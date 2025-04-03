@@ -15,20 +15,30 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public static class ConfigurationItemsExtensions
     {
+        public static IQueryable<TItem> FilterByFullName<TItem>(this IQueryable<TItem> queryable, string? module, string name) where TItem : class, IConfigurationItem 
+        {
+            return queryable.Where(new ByNameAndModuleSpecification<TItem>(name, module).ToExpression());
+        }
+
+        public static IQueryable<TItem> GetByByFullName<TItem>(this IRepository<TItem, Guid> repository, string? module, string name) where TItem : class, IConfigurationItem 
+        {
+            return repository.GetAll().FilterByFullName(module, name);
+        }
+
         /// <summary>
         /// Get <see cref="IConfigurationItem"/> by <paramref name="module"/>, <paramref name="name"/> and <paramref name="mode"/>
         /// </summary>
-        public static async Task<TItem> GetItemByFullNameAsync<TItem>(this IRepository<TItem, Guid> repository, string module, string name, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem
+        public static async Task<TItem> GetItemByFullNameAsync<TItem>(this IQueryable<TItem> queryable, string? module, string name, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem 
         {
-            var query = repository.GetAll().Where(new ByNameAndModuleSpecification<TItem>(name, module).ToExpression());            
+            var query = queryable.FilterByFullName(module, name);
 
             switch (mode)
             {
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
+                case ConfigurationItemViewMode.Live:
                 default:
                     query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     break;
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
+                case ConfigurationItemViewMode.Ready:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -43,7 +53,7 @@ namespace Shesha.ConfigurationItems
                         query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                         break;
                     }
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
+                case ConfigurationItemViewMode.Latest:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -54,8 +64,16 @@ namespace Shesha.ConfigurationItems
                         break;
                     }
             }
-            
+
             return await query.FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Get <see cref="IConfigurationItem"/> by <paramref name="module"/>, <paramref name="name"/> and <paramref name="mode"/>
+        /// </summary>
+        public static async Task<TItem> GetItemByFullNameAsync<TItem>(this IRepository<TItem, Guid> repository, string module, string name, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem
+        {
+            return await repository.GetAll().GetItemByFullNameAsync(module, name, mode);
         }
 
         /// <summary>
@@ -63,7 +81,15 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         public static async Task<TItem> GetItemByIdAsync<TItem>(this IRepository<TItem, Guid> repository, ConfigurationItemIdentifier id, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem 
         {
-            return await repository.GetItemByFullNameAsync(id.Module, id.Name, mode);
+            return await repository.GetAll().GetItemByIdAsync(id, mode);
+        }
+
+        /// <summary>
+        /// Get <see cref="IConfigurationItem"/> by <paramref name="id"/> and <paramref name="mode"/>
+        /// </summary>
+        public static async Task<TItem> GetItemByIdAsync<TItem>(this IQueryable<TItem> queryable, ConfigurationItemIdentifier id, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem 
+        {
+            return await queryable.GetItemByFullNameAsync(id.Module, id.Name, mode);
         }
     }
 }

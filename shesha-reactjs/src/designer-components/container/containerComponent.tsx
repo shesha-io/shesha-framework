@@ -113,6 +113,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           style={{
             ...getStyle(model?.style, formData),
           }}
+          noDefaultStyling={model.noDefaultStyling}
           className={model.className}
           dynamicComponents={model?.isDynamic ? model?.components : []}
           {...flexAndGridStyles}

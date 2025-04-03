@@ -5,9 +5,9 @@
     /// </summary>
     public class AssemblyBaseDto
     {
-        public string FileName { get; set; }
-        public string FileMD5 { get; set; }
-        public string FileVersion { get; set; }
-        public string ProductVersion { get; set; }
+        public required string FileName { get; set; }
+        public required string FileMD5 { get; set; }
+        public string? FileVersion { get; set; }
+        public string? ProductVersion { get; set; }
     }
 }

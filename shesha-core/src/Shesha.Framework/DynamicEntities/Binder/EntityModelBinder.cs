@@ -90,29 +90,32 @@ namespace Shesha.DynamicEntities.Binder
             ;
         }
 
+        private List<string> GetFormFields(JObject jobject, List<string>? formFields = null)
+        {
+            if (formFields != null)
+                return formFields;
+            
+            var _formFields = jobject.Property(nameof(IHasFormFieldsList._formFields));
+            var formFieldsArray = _formFields?.Value as JArray;
+            return formFieldsArray?.Select(f => f.Value<string>()).WhereNotNull().ToList() ?? new List<string>();
+        }
+
         [UnitOfWork]
         public async Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,
-            string propertyName = null, List<string> formFields = null)
+            string? propertyName = null, List<string>? formFields = null)
         {
             var entityType = entity.GetType().StripCastleProxyType();
 
             var properties = entityType.GetProperties().ToList();
             var entityIdValue = entity.GetType().GetProperty("Id")?.GetValue(entity)?.ToString();
-            if (!entityIdValue.IsNullOrEmpty() && entityIdValue != Guid.Empty.ToString())
+            if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
-            var config = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
-            var formFieldsInternal = formFields;
-            if (formFields == null)
-            {
-                var _formFields = jobject.Property(nameof(IHasFormFieldsList._formFields));
-                var formFieldsArray = _formFields?.Value as JArray;
-                formFieldsInternal = formFieldsArray?.Select(f => f.Value<string>()).ToList() ?? new List<string>();
-            }
-
+            var formFieldsInternal = GetFormFields(jobject, formFields);
             formFieldsInternal = formFieldsInternal.Select(x => x.ToCamelCase()).ToList();
 
             var jProps = jobject.Properties().ToList();
@@ -213,7 +216,7 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.ReferenceListItem:
                                 case DataTypes.Time: // ToDo: Review parsing of time
                                                      //case DataTypes.Enum: // Enum binded as integer
-                                    object parsedValue = null;
+                                    object? parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
                                     if (result && dbValue?.ToString() != parsedValue?.ToString())
                                         if (await ValidateAsync(entity, jFullName, parsedValue, context))
@@ -262,7 +265,7 @@ namespace Shesha.DynamicEntities.Binder
                                                     foreach (var item in jList)
                                                     {
                                                         context.ArrayItemIndex = arrayItemIndex++;
-                                                        object newItem = null;
+                                                        object? newItem = null;
                                                         if (!item.IsNullOrEmpty())
                                                         {
                                                             if (paramType.IsEntityType())
@@ -272,10 +275,10 @@ namespace Shesha.DynamicEntities.Binder
                                                             }
                                                             else
                                                             {
-                                                                newItem = await GetObjectOrObjectReferenceAsync(paramType, item as JObject, context, childFormFields);
-                                                                r = await _objectValidatorManager.ValidateObjectAsync(newItem, context.LocalValidationResult) && newItem != null && r;
+                                                                newItem = await GetObjectOrObjectReferenceAsync(paramType, item.ForceCastAs<JObject>(), context, childFormFields);
+                                                                r = newItem != null && await _objectValidatorManager.ValidateObjectAsync(newItem, context.LocalValidationResult) && r;
                                                             }
-                                                            addMethod?.Invoke(newArray, new[] { newItem });
+                                                            addMethod?.Invoke(newArray, [newItem]);
                                                         }
                                                     }
                                                     if (r)
@@ -339,7 +342,9 @@ namespace Shesha.DynamicEntities.Binder
                                                     if (!int.TryParse(valComponents[i], out val))
                                                     {
                                                         // Try parse enum
-                                                        var prop = entity.GetType().GetProperty(ExtractName(propertyName));
+                                                        var prop = !string.IsNullOrWhiteSpace(propertyName)
+                                                            ? entity.GetType().GetProperty(ExtractName(propertyName))
+                                                            : null;
                                                         if (prop != null && prop.PropertyType.IsEnum)
                                                         {
                                                             var type = prop.PropertyType.GetUnderlyingTypeIfNullable();
@@ -363,7 +368,7 @@ namespace Shesha.DynamicEntities.Binder
                                                         totalVal += val;
                                                 }
                                             }
-                                            object refValue = null;
+                                            object? refValue = null;
                                             result = Parser.TryParseToValueType(totalVal.ToString(), property.PropertyType, out refValue);
                                             if (result && (await ValidateAsync(entity, jFullName, refValue, context)))
                                                 property.SetValue(entity, refValue);
@@ -388,7 +393,7 @@ namespace Shesha.DynamicEntities.Binder
                                                 r = childObject != null;
                                             }
                                         }
-                                        if ((await _objectValidatorManager.ValidateObjectAsync(childObject, context.LocalValidationResult)) && r)
+                                        if (childObject == null || (await _objectValidatorManager.ValidateObjectAsync(childObject, context.LocalValidationResult)) && r)
                                             property.SetValue(entity, childObject);
                                     }
                                     else
@@ -433,20 +438,20 @@ namespace Shesha.DynamicEntities.Binder
         private async Task PerformEntityReferenceAsync(
             object entity,
             PropertyInfo property,
-            ModelPropertyDto propConfig,
+            ModelPropertyDto? propConfig,
             JToken jValue,
             string jPropertyName,
-            object dbValue,
-            List<string> childFormFields,
+            object? dbValue,
+            List<string>? childFormFields,
             EntityModelBindingContext context,
-            Action<object> action
+            Action<object?> action
             )
         {
             // Get the rules of cascade update
             var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                 ?? (propConfig == null ? null
-                    : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate, propConfig.CascadeUpdate, propConfig.CascadeDeleteUnreferenced));
+                    : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate ?? false, propConfig.CascadeUpdate ?? false, propConfig.CascadeDeleteUnreferenced ?? false));
 
             var propertyType = property.PropertyType.IsGenericType
                 ? property.PropertyType.GetGenericArguments()[0]
@@ -461,15 +466,15 @@ namespace Shesha.DynamicEntities.Binder
                 var allowedTypes = propertyType == typeof(GenericEntityReference)
                     ? property.GetCustomAttribute<EntityReferenceAttribute>()?.AllowableTypes
                     : null;
-                if (!jchildClassName.IsNullOrEmpty() && allowedTypes != null && allowedTypes.Any() && !allowedTypes.Contains(jchildClassName))
+                if (!string.IsNullOrWhiteSpace(jchildClassName) && allowedTypes != null && allowedTypes.Any() && !allowedTypes.Contains(jchildClassName))
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"`{jchildClassName}` is not allowed for `{property.Name}`."));
                     return;
                 }
 
-                var childEntityType = jchildClassName.IsNullOrEmpty()
+                var childEntityType = string.IsNullOrEmpty(jchildClassName)
                     ? JsonEntityProxy.GetUnproxiedType(propertyType)
-                    : _entityConfigurationStore.Get(jchildClassName)?.EntityType; //: _typeFinder.Find(x => x.FullName == jchildClassName).FirstOrDefault();
+                    : _entityConfigurationStore.Get(jchildClassName)?.EntityType;
                 if (childEntityType == null)
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"Type `{jchildClassName}` not found."));
@@ -479,10 +484,10 @@ namespace Shesha.DynamicEntities.Binder
                 if (!string.IsNullOrEmpty(jchildId))
                 {
                     var newChildEntity = dbValue;
-                    var childId = dbValue?.GetId().ToString();
+                    var childId = dbValue?.GetId()?.ToString();
 
                     // if child entity is specified
-                    if (childId?.ToLower() != jchildId?.ToLower()
+                    if (childId?.ToLower() != jchildId.ToLower()
                         || propertyType.FullName != jchildClassName)
                     {
                         // id or class changed
@@ -504,7 +509,7 @@ namespace Shesha.DynamicEntities.Binder
                             context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be updated."));
                             return;
                         }
-                        r = await BindPropertiesAsync(jEntity, newChildEntity, context, null, childFormFields);
+                        r = await BindPropertiesAsync(jEntity, newChildEntity.NotNull(), context, null, childFormFields); 
                         r = r && await _objectValidatorManager.ValidateObjectAsync(newChildEntity, context.LocalValidationResult);
                     }
 
@@ -513,7 +518,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (r)
                         {
                             if (propertyType == typeof(GenericEntityReference))
-                                action(new GenericEntityReference(newChildEntity));
+                                action(new GenericEntityReference(newChildEntity.NotNull()));
                             else
                                 action(newChildEntity);
 
@@ -535,7 +540,7 @@ namespace Shesha.DynamicEntities.Binder
                             return;
                         }
 
-                        var childEntity = Activator.CreateInstance(childEntityType);
+                        var childEntity = ActivatorHelper.CreateNotNullObject(childEntityType);
                         // create a new object
                         if (!await BindPropertiesAsync(jEntity, childEntity, context, null, childFormFields))
                             return;
@@ -585,7 +590,7 @@ namespace Shesha.DynamicEntities.Binder
                     var childId = dbValue?.GetType().GetProperty("Id")?.GetValue(dbValue)?.ToString();
 
                     // if child entity is specified
-                    if (childId?.ToLower() != jchildId?.ToLower())
+                    if (childId?.ToLower() != jchildId.ToLower())
                     {
                         // id changed
                         newChildEntity = await GetEntityByIdAsync(propertyType, jchildId, "", jPropertyName, context);
@@ -607,7 +612,7 @@ namespace Shesha.DynamicEntities.Binder
             }
         }
 
-        private async Task<object> GetEntityByIdAsync(Type entityType, string id, string displayName, string propertyPath, EntityModelBindingContext context)
+        private async Task<object?> GetEntityByIdAsync(Type entityType, string id, string? displayName, string propertyPath, EntityModelBindingContext context)
         {
             if (context.GetEntityById != null)
                 return context.GetEntityById(entityType, id, displayName, propertyPath, context);
@@ -619,26 +624,27 @@ namespace Shesha.DynamicEntities.Binder
             return newChildEntity;
         }
 
-        private async Task<object> GetObjectOrObjectReferenceAsync(Type objectType, JObject jobject, EntityModelBindingContext context, List<string> formFields = null)
+        private async Task<object?> GetObjectOrObjectReferenceAsync(Type objectType, JObject jobject, EntityModelBindingContext context, List<string>? formFields = null)
         {
             if (context.GetObjectOrObjectReference != null)
                 return context.GetObjectOrObjectReference(objectType, jobject, context, formFields);
 
-            var _className = jobject.ContainsKey(nameof(IJsonEntity._className).ToCamelCase())
-                ? jobject.GetValue(nameof(IJsonEntity._className).ToCamelCase()).ToString()
+            var classNameKey = nameof(IJsonEntity._className).ToCamelCase();
+            var _className = jobject.ContainsKey(classNameKey)
+                ? jobject.GetValue(classNameKey)?.ToString()
                 : null;
 
             if (_className != null)
-                objectType = _typeFinder.Find(t => t.FullName == _className).FirstOrDefault();
+                objectType = _typeFinder.Find(t => t.FullName == _className).First();
 
-            object newItem;
             // use properties binding to validate properties
-            newItem = Activator.CreateInstance(JsonEntityProxy.GetUnproxiedType(objectType));
+            var unproxiedType = JsonEntityProxy.GetUnproxiedType(objectType);
+            var newItem = Activator.CreateInstance(unproxiedType) ?? throw new Exception($"Failed to create instance of type '{unproxiedType.FullName}'");
             var r = await BindPropertiesAsync(jobject, newItem, context, null, formFields);
             return r ? newItem : null;
         }
 
-        private async Task<bool> ValidateAsync(object obj, string propertyName, object value, EntityModelBindingContext context)
+        private async Task<bool> ValidateAsync(object obj, string propertyName, object? value, EntityModelBindingContext context)
         {
             return context.SkipValidation && context.LocalSkipValidation || await _objectValidatorManager.ValidatePropertyAsync(obj, propertyName, value, context.ValidationResult);
         }
@@ -649,7 +655,7 @@ namespace Shesha.DynamicEntities.Binder
             var props = entityType.GetProperties();
             var result = false;
 
-            var config = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
             foreach (var prop in props)
             {
                 var propConfig = config.Properties.FirstOrDefault(x => x.Name == prop.Name);
@@ -674,7 +680,7 @@ namespace Shesha.DynamicEntities.Binder
             var entityType = entity.GetType().StripCastleProxyType();
             var entityTypeName = entityType.FullName;
             var references = _entityPropertyRepository.GetAll().Where(x => x.EntityType == typeShortAlias || x.EntityType == entityTypeName);
-            if (!references.Any())
+            if (!await references.AnyAsync())
                 return false;
 
             var parentId = parentEntity.GetId();
@@ -692,7 +698,8 @@ namespace Shesha.DynamicEntities.Binder
                 && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
-                if (refType == null || !refType.IsEntityType()) continue;
+                if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 
+                    continue;
 
                 var refParam = Expression.Parameter(refType);
                 var query = Expression.Lambda(
@@ -706,7 +713,8 @@ namespace Shesha.DynamicEntities.Binder
                 if (idType == null) continue;
                 var repoType = typeof(IRepository<,>).MakeGenericType(refType, idType);
                 var repo = _iocManager.Resolve(repoType);
-                var where = (repoType.GetMethod("GetAll")?.Invoke(repo, null) as IQueryable).Where(query);
+                var getAllMethodName = nameof(IRepository<IEntity<Guid>, Guid>.GetAll);
+                var where = (repoType.GetRequiredMethod(getAllMethodName).Invoke(repo, null) as IQueryable).NotNull().Where(query);
 
                 if (refType.IsAssignableFrom(parentEntity.GetType()))
                 {
@@ -742,31 +750,5 @@ namespace Shesha.DynamicEntities.Binder
             var parts = propName.RemovePostfix(".").Split('.');
             return parts[parts.Length - 1];
         }
-
-        /*private class FormField
-        {
-            public static List<FormField> GetList(JProperty _formFields)
-            {
-                var list = new List<FormField>();
-                var formFieldsArray = _formFields.Value as JArray;
-                var formFields = formFieldsArray.Select(f => f.Value<string>()).ToList();
-                foreach (var formField in formFields)
-                {
-                    var parts = formField.Split(".");
-                    var field = new FormField() { Name = parts[0] };
-                    list.Add(field);
-                    foreach (var part in parts.Skip(1))
-                    {
-                        var hField = new FormField() { Name = part, Parent = field };
-                        field.ch
-                    }
-                }
-                return list;
-            }
-
-            public FormField Parent { get; set; }
-            public string Name { get; set; }
-            public List<FormField> FormFields { get; set; } = new List<FormField>();
-        }*/
     }
 }

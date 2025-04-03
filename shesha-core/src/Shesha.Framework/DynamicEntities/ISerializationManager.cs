@@ -1,9 +1,5 @@
 ﻿using Shesha.DynamicEntities.Dtos;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
@@ -18,7 +14,7 @@ namespace Shesha.DynamicEntities
         /// <param name="propertyDto"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        string SerializeProperty(EntityPropertyDto propertyDto, object value);
+        string SerializeProperty(EntityPropertyDto propertyDto, object? value);
 
         /// <summary>
         /// Deserialize property value
@@ -26,6 +22,6 @@ namespace Shesha.DynamicEntities
         /// <param name="propertyType"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        object DeserializeProperty(Type propertyType, string value);
+        object? DeserializeProperty(Type propertyType, string value);
     }
 }

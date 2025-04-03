@@ -1,6 +1,6 @@
 import { createStyles } from "@/styles";
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx, token }, { dimensions }) => {
     const flexItem = "flex-item";
     const flexItemWrapper = "flex-item-wrapper";
     const flexItemWrapperVertical = "flex-item-wrapper-vertical";
@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const flexContainer = cx("flex-container", css`
         background-color: ${token.colorTextLightSolid};
         flex-wrap: wrap;
+        ${dimensions}
         
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;

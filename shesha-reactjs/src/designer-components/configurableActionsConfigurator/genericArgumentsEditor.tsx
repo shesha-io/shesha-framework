@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
-import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;
@@ -21,52 +20,9 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   markup,
   onValuesChange,
   readOnly = false,
+  cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
-
-  useEffect(() => {
-    formRef.current?.resetFields();
-  });
-
-  const objectMarkup = JSON.parse(JSON.stringify(markup));
-
-  const styledMarkup = (item) => {
-
-    return item.type === 'collapsiblePanel' ? {
-      ...item,
-      content: {
-        ...item.content,
-        components: item.content.components.map((item: any) => ({
-          ...item,
-          type: "settingsInput",
-          inputType: item.type === 'settingsInput' ? item.inputType : item.type === 'checkbox' ? 'switch' : item.type,
-          dropdownOptions: item?.values?.map((item: any) => ({
-            ...item,
-            label: item?.label,
-            icon: item?.icon
-          })),
-          buttonGroupOptions: item.buttonGroupOptions ?? item.items
-        }))
-      }
-    } : {
-      ...item,
-      type: "settingsInput",
-      inputType: item.type === 'settingsInput' ? item.inputType : item.type === 'checkbox' ? 'switch' : item.type,
-      dropdownOptions: item?.values?.map((item: any) => ({
-        ...item,
-        label: item?.label,
-        icon: item?.icon
-      })),
-      buttonGroupOptions: item.buttonGroupOptions ?? item.items
-    };
-  };
-
-  const newMarkUp = Array.isArray(objectMarkup)
-    ? objectMarkup.map((item: any) => styledMarkup(item))
-    : {
-      ...objectMarkup,
-      components: objectMarkup.components.map((item: any): ISettingsInputProps => styledMarkup(item))
-    };
 
   return (
     <ConfigurableForm
@@ -76,7 +32,8 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       mode={readOnly ? 'readonly' : 'edit'}
       shaFormRef={formRef}
       onFinish={onSave}
-      markup={newMarkUp as FormMarkup}
+      markup={markup}
+      cacheKey={cacheKey}
       initialValues={model}
       onValuesChange={onValuesChange}
     />

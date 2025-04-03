@@ -25,7 +25,7 @@ namespace Shesha.Controllers
     public class FrameworkController: ControllerBase, ITransientDependency
     {
         public ILogger Logger { get; set; } = new NullLogger();
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         [HttpPost]
         public async Task<string> BootstrapReferenceListsAsync()
@@ -61,7 +61,7 @@ namespace Shesha.Controllers
                 }
             })
                 .Distinct<Assembly>(new AssemblyFullNameComparer())
-                .Where(a => string.IsNullOrWhiteSpace(searchString) || a.FullName.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
+                .Where(a => string.IsNullOrWhiteSpace(searchString) || !string.IsNullOrWhiteSpace(a.FullName) && a.FullName.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
                 .OrderBy(a => a.FullName);
 
             var result = assemblies.Select(a => {
@@ -79,7 +79,7 @@ namespace Shesha.Controllers
                 {
                     FullName = a.GetName().Name,
                     Location = a.Location,
-                    Version = a.GetName().Version.ToString(),
+                    Version = a.GetName()?.Version?.ToString() ?? "unknown",
                     Architecture = architecture,
                     Description = descriptionAttribute?.Description,
                 };
@@ -100,7 +100,7 @@ namespace Shesha.Controllers
 
         [HttpPost]
         [DontWrapResult]
-        public string TestException(ExceptionInput input)
+        public string? TestException(ExceptionInput input)
         {
             if (input.GenerateException)
                 throw new Exception(input.Message);
@@ -133,7 +133,7 @@ namespace Shesha.Controllers
         public class ExceptionInput 
         { 
             public bool GenerateException { get; set; }
-            public string Message { get; set; }
+            public string? Message { get; set; }
         }
     }
 }

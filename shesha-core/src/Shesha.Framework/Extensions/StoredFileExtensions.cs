@@ -26,7 +26,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="storedFile"></param>
         /// <returns></returns>
-        public static string GetFileUrl(this StoredFile storedFile)
+        public static string? GetFileUrl(this StoredFile storedFile)
         {
             return GetUrl("Download", "StoredFile", new { Id = storedFile.Id });
         }
@@ -36,15 +36,20 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="storedFileVersion"></param>
         /// <returns></returns>
-        public static string GetFileVersionUrl(this StoredFileVersion storedFileVersion)
+        public static string? GetFileVersionUrl(this StoredFileVersion storedFileVersion)
         {
             return GetUrl("Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
         }
 
-        private static string GetUrl(string action = default, string controller = default, object values = default) 
+        private static string? GetUrl(string action, string controller, object values) 
         {
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
+            if (linkGeneratorContext.State == null)
+                return string.Empty;
+
+            if (string.IsNullOrWhiteSpace(linkGeneratorContext.State.Scheme) || string.IsNullOrWhiteSpace(linkGeneratorContext.State.Host))
+                return string.Empty;
 
             var port = linkGeneratorContext.State.Port;
 
@@ -60,7 +65,7 @@ namespace Shesha.Extensions
             );
         }
 
-        private static string GetPath(string action = default, string controller = default, object values = default) 
+        private static string? GetPath(string action, string controller, object values) 
         {
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
 
@@ -72,7 +77,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="storedFile"></param>
         /// <returns></returns>
-        public static string GetFilePath(this StoredFile storedFile)
+        public static string? GetFilePath(this StoredFile storedFile)
         {
             return GetPath("Download", "StoredFile", new { Id = storedFile.Id });
         }
@@ -82,7 +87,7 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="storedFileVersion"></param>
         /// <returns></returns>
-        public static string GetFileVersionPath(this StoredFileVersion storedFileVersion)
+        public static string? GetFileVersionPath(this StoredFileVersion storedFileVersion)
         {
             return GetPath("Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
         }

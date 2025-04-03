@@ -24,7 +24,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'text',
+                  inputType: 'textField',
                   propertyName: 'componentName',
                   label: 'Component Name',
                   size: 'large',
@@ -37,7 +37,7 @@ export const getSettings = (data: any) => {
                   inputs: [
                     {
                       id: 'headerTitle-s4gmBg31azZC0UjZjpfTm',
-                      type: 'text',
+                      type: 'textField',
                       propertyName: 'label',
                       label: 'Header Title',
                       size: 'large',
@@ -80,7 +80,7 @@ export const getSettings = (data: any) => {
                               label: 'Show Header',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: true,
+                              defaultValue: false,
                             },
                             {
                               id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
@@ -90,7 +90,7 @@ export const getSettings = (data: any) => {
                               label: 'Show Action Buttons',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: true,
+                              defaultValue: false,
                             },
                           ],
                         })
@@ -208,10 +208,10 @@ export const getSettings = (data: any) => {
                                 hidden: false,
                                 defaultValue: 'right',
                                 dropdownOptions: [
-                                  { label: 'top', value: 'top' },
-                                  { label: 'right', value: 'right' },
-                                  { label: 'bottom', value: 'bottom' },
-                                  { label: 'left', value: 'left' },
+                                  { label: 'Top', value: 'top' },
+                                  { label: 'Right', value: 'right' },
+                                  { label: 'Bottom', value: 'bottom' },
+                                  { label: 'Left', value: 'left' },
                                 ],
                                 validate: { required: true },
                               })
@@ -232,12 +232,13 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'width-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
+                                    defaultValue: '100%',
                                     propertyName: 'width',
-                                    icon: 'width',
+                                    icon: "widthIcon",
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                 ],
@@ -259,12 +260,13 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'height-s4gmBg31azZC0UjZjpfTm',
-                                    label: 'height',
+                                    label: 'Height',
                                     width: 85,
+                                    defaultValue: '100%',
                                     propertyName: 'dimensions.height',
-                                    icon: 'height',
+                                    icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                 ],
@@ -332,7 +334,7 @@ export const getSettings = (data: any) => {
                                 parentId: 'backgroundStylePnl',
                                 inputs: [
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'backgroundStyleRow-color',
                                     label: 'Color',
                                     propertyName: 'background.color',
@@ -382,7 +384,7 @@ export const getSettings = (data: any) => {
                                 parentId: 'backgroundStylePnl',
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'backgroundStyle-url',
                                     propertyName: 'background.url',
                                     jsSetting: false,
@@ -441,7 +443,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'backgroundStyle-storedFile',
                                     jsSetting: false,
                                     propertyName: 'background.storedFile.id',
@@ -452,6 +454,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-controls',
                                 parentId: 'backgroundStyleRow',
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                 inline: true,
                                 readOnly: {
                                   _code: 'return  getSettingValue(data?.readOnly);',
@@ -577,16 +580,16 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInputRow(getBorderInputs()[0] as any)
-                              .addSettingsInputRow(getBorderInputs()[1] as any)
-                              .addSettingsInputRow(getBorderInputs()[2] as any)
-                              .addSettingsInputRow(getBorderInputs()[3] as any)
-                              .addSettingsInputRow(getBorderInputs()[4] as any)
-                              .addSettingsInputRow(getCornerInputs()[0] as any)
-                              .addSettingsInputRow(getCornerInputs()[1] as any)
-                              .addSettingsInputRow(getCornerInputs()[2] as any)
-                              .addSettingsInputRow(getCornerInputs()[3] as any)
-                              .addSettingsInputRow(getCornerInputs()[4] as any)
+                              .addContainer({
+                                id: 'borderStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getBorderInputs() as any
+                              })
+                              .addContainer({
+                                id: 'borderRadiusStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getCornerInputs() as any
+                              })
                               .toJson(),
                           ],
                         },
@@ -614,43 +617,43 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'shadowStyleRow-offsetX',
                                     label: 'Offset X',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'offsetHorizontalIcon',
                                     propertyName: 'shadow.offsetX',
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'shadowStyleRow-offsetY',
                                     label: 'Offset Y',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'offsetVerticalIcon',
                                     propertyName: 'shadow.offsetY',
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'shadowStyleRow-blurRadius',
                                     label: 'Blur',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'blurIcon',
                                     propertyName: 'shadow.blurRadius',
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'shadowStyleRow-spreadRadius',
                                     label: 'Spread',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'spreadIcon',
                                     propertyName: 'shadow.spreadRadius',
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'shadowStyleRow-color',
                                     label: 'Color',
                                     hideLabel: true,
@@ -704,8 +707,8 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
-                                hideLabel: true,
-                                label: 'Body Style',
+                                hideLabel: false,
+                                label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
@@ -784,7 +787,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'backgroundStyleRow-color',
                                             label: 'Color',
                                             propertyName: 'headerBackground.color',
@@ -834,7 +837,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
-                                            type: 'text',
+                                            type: 'textField',
                                             id: 'backgroundStyle-url',
                                             propertyName: 'headerBackground.url',
                                             jsSetting: false,
@@ -893,7 +896,7 @@ export const getSettings = (data: any) => {
                                         } as any,
                                         inputs: [
                                           {
-                                            type: 'text',
+                                            type: 'textField',
                                             id: 'backgroundStyle-storedFile',
                                             jsSetting: false,
                                             propertyName: 'headerBackground.storedFile.id',
@@ -904,6 +907,7 @@ export const getSettings = (data: any) => {
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-controls',
                                         parentId: 'backgroundStyleRow',
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                         inline: true,
                                         readOnly: {
                                           _code: 'return  getSettingValue(data?.readOnly);',
@@ -1014,43 +1018,43 @@ export const getSettings = (data: any) => {
                                         } as any,
                                         inputs: [
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-offsetX',
                                             label: 'Offset X',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'offsetHorizontalIcon',
                                             propertyName: 'headerShadow.offsetX',
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-offsetY',
                                             label: 'Offset Y',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'offsetVerticalIcon',
                                             propertyName: 'headerShadow.offsetY',
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-blurRadius',
                                             label: 'Blur',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'blurIcon',
                                             propertyName: 'headerShadow.blurRadius',
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-spreadRadius',
                                             label: 'Spread',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'spreadIcon',
                                             propertyName: 'headerShadow.spreadRadius',
                                           },
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'HeadershadowStyleRow-color',
                                             label: 'Color',
                                             hideLabel: true,
@@ -1071,8 +1075,8 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'headerStyle',
-                                hideLabel: true,
-                                label: 'Header Style',
+                                hideLabel: false,
+                                label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
@@ -1151,7 +1155,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnll',
                                         inputs: [
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'backgroundStyleRow-color',
                                             label: 'Color',
                                             propertyName: 'footerBackground.color',
@@ -1201,7 +1205,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnll',
                                         inputs: [
                                           {
-                                            type: 'text',
+                                            type: 'textField',
                                             id: 'backgroundStyle-url',
                                             propertyName: 'headerBackground.url',
                                             jsSetting: false,
@@ -1260,7 +1264,7 @@ export const getSettings = (data: any) => {
                                         } as any,
                                         inputs: [
                                           {
-                                            type: 'text',
+                                            type: 'textField',
                                             id: 'footerbackgroundStyle-storedFile',
                                             jsSetting: false,
                                             propertyName: 'footerBackground.storedFile.id',
@@ -1271,6 +1275,7 @@ export const getSettings = (data: any) => {
                                       .addSettingsInputRow({
                                         id: 'footerBackground-controls',
                                         parentId: 'backgroundStyleRow',
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                         inline: true,
                                         readOnly: {
                                           _code: 'return  getSettingValue(data?.readOnly);',
@@ -1381,43 +1386,43 @@ export const getSettings = (data: any) => {
                                         } as any,
                                         inputs: [
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-offsetX',
                                             label: 'Offset X',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'offsetHorizontalIcon',
                                             propertyName: 'footerShadow.offsetX',
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-offsetY',
                                             label: 'Offset Y',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'offsetVerticalIcon',
                                             propertyName: 'footerShadow.offsetY',
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-blurRadius',
                                             label: 'Blur',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'blurIcon',
                                             propertyName: 'footerShadow.blurRadius',
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'HeadershadowStyleRow-spreadRadius',
                                             label: 'Spread',
                                             hideLabel: true,
-                                            width: 60,
+                                            width: 80,
                                             icon: 'spreadIcon',
                                             propertyName: 'footerShadow.spreadRadius',
                                           },
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'HeadershadowStyleRow-color',
                                             label: 'Color',
                                             hideLabel: true,
@@ -1438,8 +1443,8 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-sc1d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'footerStyle',
-                                hideLabel: true,
-                                label: 'Footer Style',
+                                hideLabel: false,
+                                label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
@@ -1449,24 +1454,6 @@ export const getSettings = (data: any) => {
                       })
                       .toJson(),
                   ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Security',
-            id: '6Vw9iiDw9d0MD_Rh5cbIn',
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
                 })
                 .toJson(),
             ],

@@ -4,13 +4,9 @@ export const defaultStyles = (prev): IStyleType => {
     const { borderWidth, borderColor, borderRadius, borderType } = prev;
     return {
         border: {
-            selectedCorner: 'all', selectedSide: 'all',
+            radiusType: 'all', borderType: 'all',
             border: {
-                all: { width: borderWidth || '0px', style: borderType, color: borderColor },
-                top: { width: '0px', },
-                left: { width: '0px', },
-                right: { width: '0px', },
-                bottom: { width: '0px', }
+                all: { width: borderWidth || '1px', style: borderType || 'none', color: borderColor },
             },
             radius: { all: borderRadius }
         },

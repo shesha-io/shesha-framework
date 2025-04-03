@@ -52,7 +52,7 @@ export const getPositionInputs = () => positions.map(value => {
                 hideLabel: true,
                 width: 65,
                 defaultValue: 0,
-                inputType: 'number',
+                inputType: 'numberField',
                 propertyName: `position.${label}`
             }]
     };

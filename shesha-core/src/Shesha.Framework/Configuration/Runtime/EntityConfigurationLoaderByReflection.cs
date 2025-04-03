@@ -33,7 +33,7 @@ namespace Shesha.Configuration.Runtime
                     .Select(dp => new { IsOwn = ownProps.Contains(dp), Prop = dp })
                     .OrderByDescending(dp => dp.IsOwn ? 1 : 0)
                     .Select(dp => dp.Prop)
-                    .FirstOrDefault()
+                    .First()
                 ).ToList();
             if (propsWithoutDuplicates.Count < props.Count)
             {
@@ -45,8 +45,7 @@ namespace Shesha.Configuration.Runtime
             {
                 try
                 {
-                    var propConfig = new PropertyConfiguration(config.EntityType);
-                    LoadPropertyConfiguration(prop, propConfig);
+                    var propConfig = LoadPropertyConfiguration(prop, config.EntityType);
                     config.Properties.Add(prop.Name, propConfig);
                 }
                 catch
@@ -68,32 +67,35 @@ namespace Shesha.Configuration.Runtime
             }
 
             config.Accessor = config.EntityType.GetTypeAccessor();
-            config.TypeShortAlias = config.EntityType.GetTypeShortAliasOrNull();
+            config.SetTypeShortAlias(config.EntityType.GetTypeShortAliasOrNull());
 
             LoadChangeLoggingConfiguration(config);
             config.DisplayNamePropertyInfo = config.EntityType.GetDisplayNamePropertyInfoOrNull();
         }
 
-        private static void LoadPropertyConfiguration(PropertyInfo prop, PropertyConfiguration propConfig)
+        private static PropertyConfiguration LoadPropertyConfiguration(PropertyInfo prop, Type entityType)
         {
-            propConfig.PropertyInfo = prop;
-            propConfig.GeneralType = GetGeneralDataType(prop);
-            propConfig.Category = prop.GetAttribute<CategoryAttribute>()?.Category;
+            var propConfig = new PropertyConfiguration(entityType) {
+                PropertyInfo = prop,
+                GeneralType = GetGeneralDataType(prop),
+                Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category,
+                Label = prop.GetDisplayName(),
+            };
 
             switch (propConfig.GeneralType)
             {
                 case GeneralDataType.Numeric:
                 case GeneralDataType.ReferenceList:
                     {
-                        var refListAtt = prop.GetAttribute<ReferenceListAttribute>(true);
+                        var refListAtt = prop.GetAttributeOrNull<ReferenceListAttribute>(true);
                         var refListId = refListAtt?.GetReferenceListIdentifier(prop);
                         if (refListId == null)
                         {
                             var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
 
-                            if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>()) 
+                            if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>())
                             {
-                                refListAtt = underlyingType.GetAttribute<ReferenceListAttribute>();
+                                refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
                                 refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
                             }
                         }
@@ -103,14 +105,14 @@ namespace Shesha.Configuration.Runtime
                             propConfig.ReferenceListName = refListId.Name;
                             propConfig.ReferenceListModule = refListId.Module;
 
-                            propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                            if (refListAtt != null)
+                                propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
                         }
+
                         break;
                     }
                 case GeneralDataType.Enum:
-                    var enumType = prop.PropertyType;
-                    if (enumType.IsNullableType())
-                        enumType = Nullable.GetUnderlyingType(prop.PropertyType);
+                    var enumType = prop.PropertyType.GetUnderlyingTypeIfNullable();
                     propConfig.EnumType = enumType;
                     break;
                 case GeneralDataType.MultiValueReferenceList: 
@@ -128,9 +130,9 @@ namespace Shesha.Configuration.Runtime
                     break;
             }
 
-            propConfig.Label = prop.GetDisplayName();
-
             LoadChangeLoggingPropertyConfiguration(prop, propConfig);
+            
+            return propConfig;
         }
 
         private void LoadChangeLoggingConfiguration(EntityConfiguration config)
@@ -205,7 +207,7 @@ namespace Shesha.Configuration.Runtime
             }
             else if (underlyingPropType == typeof(DateTime))
             {
-                var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
+                var dataTypeAtt = propInfo.GetAttributeOrNull<DataTypeAttribute>();
 
                 if (dataTypeAtt != null &&
                     dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))

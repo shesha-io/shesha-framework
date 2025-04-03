@@ -26,7 +26,7 @@ namespace Shesha.Settings.Dto
 
             Category = new SettingApiItemBase 
             { 
-                Name = definition.Category,
+                Name = definition.Category ?? string.Empty,
                 Accessor = definition.CategoryAccessor,
             };
 
@@ -42,7 +42,7 @@ namespace Shesha.Settings.Dto
     public class SettingApiItemBase
     { 
         public string Name { get; set; }
-        public string Description { get; set; }
-        public string Accessor { get; set; }
+        public string? Description { get; set; }
+        public string? Accessor { get; set; }
     }
 }

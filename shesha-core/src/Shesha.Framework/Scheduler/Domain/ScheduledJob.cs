@@ -22,14 +22,14 @@ namespace Shesha.Scheduler.Domain
         /// Namespace
         /// </summary>
         [StringLength(300, MinimumLength = 3)]
-        public virtual string JobNamespace { get; set; }
+        public virtual string? JobNamespace { get; set; }
 
         /// <summary>
         /// Description of the job
         /// </summary>
         [DataType(DataType.MultilineText)]
         [StringLength(int.MaxValue)]
-        public virtual string JobDescription { get; set; }
+        public virtual string? JobDescription { get; set; }
 
         /// <summary>
         /// Job status (Active/Inactive). Is used to switch job on/off.
@@ -50,7 +50,7 @@ namespace Shesha.Scheduler.Domain
         /// Folder to store the logs
         /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string LogFolder { get; set; }
+        public virtual string? LogFolder { get; set; }
 
         /// <summary>
         /// Used to specify if job class uses generic definition of ScheduledJobBase or default.

@@ -5,11 +5,12 @@ using Abp.Domain.Services;
 using Abp.Runtime.Session;
 using Abp.UI;
 using FluentValidation;
+using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FluentValidationResult = FluentValidation.Results.ValidationResult;
 
@@ -22,7 +23,7 @@ namespace Shesha.Domain
         {
             var personRepository = IocManager.Instance.Resolve<IRepository<Person, Guid>>();
             var _session = StaticContext.IocManager.Resolve<IAbpSession>();
-            var person = await personRepository.FirstOrDefaultAsync(p => p.User.Id == _session.GetUserId());
+            var person = await personRepository.FirstOrDefaultAsync(p => p.User != null && p.User.Id == _session.GetUserId());
             return person;
         }
 
@@ -34,7 +35,7 @@ namespace Shesha.Domain
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        public static async Task<T> GetEntityAsync<T>(this DomainService service, Guid id, bool throwException = true) where T : class, IEntity<Guid>
+        public static async Task<T?> GetEntityAsync<T>(this DomainService service, Guid id, bool throwException = true) where T : class, IEntity<Guid>
         {
             return await GetEntityAsync<T, Guid>(service, id, throwException);
         }
@@ -48,11 +49,14 @@ namespace Shesha.Domain
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        public static async Task<T> GetEntityAsync<T, TId>(this DomainService service, TId id, bool throwException = true) where T : class, IEntity<TId>
+        public static async Task<T?> GetEntityAsync<T, TId>(this DomainService service, TId id, bool throwException = true) where T : class, IEntity<TId>
         {
+            var stringId = id?.ToString();
+            ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
+
             var dynamicRepo = StaticContext.IocManager.Resolve<IDynamicRepository>();
 
-            var item = await dynamicRepo.GetAsync(typeof(T), id.ToString());
+            var item = await dynamicRepo.GetAsync(typeof(T), stringId);
 
             if (item != null)
                 return (T)item;
@@ -74,10 +78,9 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static async Task<T> SaveOrUpdateEntityAsync<T, TId>(this DomainService service, TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId: struct
         {
-			var isNew = id == null;
-			var item = !isNew
-				? await GetEntityAsync<T, TId>(service, id.Value)
-				: (T)Activator.CreateInstance(typeof(T));
+            var item = id != null
+                ? (await GetEntityAsync<T, TId>(service, id.Value)).NotNull()
+                : ActivatorHelper.CreateNotNullInstance<T>();
 
 			await action.Invoke(item);
 

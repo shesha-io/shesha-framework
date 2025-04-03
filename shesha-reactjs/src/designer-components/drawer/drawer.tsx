@@ -1,23 +1,15 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { CSSProperties, FC, Fragment, ReactNode, useState } from 'react';
-import {
-  Alert,
-  Button,
-  Drawer,
-  Space
-  } from 'antd';
+import { Alert, Button, Drawer, Space } from 'antd';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import {
-  useConfigurableAction,
-  useConfigurableActionDispatcher,
-} from '@/providers/configurableActionsDispatcher';
+import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { IConfigurableFormComponent } from '@/providers';
 
 interface IShaDrawer {
   id?: string;
-  propertyName?: string;
+  componentName?: string;
   showFooter?: boolean;
   label?: string | ReactNode;
   onOkAction?: IConfigurableActionConfiguration;
@@ -33,8 +25,7 @@ interface IShaDrawer {
   headerStyle?: CSSProperties;
   footerStyle?: CSSProperties;
   placement?: 'top' | 'right' | 'bottom' | 'left';
-  width?:  string | number;
-  height?: string | number;
+  width?: string | number;
   readOnly?: boolean;
 }
 
@@ -42,12 +33,12 @@ interface IShaDrawerState {
   open?: boolean;
 }
 
-const ShaDrawer: FC<IShaDrawer> = props => {
+const ShaDrawer: FC<IShaDrawer> = (props) => {
   const {
     id,
     placement,
     width,
-    propertyName: name,
+    componentName: name,
     readOnly,
     label,
     onOkAction,
@@ -68,12 +59,11 @@ const ShaDrawer: FC<IShaDrawer> = props => {
   const [state, setState] = useState<IShaDrawerState>();
   const { executeAction } = useConfigurableActionDispatcher();
 
-  const openDrawer = () => setState(prev => ({ ...prev, open: true }));
+  const openDrawer = () => setState((prev) => ({ ...prev, open: true }));
 
-  const closeDrawer = () => setState(prev => ({ ...prev, open: false }));
+  const closeDrawer = () => setState((prev) => ({ ...prev, open: false }));
 
   const actionOwnerName = `Drawer (${name})`;
-
 
   /// NAVIGATION
   const executeActionIfConfigured = (actionConfiguration: IConfigurableActionConfiguration) => {
@@ -129,8 +119,12 @@ const ShaDrawer: FC<IShaDrawer> = props => {
     globalState: allData.globalState,
   };
 
-  const okButtonDisabled = !!okButtonCustomEnabled ? !executeScriptSync<boolean>(okButtonCustomEnabled, context) : false;
-  const cancelButtonDisabled = !!cancelButtonCustomEnabled ? !executeScriptSync<boolean>(cancelButtonCustomEnabled, context) : false;
+  const okButtonDisabled = !!okButtonCustomEnabled
+    ? !executeScriptSync<boolean>(okButtonCustomEnabled, context)
+    : false;
+  const cancelButtonDisabled = !!cancelButtonCustomEnabled
+    ? !executeScriptSync<boolean>(cancelButtonCustomEnabled, context)
+    : false;
 
   if (allData.form?.formMode === 'designer') {
     return (
@@ -144,14 +138,17 @@ const ShaDrawer: FC<IShaDrawer> = props => {
       </Fragment>
     );
   }
-
   return (
     <Drawer
       open={state?.open}
       placement={placement}
       width={width}
       onClose={closeDrawer}
-      styles={{ header: { display: showHeader ? 'block' : 'none', ...headerStyle }, footer: {display: showFooter ? 'block' : 'none' , ...footerStyle}, body: style }}
+      styles={{
+        header: { display: showHeader ? 'block' : 'none', ...headerStyle },
+        footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
+        body: style,
+      }}
       title={label}
       size="large"
       footer={
@@ -167,11 +164,11 @@ const ShaDrawer: FC<IShaDrawer> = props => {
       }
     >
       <ParentProvider model={props}>
-          <ComponentsContainer
-            containerId={id}
-            dynamicComponents={isDynamic ? components?.map(c => ({ ...c, readOnly: readOnly })) : []}
-          />
-        </ParentProvider>
+        <ComponentsContainer
+          containerId={id}
+          dynamicComponents={isDynamic ? components?.map((c) => ({ ...c, readOnly: readOnly })) : []}
+        />
+      </ParentProvider>
     </Drawer>
   );
 };

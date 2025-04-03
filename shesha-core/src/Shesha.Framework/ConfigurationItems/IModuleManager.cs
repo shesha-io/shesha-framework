@@ -1,5 +1,4 @@
-﻿using Shesha.Domain.ConfigurationItems;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading.Tasks;
 using Module = Shesha.Domain.ConfigurationItems.Module;
 
@@ -22,6 +21,6 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        Task<Module> GetOrCreateModuleAsync(Assembly assembly);
+        Task<Module?> GetOrCreateModuleAsync(Assembly assembly);
     }
 }

@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { ConfigProvider, Pagination } from 'antd';
 import { useMedia } from 'react-use';
+import { useStyles } from './style';
 
 export interface ITablePagerBaseProps {
   /** Whether this component */
@@ -45,6 +46,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   style,
 }) => {
   const isWider = useMedia('(min-width: 1202px)');
+  const {styles} = useStyles({style});
 
   const onPageNumberChange = (page: number, pageSize?: number) => {
     setCurrentPage(page);
@@ -75,13 +77,14 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
       theme={{
         components: {
           Pagination: {
-            colorText: style.color,
-            fontWeightStrong: style.fontWeight,
+            colorText: style?.color,
+            fontWeightStrong: style?.fontWeight,
           },
         },
       }}
     >
       <Pagination
+        className={styles.pager}
         style={style}
         size="small"
         total={totalRows}

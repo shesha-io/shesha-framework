@@ -8,14 +8,14 @@ import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { pickStyleFromModel, useDataTableStore } from '@/index';
+import { getStyle, pickStyleFromModel, useDataTableStore } from '@/index';
 import { Alert } from 'antd';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 
-export interface IPagerComponentProps extends Omit<ITablePagerProps, 'style'>, IConfigurableFormComponent {}
+export interface IPagerComponentProps extends Omit<ITablePagerProps, 'style'>, IConfigurableFormComponent { }
 
 const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   type: 'datatable.pager',
@@ -25,17 +25,20 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const font = model?.font;
+    const jsStyle = getStyle(model.style, model);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    if (model.hidden) return null;  
+  
+    if (model.hidden) return null;
+  
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-
+  
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...fontStyles,
+      ...jsStyle,
     });
-    return <TablePager {...model} style={additionalStyles} />;
-
+  
     return store ? (
       <TablePager {...model} style={additionalStyles} />
     ) : (
@@ -57,10 +60,10 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   migrator: (m) =>
     m
       .add<IPagerComponentProps>(0, (prev) => ({ ...prev }) as IPagerComponentProps)
-      .add(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IPagerComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IPagerComponentProps>(2, (prev) => migrateVisibility(prev))
       .add<IPagerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<IPagerComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IPagerComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 
   settingsFormMarkup: (context) => getSettings(context),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

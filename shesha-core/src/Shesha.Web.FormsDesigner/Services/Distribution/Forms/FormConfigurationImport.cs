@@ -1,16 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using GraphQL;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
-using Shesha.Web.FormsDesigner.Domain;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
@@ -18,7 +14,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration import
     /// </summary>
-    public class FormConfigurationImport: ConfigurationItemImportBase, IFormConfigurationImport, ITransientDependency
+    public class FormConfigurationImport: ConfigurationItemImportBase<FormConfiguration, DistributedFormConfiguration>, IFormConfigurationImport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
         private readonly IFormManager _formManger;
@@ -54,20 +50,10 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream) 
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedFormConfiguration>(json);
-            }
-        }
-
-        /// inheritedDoc
         protected async Task<ConfigurationItemBase> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
+            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
@@ -88,7 +74,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 {
                     var liveForm = existingForm.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingForm
-                        : await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveForm != null)
                     {
                         await _formManger.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
@@ -145,8 +131,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 {
                     Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name),
                     Name = $"{form.Module?.Name}.{form.Name}",
-                    Module = form.Module.Name,
-                    ModuleId = form.Module.Id,
+                    Module = form.Module?.Name,
+                    ModuleId = form.Module?.Id,
                     Type = ShaPermissionedObjectsTypes.Form,
                     Access = item.Access,
                     Permissions = item.Permissions,
@@ -167,17 +153,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             form.Markup = item.Markup;
             form.ModelType = item.ModelType;
             form.IsTemplate = item.IsTemplate;
-
-            // todo: decide how to handle other properties
-            /*
-            form.Configuration.Origin
-            form.Configuration.Module
-            form.Configuration.BaseItem
-            form.Configuration.VersionNo
-            form.Configuration.ParentVersion
-            form.Configuration.CreatedByImport
-            form.Configuration.TenantId
-            */
         }
     }
 }

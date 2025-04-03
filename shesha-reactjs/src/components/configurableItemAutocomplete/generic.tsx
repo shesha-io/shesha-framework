@@ -9,6 +9,7 @@ import HelpTextPopover from '@/components/helpTextPopover';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, isConfigurableItemFullName, isConfigurableItemRawId, isEntityMetadata } from '@/interfaces';
 import { MetadataProvider, useMetadata } from '@/providers';
 import { StandardEntityActions } from '@/interfaces/metadata';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 interface EditorProps<TValue> {
     value?: TValue;
@@ -22,6 +23,7 @@ export type StandardAutocompleteProps = {
     readOnly?: boolean;
     maxResultCount?: number;
     filter?: object;
+    size?: SizeType;
 };
 type EditorWithMode<TValue> = SingleEditorProps<TValue> | MultipleEditorProps<TValue>;
 
@@ -182,6 +184,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
         value,
         onChange,
         filter,
+        size
     } = props;
 
     const { metadata } = useMetadata(true);
@@ -297,7 +300,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
         }
     };
 
-    
+
     const onSelect = (_value, option) => {
         setAutocompleteText(null);
 
@@ -308,7 +311,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
                 : (option as IOption<TValue>).rawValue
             : undefined;
 
-        if (isMultipleEditor(props)){
+        if (isMultipleEditor(props)) {
             const newValue = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
             props.onChange(newValue);
         } else {
@@ -346,6 +349,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
             placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
             disabled={valueFetcher.loading || props.readOnly}
             value={selectValue}
+            size={size}
             mode={mode === 'multiple' ? 'multiple' : undefined}
 
             optionRender={(option) => {

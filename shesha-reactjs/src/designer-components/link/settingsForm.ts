@@ -35,7 +35,7 @@ export const getSettings = (data: any) => {
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
-                  label: 'label',
+                  label: 'Label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
@@ -52,7 +52,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: 'href-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'text',
+                  inputType: 'textField',
                   propertyName: 'href',
                   label: 'Href',
                   size: 'small',
@@ -129,19 +129,19 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       dropdownOptions: [
                         {
-                          label: '_blank',
+                          label: 'Blank',
                           value: '_blank',
                         },
                         {
-                          label: '_parent',
+                          label: 'Parent',
                           value: '_parent',
                         },
                         {
-                          label: '_self',
+                          label: 'Self',
                           value: '_self',
                         },
                         {
-                          label: '_top',
+                          label: 'Top',
                           value: '_top',
                         },
                       ],
@@ -209,7 +209,7 @@ export const getSettings = (data: any) => {
                                     dropdownOptions: fontTypes,
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Size',
                                     propertyName: 'font.size',
@@ -227,7 +227,7 @@ export const getSettings = (data: any) => {
                                     width: 100,
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Color',
                                     hideLabel: true,
@@ -272,39 +272,39 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'center',
+                                label: 'Center',
                                 value: 'center',
                               },
                               {
-                                label: 'flex-start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
-                                label: 'flex-end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'left',
+                                label: 'Left',
                                 value: 'left',
                               },
                               {
-                                label: 'right',
+                                label: 'Right',
                                 value: 'right',
                               },
                               {
-                                label: 'space-between',
+                                label: 'Space Between',
                                 value: 'space-between',
                               },
                               {
-                                label: 'space-around',
+                                label: 'Space Around',
                                 value: 'space-around',
                               },
                               {
-                                label: 'space-evenly',
+                                label: 'Space Evenly',
                                 value: 'space-evenly',
                               },
                               {
-                                label: 'stretch',
+                                label: 'Stretch',
                                 value: 'stretch',
                               },
                             ],
@@ -318,59 +318,59 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'baseline',
+                                label: 'Baseline',
                                 value: 'baseline',
                               },
                               {
-                                label: 'center',
+                                label: 'Center',
                                 value: 'center',
                               },
                               {
-                                label: 'end',
+                                label: 'End',
                                 value: 'end',
                               },
                               {
-                                label: 'flex-end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'flex-start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
-                                label: 'inherit',
+                                label: 'Inherit',
                                 value: 'inherit',
                               },
                               {
-                                label: 'initial',
+                                label: 'Initial',
                                 value: 'initial',
                               },
                               {
-                                label: 'normal',
+                                label: 'Normal',
                                 value: 'normal',
                               },
                               {
-                                label: 'revert',
+                                label: 'Revert',
                                 value: 'revert',
                               },
                               {
-                                label: 'self-end',
+                                label: 'Self End',
                                 value: 'self-end',
                               },
                               {
-                                label: 'self-start',
+                                label: 'Self Start',
                                 value: 'self-start',
                               },
                               {
-                                label: 'start',
+                                label: 'Start',
                                 value: 'start',
                               },
                               {
-                                label: 'stretch',
+                                label: 'Stretch',
                                 value: 'stretch',
                               },
                               {
-                                label: 'unset',
+                                label: 'Unset',
                                 value: 'unset',
                               },
                             ],
@@ -384,23 +384,23 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'baseline',
+                                label: 'Baseline',
                                 value: 'baseline',
                               },
                               {
-                                label: 'center',
+                                label: 'Center',
                                 value: 'center',
                               },
                               {
-                                label: 'end',
+                                label: 'End',
                                 value: 'end',
                               },
                               {
-                                label: 'flex-end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'flex-start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
@@ -408,47 +408,47 @@ export const getSettings = (data: any) => {
                                 value: 'inherit',
                               },
                               {
-                                label: 'initial',
+                                label: 'Initial',
                                 value: 'initial',
                               },
                               {
-                                label: 'left',
+                                label: 'Left',
                                 value: 'left',
                               },
                               {
-                                label: 'legacy',
+                                label: 'Legacy',
                                 value: 'legacy',
                               },
                               {
-                                label: 'normal',
+                                label: 'Normal',
                                 value: 'normal',
                               },
                               {
-                                label: 'revert',
+                                label: 'Revert',
                                 value: 'revert',
                               },
                               {
-                                label: 'right',
+                                label: 'Right',
                                 value: 'right',
                               },
                               {
-                                label: 'self-end',
+                                label: 'Self End',
                                 value: 'self-end',
                               },
                               {
-                                label: 'self-start',
+                                label: 'Self Start',
                                 value: 'self-start',
                               },
                               {
-                                label: 'start',
+                                label: 'Start',
                                 value: 'start',
                               },
                               {
-                                label: 'stretch',
+                                label: 'Stretch',
                                 value: 'stretch',
                               },
                               {
-                                label: 'unset',
+                                label: 'Unset',
                                 value: 'unset',
                               },
                             ],
@@ -470,7 +470,7 @@ export const getSettings = (data: any) => {
                         } as any,
                         inputs: [
                           {
-                            type: 'text',
+                            type: 'textField',
                             id: 'customCss-s4gmBg31azZC0UjZjpfTm',
                             propertyName: 'className',
                             label: 'Custom CSS Class',

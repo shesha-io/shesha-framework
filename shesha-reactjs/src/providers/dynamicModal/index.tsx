@@ -114,7 +114,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
                 else
                   reject(result);
               },
-            wrapper: context.configurableActionsDispatcherProxy,
+              wrapper: context.configurableActionsDispatcherProxy,
             };
 
             createModal({ ...modalProps });

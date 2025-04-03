@@ -14,45 +14,45 @@ namespace Shesha.Domain.ConfigurationItems
     public class ConfigurationItem : FullAuditedEntity<Guid, User>, IMayHaveTenant, IMayHaveFrontEndApplication
     {
         [ReadonlyProperty]
-        public virtual string ItemType { get; set; }
+        public virtual string ItemType { get; set; } = string.Empty;
 
         /// <summary>
         /// The Guid for the Config Item.
         /// Different versions for the same Config Item will share this Id which the very first version of the item will be responsible for generating.
         /// </summary>
-        public virtual ConfigurationItem Origin { get; set; }
+        public virtual ConfigurationItem? Origin { get; set; }
 
         /// <summary>
         /// Item name
         /// </summary>
         [StringLength(200)]
         [Display(Name = "Name", Description = "Name of the configuration item. Unique within the module.")]
-        public virtual string Name { get; set; }
+        public virtual string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Label of the con
         /// </summary>
         [StringLength(200)]
         [Display(Name = "Label", Description = "Label of the item, can be used in lists as a user friendly name")]
-        public virtual string Label { get; set; }
+        public virtual string? Label { get; set; }
 
         /// <summary>
         /// Item description
         /// </summary>
         [StringLength(int.MaxValue)]
         [DataType(DataType.MultilineText)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
         
         /// <summary>
         /// Module
         /// </summary>
-        public virtual Module Module { get; set; }
+        public virtual Module? Module { get; set; }
 
         /// <summary>
         /// Base item. Is used if the current item is inherited from another one
         /// </summary>
         [Display(Name = "Base item", Description = "Is used if the current item is inherited from another one")]
-        public virtual ConfigurationItem BaseItem { get; set; }
+        public virtual ConfigurationItem? BaseItem { get; set; }
 
         /// <summary>
         /// Version number
@@ -69,12 +69,12 @@ namespace Shesha.Domain.ConfigurationItems
         /// <summary>
         /// Parent version. Note: version may have more than one child versions (e.g. new version was created and then cancelled, in this case a new version should be created in the same parent)
         /// </summary>
-        public virtual ConfigurationItem ParentVersion { get; set; }
+        public virtual ConfigurationItem? ParentVersion { get; set; }
 
         /// <summary>
         /// Import session that created this configuration item
         /// </summary>
-        public virtual ImportResult CreatedByImport { get; set; }
+        public virtual ImportResult? CreatedByImport { get; set; }
 
         //[NotMapped]
         //public virtual ConfigurationItemBase Owner { get; set; }
@@ -106,6 +106,6 @@ namespace Shesha.Domain.ConfigurationItems
         /// <summary>
         /// Application the item belongs to
         /// </summary>
-        public virtual FrontEndApp Application { get; set; }
+        public virtual FrontEndApp? Application { get; set; }
     }
 }

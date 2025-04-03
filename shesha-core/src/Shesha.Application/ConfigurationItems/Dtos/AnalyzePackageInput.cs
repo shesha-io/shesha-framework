@@ -14,6 +14,6 @@ namespace Shesha.ConfigurationItems.Dtos
         /// </summary>
         [Required]
         [BindProperty(Name = "file")]
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
     }
 }

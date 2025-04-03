@@ -17,34 +17,34 @@ namespace Shesha.Services.Settings.Dto
         /// <summary>
         /// Reference list name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Setting category
         /// </summary>
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
         /// <summary>
         /// Data type of the value
         /// </summary>
         [StringLength(100)]
-        public string DataType { get; set; }
+        public required string DataType { get; set; }
 
         [StringLength(200)]
-        public string EditorFormName { get; set; }
+        public string? EditorFormName { get; set; }
 
         [StringLength(200)]
-        public string EditorFormModule { get; set; }
+        public string? EditorFormModule { get; set; }
 
         /// <summary>
         /// Allows ordering the setting in a logical manner within its category

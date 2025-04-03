@@ -13,6 +13,7 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Json;
 using Shesha.EntityReferences;
 using Shesha.Metadata;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace Shesha.DynamicEntities
 
         public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
         {
-            return await _entityConfigCache.GetEntityPropertiesAsync(entityType);
+            return await _entityConfigCache.GetEntityPropertiesAsync(entityType) ?? new();
         }
 
         public async Task<List<DynamicProperty>> GetDynamicPropertiesAsync(Type type, DynamicDtoTypeBuildingContext context)
@@ -100,7 +101,7 @@ namespace Shesha.DynamicEntities
         /// <summary>
         /// Returns .Net type that is used to store data for the specified DTO property (according to the property settings)
         /// </summary>
-        public async Task<Type> GetDtoPropertyTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
+        public async Task<Type?> GetDtoPropertyTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
         {
             var dataType = propertyDto.DataType;
             var dataFormat = propertyDto.DataFormat;
@@ -153,15 +154,12 @@ namespace Shesha.DynamicEntities
                 case DataTypes.Array:
                     if (propertyDto.ItemsType != null)
                     {
-
                         var nestedType = await GetDtoPropertyTypeAsync(propertyDto.ItemsType, context);
-                        var arrayType = typeof(List<>).MakeGenericType(nestedType);
+                        var arrayType = typeof(List<>).MakeGenericType(nestedType.NotNull());
                         return arrayType;
                     }
                     if (propertyDto.DataFormat == ArrayFormats.ObjectReference)
                     {
-                        //var tt = _typeFinder.Find(x => x.FullName == propertyDto.EntityType);
-                        //Type t = tt.Any() ? tt[0] : typeof(object);
                         var arrayType = typeof(List<>).MakeGenericType(typeof(object));
                         return arrayType;
                     }
@@ -175,7 +173,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private Type GetEntityReferenceType(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
+        private Type? GetEntityReferenceType(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
         {
             if (propertyDto.DataType != DataTypes.EntityReference)
                 throw new NotSupportedException($"DataType {propertyDto.DataType} is not supported. Expected {DataTypes.EntityReference}");
@@ -184,12 +182,12 @@ namespace Shesha.DynamicEntities
                 return null;
 
             var entityConfig = _entityConfigurationStore.Get(propertyDto.EntityType);
-            if (entityConfig == null)
+            if (entityConfig == null || entityConfig.IdType == null)
                 return null;
 
             return context.UseDtoForEntityReferences
                 ? typeof(EntityReferenceDto<>).MakeGenericType(entityConfig.IdType)
-                : typeof(Nullable<>).MakeGenericType(entityConfig?.IdType);
+                : typeof(Nullable<>).MakeGenericType(entityConfig.IdType);
         }
 
         private async Task<Type> GetNestedTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
@@ -225,9 +223,8 @@ namespace Shesha.DynamicEntities
 
                 foreach (var property in propertyDto.Properties)
                 {
-                    //if (propertyFilter == null || propertyFilter.Invoke(property.PropertyName))
                     var propertyType = await GetDtoPropertyTypeAsync(property, context);
-                    CreateProperty(tb, property.Name, propertyType);
+                    CreateProperty(tb, property.Name, propertyType.NotNull());
                 }
 
                 if (!propertyDto.Properties.Any(p => p.Name == nameof(IHasClassNameField._className)))
@@ -328,22 +325,6 @@ namespace Shesha.DynamicEntities
             propertyBuilder.SetSetMethod(setPropMthdBldr);
 
             AddPropertyAttributes(propertyBuilder, propertyType);
-            //propertyBuilder
-
-            // https://stackoverflow.com/questions/1822047/how-to-emit-explicit-interface-implementation-using-reflection-emit
-            // DefineMethodOverride is used to associate the method 
-            // body with the interface method that is being implemented.
-            //
-            /*
-            if (propertyName == "Id") 
-            {
-                var getMethod = typeof(IEntity<Guid>).GetMethod("get_Id");
-                tb.DefineMethodOverride(getPropMthdBldr, getMethod);
-
-                var setMethod = typeof(IEntity<Guid>).GetMethod("set_Id");
-                tb.DefineMethodOverride(setPropMthdBldr, setMethod);
-            }            
-            */
         }
 
         private static void AddPropertyAttributes(PropertyBuilder propertyBuilder, Type propertyType)
@@ -351,8 +332,8 @@ namespace Shesha.DynamicEntities
             if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
             {
                 var attrCtorParams = new Type[] { typeof(Type) };
-                var attrCtorInfo = typeof(JsonConverterAttribute).GetConstructor(attrCtorParams);
-                var attrBuilder = new CustomAttributeBuilder(attrCtorInfo, new object[] { typeof(DateConverter) });
+                var attrCtorInfo = typeof(JsonConverterAttribute).GetConstructor(attrCtorParams).NotNull($"Constructor not found in type '{typeof(JsonConverterAttribute).FullName}'");
+                var attrBuilder = new CustomAttributeBuilder(attrCtorInfo, [typeof(DateConverter)]);
                 propertyBuilder.SetCustomAttribute(attrBuilder);
             }
         }
@@ -361,7 +342,7 @@ namespace Shesha.DynamicEntities
         {
             if (type.IsDynamicDto())
             {
-                var entityType = type.GetDynamicDtoEntityType();
+                var entityType = type.GetDynamicDtoEntityType().NotNull();
                 return $"DynamicDto_{entityType.Name}{suffix}";
             }
             else

@@ -11,6 +11,9 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
+import { defaultStyles } from '../util';
+import { defaultContainerStyles } from './utils';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -40,8 +43,10 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev };
 
       const updateItemDefaults = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        if (isItem(item) && item.itemSubType === 'line')
-          return { ...item, itemSubType: 'separator', buttonType: item.buttonType ?? 'link' }; // remove `line`, it works by the same way as `separator`
+        if (isItem(item) && item.itemSubType === 'line') {
+          const initialStyles = migratePrevStyles(item, defaultStyles(item));
+          return { ...item, itemSubType: 'separator', buttonType: item.buttonType ?? 'link', ...initialStyles };
+        } // remove `line`, it works by the same way as `separator`
 
         if (isGroup(item) && typeof (item.hideWhenEmpty) === 'undefined')
           return {
@@ -63,7 +68,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev, editMode: 'editable' } as IButtonGroupComponentProps;
 
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        const newItem = migrateReadOnly(item, 'inherited');
+        const newItem = { ...migrateReadOnly(item, 'inherited'), ...migratePrevStyles(item) };
         if (Array.isArray(newItem['childItems']))
           newItem['childItems'] = newItem['childItems'].map(updateItems);
         return newItem;
@@ -86,7 +91,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         items: prev.items.map(setDownIcon),
       };
     })
-  ,
+    .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles(prev)) })),
   settingsFormMarkup: (props) => getSettings(props),
 };
 

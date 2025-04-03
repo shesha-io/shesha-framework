@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shesha.Configuration.MappingMetadata
+﻿namespace Shesha.Configuration.MappingMetadata
 {
+    /// <summary>
+    /// Property mapping metadata
+    /// </summary>
     public class PropertyMappingMetadata
     {
-        public string TableName { get; set; }
-        public string[] ColumnNames { get; set; }
+        public required string TableName { get; init; }
+        public required string[] ColumnNames { get; init; }
     }
 }

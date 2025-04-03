@@ -39,7 +39,7 @@ namespace Shesha.Sessions
         [AllowAnonymous]
         public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfoAsync()
         {
-            var output = new GetCurrentLoginInfoOutput { };
+            var output = new GetCurrentLoginInfoOutput();
 
             if (AbpSession.TenantId.HasValue)
             {
@@ -89,7 +89,7 @@ namespace Shesha.Sessions
                 {
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var permissionRoles = roles.Where(x => x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
+                        var permissionRoles = roles.Where(x => x.Role != null && x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
@@ -104,7 +104,7 @@ namespace Shesha.Sessions
 
                 foreach(var role in roles)
                 {
-                    if (!role.Role.Permissions.Any())
+                    if (role.Role == null || !role.Role.Permissions.Any())
                         continue;
 
                     foreach (var permission in role.Role.Permissions.Where(x => x.IsGranted))
@@ -135,8 +135,8 @@ namespace Shesha.Sessions
             if (currentUser == null)
                 return new List<string>();
             var roles = await _roleAppointmentRepository.GetAll()
-                .Where(a => a.Person == currentUser)
-                .Select(a => a.Role.Name)
+                .Where(a => a.Person == currentUser && a.Role != null)
+                .Select(a => a.Role!.Name)
                 .Distinct()
                 .ToListAsync();
             return roles;

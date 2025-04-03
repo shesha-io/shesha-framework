@@ -1,11 +1,11 @@
 ﻿using Abp;
 using Abp.Authorization.Users;
+using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
 using Abp.TestBase;
-using DocumentFormat.OpenXml.Spreadsheet;
 using NHibernate;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
@@ -16,7 +16,6 @@ using Shesha.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.Tests
 {
@@ -201,6 +200,7 @@ namespace Shesha.Tests
                 var session = uow.GetSession();
 #pragma warning restore IDISP001 // Dispose created
                 action.Invoke(session);
+                uow.Complete();
             }
         }
 
@@ -210,6 +210,19 @@ namespace Shesha.Tests
             return unitOfWorkManager.Begin() is NhUnitOfWork nhuow
                 ? nhuow
                 : throw new Exception($"Unexpected type of UnitOfWork. Expected '{nameof(NhUnitOfWork)}'");
+        }
+
+        protected virtual async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action, UnitOfWorkOptions? options = null)
+        {
+            using (var uowManager = LocalIocManager.ResolveAsDisposable<IUnitOfWorkManager>())
+            {
+                using (var uow = uowManager.Object.Begin(options ?? new UnitOfWorkOptions()))
+                {
+                    var result = await action();
+                    await uow.CompleteAsync();
+                    return result;
+                }
+            }
         }
     }
 

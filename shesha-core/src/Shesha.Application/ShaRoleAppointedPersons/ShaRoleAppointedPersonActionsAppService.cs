@@ -6,6 +6,7 @@ using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.ShaRoleAppointedPersons.Dto;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -45,7 +46,7 @@ namespace Shesha.ShaRoleAppointedPersons
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            if (appointment?.Person?.User != null)
+            if (appointment.Person?.User != null)
                 await _shaPermissionChecker.ClearPermissionsCacheForUserAsync(appointment.Person.User.Id, appointment.Person.User.TenantId);
 
             var dto = MapToEntityDto(appointment);
@@ -61,7 +62,7 @@ namespace Shesha.ShaRoleAppointedPersons
             entity.Role = input.RoleId != Guid.Empty
                 ? await _roleRepository.GetAsync(input.RoleId)
                 : null;
-            entity.Person = (input.Person?.Id ?? Guid.Empty) != Guid.Empty
+            entity.Person = input.Person != null && input.Person.Id != null && input.Person.Id != Guid.Empty
                 ? await _personRepository.GetAsync(input.Person.Id.Value)
                 : null;
 
@@ -82,8 +83,7 @@ namespace Shesha.ShaRoleAppointedPersons
 
             // todo: validate regions only for roles with region parameter
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             await Repository.InsertOrUpdateAsync(entity);
 
@@ -120,7 +120,7 @@ namespace Shesha.ShaRoleAppointedPersons
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            if (appointment?.Person?.User != null)
+            if (appointment.Person?.User != null)
                 await _shaPermissionChecker.ClearPermissionsCacheForUserAsync(appointment.Person.User.Id, appointment.Person.User.TenantId);
 
             var dto = MapToEntityDto(appointment);

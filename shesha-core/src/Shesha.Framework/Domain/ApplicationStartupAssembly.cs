@@ -13,14 +13,14 @@ namespace Shesha.Domain
     [Table("frwk_application_startup_assemblies")]
     public class ApplicationStartupAssembly : Entity<Guid>
     {
-        public virtual string FileName { get; set; }
-        public virtual string FilePath { get; set; }
+        public required virtual string FileName { get; set; }
+        public virtual string? FilePath { get; set; }
         [StringLength(50)]
-        public virtual string FileMD5 { get; set; }
+        public required virtual string FileMD5 { get; set; }
         [StringLength(100)]
-        public virtual string FileVersion { get; set; }
+        public virtual string? FileVersion { get; set; }
         [StringLength(100)]
-        public virtual string ProductVersion { get; set; }
-        public virtual ApplicationStartup ApplicationStartup { get; set; }
+        public virtual string? ProductVersion { get; set; }
+        public required virtual ApplicationStartup ApplicationStartup { get; set; }
     }
 }

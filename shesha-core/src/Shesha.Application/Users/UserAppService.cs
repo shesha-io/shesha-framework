@@ -190,7 +190,7 @@ namespace Shesha.Users
         protected override void MapToEntity(UserDto updateInput, User user)
         {
             ObjectMapper.Map(updateInput, user);
-            user.SupportedPasswordResetMethods = updateInput.SupportedPasswordResetMethods.Sum();
+            user.SupportedPasswordResetMethods = updateInput.SupportedPasswordResetMethods?.Sum();
             user.SetNormalizedNames();
         }
 
@@ -214,7 +214,7 @@ namespace Shesha.Users
         protected override IQueryable<User> CreateFilteredQuery(PagedUserResultRequestDto input)
         {
             return Repository.GetAllIncluding(x => x.Roles)
-                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress != null && x.EmailAddress.Contains(input.Keyword))
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
         }
 
@@ -242,7 +242,7 @@ namespace Shesha.Users
 
         #region Reset password using OTP
 
-        private async Task<User> GetUniqueUserByMobileNoAsync(string mobileNo)
+        private async Task<User?> GetUniqueUserByMobileNoAsync(string mobileNo)
         {
             var users = await _userRepository.GetAll().Where(u => u.PhoneNumber == mobileNo).ToListAsync();
 
@@ -326,10 +326,13 @@ namespace Shesha.Users
                     }
                     else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled && hasEmail)
                     {
-                        var maskedEmail = person.EmailAddress.MaskEmail();
-                        methodOption.Prompt = $"Email a link to {maskedEmail}";
-                        methodOption.MaskedIdentifier = maskedEmail;
-                        isAllowed = true;
+                        if (!string.IsNullOrWhiteSpace(person.EmailAddress)) 
+                        {
+                            var maskedEmail = person.EmailAddress.MaskEmail();
+                            methodOption.Prompt = $"Email a link to {maskedEmail}";
+                            methodOption.MaskedIdentifier = maskedEmail;
+                            isAllowed = true;
+                        }                        
                     }
                     else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled && hasQuestions)
                     {
@@ -507,6 +510,9 @@ namespace Shesha.Users
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.EmailLink);
 
+            if (string.IsNullOrWhiteSpace(user.EmailAddress))
+                throw new UserFriendlyException("User has no email address");
+
             var lifetime = securitySettings.ResetPasswordEmailLinkLifetime;
 
             var encodedUserName = Convert.ToBase64String(Encoding.UTF8.GetBytes(username));
@@ -526,8 +532,8 @@ namespace Shesha.Users
         [AbpAllowAnonymous]
         public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input)
         {
-            var otp = await _otpManager.GetAsync(input.OperationId);
-            var personId = otp?.RecipientId.ToGuid() ?? Guid.Empty;
+            var otp = await _otpManager.GetOrNullAsync(input.OperationId);
+            var personId = otp?.RecipientId?.ToGuid() ?? Guid.Empty;
             var user = personId != Guid.Empty
                 ? (await _personRepository.GetAsync(personId))?.User
                 : await GetUniqueUserByMobileNoAsync(input.MobileNo);

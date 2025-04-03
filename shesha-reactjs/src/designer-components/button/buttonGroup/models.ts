@@ -1,12 +1,12 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { FormInstance } from 'antd';
 
 export interface IButtonGroupComponentProps extends IConfigurableFormComponent, IBaseButtonGroupProps {
 }
 
-export interface IButtonGroupProps extends IBaseButtonGroupProps {
+export interface IButtonGroupProps extends IBaseButtonGroupProps, IStyleType {
   id: string;
   readOnly?: boolean;
   form?: FormInstance<any>;

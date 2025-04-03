@@ -46,7 +46,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         _propertyRepository = propertyRepository;
     }
 
-    public async Task<FormIdFullNameDto> GetEntityConfigFormAsync(string entityConfigName, string typeName)
+    public async Task<FormIdFullNameDto?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
     {
         var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
         if (entityConfig == null)
@@ -78,17 +78,17 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     }
 
     [HttpGet]
-    public async Task<List<AutocompleteItemDto>> EntityConfigAutocompleteAsync(bool? implemented, string term, string selectedValue)
+    public async Task<List<AutocompleteItemDto>> EntityConfigAutocompleteAsync(bool? implemented, string? term, string? selectedValue)
     {
         var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
         var models = await _entityConfigManager.GetMainDataListAsync(implemented: implemented);
 
         var entities = isPreselection
-            ? models.Where(e => e.Id == selectedValue.ToGuid()).ToList()
+            ? models.Where(e => e.Id == selectedValue.NotNull().ToGuid()).ToList()
             : models
             .Where(e => string.IsNullOrWhiteSpace(term)
                 || e.FullClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase)
-                || e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
+                || e.Label != null && e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
             .OrderBy(e => e.FullClassName)
             .Take(10)
             .ToList();

@@ -58,13 +58,13 @@ namespace Shesha.Metadata
                         && (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/))
                         return null;
 
-                    var metadata = await _metadataProvider.GetAsync(config.EntityType, t.FullClassName);
+                    var metadata = await _metadataProvider.GetAsync(config?.EntityType, t.FullClassName);
                     return new EntityModelDto
                     {
                         Suppress = t.Suppress,
                         ClassName = t.FullClassName,
                         Type = config?.EntityType,
-                        Description = t.Description ?? (config?.EntityType != null ? ReflectionHelper.GetDescription(config?.EntityType) : ""),
+                        Description = t.Description ?? (config != null && config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
                         Alias = string.IsNullOrWhiteSpace(t.TypeShortAlias) ? config?.SafeTypeShortAlias : t.TypeShortAlias,
                         Accessor = t.Accessor,
                         ModuleAccessor = t.Module?.Accessor,
@@ -73,7 +73,7 @@ namespace Shesha.Metadata
                         Metadata = metadata,
                     };
                 }))
-                .Where(t => t != null)
+                .WhereNotNull()
                 .ToList();
 
             return dtos;

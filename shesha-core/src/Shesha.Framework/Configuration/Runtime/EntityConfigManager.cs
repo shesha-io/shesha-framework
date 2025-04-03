@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Session;
-using AutoMapper;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -20,7 +19,6 @@ namespace Shesha.Configuration.Runtime
     /// inheritedDoc
     public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
-        private readonly IMapper _mapper;
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
@@ -29,19 +27,17 @@ namespace Shesha.Configuration.Runtime
             IRepository<EntityConfig, Guid> repository,
             IRepository<EntityProperty, Guid> propertyConfigRepo,
             IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager,
-            IMapper mapper
+            IUnitOfWorkManager unitOfWorkManager            
         ) : base(repository, moduleRepository, unitOfWorkManager)
         {
             _propertyConfigRepo = propertyConfigRepo;
-            _mapper = mapper;
         }
 
-        public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig> query = null, bool? implemented = null)
+        public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null)
         {
             // Do not change to Mapper to avoid performance issues
             var result = await (query ?? Repository.GetAll())
-                .Where(x => !x.IsDeleted)
+                .Where(x => !x.IsDeleted && x.Module != null)
                 .Select(x => new EntityConfigDto()
                 {
                     Id = x.Id,
@@ -54,12 +50,13 @@ namespace Shesha.Configuration.Runtime
                     Source = x.Source,
                     EntityConfigType = x.EntityConfigType,
                     Suppress = x.Suppress,
-                    Module = x.Module.Name,
+                    Module = x.Module!.Name,
                     Name = x.Name,
                     Label = x.Label,
 
                     VersionStatus = x.VersionStatus,
                 }).ToListAsync();
+
             return implemented ?? false
                 ? result.Where(x => !x.NotImplemented).ToList()
                 : result;
@@ -115,19 +112,6 @@ namespace Shesha.Configuration.Runtime
 
             dest.ViewConfigurations = src.ViewConfigurations.ToList();
 
-            // ToDo: make permissioned objects versioned
-            /*
-            if (src.Permission != null)
-                await _permissionedObjectManager.SetAsync(src.Permission);
-            if (src.PermissionGet != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionGet);
-            if (src.PermissionCreate != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionCreate);
-            if (src.PermissionUpdate != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionUpdate);
-            if (src.PermissionDelete != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionDelete);
-            */
             return dest;
         }
 
@@ -140,10 +124,12 @@ namespace Shesha.Configuration.Runtime
             foreach (var src in properties)
             {
                 var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty();
+                    ?? new EntityProperty { 
+                        EntityConfig = item,
+                        Name = src.Name,
+                        DataType = src.DataType
+                    };
 
-                dbItem.EntityConfig = item;
-                dbItem.Name = src.Name;
                 dbItem.Label = src.Label;
                 dbItem.Description = src.Description;
                 dbItem.DataType = src.DataType;

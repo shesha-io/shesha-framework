@@ -53,6 +53,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   secondStep,
   disabled,
   hideBorder,
+  showNow = false,
+  allowClear = false,
   ...rest
 }) => {
   const { data: formData } = useFormData();
@@ -105,7 +107,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         {...steps}
         style={getStyle(style, formData)}
         className={styles.shaTimepicker}
-        
+        showNow={showNow}
+        allowClear={allowClear}
         {...rest}
         placeholder={[placeholder, placeholder]}
      
@@ -123,6 +126,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       style={getStyle(style, formData)}
       className={styles.shaTimepicker}
       placeholder={placeholder}
+      showNow={showNow}
+      allowClear={allowClear}
       {...rest}
     />
   );

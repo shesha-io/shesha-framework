@@ -51,7 +51,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const shadow = model?.shadow;
     const background = model?.background;
 
-    const jsStyle = useMemo(() => getStyle(model.style, data), [model.styles]);
+    const jsStyle = useMemo(() => getStyle(model.style, data), [model.style, data]);
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
@@ -73,7 +73,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
+        const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
         setBackgroundStyles(style);
       };
 
@@ -89,10 +89,10 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       ...dimensionsStyles,
       ...(['primary', 'default'].includes(model.buttonType) && borderStyles),
       ...fontStyles,
-      ...(['primary', 'default'].includes(model.buttonType) && backgroundStyles),
+      ...(['dashed', 'default'].includes(model.buttonType) && backgroundStyles),
       ...(['primary', 'default'].includes(model.buttonType) && shadowStyles),
       ...stylingBoxAsCSS,
-      ...jsStyle
+      ...jsStyle,
     };
 
     return (
@@ -136,9 +136,15 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
-      .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'inherited'))
+      .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+      .add<IButtonComponentProps>(8, (prev) => ({
+        ...prev,
+        desktop: { ...prev.desktop, buttonType: prev.buttonType || 'default' },
+        mobile: { ...prev.mobile, buttonType: prev.buttonType || 'default' },
+        tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' }
+      }))
+      .add<IButtonComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default ButtonComponent;

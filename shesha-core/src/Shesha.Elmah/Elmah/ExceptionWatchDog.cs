@@ -12,7 +12,7 @@ namespace Shesha.Elmah
         public Action CleanupAction { get; set; }
         private bool _disposed = false;
 
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
         public ExceptionWatchDog(Action<Exception> onError)
         {
@@ -21,7 +21,7 @@ namespace Shesha.Elmah
             AppDomain.CurrentDomain.FirstChanceException += OnException;
         }
 
-        private void OnException(object sender, FirstChanceExceptionEventArgs e)
+        private void OnException(object? sender, FirstChanceExceptionEventArgs e)
         {
             if (_disposed)
                 return;

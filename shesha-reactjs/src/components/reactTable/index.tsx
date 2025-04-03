@@ -22,7 +22,7 @@ import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import { getColumnAnchored, getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { useDataTableStore } from '@/providers/index';
+import { useDataTableStore, useShaFormInstance } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
@@ -89,6 +89,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   const { styles: mainStyles } = useMainStyles();
 
   const { setDragState } = useDataTableStore();
+
+  const shaForm = useShaFormInstance();
 
   const { allColumns, allRows } = componentState;
 
@@ -338,11 +340,12 @@ export const ReactTable: FC<IReactTableProps> = ({
       headerGroups={headerGroups}
       onInitData={newRowInitData}
       components={inlineCreatorComponents}
+      parentFormId={shaForm?.formId}
     />
   );
 
   const containerStyleFinal = useMemo<CSSProperties>(() => {
-    const result = containerStyle ?? {};
+    const result = { ...containerStyle };
     if (minHeight) result.minHeight = `${minHeight}px`;
     if (maxHeight) result.maxHeight = `${maxHeight}px`;
 

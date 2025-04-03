@@ -19,6 +19,7 @@ using Shesha.GraphQL.Mvc;
 using Shesha.GraphQL.Provider;
 using Shesha.Metadata;
 using Shesha.QuickSearch;
+using Shesha.Reflection;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using Shesha.Web;
@@ -36,6 +37,7 @@ namespace Shesha
         TEntityDto, TPrimaryKey, FilteredPagedAndSortedResultRequestDto, TEntityDto, TEntityDto>
         where TEntity : class, IEntity<TPrimaryKey>
         where TEntityDto : IEntityDto<TPrimaryKey>
+        where TPrimaryKey : notnull
     {
         protected SheshaCrudServiceBase(IRepository<TEntity, TPrimaryKey> repository) : base(repository)
         {
@@ -51,6 +53,7 @@ namespace Shesha
         where TEntityDto : IEntityDto<TPrimaryKey>
         where TUpdateInput : IEntityDto<TPrimaryKey>
         where TGetAllInput : FilteredPagedAndSortedResultRequestDto
+        where TPrimaryKey : notnull
     {
         /// <summary>
         /// Constructor
@@ -71,9 +74,10 @@ namespace Shesha
         where TUpdateInput : IEntityDto<TPrimaryKey>
         where TGetAllInput : FilteredPagedAndSortedResultRequestDto
         where TGetInput : IEntityDto<TPrimaryKey>
+        where TPrimaryKey : notnull
     {
         public IQuickSearcher QuickSearcher { get; set; } = new NullQuickSearcher();
-        public ISpecificationManager SpecificationManager { get; set; } = new NullSpecificationManager();
+        public ISpecificationManager SpecificationManager { get; set; } = NullSpecificationManager.Instance;
 
         [EntityAction(StandardEntityActions.Create)]
         public override Task<TEntityDto> CreateAsync(TCreateInput input)
@@ -247,7 +251,7 @@ namespace Shesha
                 s.Schema = schema;
 
                 s.Query = query;
-                s.Variables = new Inputs(new Dictionary<string, object> {
+                s.Variables = new Inputs(new Dictionary<string, object?> {
                     { "filter", input.Filter },
                     { "specifications", input.Specifications },
                     { "quickSearch", input.QuickSearch },
@@ -295,7 +299,7 @@ namespace Shesha
 
             var sb = new StringBuilder();
 
-            await AppendPropertiesAsync(sb, typeof(TEntity).FullName, propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
+            await AppendPropertiesAsync(sb, typeof(TEntity).GetRequiredFullName(), propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
 
             return "id " + sb.ToString();
         }
@@ -306,7 +310,7 @@ namespace Shesha
             var entityConfig = EntityConfigurationStore.Get(entityType);
 
             var propConfigs = entityConfig != null
-                ? await EntityConfigCache.GetEntityPropertiesAsync(entityConfig.EntityType.FullName)
+                ? await EntityConfigCache.GetEntityPropertiesAsync(entityConfig.EntityType.GetRequiredFullName())
                 : null;
 
             while (i < propList.Count)
@@ -409,8 +413,8 @@ namespace Shesha
         private async Task<string> GetGqlTopLevelPropertiesAsync(bool fullReference = false)
         {
             var sb = new StringBuilder();
-            var properties = (await EntityConfigCache.GetEntityPropertiesAsync(typeof(TEntity)))
-                .Where(x => !x.Suppress);
+            var allEntityProps = await EntityConfigCache.GetEntityPropertiesAsync(typeof(TEntity));
+            var properties = allEntityProps.NotNull().Where(x => !x.Suppress);
             foreach (var property in properties)
             {
                 AppendProperty(sb, property, fullReference);

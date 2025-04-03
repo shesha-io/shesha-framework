@@ -1,6 +1,6 @@
 using Abp.Domain.Repositories;
+using Abp.Threading;
 using NHibernate.Linq;
-using Nito.AsyncEx.Synchronous;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
@@ -37,11 +37,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// <returns></returns>
         public async Task<bool> IsGrantedAsync(long userId, string permissionName)
         {
-            var person = await _personRepository.GetAll().Where(p => p.User.Id == userId).FirstOrDefaultAsync();
+            var person = await _personRepository.GetAll().Where(p => p.User != null && p.User.Id == userId).FirstOrDefaultAsync();
             if (person == null)
                 return false;
 
-            if (person.User.UserName.ToLower() == "admin")
+            if (person.User?.UserName.ToLower() == "admin")
                 return true;
 
             switch (permissionName)
@@ -59,7 +59,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// <returns></returns>
         public bool IsGranted(long userId, string permissionName)
         {
-            return IsGrantedAsync(userId, permissionName).WaitAndUnwrapException();
+            return AsyncHelper.RunSync(async () => await IsGrantedAsync(userId, permissionName));
         }
 
         /// <summary>
@@ -68,10 +68,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// <param name="person"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public async Task<bool> IsInAnyOfRoles(Person person, params string[] roles)
+        public async Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
             return await _rolePersonRepository.GetAll()
-                .Where(e => roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
+                .Where(e => e.Role != null && roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
         }
 
         /// <summary>
@@ -79,9 +79,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        public async Task<bool> IsDataAdministrator(Person person)
+        public async Task<bool> IsDataAdministratorAsync(Person person)
         {
-            return await IsInAnyOfRoles(person, CommonRoles.DataAdministrator);
+            return await IsInAnyOfRolesAsync(person, CommonRoles.DataAdministrator);
         }
 
         /// <summary>
@@ -89,9 +89,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        public async Task<bool> IsAdmin(Person person)
+        public async Task<bool> IsAdminAsync(Person person)
         {
-            return await IsInAnyOfRoles(person, CommonRoles.SystemAdministrator);
+            return await IsInAnyOfRolesAsync(person, CommonRoles.SystemAdministrator);
         }
 
         /// <summary>
@@ -99,9 +99,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        public async Task<bool> IsGlobalAdmin(Person person)
+        public async Task<bool> IsGlobalAdminAsync(Person person)
         {
-            return await IsInAnyOfRoles(person, CommonRoles.GlobalAdmin);
+            return await IsInAnyOfRolesAsync(person, CommonRoles.GlobalAdmin);
         }
 
         public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)

@@ -12,6 +12,7 @@ export interface IListItemProps {
 
 export const DefaultListItem: FC<IListItemProps> = ({ item }) => {
     const { label, description, icon } = item;
+
     const actualItem = useActualContextData({ label, description, icon });
 
     const { styles } = useStyles();

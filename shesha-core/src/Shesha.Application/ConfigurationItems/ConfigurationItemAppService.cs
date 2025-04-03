@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems.Cache;
@@ -16,7 +17,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Mvc;
-using Shesha.Services;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -75,6 +76,9 @@ namespace Shesha.ConfigurationItems
         [Consumes("multipart/form-data")]
         public async Task<AnalyzePackageResult> AnalyzePackageAsync([FromForm] AnalyzePackageInput input)
         {
+            if (input.File == null)
+                throw new UserFriendlyException("Please upload a package");
+
             using (var zipStream = input.File.OpenReadStream())
             {
                 var context = new ReadPackageContext { 
@@ -177,8 +181,8 @@ namespace Shesha.ConfigurationItems
             var validationResults = new List<ValidationResult>();
             if (string.IsNullOrWhiteSpace(input.Filter))
                 validationResults.Add(new ValidationResult("Filter is mandatory", new string[] { nameof(input.Filter) }));
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var items = await _itemsRepository.GetAllFiltered(input.Filter).ToListAsync();
 

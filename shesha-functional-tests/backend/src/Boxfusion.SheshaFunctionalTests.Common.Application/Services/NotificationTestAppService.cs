@@ -46,7 +46,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = recipientPerson?.FullName ?? "Unknown Recipient",
                 Subject = type.Name,
-                Body = type.Description
+                Body = type.Description ?? string.Empty
             };
 
             // Get attachments only if recipient is provided
@@ -78,6 +78,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 data,
                 notification.Priority,
                 attachments,
+                notification.Cc,
                 null,
                 channel
             );
@@ -117,6 +118,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         notification.Priority,
                         null,
                         null,
+                        null,
                         channel
                      );
                 }
@@ -135,6 +137,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
+                        null,
                         null,
                         null,
                         channel

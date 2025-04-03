@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.Domain;
+using Shesha.Reflection;
 using System;
 using System.Linq;
 
@@ -34,12 +35,12 @@ namespace Shesha.Settings
                 var dbSettings = _settingConfigurationRepository.GetAll().Where(sc => sc.Module != null).ToList();
 
                 var dynamicallyCreatedSettings = dbSettings
-                    .Where(c => !settings.Any(d => d.Value.Name == c.Name && d.Value.ModuleName == c.Module.Name))
+                    .Where(c => !settings.Any(d => d.Value.Name == c.Name && d.Value.ModuleName == c.Module.NotNull().Name))
                     .ToList();
 
                 foreach (var setting in dynamicallyCreatedSettings)
                 {
-                    var definition = _settingDefinitionManager.CreateUserSettingDefinition(setting.Module.Name, setting.Name, setting.DataType, null);
+                    var definition = _settingDefinitionManager.CreateUserSettingDefinition(setting.Module.NotNull().Name, setting.Name, setting.DataType, null);
 
                     var id = new SettingIdentifier(definition.ModuleName, definition.Name);
                     if (settings.ContainsKey(id))

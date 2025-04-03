@@ -67,6 +67,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   hideFileName?: boolean;
   gap?: number;
   container?: IStyleType;
+  primaryColor?: string;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -87,6 +88,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   validFileTypes = [],
   maxFileLength = 0,
   isDragger = false,
+  primaryColor,
   disabled,
   isStub = false,
   allowedFileTypes = [],
@@ -158,8 +160,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const { styles } = useStyles({
     containerStyles: { ...{ ...containerDimensions, width: layout === 'vertical' ? '' : addPx(containerDimensions.width), height: layout === 'horizontal' ? '' : addPx(containerDimensions.height) }, ...containerJsStyle },
-    style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger }
+    style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger },
+    primaryColor
   });
+
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
   const openFilesZipNotification = () =>

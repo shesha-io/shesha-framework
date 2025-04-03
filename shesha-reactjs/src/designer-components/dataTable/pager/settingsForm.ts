@@ -25,7 +25,7 @@ export const getSettings = (data: any) => {
                   inputs: [
                     {
                       id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                      type: 'text',
+                      type: 'textField',
                       propertyName: 'componentName',
                       label: 'Component Name',
                       size: 'large',
@@ -59,16 +59,15 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       defaultValue: true,
                     },
-                    {
-                      id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                      type: 'switch',
-                      inputType: 'switch',
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
                   ],
+                })
+                .addSettingsInput({
+                  id: 'hide-css-412c-8461-4c8d55e5c073',
+                  inputType: 'switch',
+                  propertyName: 'hidden',
+                  hideLabel: false,
+                  label: 'Hide',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],
@@ -126,7 +125,7 @@ export const getSettings = (data: any) => {
                                     dropdownOptions: fontTypes,
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Size',
                                     propertyName: 'font.size',
@@ -144,7 +143,7 @@ export const getSettings = (data: any) => {
                                     width: 100,
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Color',
                                     hideLabel: true,

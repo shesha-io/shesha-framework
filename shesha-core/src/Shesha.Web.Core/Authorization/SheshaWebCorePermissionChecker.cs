@@ -32,7 +32,7 @@ namespace Boxfusion.Authorization
         /// inheritedDoc
         public async Task<bool> IsGrantedAsync(long userId, string permissionName)
         {
-            var person = await _personRepository.FirstOrDefaultAsync(p => p.User.Id == userId);
+            var person = await _personRepository.FirstOrDefaultAsync(p => p.User != null && p.User.Id == userId);
             if (person == null)
                 return false;
 
@@ -49,7 +49,7 @@ namespace Boxfusion.Authorization
         public async Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
             return await _rolePersonRepository.GetAll()
-                .Where(e => roles.Contains(e.Role.Name) && e.Person == person)
+                .Where(e => e.Role != null && roles.Contains(e.Role.Name) && e.Person == person)
                 .AnyAsync();
         }
 

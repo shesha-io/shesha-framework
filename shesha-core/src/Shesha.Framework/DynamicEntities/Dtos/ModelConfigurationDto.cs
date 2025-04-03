@@ -22,17 +22,17 @@ namespace Shesha.DynamicEntities.Dtos
 
         public bool AllowConfigureAppService { get; set; }
 
-        public List<ModelPropertyDto> Properties { get; set; }
+        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
 
-        public string HardcodedPropertiesMD5 { get; set; }
+        public string? HardcodedPropertiesMD5 { get; set; }
         public DateTime ChangeTime { get; set; }
 
         // ConfigurationItem        
         public Guid? ModuleId { get; set; }
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public string Name { get; set; }
-        public string Label { get; set; }
-        public string Description { get; set; }
+        public string? Label { get; set; }
+        public string? Description { get; set; }
         public int VersionNo { get; set; }
         public ConfigurationItemVersionStatus VersionStatus { get; set; }
         public bool Suppress { get; set; }
@@ -46,15 +46,15 @@ namespace Shesha.DynamicEntities.Dtos
         public virtual EntityConfigTypes? EntityConfigType { get; set; }
 
         // Permissions
-        public PermissionedObjectDto Permission { get; set; }
-        public PermissionedObjectDto PermissionGet { get; set; }
-        public PermissionedObjectDto PermissionCreate { get; set; }
-        public PermissionedObjectDto PermissionUpdate { get; set; }
-        public PermissionedObjectDto PermissionDelete { get; set; }
+        public PermissionedObjectDto? Permission { get; set; }
+        public PermissionedObjectDto? PermissionGet { get; set; }
+        public PermissionedObjectDto? PermissionCreate { get; set; }
+        public PermissionedObjectDto? PermissionUpdate { get; set; }
+        public PermissionedObjectDto? PermissionDelete { get; set; }
 
         public List<EntityViewConfigurationDto> ViewConfigurations { get; set; } = new List<EntityViewConfigurationDto>();
 
-        public void NormalizeViewConfigurations(EntityConfig model = null)
+        public void NormalizeViewConfigurations(EntityConfig model)
         {
             var list = new List<EntityViewConfigurationDto>();
             if (model.EntityConfigType == EntityConfigTypes.Class)

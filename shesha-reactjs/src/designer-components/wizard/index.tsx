@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
-import { IToolboxComponent } from '@/interfaces';
+import { DataTypes, IObjectMetadata, IToolboxComponent } from '@/interfaces';
 import { IWizardComponentProps } from './models';
 import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateWizardActions } from './migrations/migrateWizardActions';
@@ -19,6 +19,7 @@ import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { wizardApiCode } from '@/publicJsApis';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -26,12 +27,19 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model, form }) => {
+    const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
+      typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWizardApi', files: [{ content: wizardApiCode, fileName: 'apis/wizard.ts' }] }),
+      properties: [{ path: 'current', dataType: DataTypes.number }],
+      dataType: DataTypes.object
+    } as IObjectMetadata), []);
+
     return (
       <DataContextProvider
         id={'ctx_' + model.id}
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
         type="control"
+        metadata={contextMetadata}
       >
         <Tabs {...model} form={form} />
       </DataContextProvider>
@@ -43,12 +51,13 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   migrator: (m) =>
     m
       .add<IWizardComponentPropsV0>(0, (prev) => {
+        const id = nanoid();
         const model: IWizardComponentPropsV0 = {
           ...prev,
           name: prev['name'] ?? 'custom Name',
           tabs: prev['filteredTabs'] ?? [
             {
-              id: nanoid(),
+              id: id,
               name: 'step1',
               label: 'Step 1',
               title: 'Step 1',
@@ -60,7 +69,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               nextButtonText: 'Next',
               backButtonText: 'Back',
               doneButtonText: 'Done',
-              key: 'step1',
+              key: id,
               components: [],
               itemType: 'item',
             },
@@ -96,9 +105,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
-      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()) })),
+  settingsFormMarkup: () => getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 
   customContainerNames: ['steps'],
   getContainers: (model) => {

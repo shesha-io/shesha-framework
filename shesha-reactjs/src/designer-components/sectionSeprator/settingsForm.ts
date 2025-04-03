@@ -27,39 +27,76 @@ export const getSettings = (data: any) => {
                   label: 'Component Name',
                   jsSetting: true,
                 })
-                .addSettingsInput({
+                .addContainer({
+                  id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                  components: [
+                    ...new DesignerToolbarSettings()
+                      .addLabelConfigurator({
+                        id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                        propertyName: 'hideLabel',
+                        label: 'Label',
+                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        hideLabel: true,
+                        labelAlignOptions: [
+                          { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
+                          { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
+                          { value: 'right', icon: 'AlignRightOutlined', title: 'Right' },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        inputs: [
+                          {
+                            id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                            type: 'textArea',
+                            propertyName: 'description',
+                            label: 'Tooltip',
+                            jsSetting: true,
+                            hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          },
+                        ],
+                      }).toJson(),
+                  ]
+                })
+                .addSettingsInputRow({
                   id: 'orientation-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'dropdown',
-                  propertyName: 'orientation',
-                  label: 'Orientation',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    {
-                      label: 'horizontal',
-                      value: 'horizontal',
-                    },
-                    {
-                      label: 'vertical',
-                      value: 'vertical',
-                    },
-                  ],
-                })
-                .addLabelConfigurator({
-                  id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                  propertyName: 'hideLabel',
-                  label: 'label',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hideLabel: true,
-                })
-                .addSettingsInput({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'textArea',
-                  propertyName: 'description',
-                  label: 'Tooltip',
-                  jsSetting: true,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'orientation-s4gmBg31azZC0UjZjpfTm',
+                      parentId: 's4gmBg31azZC0UjZjpfTm',
+                      type: 'dropdown',
+                      propertyName: 'orientation',
+                      label: 'Orientation',
+                      jsSetting: true,
+                      dropdownOptions: [
+                        {
+                          label: 'Horizontal',
+                          value: 'horizontal',
+                        },
+                        {
+                          label: 'Vertical',
+                          value: 'vertical',
+                        },
+                      ],
+                    },
+                    {
+                      type: 'switch',
+                      id: 'inline-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'inline',
+                      label: 'Inline',
+                      size: 'small',
+                      hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
+                    }
+                  ]
                 })
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
@@ -73,15 +110,7 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       jsSetting: true,
                       layout: 'horizontal',
-                    },
-                    {
-                      type: 'switch',
-                      id: 'inline-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'inline',
-                      label: 'Inline',
-                      size: 'small',
-                      jsSetting: true,
-                    },
+                    }
                   ],
                 })
                 .toJson(),
@@ -120,69 +149,54 @@ export const getSettings = (data: any) => {
                           id: 'stylePnl-M500-911MFR',
                           components: [
                             ...new DesignerToolbarSettings()
-                              .addCollapsiblePanel({
-                                id: 'linefontStyleCollapsiblePanel',
-                                propertyName: 'linepnlFontStyle',
-                                label: 'Font',
-                                labelAlign: 'right',
-                                parentId: 'styleRouter',
-                                ghost: true,
-                                collapsible: 'header',
-                                content: {
-                                  id: 'fontStylePnlline',
-                                  components: [
-                                    ...new DesignerToolbarSettings()
-                                      .addSettingsInputRow({
-                                        id: 'trye26vo0xhs-HxJ5k5ngYE',
-                                        parentId: 'fontStylePnlline',
-                                        inline: true,
-                                        propertyName: 'lineFont',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        inputs: [
-                                          {
-                                            type: 'number',
-                                            id: 'fontSize-s04gmBg31azZC0UjZjpfTm',
-                                            label: 'Size',
-                                            propertyName: 'lineFont.size',
-                                            hideLabel: true,
-                                            width: 50,
-                                          },
-                                          {
-                                            type: 'color',
-                                            id: 'fontColor-s40gmBg31azZC0UjZjpfTm',
-                                            label: 'Color',
-                                            hideLabel: true,
-                                            propertyName: 'lineFont.color',
-                                          },
-                                        ],
-                                      })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
                               .addSettingsInputRow({
-                                id: `lineStyleRow`,
-                                parentId: 'lineStylePnl',
+                                id: 'trye26vo0xhs-HxJ5k5ngYE',
+                                parentId: 'fontStylePnlline',
                                 inline: true,
-                                hidden: false,
+                                propertyName: 'lineFont',
                                 readOnly: {
-                                  _code: 'return getSettingValue(data?.readOnly);',
+                                  _code: 'return  getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'switch',
-                                    id: 'dashed',
-                                    label: 'Dashed',
+                                    type: 'numberField',
+                                    id: 'fontSize-s04gmBg31azZC0UjZjpfTm',
+                                    label: 'Thickness',
+                                    propertyName: 'lineFont.size',
                                     hideLabel: false,
-                                    propertyName: 'dashed',
-                                    layout: 'horizontal',
+                                    width: 50,
                                   },
+                                  {
+                                    type: 'colorPicker',
+                                    id: 'fontColor-s40gmBg31azZC0UjZjpfTm',
+                                    label: 'Color',
+                                    hideLabel: false,
+                                    propertyName: 'lineFont.color',
+                                  },
+                                  {
+                                    type: 'dropdown',
+                                    id: 'type-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Type',
+                                    propertyName: 'lineType',
+                                    hideLabel: false,
+                                    defaultValue: 'solid',
+                                    dropdownOptions: [
+                                      {
+                                        label: 'Solid',
+                                        value: 'solid',
+                                      },
+                                      {
+                                        label: 'Dashed',
+                                        value: 'dashed',
+                                      },
+                                      {
+                                        label: 'Dotted',
+                                        value: 'dotted',
+                                      }
+                                    ],
+                                  }
                                 ],
                               })
                               .toJson(),
@@ -217,7 +231,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'width-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
@@ -243,7 +257,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'height-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Height',
                                     width: 85,
@@ -302,7 +316,7 @@ export const getSettings = (data: any) => {
                                             dropdownOptions: fontTypes,
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                             label: 'Size',
                                             propertyName: 'font.size',
@@ -320,7 +334,7 @@ export const getSettings = (data: any) => {
                                             width: 100,
                                           },
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                             label: 'Color',
                                             hideLabel: true,
@@ -333,39 +347,32 @@ export const getSettings = (data: any) => {
                                 },
                               })
                               .addCollapsiblePanel({
-                                id: 'styleCollapsiblePanel',
-                                propertyName: 'stylingBox',
-                                label: 'Margin & Padding',
+                                id: 'customStyleCollapsiblePanel',
+                                propertyName: 'customStyle',
+                                label: 'Custom Styles',
                                 labelAlign: 'right',
                                 ghost: true,
-                                collapsible: 'header',
                                 content: {
-                                  id: 'stylePnl-M5-911',
+                                  id: 'stylePnl-M500-911MFR-title',
                                   components: [
                                     ...new DesignerToolbarSettings()
-                                      .addStyleBox({
-                                        id: 'styleBoxPnl',
-                                        label: 'Margin Padding',
-                                        hideLabel: true,
-                                        propertyName: 'stylingBox',
+                                      .addSettingsInput({
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        id: 'title-css-412c-8461-4c8d55e5c073',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'titleStyle',
+                                        hideLabel: false,
+                                        label: 'Style',
+                                        description:
+                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                       })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
-                              .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'title-css-412c-8461-4c8d55e5c073',
-                                inputType: 'codeEditor',
-                                propertyName: 'containerStyle',
-                                hideLabel: true,
-                                label: 'Style',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                      .toJson()
+                                  ]
+                                }
                               })
                               .toJson(),
                           ],
@@ -399,25 +406,39 @@ export const getSettings = (data: any) => {
                                         id: 'stylecontainerBoxPnl',
                                         label: 'Margin Padding',
                                         hideLabel: true,
-                                        propertyName: 'stylingBox',
+                                        propertyName: 'containerStylingBox',
                                       })
                                       .toJson(),
                                   ],
                                 },
                               })
-                              .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'custom-css-412c-8461-4c8d55e5c073',
-                                inputType: 'codeEditor',
-                                propertyName: 'containerStyle',
-                                hideLabel: true,
-                                label: 'Style',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              .addCollapsiblePanel({
+                                id: 'customStyleCollapsiblePanel',
+                                propertyName: 'customStyle',
+                                label: 'Custom Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                content: {
+                                  id: 'stylePnl-M500-911MFR',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInput({
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        id: 'custom-css-412c-8461-4c8d55e5c073',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'containerStyle',
+                                        hideLabel: false,
+                                        label: 'Style',
+                                        description:
+                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                      })
+                                      .toJson()
+                                  ]
+                                }
                               })
                               .toJson(),
                           ],

@@ -1,5 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Distribution;
-using Shesha.Web.FormsDesigner.Domain;
+using Shesha.Domain;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
 {

@@ -4,9 +4,11 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ChevronControl } from '@/components/chevron';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
-import { ChevronSettingsForm } from './settings';
+import { getSettings } from './settingsForm';
 import { ConfigurableFormItem } from '@/components';
 import { IChevronProps } from '@/components/chevron/models';
+import { defaultStyles } from './utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const ChevronComponent: IToolboxComponent<IChevronProps> = {
   type: 'chevron',
@@ -14,9 +16,7 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
   name: 'Chevron',
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
-
-    if (model.hidden) return null;
-
+    if (model.hidden) return null;    
     return (
       <ConfigurableFormItem model={model}>
         {value => (
@@ -29,11 +29,9 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: (props) => {
-    return (
-      <ChevronSettingsForm {...props} />
-    );
-  }
+  settingsFormMarkup: (props) => getSettings(props),
+    migrator: (m) => m
+    .add<IChevronProps>(1, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),  
 };
 
 export default ChevronComponent;

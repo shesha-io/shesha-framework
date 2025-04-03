@@ -12,7 +12,7 @@ namespace Shesha.Domain.Conventions
                 
         }
 
-        public string GetColumnName(string prefix, string propertyName, string suffix)
+        public string GetColumnName(string prefix, string propertyName, string? suffix)
         {
             return $"{ConvertPrefix(prefix)}{propertyName.ToSnakeCase()}{ConvertSuffix(suffix)}";
         }
@@ -24,7 +24,7 @@ namespace Shesha.Domain.Conventions
                 : prefix.ToSnakeCase().TrimEnd('_') + "_";
         }
 
-        private string ConvertSuffix(string suffix)
+        private string? ConvertSuffix(string? suffix)
         {
             return string.IsNullOrWhiteSpace(suffix)
                 ? suffix

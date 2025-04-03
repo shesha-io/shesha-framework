@@ -1,9 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
 
 export const getSettings = () => {
@@ -21,7 +19,7 @@ export const getSettings = () => {
         tabs: [
           {
             key: '1',
-            title: 'Display',
+            title: 'Common',
             id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
             components: [
               ...new DesignerToolbarSettings()
@@ -37,34 +35,36 @@ export const getSettings = () => {
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
                   hideLabel: true,
-                  label: 'Label'
-                })
-                .addSettingsInput({
-                  id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
-                  propertyName: 'description',
-                  label: 'Tooltip',
-                  inputType: 'textArea',
+                  label: 'Label',
+                  hideLabelPropName: 'hideLabel'
                 })
                 .addSettingsInputRow({
-                  id: 'display-row-0-dragger',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: 'description-is-dragger-row ',
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
+                    {
+                      id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
+                      propertyName: 'description',
+                      label: 'Tooltip',
+                      type: 'textArea',
+                      jsSetting: true
+                    },
                     {
                       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412447',
                       propertyName: 'isDragger',
                       label: 'Is Dragger',
                       type: 'switch',
+                      jsSetting: true,
                       description: 'Where the uploader should show a dragger instead of a button',
+                      hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
                     }
-                  ],
-                  hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
+                  ]
                 })
                 .addSettingsInputRow({
                   id: 'b920ef96-ae27-4a01-bfad-list-type',
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
-                  hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: 'b920ef96-ae27-4a01-bfad-bob7d07218da',
@@ -72,17 +72,12 @@ export const getSettings = () => {
                       label: 'List Type',
                       type: 'dropdown',
                       dropdownOptions: [
-                        { label: 'File Name', value: 'text' },
+                        { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
                       ],
-                    }]
-                })
-                .addSettingsInputRow({
-                  id: 'b920ef96-layout-4a01-bfad-bob7d07218da',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
-                  inputs: [
+                      hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
+                    },
                     {
                       id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
                       propertyName: 'filesLayout',
@@ -92,22 +87,35 @@ export const getSettings = () => {
                         { label: 'Vertical', value: 'vertical' },
                         { label: 'Horizontal', value: 'horizontal' },
                         { label: 'Grid', value: 'grid' },
-                      ]
-                    },]
+                      ],
+                      jsSetting: true,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                    }
+                  ]
                 })
                 .addSettingsInputRow({
                   id: 'b920ef96-thumbnail-4a01-bfad-bob7d07218da',
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
                       propertyName: 'gap',
                       label: 'Gap',
-                      type: 'number',
+                      type: 'numberField',
                       description: 'The gap between the thumbnails.',
-                    }]
+                      jsSetting: true,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                    },
+                    {
+                      id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
+                      propertyName: 'hideFileName',
+                      label: 'Hide File Name',
+                      type: 'switch',
+                      jsSetting: true,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                    }
+                  ]
                 })
                 .addSettingsInputRow({
                   id: 'display-row-1',
@@ -119,25 +127,17 @@ export const getSettings = () => {
                       propertyName: 'hidden',
                       label: 'Hide',
                       type: 'switch',
+                      jsSetting: true,
                     },
                     {
                       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       type: 'editModeSelector',
+                      defaultValue: 'inherited',
+                      jsSetting: true,
                     },
                   ],
-                })
-                .addSettingsInputRow({
-                  id: 'b920ef96-ae27-hidefile-name-bfad-b5b7d0xc18da',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [{
-                    id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
-                    propertyName: 'hideFileName',
-                    label: 'Hide File Name',
-                    type: 'switch',
-                  }]
                 })
                 .addSettingsInputRow({
                   id: 'display-row-2',
@@ -149,6 +149,7 @@ export const getSettings = () => {
                       propertyName: 'allowAdd',
                       label: 'Allow Add',
                       type: 'switch',
+                      jsSetting: true,
                       hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
                     },
                     {
@@ -157,6 +158,7 @@ export const getSettings = () => {
                       label: 'Allow Remove',
                       type: 'switch',
                       hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -165,6 +167,7 @@ export const getSettings = () => {
                   propertyName: 'downloadZip',
                   label: 'Download Zip',
                   inputType: 'switch',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],
@@ -175,42 +178,66 @@ export const getSettings = () => {
             id: '9b302942-a0a6-4805-ac47-8f45486a69d4',
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                  propertyName: 'ownerName',
-                  label: 'Owner',
-                  inputType: 'propertyAutocomplete',
-                  autoFillProps: false,
+                .addSettingsInputRow({
+                  id: 'owner-name-row',
+                  parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                      propertyName: 'ownerName',
+                      label: 'Owner',
+                      type: 'propertyAutocomplete',
+                      autoFillProps: false,
+                    },
+                    {
+                      id: '1c03863c-880d-4308-8667-c3d996619cb7',
+                      propertyName: 'ownerId',
+                      label: 'Owner Id',
+                      type: 'textField',
+                      jsSetting: true,
+                    },
+                  ]
                 })
-                .addSettingsInput({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb7',
-                  propertyName: 'ownerId',
-                  label: 'Owner Id',
-                  inputType: 'text',
-                })
-                .addSettingsInput({
-                  id: '0009bf13-04a3-49d5-a9d8-1b23df20b97c',
-                  propertyName: 'ownerType',
-                  label: 'Owner Type',
-                  inputType: 'autocomplete',
-                  dataSourceType: 'url',
-                  dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                  useRawValues: true,
-                })
-                .addSettingsInput({
-                  id: 'db913b1b-3b25-46c9-afef-21854d917ba7',
-                  propertyName: 'filesCategory',
-                  label: 'Files Category',
-                  inputType: 'text',
-                })
-                .addSettingsInput({
-                  id: nanoid
+                .addSettingsInputRow({
+                  id: 'owner-id-owner-type-row',
+                  parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
 
-                    (),
-                  propertyName: 'allowedFileTypes',
-                  label: 'Allowed File Types',
-                  inputType: 'editableTagGroupProps',
-                  description: 'File types that can be accepted.',
+                    {
+                      id: '0009bf13-04a3-49d5-a9d8-1b23df20b97c',
+                      propertyName: 'ownerType',
+                      label: 'Owner Type',
+                      type: 'autocomplete',
+                      dataSourceType: 'url',
+                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      useRawValues: true,
+                      jsSetting: true,
+                    },
+                    {
+                      id: 'db913b1b-3b25-46c9-afef-21854d917ba7',
+                      propertyName: 'filesCategory',
+                      label: 'Files Category',
+                      type: 'textField',
+                      jsSetting: true,
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: 'allowed-file-types-row',
+                  parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'allowed-file-types-row',
+                      propertyName: 'allowedFileTypes',
+                      label: 'Allowed File Types',
+                      type: 'editableTagGroupProps',
+                      description: 'File types that can be accepted.',
+                      jsSetting: true,
+                    }
+                  ]
                 })
                 .toJson(),
             ],
@@ -226,6 +253,7 @@ export const getSettings = () => {
                   propertyName: 'validate.required',
                   label: 'Required',
                   inputType: 'switch',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],
@@ -292,7 +320,7 @@ export const getSettings = () => {
                                 dropdownOptions: fontTypes,
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Size',
                                 propertyName: 'font.size',
@@ -310,7 +338,7 @@ export const getSettings = () => {
                                 width: 100,
                               },
                               {
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Color',
                                 hideLabel: true,
@@ -327,6 +355,13 @@ export const getSettings = () => {
                               },
                             ],
                           })
+                          .addSettingsInput({
+                            id: 'primary-color',
+                            propertyName: 'primaryColor',
+                            label: 'Primary Color',
+                            inputType: 'colorPicker',
+                            jsSetting: true,
+                          })
                           .toJson()
                         ]
                       }
@@ -339,6 +374,7 @@ export const getSettings = () => {
                       labelAlign: 'right',
                       ghost: true,
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'dimensionsStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -349,7 +385,7 @@ export const getSettings = () => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                 label: "Width",
                                 width: 85,
@@ -359,7 +395,7 @@ export const getSettings = () => {
 
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                 label: "Min Width",
                                 width: 85,
@@ -368,7 +404,7 @@ export const getSettings = () => {
                                 icon: "minWidthIcon",
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                 label: "Max Width",
                                 width: 85,
@@ -385,7 +421,7 @@ export const getSettings = () => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                 label: "Height",
                                 width: 85,
@@ -394,7 +430,7 @@ export const getSettings = () => {
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                 label: "Min Height",
                                 width: 85,
@@ -403,7 +439,7 @@ export const getSettings = () => {
                                 icon: "minHeightIcon",
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                 label: "Max Height",
                                 width: 85,
@@ -425,6 +461,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'borderStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -445,36 +482,16 @@ export const getSettings = () => {
                               },
                             ]
                           })
-                          .addSettingsInputRow(
-                            getBorderInputs()[0] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[1] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[2] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[3] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[4] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[0] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[1] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[2] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[3] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[4] as any
-                          )
+                          .addContainer({
+                            id: 'borderStyleRow',
+                            parentId: 'borderStylePnl',
+                            components: getBorderInputs() as any
+                          })
+                          .addContainer({
+                            id: 'borderRadiusStyleRow',
+                            parentId: 'borderStylePnl',
+                            components: getCornerInputs() as any
+                          })
                           .toJson()
                         ]
                       }
@@ -487,6 +504,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'backgroundStylePnl',
                         components: [
@@ -532,7 +550,7 @@ export const getSettings = () => {
                               id: "backgroundStyleRow-color",
                               parentId: "backgroundStylePnl",
                               inputs: [{
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'backgroundStyleRow-color',
                                 label: "Color",
                                 propertyName: "background.color",
@@ -561,7 +579,7 @@ export const getSettings = () => {
                               id: "backgroundStyle-url",
                               parentId: "backgroundStylePnl",
                               inputs: [{
-                                type: 'text',
+                                type: 'textField',
                                 id: 'backgroundStyle-url',
                                 propertyName: "background.url",
                                 jsSetting: false,
@@ -590,7 +608,7 @@ export const getSettings = () => {
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: 'backgroundStyle-storedFile',
                                   jsSetting: false,
                                   propertyName: "background.storedFile.id",
@@ -602,6 +620,7 @@ export const getSettings = () => {
                               id: "backgroundStyleRow-controls",
                               parentId: 'backgroundStyleRow',
                               inline: true,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
@@ -621,16 +640,23 @@ export const getSettings = () => {
                                   customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
-                                },
-                                {
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat',
-                                  label: "Repeat",
-                                  hideLabel: true,
-                                  propertyName: "background.repeat",
-                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
+                            })
+                            .addSettingsInputRow({
+                              id: 'backgroundStyleRow-repeat',
+                              parentId: 'backgroundStyleRow',
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [{
+                                type: 'radio',
+                                id: 'backgroundStyleRow-repeat-radio',
+                                label: 'Repeat',
+                                hideLabel: true,
+                                propertyName: 'background.repeat',
+                                inputType: 'radio',
+                                buttonGroupOptions: repeatOptions,
+                              }],
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ],
@@ -644,6 +670,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'shadowStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -654,43 +681,43 @@ export const getSettings = () => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-offsetX',
                                 label: 'Offset X',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: "offsetHorizontalIcon",
                                 propertyName: 'shadow.offsetX',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-offsetY',
                                 label: 'Offset Y',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'offsetVerticalIcon',
                                 propertyName: 'shadow.offsetY',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-blurRadius',
                                 label: 'Blur',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'blurIcon',
                                 propertyName: 'shadow.blurRadius',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-spreadRadius',
                                 label: 'Spread',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'spreadIcon',
                                 propertyName: 'shadow.spreadRadius',
                               },
                               {
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'shadowStyleRow-color',
                                 label: 'Color',
                                 hideLabel: true,
@@ -710,6 +737,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'stylePnl-M500-911MFR',
                         components: [...new DesignerToolbarSettings()
@@ -755,7 +783,7 @@ export const getSettings = () => {
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
-                                      type: 'text',
+                                      type: 'textField',
                                       id: 'width-s4gmBg31azZC0UjZjpfTm',
                                       label: "Width",
                                       width: 85,
@@ -765,7 +793,7 @@ export const getSettings = () => {
 
                                     },
                                     {
-                                      type: 'text',
+                                      type: 'textField',
                                       id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                       label: "Min Width",
                                       width: 85,
@@ -774,7 +802,7 @@ export const getSettings = () => {
                                       icon: "minWidthIcon",
                                     },
                                     {
-                                      type: 'text',
+                                      type: 'textField',
                                       id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                       label: "Max Width",
                                       width: 85,
@@ -792,7 +820,7 @@ export const getSettings = () => {
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
-                                      type: 'text',
+                                      type: 'textField',
                                       id: 'height-s4gmBg31azZC0UjZjpfTm',
                                       label: "Height",
                                       width: 85,
@@ -801,7 +829,7 @@ export const getSettings = () => {
                                       tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                     },
                                     {
-                                      type: 'text',
+                                      type: 'textField',
                                       id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                       label: "Min Height",
                                       width: 85,
@@ -810,7 +838,7 @@ export const getSettings = () => {
                                       icon: "minHeightIcon",
                                     },
                                     {
-                                      type: 'text',
+                                      type: 'textField',
                                       id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                       label: "Max Height",
                                       width: 85,

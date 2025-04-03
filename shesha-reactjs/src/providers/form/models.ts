@@ -86,13 +86,15 @@ export interface IInputStyles extends IStyleType {
   borderType?: string;
   borderColor?: string;
   fontColor?: string;
+  color?: string;
   fontWeight?: string | number;
   fontSize?: string | number;
   stylingBox?: string;
   height?: string | number;
   width?: string | number;
-  backgroundColor?: string;
   hideBorder?: boolean;
+  backgroundColor?: string;
+  backgroundPosition?: string;
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;
@@ -144,6 +146,9 @@ export interface IComponentRuntimeProps {
   /** Custom onChange handler */
   onChangeCustom?: string;
 
+  /** Custom onClick handler */
+  onClickCustom?: string;
+
   /** Custom onFocus handler */
   onFocusCustom?: string;
 }
@@ -182,14 +187,17 @@ export interface IComponentMetadata {
  */
 export interface IConfigurableFormComponent
   extends IFormComponentContainer,
-  IHasVersion,
-  IComponentBindingProps,
-  IComponentLabelProps,
-  IComponentVisibilityProps,
-  IComponentRuntimeProps,
-  IComponentMetadata {
+    IHasVersion,
+    IComponentBindingProps,
+    IComponentLabelProps,
+    IComponentVisibilityProps,
+    IComponentRuntimeProps,
+    IComponentMetadata {
   /** Type of the component */
   type: string;
+
+  /** Options added using the dialog*/
+  queryParams?: any;
 
   /** Description of the field, is used for tooltips */
   description?: string;

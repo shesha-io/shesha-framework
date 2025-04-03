@@ -12,14 +12,12 @@ using Abp.TestBase;
 using Abp.Zero.Configuration;
 using Castle.Facilities.Logging;
 using Castle.MicroKernel.Registration;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
 using Shesha.Tests.DynamicEntities;
@@ -44,6 +42,8 @@ namespace Shesha.Tests
         )]
     public class SheshaTestModule : AbpModule
     {
+        private const string ConnectionStringName = "TestDB";
+
         public SheshaTestModule(SheshaNHibernateModule nhModule)
         {
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
@@ -54,7 +54,7 @@ namespace Shesha.Tests
             IocManager.MockWebHostEnvirtonment();
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var connectionString = config.GetConnectionString("TestDB");
+            var connectionString = config.GetConnectionString(ConnectionStringName).NotNullOrWhiteSpace($"Connection string '{ConnectionStringName}' is unavailable");
 
             var nhConfig = Configuration.Modules.ShaNHibernate();
             nhConfig.UseMsSql(connectionString);
@@ -70,7 +70,7 @@ namespace Shesha.Tests
             // mock IWebHostEnvironment
             //var hostingEnvironment = Mock.Of<IWebHostEnvironment>(e => e.ApplicationName == "test");
 
-            var inMemorySettings = new Dictionary<string, string> {
+            var inMemorySettings = new Dictionary<string, string?> {
                 /* in memory settings:
                 {"TopLevelKey", "TopLevelValue"},
                 {"SectionName:SomeKey", "SectionValue"},
@@ -103,8 +103,6 @@ namespace Shesha.Tests
             //Configuration.ReplaceService<IDbPerTenantConnectionStringResolver, TestConnectionStringResolver>(DependencyLifeStyle.Transient);
 
             Configuration.ReplaceService<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(DependencyLifeStyle.Singleton);
-
-            Configuration.Settings.Providers.Add<TestSettingsProvider>();
 
             Configuration.EntityHistory.Selectors.Add("Settings", typeof(Setting));
 

@@ -1,6 +1,7 @@
 import React, { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
 import {
   confirmModel,
+  defaultStyles,
   getDefaultModel,
   getFormItemProps,
   getInputProps,
@@ -90,7 +91,8 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
+      ...jsStyle
     });
 
 
@@ -139,7 +141,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IPasswordComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { dimensions: { width: '100%', height: '32px', minHeight: '0', minWidth: '0', maxHeight: 'auto', maxWidth: 'auto' } }), editMode: 'inherited' })),
+    .add<IPasswordComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()), editMode: 'inherited' })),
 };
 
 export default PasswordComboComponent;

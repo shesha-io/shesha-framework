@@ -46,7 +46,7 @@ namespace Shesha.Scheduler
         private readonly IIocManager _iocManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public Castle.Core.Logging.ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         public ScheduledJobManager(IRepository<ScheduledJobTrigger, Guid> triggerRepository, IUnitOfWorkManager unitOfWorkManager, ITypeFinder typeFinder, IIocManager iocManager, IServiceProvider serviceProvider)
         {
@@ -60,8 +60,8 @@ namespace Shesha.Scheduler
 
         private const string JobExecutionIdKey = "JobExecutionId";
 
-        private IHubContext<SignalrAppenderHub> _signalrHub;
-        internal IHubContext<SignalrAppenderHub> SignalrHub => _signalrHub ??= _iocManager?.Resolve<IHubContext<SignalrAppenderHub>>();
+        private IHubContext<SignalrAppenderHub>? _signalrHub;
+        internal IHubContext<SignalrAppenderHub> SignalrHub => _signalrHub ??= _iocManager.Resolve<IHubContext<SignalrAppenderHub>>();
 
         /// inheritedDoc
         public async Task EnqueueAllAsync()
@@ -124,7 +124,7 @@ namespace Shesha.Scheduler
                 uow.Complete();
             }
 
-            var jobType = _typeFinder.Find(t => t.GetAttribute<ScheduledJobAttribute>()?.Uid == jobId).FirstOrDefault();
+            var jobType = _typeFinder.Find(t => t.GetAttributeOrNull<ScheduledJobAttribute>()?.Uid == jobId).FirstOrDefault();
             if (jobType == null)
                 throw new Exception($"Job with Id = '{jobId}' not found");
 
@@ -185,10 +185,10 @@ namespace Shesha.Scheduler
         [ForwardDisableConcurrentExecution]
         public async Task RunJobAsync(Guid jobId, string jobType, Guid executionId, Int64? startedById, CancellationToken cancellationToken)
         {
-            await ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", new object[] { executionId, startedById, cancellationToken });
+            await ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", [executionId, startedById, cancellationToken]);
         }
 
-        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object[] methodArgs)
+        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object?[] methodArgs)
         {
             var recordedType = !string.IsNullOrEmpty(jobType) ? Type.GetType(jobType) : GetJobTypeById(jobId).BaseType;
 
@@ -196,28 +196,31 @@ namespace Shesha.Scheduler
             {
                 var jobInstanceType = GetJobTypeById(jobId);
                 var jobInstance = _serviceProvider.GetService(jobInstanceType);
-                var methodInfo = recordedType.GetMethod(methodName);
+                var methodInfo = recordedType.GetRequiredMethod(methodName);
 
-                Task task = (Task)methodInfo.Invoke(jobInstance, methodArgs);
+                Task task = methodInfo.Invoke<Task>(jobInstance, methodArgs).NotNull();
                 await task;
             }
             
         }
 
         /// inheritedDoc
-        public Type GetJobTypeById(Guid id)
+        public Type? GetJobTypeByIdOrNull(Guid id)
         {
-            return _typeFinder.Find(t => t.GetAttribute<ScheduledJobAttribute>()?.Uid == id).FirstOrDefault();
+            return _typeFinder.Find(t => t.GetAttributeOrNull<ScheduledJobAttribute>()?.Uid == id).FirstOrDefault();
+        }
+
+        // inheritedDoc
+        public Type GetJobTypeById(Guid id) 
+        {
+            return GetJobTypeByIdOrNull(id) ?? throw new Exception($"Type of job with id = '{id}' is unavailable");
         }
 
         /// inheritedDoc
         public ScheduledJobBase GetJobInstanceById(Guid id)
         {
             var jobType = GetJobTypeById(id);
-            if (jobType == null)
-                throw new Exception($"Job with Id = '{id}' not found");
-
-            var jobInstance = _iocManager.Resolve(jobType) as ScheduledJobBase;
+            var jobInstance = _iocManager.Resolve(jobType).ForceCastAs<ScheduledJobBase>();
             return jobInstance;
         }
 
@@ -242,8 +245,8 @@ namespace Shesha.Scheduler
 
             repository.Root.Level = log4net.Core.Level.Info;
 
-            logger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
-            if (logger == null)
+            var existingLogger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
+            if (existingLogger == null)
             {
                 // Configure default logger for scheduled job
                 logger = repository.LoggerFactory.CreateLogger(repository, name);
@@ -259,7 +262,8 @@ namespace Shesha.Scheduler
                 // Mark repository as configured and notify that is has changed.  
                 repository.Configured = true;
                 repository.RaiseConfigurationChanged(EventArgs.Empty);
-            }
+            } else
+                logger = existingLogger;
 
             log = LogManager.GetLogger(Assembly.GetCallingAssembly(), name);
         }
@@ -320,7 +324,7 @@ namespace Shesha.Scheduler
 
             #region Configure file appender
 
-            FileAppender fileAppender = null;
+            FileAppender? fileAppender = null;
 
             if (!string.IsNullOrWhiteSpace(job.LogFilePath))
             {

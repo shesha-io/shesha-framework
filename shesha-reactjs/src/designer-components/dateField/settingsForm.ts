@@ -4,6 +4,7 @@ import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IDateFieldProps } from './interfaces';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: IDateFieldProps) => {
 
@@ -104,7 +105,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                         id: '57a40a33-7e10-4ce4-9f08-a34d24a83338',
                                         propertyName: 'placeholder',
                                         label: 'Placeholder',
-                                        type: 'text',
+                                        type: 'textField',
                                         size: 'small',
                                         jsSetting: true,
                                     },
@@ -155,7 +156,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Date Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "DD/MM/YYYY",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -165,7 +166,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Time Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "HH:mm:ss",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -175,7 +176,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Year Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -185,7 +186,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Quarter Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY-\\QQ",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -195,7 +196,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Month Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY-MM",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -205,7 +206,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Week Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY-wo",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -394,7 +395,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 dropdownOptions: fontTypes,
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
@@ -412,7 +413,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 width: 100,
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Color',
                                                                 hideLabel: true,
@@ -451,7 +452,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
@@ -461,7 +462,7 @@ export const getSettings = (data: IDateFieldProps) => {
 
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Width",
                                                                 width: 85,
@@ -470,7 +471,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 icon: "minWidthIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Width",
                                                                 width: 85,
@@ -487,7 +488,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
@@ -496,7 +497,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Height",
                                                                 width: 85,
@@ -505,7 +506,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 icon: "minHeightIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Height",
                                                                 width: 85,
@@ -513,19 +514,6 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 propertyName: "dimensions.maxHeight",
                                                                 icon: "maxHeightIcon",
                                                             }
-                                                        ]
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: 'predefinedSizes',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
                                                         ]
                                                     })
                                                     .toJson()
@@ -560,36 +548,16 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -614,40 +582,14 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'backgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
@@ -676,7 +618,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'backgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
@@ -705,7 +647,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'text',
+                                                                    type: 'textField',
                                                                     id: 'backgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
@@ -716,6 +658,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                             inline: true,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
@@ -725,20 +668,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: sizeOptions,
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
@@ -746,71 +676,24 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                     label: "Position",
                                                                     hideLabel: true,
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
-                                                                },
-                                                                {
-                                                                    type: 'dropdown',
-                                                                    id: 'backgroundStyleRow-repeat',
-                                                                    label: "Repeat",
-                                                                    hideLabel: true,
-                                                                    propertyName: "background.repeat",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "repeat",
-                                                                            label: "repeat"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-x",
-                                                                            label: "repeatX"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-y",
-                                                                            label: "repeatY"
-                                                                        },
-                                                                        {
-                                                                            value: "no-repeat",
-                                                                            label: "noRepeat"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: positionOptions,
                                                                 }
                                                             ]
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            parentId: 'backgroundStyleRow',
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
                                                 ],
@@ -834,43 +717,47 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset X',
+                                                                width: 80,
                                                                 icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset Y',
+                                                                width: 80,
                                                                 icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Blur Radius',
+                                                                width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Spread Radius',
+                                                                width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'shadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,

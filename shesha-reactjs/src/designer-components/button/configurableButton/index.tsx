@@ -8,11 +8,11 @@ import { useConfigurableActionDispatcher } from '@/providers/configurableActions
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
-
+import { useStyles } from './style';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
-  dynamicItem?: any;  
+  dynamicItem?: any;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
@@ -23,6 +23,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const dynamicContext = useActionDynamicContext(actionConfiguration);
 
   const { theme } = useTheme();
+  const { styles } = useStyles();
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
@@ -74,7 +75,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       iconPosition={props.iconPosition}
-      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
+      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
       size={props?.size}
       disabled={buttonDisabled}
       style={{ ...props?.style, ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }) }}

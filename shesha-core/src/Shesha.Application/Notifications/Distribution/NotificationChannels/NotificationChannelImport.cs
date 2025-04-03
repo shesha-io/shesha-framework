@@ -1,15 +1,11 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Notifications.Distribution.NotificationChannels.Dto;
-using Shesha.EntityReferences;
-using Shesha.Services;
 using Shesha.Services.ConfigurationItems;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Distribution.NotificationChannels
@@ -17,7 +13,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationChannelImport : ConfigurationItemImportBase, INotificationChannelImport, ITransientDependency
+    public class NotificationChannelImport : ConfigurationItemImportBase<NotificationChannelConfig, DistributedNotificationChannel>, INotificationChannelImport, ITransientDependency
     {
         public readonly IRepository<NotificationChannelConfig, Guid> _configurationRepo;
 
@@ -104,23 +100,6 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             dbItem.Status = item.Status;
 
             return dbItem;
-        }
-
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                
-                var result = !string.IsNullOrWhiteSpace(json)
-                    ? JsonConvert.DeserializeObject<DistributedNotificationChannel>(json)
-                    : null;
-                
-                if (result == null)
-                    throw new Exception($"Failed to read {nameof(NotificationChannelConfig)} from json");
-
-                return result;
-            }
         }
     }
 }

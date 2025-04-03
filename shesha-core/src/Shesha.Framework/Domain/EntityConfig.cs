@@ -4,7 +4,6 @@ using Shesha.DynamicEntities.Dtos;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -20,19 +19,19 @@ namespace Shesha.Domain
 
         [EntityDisplayName]
         [StringLength(255)]
-        public virtual string FriendlyName { get; set; }
+        public virtual string? FriendlyName { get; set; }
         [StringLength(100)]
-        public virtual string TypeShortAlias { get; set; }
+        public virtual string? TypeShortAlias { get; set; }
         [StringLength(255)]
-        public virtual string TableName { get; set; }
+        public virtual string? TableName { get; set; }
         [StringLength(500)]
         public virtual string ClassName { get; set; }
         [StringLength(500)]
-        public virtual string Namespace { get; set; }
+        public virtual string? Namespace { get; set; }
         [StringLength(255)]
-        public virtual string DiscriminatorValue { get; set; }
+        public virtual string? DiscriminatorValue { get; set; }
 
-        public virtual EntityConfig Parent { get; set; }
+        public virtual EntityConfig? Parent { get; set; }
 
         public virtual bool GenerateAppService { get; set; }
 
@@ -48,7 +47,7 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(40)]
         [Column("PropertiesMD5")]
-        public virtual string HardcodedPropertiesMD5 { get; set; }
+        public virtual string? HardcodedPropertiesMD5 { get; set; }
 
         public override string ItemType => ItemTypeName;
 
@@ -70,6 +69,6 @@ namespace Shesha.Domain
         /// Code identifier that can be used in the client-side code to reference current module
         /// </summary>
         [StringLength(200)]
-        public virtual string Accessor { get; set; }
+        public virtual string? Accessor { get; set; }
     }
 }

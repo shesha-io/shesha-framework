@@ -103,9 +103,6 @@ namespace Shesha.DynamicEntities.Distribution
 
         private async Task<DistributedEntityConfigProperty> MapPropertyAsync(EntityProperty src) 
         {
-            if (src == null)
-                return null;
-            
             var property = new DistributedEntityConfigProperty();
             property.Name = src.Name;
             property.Label = src.Label;
@@ -118,7 +115,9 @@ namespace Shesha.DynamicEntities.Distribution
             property.Source = src.Source;
             property.SortOrder = src.SortOrder;
 
-            property.ItemsType = await MapPropertyAsync(src.ItemsType);
+            property.ItemsType = src.ItemsType != null 
+                ? await MapPropertyAsync(src.ItemsType)
+                : null;
             property.IsFrameworkRelated = src.IsFrameworkRelated;
             property.Suppress = src.Suppress;
             property.Required = src.Required;
@@ -145,7 +144,7 @@ namespace Shesha.DynamicEntities.Distribution
 
         private List<EntityViewConfigurationDto> MapViewConfigurations(EntityConfig entityConfig)
         {
-            return entityConfig.ViewConfigurations?.ToList();
+            return entityConfig.ViewConfigurations?.ToList() ?? new();
         }
 
         /// inheritedDoc

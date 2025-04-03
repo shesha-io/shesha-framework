@@ -1,6 +1,6 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }, hasCode) => {
+export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) => {
 
     const contentJs = cx(css`
         position: relative;
@@ -28,17 +28,22 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         }
     `);
 
-    const label = cx(css`
+    const label = cx("properties-label", css`
             font-size: 12px;
             color: darkslategrey;
             font-weight: 500;
             position: relative;
-            top: 7px;
-
+            
             +.ant-form-item-tooltip {
             align-self: end !important;
             position: relative;
             bottom: -2px;
+            margin-right: 8px;
+            }
+
+            +.sha-required-mark {
+                position: relative;
+                bottom: -8px;
             }
     `);
 
@@ -46,7 +51,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         top: -8px;
         `);
     const jsSwitch = cx(css`
-        &.${prefixCls}-btn {
             position: absolute;
             right: 0;
             top: 4px;
@@ -69,14 +73,14 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             .sidebar-container & {
                 right: 0;
                 left: auto;
-                top: ${hasCode ? '-35px' : '-25px'};
+                top: -25px;
             }
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
-                top: -25px;
+                top: ${hasCode ? '-38px' : '-25px'};
             }
-        }
+        
     `);
 
     return {

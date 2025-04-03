@@ -37,9 +37,28 @@ namespace Shesha.Excel
         /// </summary>
         private static void SetSheetName(string excelSpreadSheetName, SpreadsheetDocument spreadSheet)
         {
-            var ss = spreadSheet.WorkbookPart.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name == DefaultSheetName);
+            var ss = spreadSheet.WorkbookPart?.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name == DefaultSheetName);
             if (ss != null)
                 ss.Name = excelSpreadSheetName;
+        }
+
+
+        private static WorkbookPart GetWorkbookPart(SpreadsheetDocument spreadSheet) 
+        {
+            if (spreadSheet.WorkbookPart == null) 
+            {
+                return spreadSheet.AddWorkbookPart();
+            } else
+                return spreadSheet.WorkbookPart;
+        }
+
+        private static Stylesheet GetStyleSheet(SpreadsheetDocument spreadSheet) 
+        {
+            var workbookPart = GetWorkbookPart(spreadSheet);
+
+            var stylePart = workbookPart.WorkbookStylesPart ?? workbookPart.AddNewPart<WorkbookStylesPart>();
+            var styleSheet = stylePart.Stylesheet ?? (stylePart.Stylesheet = new Stylesheet());
+            return styleSheet;
         }
 
         /// <summary>
@@ -47,13 +66,16 @@ namespace Shesha.Excel
         /// </summary>
         private static void SetStyleSheet(SpreadsheetDocument spreadSheet)
         {
-            var styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
+            var styleSheet = GetStyleSheet(spreadSheet);
+
+            styleSheet.Fonts ??= new();
             styleSheet.Fonts.Append(new Font(
                 new FontSize { Val = 11 },
                 new Color { Rgb = "FFFFFF" },
                 new Bold(),
                 new FontName { Val = "Calibri" }));
 
+            styleSheet.Fills ??= new();
             styleSheet.Fills.AppendChild(new Fill
             {
                 PatternFill = new PatternFill
@@ -72,7 +94,7 @@ namespace Shesha.Excel
             styleSheet.CellFormats.AppendChild(new CellFormat { FormatId = 1, FontId = 0, BorderId = 0, FillId = 0, ApplyFill = false, ApplyBorder = false, ApplyFont = false }).AppendChild(new Alignment { Vertical = VerticalAlignmentValues.Top, WrapText = true });
             styleSheet.CellFormats.Count = 2;
 
-            spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.Save();
+            styleSheet.Save();
         }
 
         /// <summary>
@@ -91,7 +113,7 @@ namespace Shesha.Excel
 
         private static readonly Dictionary<int, string> LettersCache = new Dictionary<int, string>();
 
-        private static string ReplaceSpecialCharacters(string value)
+        private static string ReplaceSpecialCharacters(string? value)
         {
             return (value ?? "").Replace("’", "'")
                 .Replace("“", "\"")
@@ -102,15 +124,19 @@ namespace Shesha.Excel
 
         private static void SetHeaderStyle(SpreadsheetDocument spreadSheet, Cell cell)
         {
-            Stylesheet styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
+            var styleSheet = GetStyleSheet(spreadSheet);
             cell.SetAttribute(new OpenXmlAttribute("", "s", "", "1"));
             OpenXmlAttribute cellStyleAttribute = cell.GetAttribute("s", "");
-            CellFormats cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats;
+            var cellFormats = styleSheet.CellFormats.NotNull();
 
             // pick the first cell format.
             CellFormat cellFormat = (CellFormat)cellFormats.ElementAt(0);
 
             CellFormat cf = new CellFormat(cellFormat.OuterXml);
+            
+            styleSheet.Fonts ??= new();
+            styleSheet.Fills ??= new();
+
             cf.FontId = styleSheet.Fonts.Count;
             cf.FillId = styleSheet.Fills.Count;
 
@@ -123,13 +149,13 @@ namespace Shesha.Excel
 
         #endregion
 
-        public static async Task<MemoryStream> DataToExcelStreamAsync(WriteRowsDelegate writeRows, IList<String> headers, string sheetName, List<int> columnWidths = null)
+        public static async Task<MemoryStream> DataToExcelStreamAsync(WriteRowsDelegate writeRows, IList<String> headers, string sheetName, List<int>? columnWidths = null)
         {
             var xmlStream = ReportingHelper.GetResourceStream("Shesha.Excel.template.xlsx", typeof(ExcelUtility).Assembly);
 
             using (var document = SpreadsheetDocument.Open(xmlStream, true))
             {
-                var workbookPart = document.WorkbookPart;
+                var workbookPart = GetWorkbookPart(document);
                 var worksheetPart = workbookPart.WorksheetParts.First();
                 var originalSheetId = workbookPart.GetIdOfPart(worksheetPart);
 
@@ -147,6 +173,8 @@ namespace Shesha.Excel
                 ws.SheetProperties = sp;
 
                 // Set the FitToPage property to true
+                ws.SheetProperties ??= new();
+                ws.SheetProperties.PageSetupProperties ??= new();
                 ws.SheetProperties.PageSetupProperties.FitToPage = BooleanValue.FromBoolean(true);
 
                 var pgOr = new PageSetup
@@ -187,7 +215,7 @@ namespace Shesha.Excel
                 }
 
                 worksheetPart.Worksheet.Save();
-                document.WorkbookPart.Workbook.Save();
+                workbookPart.Workbook.Save();
 
                 using (var xmlReader = OpenXmlReader.Create(worksheetPart))
                 {
@@ -209,7 +237,7 @@ namespace Shesha.Excel
                                 SetHeaderStyle(document, headerCell);
                                 foreach (var header in headers)
                                 {
-                                    headerCell.CellValue.Text = header;
+                                    headerCell.CellValue.NotNull().Text = header;
                                     xmlWriter.WriteElement(headerCell);
                                 }
                                 xmlWriter.WriteEndElement();
@@ -233,16 +261,16 @@ namespace Shesha.Excel
                     }
                 }
 
-                var sheet = workbookPart.Workbook.Descendants<Sheet>().First(s => s.Id.Value.Equals(originalSheetId));
+                var sheet = workbookPart.Workbook.Descendants<Sheet>().First(s => s.Id != null && s.Id.Value != null && s.Id.Value.Equals(originalSheetId));
 
-                sheet.Id.Value = replacementPartId;
+                sheet.Id.NotNull().Value = replacementPartId;
                 workbookPart.DeletePart(worksheetPart);
             }
 
             return xmlStream;
         }
 
-        public async Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object>> list, IList<ExcelColumn> columns, string sheetName)
+        public async Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object?>> list, IList<ExcelColumn> columns, string sheetName)
         {
             var headers = columns
                 .Select(t => ReplaceSpecialCharacters(t.Label))
@@ -287,7 +315,7 @@ namespace Shesha.Excel
             return result;
         }
 
-        private Func<object, string> CreateGetAsString(Type rowType, ExcelColumn c)
+        private Func<object?, string?> CreateGetAsString(Type rowType, ExcelColumn c)
         {
             var property = ReflectionHelper.GetProperty(rowType, c.PropertyName, useCamelCase: true);
 
@@ -297,8 +325,8 @@ namespace Shesha.Excel
 
             var underlyingType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
             
-            var dataTypeAttr = property.GetAttribute<DataTypeAttribute>();
-            var formatAttr = property.GetAttribute<DisplayFormatAttribute>();
+            var dataTypeAttr = property.GetAttributeOrNull<DataTypeAttribute>();
+            var formatAttr = property.GetAttributeOrNull<DisplayFormatAttribute>();
 
             if (underlyingType == typeof(DateTime))
             {
@@ -307,7 +335,7 @@ namespace Shesha.Excel
                     : dataTypeAttr != null && dataTypeAttr.DataType == DataType.Date
                         ? "dd/MM/yyyy"
                         : "dd/MM/yyyy HH:mm";
-                return new Func<object, string>(val =>
+                return new Func<object?, string?>(val =>
                 {
                     if (val == null)
                         return null;
@@ -325,7 +353,7 @@ namespace Shesha.Excel
                 var format = !string.IsNullOrWhiteSpace(formatAttr?.DataFormatString)
                     ? formatAttr.DataFormatString
                     : @"hh\:mm";
-                return new Func<object, string>(val =>
+                return new Func<object?, string?>(val =>
                 {
                     if (val == null)
                         return null;
@@ -340,13 +368,13 @@ namespace Shesha.Excel
             else
             if (ReflectionHelper.IsReferenceListProperty(property))
             {
-                var refListIdentifier = ReflectionHelper.GetReferenceListIdentifierOrNull(property);
+                var refListIdentifier = ReflectionHelper.GetReferenceListIdentifierOrNull(property).NotNull();
                 var list = _refListHelper.GetItems(refListIdentifier);
                 var isMultiValue = ReflectionHelper.IsMultiValueReferenceListProperty(property);
 
                 if (isMultiValue)
                 {
-                    return new Func<object, string>(val =>
+                    return new Func<object?, string?>(val =>
                     {
                         if (val == null)
                             return null;
@@ -369,7 +397,7 @@ namespace Shesha.Excel
                     });
                 }
                 else
-                    return new Func<object, string>(val =>
+                    return new Func<object?, string?>(val =>
                     {
                         if (val == null)
                             return null;
@@ -379,7 +407,7 @@ namespace Shesha.Excel
             }
             else
             if (property.PropertyType.IsEntityType()) {
-                return new Func<object, string>(val => {
+                return new Func<object?, string?>(val => {
                     if (val == null)
                         return null;
 
@@ -388,14 +416,14 @@ namespace Shesha.Excel
                     return dict[EntityConstants.DisplayNameField]?.ToString();
                 });
             } else
-                return new Func<object, string>(val => val?.ToString());
+                return new Func<object?, string?>(val => val?.ToString());
         }
 
         private static GetValueDelegate CalculateColumnValueGetter(ExcelColumn column)
         {
             var parts = column.PropertyName.Split(".").Select(p => p.ToCamelCase()).Reverse().ToList();
 
-            var getterFactory = new Func<string, GetValueDelegate, GetValueDelegate>((name, getter) => {
+            var getterFactory = new Func<string, GetValueDelegate?, GetValueDelegate>((name, getter) => {
                 if (getter == null)
                 {
                     return new GetValueDelegate(row => row == null
@@ -412,23 +440,24 @@ namespace Shesha.Excel
                             : row.TryGetValue(name, out var partValue)
                                 ? partValue
                                 : null;
-                        return container != null && container is Dictionary<string, object> dict
+                        return container != null && container is Dictionary<string, object?> dict
                             ? getter.Invoke(dict)
                             : null;
                     });
                 }
             });
 
-            GetValueDelegate result = null;
+            GetValueDelegate? result = null;
             foreach (var part in parts) 
             {
                 result = getterFactory(part, result);
             }
-            return result;
+            return result ?? throw new Exception("Failed to get column valu getter");
         }
 
         private static void FillCellValue(Cell cell, string value, Type type)
         {
+            cell.CellValue ??= new();
             cell.CellValue.Text = ReplaceSpecialCharacters(ReplaceSpecialCharacters(value ?? ""));
 
             switch (Type.GetTypeCode(type))
@@ -457,14 +486,14 @@ namespace Shesha.Excel
         }
 
         public delegate Task WriteRowsDelegate(OpenXmlWriter xmlWriter);
-        public delegate object GetValueDelegate(Dictionary<string, object> container);
+        public delegate object? GetValueDelegate(Dictionary<string, object?> container);
 
         public class ExcelColumnProcessing
         {
             public string PropertyName { get; set; }
             public string Label { get; set; }
             public GetValueDelegate Getter { get; set; }
-            public Func<object, string> GetAsString { get; set; }
+            public Func<object?, string?> GetAsString { get; set; }
         }
     }
 }

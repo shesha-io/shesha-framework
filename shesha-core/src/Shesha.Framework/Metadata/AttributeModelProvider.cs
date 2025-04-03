@@ -26,14 +26,14 @@ namespace Shesha.Metadata
                 .Distinct(new AssemblyFullNameComparer())
                 .SelectMany(a => a.GetTypes())
                 .Where(t =>
-                    t.GetAttribute<AddToMetadataAttribute>() != null &&
+                    t.GetAttributeOrNull<AddToMetadataAttribute>() != null &&
                     // skip entity types, they shouldn't be returned by the application service at all
                     !t.IsEntityType()
                 ).ToList();
 
             var dtos = types.Select(p => new ModelDto
             {
-                ClassName = p.FullName,
+                ClassName = p.GetRequiredFullName(),
                 Type = p,
                 Description = ReflectionHelper.GetDescription(p),
                 Alias = null

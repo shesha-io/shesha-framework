@@ -6,4 +6,9 @@ export interface ISectionSeparatorComponentProps extends IConfigurableFormCompon
     titleStyle?: string;
     lineFont?: IFontValue;
     font?: IFontValue;
+    titleStylingBox?: string;
+    containerStylingBox?: string;
+    dashed?: boolean;
+    lineWidth?: string;
+    lineHeight?: string;
 }

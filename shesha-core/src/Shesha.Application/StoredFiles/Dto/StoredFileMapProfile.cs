@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using AutoMapper;
@@ -7,6 +5,8 @@ using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
+using System;
+using System.Linq;
 
 namespace Shesha.StoredFilters.Dtos
 {
@@ -28,7 +28,7 @@ namespace Shesha.StoredFilters.Dtos
                 .ForMember(u => u.Url, options => options.MapFrom(e => e.GetFileVersionUrl()));
         }
 
-        private static string GetCreatorUserFullName(ICreationAudited entity)
+        private static string? GetCreatorUserFullName(ICreationAudited entity)
         {
             if (entity.CreatorUserId == null)
                 return null;

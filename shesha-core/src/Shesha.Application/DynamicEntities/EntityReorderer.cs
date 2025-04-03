@@ -7,6 +7,7 @@ using NHibernate.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -51,10 +52,16 @@ namespace Shesha.DynamicEntities
             if (!idConverter.CanConvertFrom(typeof(string)))
                 throw new NotSupportedException($"Conversion of string to type `{typeof(TId).FullName}` is not supported");
 
-            var passedItems = input.Items.Select(item => new ReorderingItem<TId, TOrderIndex> {
-                OrderIndex = convertOrderIndex(item.OrderIndex),
-                Id = (TId)idConverter.ConvertFrom(item.Id) }
-                )
+            var passedItems = input.Items.Select(item => 
+                {
+                    var id = idConverter.ConvertFrom(item.Id);
+                
+                    return new ReorderingItem<TId, TOrderIndex>
+                    {
+                        OrderIndex = convertOrderIndex(item.OrderIndex),
+                        Id = id != null ? (TId)id : throw new Exception($"Failed to convert id = '{item.Id}' to type '{typeof(TId).FullName}'")
+                    };
+                })
                 .ToList();
             
             var ids = passedItems.Select(item => item.Id).ToList();
@@ -123,7 +130,7 @@ namespace Shesha.DynamicEntities
             // new statement "new {}"
             var constructor = partialType.GetConstructors().Where(c => c.GetParameters().Any()).Single();
 
-            var orderIndexProperty = partialType.GetProperty(orderIndexPropertyName);
+            var orderIndexProperty = partialType.GetRequiredProperty(orderIndexPropertyName);
             var newExpression = Expression.New(constructor, new Expression[] { Expression.Constant(orderIndex) }, orderIndexProperty);
 
             var lambda = Expression.Lambda<Func<T, object>>(newExpression, entParam);
@@ -139,8 +146,8 @@ namespace Shesha.DynamicEntities
             var newExpression = Expression.New(typeof(ReorderingItem<TId, TOrderIndex>));
 
             var bindings = new MemberBinding[]{
-                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetProperty(nameof(ReorderingItem<TId, TOrderIndex>.Id)), Expression.Property(entParam, typeof(T).GetProperty("Id"))),
-                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetProperty(nameof(ReorderingItem<TId, TOrderIndex>.OrderIndex)), Expression.Property(entParam, orderIndexProperty)),
+                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetRequiredProperty(nameof(ReorderingItem<TId, TOrderIndex>.Id)), Expression.Property(entParam, typeof(T).GetRequiredProperty("Id"))),
+                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetRequiredProperty(nameof(ReorderingItem<TId, TOrderIndex>.OrderIndex)), Expression.Property(entParam, orderIndexProperty)),
             };
             var initExpression = Expression.MemberInit(newExpression, bindings);
 

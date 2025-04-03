@@ -3,7 +3,6 @@ using System;
 
 namespace Shesha.NHibernate.Session
 {
-#nullable enable
     public interface INhCurrentSessionContext : IDisposable
     {
         /// <summary>
@@ -12,5 +11,4 @@ namespace Shesha.NHibernate.Session
         ISession Session { get; }
         ISession? SessionOrNull { get; }
     }
-#nullable restore
 }

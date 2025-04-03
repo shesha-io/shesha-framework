@@ -10,7 +10,45 @@ const evaluateString = (expression: string, data: any): any => {
     }
 };
 
-export const filterDynamicComponents = (components, query, data) => {
+const getHeaderStyles = (primaryColor) => (
+    {
+        "font": {
+            "color": "darkslategrey",
+            "size": 14,
+            "weight": "500",
+            "align": "left",
+        },
+        "background": {
+            "type": "color",
+            "color": "#fff"
+        },
+        "dimensions": {
+            "width": "auto",
+            "height": "auto",
+            "minHeight": "0",
+            "maxHeight": "auto",
+            "minWidth": "0",
+            "maxWidth": "auto"
+        },
+        "border": {
+            "radiusType": "all",
+            "borderType": "custom",
+            "border": {
+                "bottom": {
+                    "width": "2px",
+                    "style": "solid",
+                    "color": primaryColor
+                },
+            },
+            "radius": {
+                "all": 0
+            }
+        },
+        "stylingBox": "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\"}"
+    }
+);
+
+export const filterDynamicComponents = (components, query, data, primaryColor) => {
     if (!components || !Array.isArray(components)) return [];
 
     const lowerCaseQuery = query.toLowerCase();
@@ -36,7 +74,7 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle propertyRouter
         if (c.componentName === 'propertyRouter') {
-            const filteredComponents = filterDynamicComponents(c.components, query, data);
+            const filteredComponents = filterDynamicComponents(c.components, query, data, primaryColor);
 
             return {
                 ...c,
@@ -47,17 +85,36 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle collapsiblePanel
         if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data);
+            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data, primaryColor);
             const hasVisibleChildren = contentComponents.length > 0;
 
             return {
                 ...c,
+                collapsible: c.collapsible ?? 'header',
                 content: {
                     ...c.content,
                     components: contentComponents
                 },
-                className: 'y-overflow',
-                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
+                ghost: false,
+                collapsedByDefault: true,
+                headerStyles: getHeaderStyles(primaryColor),
+                border: {
+                    "hideBorder": false,
+                    "radiusType": "all",
+                    "borderType": "all",
+                    "border": {
+                        "all": {
+                            "width": "1px",
+                            "style": "none",
+                            "color": "#d9d9d9"
+                        },
+                    },
+                    "radius": {
+                        "all": 0
+                    }
+                },
+                "stylingBox": "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
+                "hidden": evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }
 
@@ -78,7 +135,7 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle components with nested components
         if (c.components) {
-            const filteredComponents = filterDynamicComponents(c.components, query, data);
+            const filteredComponents = filterDynamicComponents(c.components, query, data, primaryColor);
             const hasVisibleChildren = filteredComponents.length > 0;
 
             return {

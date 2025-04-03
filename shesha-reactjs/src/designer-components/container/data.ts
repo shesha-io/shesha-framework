@@ -159,8 +159,8 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     minWidth = '0px',
     borderColor = '#d9d9d9',
     borderRadius = '8',
-    borderStyle = 'solid',
-    borderWidth = '0px',
+    borderStyle = 'none',
+    borderWidth = '1px',
     shadowStyle,
   } = prev || {};
 
@@ -178,8 +178,8 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       maxWidth
     },
     border: {
-      selectedCorner: 'all',
-      selectedSide: 'all',
+      radiusType: 'all',
+      borderType: 'all',
       border: {
         all: { width: borderWidth, color: borderColor, style: borderStyle as any },
       },

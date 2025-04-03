@@ -46,9 +46,8 @@ namespace Shesha.Metadata
                     return types;
                 })
                 .ToList();
-            Func<IEnumerable<Type>, List<Type>> getTypes = null;
 
-            getTypes = (IEnumerable<Type> types) =>
+            List<Type> getTypes(IEnumerable<Type> types)
             {
                 // Paremeters types
                 var parameterTypes = types
@@ -88,7 +87,8 @@ namespace Shesha.Metadata
                         t != typeof(string) &&
                         t != typeof(object) &&
                         !(t.Namespace ?? string.Empty).StartsWith("Abp"))
-                    .Select(t => t.GetElementType());
+                    .Select(t => t.GetElementType())
+                    .WhereNotNull();
 
                 if (arrayTypes?.Count() > 0)
                 {
@@ -105,7 +105,7 @@ namespace Shesha.Metadata
                 .OrderBy(x => x.Name)
                 .Select(p => new ModelDto
                 {
-                    ClassName = p.FullName,
+                    ClassName = p.GetRequiredFullName(),
                     Type = p,
                     Description = ReflectionHelper.GetDescription(p),
                     Alias = null
@@ -116,9 +116,9 @@ namespace Shesha.Metadata
 
         private class ParameterTypeComparer : IEqualityComparer<Type>
         {
-            bool IEqualityComparer<Type>.Equals(Type x, Type y)
+            bool IEqualityComparer<Type>.Equals(Type? x, Type? y)
             {
-                return x.FullName == y.FullName;
+                return x != null && y != null && x.FullName == y.FullName || x == null && y == null;
             }
 
             int IEqualityComparer<Type>.GetHashCode(Type obj)

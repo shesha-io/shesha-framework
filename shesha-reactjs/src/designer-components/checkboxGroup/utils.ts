@@ -21,6 +21,8 @@ export interface ICheckboxGroupProps extends Omit<IConfigurableFormComponent, 's
   direction?: SpaceProps['direction'];
   value?: any[];
   onChange?: (checkedValue: Array<any> | RadioChangeEvent) => void;
+  onFocus?: (e: any) => void;
+  onBlur?: (e: any) => void;
   style?: CSSProperties;
   dataSourceUrl?: string;
   reducerFunc?: string;

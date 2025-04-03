@@ -1,772 +1,355 @@
 {
   "components": [
     {
-      "id": "840aee56-42d2-40ed-a2c6-57abb255fb95",
-      "type": "dropdown",
-      "jsSetting": false,
-      "propertyName": "columnType",
-      "label": "Type",
+      "id": "searchableTabs1",
+      "type": "searchableTabs",
+      "propertyName": "settingsTabs",
+      "parentId": "root",
+      "label": "Settings",
+      "hideLabel": true,
       "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "dataSourceType": "values",
-      "values": [
+      "size": "small",
+      "tabs": [
         {
-          "id": "cc268f50-47ca-4e4e-966f-7f2abfec902f",
-          "label": "Action",
-          "value": "action"
-        },
-        {
-          "id": "Owj_p4rSgOh3u5WPXv9Ba",
-          "label": "CRUD Operations",
-          "value": "crud-operations"
-        },
-        {
-          "id": "8400a8ec-577d-4468-9347-5601f952b44c",
-          "label": "Data",
-          "value": "data"
-        },
-        {
-          "id": "ffffa8ec-577d-4468-9347-5601f952b44c",
-          "label": "Form",
-          "value": "form"
-        }
-      ],
-      "validate": {
-        "required": true
-      },
-      "settingsValidationErrors": [],
-      "version": 7,
-      "useRawValues": false,
-      "referenceListId": null,
-      "placeholder": "",
-      "description": "",
-      "defaultValue": "",
-      "mode": [
-        "single"
-      ],
-      "entityTypeShortAlias": "",
-      "dataSourceUrl": "",
-      "valueFormat": "listItem",
-      "desktop": {},
-      "tablet": {},
-      "mobile": {}
-    },
-    {
-      "id": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
-      "type": "container",
-      "propertyName": "dataContainer",
-      "label": "Container3",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  getSettingValue(data?.columnType) !== 'data';",
-        "_mode": "code",
-        "_value": false
-      },
-      "direction": "vertical",
-      "justifyContent": "left",
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "52f4460d-2e64-4d79-a900-7cd28b0bebd3",
-          "type": "propertyAutocomplete",
-          "jsSetting": false,
-          "propertyName": "propertyName",
-          "label": "Property Name",
-          "labelAlign": "right",
-          "parentId": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
-          "hidden": false,
-          "validate": {},
-          "settingsValidationErrors": [],
-          "version": 2
-        }
-      ],
-      "version": 6,
-      "flexWrap": "wrap",
-      "jsSetting": false,
-      "desktop": {},
-      "tablet": {},
-      "mobile": {},
-      "shadowStyle": "none"
-    },
-    {
-      "id": "135a51c1-13cc-4952-a25c-5b03442097a0",
-      "type": "container",
-      "propertyName": "dataContainerp",
-      "label": "Container3p",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  getSettingValue(data?.columnType) !== 'form';",
-        "_mode": "code",
-        "_value": false
-      },
-      "direction": "vertical",
-      "justifyContent": "left",
-      "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "5314460d-2e64-4d79-a900-7cd28b0bebd3",
-          "type": "propertyAutocomplete",
-          "jsSetting": false,
-          "propertyName": "propertiesNames",
-          "label": "Properties to fetch",
-          "labelAlign": "right",
-          "parentId": "135a51c1-13cc-4952-a25c-5b03442097a0",
-          "mode": "multiple",
-          "hidden": false,
-          "validate": {},
-          "settingsValidationErrors": [],
-          "version": 2
-        }
-      ],
-      "version": 6,
-      "flexWrap": "wrap",
-      "jsSetting": false,
-      "desktop": {},
-      "tablet": {},
-      "mobile": {},
-      "shadowStyle": "none"
-    },
-    {
-      "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
-      "type": "textField",
-      "jsSetting": false,
-      "propertyName": "caption",
-      "label": "Caption",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "autoSize": false,
-      "showCount": false,
-      "allowClear": false,
-      "settingsValidationErrors": [],
-      "version": 5,
-      "textType": "text",
-      "desktop": {},
-      "tablet": {},
-      "mobile": {}
-    },
-    {
-      "id": "9e5cad3f-b9af-4b19-aebb-d630265f6619",
-      "type": "textArea",
-      "jsSetting": false,
-      "propertyName": "description",
-      "label": "Tooltip Description",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "autoSize": false,
-      "showCount": false,
-      "allowClear": false,
-      "validate": {},
-      "settingsValidationErrors": [],
-      "version": 4,
-      "desktop": {},
-      "tablet": {},
-      "mobile": {}
-    },
-    {
-      "id": "345c2181-fb9f-48ed-9631-864ac357807b",
-      "type": "container",
-      "propertyName": "cntButton",
-      "label": "Container2",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  getSettingValue(data?.columnType) !== 'action';",
-        "_mode": "code",
-        "_value": false
-      },
-      "direction": "vertical",
-      "justifyContent": "left",
-      "components": [
-        {
-          "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
-          "type": "iconPicker",
-          "jsSetting": false,
-          "propertyName": "icon",
-          "label": "Icon",
-          "labelAlign": "right",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "settingsValidationErrors": [],
-          "version": 3
-        },
-        {
-          "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
-          "type": "configurableActionConfigurator",
-          "jsSetting": false,
-          "propertyName": "actionConfiguration",
-          "label": "Action Configuration",
-          "hidden": false,
-          "validate": {},
-          "settingsValidationErrors": [],
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "version": 1
-        }
-      ],
-      "settingsValidationErrors": [],
-      "version": 6,
-      "flexWrap": "wrap",
-      "jsSetting": false,
-      "desktop": {},
-      "tablet": {},
-      "mobile": {},
-      "shadowStyle": "none"
-    },
-    {
-      "id": "b1803af1-37fb-4f03-b2b6-727b7f17730c",
-      "type": "numberField",
-      "jsSetting": false,
-      "propertyName": "minWidth",
-      "label": "Min Width",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "validate": {},
-      "settingsValidationErrors": [],
-      "version": 4,
-      "desktop": {},
-      "tablet": {},
-      "mobile": {}
-    },
-    {
-      "id": "65bb484c-ab85-472c-bde7-e447c481ed47",
-      "type": "numberField",
-      "jsSetting": false,
-      "propertyName": "maxWidth",
-      "label": "Max Width",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "validate": {},
-      "settingsValidationErrors": [],
-      "version": 4,
-      "desktop": {},
-      "tablet": {},
-      "mobile": {}
-    },
-    {
-      "id": "adc03af1-37fb-4f03-b2b6-727b7f17730c_setting",
-      "type": "setting",
-      "propertyName": "minHeight",
-      "label": "Min Height",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  getSettingValue(data?.columnType) !== 'form';",
-        "_mode": "code",
-        "_value": false
-      },
-      "validate": {},
-      "settingsValidationErrors": [],
-      "version": 2,
-      "jsSetting": false,
-      "components": [
-        {
-          "id": "adc03af1-37fb-4f03-b2b6-727b7f17730c",
-          "type": "numberField",
-          "propertyName": "minHeight",
-          "label": "Min Height",
-          "labelAlign": "right",
-          "parentId": "adc03af1-37fb-4f03-b2b6-727b7f17730c_setting",
-          "hidden": {
-            "_code": "return  getSettingValue(data?.columnType) !== 'form';",
-            "_mode": "code",
-            "_value": false
-          },
-          "validate": {},
-          "settingsValidationErrors": [],
-          "version": 4,
-          "jsSetting": false,
-          "desktop": {},
-          "tablet": {},
-          "mobile": {}
-        }
-      ]
-    },
-    {
-      "id": "77ceb915-f4f9-4957-b62f-7a4e4ba00846",
-      "type": "checkbox",
-      "jsSetting": false,
-      "propertyName": "isVisible",
-      "label": "Is Visible",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "validate": {},
-      "settingsValidationErrors": [],
-      "version": 4,
-      "desktop": {},
-      "tablet": {},
-      "mobile": {}
-    },
-    {
-      "id": "57a40a33-7e08-4ce4-9f08-a34d24a82338_setting",
-      "type": "setting",
-      "propertyName": "anchored",
-      "parentId": "root",
-      "label": "Anchored ",
-      "values": [
-        {
-          "label": "Left",
-          "value": "left",
-          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-        },
-        {
-          "label": "Right",
-          "value": "right",
-          "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-        }
-      ],
-      "allowClear": true,
-      "dataSourceType": "values",
-      "version": 5,
-      "useRawValues": false,
-      "referenceListId": null,
-      "valueFormat": "listItem",
-      "jsSetting": false,
-      "components": [
-        {
-          "id": "57a40a33-7e08-4ce4-9f08-a34d24a82338",
-          "type": "dropdown",
-          "propertyName": "anchored",
-          "parentId": "57a40a33-7e08-4ce4-9f08-a34d24a82338_setting",
-          "label": "Anchored ",
-          "values": [
+          "key": "common",
+          "title": "Common",
+          "id": "commonTab1",
+          "components": [
             {
-              "label": "Left",
-              "value": "left",
-              "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              "id": "columnType1",
+              "type": "settingsInput",
+              "inputType": "dropdown",
+              "propertyName": "columnType",
+              "label": "Type",
+              "labelAlign": "right",
+              "dropdownOptions": [
+                {
+                  "label": "Action",
+                  "value": "action"
+                },
+                {
+                  "label": "CRUD Operations",
+                  "value": "crud-operations"
+                },
+                {
+                  "label": "Data",
+                  "value": "data"
+                },
+                {
+                  "label": "Form",
+                  "value": "form"
+                }
+              ],
+              "validate": {
+                "required": true
+              }
             },
             {
-              "label": "Right",
-              "value": "right",
-              "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-            }
-          ],
-          "allowClear": true,
-          "dataSourceType": "values",
-          "version": 7,
-          "useRawValues": false,
-          "referenceListId": null,
-          "valueFormat": "listItem",
-          "jsSetting": false,
-          "desktop": {},
-          "tablet": {},
-          "mobile": {}
-        }
-      ]
-    },
-    {
-      "id": "EhERYkBRv066KGKNaRA7j",
-      "type": "container",
-      "propertyName": "container3",
-      "label": "Container3",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  getSettingValue(data?.columnType) !== 'data';",
-        "_mode": "code",
-        "_value": false
-      },
-      "isDynamic": false,
-      "version": 6,
-      "direction": "vertical",
-      "justifyContent": "left",
-      "display": "block",
-      "flexWrap": "wrap",
-      "components": [
-        {
-          "id": "FGIcguhDkag6a801GXSgm",
-          "type": "component-selector",
-          "name": "displayComponent",
-          "label": "Display component",
-          "labelAlign": "right",
-          "parentId": "EhERYkBRv066KGKNaRA7j",
-          "hidden": false,
-          "isDynamic": false,
-          "version": 2,
-          "componentType": "output",
-          "tooltip": "",
-          "settingsValidationErrors": [],
-          "description": "",
-          "noSelectionItemText": "Default",
-          "noSelectionItemValue": "[default]",
-          "propertyAccessor": "{{data.propertyName}}",
-          "componentName": "displayComponent",
-          "propertyName": "displayComponent",
-          "jsSetting": false
-        },
-        {
-          "id": "rYYm0wT-TDnBfqmOMVmIX",
-          "type": "component-selector",
-          "name": "editComponent",
-          "label": "Edit component",
-          "labelAlign": "right",
-          "parentId": "EhERYkBRv066KGKNaRA7j",
-          "hidden": false,
-          "isDynamic": false,
-          "version": 2,
-          "componentType": "input",
-          "tooltip": "",
-          "settingsValidationErrors": [],
-          "description": "",
-          "noSelectionItemText": "Not editable",
-          "noSelectionItemValue": "[not-editable]",
-          "propertyAccessor": "{{data.propertyName}}",
-          "componentName": "editComponent",
-          "propertyName": "editComponent",
-          "jsSetting": false
-        },
-        {
-          "id": "L2bRSuStgiAmWfd5Z09CR",
-          "type": "component-selector",
-          "name": "createComponent",
-          "label": "Create component",
-          "labelAlign": "right",
-          "parentId": "EhERYkBRv066KGKNaRA7j",
-          "hidden": false,
-          "isDynamic": false,
-          "version": 2,
-          "componentType": "input",
-          "tooltip": "",
-          "settingsValidationErrors": [],
-          "description": "",
-          "noSelectionItemText": "Not editable",
-          "noSelectionItemValue": "[not-editable]",
-          "propertyAccessor": "{{data.propertyName}}",
-          "componentName": "createComponent",
-          "propertyName": "createComponent",
-          "jsSetting": false
-        }
-      ],
-      "gap": "",
-      "gridColumnsCount": "",
-      "className": "",
-      "settingsValidationErrors": [],
-      "jsSetting": false,
-      "desktop": {
-        "className": ""
-      },
-      "tablet": {
-        "className": ""
-      },
-      "mobile": {
-        "className": ""
-      },
-      "shadowStyle": "none"
-    },
-    {
-      "id": "dfaRYkBRv066KGKNaRA7j",
-      "type": "container",
-      "propertyName": "container3fp",
-      "label": "Container3",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  getSettingValue(data?.columnType) !== 'form';",
-        "_mode": "code",
-        "_value": false
-      },
-      "isDynamic": false,
-      "version": 6,
-      "direction": "vertical",
-      "justifyContent": "left",
-      "display": "block",
-      "flexWrap": "wrap",
-      "components": [
-        {
-          "id": "1FGIcguhDkag6a801GXSgm_setting",
-          "type": "setting",
-          "componentName": "displayFormId",
-          "propertyName": "displayFormId",
-          "parentId": "dfaRYkBRv066KGKNaRA7j",
-          "label": "Display form",
-          "version": 2,
-          "textType": "text",
-          "jsSetting": false,
-          "components": [
-            {
-              "id": "1FGIcguhDkag6a801GXSgm",
-              "type": "formAutocomplete",
-              "componentName": "displayFormId",
-              "propertyName": "displayFormId",
-              "parentId": "1FGIcguhDkag6a801GXSgm_setting",
-              "label": "Display form",
-              "version": 2,
-              "textType": "text",
-              "jsSetting": false
-            }
-          ]
-        },
-        {
-          "id": "1rYYm0wT-TDnBfqmOMVmIX_setting",
-          "type": "setting",
-          "componentName": "createFormId",
-          "propertyName": "createFormId",
-          "parentId": "dfaRYkBRv066KGKNaRA7j",
-          "label": "Create form",
-          "version": 2,
-          "textType": "text",
-          "jsSetting": false,
-          "components": [
-            {
-              "id": "1rYYm0wT-TDnBfqmOMVmIX",
-              "type": "formAutocomplete",
-              "componentName": "createFormId",
-              "propertyName": "createFormId",
-              "parentId": "1rYYm0wT-TDnBfqmOMVmIX_setting",
-              "label": "Create form",
-              "version": 2,
-              "textType": "text",
-              "jsSetting": false
-            }
-          ]
-        },
-        {
-          "id": "1L2bRSuStgiAmWfd5Z09CR_setting",
-          "type": "setting",
-          "componentName": "editFormId",
-          "propertyName": "editFormId",
-          "parentId": "dfaRYkBRv066KGKNaRA7j",
-          "label": "Edit form",
-          "version": 2,
-          "textType": "text",
-          "jsSetting": false,
-          "components": [
-            {
-              "id": "1L2bRSuStgiAmWfd5Z09CR",
-              "type": "formAutocomplete",
-              "componentName": "editFormId",
-              "propertyName": "editFormId",
-              "parentId": "1L2bRSuStgiAmWfd5Z09CR_setting",
-              "label": "Edit form",
-              "version": 2,
-              "textType": "text",
-              "jsSetting": false
-            }
-          ]
-        }
-      ],
-      "gap": "",
-      "gridColumnsCount": "",
-      "className": "",
-      "settingsValidationErrors": [],
-      "jsSetting": false,
-      "desktop": {
-        "className": ""
-      },
-      "tablet": {
-        "className": ""
-      },
-      "mobile": {
-        "className": ""
-      },
-      "shadowStyle": "none"
-    },
-    {
-      "id": "33IOXJRmPdfU9KLeDUF64",
-      "type": "checkbox",
-      "jsSetting": false,
-      "propertyName": "allowSorting",
-      "componentName": "allowSorting",
-      "label": "Allow sorting",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  getSettingValue(data?.columnType) !== 'data';",
-        "_mode": "code",
-        "_value": false
-      },
-      "isDynamic": false,
-      "version": 4,
-      "validate": {},
-      "settingsValidationErrors": [],
-      "desktop": {},
-      "tablet": {},
-      "mobile": {}
-    },
-    {
-      "id": "52c604d6-0183-4331-a960-0b9551e88b09",
-      "type": "sectionSeparator",
-      "propertyName": "sectionVisibility",
-      "parentId": "root",
-      "label": "Visibility",
-      "version": 3,
-      "jsSetting": false,
-      "labelAlign": "left",
-      "titleMargin": null
-    },
-    {
-      "id": "eda790c5-3cea-4755-9c75-039eca9318f3",
-      "type": "codeEditor",
-      "propertyName": "customVisibility",
-      "label": "Custom Visibility",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "description": "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        {
-          "name": "globalState",
-          "description": "The global state of the application",
-          "type": "object"
-        },
-        {
-          "name": "data",
-          "description": "Selected form values",
-          "type": "object"
-        }
-      ],
-      "version": 4,
-      "language": "typescript",
-      "placeholder": "",
-      "wrapInTemplate": true,
-      "templateSettings": {
-        "functionName": "customVisibility"
-      },
-      "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();",
-      "jsSetting": false,
-      "environment": "front-end"
-    },
-    {
-      "id": "WwHwuygM-SKcqDbHVbPNkoMAcsUHGJ_setting",
-      "type": "setting",
-      "propertyName": "backgroundColor",
-      "componentName": "backgroundColor",
-      "label": "Background color",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 2,
-      "settingsValidationErrors": [],
-      "title": "",
-      "fontSize": "",
-      "allowClear": true,
-      "showText": true,
-      "exposedVariables": [
-        {
-          "id": "RyCiFg3TwQ",
-          "name": "value",
-          "description": "Component cell value",
-          "type": "string | any"
-        },
-        {
-          "id": "m5URdpeB7x",
-          "name": "row",
-          "description": "Current row value",
-          "type": "object"
-        }
-      ],
-      "jsSetting": false,
-      "components": [
-        {
-          "id": "WwHwuygM-SKcqDbHVbPNkoMAcsUHGJ",
-          "type": "colorPicker",
-          "propertyName": "backgroundColor",
-          "componentName": "backgroundColor",
-          "label": "Background color",
-          "labelAlign": "right",
-          "parentId": "WwHwuygM-SKcqDbHVbPNkoMAcsUHGJ_setting",
-          "hidden": false,
-          "isDynamic": false,
-          "version": 3,
-          "settingsValidationErrors": [],
-          "title": "",
-          "fontSize": "",
-          "allowClear": true,
-          "showText": true,
-          "exposedVariables": [
-            {
-              "id": "RyCiFg3TwQ",
-              "name": "value",
-              "description": "Component cell value",
-              "type": "string | any"
+              "id": "dataContainer1",
+              "type": "container",
+              "propertyName": "dataContainer",
+              "label": "Data Settings",
+              "hidden": {
+                "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                "_mode": "code",
+                "_value": false
+              },
+              "components": [
+                {
+                  "id": "propertyName1",
+                  "type": "settingsInput",
+                  "inputType": "propertyAutocomplete",
+                  "propertyName": "propertyName",
+                  "label": "Property Name",
+                  "labelAlign": "right"
+                }
+              ]
             },
             {
-              "id": "m5URdpeB7x",
-              "name": "row",
-              "description": "Current row value",
-              "type": "object"
+              "id": "formContainer1",
+              "type": "container",
+              "propertyName": "formContainer",
+              "label": "Form Settings",
+              "hidden": {
+                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                "_mode": "code",
+                "_value": false
+              },
+              "components": [
+                {
+                  "id": "propertiesNames1",
+                  "type": "settingsInput",
+                  "inputType": "propertyAutocomplete",
+                  "propertyName": "propertiesNames",
+                  "label": "Properties to fetch",
+                  "labelAlign": "right",
+                  "mode": "multiple"
+                }
+              ]
+            },
+            {
+              "id": "caption1",
+              "type": "settingsInput",
+              "inputType": "textField",
+              "propertyName": "caption",
+              "label": "Caption",
+              "labelAlign": "right"
+            },
+            {
+              "id": "description1",
+              "type": "settingsInput",
+              "inputType": "textArea",
+              "propertyName": "description",
+              "label": "Tooltip Description",
+              "labelAlign": "right"
+            },
+            {
+              "id": "actionContainer1",
+              "type": "container",
+              "propertyName": "actionContainer",
+              "label": "Action Settings",
+              "hidden": {
+                "_code": "return getSettingValue(data?.columnType) !== 'action';",
+                "_mode": "code",
+                "_value": false
+              },
+              "components": [
+                {
+                  "id": "icon1",
+                  "type": "settingsInput",
+                  "inputType": "iconPicker",
+                  "propertyName": "icon",
+                  "label": "Icon",
+                  "labelAlign": "right"
+                },
+                {
+                  "id": "actionConfig1",
+                  "type": "settingsInput",
+                  "inputType": "configurableActionConfigurator",
+                  "propertyName": "actionConfiguration",
+                  "label": "Action Configuration"
+                }
+              ]
+            },
+            {
+              "id": "minWidth1",
+              "type": "settingsInput",
+              "inputType": "numberField",
+              "propertyName": "minWidth",
+              "label": "Min Width",
+              "labelAlign": "right"
+            },
+            {
+              "id": "maxWidth1",
+              "type": "settingsInput",
+              "inputType": "numberField",
+              "propertyName": "maxWidth",
+              "label": "Max Width",
+              "labelAlign": "right"
+            },
+            {
+              "id": "minHeight1",
+              "type": "settingsInputRow",
+              "propertyName": "minHeight",
+              "label": "Min Height",
+              "hidden": {
+                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                "_mode": "code",
+                "_value": false
+              },
+              "inputs": [
+                {
+                  "type": "numberField",
+                  "propertyName": "minHeight",
+                  "label": "Min Height",
+                  "labelAlign": "right"
+                }
+              ]
+            },
+            {
+              "id": "isVisible1",
+              "type": "settingsInput",
+              "inputType": "switch",
+              "propertyName": "isVisible",
+              "label": "Is Visible",
+              "labelAlign": "right"
+            },
+            {
+              "id": "anchored1",
+              "type": "settingsInput",
+              "inputType": "dropdown",
+              "propertyName": "anchored",
+              "label": "Anchored",
+              "dropdownOptions": [
+                {
+                  "label": "Left",
+                  "value": "left"
+                },
+                {
+                  "label": "Right",
+                  "value": "right"
+                }
+              ],
+              "allowClear": true
+            },
+            {
+              "id": "displayContainer1",
+              "type": "container",
+              "propertyName": "displayContainer",
+              "label": "Display Settings",
+              "hidden": {
+                "_code": "console.log(getSettingValue(data)); return getSettingValue(data?.columnType) !== 'data';",
+                "_mode": "code",
+                "_value": false
+              },
+              "components": [
+                {
+                  "id": "displayComponent1",
+                  "type": "settingsInput",
+                  "inputType": "componentSelector",
+                  "propertyName": "displayComponent",
+                  "label": "Display component",
+                  "componentType": "output",
+                  "noSelectionItemText": "Default",
+                  "noSelectionItemValue": "[default]"
+                },
+                {
+                  "id": "editComponent1",
+                  "type": "settingsInput",
+                  "inputType": "componentSelector",
+                  "propertyName": "editComponent",
+                  "label": "Edit component",
+                  "componentType": "input",
+                  "noSelectionItemText": "Not editable",
+                  "noSelectionItemValue": "[not-editable]"
+                },
+                {
+                  "id": "createComponent1",
+                  "type": "settingsInput",
+                  "inputType": "componentSelector",
+                  "propertyName": "createComponent",
+                  "label": "Create component",
+                  "componentType": "input",
+                  "noSelectionItemText": "Not editable",
+                  "noSelectionItemValue": "[not-editable]"
+                }
+              ]
+            },
+            {
+              "id": "formDisplayContainer1",
+              "type": "container",
+              "propertyName": "formDisplayContainer",
+              "label": "Form Display Settings",
+              "hidden": {
+                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                "_mode": "code",
+                "_value": false
+              },
+              "components": [
+                {
+                  "id": "displayFormId1",
+                  "type": "settingsInput",
+                  "inputType": "formAutocomplete",
+                  "propertyName": "displayFormId",
+                  "label": "Display form"
+                },
+                {
+                  "id": "createFormId1",
+                  "type": "settingsInput",
+                  "inputType": "formAutocomplete",
+                  "propertyName": "createFormId",
+                  "label": "Create form"
+                },
+                {
+                  "id": "editFormId1",
+                  "type": "settingsInput",
+                  "inputType": "formAutocomplete",
+                  "propertyName": "editFormId",
+                  "label": "Edit form"
+                }
+              ]
+            },
+            {
+              "id": "allowSorting1",
+              "type": "settingsInput",
+              "inputType": "switch",
+              "propertyName": "allowSorting",
+              "label": "Allow sorting",
+              "hidden": {
+                "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                "_mode": "code",
+                "_value": false
+              }
+            },
+            {
+              "id": "backgroundColor1",
+              "type": "settingsInput",
+              "inputType": "colorPicker",
+              "propertyName": "backgroundColor",
+              "label": "Background Color",
+              "allowClear": true,
+              "showText": true
             }
-          ],
-          "jsSetting": false
-        }
-      ],
-      "availableConstantsExpression": "    return metadataBuilder.object('constants').addAllStandard().addAny('value', 'Value of the cell').addAny('row', 'Data of the current row').build();"
-    },
-    {
-      "id": "52c604d6-0183-4331-a960-0b9551e88b89",
-      "type": "sectionSeparator",
-      "propertyName": "sectionSecurity",
-      "parentId": "root",
-      "label": "Security",
-      "version": 3,
-      "jsSetting": false,
-      "labelAlign": "left",
-      "titleMargin": null
-    },
-    {
-      "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7_setting",
-      "type": "setting",
-      "propertyName": "permissions",
-      "parentId": "root",
-      "label": "Permissions",
-      "validate": {},
-      "version": 1,
-      "jsSetting": false,
-      "components": [
+          ]
+        },
         {
-          "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
-          "type": "permissionAutocomplete",
-          "propertyName": "permissions",
-          "parentId": "1adea529-1f0c-4def-bd41-ee166a5dfcd7_setting",
-          "label": "Permissions",
-          "validate": {},
-          "version": 1,
-          "jsSetting": false
+          "key": "visibility",
+          "title": "Visibility",
+          "id": "visibilityTab1",
+          "components": [
+            {
+              "id": "customVisibility1",
+              "type": "settingsInput",
+              "inputType": "codeEditor",
+              "propertyName": "customVisibility",
+              "label": "Custom Visibility",
+              "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+              "exposedVariables": [
+                {
+                  "name": "globalState",
+                  "description": "The global state of the application",
+                  "type": "object"
+                },
+                {
+                  "name": "data",
+                  "description": "Selected form values",
+                  "type": "object"
+                }
+              ],
+              "language": "typescript",
+              "wrapInTemplate": true,
+              "templateSettings": {
+                "functionName": "customVisibility"
+              }
+            }
+          ]
+        },
+        {
+          "key": "security",
+          "title": "Security",
+          "id": "securityTab1",
+          "components": [
+            {
+              "id": "permissions1",
+              "type": "settingsInput",
+              "inputType": "permissionAutocomplete",
+              "propertyName": "permissions",
+              "label": "Permissions"
+            }
+          ]
         }
       ]
     }
   ],
   "formSettings": {
     "isSettingsForm": true,
-    "layout": "horizontal",
-    "colon": true,
+    "layout": "vertical",
+    "colon": false,
     "labelCol": {
       "span": 8
     },
     "wrapperCol": {
       "span": 16
-    },
-    "access": null,
-    "permissions": null,
-    "version": 6,
-    "dataLoaderType": "gql",
-    "dataSubmitterType": "gql",
-    "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
-    "onAfterDataLoad": null,
-    "onPrepareSubmitData": null,
-    "onBeforeSubmit": null,
-    "onSubmitSuccess": null,
-    "onSubmitFailed": null,
-    "dataSubmittersSettings": {
-      "gql": {
-        "endpointType": "default",
-        "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
-      }
-    },
-    "dataLoadersSettings": {
-      "gql": {
-        "endpointType": "default"
-      },
-      "custom": {}
     }
   }
 }

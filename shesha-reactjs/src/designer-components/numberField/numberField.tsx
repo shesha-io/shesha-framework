@@ -6,11 +6,19 @@ import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm, useGlobalState, useMetadata } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import {
+  evaluateString,
+  useAvailableConstantsData,
+  validateConfigurableComponentSettings,
+} from '@/providers/form/utils';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migratePropertyName,
+  migrateCustomFunctions,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -18,6 +26,8 @@ import { asPropertiesArray } from '@/interfaces/metadata';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
+import { defaultStyles } from './utils';
 
 const settingsForm = settingsFormJson as unknown as FormMarkup;
 
@@ -32,6 +42,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   Factory: ({ model }) => {
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties, []);
+    const allData = useAvailableConstantsData();
 
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
@@ -39,9 +50,12 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     return (
       <ConfigurableFormItem
         model={model}
-        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
+        initialValue={
+          model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined
+        }
       >
         {(value, onChange) => {
+          const customEvents = getEventHandlers(model, allData);
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
               type="number"
@@ -49,10 +63,12 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
             />
           ) : (
             <NumberFieldControl
-            disabled={model.readOnly}
-            model={model}
-            value={value}
-            onChange={onChange}
+              disabled={model.readOnly}
+              model={model}
+              value={value}
+              onChange={onChange}
+              onBlur={customEvents.onBlur}
+              onFocus={customEvents.onFocus}
             />
           );
         }}
@@ -63,22 +79,24 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   initModel: (model) => ({
     ...model,
   }),
-  migrator: (m) => m
-    .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<INumberFieldComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<INumberFieldComponentProps>(4, (prev) => {
-      const styles: IInputStyles = {
-        size: prev.size,
-        hideBorder: prev.hideBorder,
-        stylingBox: prev.stylingBox,
-        style: prev.style,
-      };
+  migrator: (m) =>
+    m
+      .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
+      .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
+      .add<INumberFieldComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+      .add<INumberFieldComponentProps>(4, (prev) => {
+        const styles: IInputStyles = {
+          size: prev.size,
+          hideBorder: prev.hideBorder,
+          stylingBox: prev.stylingBox,
+          style: prev.style,
+        };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-    .add<INumberFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, {dimensions: {width: '100%'}}) })),
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      })
+      .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {

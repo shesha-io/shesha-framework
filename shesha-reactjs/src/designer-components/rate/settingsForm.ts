@@ -33,6 +33,7 @@ export const getSettings = (data: IRateProps) => {
                   parentId: commonTabId,
                   styledLabel: true,
                   validate: { required: true },
+                  size: 'small',
                   jsSetting: true
                 })
                 .addLabelConfigurator({
@@ -41,27 +42,7 @@ export const getSettings = (data: IRateProps) => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                  {
-                    type: 'number',
-                    id: nanoid(),
-                    propertyName: 'count',
-                    label: 'Max Rating',
-                    jsSetting: true,
-                  },
-                    {
-                      type: 'iconPicker',
-                      id: nanoid(),
-                      propertyName: 'icon',
-                      label: 'Icon',
-                      jsSetting: true,
-                    },
-                  ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  defaultValue: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -72,6 +53,28 @@ export const getSettings = (data: IRateProps) => {
                       id: nanoid(),
                       propertyName: 'description',
                       label: 'Tooltip',
+                      jsSetting: true,
+                    },
+                  ],
+                  hidden: { _code: 'return  getSettingValue(data?.hideLabel);', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'count',
+                      label: 'Max Rating',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'iconPicker',
+                      id: nanoid(),
+                      propertyName: 'icon',
+                      label: 'Icon',
                       jsSetting: true,
                     },
                   ],
@@ -101,6 +104,24 @@ export const getSettings = (data: IRateProps) => {
                       jsSetting: true,
                     }
                   ]
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  parentId: securityTabId,
                 })
                 .toJson()
             ]
@@ -142,7 +163,7 @@ export const getSettings = (data: IRateProps) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
+                              hideLabel: false,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
@@ -171,24 +192,6 @@ export const getSettings = (data: IRateProps) => {
                   labelAlign: 'right',
                   tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
                   parentId: eventsTabId
-                })
-                .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
                 })
                 .toJson()
             ]

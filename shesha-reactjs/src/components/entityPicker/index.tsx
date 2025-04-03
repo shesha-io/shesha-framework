@@ -1,7 +1,6 @@
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Button, Space, Select, Skeleton, ConfigProvider } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import _ from 'lodash';
 import React, { useMemo, useRef, useState } from 'react';
 import { useEntitySelectionData } from '@/utils/entity';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
@@ -162,7 +161,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           theme={{
             components: {
               Select: {
-                fontSize: Number(style?.fontSize),
+                fontSize: Number(style?.fontSize ?? 14),
                 colorText: style?.color,
                 fontFamily: style?.fontFamily,
                 fontWeightStrong: Number(style.fontWeight)

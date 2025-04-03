@@ -178,7 +178,7 @@
       "type": "textField",
       "propertyName": "httpVerb",
       "componentName": "httpVerb",
-      "label": "Http Verb",
+      "label": "HTTP Verb",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {

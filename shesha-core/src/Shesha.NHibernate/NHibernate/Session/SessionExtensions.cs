@@ -37,27 +37,23 @@ namespace Shesha.NHibernate.Session
                     .ToList()
                 : new List<DirtyPropertyInfo>();
         }
-
-        public static EntityEntry GetEntry(this ISession session, Object entity, bool assert = true)
+        
+        public static EntityEntry? GetEntryOrNull(this ISession session, Object entity) 
         {
             var sessionImpl = session.GetSessionImplementation();
             var oldEntry = sessionImpl.PersistenceContext.GetEntry(entity);
-            if (oldEntry == null)
+            if (entity is INHibernateProxy proxy)
             {
-                if (entity is INHibernateProxy proxy)
-                {
-                    Object obj = sessionImpl.PersistenceContext.Unproxy(proxy);
-                    oldEntry = sessionImpl.PersistenceContext.GetEntry(obj);
-                }
-                else
-                {
-                    if (assert)
-                        System.Diagnostics.Debug.Assert(false, "Entity was likely retrieved using an NHibernate session which is no longer available.");
-                    else return null;
-                }
+                Object obj = sessionImpl.PersistenceContext.Unproxy(proxy);
+                oldEntry = sessionImpl.PersistenceContext.GetEntry(obj);
             }
             return oldEntry;
         }
+
+        public static EntityEntry GetEntry(this ISession session, Object entity) 
+        {
+            return session.GetEntryOrNull(entity) ?? throw new Exception("Entity was likely retrieved using an NHibernate session which is no longer available.");
+        }        
 
         public static bool IsEntityDeleted(this ISession session, Object entity)
         {
@@ -71,9 +67,9 @@ namespace Shesha.NHibernate.Session
 
         public class DirtyPropertyInfo
         {
-            public string Name { get; set; }
-            public object OldValue { get; set; }
-            public object NewValue { get; set; }
+            public required string Name { get; init; }
+            public object? OldValue { get; init; }
+            public object? NewValue { get; init; }
         }
 
         /// <summary>
@@ -81,7 +77,7 @@ namespace Shesha.NHibernate.Session
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        public static SheshaNHibernateInterceptor LocalInterceptor(this ISession session)
+        public static SheshaNHibernateInterceptor? LocalInterceptor(this ISession session)
         {
             return session.GetSessionImplementation().Interceptor as SheshaNHibernateInterceptor;
         }
