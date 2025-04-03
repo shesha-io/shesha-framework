@@ -94,7 +94,7 @@ export const defaultStyles = (textType: string): IStyleType => {
       type: 'Segoe UI',
       size:  textType === 'title' ? undefined : 14
     },
-    background: { type: 'color', color: 'transparent' },
+    background: { type: 'color', color: '#fff' },
     border: {
       border: {
         all: {
