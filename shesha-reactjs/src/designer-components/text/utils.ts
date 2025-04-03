@@ -87,7 +87,6 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
 };
 
 export const defaultStyles = (textType: string): IStyleType => {
-  console.log('textType', textType);
   return {
     font: {
       color: '#000',
