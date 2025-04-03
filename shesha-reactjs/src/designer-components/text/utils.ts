@@ -86,11 +86,13 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
   }
 };
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (textType: string): IStyleType => {
+  console.log('textType', textType);
   return {
     font: {
       color: '#000',
       type: 'Segoe UI',
+      size:  textType === 'title' ? undefined : 14
     },
     background: { type: 'color', color: 'transparent' },
     border: {

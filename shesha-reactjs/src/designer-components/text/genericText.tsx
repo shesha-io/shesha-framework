@@ -23,8 +23,8 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   contentType,
   dataType,
   dateFormat,
-  fontSize,
   level,
+  size,
   numberFormat,
   textType,
   style,
@@ -48,7 +48,6 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     model.strong,
   ]);
 
-
   const baseProps: ITypographyProps = {
     code: model?.code,
     copyable: model?.copyable,
@@ -59,7 +58,11 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     keyboard: model?.keyboard,
     italic: model?.italic,
     type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
-    style: {...style, color: contentType === 'custom' ? style.color : undefined, textAlign: 'right'},
+    style: {
+      ...style,
+      color: contentType === 'custom' ? style.color : undefined,
+      fontSize: textType === 'title' ? undefined : style?.fontSize,
+    },
   };
 
   const textProps: TextProps = {
