@@ -4,8 +4,6 @@ import { FormLayout } from "antd/es/form/Form";
 
 export const getSettings = (data: any) => {
 
-  let formTypeSearchTerm = '';
-
   const ENABLE_CRUD_EXPOSED_VARIABLES = [
     {
       id: nanoid(),
@@ -26,16 +24,6 @@ export const getSettings = (data: any) => {
       type: 'object',
     }
   ].map(item => JSON.stringify(item));
-
-  const formTypes = [
-    { label: 'Table', value: 'Table' },
-    { label: 'Create', value: 'Create' },
-    { label: 'Edit', value: 'Edit' },
-    { label: 'Details', value: 'Details' },
-    { label: 'Quickview', value: 'Quickview' },
-    { label: 'ListItem', value: 'ListItem' },
-    { label: 'Picker', value: 'Picker' }
-  ];
 
   const ROW_SAVE_EXPOSED_VARIABLES = [
     {
@@ -98,217 +86,6 @@ export const getSettings = (data: any) => {
                 jsSetting: false,
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .toJson()
-            ]
-          },
-          {
-            key: 'data',
-            title: 'Data',
-            id: nanoid(),
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'dropdown',
-                propertyName: "formSelectionMode",
-                parentId: 'root',
-                label: "Form selection mode",
-                jsSetting: false,
-                dropdownOptions: [
-                  { label: 'Named form', value: 'name' },
-                  { label: 'View type', value: 'view' },
-                  { label: 'Expression', value: 'expression' },
-                ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: '',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                hidden: {
-                  _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
-                  _mode: 'code',
-                  _value: false,
-                } as any,
-                inputs: [
-                  {
-                    id: nanoid(),
-                    propertyName: 'formType',
-                    label: 'Form Type',
-                    parentId: '',
-                    type: 'formTypeAutocomplete',
-                    jsSetting: true,
-                    width: '100%',
-                    allowClear: true,
-                  }
-                ],
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: '',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                hidden: {
-                  _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
-                  _mode: 'code',
-                  _value: false,
-                } as any,
-                inputs: [
-                  {
-                    id: nanoid(),
-                    propertyName: 'formId',
-                    label: 'Modal form',
-                    type: 'formAutocomplete',
-                    labelAlign: 'right',
-                    parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-                    hidden: false,
-                    validate: {
-                      required: true,
-                    },
-                  }
-                ],
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: '',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                hidden: {
-                  _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";',
-                  _mode: 'code',
-                  _value: false,
-                } as any,
-                inputs: [
-                  {
-                    id: nanoid(),
-                    type: 'codeEditor',
-                    propertyName: "formIdExpression",
-                    parentId: 'root',
-                    label: "Form identifier expression",
-                    hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";', _mode: 'code', _value: false } as any,
-                    jsSetting: false,
-                    description: "Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-                    exposedVariables: [
-                      `{ name: "item", description: "List item", type: "object" }`,
-                      `{ name: "data", description: "Selected form values", type: "object" }`,
-                      `{ name: "contexts", description: "Contexts data", type: "object" }`,
-                      `{ name: "globalState", description: "The global model of the application", type: "object" }`,
-                      `{ name: "setGlobalState", description: "Setting the global state of the application", type: "function" }`,
-                      `{ name: "formMode", description: "Form mode", type: "object" }`,
-                      `{ name: "form", description: "Form instance", type: "object" }`,
-                      `{ name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" }`,
-                      `{ name: "moment", description: "moment", type: "object" }`,
-                      `{ name: "http", description: "axiosHttp", type: "object" }`,
-                      `{ name: "message", description: "message framework", type: "object" }`,
-                    ],
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  }
-
-                  
-                ],
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'dropdown',
-                propertyName: "selectionMode",
-                parentId: 'root',
-                label: "Selection mode",
-                jsSetting: true,
-                defaultValue: 'none',
-                dropdownOptions: [
-                  { label: 'None', value: 'none' },
-                  { label: 'Single', value: 'single' },
-                  { label: 'Multiple', value: 'multiple' },
-                ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'canEditInline',
-                label: 'Can edit inline',
-                inputType: 'dropdown',
-                parentId: 'events',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                dropdownOptions: [
-                  { value: 'yes', label: 'Yes' },
-                  { value: 'no', label: 'No' },
-                  { value: 'inherit', label: 'Inherit' },
-                  { value: 'js', label: 'Expression' },
-                ],
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'canDeleteInline',
-                label: 'Can delete inline',
-                inputType: 'dropdown',
-                parentId: 'events',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                dropdownOptions: [
-                  { value: 'yes', label: 'Yes' },
-                  { value: 'no', label: 'No' },
-                  { value: 'inherit', label: 'Inherit' },
-                  { value: 'js', label: 'Expression' },
-                ],
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                readOnly: false,
-                hidden: { _code: 'return getSettingValue(data?.canDeleteInline) !== "js";', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    id: nanoid(),
-                    propertyName: 'canDeleteInlineExpression',
-                    label: 'Can delete inline expression',
-                    type: 'codeEditor',
-                    parentId: 'events',
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    description: 'Return true to enable inline deletion and false to disable.',
-                    exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
-                  }
-                ]
-              })
-              .toJson()
-            ]
-          },
-          {
-            key: 'events',
-            title: 'Events',
-            id: nanoid(),
-            components: [...new DesignerToolbarSettings()
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: "dblClickActionConfiguration",
-                parentId: 'root',
-                label: "On Double Click",
-                jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'onRowSave',
-                label: 'On row save',
-                inputType: 'codeEditor',
-                parentId: 'events',
-                tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
-                hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
-                exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
-              })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onRowSaveSuccessAction',
-                label: 'On Row Save Success',
-                parentId: 'events',
-                description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                hideLabel: true,
-                jsSetting: true,
-              })
-              .toJson()
-            ]
-          },
-          {
-            key: 'appearance',
-            title: 'Appearance',
-            id: nanoid(),
-            components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'switch',
@@ -319,6 +96,32 @@ export const getSettings = (data: any) => {
                 value: 'checked',
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
+              .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: nanoid(),
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                parentId: 'root',
+                label: "Permissions",
+                tooltip: "Enter a list of permissions that should be associated with this component",
+                jsSetting: true,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .toJson()
+            ]
+          },
+          {
+            key: 'appearance',
+            title: 'Appearance',
+            id: nanoid(),
+            components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',
@@ -446,27 +249,269 @@ export const getSettings = (data: any) => {
                 jsSetting: false,
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
+              .addCollapsiblePanel({
+                id: 'groupCollapsiblePanel',
+                propertyName: 'pnlGroup',
+                label: 'Group Styles',
+                parentId: 'root',
+                labelAlign: 'right',
+                ghost: true,
+                collapsible: 'header',
+                content: {
+                  id: 'groupPnl',
+                  components: [...new DesignerToolbarSettings()
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: "groupPnl",
+                      inputs: [{
+                        id: nanoid(),
+                        type: "switch",
+                        propertyName: "collapsible",
+                        label: "Collapsible",
+                        labelAlign: "right",
+                        parentId: "root",
+                        hidden: false,
+                      },
+                      {
+                        id: nanoid(),
+                        type: "switch",
+                        propertyName: "collapseByDefault",
+                        label: "Collapsible By Default",
+                        labelAlign: "right",
+                        parentId: "root",
+                        hidden: false,
+                      }],
+                      hideLabel: true,
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: "groupPnl",
+                      inputs: [{
+                        id: nanoid(),
+                        type: 'codeEditor',
+                        propertyName: "groupStyle",
+                        parentId: 'root',
+                        label: "Style",
+                        jsSetting: false,
+                        exposedVariables: [
+                          { name: "data", description: "Selected form values", type: "object" },
+                        ],
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      }
+
+                      ],
+                      hideLabel: true,
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    })
+                    .toJson()
+                  ]
+                }
+              })
               .toJson()
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
+            key: 'data',
+            title: 'Data',
             id: nanoid(),
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
+                inputType: 'dropdown',
+                propertyName: "formSelectionMode",
                 parentId: 'root',
-                label: "Permissions",
-                tooltip: "Enter a list of permissions that should be associated with this component",
-                jsSetting: true,
+                label: "Form selection mode",
+                jsSetting: false,
+                dropdownOptions: [
+                  { label: 'Named form', value: 'name' },
+                  { label: 'View type', value: 'view' },
+                  { label: 'Expression', value: 'expression' },
+                ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: '',
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                hidden: {
+                  _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'formType',
+                    label: 'Form Type',
+                    parentId: '',
+                    type: 'formTypeAutocomplete',
+                    jsSetting: true,
+                    width: '100%',
+                    allowClear: true,
+                  }
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: '',
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                hidden: {
+                  _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'formId',
+                    label: 'Modal form',
+                    type: 'formAutocomplete',
+                    labelAlign: 'right',
+                    parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+                    hidden: false,
+                    validate: {
+                      required: true,
+                    },
+                  }
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: '',
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                hidden: {
+                  _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'codeEditor',
+                    propertyName: "formIdExpression",
+                    parentId: 'root',
+                    label: "Form identifier expression",
+                    hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                    description: "Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+                    exposedVariables: [
+                      `{ name: "item", description: "List item", type: "object" }`,
+                      `{ name: "data", description: "Selected form values", type: "object" }`,
+                      `{ name: "contexts", description: "Contexts data", type: "object" }`,
+                      `{ name: "globalState", description: "The global model of the application", type: "object" }`,
+                      `{ name: "setGlobalState", description: "Setting the global state of the application", type: "function" }`,
+                      `{ name: "formMode", description: "Form mode", type: "object" }`,
+                      `{ name: "form", description: "Form instance", type: "object" }`,
+                      `{ name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" }`,
+                      `{ name: "moment", description: "moment", type: "object" }`,
+                      `{ name: "http", description: "axiosHttp", type: "object" }`,
+                      `{ name: "message", description: "message framework", type: "object" }`,
+                    ],
+                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  }
+                ],
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'dropdown',
+                propertyName: "selectionMode",
+                parentId: 'root',
+                label: "Selection mode",
+                jsSetting: true,
+                defaultValue: 'none',
+                dropdownOptions: [
+                  { label: 'None', value: 'none' },
+                  { label: 'Single', value: 'single' },
+                  { label: 'Multiple', value: 'multiple' },
+                ],
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'canEditInline',
+                label: 'Can edit inline',
+                inputType: 'dropdown',
+                parentId: 'events',
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                dropdownOptions: [
+                  { value: 'yes', label: 'Yes' },
+                  { value: 'no', label: 'No' },
+                  { value: 'inherit', label: 'Inherit' },
+                  { value: 'js', label: 'Expression' },
+                ],
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'canDeleteInline',
+                label: 'Can delete inline',
+                inputType: 'dropdown',
+                parentId: 'events',
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                dropdownOptions: [
+                  { value: 'yes', label: 'Yes' },
+                  { value: 'no', label: 'No' },
+                  { value: 'inherit', label: 'Inherit' },
+                  { value: 'js', label: 'Expression' },
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                readOnly: false,
+                hidden: { _code: 'return getSettingValue(data?.canDeleteInline) !== "js";', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'canDeleteInlineExpression',
+                    label: 'Can delete inline expression',
+                    type: 'codeEditor',
+                    parentId: 'events',
+                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    description: 'Return true to enable inline deletion and false to disable.',
+                    exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
+                  }
+                ]
               })
               .toJson()
             ]
-          }
+          },
+          {
+            key: 'events',
+            title: 'Events',
+            id: nanoid(),
+            components: [...new DesignerToolbarSettings()
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: "dblClickActionConfiguration",
+                parentId: 'root',
+                label: "On Double Click",
+                jsSetting: false,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'onRowSave',
+                label: 'On row save',
+                inputType: 'codeEditor',
+                parentId: 'events',
+                tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
+                hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
+                exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+              })
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: 'onRowSaveSuccessAction',
+                label: 'On Row Save Success',
+                parentId: 'events',
+                description: 'Custom business logic to be executed after successfull saving of new/updated row.',
+                hideLabel: true,
+                jsSetting: true,
+              })
+              .toJson()
+            ]
+          },
         ]
       })
       .toJson(),
