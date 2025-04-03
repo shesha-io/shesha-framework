@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IConfigurableFormItemChildFunc } from '@/components/formDesigner/components/formItem';
+import { IConfigurableFormItemChildFunc } from '@/components/formDesigner/components/model';
 
 export interface IDataBinderProps {
     value?: any;

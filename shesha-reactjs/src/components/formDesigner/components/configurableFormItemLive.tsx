@@ -1,9 +1,8 @@
 import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
-import { useForm } from '@/providers/form';
 import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useFormItem } from '@/providers';
+import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
@@ -17,10 +16,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-  const { formData } = useForm();
-
+  const { formData } = useShaFormInstance();
   const formItem = useFormItem();
-
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
   const layout = useMemo(() => {
