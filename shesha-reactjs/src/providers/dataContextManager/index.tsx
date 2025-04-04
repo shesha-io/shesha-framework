@@ -1,6 +1,6 @@
 import { ConfigurableFormInstance } from "@/interfaces";
 import { isEqual } from "lodash";
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from "react";
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload, SHESHA_ROOT_DATA_CONTEXT_MANAGER } from "./models";
 import { DataContextType, IDataContextFull, useDataContext } from "../dataContextProvider/contexts";
 import { createNamedContext } from "@/utils/react";
@@ -8,7 +8,7 @@ import { createNamedContext } from "@/utils/react";
 export const RootContexts: string[] = [];
 
 export interface IDataContextManagerStateContext {
-  lastUpdate: string;
+  lastUpdate: number;
   id: string;
   parent?: IDataContextManagerFullInstance;
 }
@@ -19,6 +19,7 @@ export interface IDataContextsData {
 }
 
 export interface IDataContextManagerActionsContext {
+  regiterListener: (payload: () => void) => void;
   registerDataManager: (payload: IDataContextManagerFullInstance) => void;
   unregisterDataManager: (payload: IDataContextManagerFullInstance) => void;
   registerDataContext: (payload: IRegisterDataContextPayload) => void;
@@ -42,7 +43,7 @@ export interface IDataContextManagerFullInstance extends IDataContextManagerStat
 }
 
 /** initial state */
-export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: '', id: ''};
+export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: 0, id: ''};
 
 export const DataContextManagerStateContext = createNamedContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, "DataContextManagerStateContext");
 export const DataContextManagerActionsContext = createNamedContext<IDataContextManagerActionsContext>(undefined, "DataContextManagerActionsContext");
@@ -77,18 +78,18 @@ const useDataContextManager = (require: boolean = true): IDataContextManagerFull
 };
 
 const useDataManagerRegister = (payload: IDataContextManagerFullInstance, deps?: ReadonlyArray<any>) => {
-const manager = useDataContextManager(false)?.parent;
+  const manager = useDataContextManager(false)?.parent;
 
-useEffect(() => {
-    if (!manager)
-        return undefined;
+  useEffect(() => {
+      if (!manager)
+          return undefined;
 
-    manager.registerDataManager(payload);
+      manager.registerDataManager(payload);
 
-    return () => {
-        manager.unregisterDataManager(payload);
-    };
-}, deps);
+      return () => {
+          manager.unregisterDataManager(payload);
+      };
+  }, deps);
 };
 
 const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: ReadonlyArray<any>) => {
@@ -126,24 +127,34 @@ const DataManagerAccessor: FC<PropsWithChildren<Omit<IDataContextManagerProps, '
 
 const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ id, children }) => {
 
-  const parentManager = useDataContextManager(false);
+    const parent = useDataContextManager(false);
 
-    const [state, setState] = useState<IDataContextManagerStateContext>({...DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, id, parent: parentManager});
+    // ToDo: AS - remove after optimisation
+    //const [state, setState] = useState<IDataContextManagerStateContext>({...DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, id, parent: parentManager});
+    const state = useRef<IDataContextManagerStateContext>({...DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, id, parent});
 
     const contexts = useRef<IDataContextDictionary>({});
     const managers = useRef<IDataContextManagerFullInstance[]>([]);
     const formInstance = useRef<ConfigurableFormInstance>();
 
-    const setLastUpdate = () => setState({...state, lastUpdate: new Date().toJSON()});
+    const updateListener = useRef<() => void>(() => {});
+
+    const internalUpdate = () => {
+      state.current.lastUpdate = Date.now();
+      updateListener.current();
+      
+      // ToDo: AS - remove after optimisation
+      // setState({...state, lastUpdate: new Date().toJSON()});
+    }
 
     const onChangeContextData = () => {
-      setLastUpdate();
-      state.parent?.onChangeContextData();
+      internalUpdate();
+      parent?.onChangeContextData();
     };
 
     const updatePageFormInstance = (form: ConfigurableFormInstance) => {
         formInstance.current = form;
-        setLastUpdate();
+        internalUpdate();
     };
 
     const getPageFormInstance = () => {
@@ -153,7 +164,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
   const registerDataManager = (payload: IDataContextManagerFullInstance) => {
     if (!managers.current.find(x => x.id === payload.id)) {
       managers.current.push(payload);
-      setLastUpdate();
+      internalUpdate();
     }
   };
 
@@ -161,7 +172,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     const manager = managers.current.find(x => x.id === payload.id);
     if (manager) {
       managers.current.splice(managers.current.indexOf(manager), 1);
-      setLastUpdate();
+      internalUpdate();
     }
   };
 
@@ -170,7 +181,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
             const ctx = {...payload};
             delete ctx.initialData;
             contexts.current[payload.id] = {...ctx};
-            setLastUpdate();
+            internalUpdate();
 
             if (payload.type === 'root')
                 RootContexts.push(payload.id);
@@ -181,7 +192,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       if (!!contexts.current[payload.id])
         delete contexts.current[payload.id];
 
-      setLastUpdate();
+      internalUpdate();
 
       if (payload.type === 'root')
         RootContexts.splice(RootContexts.indexOf(payload.id), 1);
@@ -226,10 +237,10 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     };
 
     const getRoot = () => {
-      if (parentManager?.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER)
-        return parentManager;
-      if (parentManager)
-        return parentManager?.getRoot();
+      if (parent?.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER)
+        return parent;
+      if (parent)
+        return parent?.getRoot();
       return null;
     };
 
@@ -237,7 +248,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       const ctxs = getLocalDataContexts(topId);
       if (isRoot())
         return ctxs;
-      return ctxs.concat(parentManager?.getDataContexts('all') ?? []);
+      return ctxs.concat(parent?.getDataContexts('all') ?? []);
     };
 
     const getNearestDataContext = (topId: string, type: DataContextType) => {
@@ -257,7 +268,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
           return undefined;
 
       const dc = getLocalDataContexts('all').find(x => x.uid === contextId || x.id === contextId);
-      return dc ? dc : parentManager?.getDataContext(contextId);
+      return dc ? dc : parent?.getDataContext(contextId);
     };
 
     const getDataContextData = (contextId: string): IDataContextFull => {
@@ -268,7 +279,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     };
 
     const getLocalDataContextsData =(topId?: string, data?: any) => {
-      const res = data ?? { lastUpdate: state.lastUpdate, refreshContext: onChangeContextData };
+      const res = data ?? { lastUpdate: state.current.lastUpdate, refreshContext: onChangeContextData };
       getDataContexts(topId).forEach(item => {
         if (res[item.name] === undefined) {
           res[item.name] = getDataContextData(item.id);
@@ -281,7 +292,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       const res = getLocalDataContextsData(topId, data);
       if (isRoot())
         return res;
-      parentManager?.getDataContextsData('all', res);
+      parent?.getDataContextsData('all', res);
       return res;
     };
 
@@ -295,12 +306,17 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
             const changed = !isEqual(existingContext, newCtx);
             if (changed) {
                 contexts.current[payload.id] = newCtx;
-                setLastUpdate();
+                internalUpdate();
             }
         }
     };
 
+    const regiterListener = (payload: () => void) => {
+      updateListener.current = payload;
+    };
+
     const dataContextsManagerActions: IDataContextManagerActionsContext = {
+      regiterListener,
       registerDataManager,
       unregisterDataManager,
       registerDataContext,
@@ -321,12 +337,12 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     if (isRoot()) {
       dataContextsManagerActions.getRoot = () => {
-        return {...state, ...dataContextsManagerActions};
+        return {...state.current, ...dataContextsManagerActions};
       };
     }
 
     return (
-        <DataContextManagerStateContext.Provider value={state}>
+        <DataContextManagerStateContext.Provider value={state.current}>
             <DataContextManagerActionsContext.Provider value={dataContextsManagerActions}>
               <DataManagerAccessor>
                 {children}

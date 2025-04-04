@@ -59,6 +59,8 @@ export interface IDataSubmitContext {
     getDelayedUpdates: () => IDelayedUpdateGroup[];
 }
 
+export type ForceUpdateTrigger = () => void;
+
 export interface IShaFormInstance<Values = any> {
     setDataSubmitContext: (context: IDataSubmitContext) => void;
     setInitialValues: (values: Values) => void;
@@ -112,7 +114,9 @@ export interface IShaFormInstance<Values = any> {
     resetFields: () => void;
     getFieldsValue: () => Values;
     validateFields: () => Promise<Values>;
-    //#endregion    
+    //#endregion
+
+    dataUpdate: ForceUpdateTrigger;
 }
 
 export interface SubmitRelatedEvents<Values = any> {

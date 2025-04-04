@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
+import React, { FC, MutableRefObject, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
@@ -23,6 +23,11 @@ import {
 import ConditionalWrap from "@/components/conditionalWrapper/index";
 import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
 
+export interface  IDataContextBinderRef {
+  fireListener: (propertyName: string) => void;
+  fireAllListeners: () => void;
+}
+
 export interface IDataContextBinderProps { 
   id: string;
   name: string;
@@ -38,6 +43,7 @@ export interface IDataContextBinderProps {
   setFieldValue?: ContextSetFieldValue;
   onChangeData?: ContextOnChangeData;
   actionsOverride?: IDataContextProviderActionsContextOverride;
+  listenersRef: MutableRefObject<IDataContextBinderRef>;
 }
 
 const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props) => {
@@ -49,6 +55,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     type, 
     data,
     onChangeData,
+    listenersRef,
   } = props;
 
   const uid = useId();
@@ -72,7 +79,29 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     metadata: props.metadata ?? Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name, properties: []} as IModelMetadata) // set default metadata if empty
   });
 
+  const listeners = useRef<{ id: string, propertyName: string, listener: () => void }[]>([]);
+
   const metadata = props.metadata ?? state.metadata;
+
+  const fireListener = (propertyName: string) => {
+    listeners.current.forEach(listener => {
+      if (listener.propertyName === propertyName)
+        listener.listener();
+    });
+  };
+
+  const fireAllListeners = () => {
+    listeners.current.forEach(listener => listener.listener());
+  };
+
+  if (listenersRef && !listenersRef.current)
+    listenersRef.current = { fireListener, fireAllListeners };
+
+  const registerListener = (id: string, propertyName: string, listener: () => void) => {
+    if (listeners.current.find(x => x.id === id && x.propertyName === propertyName)) 
+      return;
+    listeners.current.push({ id, propertyName, listener });
+  };
 
   const getFieldValue = useCallback((name: string) => {
     if (props.getFieldValue)
@@ -93,22 +122,25 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
 
   const setFieldValue = useDeepCompareCallback((name: string, value: any) => {
     if (props.setFieldValue)
-      return props.setFieldValue(name, value, onChangeContextData);
+      props.setFieldValue(name, value, onChangeContextData);
+    else {
+      const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
+      const changedData = setValueByPropertyName({}, name, value);
 
-    const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
-    const changedData = setValueByPropertyName({}, name, value);
+      if (onChangeData)
+        onChangeData(newData, changedData, onChangeContextData);
+    }
 
-    if (onChangeData)
-      onChangeData(newData, changedData, onChangeContextData);
-
+    fireListener(name);
   }, [props.setFieldValue, onChangeData]);
 
   const setData = useDeepCompareCallback((changedData: any) => {
-    if (props.setData)
-      return props.setData(changedData,  onChangeContextData);
-
-    if (onChangeData)
+    if (props.setData) 
+      props.setData(changedData,  onChangeContextData);
+    else if (onChangeData)
       onChangeData({...dataRef.current, ...changedData}, {...changedData}, onChangeContextData);
+
+    fireAllListeners();
   }, [props.setData, onChangeData]);
 
   const updateApi = (api: any) => {
@@ -128,6 +160,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   };
 
   const actionContext: IDataContextProviderActionsContext ={
+    registerListener,
     setFieldValue,
     getFieldValue,
     setData,

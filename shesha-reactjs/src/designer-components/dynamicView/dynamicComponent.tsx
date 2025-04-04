@@ -1,11 +1,10 @@
 import React, { FC, useRef } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { useCanvas, useForm, useSheshaApplication } from '@/index';
+import { useActualContextData, useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
 import ComponentError from '@/components/componentErrors';
-import { useActualContextData } from '@/hooks/useActualContextData';
 import { formComponentActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 
 export interface IConfigurableFormComponentProps {
@@ -14,9 +13,8 @@ export interface IConfigurableFormComponentProps {
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componentModel }) => {
   const { activeDevice } = useCanvas();
-  const formInstance = useForm();
+  const form = useShaFormInstance();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { form } = formInstance;
   const getToolboxComponent = useFormDesignerComponentGetter();
 
   const componentRef = useRef();
@@ -35,7 +33,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     />;
 
   // TODO: AS review hidden and enabled for SubForm
-  actualModel.hidden = formInstance.formMode !== 'designer'
+  actualModel.hidden = form.formMode !== 'designer'
     && (
       actualModel.hidden
       || !anyOfPermissionsGranted(actualModel?.permissions || []));
@@ -46,7 +44,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
 
-  if (formInstance.formMode === 'designer') {
+  if (form.formMode === 'designer') {
     const validationResult: IModelValidation = {hasErrors: false, errors: []};
     toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
       validationResult.hasErrors = true;

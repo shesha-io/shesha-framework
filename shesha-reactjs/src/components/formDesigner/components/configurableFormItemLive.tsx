@@ -51,6 +51,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     if (model.context) {
       return (
         <ConfigurableFormItemContext
+          componentId={model.id}
           formItemProps={formItemProps}
           valuePropName={valuePropName}
           propertyName={propName}

@@ -23,6 +23,7 @@ export interface IDataContextFull {
 }
 
 export interface IDataContextProviderActionsContext {
+  registerListener: (id: string, propertyName: string, listener: () => void) => void;
   setFieldValue: ContextSetFieldValue;
   getFieldValue: ContextGetFieldValue;
   setData: ContextSetData;

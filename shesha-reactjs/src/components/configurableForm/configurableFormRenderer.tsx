@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { DataUpdateListenerProvider } from '@/providers/form/providers/dataUpdateProvider';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -114,7 +115,9 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           data-sha-form-id={shaForm.form.id}
           data-sha-form-name={`${shaForm.form.module}/${shaForm.form.name}`}
         >
-          <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+          <DataUpdateListenerProvider>
+            <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+          </DataUpdateListenerProvider>
           {children}
         </Form>
       </Spin>

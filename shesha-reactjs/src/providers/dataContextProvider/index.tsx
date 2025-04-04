@@ -1,12 +1,12 @@
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, } from "@/providers";
-import React, { FC, PropsWithChildren, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useEffect, useRef } from "react";
 import { useDataContextManager } from "../dataContextManager/index";
 import {  DataContextType, ContextOnChangeData, ContextGetFull } from "./contexts";
-import DataContextBinder from "./dataContextBinder";
+import DataContextBinder, { IDataContextBinderRef } from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";
 import { useAvailableConstantsData } from "../form/utils";
-import { IStorageProxy, StorageProxy } from "./contexts/storageProxy";
+import { CreateStorageProperty, IStorageProxy } from "./contexts/storageProxy";
 
 export interface IDataContextProviderProps { 
   id: string;
@@ -36,7 +36,18 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const allData = useRef<any>({});
   allData.current = useAvailableConstantsData({ topContextId: id });
 
-  const [storage] = useState<IStorageProxy>(() => new StorageProxy(() => onChangeContextData()));
+  const dataBinderRef = useRef<IDataContextBinderRef>();
+
+  const fireListeners = () => {
+    dataBinderRef.current?.fireAllListeners();
+    onChangeContextData();
+  };
+
+  const storage = useRef<IStorageProxy>(CreateStorageProperty(fireListeners));
+  useEffect(() => {
+    storage.current.updateOnChange(fireListeners);
+  }, [dataBinderRef.current])
+
   const initialDataRef = useRef<any>(undefined);
 
   const onChangeData = useRef<ContextOnChangeData>();
@@ -45,17 +56,17 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   }
 
   const getFieldValue = (name: string) => {
-    return storage.getFieldValue(name);
+    return storage.current.getFieldValue(name);
   };
 
   const getData = () => {
-    return storage.getData();
+    return storage.current;
   };
 
   let onChangeAction = null;
 
   const setFieldValue = (name: string, value: any) => {
-    storage.setFieldValue(name, value);
+    storage.current.setFieldValue(name, value);
     const changedData = setValueByPropertyName({}, name, value, false);
     
     onChangeAction(changedData);
@@ -78,7 +89,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   };
 
   const setDataInternal = (changedData: any) => {
-    storage.setData(changedData);
+    storage.current.setData(changedData);
 
     if (onChangeData.current)
       onChangeData.current(changedData, changedData);
@@ -112,6 +123,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       getFieldValue={getFieldValue}
       setData={setData}
       getData={getData}
+      listenersRef={dataBinderRef}
     >
       {children}
     </DataContextBinder>

@@ -77,7 +77,7 @@ export function useCalculatedModel<T = any>(
   return calculatedModelRef.current;
 }
 
-export function useActualContextExecution<T = any>(code: string, additionalData?: any) {
+export function useActualContextExecution<T = any>(code: string, additionalData?: any, defaultValue?: T) {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
@@ -92,12 +92,12 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
   contextProxyRef.current.checkChanged();
 
   const prevCode = useRef<string>();
-  const actualDataRef = useRef<T>(undefined);
+  const actualDataRef = useRef<T>(defaultValue);
 
   if (contextProxyRef.current.changed || !isEqual(prevCode.current, code)) {
     actualDataRef.current = Boolean(code) 
       ? executeScriptSync(code, contextProxyRef.current) 
-      : undefined;
+      : defaultValue;
   }
 
   prevCode.current = code;

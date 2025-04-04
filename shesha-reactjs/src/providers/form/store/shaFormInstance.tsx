@@ -1,5 +1,5 @@
 import React from "react";
-import { AfterSubmitHandler, FormEvents, IDataSubmitContext, InitByFormIdPayload, InitByMarkupPayload, InitByRawMarkupPayload, IShaFormInstance, LoadFormByIdPayload, OnMarkupLoadedHandler, OnValuesChangeHandler, ProcessingState, SubmitDataPayload, SubmitHandler } from "./interfaces";
+import { AfterSubmitHandler, ForceUpdateTrigger, FormEvents, IDataSubmitContext, InitByFormIdPayload, InitByMarkupPayload, InitByRawMarkupPayload, IShaFormInstance, LoadFormByIdPayload, OnMarkupLoadedHandler, OnValuesChangeHandler, ProcessingState, SubmitDataPayload, SubmitHandler } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
 import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
 import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
@@ -23,7 +23,6 @@ import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
 
-type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
     forceRootUpdate: ForceUpdateTrigger;
     formManager: IFormManagerActionsContext;
@@ -107,6 +106,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     initialValues: any;
     parentFormValues: any;
     formArguments?: any;
+
+    dataUpdate: ForceUpdateTrigger;
 
     onFinish: SubmitHandler<Values>;
     onAfterSubmit: AfterSubmitHandler<Values>;
@@ -203,7 +204,9 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         this.#setInternalFormData(newData);
 
-        this.forceRootUpdate();
+        //this.forceRootUpdate();
+        if (this.dataUpdate)
+            this.dataUpdate();
     };
 
     setParentFormValues = (values: any) => {
@@ -227,7 +230,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
     setFieldsValue = (values: Partial<Values>) => {
         this.antdForm.setFieldsValue(values);
-        this.forceRootUpdate();
+        if (this.dataUpdate)
+          this.dataUpdate();
     };
     resetFields = () => {
         this.antdForm.resetFields();
