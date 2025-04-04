@@ -121,6 +121,140 @@ export const getSettings = (data: ITableComponentProps) => {
                         ]
                     },
                     {
+                        key: 'security',
+                        title: 'Security',
+                        id: securityTabId,
+                        components: [
+                            ...new DesignerToolbarSettings()
+                                .addSettingsInput({
+                                    id: nanoid(),
+                                    propertyName: 'permissions',
+                                    label: 'Permissions',
+                                    inputType: 'permissions',
+                                    parentId: securityTabId,
+                                    jsSetting: true,
+                                    tooltip: 'Enter a list of permissions that should be associated with this component',
+                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                })
+                                .toJson()
+                        ]
+                    },
+                    {
+                        key: 'appearance',
+                        title: 'Appearance',
+                        id: layoutTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'minHeight',
+                                        label: 'Min Height',
+                                        type: 'numberField',
+                                        parentId: layoutTabId,
+                                        tooltip: 'The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.',
+                                        jsSetting: true,
+                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'maxHeight',
+                                        label: 'Max Height',
+                                        type: 'numberField',
+                                        parentId: layoutTabId,
+                                        tooltip: 'The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.',
+                                        jsSetting: true,
+                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    }
+                                ]
+                            })
+                            .addCollapsiblePanel({
+                                id: 'tableStyles',
+                                propertyName: 'tableStylesCol',
+                                label: 'Customize Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: layoutTabId,
+                                collapsible: 'header',
+                                content: {
+                                    id: 'tableStylesCollapsible',
+                                    components: [...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'containerStyle',
+                                            label: 'Table container style',
+                                            inputType: 'codeEditor',
+                                            parentId: layoutTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'The style that will be applied to the table container/wrapper',
+                                            exposedVariables: [],
+                                        })
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'tableStyle',
+                                            label: 'Table style',
+                                            inputType: 'codeEditor',
+                                            parentId: layoutTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'The style that will be applied to the table',
+                                            exposedVariables: [],
+                                        })
+                                        .toJson()
+
+
+
+                                    ]
+                                }
+                            })
+                            .addCollapsiblePanel({
+                                id: 'tableEmptyState',
+                                propertyName: 'tableEmptyState',
+                                label: 'Empty State',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: layoutTabId,
+                                collapsible: 'header',
+                                content: {
+                                    id: 'tableEmptyState',
+                                    components: [...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'noDataIcon',
+                                            label: 'Icon',
+                                            inputType: 'iconPicker',
+                                            parentId: emptyTableTabId,
+                                            jsSetting: true,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        })
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'noDataText',
+                                            label: 'Primary Text',
+                                            inputType: 'textField',
+                                            parentId: emptyTableTabId,
+                                            jsSetting: true,
+                                            defaultValue: 'No Data',
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        })
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'noDataSecondaryText',
+                                            label: 'Secondary Text',
+                                            inputType: 'textField',
+                                            parentId: emptyTableTabId,
+                                            jsSetting: true,
+                                            defaultValue: 'No data is available for this table',
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        }).toJson()
+                                    ]
+                                }
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
                         key: 'data',
                         title: 'Data',
                         id: crudTabId,
@@ -432,140 +566,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                 .toJson()
                         ]
                     },
-                    {
-                        key: 'appearance',
-                        title: 'Appearance',
-                        id: layoutTabId,
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                                id: nanoid(),
-                                readOnly: false,
-                                inputs: [
-                                    {
-                                        id: nanoid(),
-                                        propertyName: 'minHeight',
-                                        label: 'Min Height',
-                                        type: 'numberField',
-                                        parentId: layoutTabId,
-                                        tooltip: 'The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.',
-                                        jsSetting: true,
-                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    },
-                                    {
-                                        id: nanoid(),
-                                        propertyName: 'maxHeight',
-                                        label: 'Max Height',
-                                        type: 'numberField',
-                                        parentId: layoutTabId,
-                                        tooltip: 'The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.',
-                                        jsSetting: true,
-                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    }
-                                ]
-                            })
-                            .addCollapsiblePanel({
-                                id: 'tableStyles',
-                                propertyName: 'tableStylesCol',
-                                label: 'Customize Styles',
-                                labelAlign: 'right',
-                                ghost: true,
-                                parentId: layoutTabId,
-                                collapsible: 'header',
-                                content: {
-                                    id: 'tableStylesCollapsible',
-                                    components: [...new DesignerToolbarSettings()
-                                        .addSettingsInput({
-                                            id: nanoid(),
-                                            propertyName: 'containerStyle',
-                                            label: 'Table container style',
-                                            inputType: 'codeEditor',
-                                            parentId: layoutTabId,
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            description: 'The style that will be applied to the table container/wrapper',
-                                            exposedVariables: [],
-                                        })
-                                        .addSettingsInput({
-                                            id: nanoid(),
-                                            propertyName: 'tableStyle',
-                                            label: 'Table style',
-                                            inputType: 'codeEditor',
-                                            parentId: layoutTabId,
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            description: 'The style that will be applied to the table',
-                                            exposedVariables: [],
-                                        })
-                                        .toJson()
 
-
-
-                                    ]
-                                }
-                            })
-                            .addCollapsiblePanel({
-                                id: 'tableEmptyState',
-                                propertyName: 'tableEmptyState',
-                                label: 'Empty State',
-                                labelAlign: 'right',
-                                ghost: true,
-                                parentId: layoutTabId,
-                                collapsible: 'header',
-                                content: {
-                                    id: 'tableEmptyState',
-                                    components: [...new DesignerToolbarSettings()
-                                        .addSettingsInput({
-                                            id: nanoid(),
-                                            propertyName: 'noDataIcon',
-                                            label: 'Icon',
-                                            inputType: 'iconPicker',
-                                            parentId: emptyTableTabId,
-                                            jsSetting: true,
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        })
-                                        .addSettingsInput({
-                                            id: nanoid(),
-                                            propertyName: 'noDataText',
-                                            label: 'Primary Text',
-                                            inputType: 'textField',
-                                            parentId: emptyTableTabId,
-                                            jsSetting: true,
-                                            defaultValue: 'No Data',
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        })
-                                        .addSettingsInput({
-                                            id: nanoid(),
-                                            propertyName: 'noDataSecondaryText',
-                                            label: 'Secondary Text',
-                                            inputType: 'textField',
-                                            parentId: emptyTableTabId,
-                                            jsSetting: true,
-                                            defaultValue: 'No data is available for this table',
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        }).toJson()
-                                    ]
-                                }
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: 'security',
-                        title: 'Security',
-                        id: securityTabId,
-                        components: [
-                            ...new DesignerToolbarSettings()
-                                .addSettingsInput({
-                                    id: nanoid(),
-                                    propertyName: 'permissions',
-                                    label: 'Permissions',
-                                    inputType: 'permissions',
-                                    parentId: securityTabId,
-                                    jsSetting: true,
-                                    tooltip: 'Enter a list of permissions that should be associated with this component',
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                })
-                                .toJson()
-                        ]
-                    },
                     {
                         key: 'events',
                         title: 'Events',
