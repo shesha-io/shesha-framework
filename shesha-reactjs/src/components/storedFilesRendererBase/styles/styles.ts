@@ -203,6 +203,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         justify-content: center;
         ${rest}
       }
+
+      .ant-upload-list-item-name-stub { 
+        position: absolute;
+        bottom: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+      }
 `);
 
   const antPreviewDownloadIcon = cx("ant-preview-download-icon", css`
