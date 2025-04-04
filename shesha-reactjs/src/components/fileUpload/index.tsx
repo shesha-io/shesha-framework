@@ -3,6 +3,7 @@ import { useSheshaApplication, useStoredFile } from '@/providers';
 import {
   DeleteOutlined,
   DownloadOutlined,
+  EyeOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
   SyncOutlined,
@@ -10,14 +11,14 @@ import {
 } from '@ant-design/icons';
 import { App, Button, Upload } from 'antd';
 import { UploadProps } from 'antd/lib/upload/Upload';
-import filesize from 'filesize';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
 import { isImageType, getFileIcon } from '@/icons/fileIcons';
 import { Image } from 'antd/lib';
+import filesize from 'filesize';
+import FileVersionsPopup from './fileVersionsPopup';
 const { Dragger } = Upload;
 
 export interface IFileUploadProps {
@@ -91,11 +92,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
     downloadFile({ fileId: fileInfo.id, fileName: fileInfo.name });
   };
 
-  const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const onReplaceClick = (e) => {
     e.preventDefault();
 
     if (!isDragger) {
-      uploadButtonRef.current.click();
+      uploadButtonRef?.current?.click();
     } else {
       if (uploadDraggerSpanRef.current) {
         uploadDraggerSpanRef.current.click();
@@ -108,28 +109,71 @@ export const FileUpload: FC<IFileUploadProps> = ({
     deleteFile();
   };
 
-  // const fileControls = () => {
-  //   return (
-  //     <React.Fragment>
-  //       {fileInfo && (
-  //         <a>
-  //           {false && <InfoCircleOutlined />}
-  //           <FileVersionsPopup fileId={fileInfo.id} />
-  //         </a>
-  //       )}
-  //       {allowReplace && (
-  //         <a onClick={onReplaceClick}>
-  //           <SyncOutlined title="Replace" />
-  //         </a>
-  //       )}
-  //       {allowDelete && (
-  //         <a onClick={onDeleteClick}>
-  //           <DeleteOutlined title="Remove" />
-  //         </a>
-  //       )}
-  //     </React.Fragment>
-  //   );
-  // };
+  const onPreview = () => {
+    setPreviewImage({ url, uid: fileInfo.id, name: fileInfo.name });
+    setPreviewOpen(true);
+  };
+
+  const fileControls = () => {
+    return (
+      <>
+        <a style={{ color: '#000' }}>
+          {false && <InfoCircleOutlined />}
+          <FileVersionsPopup fileId={fileInfo.id} />
+        </a>
+        {allowReplace && (
+          <a onClick={(e) => onReplaceClick(e)} style={{ color: '#000' }}>
+            <SyncOutlined title="Replace" />
+          </a>
+        )}
+        {allowDelete && (
+          <a onClick={(e) => onDeleteClick(e)} style={{ color: '#000' }}>
+            <DeleteOutlined title="Remove" />
+          </a>
+        )}
+        {
+          <a onClick={onPreview} style={{ color: '#000' }}>
+            <EyeOutlined title="Preview" />
+          </a>
+        }
+      </>
+    );
+  };
+  const styledfileControls = () => {
+    return (
+      fileInfo && (
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <Image
+            src={imageUrl}
+            alt={fileInfo.name}
+            preview={false}
+            style={{
+              width: '90px', // Adjust based on requirement
+              height: '90px',
+              objectFit: 'cover',
+              borderRadius: '8px',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              background: 'rgba(0, 0, 0, 0.6)',
+              height: '100%',
+              width: '100%',
+              padding: '5px',
+              borderRadius: '8px',
+              display: 'flex',
+              gap: '8px',
+            }}
+          >
+            {fileControls()}
+          </div>
+        </div>
+      )
+    );
+  };
 
   const url = `${backendUrl}${fileInfo?.url}`;
   useEffect(() => {
@@ -145,29 +189,24 @@ export const FileUpload: FC<IFileUploadProps> = ({
       });
   }, [fileInfo]);
 
-  const iconRender = (fileInfo) => {
-    const { type, name } = fileInfo;
-    if (isImageType(type)) {
-      if (listType === 'thumbnail' && !isDragger) {
-        return <Image src={imageUrl} alt={name} preview={false} />;
-      }
-    }
+  // const iconRender = (fileInfo) => {
+  //   const { type, name } = fileInfo;
+  //   if (isImageType(type)) {
+  //     if (listType === 'thumbnail' && !isDragger) {
+  //       return <Image src={imageUrl} alt={name} preview={false} />;
+  //     }
+  //   }
 
-    return getFileIcon(type);
-  };
+  //   return getFileIcon(type);
+  // };
 
   const fileProps: UploadProps = {
     name: 'file',
-    disabled: readonly && allowUpload,
+    disabled: !allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
-    listType: listType === 'text' ? 'text' : 'picture-card',
     fileList: fileInfo ? [fileInfo] : [],
     customRequest: onCustomRequest,
-    onPreview: () => {
-      setPreviewImage({ url, uid: fileInfo.id, name: fileInfo.name });
-      setPreviewOpen(true);
-    },
     onChange(info) {
       if (info.file.status !== 'uploading') {
         //
@@ -178,13 +217,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onRemove: () => deleteFile(),
-    onDownload: (e) => onDownloadClick(e),
-    showUploadList: {
-      showRemoveIcon: allowDelete,
-      showDownloadIcon: true,
+    itemRender: (_originNode, file, _currFileList) => {
+      return (
+        <div>
+          {!isUploading && listType === 'thumbnail' ? styledfileControls() : null}
+          <a title={file.name} style={{ display: 'block', marginTop: '5px' }}>
+            {file.name} ({filesize(file.size)}){listType === 'text' ? fileControls(): null}
+          </a>
+        </div>
+      );
     },
-    iconRender: iconRender,
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
