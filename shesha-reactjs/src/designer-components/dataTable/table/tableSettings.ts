@@ -296,7 +296,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                 .addSettingsInput({
                                     id: nanoid(),
                                     propertyName: 'canEditInline',
-                                    label: 'Can edit inline',
+                                    label: 'Can Edit Inline',
                                     inputType: 'dropdown',
                                     parentId: crudTabId,
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -315,7 +315,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'canEditInlineExpression',
-                                            label: 'Can edit inline expression',
+                                            label: 'Can Edit Inline Expression',
                                             type: 'codeEditor',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -332,7 +332,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'inlineEditMode',
-                                            label: 'Row edit mode',
+                                            label: 'Row Edit Mode',
                                             type: 'dropdown',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -351,7 +351,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'inlineSaveMode',
-                                            label: 'Save mode',
+                                            label: 'Save Mode',
                                             type: 'dropdown',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -363,8 +363,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     ]
                                 })
 
-
-                                // Custom update URL
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     readOnly: false,
@@ -373,15 +371,13 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'customUpdateUrl',
-                                            label: 'Custom update url',
+                                            label: 'Custom Update URL',
                                             type: 'textField',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                         }
                                     ]
                                 })
-
-                                // Can add inline
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     readOnly: false,
@@ -390,7 +386,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'canAddInline',
-                                            label: 'Can add inline',
+                                            label: 'Can Add Inline',
                                             type: 'dropdown',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -403,8 +399,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
-
-                                // Can add inline expression
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     readOnly: false,
@@ -413,7 +407,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'canAddInlineExpression',
-                                            label: 'Can add inline expression',
+                                            label: 'Can Add Inline Expression',
                                             type: 'codeEditor',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -422,8 +416,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
-
-                                // New row capture position
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     readOnly: false,
@@ -432,7 +424,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'newRowCapturePosition',
-                                            label: 'New row capture position',
+                                            label: 'New Row Capture Position',
                                             type: 'dropdown',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -452,7 +444,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'newRowInsertPosition',
-                                            label: 'New row insert position',
+                                            label: 'New Row Insert Position',
                                             type: 'dropdown',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -463,8 +455,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
-
-                                // Custom create URL
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     readOnly: false,
@@ -473,15 +463,13 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'customCreateUrl',
-                                            label: 'Custom create url',
+                                            label: 'Custom Create URL',
                                             type: 'textField',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                         }
                                     ]
                                 })
-
-
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     readOnly: false,
@@ -490,7 +478,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'onNewRowInitialize',
-                                            label: 'New row init',
+                                            label: 'New Row Init',
                                             type: 'codeEditor',
                                             parentId: crudTabId,
                                             tooltip: 'Allows configurators to specify logic to initialise the object bound to a new row.',
@@ -516,7 +504,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                 .addSettingsInput({
                                     id: nanoid(),
                                     propertyName: 'canDeleteInline',
-                                    label: 'Can delete inline',
+                                    label: 'Can Delete Inline',
                                     inputType: 'dropdown',
                                     parentId: crudTabId,
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -536,7 +524,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'canDeleteInlineExpression',
-                                            label: 'Can delete inline expression',
+                                            label: 'Can Delete Inline Expression',
                                             type: 'codeEditor',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -554,7 +542,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'customDeleteUrl',
-                                            label: 'Custom delete url',
+                                            label: 'Custom Delete URL',
                                             type: 'textField',
                                             parentId: crudTabId,
                                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
