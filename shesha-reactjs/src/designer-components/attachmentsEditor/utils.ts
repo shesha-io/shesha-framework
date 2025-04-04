@@ -39,7 +39,7 @@ export const containerDefaultStyles = (): IStyleType => {
             width: 'auto',
             height: 'auto',
             minHeight: '0px',
-            maxHeight: '100%',
+            maxHeight: '140px',
             minWidth: '0px',
             maxWidth: '100%',
         }
