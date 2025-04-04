@@ -345,13 +345,13 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [onRowDoubleClick]);
 
   const handleDoubleClickRow = (row, index) => {
-    console.log(typeof onRowDoubleClick);
     if (typeof onRowDoubleClick === 'object'){
       performOnRowDoubleClick(row);
     } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
     }
   };
+  
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
   const renderNewRowEditor = () => (
