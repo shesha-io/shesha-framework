@@ -3,7 +3,7 @@ import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
-import { positionOptions, repeatOptions, sizeOptions } from "../_settings/utils/background/utils";
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -15,7 +15,6 @@ export const getSettings = (data: any) => {
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
   const borderStyleRowId = nanoid();
-  const backgroundStylePnlId = nanoid();
 
   const propertyNameId = nanoid();
   const hiddenId = nanoid();
@@ -305,99 +304,73 @@ export const getSettings = (data: any) => {
                         }
                       })
                       .addCollapsiblePanel({
-                        id: nanoid(),
+                        id: 'backgroundStyleCollapsiblePanel',
                         propertyName: 'pnlBackgroundStyle',
                         label: 'Background',
                         labelAlign: 'right',
                         ghost: true,
-                        parentId: styleRouterId,
+                        parentId: 'styleRouter',
                         collapsible: 'header',
                         content: {
-                          id: backgroundStylePnlId,
+                          id: 'backgroundStylePnl',
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                id: `${backgroundStylePnlId}-type`,
-                                parentId: backgroundStylePnlId,
+                                id: "backgroundStyleRow-selectType",
+                                parentId: "backgroundStylePnl",
                                 label: "Type",
                                 jsSetting: false,
                                 propertyName: "background.type",
                                 inputType: "radio",
                                 tooltip: "Select a type of background",
-                                buttonGroupOptions: [
-                                  {
-                                    value: "color",
-                                    icon: "FormatPainterOutlined",
-                                    title: "Color"
-                                  },
-                                  {
-                                    value: "gradient",
-                                    icon: "BgColorsOutlined",
-                                    title: "Gradient"
-                                  },
-                                  {
-                                    value: "image",
-                                    icon: "PictureOutlined",
-                                    title: "Image"
-                                  },
-                                  {
-                                    value: "url",
-                                    icon: "LinkOutlined",
-                                    title: "URL"
-                                  },
-                                  {
-                                    value: "storedFile",
-                                    icon: "DatabaseOutlined",
-                                    title: "Stored File"
-                                  }
-                                ],
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                buttonGroupOptions: backgroundTypeOptions,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
-                                id: `${backgroundStylePnlId}-color`,
-                                parentId: backgroundStylePnlId,
+                                id: "backgroundStyleRow-color",
+                                parentId: "backgroundStylePnl",
                                 inputs: [{
                                   type: 'colorPicker',
-                                  id: nanoid(),
+                                  id: 'backgroundStyleRow-color',
                                   label: "Color",
                                   propertyName: "background.color",
                                   hideLabel: true,
                                   jsSetting: false,
                                 }],
-                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
-                                id: `${backgroundStylePnlId}-gradient`,
-                                parentId: backgroundStylePnlId,
+                                id: "backgroundStyle-gradientColors",
+                                parentId: "backgroundStylePnl",
                                 inputs: [{
                                   type: 'multiColorPicker',
-                                  id: nanoid(),
+                                  id: 'backgroundStyle-gradientColors',
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
                                 }
                                 ],
-                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
-                                id: `${backgroundStylePnlId}-url`,
-                                parentId: backgroundStylePnlId,
+                                id: "backgroundStyle-url",
+                                parentId: "backgroundStylePnl",
                                 inputs: [{
                                   type: 'textField',
-                                  id: nanoid(),
+                                  id: 'backgroundStyle-url',
                                   propertyName: "background.url",
                                   jsSetting: false,
                                   label: "URL",
                                 }],
-                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
-                                id: `${backgroundStylePnlId}-image`,
-                                parentId: backgroundStylePnlId,
+                                id: "backgroundStyle-image",
+                                parentId: 'backgroundStylePnl',
                                 inputs: [{
                                   type: 'imageUploader',
                                   id: 'backgroundStyle-image',
@@ -405,14 +378,14 @@ export const getSettings = (data: any) => {
                                   label: "Image",
                                   jsSetting: false,
                                 }],
-                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
-                                id: `${backgroundStylePnlId}-storedFile`,
-                                parentId: backgroundStylePnlId,
-                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: "backgroundStyleRow-storedFile",
+                                parentId: 'backgroundStylePnl',
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -424,30 +397,33 @@ export const getSettings = (data: any) => {
                                 ]
                               })
                               .addSettingsInputRow({
-                                id: `${backgroundStylePnlId}-controls`,
-                                parentId: backgroundStylePnlId,
+                                id: "backgroundStyleRow-controls",
+                                parentId: 'backgroundStyleRow',
                                 inline: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
-                                    id: nanoid(),
+                                    id: 'backgroundStyleRow-size',
                                     label: "Size",
                                     hideLabel: true,
                                     propertyName: "background.size",
+                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                     dropdownOptions: sizeOptions,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                   },
                                   {
                                     type: 'customDropdown',
-                                    id: nanoid(),
+                                    id: 'backgroundStyleRow-position',
                                     label: "Position",
                                     hideLabel: true,
+                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
                                 ]
                               })
-
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
@@ -560,7 +536,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'style',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
