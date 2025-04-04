@@ -32,7 +32,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const { data: formData } = useFormData();
-
+    
     const { namePrefix } = useFormItem();
 
     if (model.hidden && formMode !== 'designer') return null;
