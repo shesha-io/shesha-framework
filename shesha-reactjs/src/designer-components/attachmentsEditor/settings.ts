@@ -738,7 +738,7 @@ export const getSettings = () => {
                     .addCollapsiblePanel({
                       id: 'containerStyleCollapsiblePanel',
                       propertyName: 'pnlContainerStyle',
-                      label: 'Container',
+                      label: 'Container Styles',
                       labelAlign: 'right',
                       ghost: true,
                       parentId: 'styleRouter',
@@ -878,7 +878,7 @@ export const getSettings = () => {
                                     id: 'styleBoxPnl',
                                     label: 'Margin Padding',
                                     hideLabel: true,
-                                    propertyName: 'stylingBox',
+                                    propertyName: 'container.stylingBox',
                                   })
                                   .toJson()
                               ]
