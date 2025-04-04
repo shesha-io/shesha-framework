@@ -124,7 +124,8 @@ export const GlobalSheshaStyles = createGlobalStyle`
     margin: 0;
     div {
       .ant-tabs-dropdown {
-      --ant-tabs-z-index-popup: 1200 !important;
+      --ant-tabs-z-index-popup: 2000 !important;
+      z-index: 2000 !important;
       }
     }
   }
