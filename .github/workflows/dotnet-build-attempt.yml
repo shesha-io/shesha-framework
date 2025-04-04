@@ -1,0 +1,35 @@
+name: shesha-core-build
+description: "This action attempts to build the dotnet project to make sure it's still working with the proposed changes, the project is in the `shesha-core` folder"
+
+on:
+  pull_request:
+    branches:
+      - dnet-test
+    paths:
+      - 'shesha-core/**'
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  build-attempt:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./shesha-core
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build
