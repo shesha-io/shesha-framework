@@ -3,12 +3,10 @@ import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import {
-  backgroundTypeOptions,
   positionOptions,
   repeatOptions,
   sizeOptions,
 } from '../_settings/utils/background/utils';
-import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
 
 export const getSettings = () => {

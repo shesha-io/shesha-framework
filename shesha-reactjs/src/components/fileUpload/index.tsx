@@ -1,24 +1,23 @@
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useSheshaApplication, useStoredFile, useTheme } from '@/providers';
 import {
   DeleteOutlined,
   DownloadOutlined,
   EyeOutlined,
   InfoCircleOutlined,
-  LoadingOutlined,
   SyncOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import { App, Button, Flex, Space, Upload } from 'antd';
+import { App, Button, Space, Upload } from 'antd';
+import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
+import filesize from 'filesize';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { FC, useEffect, useRef, useState } from 'react';
+import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
-import { isImageType, getFileIcon } from '@/icons/fileIcons';
-import { Image } from 'antd/lib';
-import filesize from 'filesize';
-import FileVersionsPopup from './fileVersionsPopup';
 const { Dragger } = Upload;
 
 export interface IFileUploadProps {
@@ -67,14 +66,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
   } = useStoredFile();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const { styles } = useStyles({
-    styles: stylesProp,
+
+  const props = {
+    style: stylesProp,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: hideFileName && listType === 'thumbnail',
       isDragger,
     },
-  });
+  };
+  const { styles } = useStyles(props);
   const { theme } = useTheme();
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
@@ -227,7 +228,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     if (isDragger) {
       return (
         <Dragger disabled>
-          <DraggerStub />
+          <DraggerStub styles={styles}/>
         </Dragger>
       );
     }
@@ -240,7 +241,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       return (
         <Dragger {...fileProps}>
           <span ref={uploadDraggerSpanRef} />
-          <DraggerStub />
+          <DraggerStub styles={styles} />
         </Dragger>
       );
     }

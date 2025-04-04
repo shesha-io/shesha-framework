@@ -1,7 +1,6 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }) => {
-
   const {
     background = 'transparent',
     backgroundImage,
@@ -45,10 +44,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const { gap, layout, hideFileName, isDragger } = model;
 
+  const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
+  const antUploadText = `${prefixCls}-upload-text`;
+  const antUploadHint = `${prefixCls}-upload-hint`;
+
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
 
-  const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
     --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
     --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};
@@ -238,6 +240,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antUploadDragIcon,
     antPreviewDownloadIcon,
     thumbnailControls,
-    overlayThumbnailControls
+    overlayThumbnailControls,
+    antUploadText,
+    antUploadHint,
   };
 });
