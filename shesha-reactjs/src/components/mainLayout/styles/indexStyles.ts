@@ -152,7 +152,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-
         }
        
     }

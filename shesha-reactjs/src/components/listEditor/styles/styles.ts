@@ -103,15 +103,15 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                     cursor: grab;
                 }
 
-
                 .${listItemContent} {
+                    display: flex;
                     flex: 1;
                     margin-left: 30px;
 
                     .${listItemName} {
                         margin-left: 10px;
                         margin-right: 10px;
-                    }
+                    }+
                     .${helpIcon} {
                         cursor: help;
                         font-size: 14px;
