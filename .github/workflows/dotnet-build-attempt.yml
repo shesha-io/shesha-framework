@@ -4,7 +4,7 @@ description: "This action attempts to build the dotnet project to make sure it's
 on:
   pull_request:
     branches:
-      - dnet-test
+      - main
     paths:
       - 'shesha-core/**'
 
