@@ -45,6 +45,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   borderRadius?: number;
   hideFileName?: boolean;
   container?: IStyleType;
+  primaryColor?: string;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -151,7 +152,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
+    .add<IAttachmentsEditorProps>(7, (prev) => (
+      {
+        ...prev, ...defaultStyles(),
+        desktop: { ...defaultStyles(), container: containerDefaultStyles() },
+        mobile: { ...defaultStyles(), container: containerDefaultStyles() },
+        tablet: { ...defaultStyles(), container: containerDefaultStyles() }
+      })),
 };
 
 export default AttachmentsEditor;

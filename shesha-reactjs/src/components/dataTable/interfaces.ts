@@ -67,6 +67,7 @@ export interface IShaDataTableInlineEditableProps {
   onNewRowInitialize?: string;
   onRowSave?: string;
   onRowSaveSuccessAction?: IConfigurableActionConfiguration;
+  onDblClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
 }
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
@@ -81,7 +82,6 @@ export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInl
   selectedRowIndex?: number;
   onSelectRow?: (index: number, row: any) => void;
   onSelectedIdsChanged?: (selectedRowIds: string[]) => void;
-  onDblClick?: (data: any, index?: number) => void;
   onMultiRowSelect?: (rows: Array<Row> | Row) => void;
   customTypeEditors?: ITableCustomTypeEditor[];
   onRowsChanged?: (rows: object[]) => void;

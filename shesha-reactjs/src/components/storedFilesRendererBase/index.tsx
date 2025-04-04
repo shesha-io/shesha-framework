@@ -67,6 +67,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   hideFileName?: boolean;
   gap?: number;
   container?: IStyleType;
+  primaryColor?: string;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -87,6 +88,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   validFileTypes = [],
   maxFileLength = 0,
   isDragger = false,
+  primaryColor,
   disabled,
   isStub = false,
   allowedFileTypes = [],
@@ -141,11 +143,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fetchStyles();
   }, [background, backendUrl, httpHeaders, jsStyle]);
 
-  const styling = JSON.parse(model.stylingBox || '{}');
+  const styling = JSON.parse(model.container?.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   const additionalStyles: CSSProperties = removeUndefinedProps({
-    ...stylingBoxAsCSS,
     ...dimensionsStyles,
     ...borderStyles,
     ...fontStyles,
@@ -157,9 +158,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const finalStyle = removeUndefinedProps(additionalStyles);
 
   const { styles } = useStyles({
-    containerStyles: { ...{ ...containerDimensions, width: layout === 'vertical' ? '' : addPx(containerDimensions.width), height: layout === 'horizontal' ? '' : addPx(containerDimensions.height) }, ...containerJsStyle },
-    style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger }
+    containerStyles: { ...{ ...containerDimensions, width: layout === 'vertical' ? '' : addPx(containerDimensions.width), height: layout === 'horizontal' ? '' : addPx(containerDimensions.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
+    style: finalStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    primaryColor
   });
+
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
   const openFilesZipNotification = () =>
@@ -207,7 +210,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
-
 
   const iconRender = (file) => {
     const { type, uid } = file;
@@ -300,7 +302,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         theme={{
           components: {
             Upload: {
-              actionsColor: '#1890ff',
+              actionsColor: primaryColor,
             },
           },
         }}
@@ -308,11 +310,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         {isStub
           ? (isDragger
             ? <Dragger disabled><DraggerStub /></Dragger>
-            : <div>{renderUploadContent()}</div>)
+            : <div
+              className={listType !== 'text' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}>
+              {renderUploadContent()}
+              {listType !== 'text' && !rest.hideFileName && <span className='ant-upload-list-item-name' style={{ position: 'absolute', bottom: '0' }}>{'name'}</span>}
+            </div>)
           : (props.disabled
             ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
-            : isDragger
-              ? <Dragger {...props}><DraggerStub /></Dragger>
+            : isDragger ?
+              <Dragger {...props}>
+                <DraggerStub />
+              </Dragger>
               : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
         }
       </ConfigProvider>
