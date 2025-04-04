@@ -59,12 +59,12 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   const setContextMode = () => {
     setState({ ...state, mode: 'context' });
-    onValuesChange({ context: state?.context });
+    onValuesChange({ context: state?.context, componentName: state?.componentName });
   };
 
   const setFormDataMode = () => {
     setState({ ...state, mode: 'formData' });
-    onValuesChange({ context: null });
+    onValuesChange({ context: null, componentName: state?.propertyName });
   };
 
   const mode = state?.mode ?? 'formData';
@@ -86,8 +86,11 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           readOnly={readOnly}
           value={formData.componentName}
           onChange={(e) => {
-            setState(prev => ({ ...prev, componentName: e.target.value }));
-            onValuesChange({ componentName: e.target.value });
+            const value = e.target.value;
+            if (value !== undefined) {
+              setState(prev => ({ ...prev, componentName: value }));
+              onValuesChange({ componentName:value });
+            }
           }}
           size={model.size}
         />
@@ -98,8 +101,10 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           readOnly={readOnly}
           value={formData?.context}
           onChange={(value) => {
-            onValuesChange({ context: value });
-            setState({ ...state, context: value });
+            if (value !== undefined) {
+              onValuesChange({ context: value });
+              setState({ ...state, context: value });
+            }
           }}
         />
       </Form.Item>
@@ -112,11 +117,13 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
             propertyName={'propertyName'}
             mode={'value'}
             onChange={(value) => {
-              const changedData = { propertyName: value };
-              if (state?.mode === 'formData')
-                changedData['componentName'] = getValueFromPropertySettings(value);
-              setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
-              onValuesChange(changedData);
+              if (value !== undefined) {
+                const changedData = { propertyName: value };
+                if (state?.mode === 'formData')
+                  changedData['componentName'] = getValueFromPropertySettings(value);
+                setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
+                onValuesChange(changedData);
+              }
             }}
             value={formData.propertyName as any}
             readOnly={readOnly}
@@ -137,10 +144,10 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           </SettingsControl>
         </Form.Item>
       </ConditionalWrap>
-      <Button type='link' onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'} className={styles.bindingOptionsBtn}>
+      <Button type='link' onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'}>
         hide binding option (bind to form data)
       </Button>
-      <Button type='link' onClick={setContextMode} hidden={model.readOnly || mode === 'context'} className={styles.bindingOptionsBtn}>
+      <Button type='link' onClick={setContextMode} hidden={model.readOnly || mode === 'context'}>
         show binding option
       </Button>
     </>

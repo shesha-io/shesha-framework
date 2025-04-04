@@ -1,10 +1,11 @@
+import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = () => {
     return {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
-                id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D-row',
+                id: 'endpointsAutocomplete-labelValueEditor-row',
                 readOnly: false,
                 inputs: [
                     {
@@ -81,14 +82,7 @@ export const getSettings = () => {
                         validate: {
                             required: true
                         },
-                        dropdownOptions: [
-                            { label: 'primary', value: 'primary' },
-                            { label: 'ghost', value: 'ghost' },
-                            { label: 'dashed', value: 'dashed' },
-                            { label: 'link', value: 'link' },
-                            { label: 'text', value: 'text' },
-                            { label: 'default', value: 'default' }
-                        ],
+                        dropdownOptions: buttonTypes,
                         jsSetting: false
                     },
                     {

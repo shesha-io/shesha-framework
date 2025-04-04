@@ -71,6 +71,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'value',
                     label: 'Value',
                     jsSetting: true,
+                    description: 'The value to display in the statistic. This value will will only override if there is no binding to the property name.',
                   },
                   {
                     type: 'numberField',
@@ -102,7 +103,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: fixesRowId,
@@ -123,7 +124,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -167,6 +168,157 @@ export const getSettings = (data: any) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'titleStyle',
+                        label: 'Title Font',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        collapsedByDefault: true,
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: pnlFontStyleId,
+                              inline: true,
+                              propertyName: 'titleFont',
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'dropdown',
+                                  id: `fontFamily-${styleRouterId}`,
+                                  label: 'Family',
+                                  propertyName: 'titleFont.type',
+                                  hideLabel: true,
+                                  dropdownOptions: fontTypes,
+                                },
+                                {
+                                  type: 'numberField',
+                                  id: `fontSize-${styleRouterId}`,
+                                  label: 'Size',
+                                  propertyName: 'titleFont.size',
+                                  hideLabel: true,
+                                  width: 50,
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontWeight-${styleRouterId}`,
+                                  label: 'Weight',
+                                  propertyName: 'titleFont.weight',
+                                  hideLabel: true,
+                                  dropdownOptions: fontWeights,
+                                  width: 100,
+                                },
+                                {
+                                  type: 'colorPicker',
+                                  id: `fontColor-${styleRouterId}`,
+                                  label: 'Color',
+                                  hideLabel: true,
+                                  propertyName: 'titleFont.color',
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontAlign-${styleRouterId}`,
+                                  label: 'Align',
+                                  propertyName: 'titleFont.align',
+                                  hideLabel: true,
+                                  width: 60,
+                                  dropdownOptions: textAlign,
+                                },
+                              ],
+                            })
+                            .addSettingsInput({
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'titleStyle',
+                              hideLabel: true,
+                              label: 'Custom Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'valueStyle',
+                        label: 'Value Font',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        collapsedByDefault: true,
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: pnlFontStyleId,
+                              inline: true,
+                              propertyName: 'valueFont',
+                              label: 'Value Font',
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'dropdown',
+                                  id: `fontFamily-${styleRouterId}`,
+                                  label: 'Family',
+                                  propertyName: 'valueFont.type',
+                                  hideLabel: true,
+                                  dropdownOptions: fontTypes,
+                                },
+                                {
+                                  type: 'numberField',
+                                  id: `fontSize-${styleRouterId}`,
+                                  label: 'Size',
+                                  propertyName: 'valueFont.size',
+                                  hideLabel: true,
+                                  width: 50,
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontWeight-${styleRouterId}`,
+                                  label: 'Weight',
+                                  propertyName: 'valueFont.weight',
+                                  hideLabel: true,
+                                  dropdownOptions: fontWeights,
+                                  width: 100,
+                                },
+                                {
+                                  type: 'colorPicker',
+                                  id: `fontColor-${styleRouterId}`,
+                                  label: 'Color',
+                                  hideLabel: true,
+                                  propertyName: 'valueFont.color',
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontAlign-${styleRouterId}`,
+                                  label: 'Align',
+                                  propertyName: 'valueFont.align',
+                                  hideLabel: true,
+                                  width: 60,
+                                  dropdownOptions: textAlign,
+                                },
+                              ],
+                            })
+                            .addSettingsInput({
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'valueStyle',
+                              hideLabel: false,
+                              label: 'Custom Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
                         label: 'Dimensions',
@@ -198,7 +350,7 @@ export const getSettings = (data: any) => {
                                   id: `minWidth-${styleRouterId}`,
                                   label: "Min Width",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
                                 },
@@ -207,7 +359,7 @@ export const getSettings = (data: any) => {
                                   id: `maxWidth-${styleRouterId}`,
                                   label: "Max Width",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
                                 }
@@ -233,7 +385,7 @@ export const getSettings = (data: any) => {
                                   id: `minHeight-${dimensionsStylePnlId}`,
                                   label: "Min Height",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.minHeight",
                                   icon: "minHeightIcon",
                                 },
@@ -242,7 +394,7 @@ export const getSettings = (data: any) => {
                                   id: `maxHeight-${dimensionsStylePnlId}`,
                                   label: "Max Height",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
                                 }
@@ -431,13 +583,12 @@ export const getSettings = (data: any) => {
                                   }
                                 ]
                               })
-
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-controls",
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -462,7 +613,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [{
                                   type: 'radio',
                                   id: 'backgroundStyleRow-repeat-radio',
@@ -472,7 +623,7 @@ export const getSettings = (data: any) => {
                                   inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ],
@@ -552,157 +703,6 @@ export const getSettings = (data: any) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'titleStyle',
-                        label: 'Title Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        collapsedByDefault: true,
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: pnlFontStyleId,
-                              inline: true,
-                              propertyName: 'titleFont',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'dropdown',
-                                  id: `fontFamily-${styleRouterId}`,
-                                  label: 'Family',
-                                  propertyName: 'titleFont.type',
-                                  hideLabel: false,
-                                  dropdownOptions: fontTypes,
-                                },
-                                {
-                                  type: 'numberField',
-                                  id: `fontSize-${styleRouterId}`,
-                                  label: 'Size',
-                                  propertyName: 'titleFont.size',
-                                  hideLabel: false,
-                                  width: 50,
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontWeight-${styleRouterId}`,
-                                  label: 'Weight',
-                                  propertyName: 'titleFont.weight',
-                                  hideLabel: false,
-                                  dropdownOptions: fontWeights,
-                                  width: 100,
-                                },
-                                {
-                                  type: 'colorPicker',
-                                  id: `fontColor-${styleRouterId}`,
-                                  label: 'Color',
-                                  hideLabel: false,
-                                  propertyName: 'titleFont.color',
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontAlign-${styleRouterId}`,
-                                  label: 'Align',
-                                  propertyName: 'titleFont.align',
-                                  hideLabel: false,
-                                  width: 60,
-                                  dropdownOptions: textAlign,
-                                },
-                              ],
-                            })
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'titleStyle',
-                              hideLabel: false,
-                              label: 'Custom',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'valueStyle',
-                        label: 'Value Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        collapsedByDefault: true,
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: pnlFontStyleId,
-                              inline: true,
-                              propertyName: 'valueFont',
-                              label: 'Value Font',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'dropdown',
-                                  id: `fontFamily-${styleRouterId}`,
-                                  label: 'Family',
-                                  propertyName: 'valueFont.type',
-                                  hideLabel: false,
-                                  dropdownOptions: fontTypes,
-                                },
-                                {
-                                  type: 'numberField',
-                                  id: `fontSize-${styleRouterId}`,
-                                  label: 'Size',
-                                  propertyName: 'valueFont.size',
-                                  hideLabel: false,
-                                  width: 50,
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontWeight-${styleRouterId}`,
-                                  label: 'Weight',
-                                  propertyName: 'valueFont.weight',
-                                  hideLabel: false,
-                                  dropdownOptions: fontWeights,
-                                  width: 100,
-                                },
-                                {
-                                  type: 'colorPicker',
-                                  id: `fontColor-${styleRouterId}`,
-                                  label: 'Color',
-                                  hideLabel: false,
-                                  propertyName: 'valueFont.color',
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontAlign-${styleRouterId}`,
-                                  label: 'Align',
-                                  propertyName: 'valueFont.align',
-                                  hideLabel: false,
-                                  width: 60,
-                                  dropdownOptions: textAlign,
-                                },
-                              ],
-                            })
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'valueStyle',
-                              hideLabel: false,
-                              label: 'Custom',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
                         propertyName: 'stylingBox',
                         label: 'Margin & Padding',
                         labelAlign: 'right',
@@ -725,7 +725,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'style',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
@@ -759,7 +759,7 @@ export const getSettings = (data: any) => {
             id: eventsId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'codeEditor',
                 propertyName: 'onClickCustom',

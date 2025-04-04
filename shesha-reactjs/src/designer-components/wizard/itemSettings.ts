@@ -4,7 +4,7 @@ import { nanoid } from '@/utils/uuid';
 export const getItemSettings = () => {
   return new DesignerToolbarSettings()
     .addSearchableTabs({
-      id: nanoid(),
+      id: 'wizard-settings-tabs',
       propertyName: 'settingsTabs',
       parentId: 'root',
       label: 'Settings',
@@ -15,14 +15,14 @@ export const getItemSettings = () => {
         {
           key: '1',
           title: 'Common',
-          id: nanoid(),
+          id: 'wizard-settings-tabs-common',
           components: [...new DesignerToolbarSettings()
             .addSettingsInputRow({
-              id: nanoid(),
+              id: 'wizard-settings-tabs-common-name-row',
               readOnly: false,
               inputs: [
                 {
-                  id: nanoid(),
+                  id: 'wizard-settings-tabs-common-name',
                   type: 'textField',
                   propertyName: 'name',
                   label: 'Component Name',
@@ -33,22 +33,22 @@ export const getItemSettings = () => {
                   },
                 },
                 {
-                  id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
-                  propertyName: 'title',
+                  id: 'wizard-settings-tabs-common-title',
                   type: 'textField',
+                  propertyName: 'title',
                   label: 'Title',
                   labelAlign: 'right',
                   parentId: 'root',
-                  jsSetting: true,
+                  jsSetting: true
                 }
               ]
             })
             .addSettingsInputRow({
-              id: nanoid(),
+              id: 'wizard-settings-tabs-common-subTitle-row',
               readOnly: false,
               inputs: [
                 {
-                  id: nanoid(),
+                  id: 'wizard-settings-tabs-common-subTitle',
                   type: 'textField',
                   propertyName: 'subTitle',
                   label: 'Sub Title',
@@ -57,7 +57,7 @@ export const getItemSettings = () => {
                   jsSetting: true,
                 },
                 {
-                  id: '4dca96b4-095d-4d92-aad8-2135e07c04a6',
+                  id: 'wizard-settings-tabs-common-description',
                   propertyName: 'description',
                   type: 'textArea',
                   label: 'Description',
@@ -68,11 +68,11 @@ export const getItemSettings = () => {
               ]
             })
             .addSettingsInputRow({
-              id: nanoid(),
+              id: 'wizard-settings-tabs-common-key-row',
               readOnly: false,
               inputs: [
                 {
-                  id: nanoid(),
+                  id: 'wizard-settings-tabs-common-key',
                   type: 'textField',
                   propertyName: 'key',
                   label: 'Key',
@@ -81,7 +81,7 @@ export const getItemSettings = () => {
                   jsSetting: true,
                 },
                 {
-                  id: nanoid(),
+                  id: 'wizard-settings-tabs-common-status',
                   type: 'dropdown',
                   propertyName: 'status',
                   label: 'Status',
@@ -99,11 +99,11 @@ export const getItemSettings = () => {
               ]
             })
             .addSettingsInputRow({
-              id: nanoid(),
+              id: 'wizard-settings-tabs-common-icon-row',
               readOnly: false,
               inputs: [
                 {
-                  id: nanoid(),
+                  id: 'wizard-settings-tabs-common-icon',
                   type: 'iconPicker',
                   propertyName: 'icon',
                   label: 'Icon',
@@ -113,7 +113,7 @@ export const getItemSettings = () => {
                   settingsValidationErrors: [],
                 },
                 {
-                  id: 'f5b9b8c6-1a3d-4e0d-9b5d-9a8f7f4e4f9c',
+                  id: 'wizard-settings-tabs-common-allowCancel',
                   type: 'switch',
                   propertyName: 'allowCancel',
                   label: 'Allow Cancel',
@@ -153,7 +153,7 @@ export const getItemSettings = () => {
                     readOnly: false,
                     inputs: [
                       {
-                        id: nanoid(),
+                        id: 'wizard-settings-tabs-common-nextButtonText',
                         type: 'textField',
                         propertyName: 'nextButtonText',
                         label: 'Text',
@@ -162,7 +162,7 @@ export const getItemSettings = () => {
                         jsSetting: true,
                       },
                       {
-                        id: nanoid(),
+                        id: 'wizard-settings-tabs-common-nextButtonCustomEnabled',
                         type: 'codeEditor',
                         propertyName: 'nextButtonCustomEnabled',
                         label: 'Custom Enabled',
@@ -172,7 +172,7 @@ export const getItemSettings = () => {
                       }]
                   })
                   .addSettingsInputRow({
-                    id: nanoid(),
+                    id: 'wizard-settings-tabs-common-nextButtonBeforeActionRow',
                     readOnly: false,
                     inputs: [
                       {
@@ -404,7 +404,7 @@ export const getItemSettings = () => {
                   .addConfigurableActionConfigurator({
                     id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
                     propertyName: 'onBeforeRenderActionConfiguration',
-                    label: 'Action configuration',
+                    label: 'Action Configuration',
                     hideLabel: true,
                     hidden: false,
                   })

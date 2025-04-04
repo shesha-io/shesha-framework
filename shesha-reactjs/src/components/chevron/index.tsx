@@ -1,22 +1,27 @@
-import { CSSProperties, FC, useEffect, useRef, useState } from "react";
+import { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
 import React from "react";
 import { Button, Form, FormInstance } from "antd";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
-import { useTheme } from "@/index";
+import { pickStyleFromModel, useTheme } from "@/index";
 import { useStyles } from "./styles";
 import { fadeColor } from "@/providers/refList/provider/utils";
 import { IChevronButton, IChevronControlProps } from "./models";
 import classNames from "classnames";
 import { addPx } from "@/designer-components/_settings/utils";
+import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
+
 
 export const ChevronControl: FC<IChevronControlProps> = (props) => {
-    const { value, activeColor, fontColor, showIcons, colorSource, items, width, height, fontSize } = props;
+    const fontStyles = useMemo(() => getFontStyle(props?.font), [props?.font]);
+    const { value, activeColor, showIcons, colorSource, items, width, height, stylingBox } = props;
     const { styles } = useStyles({ height });
     const [form] = Form.useForm();
     const { theme } = useTheme();
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
     const containerRef = useRef(null);
+    const stylingBoxJSON = JSON.parse(stylingBox || '{}');
+    const stylingBoxCSS = pickStyleFromModel(stylingBoxJSON);    
 
     const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>) => {
         function getColor(source: string) {
@@ -33,7 +38,6 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
         }
 
         const newStyles: CSSProperties = {
-            color: fontColor,
             backgroundColor: props.itemValue === value ? getColor(colorSource) : fadeColor(getColor(colorSource), 70),
             clipPath: 'polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 5% 50%, 0% 0%)',
             textAlign: 'center',
@@ -41,17 +45,17 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
             outline: 'none',
             width: addPx(width) ?? '150px',
             height: addPx(height) ?? '35px',
-            fontSize: addPx(fontSize) ?? '14px',
-            borderRadius: '0px'
+            borderRadius: '0px',
+            ...fontStyles
         };
 
         return !props.hidden && (
-            <div className={styles.chevronButton} >
+            <div className={styles.chevronButton}>
                 <ConfigurableButton
                     key={uuid}
                     {...props}
                     icon={showIcons ? props.icon : null}
-                    style={newStyles}
+                    style={{...newStyles, ...stylingBoxCSS}}
                     readOnly={props.readOnly}
                     buttonType='text'
                     form={form}

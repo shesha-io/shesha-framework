@@ -1,3 +1,5 @@
+import { StorageProxy } from "@/providers/dataContextProvider/contexts/storageProxy";
+
 interface IAnyObject {
   [value: string]: any;
 }
@@ -33,4 +35,12 @@ export const arrayMove = (array, from, to) => {
   array = array.slice();
   arrayMoveMutate(array, from, to);
   return array;
+};
+
+export const isArray = (value: any): boolean => {
+  return Array.isArray(value) 
+    ? true
+    : value instanceof StorageProxy && Array.isArray(value.getData())
+      ? true
+      : false;
 };

@@ -6,6 +6,7 @@ export interface IDataContextFullInstance extends IDataContextProviderStateConte
 
 export interface IDataContextProviderStateContext {
   id: string;
+  uid: string;
   name: string;
   description?: string;
   type: string;
@@ -34,7 +35,7 @@ export interface IDataContextProviderActionsContext {
 export interface IDataContextProviderActionsContextOverride extends Partial<IDataContextProviderActionsContext> {}
 
 /** initial state */
-export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderStateContext = { id: '', name: '', type: '' };
+export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderStateContext = { id: '', uid: '', name: '', type: '' };
 
 export const DataContextProviderStateContext = createNamedContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE, "DataContextProviderStateContext");
 export const DataContextProviderActionsContext = createNamedContext<IDataContextProviderActionsContext>(undefined, "DataContextProviderActionsContext");

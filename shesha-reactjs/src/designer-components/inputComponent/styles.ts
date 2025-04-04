@@ -15,7 +15,6 @@ export const useStyles = createStyles(({ css, cx }) => {
         gap: 0px 8px;
         `);
 
-
     const icon = cx(css`
         --icon-fill-color: #1C1B1F;
     `);

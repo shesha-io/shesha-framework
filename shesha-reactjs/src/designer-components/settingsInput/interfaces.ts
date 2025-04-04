@@ -1,12 +1,14 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { CodeLanguages } from '../codeEditor/types';
-import { ResultType } from '@/components/codeEditor/models';
-import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent } from '@/index';
+import { CodeTemplateSettings, ResultType } from '@/components/codeEditor/models';
+import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ComponentType } from '@/components/formComponentSelector';
 import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { GetResultTypeFunc } from '../codeEditor/interfaces';
+import { IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 
 export interface IRadioOption {
     value: string | number;
@@ -19,6 +21,7 @@ export interface IRadioOption {
 export interface IDropdownOption {
     label: string | React.ReactNode;
     value: string;
+    icon?: string | React.ReactNode;
 }
 
 export interface InputType {
@@ -26,7 +29,8 @@ export interface InputType {
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'textField' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
     | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip'
-    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal' | 'myAutocomplete';
+    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal'
+    | 'keyInformationBarColumnsList' | 'Password';
 }
 
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
@@ -45,7 +49,9 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    tooltipAlt?: string;
     customTooltip?: string;
+    prefix?: string;
     suffix?: string;
     size?: SizeType;
     width?: string | number;
@@ -65,16 +71,19 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     value?: any;
     placeholder?: string;
     mode?: any;
+    availableHttpVerbs?: IHttpVerb[];
     /** Can be any valid number e.g.: 1, 0.1, 3, 3.14 */
     step?: number;
     exposedVariables?: string[] | ICodeExposedVariable[];
     dropdownMode?: 'multiple' | 'tags';
     customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
+    allowSearch?: boolean;
     className?: string;
     icon?: string | React.ReactNode;
     iconAlt?: string | React.ReactNode;
     inline?: boolean;
+    autoSize?: boolean;
     inputType?: InputType['type'];
     referenceList?: any;
     filter?: any;
@@ -88,6 +97,10 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     max?: number;
     showText?: boolean;
     fieldsUnavailableHint?: string;
+    wrapInTemplate?: boolean;
+    templateSettings?: CodeTemplateSettings;
+    resultTypeExpression?: string | GetResultTypeFunc;
+    availableConstants?: IObjectMetadata;
     items?: [];
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     listItemSettingsMarkup?: IConfigurableFormComponent[];
@@ -103,7 +116,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     noSelectionItemValue?: string;
     componentType?: ComponentType;
     parentComponentType?: string;
-    options?: any;
-    onSearch?: (term: any) => void;
-    
+    textType?: string;
+    showSearch?: boolean;
+    defaultChecked?: boolean;
 };

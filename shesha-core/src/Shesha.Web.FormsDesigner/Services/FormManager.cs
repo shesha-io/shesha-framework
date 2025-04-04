@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Session;
-using Abp.Runtime.Validation;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -11,6 +10,7 @@ using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
+using Shesha.Validations;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;
@@ -139,8 +139,7 @@ namespace Shesha.Web.FormsDesigner.Services
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             form.NotNull();
 
@@ -171,8 +170,7 @@ namespace Shesha.Web.FormsDesigner.Services
                         : $"Form with name `{input.Name}` already exists"
                     )
                 );
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var template = input.TemplateId.HasValue
                 ? await Repository.GetAsync(input.TemplateId.Value)
@@ -231,8 +229,7 @@ namespace Shesha.Web.FormsDesigner.Services
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var form = new FormConfiguration();
             form.Name = input.Name;

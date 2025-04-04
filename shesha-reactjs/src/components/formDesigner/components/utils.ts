@@ -101,6 +101,17 @@ export const customOnChangeValueEventHandler = (model: IConfigurableFormComponen
   },
 });
 
+export const customOnClickEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext, clickEvent: Function = null) => ({
+  onClick: (value: any) => {
+    if (typeof clickEvent === 'function')
+      clickEvent(value);
+    const expression = model?.onClickCustom;
+    if (Boolean(expression)) {
+      return executeScriptSync(expression, addContextData(context, {value}));
+    }
+  },
+});
+
 export const onCustomEventsHandler = <FormCustomEvent = any>(
   event: FormCustomEvent,
   customEventAction: string,
@@ -133,7 +144,8 @@ export const customAddressEventHandler = (
   model: IConfigurableFormComponent,
   context: IApplicationContext,
   onChangeCustom,
-  onSelectCustom
+  onSelectCustom,
+  onFocusCustom,
 ): IGooglePlacesAutocompleteProps => {
 
   const onCustomEvent = (event: any, key: string) => {
@@ -157,12 +169,18 @@ export const customAddressEventHandler = (
     onCustomEvent(e, 'onChangeCustom');
   };
 
+  const onFocus = (e: string) => {
+    onFocusCustom(e);
+    onCustomEvent(e, 'onFocusCustom');
+  };
+
   const onGeocodeChange = (event: IAddressAndCoords) =>
     onSelectCustom(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
 
   return {
     onChange,
     onGeocodeChange,
+    onFocus
   };
 };
 

@@ -159,18 +159,24 @@ export const getSettings = (data) => {
                 id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 components: [...new DesignerToolbarSettings()
-                  .addSettingsInput(
-                    {
-                      inputType: 'queryBuilder',
-                      id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'filters',
-                      label: 'Entity Filter',
-                      jsSetting: true,
-                      modelType: '{{data.entityType}}',
-                      fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.'
-                    }
-
-                  ).addSettingsInput({
+                  .addSettingsInputRow({
+                    id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
+                    parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    inputs: [
+                      {
+                        type: 'queryBuilder',
+                        id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
+                        propertyName: 'filters',
+                        label: 'Entity Filter',
+                        jsSetting: true,
+                        modelType: '{{data.entityType}}',
+                        fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                        hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                      },
+                    ],
+                  })
+                  .addSettingsInput({
                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     inputType: 'dropdown',
                     id: 'acb2d566-fe48-43bd-84e0-28b7103354c1',

@@ -8,7 +8,7 @@ export interface IDataContextDescriptor extends IDataContextProviderActionsConte
   name: string;
   description?: string;
   type: DataContextType;
-  parentId?: string;
+  parentUid?: string;
   metadata?: IContextMetadata;
 }
 
