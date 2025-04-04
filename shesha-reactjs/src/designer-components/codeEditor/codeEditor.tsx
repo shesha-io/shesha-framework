@@ -151,7 +151,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', fontSize: '12px', width: '100%' } : { width: '100%' }}
         >
-          {hasValue ? <><CodeOutlined /> {value}</> : <><CodeOutlined /> ...</>}
+          {<><CodeOutlined /> {hasValue ? value : '...'}</>}
         </Button>
         {showDialog && (
           <Modal
