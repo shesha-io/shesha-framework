@@ -134,7 +134,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'numberField':
             return <InputNumber
                 placeholder={placeholder}
-                controls={false}
+                controls={!icon}
                 defaultValue={defaultValue}
                 variant={variant} readOnly={readOnly}
                 size={size}
