@@ -1,5 +1,5 @@
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { useSheshaApplication, useStoredFile } from '@/providers';
+import { useSheshaApplication, useStoredFile, useTheme } from '@/providers';
 import {
   DeleteOutlined,
   DownloadOutlined,
@@ -9,7 +9,7 @@ import {
   SyncOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import { App, Button, Upload } from 'antd';
+import { App, Button, Flex, Space, Upload } from 'antd';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import React, { FC, useEffect, useRef, useState } from 'react';
@@ -75,105 +75,13 @@ export const FileUpload: FC<IFileUploadProps> = ({
       isDragger,
     },
   });
+  const { theme } = useTheme();
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
   const { message } = App.useApp();
   const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
-
-  const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
-    // call action from context
-    uploadFile({ file: file as File }, callback);
-  };
-
-  const onDownloadClick = (e) => {
-    e.preventDefault();
-    downloadFile({ fileId: fileInfo.id, fileName: fileInfo.name });
-  };
-
-  const onReplaceClick = (e) => {
-    e.preventDefault();
-
-    if (!isDragger) {
-      uploadButtonRef?.current?.click();
-    } else {
-      if (uploadDraggerSpanRef.current) {
-        uploadDraggerSpanRef.current.click();
-      }
-    }
-  };
-
-  const onDeleteClick = (e) => {
-    e.preventDefault();
-    deleteFile();
-  };
-
-  const onPreview = () => {
-    setPreviewImage({ url, uid: fileInfo.id, name: fileInfo.name });
-    setPreviewOpen(true);
-  };
-
-  const fileControls = () => {
-    return (
-      <>
-        <a style={{ color: '#000' }}>
-          {false && <InfoCircleOutlined />}
-          <FileVersionsPopup fileId={fileInfo.id} />
-        </a>
-        {allowReplace && (
-          <a onClick={(e) => onReplaceClick(e)} style={{ color: '#000' }}>
-            <SyncOutlined title="Replace" />
-          </a>
-        )}
-        {allowDelete && (
-          <a onClick={(e) => onDeleteClick(e)} style={{ color: '#000' }}>
-            <DeleteOutlined title="Remove" />
-          </a>
-        )}
-        {
-          <a onClick={onPreview} style={{ color: '#000' }}>
-            <EyeOutlined title="Preview" />
-          </a>
-        }
-      </>
-    );
-  };
-  const styledfileControls = () => {
-    return (
-      fileInfo && (
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-          <Image
-            src={imageUrl}
-            alt={fileInfo.name}
-            preview={false}
-            style={{
-              width: '90px', // Adjust based on requirement
-              height: '90px',
-              objectFit: 'cover',
-              borderRadius: '8px',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              background: 'rgba(0, 0, 0, 0.6)',
-              height: '100%',
-              width: '100%',
-              padding: '5px',
-              borderRadius: '8px',
-              display: 'flex',
-              gap: '8px',
-            }}
-          >
-            {fileControls()}
-          </div>
-        </div>
-      )
-    );
-  };
 
   const url = `${backendUrl}${fileInfo?.url}`;
   useEffect(() => {
@@ -189,16 +97,97 @@ export const FileUpload: FC<IFileUploadProps> = ({
       });
   }, [fileInfo]);
 
-  // const iconRender = (fileInfo) => {
-  //   const { type, name } = fileInfo;
-  //   if (isImageType(type)) {
-  //     if (listType === 'thumbnail' && !isDragger) {
-  //       return <Image src={imageUrl} alt={name} preview={false} />;
-  //     }
-  //   }
+  const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
+    // call action from context
+    uploadFile({ file: file as File }, callback);
+  };
 
-  //   return getFileIcon(type);
-  // };
+  const onReplaceClick = (e) => {
+    e.preventDefault();
+
+    if (!isDragger) {
+      uploadButtonRef?.current?.click();
+    } else {
+      if (uploadDraggerSpanRef.current) {
+        uploadDraggerSpanRef?.current?.click();
+      }
+    }
+  };
+
+  const onDeleteClick = (e) => {
+    e.preventDefault();
+    deleteFile();
+  };
+
+  const onPreview = () => {
+    setPreviewImage({ url, uid: fileInfo.id, name: fileInfo.name });
+    setPreviewOpen(true);
+  };
+
+  const fileControls = (color: string) => {
+    return (
+      //space between the icons
+      <Space>
+        <a style={{ color: color }}>
+          {false && <InfoCircleOutlined />}
+          <FileVersionsPopup fileId={fileInfo.id} />
+        </a>
+        {allowReplace && (
+          <a onClick={(e) => onReplaceClick(e)} style={{ color: color }}>
+            <SyncOutlined title="Replace" />
+          </a>
+        )}
+        {allowDelete && (
+          <a onClick={(e) => onDeleteClick(e)} style={{ color: color }}>
+            <DeleteOutlined title="Remove" />
+          </a>
+        )}
+        {
+          <a onClick={onPreview} style={{ color: color }}>
+            <EyeOutlined title="Preview" />
+          </a>
+        }
+      </Space>
+    );
+  };
+
+  const iconRender = (fileInfo) => {
+    const { type, name } = fileInfo;
+    if (isImageType(type)) {
+      if (listType === 'thumbnail' && !isDragger) {
+        return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls} />;
+      }
+    }
+
+    return getFileIcon(type);
+  };
+
+  const styledfileControls = () => {
+    return (
+      fileInfo && (
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          {iconRender(fileInfo)}
+          <div className={styles.overlayThumbnailControls}>{fileControls('#fff')}</div>
+        </div>
+      )
+    );
+  };
+
+  const renderFileItem = (file: any) => {
+    const showThumbnailControls = !isUploading && listType === 'thumbnail';
+    const showTextControls = listType === 'text';
+
+    return (
+      <div>
+        {showThumbnailControls && styledfileControls()}
+        <a title={file.name} style={{ display: 'block', marginTop: '5px' }}>
+          <Space>
+            {file.name} ({filesize(file.size)}){showTextControls && fileControls(theme.application.primaryColor)}
+          </Space>
+        </a>
+      </div>
+    );
+  };
 
   const fileProps: UploadProps = {
     name: 'file',
@@ -217,16 +206,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    itemRender: (_originNode, file, _currFileList) => {
-      return (
-        <div>
-          {!isUploading && listType === 'thumbnail' ? styledfileControls() : null}
-          <a title={file.name} style={{ display: 'block', marginTop: '5px' }}>
-            {file.name} ({filesize(file.size)}){listType === 'text' ? fileControls(): null}
-          </a>
-        </div>
-      );
-    },
+    itemRender: (_originNode, file) => renderFileItem(file),
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;

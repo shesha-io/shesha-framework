@@ -206,126 +206,38 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
     `);
 
-  // const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css`
-  //   height: var(--container-height) !important;
-  //   width: var(--container-width) !important;
-  //   max-height: var(--container-max-height) !important;
-  //   max-width: var(--container-max-width) !important;
-  //   min-height: var(--container-min-height) !important;
-  //   .${prefixCls}-upload-list {
-  //         display: flex !important;
-  //         flex-wrap: nowrap !important;
-  //         flex-direction: row !important;
-  //         flex-shrink: 0 !important;
-  //         overflow-x: auto;
-  //         overflow-y: clip !important;
-  //         align-items: center !important;
-  //         padding: 0 ${borderWidth ?? '2px'} !important;
-  //         height: max-content !important;
-  //         width: var(--container-width) !important;
-  //         min-width: var(--container-min-width) !important;
-  //         max-width: var(--container-max-width) !important;
-  //     }
+    const thumbnailControls = cx("thumbnail-controls", css`
+       width: 90px !important;   
+       height: 90px !important;
+       object-fit: cover;
+       border-radius: 8px;
+    `);
 
-  //     .ant-upload-list-item-container {
-  //       display: inline-block !important;
-  //       max-width: var(--thumbnail-width) !important;
-  //       height: var(--thumbnail-height) !important;
-  //       border-radius: ${borderRadius ?? '8px'} !important;
-  //       &.ant-upload-animate-inline-appear,
-  //       &.ant-upload-animate-inline-appear-active,
-  //       &.ant-upload-animate-inline {
-  //         display: none !important;
-  //         animation: none !important;
-  //         transition: none !important;
-  //       }
-  //     }
-  //   `);
-
-  // const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
-  //     width: max-content;
-  //     max-width: var(--container-max-width) !important;
-  //     padding: ${borderWidth ?? '2px'} !important;
-  //     width: max-content !important;
-  //     height: var(--container-height) !important;
-  //     max-height: var(--container-max-height) !important;
-  //     min-height: var(--container-min-height) !important;
-  //   .${prefixCls}-upload-list {
-  //         display: flex !important;
-  //         flex-direction: column !important;
-  //         flex-wrap: nowrap !important;
-  //         padding: 2px ${borderWidth ?? '2px'} !important;
-  //         height: var(--container-height) !important;
-  //         width: 100% !important;
-  //         max-height: calc(var(--container-max-height) - 32px) !important;
-  //         min-height: calc(var(--container-min-height) - 32px) !important;
-  //         min-height: calc(var(--container-min-height) - 32px) !important;
-  //       }
-
-  //   .stored-files-renderer-btn-container {
-  //     justify-content: flex-start;
-  //     .ant-btn {
-  //       padding: 0;
-  //     }
-  //    }
-
-  //    .ant-upload-list-item-container {
-  //       display: inline-block !important;
-  //       width: var(--thumbnail-width) !important;
-  //       height: var(--thumbnail-height) !important;
-  //       border-radius: ${borderRadius ?? '8px'} !important;
-  //       &.ant-upload-animate-inline-appear,
-  //       &.ant-upload-animate-inline-appear-active,
-  //       &.ant-upload-animate-inline {
-  //         display: none !important;
-  //         animation: none !important;
-  //         transition: none !important;
-  //       }
-  //     }
-  //   `);
-
-  // const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-grid", css` 
-  //   max-width: var(--container-width) !important;
-  //   max-height: var(--container-height) !important;
-
-  //   .${prefixCls}-upload-list {
-  //     align-items: center;
-  //     padding: 2px;
-  //     height: var(--container-height) !important;
-  //     width: var(--container-width) !important;
-  //     max-height: var(--container-max-height) !important;
-  //     max-width: var(--container-max-width) !important;
-  //     min-height: var(--container-min-height) !important;
-  //     min-width: var(--container-min-width) !important;
-  //         .${prefixCls}-upload-list-item {
-  //           width: 100% !important;
-  //           height: 100% !important;
-  //         }
-  //       }
-
-  //       .ant-upload-list-item-container {
-  //       display: inline-block !important;
-  //       width: var(--thumbnail-width) !important;
-  //       height: var(--thumbnail-height) !important;
-  //       border-radius: ${borderRadius ?? '8px'} !important;
-  //       &.ant-upload-animate-inline-appear,
-  //       &.ant-upload-animate-inline-appear-active,
-  //       &.ant-upload-animate-inline {
-  //         display: none !important;
-  //         animation: none !important;
-  //         transition: none !important;
-  //       }
-  //     }
-  //   `);
+    const overlayThumbnailControls = cx("overlay-thumbnail-controls", css`
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.6);
+      height: 100%;
+      width:100%;
+      opacity: 0;
+      border-radius: 8px;
+      transition: opacity 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &:hover {
+       opacity: 1;
+      }
+    `);
 
   return {
     shaStoredFilesRenderer,
-    // shaStoredFilesRendererHorizontal,
-    // shaStoredFilesRendererVertical,
-    // shaStoredFilesRendererGrid,
     storedFilesRendererBtnContainer,
     storedFilesRendererNoFiles,
     antUploadDragIcon,
-    antPreviewDownloadIcon
+    antPreviewDownloadIcon,
+    thumbnailControls,
+    overlayThumbnailControls
   };
 });
