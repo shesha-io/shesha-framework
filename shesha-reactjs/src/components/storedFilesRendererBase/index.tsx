@@ -311,9 +311,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           ? (isDragger
             ? <Dragger disabled><DraggerStub /></Dragger>
             : <div
-              className={listType !== 'text' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}>
+              className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+            >
               {renderUploadContent()}
-              {listType !== 'text' && !rest.hideFileName && <span className='ant-upload-list-item-name' style={{ position: 'absolute', bottom: '0' }}>{'name'}</span>}
+              {listType !== 'text' && !rest.hideFileName &&
+                <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
+                  {'file name'}
+                </span>}
             </div>)
           : (props.disabled
             ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />

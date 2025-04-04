@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { useStyles } from './styles/styles';
@@ -58,6 +58,10 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     if (props.onChange)
       props.onChange(newValue);
   };
+
+  useEffect(() => {
+    onInternalChange({ ...setting, _mode: mode }, mode);
+  }, [mode]);
 
   const codeOnChange = (val: any) => {
     const newValue = { ...setting, _code: val };

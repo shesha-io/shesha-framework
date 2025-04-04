@@ -66,7 +66,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const codeEditorProps: ICodeEditorProps = {
         readOnly: readOnly,
         description: description,
-        mode: 'dialog',
+        mode: props.mode ?? 'dialog',
         language: props.language ?? 'typescript',
         fileName: propertyName,
         label: label ?? propertyName,
