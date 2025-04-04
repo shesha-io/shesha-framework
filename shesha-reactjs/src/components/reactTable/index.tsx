@@ -344,11 +344,12 @@ export const ReactTable: FC<IReactTableProps> = ({
     };
   }, [onRowDoubleClick]);
 
-  const handleDoubleClickRow = (row, index) => {
+  const handleDoubleClickRow = (row) => {
     if (!onRowDoubleClick) {
       performOnRowDoubleClick(row);
     } else if (typeof onRowDoubleClick === 'function') {
-      onRowDoubleClick(row, index);
+      console.log("SELECTED",row);
+      onRowDoubleClick(row);
     }
   };
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
@@ -384,7 +385,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         key={id ?? rowIndex}
         prepareRow={prepareRow}
         onClick={handleSelectRow}
-        onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
+        onDoubleClick={()=>handleDoubleClickRow(row)}
         row={row}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
