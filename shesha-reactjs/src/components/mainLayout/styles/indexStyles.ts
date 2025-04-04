@@ -145,13 +145,13 @@ export const GlobalSheshaStyles = createGlobalStyle`
     line-height: 1;
   }
     .sha-toolbar-btn-configurable {
-          display: flex;
-          align-items: center;
-            span {
-                max-width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+      display: flex;
+      align-items: center;
+      span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         }
        
     }
