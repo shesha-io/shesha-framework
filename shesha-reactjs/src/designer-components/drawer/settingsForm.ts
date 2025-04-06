@@ -975,7 +975,7 @@ export const getSettings = (data: any) => {
                                             id: 'backgroundStyleRow-repeat',
                                             label: 'Repeat',
                                             hideLabel: true,
-                                            propertyName: 'background.repeat',
+                                            propertyName: 'headerBackground.repeat',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
@@ -1215,7 +1215,7 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'textField',
                                             id: 'backgroundStyle-url',
-                                            propertyName: 'headerBackground.url',
+                                            propertyName: 'footerBackground.url',
                                             jsSetting: false,
                                             label: 'URL',
                                           },
@@ -1239,7 +1239,7 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'imageUploader',
                                             id: 'backgroundStyle-image',
-                                            propertyName: 'headerBackground.uploadFile',
+                                            propertyName: 'footerBackground.uploadFile',
                                             label: 'Image',
                                             jsSetting: false,
                                           },
@@ -1285,7 +1285,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStyleRow',
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1367,7 +1367,7 @@ export const getSettings = (data: any) => {
                                             id: 'backgroundStyleRow-repeat',
                                             label: 'Repeat',
                                             hideLabel: true,
-                                            propertyName: 'background.repeat',
+                                            propertyName: 'footerBackground.repeat',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
