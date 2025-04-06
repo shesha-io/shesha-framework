@@ -64,7 +64,7 @@ export const getSettings = (data: any) => {
                     components: [
                       ...new DesignerToolbarSettings()
                         .addSettingsInputRow({
-                          id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                          id: '12d700d6-ed4d-49d5-9cfd-fe8f00d6-ed4d-49d5-9cfd-fe8f00w0f3b6',
                           parentId: 's4gmBg31azZC0UjZjpfTm',
                           readOnly: {
                             _code: 'return  getSettingValue(data?.readOnly);',
@@ -725,6 +725,11 @@ export const getSettings = (data: any) => {
                         ghost: true,
                         parentId: 'styleRouter',
                         collapsible: 'header',
+                        hidden: {
+                          _code: 'return  !getSettingValue(data?.showHeader);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         content: {
                           id: 'stylePnl-M500-911MFR',
                           components: [
@@ -1066,19 +1071,33 @@ export const getSettings = (data: any) => {
                                   ],
                                 },
                               })
-                              .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'custom-css-412c-8461-4c8d55e5c073',
-                                inputType: 'codeEditor',
-                                propertyName: 'headerStyle',
-                                hideLabel: false,
-                                label: 'Style',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              .addCollapsiblePanel({
+                                id: 'footerStyleCollapsiblePanell',
+                                propertyName: 'headerStylePanell',
+                                label: 'Custom Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: 'styleRouter',
+                                collapsible: 'header',
+                                content: {
+                                  id: 'footerStylePnl',
+                                  components: new DesignerToolbarSettings()
+                                    .addSettingsInput({
+                                      readOnly: {
+                                        _code: 'return  getSettingValue(data?.readOnly);',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      id: 'custom-css-412c-8461-sc1d55e5c0734',
+                                      inputType: 'codeEditor',
+                                      propertyName: 'headerStyle',
+                                      hideLabel: false,
+                                      label: 'Style',
+                                      description:
+                                        'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                    })
+                                    .toJson()
+                                }
                               })
                               .toJson(),
                           ],
@@ -1093,6 +1112,11 @@ export const getSettings = (data: any) => {
                         ghost: true,
                         parentId: 'styleRouter',
                         collapsible: 'header',
+                        hidden: {
+                          _code: 'return  !getSettingValue(data?.showFooter);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         content: {
                           id: 'stolePnl-M500-911MFR',
                           components: [
@@ -1434,19 +1458,33 @@ export const getSettings = (data: any) => {
                                   ],
                                 },
                               })
-                              .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'custom-css-412c-8461-sc1d55e5c073',
-                                inputType: 'codeEditor',
-                                propertyName: 'footerStyle',
-                                hideLabel: false,
-                                label: 'Style',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              .addCollapsiblePanel({
+                                id: 'footerStyleCollapsiblePanel',
+                                propertyName: 'footerStylePanel',
+                                label: 'Custom Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: 'styleRouter',
+                                collapsible: 'header',
+                                content: {
+                                  id: 'footerStylePnl',
+                                  components: new DesignerToolbarSettings()
+                                    .addSettingsInput({
+                                      readOnly: {
+                                        _code: 'return  getSettingValue(data?.readOnly);',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      id: 'custom-css-412c-8461-sc1d55e5c073',
+                                      inputType: 'codeEditor',
+                                      propertyName: 'footerStyle',
+                                      hideLabel: false,
+                                      label: 'Style',
+                                      description:
+                                        'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                    })
+                                    .toJson()
+                                }
                               })
                               .toJson(),
                           ],
