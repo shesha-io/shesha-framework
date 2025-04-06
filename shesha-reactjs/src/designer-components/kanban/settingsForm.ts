@@ -142,7 +142,8 @@ export const getSettings = (data: IKanbanProps) => {
                       label: 'Create Form',
                       jsSetting: true,
                       hidden: {
-                        _code: 'return !getSettingValue(data?.allowNewRecord) || getSettingValue(data?.kanbanReadonly);',
+                        _code:
+                          'return !getSettingValue(data?.allowNewRecord) || getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
                       } as any,
@@ -743,14 +744,35 @@ export const getSettings = (data: IKanbanProps) => {
                                   ],
                                 },
                               })
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'headerStyles',
-                                label: 'Style',
-                                parentId: styleRouterId,
-                                inputType: 'codeEditor',
-                                mode: 'dialog',
-                                description: 'CSS Style',
+                              .addCollapsiblePanel({
+                                id: 'customStyleCollapsiblePanel',
+                                propertyName: 'customStyle',
+                                label: 'Custom Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: 'styleRouter',
+                                collapsible: 'header',
+                                content: {
+                                  id: 'stylePnl-M500-911MFR',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInput({
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        id: 'custom-css-412c-8461-4c8d55e5c073',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'headerStyles',
+                                        hideLabel: false,
+                                        label: 'Style',
+                                        description:
+                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                      })
+                                      .toJson(),
+                                  ],
+                                },
                               })
                               .toJson(),
                           ],
@@ -1302,29 +1324,35 @@ export const getSettings = (data: IKanbanProps) => {
                                 },
                               })
                               .addCollapsiblePanel({
-                                id: 'customStyleCollapsiblePanel',
-                                propertyName: 'customStyle',
+                                id: 'columncustomStyleCollapsiblePanel',
+                                propertyName: 'columncustomStyle',
                                 label: 'Custom Styles',
                                 labelAlign: 'right',
                                 ghost: true,
                                 parentId: 'styleRouter',
                                 collapsible: 'header',
                                 content: {
-                                    id: 'stylePnl-M500-911MFR',
-                                    components: [...new DesignerToolbarSettings()
-                                        .addSettingsInput({
-                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            id: 'custom-css-412c-8461-4c8d55e5c073',
-                                            inputType: 'codeEditor',
-                                            propertyName: 'columnStyle',
-                                            hideLabel: false,
-                                            label: 'Style',
-                                            description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                        })
-                                        .toJson()
-                                    ]
-                                }
-                            })
+                                  id: 'stylePnl-M500-911MFR',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInput({
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        id: 'column-custom-css-412c-8461-4c8d55e5c073',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'columnStyle',
+                                        hideLabel: false,
+                                        label: 'Style',
+                                        description:
+                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                      })
+                                      .toJson(),
+                                  ],
+                                },
+                              })
                               .toJson(),
                           ],
                         },
