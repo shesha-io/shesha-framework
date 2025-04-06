@@ -103,14 +103,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
     uploadFile({ file: file as File }, callback);
   };
 
-  const onReplaceClick = (e) => {
+  const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
 
     if (!isDragger) {
-      uploadButtonRef?.current?.click();
+      uploadButtonRef.current.click();
     } else {
       if (uploadDraggerSpanRef.current) {
-        uploadDraggerSpanRef?.current?.click();
+        uploadDraggerSpanRef.current.click();
       }
     }
   };
@@ -134,10 +134,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
           <FileVersionsPopup fileId={fileInfo.id} />
         </a>
         {allowReplace && (
-          <a onClick={(e) => onReplaceClick(e)} style={{ color: color }}>
+          <a onClick={onReplaceClick}  style={{ color: color }}>
             <SyncOutlined title="Replace" />
           </a>
         )}
+
         {allowDelete && (
           <a onClick={(e) => onDeleteClick(e)} style={{ color: color }}>
             <DeleteOutlined title="Remove" />
@@ -211,7 +212,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
-  // const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
+ // const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
     <Button
@@ -239,7 +240,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const renderUploader = () => {
     if (isDragger && allowUpload) {
       return (
-        <Dragger {...fileProps}>
+        <Dragger {...fileProps} className={classes}>
           <span ref={uploadDraggerSpanRef} />
           <DraggerStub styles={styles} />
         </Dragger>
