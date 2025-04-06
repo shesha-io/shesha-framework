@@ -155,9 +155,9 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                 {
                     id: nanoid(),
                     type: 'tooltip',
-                    label: 'Icon',
+                    label: '',
                     hideLabel: true,
-                    propertyName: 'borderIcon',
+                    propertyName: '',
                     icon: 'BorderOutlined',
                     width: 20,
                     tooltip: `Styles will apply to all border`,

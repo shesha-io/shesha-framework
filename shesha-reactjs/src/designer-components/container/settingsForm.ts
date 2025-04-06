@@ -168,7 +168,7 @@ export const getSettings = (data) => {
                               { value: 'block', title: 'Block', icon: 'BorderOutlined' },
                               { value: 'grid', title: 'Grid', icon: 'AppstoreOutlined' },
                               { value: 'flex', title: 'Flex', icon: 'flex' },
-                              { value: 'inline-grid', title: 'Inline Grid', icon: 'TableOutlined' }
+                              { value: 'inline-grid', title: 'Inline grid', icon: 'TableOutlined' }
                             ]
                           })
                           .addSettingsInputRow({
@@ -226,7 +226,7 @@ export const getSettings = (data) => {
                                 description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
                               },
                               {
-                                type: 'textField',
+                                type: 'numberField',
                                 id: 'grid-columns-count-s4gmBg31azZC0UjZjpfTm',
                                 propertyName: 'gridColumnsCount',
                                 parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
@@ -688,7 +688,7 @@ export const getSettings = (data) => {
                     .addCollapsiblePanel({
                       id: 'customStyleCollapsiblePanel',
                       propertyName: 'customStyle',
-                      label: 'Custom Style',
+                      label: 'Custom Styles',
                       labelAlign: 'right',
                       ghost: true,
                       parentId: 'styleRouter',

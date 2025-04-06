@@ -147,13 +147,11 @@ export const GlobalSheshaStyles = createGlobalStyle`
     .sha-toolbar-btn-configurable {
           display: flex;
           align-items: center;
-            max-width: 100%;
             span {
                 max-width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-
         }
        
     }

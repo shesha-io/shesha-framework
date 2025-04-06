@@ -22,7 +22,7 @@ import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import { getColumnAnchored, getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { useDataTableStore, useShaFormInstance } from '@/providers/index';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstance } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
@@ -325,12 +325,33 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [state?.columnResizing]);
 
-  const handleDoubleClickRow = (row: Row<object>, index: number) => {
-    if (onRowDoubleClick) {
+  const { executeAction } = useConfigurableActionDispatcher();
+  const performOnRowDoubleClick = useMemo(() => {
+    if (!onRowDoubleClick)
+      return () => {
+        /*nop*/
+      };
+
+    return (data,) => {
+      const evaluationContext = {
+        data,
+      };
+
+      executeAction({
+        actionConfiguration: onRowDoubleClick as IConfigurableActionConfiguration,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    };
+  }, [onRowDoubleClick]);
+
+  const handleDoubleClickRow = (row, index) => {
+    if (typeof onRowDoubleClick === 'object'){
+      performOnRowDoubleClick(row);
+    } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
     }
   };
-
+  
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
   const renderNewRowEditor = () => (
@@ -364,7 +385,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         key={id ?? rowIndex}
         prepareRow={prepareRow}
         onClick={handleSelectRow}
-        onDoubleClick={handleDoubleClickRow}
+        onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
         row={row}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
