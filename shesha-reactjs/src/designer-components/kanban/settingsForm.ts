@@ -142,7 +142,7 @@ export const getSettings = (data: IKanbanProps) => {
                       label: 'Create Form',
                       jsSetting: true,
                       hidden: {
-                        _code: 'return !getSettingValue(data?.allowNewRecord);',
+                        _code: 'return !getSettingValue(data?.allowNewRecord) || getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
                       } as any,
@@ -176,7 +176,7 @@ export const getSettings = (data: IKanbanProps) => {
                       label: 'Edit Form',
                       jsSetting: true,
                       hidden: {
-                        _code: 'return !getSettingValue(data?.allowEdit);',
+                        _code: 'return !getSettingValue(data?.allowEdit) || getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
                       } as any,
