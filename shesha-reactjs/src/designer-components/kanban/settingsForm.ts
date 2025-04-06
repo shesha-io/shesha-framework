@@ -974,7 +974,7 @@ export const getSettings = (data: IKanbanProps) => {
                                           {
                                             type: 'textField',
                                             id: 'backgroundStyle-url',
-                                            propertyName: 'background.url',
+                                            propertyName: 'columnStyles.background.url',
                                             jsSetting: false,
                                             label: 'URL',
                                           },
@@ -1034,7 +1034,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             type: 'textField',
                                             id: 'backgroundStyle-storedFile',
                                             jsSetting: false,
-                                            propertyName: 'background.storedFile.id',
+                                            propertyName: 'columnStyles.background.storedFile.id',
                                             label: 'File ID',
                                           },
                                         ],
