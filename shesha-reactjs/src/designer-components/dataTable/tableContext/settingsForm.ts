@@ -246,10 +246,39 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: dataTabId,
                         inline: true,
+                        hidden: {
+                          _value: false,
+                          _code: "const sourceType = getSettingValue(data && data.sourceType);\nconst entityType = getSettingValue(data && data.entityType);\n\nreturn !(sourceType === 'Entity' && Boolean(entityType));",
+                          _mode: "code"
+                        },
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'permanentFilter',
+                            label: 'Permanent Filter',
+                            labelAlign: 'right',
+                            parentId: dataTabId,
+                            type: 'queryBuilder',
+                            hidden: false,
+                            isDynamic: false,
+                            validate: {},
+                            settingsValidationErrors: [],
+                            modelType: '{{data.entityType}}',
+                            fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                            width: '100%',
+                            jsSetting: true,
+                          }
+                        ]
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        inline: true,
                         readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         hidden: {
                           _value: false,
-                          _code: "return getSettingValue(data.sourceType) === 'Url';",
+                          _code: "return !getSettingValue(data?.sourceType) || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
                           _mode: "code"
                         } as any,
                         inputs: [
@@ -286,9 +315,15 @@ export const getSettings = (data: any) => {
                         readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         hidden: {
                           _value: false,
-                          _code: "return getSettingValue(data.sortMode) !== 'strict';",
+                          _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'strict';",
                           _mode: "code"
                         } as any,
+                        validate: {
+                          required: {
+                            _code: "return getSettingValue(data.sortMode) === 'strict';",
+                            _mode: "code",
+                          } as any
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -357,7 +392,7 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _value: false,
-                          _code: "return getSettingValue(data.sortMode) !== 'standard' || getSettingValue(data.sourceType) === 'Url';",
+                          _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard' || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
                           _mode: "code"
                         },
                         readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -376,6 +411,36 @@ export const getSettings = (data: any) => {
                             settingsValidationErrors: [],
                             modelType: "{{data.entityType}}",
                             width: '100%',
+                            jsSetting: true,
+                          }
+                        ]
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        inline: true,
+                        hidden: {
+                          _value: false,
+                          _code: "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');",
+                          _mode: "code"
+                        } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: "dataSortingEditor",
+                            propertyName: "grouping",
+                            componentName: "grouping",
+                            label: "Grouping",
+                            labelAlign: "right",
+                            parentId: "root",
+                            isDynamic: false,
+                            version: 0,
+                            validate: {},
+                            settingsValidationErrors: [],
+                            modelType: "{{data.entityType}}",
+                            width: '100%',
+                            jsSetting: true,
                           }
                         ]
                       })
@@ -415,63 +480,6 @@ export const getSettings = (data: any) => {
                             ],
                             width: '100%',
                             validate: { required: true },
-                            jsSetting: true,
-                          }
-                        ]
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inline: true,
-                        hidden: {
-                          _value: false,
-                          _code: "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');",
-                          _mode: "code"
-                        } as any,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: "dataSortingEditor",
-                            propertyName: "grouping",
-                            componentName: "grouping",
-                            label: "Grouping",
-                            labelAlign: "right",
-                            parentId: "root",
-                            isDynamic: false,
-                            version: 0,
-                            validate: {},
-                            settingsValidationErrors: [],
-                            modelType: "{{data.entityType}}",
-                            width: '100%',
-                          }
-                        ]
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inline: true,
-                        hidden: {
-                          _value: false,
-                          _code: "return getSettingValue(data && data.sourceType) !== 'Entity';",
-                          _mode: "code"
-                        },
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'permanentFilter',
-                            label: 'Permanent Filter',
-                            labelAlign: 'right',
-                            parentId: dataTabId,
-                            type: 'queryBuilder',
-                            hidden: false,
-                            isDynamic: false,
-                            validate: {},
-                            settingsValidationErrors: [],
-                            modelType: '{{data.entityType}}',
-                            fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                            width: '100%',
                             jsSetting: true,
                           }
                         ]
