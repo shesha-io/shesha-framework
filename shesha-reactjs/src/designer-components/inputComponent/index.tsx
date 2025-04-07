@@ -1,3 +1,4 @@
+
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
@@ -96,9 +97,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
 
     switch (type) {
-        case 'myAutocomplete':
-            console.log('myAutocomplete', { ...props });
-            return <MyAutoComplete {...props}/>;
         case 'tooltip':
             return iconElement(icon, null, tooltip, {}, styles);
         case 'dataSortingEditor':
@@ -341,4 +339,3 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             />;
     }
 };
-
