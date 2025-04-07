@@ -242,7 +242,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         ...borderStyles,
         ...backgroundStyles,
         ...shadowStyles,
-        ...stylingBoxAsCSS
+        ...stylingBoxAsCSS,
+        ...jsStyle
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
