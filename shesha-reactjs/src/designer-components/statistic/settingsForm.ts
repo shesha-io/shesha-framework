@@ -51,15 +51,27 @@ export const getSettings = (data: any) => {
                 jsSetting: true,
                 styledLabel: true,
               })
-              .addSettingsInput({
+              .addSettingsInputRow({
                 id: nanoid(),
-                propertyName: 'title',
-                label: 'Title',
                 parentId: commonTabId,
-                size: 'small',
-                inputType: 'textField',
-                jsSetting: true,
-                value: 'Statistic',
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: nanoid(),
+                    propertyName: 'title',
+                    label: 'Title',
+                    jsSetting: true,
+                    value: 'Statistic',
+                  },
+                  {
+                    type: 'textField',
+                    id: nanoid(),
+                    propertyName: 'placeholder',
+                    label: 'Placeholder',
+                    jsSetting: true,
+                  }
+                ]
               })
               .addSettingsInputRow({
                 id: nanoid(),
