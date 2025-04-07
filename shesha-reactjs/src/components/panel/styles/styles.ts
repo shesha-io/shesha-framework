@@ -197,7 +197,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
           --ant-collapse-header-padding: 5px 0px !important;
           border-bottom-left-radius: unset;
           border-bottom-right-radius: unset;
-          border-bottom: 2px solid ${token.colorPrimary};
+          ${accentStyle && `border-bottom: 2px solid ${token.colorPrimary};`}
           ${accentStyle && (panelHeadType === 'default' || panelHeadType === 'parent') && `border-top: 3px solid var(--primary-color);`}
           ${accentStyle && panelHeadType === 'child' && `border-left: 3px solid  var(--primary-color);`}
           font-weight: ${fontWeight || '500'};

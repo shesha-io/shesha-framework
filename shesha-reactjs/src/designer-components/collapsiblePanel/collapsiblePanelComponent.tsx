@@ -225,13 +225,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
       .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
         ...prev,
-        customHeader: { id: nanoid(), components: [] },
-        accentStyle: prev.border?.border ? false : true
+        customHeader: { id: nanoid(), components: [] }
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
         const defaultHeaderStyle = { ...defaultHeaderStyles(prev) };
-        const accentStyle = prev?.border?.border ? true : false;
+        const accentStyle = prev.accentStyle || !!prev?.headerStyles;
 
         return {
           ...newModel, accentStyle, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle, accentStyle },
