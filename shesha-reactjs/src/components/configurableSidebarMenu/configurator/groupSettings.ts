@@ -84,10 +84,10 @@ export const getGroupSettings = (data: any) => {
             })
             .toJson(),
         formSettings: {
-            colon: false,
-            layout: 'vertical' as FormLayout,
-            labelCol: { span: 24 },
-            wrapperCol: { span: 24 },
+            colon: false,    
+            layout: 'horizontal' as FormLayout,
+            labelCol: { span: 8},
+            wrapperCol: { span: 16 },
             isSettingsForm: true
         }
     };
