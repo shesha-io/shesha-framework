@@ -34,35 +34,6 @@ export const getSettings = (data: IButtonGroupComponentProps) => {
                                 jsSetting: true,
                             })
                             .addSettingsInputRow({
-                                id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [
-                                    {
-                                        type: 'dropdown',
-                                        id: 'space-size-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'spaceSize',
-                                        label: 'Space Size',
-                                        tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                                        jsSetting: true,
-                                        dropdownOptions: [
-                                            {
-                                                label: 'Small',
-                                                value: 'small',
-                                            },
-                                            {
-                                                label: 'Middle',
-                                                value: 'middle',
-                                            },
-                                            {
-                                                label: 'Large',
-                                                value: 'large',
-                                            }
-                                        ],
-                                    },
-                                ],
-                            })
-                            .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -131,6 +102,36 @@ export const getSettings = (data: IButtonGroupComponentProps) => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+
+                                        .addSettingsInputRow({
+                                            id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            inputs: [
+                                                {
+                                                    type: 'dropdown',
+                                                    id: 'space-size-s4gmBg31azZC0UjZjpfTm',
+                                                    propertyName: 'spaceSize',
+                                                    label: 'Gap',
+                                                    tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
+                                                    jsSetting: true,
+                                                    dropdownOptions: [
+                                                        {
+                                                            label: 'Small',
+                                                            value: 'small',
+                                                        },
+                                                        {
+                                                            label: 'Middle',
+                                                            value: 'middle',
+                                                        },
+                                                        {
+                                                            label: 'Large',
+                                                            value: 'large',
+                                                        }
+                                                    ],
+                                                },
+                                            ],
+                                        })
                                         .addCollapsiblePanel({
                                             id: 'dimensionsStyleCollapsiblePanel',
                                             propertyName: 'pnlDimensions',
