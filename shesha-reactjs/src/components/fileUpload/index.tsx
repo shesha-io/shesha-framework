@@ -36,7 +36,6 @@ export interface IFileUploadProps {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  readonly?: boolean;
   styles?: any;
 }
 
@@ -51,7 +50,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   isDragger = false,
   listType = 'text',
   hideFileName = false,
-  readonly,
   styles: stylesProp,
 }) => {
   const {
@@ -65,7 +63,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
     */
   } = useStoredFile();
   const { backendUrl, httpHeaders } = useSheshaApplication();
-
 
   const props = {
     style: stylesProp,
@@ -84,18 +81,20 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
 
-  const url = `${backendUrl}${fileInfo?.url}`;
+  const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
   useEffect(() => {
-    fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
-      .then((response) => {
-        return response.blob();
-      })
-      .then((blob) => {
-        return URL.createObjectURL(blob);
-      })
-      .then((url) => {
-        setImageUrl(url);
-      });
+    if (fileInfo && url) {
+      fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
+        .then((response) => {
+          return response.blob();
+        })
+        .then((blob) => {
+          return URL.createObjectURL(blob);
+        })
+        .then((url) => {
+          setImageUrl(url);
+        });
+    }
   }, [fileInfo]);
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
@@ -105,9 +104,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
+    e.stopPropagation();
 
     if (!isDragger) {
-      uploadButtonRef.current.click();
+      // Find the hidden input element created by Upload component
+      const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (input) {
+        input.click();
+      }
     } else {
       if (uploadDraggerSpanRef.current) {
         uploadDraggerSpanRef.current.click();
@@ -115,14 +119,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   };
 
-  const onDeleteClick = (e) => {
+  const onDeleteClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     deleteFile();
   };
 
   const onPreview = () => {
-    setPreviewImage({ url, uid: fileInfo.id, name: fileInfo.name });
-    setPreviewOpen(true);
+    if (fileInfo) {
+      setPreviewImage({ url, uid: fileInfo?.id, name: fileInfo?.name });
+      setPreviewOpen(true);
+    }
   };
 
   const fileControls = (color: string) => {
@@ -131,10 +137,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
       <Space>
         <a style={{ color: color }}>
           {false && <InfoCircleOutlined />}
-          <FileVersionsPopup fileId={fileInfo.id} />
+          <FileVersionsPopup fileId={fileInfo?.id} />
         </a>
         {allowReplace && (
-          <a onClick={onReplaceClick}  style={{ color: color }}>
+          <a onClick={onReplaceClick} style={{ color: color }}>
             <SyncOutlined title="Replace" />
           </a>
         )}
@@ -184,7 +190,8 @@ export const FileUpload: FC<IFileUploadProps> = ({
         {showThumbnailControls && styledfileControls()}
         <a title={file.name} style={{ display: 'block', marginTop: '5px' }}>
           <Space>
-            {file.name} ({filesize(file.size)}){showTextControls && fileControls(theme.application.primaryColor)}
+            {(listType === 'text' || !hideFileName) && `${file.name} (${filesize(file.size)})`}
+            {showTextControls && fileControls(theme.application.primaryColor)}
           </Space>
         </a>
       </div>
@@ -197,6 +204,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
+    style: stylesProp,
     customRequest: onCustomRequest,
     onChange(info) {
       if (info.file.status !== 'uploading') {
@@ -212,7 +220,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
- // const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
+  // const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
     <Button
@@ -229,7 +237,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     if (isDragger) {
       return (
         <Dragger disabled>
-          <DraggerStub styles={styles}/>
+          <DraggerStub styles={styles} />
         </Dragger>
       );
     }
@@ -238,15 +246,22 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const renderUploader = () => {
+    const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';    
     if (isDragger && allowUpload) {
       return (
-        <Dragger {...fileProps} className={classes}>
+        <Dragger {...fileProps}>
           <span ref={uploadDraggerSpanRef} />
           <DraggerStub styles={styles} />
         </Dragger>
       );
     }
-    return <Upload {...fileProps}>{allowUpload && !fileInfo && uploadButton}</Upload>;
+    return (
+      <div>
+        <Upload {...fileProps} listType={antListType}>
+          {allowUpload && !fileInfo && uploadButton}
+        </Upload>
+      </div>
+    );
   };
 
   return (
@@ -264,7 +279,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
                 <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
                   <DownloadOutlined
                     className={styles.antPreviewDownloadIcon}
-                    onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })}
+                    onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
                   />
                   {original}
                 </div>
