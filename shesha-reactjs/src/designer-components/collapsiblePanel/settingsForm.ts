@@ -120,16 +120,6 @@ export const getSettings = () => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
-                                        propertyName: 'hideWhenEmpty',
-                                        label: 'Hide when empty',
-                                        labelAlign: 'right',
-                                        parentId: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-                                        type: 'switch',
-                                        jsSetting: true,
-                                        description: 'Allows to hide the panel when all components are hidden due to some conditions',
-                                    },
-                                    {
                                         id: 'panel-wYzLo-lK468vwxVVBDMh',
                                         propertyName: 'collapsedByDefault',
                                         label: 'Collapsed By Default',
@@ -141,64 +131,7 @@ export const getSettings = () => {
                                         description: '',
                                         jsSetting: true,
                                         validate: {},
-                                    }
-                                ]
-                            })
-                            .addSettingsInputRow({
-                                id: 'panel-wYzLo-lK468vwxVVBDMh',
-                                propertyName: 'ghost',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [
-                                    {
-                                        id: 'panel-wYzLo-lK468vwxVVBDMh',
-                                        label: 'Ghost',
-                                        propertyName: 'ghost',
-                                        type: 'switch',
-                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                        jsSetting: true
                                     },
-                                    {
-                                        id: 'panelcfd7d45e-smpl-4a27-987b-dc525c412448',
-                                        propertyName: 'isSimpleDesign',
-                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                        label: 'Simple Design',
-                                        type: 'switch',
-                                        jsSetting: true
-                                    }
-                                ]
-                            })
-                            .addSettingsInputRow({
-                                id: 'dsfeqrgewbsjgrbnogjloeghojfjr',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [
-                                    {
-                                        id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
-                                        propertyName: 'hidden',
-                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                        label: 'Hide',
-                                        type: 'switch',
-                                        jsSetting: true
-                                    },
-                                    {
-                                        id: 'panel7e5fc1c1-a804-4f0a-8327-1a92e963e5e1',
-                                        propertyName: 'hideCollapseContent',
-                                        label: 'Hide Top Bar',
-                                        labelAlign: 'right',
-                                        type: 'switch',
-                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                        description: 'Hides the collapsible panel',
-                                        jsSetting: true
-                                    }
-
-                                ]
-                            })
-                            .addSettingsInputRow({
-                                id: 'hide-when-empty-row',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.hideWhenEmpty);', _mode: 'code', _value: false } as any,
-                                inputs: [
                                     {
                                         id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
                                         propertyName: 'hideWhenEmpty',
@@ -209,7 +142,14 @@ export const getSettings = () => {
                                         jsSetting: true,
                                         description: 'Allows to hide the panel when all components are hidden due to some conditions',
 
-                                    },
+                                    }
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: 'hide-when-empty-row',
+                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                readOnly: { _code: 'return  getSettingValue(data?.hideWhenEmpty);', _mode: 'code', _value: false } as any,
+                                inputs: [
                                     {
                                         id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
                                         propertyName: 'hidden',
@@ -242,6 +182,58 @@ export const getSettings = () => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+                                        .addSettingsInputRow({
+                                            id: 'panel-wYzLo-lK468vwxVVBDMh',
+                                            propertyName: 'ghost',
+                                            parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            inputs: [
+                                                {
+                                                    id: 'panel-wYzLo-lK468vwxVVBDMh',
+                                                    label: 'Ghost',
+                                                    propertyName: 'ghost',
+                                                    type: 'switch',
+                                                    parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                                    jsSetting: true
+                                                },
+                                                {
+                                                    id: 'panelcfd7d45e-smpl-4a27-987b-dc525c412448',
+                                                    propertyName: 'isSimpleDesign',
+                                                    parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                                    label: 'Simple Design',
+                                                    type: 'switch',
+                                                    jsSetting: true
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: 'dsfeqrgewbsjgrbnogjloeghojfjr',
+                                            parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            inputs: [
+                                                {
+                                                    id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
+                                                    propertyName: 'accentStyle',
+                                                    label: 'Accent',
+                                                    labelAlign: 'right',
+                                                    parentId: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
+                                                    type: 'switch',
+                                                    jsSetting: true,
+                                                    description: 'Allows to hide the panel when all components are hidden due to some conditions',
+                                                },
+                                                {
+                                                    id: 'panel7e5fc1c1-a804-4f0a-8327-1a92e963e5e1',
+                                                    propertyName: 'hideCollapseContent',
+                                                    label: 'Hide Top Bar',
+                                                    labelAlign: 'right',
+                                                    type: 'switch',
+                                                    parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                                    description: 'Hides the collapsible panel',
+                                                    jsSetting: true
+                                                }
+
+                                            ]
+                                        })
                                         .addCollapsiblePanel({
                                             id: 'paneldimensionsStyleCollapsiblePanel',
                                             propertyName: 'pnlDimensions',
@@ -345,27 +337,10 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
-                                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: 'panelborderStylePnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'panelborderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
                                                     .addContainer({
                                                         id: 'borderStyleRow',
                                                         parentId: 'borderStylePnl',
@@ -388,7 +363,7 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
-                                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: 'panelbackgroundStylePnl',
                                                 components: [
@@ -815,8 +790,13 @@ export const getSettings = () => {
                                                         label: 'Border',
                                                         labelAlign: 'right',
                                                         collapsedByDefault: true,
-                                                        hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                                         parentId: 'panel-header-styles-pnl',
+                                                        hidden: {
+                                                            _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost)' +
+                                                                ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.accentStyle)' +
+                                                                ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);',
+                                                            _mode: 'code', _value: false
+                                                        } as any,
                                                         content: {
                                                             id: 'panelheaderborderStylePnl',
                                                             components: [...new DesignerToolbarSettings()

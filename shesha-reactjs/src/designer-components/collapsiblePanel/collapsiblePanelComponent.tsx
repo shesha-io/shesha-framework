@@ -167,6 +167,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             panelHeadType={headType}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
+            accentStyle={model?.accentStyle}
           >
             <ComponentsContainer
               containerId={content.id}
@@ -224,16 +225,18 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
       .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
         ...prev,
-        customHeader: { id: nanoid(), components: [] }
+        customHeader: { id: nanoid(), components: [] },
+        accentStyle: prev.border?.border ? false : true
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
-        const defaultHeaderStyle = {...defaultHeaderStyles(prev)};
+        const defaultHeaderStyle = { ...defaultHeaderStyles(prev) };
+        const accentStyle = prev?.border?.border ? true : false;
 
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle }
+          ...newModel, accentStyle, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle, accentStyle },
+          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle, accentStyle },
+          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle, accentStyle }
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],
