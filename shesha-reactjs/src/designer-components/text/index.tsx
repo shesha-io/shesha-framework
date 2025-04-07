@@ -26,7 +26,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   isInput: false,
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => {
-    const {httpHeaders, backendUrl} = useSheshaApplication();
+    const { httpHeaders, backendUrl } = useSheshaApplication();
     const data = model;
     const font = model?.font;
     const border = model?.border;
@@ -40,6 +40,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
+
 
     useEffect(() => {
       const fetchStyles = async () => {
@@ -55,11 +56,11 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
                   return URL.createObjectURL(blob);
                 })
             : '';
-    
+
         const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
         setBackgroundStyles(style);
       };
-    
+
       fetchStyles();
     }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
@@ -84,7 +85,11 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
         {(value) => (
-          <TypographyComponent {...model} styles={additionalStyles} value={model?.contentDisplay === 'name' ? value : model?.content} />
+          <TypographyComponent
+            {...model}
+            styles={additionalStyles}
+            value={model?.contentDisplay === 'name' ? value : model?.content}
+          />
         )}
       </ConfigurableFormItem>
     );
@@ -112,8 +117,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
         backgroundColor: legacyColor2Hex(prev.backgroundColor),
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) })),
 };
 
 export default TextComponent;
-

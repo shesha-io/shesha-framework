@@ -18,7 +18,7 @@ import { removeUndefinedProps } from '@/utils/object';
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
   name: 'Switch',
-icon: <SwitcherOutlined />,
+  icon: <SwitcherOutlined />,
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
@@ -53,7 +53,7 @@ icon: <SwitcherOutlined />,
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
           ) : (
-            <Switch className="sha-switch" disabled={model.readOnly} style={inputProps.style} size={size as SwitchSize} checked={value} {...customEvent} onChange={onChangeInternal} />
+            <Switch className="sha-switch" disabled={model.readOnly} style={inputProps.style} size={size as SwitchSize} checked={value} {...customEvent} defaultChecked={model.defaultChecked} defaultValue={model.defaultValue} onChange={onChangeInternal} />
           );
         }}
       </ConfigurableFormItem>

@@ -119,7 +119,6 @@ export const getSettings = (data) => {
                                 jsSetting: true,
                                 propertyName: "dataSource",
                                 inputType: "radio",
-                                tooltip: "Select a type of image ",
                                 buttonGroupOptions: [
                                     {
                                         title: "StoredFile",
@@ -323,7 +322,7 @@ export const getSettings = (data) => {
                                         .addCollapsiblePanel({
                                             id: 'size-position-CollapsiblePanel',
                                             propertyName: 'pnlsize-position-',
-                                            label: 'Picture Style',
+                                            label: 'Picture Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -525,7 +524,7 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                tooltip: 'Blur radius',
+                                                                tooltip: 'Blur Radius',
                                                                 width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
@@ -535,7 +534,7 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                tooltip: 'Spread radius',
+                                                                tooltip: 'Spread Radius',
                                                                 width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
@@ -576,7 +575,7 @@ export const getSettings = (data) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',

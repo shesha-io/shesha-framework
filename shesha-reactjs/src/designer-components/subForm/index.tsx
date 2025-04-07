@@ -17,9 +17,10 @@ import { getSettings } from './settingsForm';
 
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
-  IConfigurableFormComponent {
+  Omit<IConfigurableFormComponent, 'queryParams'> {
   labelCol?: number;
   wrapperCol?: number;
+  queryParams?: ISubFormProviderProps['queryParams'];
 }
 
 const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
@@ -31,7 +32,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const { data: formData } = useFormData();
-
+    
     const { namePrefix } = useFormItem();
 
     if (model.hidden && formMode !== 'designer') return null;

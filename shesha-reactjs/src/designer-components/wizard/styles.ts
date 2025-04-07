@@ -7,16 +7,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
   const shaStepsButtons = "sha-steps-buttons";
 
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = colors;
-
+  const { color, ...rest } = styles;
   const shaWizard = cx("sha-wizard", css`
     
     .ant-steps-item {
       --ant-color-primary: ${primaryBgColor};
-      --ant-color-text-description: ${styles.color}45;
-      --ant-color-text: ${styles.color};
+      --ant-color-text-description: ${color}75;
+      --ant-color-text: ${color};
       --ant-font-size: calc(${styles.fontSize}/1.3);
       --ant-font-size-lg: ${styles.fontSize || 16};
-      --ant-steps-nav-arrow-color: ${styles.color}45;
+      --ant-steps-nav-arrow-color: ${color}45;
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
       --ant-color-text-light-solid: ${primaryTextColor} !important;
 
@@ -33,9 +33,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
         ${secondaryBgColor && `--ant-button-default-active-bg: ${secondaryBgColor}90 !important`};
         ${secondaryTextColor && `--ant-button-default-active-color: ${secondaryTextColor} !important`};
         ${secondaryBgColor && `--ant-button-default-active-border-color: ${secondaryBgColor} !important`};
-        ${secondaryBgColor && `--ant-button-default-hover-bg: ${secondaryBgColor} !important`};
-        ${secondaryBgColor && `--ant-button-default-hover-border-color: ${secondaryBgColor} !important`};
-        ${secondaryTextColor && `--ant-button-default-hover-color: ${secondaryTextColor} !important`};
+        ${secondaryBgColor && `--ant-button-default-hover-bg: ${secondaryBgColor}90 !important`};
+        ${secondaryBgColor && `--ant-button-default-hover-border-color: ${secondaryBgColor}90 !important`};
+        ${secondaryTextColor && `--ant-button-default-hover-color: ${secondaryTextColor}90 !important`};
         ${secondaryTextColor && `--ant-button-default-color: ${secondaryTextColor} !important`};
         font-family: ${styles.fontFamily};
     }
@@ -44,7 +44,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
         ${primaryBgColor && `--ant-color-primary: ${primaryBgColor};`}
         ${primaryBgColor && `--ant-button-primary-active-bg: ${primaryBgColor} !important`};
         ${primaryBgColor && `--ant-color-primary-active: ${primaryBgColor}90 !important`};
-        ${primaryBgColor && `--ant-color-primary-hover: ${primaryBgColor} !important`};
+        ${primaryBgColor && `--ant-color-primary-hover: ${primaryBgColor}90 !important`};
         ${primaryTextColor && `--ant-button-primary-hover-color: ${primaryTextColor} !important`};
         ${primaryTextColor && `--ant-color-text-light-solid: ${primaryTextColor} !important`};
         ${secondaryBgColor && `--ant-button-primary-hover-border-color: ${secondaryBgColor} !important`};
@@ -53,7 +53,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       }
   }
     
-    ${styles}
+    ${rest}
       
     .${shaWizardContainer} {
       margin: unset;

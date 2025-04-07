@@ -35,6 +35,7 @@ export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleT
   size?: SizeType;
   defaultActiveKey?: string;
   tabType?: 'line' | 'card';
+  tabLineColor?: string;
   hidden?: boolean;
   ghost?: boolean;
   customVisibility?: string;

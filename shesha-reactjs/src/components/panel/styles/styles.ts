@@ -30,6 +30,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     borderLeftColor,
     backgroundColor,
     backgroundImage,
+    backgroundSize,
+    backgroundPosition,
+    backgroundRepeat,
     boxShadow,
     width,
     height,
@@ -119,6 +122,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       min-height: ${minHeight};
       max-height: ${maxHeight};
       background: ${backgroundImage || backgroundColor};
+      background-size: ${backgroundSize};
+      background-position: ${backgroundPosition};
+      background-repeat: ${backgroundRepeat};
       position: relative;
       overflow: ${overflow ?? 'auto'};
       padding-top: ${paddingTop} !important;

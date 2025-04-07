@@ -14,7 +14,6 @@ import {
 
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { getPositionInputs } from '../_settings/utils/position/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
@@ -70,6 +69,15 @@ export const getSettings = (data) => {
                   },
                 ],
               })
+              .addSettingsInput({
+                id: 'noDefaultStyling-s4gmBg31azZC0UjZjpfTm',
+                inputType: 'switch',
+                propertyName: 'noDefaultStyling',
+                label: 'No Default Styling',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                size: 'small',
+                jsSetting: true,
+              })
               .toJson()
             ]
           },
@@ -93,48 +101,48 @@ export const getSettings = (data) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
-                    .addCollapsiblePanel({
-                      id: 'positionCollapsiblePanel',
-                      propertyName: 'pnlPosition',
-                      label: 'Position',
-                      labelAlign: 'right',
-                      parentId: 'styleRouter',
-                      ghost: true,
-                      collapsible: 'header',
-                      content: {
-                        id: 'positionStylePnl',
-                        components: [...new DesignerToolbarSettings()
-                          .addSettingsInput({
-                            id: 'position-s4gmBg31azZC0UjZjpfTm',
-                            propertyName: 'position.value',
-                            label: 'Position',
-                            parentId: 'positionCollapsiblePanel',
-                            inputType: 'dropdown',
-                            description: 'The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.',
-                            validate: {
-                              required: true,
-                            },
-                            dropdownOptions: [
-                              { value: 'relative', label: 'Relative' },
-                              { value: 'Fixed', label: 'Fixed' },
-                            ]
-                          })
-                          .addSettingsInputRow(
-                            getPositionInputs()[0] as any
-                          )
-                          .addSettingsInputRow(
-                            getPositionInputs()[1] as any
-                          )
-                          .addSettingsInputRow(
-                            getPositionInputs()[2] as any
-                          )
-                          .addSettingsInputRow(
-                            getPositionInputs()[3] as any
-                          )
-                          .toJson()
-                        ]
-                      }
-                    })
+                    // .addCollapsiblePanel({
+                    //   id: 'positionCollapsiblePanel',
+                    //   propertyName: 'pnlPosition',
+                    //   label: 'Position',
+                    //   labelAlign: 'right',
+                    //   parentId: 'styleRouter',
+                    //   ghost: true,
+                    //   collapsible: 'header',
+                    //   content: {
+                    //     id: 'positionStylePnl',
+                    //     components: [...new DesignerToolbarSettings()
+                    //       .addSettingsInput({
+                    //         id: 'position-s4gmBg31azZC0UjZjpfTm',
+                    //         propertyName: 'position.value',
+                    //         label: 'Position',
+                    //         parentId: 'positionCollapsiblePanel',
+                    //         inputType: 'dropdown',
+                    //         description: 'The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.',
+                    //         validate: {
+                    //           required: true,
+                    //         },
+                    //         dropdownOptions: [
+                    //           { value: 'relative', label: 'Relative' },
+                    //           { value: 'absolute', label: 'Absolute' }
+                    //         ]
+                    //       })
+                    //       .addSettingsInputRow(
+                    //         getPositionInputs()[0] as any
+                    //       )
+                    //       .addSettingsInputRow(
+                    //         getPositionInputs()[1] as any
+                    //       )
+                    //       .addSettingsInputRow(
+                    //         getPositionInputs()[2] as any
+                    //       )
+                    //       .addSettingsInputRow(
+                    //         getPositionInputs()[3] as any
+                    //       )
+                    //       .toJson()
+                    //     ]
+                    //   }
+                    // })
                     .addCollapsiblePanel({
                       id: 'displayCollapsiblePanel',
                       propertyName: 'pnlDisplayStyle',
@@ -160,7 +168,7 @@ export const getSettings = (data) => {
                               { value: 'block', title: 'Block', icon: 'BorderOutlined' },
                               { value: 'grid', title: 'Grid', icon: 'AppstoreOutlined' },
                               { value: 'flex', title: 'Flex', icon: 'flex' },
-                              { value: 'inline-grid', title: 'Inline Grid', icon: 'TableOutlined' }
+                              { value: 'inline-grid', title: 'Inline grid', icon: 'TableOutlined' }
                             ]
                           })
                           .addSettingsInputRow({
@@ -218,7 +226,7 @@ export const getSettings = (data) => {
                                 description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
                               },
                               {
-                                type: 'textField',
+                                type: 'numberField',
                                 id: 'grid-columns-count-s4gmBg31azZC0UjZjpfTm',
                                 propertyName: 'gridColumnsCount',
                                 parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
@@ -680,7 +688,7 @@ export const getSettings = (data) => {
                     .addCollapsiblePanel({
                       id: 'customStyleCollapsiblePanel',
                       propertyName: 'customStyle',
-                      label: 'Custom Style',
+                      label: 'Custom Styles',
                       labelAlign: 'right',
                       ghost: true,
                       parentId: 'styleRouter',

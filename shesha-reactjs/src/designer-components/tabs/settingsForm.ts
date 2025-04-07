@@ -10,6 +10,14 @@ import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
 
+    const prefix = 'getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tabPosition) === ';
+
+    const hideConditions = {
+        topLeft: 'return ' + prefix + '"top" || ' + prefix + '"left";',
+        topRight: 'return ' + prefix + '"top" || ' + prefix + '"right";',
+        bottomLeft: 'return ' + prefix + '"bottom" || ' + prefix + '"left";',
+        bottomRight: 'return ' + prefix + '"bottom" || ' + prefix + '"right";',
+    };
 
     return {
         components: new DesignerToolbarSettings()
@@ -80,7 +88,7 @@ export const getSettings = () => {
                                             labelAlign: 'right',
                                             parentId: 'root',
                                             buttonTextReadOnly: 'View Tab Panes',
-                                            buttonText: 'Configure Tabs',
+                                            buttonText: 'Configure Tab Panes',
                                             listItemSettingsMarkup: getItemSettings(),
                                             onAddNewItem: onAddNewItem,
                                             hidden: false,
@@ -108,7 +116,7 @@ export const getSettings = () => {
                         ]
                     },
                     {
-                        key: '4',
+                        key: '2',
                         title: 'Appearance',
                         type: '',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
@@ -307,23 +315,6 @@ export const getSettings = () => {
                                             content: {
                                                 id: 'borderStylePnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'borderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
                                                     .addContainer({
                                                         id: 'borderStyleRow',
                                                         parentId: 'borderStylePnl',
@@ -332,9 +323,34 @@ export const getSettings = () => {
                                                     .addContainer({
                                                         id: 'borderRadiusStyleRow',
                                                         parentId: 'borderStylePnl',
-                                                        components: getCornerInputs() as any
+                                                        components: getCornerInputs("", true, hideConditions) as any
                                                     })
                                                     .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .addCollapsiblePanel({
+                                            id: 'tab-line-color-collapsible-panel',
+                                            propertyName: 'pnlTabLineColor',
+                                            label: 'Line Color',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            parentId: 'styleRouter',
+                                            collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.tabType) !== "line";', _mode: 'code', _value: false } as any,
+                                            content: {
+                                                id: 'tab-line-color-pnl',
+                                                components: [
+                                                    ...new DesignerToolbarSettings()
+                                                        .addSettingsInput({
+                                                            id: 'tab-line-color-row',
+                                                            parentId: 'tab-line-color-pnl',
+                                                            inputType: 'colorPicker',
+                                                            label: 'Color',
+                                                            propertyName: 'tabLineColor',
+                                                            jsSetting: false,
+                                                        })
+                                                        .toJson()
                                                 ]
                                             }
                                         })
@@ -346,6 +362,7 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: 'backgroundStylePnl',
                                                 components: [
@@ -519,7 +536,7 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                tooltip: 'Blur radius',
+                                                                tooltip: 'Blur Radius',
                                                                 width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
@@ -529,7 +546,7 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                tooltip: 'Spread radius',
+                                                                tooltip: 'Spread Radius',
                                                                 width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
@@ -693,6 +710,7 @@ export const getSettings = () => {
                                                                             id: 'card-min-width-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Min Width",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.minWidth",
                                                                         },
                                                                         {
@@ -700,6 +718,7 @@ export const getSettings = () => {
                                                                             id: 'card-max-width-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Max Width",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.maxWidth",
                                                                         }
                                                                     ]
@@ -724,6 +743,7 @@ export const getSettings = () => {
                                                                             id: 'card-min-height-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Min Height",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.minHeight",
                                                                         },
                                                                         {
@@ -731,6 +751,7 @@ export const getSettings = () => {
                                                                             id: 'card-max-height-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Max Height",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.maxHeight",
                                                                         }
                                                                     ]
@@ -913,7 +934,7 @@ export const getSettings = () => {
                             }).toJson()]
                     },
                     {
-                        key: '5',
+                        key: '3',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         type: '',

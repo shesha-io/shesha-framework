@@ -56,25 +56,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       >
         {(value, onChange) => {
           const customEvents = getEventHandlers(model, allData);
-
-          const onChangeInternal = (...args: any[]) => {
-            // Handle the case where the user clears the input
-            if (args[0] === null) {
-              // Fire custom event with `null` or fallback value
-              customEvents.onChange({ target: { value: null } } as unknown as React.ChangeEvent<HTMLInputElement>);
-
-              if (typeof onChange === 'function') onChange(null);
-              return;
-            }
-
-            // Handle normal case where args[0] is a valid number
-            customEvents.onChange({
-              target: { value: args[0] },
-            } as unknown as React.ChangeEvent<HTMLInputElement>);
-
-            if (typeof onChange === 'function') onChange(...args);
-          };
-
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
               type="number"
@@ -85,7 +66,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
               disabled={model.readOnly}
               model={model}
               value={value}
-              onChange={onChangeInternal}
+              onChange={onChange}
               onBlur={customEvents.onBlur}
               onFocus={customEvents.onFocus}
             />
@@ -104,8 +85,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
       .add<INumberFieldComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<INumberFieldComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-      .add<INumberFieldComponentProps>(5, (prev) => {
+      .add<INumberFieldComponentProps>(4, (prev) => {
         const styles: IInputStyles = {
           size: prev.size,
           hideBorder: prev.hideBorder,
@@ -114,7 +94,9 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      }),
+      })
+      .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
