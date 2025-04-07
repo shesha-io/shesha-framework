@@ -49,6 +49,9 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent,
   widthUnits?: string;
   buttons?: ButtonGroupItemProps[];
   footerButtons?: ModalFooterButtons;
+  dividerWidth?: string;
+  dividerStyle?: CSSProperties['borderLeftStyle'];
+  dividerColor?: string;
 }
 
 const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
@@ -198,6 +201,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               value={value}
               onChange={onChangeInternal}
               size={model.size}
+              dividerWidth={model.dividerWidth}
+              dividerStyle={model.dividerStyle}
+              dividerColor={model.dividerColor}
             />
           );
         }}
@@ -257,7 +263,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ...model,
       editMode: 'inherited',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? propMetadata.entityType 
+        ? propMetadata.entityType
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
           ? propMetadata.entityType
           : undefined,

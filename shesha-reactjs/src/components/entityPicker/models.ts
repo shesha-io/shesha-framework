@@ -65,4 +65,7 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   placeholder: string;
   incomeValueFunc: IncomeValueFunc;
   outcomeValueFunc: OutcomeValueFunc;
+  dividerWidth?: string;
+  dividerStyle?: CSSProperties['borderLeftStyle'];
+  dividerColor?: string;
 }

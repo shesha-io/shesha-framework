@@ -65,6 +65,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     `);
 
   const entitySelect = cx("entity-select", css`
+        width: calc(100% - 32px) !important;
         &:hover: {
                 color: colorTextSecondary,
               }

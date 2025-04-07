@@ -63,7 +63,9 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     outcomeValueFunc,
     incomeValueFunc,
     placeholder,
-    hideBorder
+    dividerWidth = '1px',
+    dividerStyle = 'solid',
+    dividerColor = '#d9d9d9'
   } = props;
 
   if (!entityType)
@@ -147,10 +149,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     if (onChange) onChange(null, null);
   };
 
-  const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
-    borderBottomWidth, borderRightColor, borderRightStyle, borderColor, borderBottomLeftRadius,
-    borderTopLeftRadius, MozBorderTopColors, borderTopStyle, borderTopColor, borderTop, boxShadow,
-    borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, ...restStyle } = style;
+  const { borderBottomLeftRadius,
+    borderTopLeftRadius, borderTopRightRadius, borderBottomRightRadius, width, minWidth, maxWidth, boxShadow, background, backgroundImage, marginTop, marginRight, marginBottom, marginLeft, paddingTop, paddingRight, paddingBottom, paddingLeft, ...restStyle } = style;
 
   const borderRadii = style?.borderRadius?.toString().split(' ');
 
@@ -164,17 +164,20 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                 fontSize: Number(style?.fontSize ?? 14),
                 colorText: style?.color,
                 fontFamily: style?.fontFamily,
-                fontWeightStrong: Number(style.fontWeight)
+                fontWeightStrong: Number(style.fontWeight),
+                multipleItemBg: 'rgba(0,0,0,0.06)'
               },
             },
           }}
         >
           {useButtonPicker ? (
-            <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
+            <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})} style={style}>
               {title}
             </Button>
           ) : (
-            <Space.Compact style={{ width: '100%', ...style }}>
+            <Space.Compact style={{
+              width, minWidth, maxWidth, boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius
+            }}>
               <Select
                 size={size}
                 onDropdownVisibleChange={(_e) => {
@@ -191,11 +194,19 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                 allowClear
                 mode={selectedMode}
                 options={options}
-                variant={hideBorder ? 'borderless' : null}
+                variant='borderless'
                 suffixIcon={null}
                 onChange={handleMultiChange}
                 className={styles.entitySelect}
-                style={{ width: '100%' }}
+                style={{
+                  ...restStyle,
+                  borderRightStyle: 'none',
+                  borderRightWidth: 0,
+                  marginTop: 0,
+                  marginRight: 0, marginBottom: 0, marginLeft: 0, paddingTop, paddingRight, paddingBottom, paddingLeft,
+                  borderTopRightRadius: 0, borderBottomRightRadius: 0,
+                  borderTopLeftRadius, borderBottomLeftRadius
+                }}
                 loading={selection.loading}
               >
                 {''}
@@ -209,10 +220,20 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                 icon={<EllipsisOutlined />}
                 style={{
                   ...restStyle,
+                  borderTopLeftRadius: 0,
+                  borderBottomLeftRadius: 0,
+                  marginTop: 0,
+                  marginRight: 0,
+                  marginBottom: 0,
+                  marginLeft: 0,
+                  paddingTop,
+                  paddingRight,
+                  paddingBottom,
+                  paddingLeft,
+                  borderLeftStyle: dividerStyle,
+                  borderLeftWidth: dividerWidth,
+                  borderLeftColor: dividerColor,
                   borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
-                  background: 'transparent',
-                  borderLeft: '1px solid #d9d9d9',
-                  height: '100%',
                   zIndex: 1,
                 }}
                 type='text'
