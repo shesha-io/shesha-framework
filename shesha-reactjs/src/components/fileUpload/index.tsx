@@ -6,6 +6,7 @@ import {
   DownloadOutlined,
   EyeOutlined,
   InfoCircleOutlined,
+  PictureOutlined,
   SyncOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
@@ -68,7 +69,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
     style: stylesProp,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
-      hideFileName: hideFileName && listType === 'thumbnail',
       isDragger,
     },
   };
@@ -150,11 +150,15 @@ export const FileUpload: FC<IFileUploadProps> = ({
             <DeleteOutlined title="Remove" />
           </a>
         )}
-        {
+         {isImageType(fileInfo?.type) ? (
           <a onClick={onPreview} style={{ color: color }}>
             <EyeOutlined title="Preview" />
           </a>
-        }
+        ) : (
+          <a onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })} style={{ color: color }}>
+            <DownloadOutlined title="Download" />
+          </a>
+        )}
       </Space>
     );
   };
@@ -163,7 +167,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     const { type, name } = fileInfo;
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
-        return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls} />;
+        return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls}/>;
       }
     }
 
@@ -173,27 +177,28 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const styledfileControls = () => {
     return (
       fileInfo && (
-        <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div style={{width: '90px', height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', overflow: 'hidden', fontSize: '35px'}}>
           {iconRender(fileInfo)}
-          <div className={styles.overlayThumbnailControls}>{fileControls('#fff')}</div>
+          <div className={styles.overlayThumbnailControls} style={{fontSize: '15px'}}>{fileControls('#fff')}</div>
         </div>
       )
     );
   };
-
   const renderFileItem = (file: any) => {
     const showThumbnailControls = !isUploading && listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
     return (
-      <div>
-        {showThumbnailControls && styledfileControls()}
-        <a title={file.name} style={{ display: 'block', marginTop: '5px' }}>
-          <Space>
-            {(listType === 'text' || !hideFileName) && `${file.name} (${filesize(file.size)})`}
-            {showTextControls && fileControls(theme.application.primaryColor)}
-          </Space>
-        </a>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <div style={{backgroundColor: '#f2f2f2', display: 'flex', width: '90px', height: '90px', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', overflow: 'hidden',}}>
+          {showThumbnailControls && styledfileControls()}
+        </div>
+        {!hideFileName && (
+          <div style={{ textAlign: 'center', maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {file.name} ({filesize(file.size)})
+          </div>
+        )}
+        {showTextControls && fileControls(theme.application.primaryColor)}
       </div>
     );
   };
@@ -219,12 +224,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
     itemRender: (_originNode, file) => renderFileItem(file),
   };
 
-  const showUploadButton = allowUpload && !fileInfo && !isUploading;
+  const showUploadButton = allowUpload && !isUploading;
   // const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
     <Button
-      icon={<UploadOutlined />}
+      icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
       type="link"
       ref={uploadButtonRef}
       style={{ display: !showUploadButton ? 'none' : '' }}
@@ -233,6 +238,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Button>
   );
 
+  
   const renderStub = () => {
     if (isDragger) {
       return (
@@ -242,7 +248,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       );
     }
 
-    return <div>{uploadButton}</div>;
+    return <div className='ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub'>{uploadButton}</div>;
   };
 
   const renderUploader = () => {

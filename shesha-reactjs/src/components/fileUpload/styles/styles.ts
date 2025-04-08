@@ -42,7 +42,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     ...rest
   } = style || {};
 
-  const { gap, layout, hideFileName, isDragger } = model;
+  const { layout, isDragger } = model;
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const antUploadText = `${prefixCls}-upload-text`;
@@ -54,9 +54,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
     css`
-      --thumbnail-width: ${layout ? (width ?? height ?? '60px') : '100%'};
-      --thumbnail-height: ${layout ? (height ?? width ?? '60px') : '100%'};
-      --ant-margin-xs: ${gap ?? '8px'} !important;
+      --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
+      --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};
       --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
       --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
       --ant-border-radius-lg: ${borderRadius ?? '8px'} !important;
@@ -66,6 +65,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --ant-button-font-weight: ${fontWeight ?? '400'} !important;
       ${rest}
       max-height: auto;
+      height: ${height ?? '54px'} !important;
+      width: ${width ?? '54px'} !important;
 
       .ant-upload-select-picture-card {
         width: var(--thumbnail-width) !important;
@@ -86,6 +87,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           height: 100% !important;
           object-fit: contain !important;
         }
+        .ant-image .anticon {
+        border-radius: ${borderRadius ?? '8px'} !important;
+        display: block !important;
+      
+      }
       }
 
       .ant-upload-list-picture-card .ant-upload-list-item-thumbnail {
@@ -153,7 +159,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .ant-upload-list-item-name {
-        display: ${hideFileName ? 'none !important' : 'block'};
+        display:  'block';
         color: ${color ?? token.colorPrimary};
         font-family: ${fontFamily ?? 'Segoe UI'};
         font-size: ${fontSize ?? '14px'};
@@ -162,6 +168,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         padding: 0 8px !important;
         width: ${(layout && width) ?? '54px'} !important;
         font-size: var(--font-size, 14px) !important;
+      }
+
+      .thumbnail-stub {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        ${style}
       }
 
       .ant-upload-list-text {
@@ -188,9 +202,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
             margin: unset;
           }
 
-          .${storedFilesRendererNoFiles} {
-            margin-bottom: 6px;
-          }
 
           .ant-upload-select {
             align-content: center;
@@ -206,24 +217,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           font-family: ${fontFamily ?? 'Segoe UI'} !important;
         }
       }
-      .${storedFilesRendererBtnContainer} {
-        display: flex;
-        margin-top: 4px;
-        justify-content: flex-end;
-      }
-
-      .${prefixCls}-upload-list {
-        padding: 2px !important; /*to remove scroller*/
-        --ant-margin-xs: ${gap ?? '8px'} !important;
-        overflow-y: auto;
-      }
-
-      .ant-upload-list-item-uploading {
-        display: none;
-      }
 
       .ant-upload-list-item-container {
-        display: inline-block !important;
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
@@ -269,10 +264,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     css`
       position: absolute;
       top: 0;
-      right: 0;
+      left: 0;
       background: rgba(0, 0, 0, 0.6);
-      height: 100%;
-      width: 100%;
+      height: ${height ?? '54px'} !important;
+      width: ${width ?? '54px'} !important;
       opacity: 0;
       border-radius: 8px;
       transition: opacity 0.3s ease;
