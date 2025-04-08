@@ -568,8 +568,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         inputs: [
                           {
                             id: nanoid(),
-                            propertyName: 'customFooterButtons',
-                            label: 'Custom Footer Buttons',
+                            propertyName: 'buttons',
+                            label: 'Configure Modal Buttons',
                             parentId: dataTabId,
                             type: 'buttonGroupConfigurator',
                             jsSetting: true,
