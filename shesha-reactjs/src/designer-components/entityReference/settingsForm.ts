@@ -299,7 +299,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   label: 'Entity Type',
                   description: 'The entity type you want to use for the chart.',
                   labelAlign: 'right',
-                  parentId: 'root',
+                  parentId: dataTabId,
                   hidden: false,
                   dataSourceType: 'url',
                   validate: { required: true },
@@ -345,6 +345,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       jsSetting: true,
                       width: '100%',
                       modelType: '{{data.entityType}}',
+                      autoFillProps: false,
                     },
                   ],
                 })
