@@ -100,6 +100,30 @@ export const getSettings = (data) => {
                   },
                 ],
               })
+
+              .addSettingsInputRow({
+                id: 'default-value-s4gmBg31azZC0UjZjpfTm',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                readOnly: false,
+                hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'propertyAutocomplete',
+                    id: 'hpm6rN_aj-L_KaG5MLIZt',
+                    propertyName: 'displayEntityKey',
+                    label: 'Display Property',
+                    labelAlign: 'right',
+                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
+                    hidden: false,
+                    isDynamic: false,
+                    description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
+                    validate: {},
+                    modelType: '{{data.entityType}}',
+                    autoFillProps: false,
+                    settingsValidationErrors: [],
+                  },
+                ],
+              })
               .addSettingsInputRow({
                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -121,29 +145,6 @@ export const getSettings = (data) => {
                     label: 'Hide',
                     jsSetting: true,
                     layout: 'horizontal',
-                  },
-                ],
-              })
-              .addSettingsInputRow({
-                id: 'default-value-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                readOnly: false,
-                hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    type: 'propertyAutocomplete',
-                    id: 'hpm6rN_aj-L_KaG5MLIZt',
-                    propertyName: 'displayEntityKey',
-                    label: 'Display Property',
-                    labelAlign: 'right',
-                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
-                    hidden: false,
-                    isDynamic: false,
-                    description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
-                    validate: {},
-                    modelType: '{{data.entityType}}',
-                    autoFillProps: false,
-                    settingsValidationErrors: [],
                   },
                 ],
               })
