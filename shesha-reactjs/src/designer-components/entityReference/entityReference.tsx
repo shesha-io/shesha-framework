@@ -99,6 +99,20 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
         obj[key] = additionalStylesJS[key];
         return obj;
       }, {});
+    const dimensionStyles = removeUndefinedProps({
+      width: additionalStylesJS.width,
+      minWidth: additionalStylesJS.minWidth,
+      maxWidth: additionalStylesJS.maxWidth,
+      height: additionalStylesJS.height,
+      minHeight: additionalStylesJS.minHeight,
+      maxHeight: additionalStylesJS.maxHeight,
+    });
+    additionalStylesJS = Object.keys(additionalStylesJS)
+      .filter((key) => !dimensionStyles[key])
+      .reduce((obj, key) => {
+        obj[key] = additionalStylesJS[key];
+        return obj;
+      }, {});
 
     const additionStyles = JSON.stringify(additionalStylesJS);
     const additionalStylesWithoutQuotes = additionStyles.replace(/"([^"]+)":/g, '$1:').replace(/'([^']+)':/g, '$1:');
@@ -112,13 +126,14 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
               style={{
                 padding: 0,
                 margin: 0,
-                height: 'fit-content',
-                width: 'fit-content',
+                boxSizing: 'border-box',
+                width: marginStyles.marginLeft || marginStyles.marginRight ? 'auto' : dimensionStyles.width ?? 'fit-content',
                 borderRadius: '5px',
                 ...paddingStyles,
                 ...marginStyles,
                 ...borderStyles,
                 ...background,
+                ...dimensionStyles,
               }}
             >
               <EntityReference {...model} value={value} style={finalStyle} />
