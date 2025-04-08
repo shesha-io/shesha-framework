@@ -63,9 +63,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     outcomeValueFunc,
     incomeValueFunc,
     placeholder,
-    dividerWidth = '1px',
-    dividerStyle = 'solid',
-    dividerColor = '#d9d9d9'
+    dividerStyle
   } = props;
 
   if (!entityType)
@@ -200,12 +198,12 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                 className={styles.entitySelect}
                 style={{
                   ...restStyle,
-                  borderRightStyle: 'none',
-                  borderRightWidth: 0,
+                  borderRight: 'none',
                   marginTop: 0,
                   marginRight: 0, marginBottom: 0, marginLeft: 0, paddingTop, paddingRight, paddingBottom, paddingLeft,
                   borderTopRightRadius: 0, borderBottomRightRadius: 0,
-                  borderTopLeftRadius, borderBottomLeftRadius
+                  borderTopLeftRadius,
+                  borderBottomLeftRadius
                 }}
                 loading={selection.loading}
               >
@@ -230,9 +228,9 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                   paddingRight,
                   paddingBottom,
                   paddingLeft,
-                  borderLeftStyle: dividerStyle,
-                  borderLeftWidth: dividerWidth,
-                  borderLeftColor: dividerColor,
+                  borderLeftStyle: dividerStyle?.style ?? 'solid',
+                  borderLeftWidth: dividerStyle?.width ?? '1px',
+                  borderLeftColor: dividerStyle?.color ?? '#d9d9d9',
                   borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
                   zIndex: 1,
                 }}
