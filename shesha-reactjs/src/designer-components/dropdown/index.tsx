@@ -5,19 +5,10 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import {
-  getStyle,
-  pickStyleFromModel,
-  useAvailableConstantsData,
-  validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
+import { getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDropdownComponentProps } from './model';
 import { IToolboxComponent } from '@/interfaces';
-import {
-  migrateCustomFunctions,
-  migratePropertyName,
-  migrateReadOnly,
-} from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -33,6 +24,7 @@ import { useSheshaApplication } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { ConfigProvider } from 'antd';
+
 
 const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   type: 'dropdown',
@@ -60,20 +52,19 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
+
     useEffect(() => {
+
       const fetchStyles = async () => {
-        const storedImageUrl =
-          background?.storedFile?.id && background?.type === 'storedFile'
-            ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
-                headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-              })
-                .then((response) => {
-                  return response.blob();
-                })
-                .then((blob) => {
-                  return URL.createObjectURL(blob);
-                })
-            : '';
+        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
+          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
+            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+            .then((response) => {
+              return response.blob();
+            })
+            .then((blob) => {
+              return URL.createObjectURL(blob);
+            }) : '';
 
         const style = await getBackgroundStyle(background, localStyle, storedImageUrl);
         setBackgroundStyles(style);
@@ -82,11 +73,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       fetchStyles();
     }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-    if (
-      model?.background?.type === 'storedFile' &&
-      model?.background.storedFile?.id &&
-      !isValidGuid(model?.background.storedFile.id)
-    ) {
+    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -101,12 +88,9 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles,
+      ...shadowStyles
     });
-    const finalStyle = removeUndefinedProps({
-      ...additionalStyles,
-      fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400,
-    });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -114,33 +98,34 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function') onChange(...args);
+            if (typeof onChange === 'function')
+              onChange(...args);
           };
 
           return (
             <ConfigProvider
               theme={{
                 components: {
-                  Select: {
+                  Dropdown: {
                     fontFamily: model?.font?.type,
                     fontSize: model?.font?.size,
                     fontWeightStrong: Number(fontStyles.fontWeight),
-                    colorText: model?.font?.color,
-                    colorPrimary: model?.font?.color,
                   },
                 },
               }}
             >
               <Dropdown
                 {...model}
-                style={{ ...finalStyle, ...localStyle }}
+                style={{
+                  ...finalStyle
+                }}
                 {...customEvent}
-                value={model?.dataSourceType === 'referenceList' ? value : model?.queryParams}
+                value={value}
                 size={model?.size}
                 onChange={onChangeInternal}
-                disabledValues={model?.disableItemValue ? model?.disabledValues : []}
               />
             </ConfigProvider>
+
           );
         }}
       </ConfigurableFormItem>
@@ -148,55 +133,58 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-  migrator: (m) =>
-    m
-      .add<IDropdownComponentProps>(0, (prev) => ({
+  migrator: (m) => m
+    .add<IDropdownComponentProps>(0, (prev) => ({
+      ...prev,
+      dataSourceType: prev['dataSourceType'] ?? 'values',
+      useRawValues: prev['useRawValues'] ?? false,
+    }))
+    .add<IDropdownComponentProps>(1, (prev) => {
+      return {
         ...prev,
-        dataSourceType: prev['dataSourceType'] ?? 'values',
-        useRawValues: prev['useRawValues'] ?? false,
-      }))
-      .add<IDropdownComponentProps>(1, (prev) => {
-        return {
-          ...prev,
-          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
-        };
-      })
-      .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
-      .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
-      .add<IDropdownComponentProps>(5, (prev, context) => ({
-        ...prev,
-        valueFormat:
-          (prev.valueFormat ?? context.isNew) ? 'simple' : prev['useRawValue'] === true ? 'simple' : 'listItem',
-      }))
-      .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IDropdownComponentProps>(7, (prev) => {
-        const styles: IInputStyles = {
-          size: prev.size,
-          stylingBox: prev.stylingBox,
-          style: prev.style,
-        };
+        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+      };
+    })
+    .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
+    .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
+    .add<IDropdownComponentProps>(5, (prev, context) => ({
+      ...prev,
+      valueFormat: prev.valueFormat ??
+        context.isNew
+        ? 'simple'
+        : prev['useRawValue'] === true
+          ? 'simple'
+          : 'listItem',
+    }))
+    .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IDropdownComponentProps>(7, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
 
-        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      })
-      .add<IDropdownComponentProps>(8, (prev) => {
-        const styles: IInputStyles = {
-          size: prev.size,
-          width: prev.width,
-          height: prev.height,
-          hideBorder: prev.hideBorder,
-          borderSize: prev.borderSize,
-          borderRadius: prev.borderRadius,
-          borderColor: prev.borderColor,
-          fontSize: prev.fontSize,
-          fontColor: prev.fontColor,
-          backgroundColor: prev.backgroundColor,
-          stylingBox: prev.stylingBox,
-        };
-        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      })
-      .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
+    .add<IDropdownComponentProps>(8, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        fontColor: prev.fontColor,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox,
+      };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
+    .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+  ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
     const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';
