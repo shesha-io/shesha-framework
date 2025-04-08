@@ -84,6 +84,7 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
         selectedItem,
         setSelectedItem,
         refresh,
+        updateItem,
     } = contextAccessor();
 
     const onAddClick = () => {
@@ -150,11 +151,15 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                         disabled={readOnly}
                     >
                         {value.map((item, index) => {
-                            const localItemChange = (newValue: TItem, changeDetails: ItemChangeDetails) => {
-                                Object.assign(item, newValue);
-
-                                const skipValueUpdate = changeDetails && changeDetails.isReorder && changeDetails.childsLengthDelta < 0;
-                                refresh(!skipValueUpdate);
+                            const localItemChange = (newValue: TItem, _changeDetails: ItemChangeDetails) => {
+                                // Create a new object with the updated values
+                                const updatedItem = { ...item, ...newValue };
+                                
+                                // Always update the item directly to ensure changes propagate up
+                                updateItem(index, updatedItem);
+                                
+                                // Force a UI refresh
+                                refresh(true);
                             };
                             return (
                                 <ListItemWrapper
