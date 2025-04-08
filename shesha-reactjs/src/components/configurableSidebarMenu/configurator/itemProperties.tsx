@@ -1,5 +1,3 @@
-import groupSettingsJson from './groupSettings.json';
-import itemSettingsJson from './itemSettings.json';
 import React, {
   FC,
   useMemo,
@@ -11,6 +9,8 @@ import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
 import { ConfigurableForm } from '@/components';
+import { getGroupSettings } from './groupSettings';
+import { getItemSettings } from './itemSettings';
 
 export interface ISidebarItemPropertiesProps {
   item?: ISidebarMenuItem;
@@ -33,8 +33,8 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
     if (!item) return emptyEditor;
 
     const markup = isSidebarGroup(item)
-      ? (groupSettingsJson as FormMarkup)
-      : (itemSettingsJson as FormMarkup);
+      ? getGroupSettings(item) as FormMarkup
+      : (getItemSettings(item) as FormMarkup);
       
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>

@@ -44,8 +44,13 @@ export const defaultStyles = (prev): IStyleType => {
             blurRadius: 0,
             spreadRadius: 0,
         },
-        // stylingBox: '{"paddingLeft":"15","paddingBottom":"4","paddingTop":"4","paddingRight":"15"}',
-        dimensions: { width: prev.block ? '100%' : 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+        dimensions: {
+            width: prev.block ? '100%' : 'auto',
+            height: '32px', minHeight: '0px',
+            maxHeight: 'auto',
+            minWidth: '0px',
+            maxWidth: 'auto'
+        }
     };
 };
 

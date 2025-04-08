@@ -10,9 +10,7 @@ import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithCon
 import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 import { Button } from 'antd';
-import {
-  CodeOutlined, CodeFilled, FormOutlined
-} from '@ant-design/icons';
+import { CodeOutlined, CodeFilled } from '@ant-design/icons';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -62,10 +60,8 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   useEffect(() => {
-    const newMode = !!code ? 'code' : 'value' as IPropertySetting<Value>['_mode'];
-    props.setHasCode?.(newMode === 'code');
-    onInternalChange({ ...setting, _mode: newMode }, newMode);
-  }, [code]);
+    onInternalChange({ ...setting, _mode: mode }, mode);
+  }, [mode]);
 
   const codeOnChange = (val: any) => {
     const newValue = { ...setting, _code: val };
@@ -122,7 +118,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         danger={mode === 'value' && !!code}
         ghost
         size='small'
-        icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        icon={mode === 'code' && !!code ? <CodeFilled /> : !!code ? <CodeFilled /> : <CodeOutlined />}
         color='lightslategrey'
         onClick={onSwitchMode}
       />
