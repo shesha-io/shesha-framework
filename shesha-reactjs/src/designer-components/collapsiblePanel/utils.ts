@@ -29,7 +29,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
 };
 
 export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
-    const headerBgColor = prev?.headerColor || '#00000005';
+    const headerBgColor = prev?.headerColor || '#fff';
     const { isSimpleDesign, borderRadius } = prev;
 
     return {

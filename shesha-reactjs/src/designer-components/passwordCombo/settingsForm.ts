@@ -146,16 +146,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                         label: 'Min Length',
                                         size: 'small',
                                         jsSetting: true,
-                                    },
-                                    {
-                                        type: 'numberField',
-                                        id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
-                                        defaultValue: 4,
-                                        propertyName: 'maxLength',
-                                        label: 'Max Length',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
+                                    }
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })

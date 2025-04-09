@@ -228,14 +228,22 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         customHeader: { id: nanoid(), components: [] }
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
-        const newModel = migratePrevStyles(prev, defaultStyles(prev));
-        const defaultHeaderStyle = { ...defaultHeaderStyles(prev) };
-        const accentStyle = prev.accentStyle || !!prev?.headerStyles;
+        const accentStyle = prev?.overflow === undefined;
 
         return {
-          ...newModel, accentStyle, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle, accentStyle },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle, accentStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle, accentStyle }
+          ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
+          tablet: { ...prev.tablet, accentStyle },
+          mobile: { ...prev.mobile, accentStyle }
+        };
+      })
+      .add<ICollapsiblePanelComponentProps>(9, (prev) => {
+        const newModel = migratePrevStyles(prev, defaultStyles(prev));
+        const defaultHeaderStyle = { ...defaultHeaderStyles(prev) };
+
+        return {
+          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
+          tablet: { ...newModel.tablet, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
+          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle }
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],
