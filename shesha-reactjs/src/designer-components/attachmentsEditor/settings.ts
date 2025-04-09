@@ -79,35 +79,6 @@ export const getSettings = () => {
                       jsSetting: true,
                     },
                     {
-                      id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
-                      propertyName: 'filesLayout',
-                      label: 'Layout',
-                      type: 'dropdown',
-                      dropdownOptions: [
-                        { label: 'Vertical', value: 'vertical' },
-                        { label: 'Horizontal', value: 'horizontal' },
-                        { label: 'Grid', value: 'grid' },
-                      ],
-                      jsSetting: true,
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: 'b920ef96-thumbnail-4a01-bfad-bob7d07218da',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
-                  inputs: [
-                    {
-                      id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
-                      propertyName: 'gap',
-                      label: 'Gap',
-                      type: 'numberField',
-                      description: 'The gap between the thumbnails.',
-                      jsSetting: true,
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                    },
-                    {
                       id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
                       propertyName: 'hideFileName',
                       label: 'Hide File Name',
@@ -193,7 +164,7 @@ export const getSettings = () => {
                     {
                       id: '1c03863c-880d-4308-8667-c3d996619cb7',
                       propertyName: 'ownerId',
-                      label: 'Owner Id',
+                      label: 'Owner ID',
                       type: 'textField',
                       jsSetting: true,
                     },
@@ -265,10 +236,20 @@ export const getSettings = () => {
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: '48ff91b3-5fb1-4e1b-a17f-ff86bce22e0b',
+                inputType: 'codeEditor',
                 propertyName: 'onFileChanged',
                 label: 'On File List Changed',
-                inputType: 'codeEditor',
-                description: 'Callback that is triggered when the file is changed.'
+                labelAlign: 'right',
+                parentId: 'root',
+                hidden: false,
+                description: 'Callback that is triggered when the file is changed.',
+                validate: {},
+                settingsValidationErrors: [],
+                wrapInTemplate: true,
+                templateSettings: {
+                  functionName: 'onFileListChanged',
+                  useAsyncDeclaration: true,
+                },
               })
               .toJson()
             ]
@@ -757,7 +738,7 @@ export const getSettings = () => {
                     .addCollapsiblePanel({
                       id: 'containerStyleCollapsiblePanel',
                       propertyName: 'pnlContainerStyle',
-                      label: 'Container',
+                      label: 'Container Styles',
                       labelAlign: 'right',
                       ghost: true,
                       parentId: 'styleRouter',
@@ -765,6 +746,36 @@ export const getSettings = () => {
                       content: {
                         id: 'containerStylePnl',
                         components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: 'b920ef96-thumbnail-4a01-bfad-bob7d07218da',
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
+                            inputs: [
+                              {
+                                id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
+                                propertyName: 'filesLayout',
+                                label: 'Layout',
+                                type: 'dropdown',
+                                dropdownOptions: [
+                                  { label: 'Vertical', value: 'vertical' },
+                                  { label: 'Horizontal', value: 'horizontal' },
+                                  { label: 'Grid', value: 'grid' },
+                                ],
+                                defaultValue: 'horizontal',
+                                jsSetting: true,
+                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                              },
+                              {
+                                id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+                                propertyName: 'gap',
+                                label: 'Gap',
+                                type: 'numberField',
+                                description: 'The gap between the thumbnails.',
+                                jsSetting: true,
+                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                              }
+                            ]
+                          })
                           .addCollapsiblePanel({
                             id: 'containerDimensionsStyleCollapsiblePanel',
                             propertyName: 'pnlDimensions',
@@ -779,7 +790,7 @@ export const getSettings = () => {
                                   id: 'dimensionsStyleRowWidth',
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
@@ -816,7 +827,7 @@ export const getSettings = () => {
                                   id: 'dimensionsStyleRowHeight',
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
@@ -867,7 +878,7 @@ export const getSettings = () => {
                                     id: 'styleBoxPnl',
                                     label: 'Margin Padding',
                                     hideLabel: true,
-                                    propertyName: 'stylingBox',
+                                    propertyName: 'container.stylingBox',
                                   })
                                   .toJson()
                               ]
