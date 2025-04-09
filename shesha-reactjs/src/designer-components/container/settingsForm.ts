@@ -235,47 +235,86 @@ export const getSettings = (data) => {
                               },
                             ],
                           })
-                          .addSettingsInputRow({
-                            id: nanoid(),
+                          .addContainer({
+                            id: 'non-block-26voxhs-HxJ5k5ngYE',
                             parentId: 'displayCollapsiblePanel',
-                            inline: false,
+                            hidden: {
+                              _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "block";',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: 'align-items-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Align Items',
-                                propertyName: 'alignItems',
-                                dropdownOptions: ALIGN_ITEMS
-                              },
-                              {
-                                type: 'dropdown',
-                                id: 'align-self-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Align Self',
-                                propertyName: 'alignSelf',
-                                dropdownOptions: ALIGN_SELF
-                              },]
-                          })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'displayCollapsiblePanel',
-                            inline: false,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: 'justify-content-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Justify Content',
-                                propertyName: 'justifyContent',
-                                dropdownOptions: JUSTIFY_CONTENT
-                              },
-                              {
-                                type: 'dropdown',
-                                id: 'justify-self-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Justify Self',
-                                propertyName: 'justifySelf',
-                                dropdownOptions: JUSTIFY_SELF
-                              },
+                            components: [
+                              ...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: 'displayCollapsiblePanel',
+                                  inline: false,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: 'align-items-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Align Items',
+                                      propertyName: 'alignItems',
+                                      dropdownOptions: ALIGN_ITEMS
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'align-self-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Align Self',
+                                      propertyName: 'alignSelf',
+                                      dropdownOptions: ALIGN_SELF
+                                    },]
+                                })
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: 'displayCollapsiblePanel',
+                                  inline: false,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: 'justify-content-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Justify Content',
+                                      propertyName: 'justifyContent',
+                                      dropdownOptions: JUSTIFY_CONTENT
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'justify-self-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Justify Self',
+                                      propertyName: 'justifySelf',
+                                      hidden: {
+                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      dropdownOptions: JUSTIFY_SELF
+                                    },
+                                  ]
+                                })
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: 'displayCollapsiblePanel',
+                                  inline: true,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: 'justify-items-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Justify Items',
+                                      propertyName: 'justifyItems',
+                                      hidden: {
+                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      dropdownOptions: JUSTIFY_ITEMS
+                                    }
+                                  ]
+                                })
+                                .toJson()
                             ]
                           })
                           .addSettingsInputRow({
@@ -289,23 +328,13 @@ export const getSettings = (data) => {
                                 id: 'text-justify-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Text Justify',
                                 propertyName: 'textJustify',
+                                hidden: {
+                                  _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "block";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
                                 dropdownOptions: TEXT_JUSTIFY
                               },
-                              {
-                                type: 'dropdown',
-                                id: 'justify-items-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Justify Items',
-                                propertyName: 'justifyItems',
-                                dropdownOptions: JUSTIFY_ITEMS
-                              },
-                            ],
-                          })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'displayCollapsiblePanel',
-                            inline: true,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
                               {
                                 type: 'dropdown',
                                 id: 'overflow-s4gmBg31azZC0UjZjpfTm',
@@ -326,7 +355,7 @@ export const getSettings = (data) => {
                                   }
                                 ]
                               }
-                            ]
+                            ],
                           })
                           .toJson()
                         ]
