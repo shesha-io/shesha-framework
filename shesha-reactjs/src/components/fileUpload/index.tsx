@@ -150,15 +150,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
             <DeleteOutlined title="Remove" />
           </a>
         )}
-         {isImageType(fileInfo?.type) ? (
+        {
           <a onClick={onPreview} style={{ color: color }}>
             <EyeOutlined title="Preview" />
           </a>
-        ) : (
-          <a onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })} style={{ color: color }}>
-            <DownloadOutlined title="Download" />
-          </a>
-        )}
+        }
       </Space>
     );
   };
@@ -177,28 +173,33 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const styledfileControls = () => {
     return (
       fileInfo && (
-        <div style={{width: '90px', height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', overflow: 'hidden', fontSize: '35px'}}>
+        <div className={styles.styledFileControls}>
           {iconRender(fileInfo)}
           <div className={styles.overlayThumbnailControls} style={{fontSize: '15px'}}>{fileControls('#fff')}</div>
         </div>
       )
     );
   };
+
   const renderFileItem = (file: any) => {
     const showThumbnailControls = !isUploading && listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-        <div style={{backgroundColor: '#f2f2f2', display: 'flex', width: '90px', height: '90px', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', overflow: 'hidden',}}>
-          {showThumbnailControls && styledfileControls()}
-        </div>
-        {!hideFileName && (
-          <div style={{ textAlign: 'center', maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {file.name} ({filesize(file.size)})
-          </div>
-        )}
-        {showTextControls && fileControls(theme.application.primaryColor)}
+      <div>
+        {showThumbnailControls && styledfileControls()}
+        <a title={file.name}>
+          <Space>
+            {isUploading ? (
+              <span><SyncOutlined spin /></span>
+            ) : (
+              <>
+                {(listType === 'text' || !hideFileName) && `${file.name} (${filesize(file.size)})`}
+                {showTextControls && fileControls(theme.application.primaryColor)}
+              </>
+            )}
+          </Space>
+        </a>
       </div>
     );
   };
@@ -248,7 +249,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       );
     }
 
-    return <div className='ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub'>{uploadButton}</div>;
+    return <div className={listType === 'thumbnail' ? 'ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub' : ''}>{uploadButton}</div>;
   };
 
   const renderUploader = () => {
