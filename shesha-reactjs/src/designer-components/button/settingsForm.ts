@@ -88,7 +88,6 @@ export const getSettings = (data) => {
                     } as any
                   },
                 ],
-                readOnly: data.readOnly,
               })
               .addSettingsInputRow({
                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',

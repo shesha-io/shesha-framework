@@ -500,11 +500,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: {
-                          _code: 'return getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
