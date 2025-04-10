@@ -219,7 +219,7 @@ export const getSettings = () => {
                                                     parentId: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
                                                     type: 'switch',
                                                     jsSetting: true,
-                                                    description: 'Allows to hide the panel when all components are hidden due to some conditions',
+                                                    description: 'Applies accent styling to panel borders using the primary color',
                                                 },
                                                 {
                                                     id: 'panel7e5fc1c1-a804-4f0a-8327-1a92e963e5e1',
