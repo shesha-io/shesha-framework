@@ -21,7 +21,6 @@ export const getItemSettings = () => {
                         ...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                                 id: 'name-title-frfwfwefvrr',
-                                readOnly: false,
                                 inputs: [
                                     {
                                         id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
@@ -45,7 +44,6 @@ export const getItemSettings = () => {
                             })
                             .addSettingsInputRow({
                                 id: 'key-className-row',
-                                readOnly: false,
                                 inputs: [
                                     {
                                         id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
@@ -69,7 +67,6 @@ export const getItemSettings = () => {
                             })
                             .addSettingsInputRow({
                                 id: 'animated-icon-row',
-                                readOnly: false,
                                 inputs: [
                                     {
                                         id: 'caed91a6-3e9e-4f04-9800-7d9c7a3ffb80',
@@ -97,7 +94,6 @@ export const getItemSettings = () => {
 
                             .addSettingsInputRow({
                                 id: 'hidden-forceRender-row',
-                                readOnly: false,
                                 inputs: [
                                     {
                                         id: '81da0da4-00db-4d6b-9f16-b364a6f9d9e1',
@@ -125,7 +121,6 @@ export const getItemSettings = () => {
                             })
                             .addSettingsInputRow({
                                 id: 'selectMode-destroyInactiveTabPane-row',
-                                readOnly: false,
                                 inputs: [
                                     {
                                         id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
@@ -186,8 +181,7 @@ export const getItemSettings = () => {
                     type: '',
                     components: [...new DesignerToolbarSettings()
                         .addSettingsInput({
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                      id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                             inputType: 'permissions',
                             propertyName: 'permissions',
                             label: 'Permissions',

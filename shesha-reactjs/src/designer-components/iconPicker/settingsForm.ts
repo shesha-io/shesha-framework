@@ -78,7 +78,6 @@ export const getSettings = (data: any) => {
                                         ],
                                     },
                                 ],
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
@@ -101,7 +100,6 @@ export const getSettings = (data: any) => {
                                         jsSetting: true,
                                     }
                                 ],
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ]
@@ -141,8 +139,7 @@ export const getSettings = (data: any) => {
                                                     .addSettingsInputRow({
                                                         id: nanoid(),
                                                         parentId: 'pnl24bf6-f76d-4139-a850-cbf06c8b71',
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
+                                                                inputs: [
                                                             {
                                                                 type: 'colorPicker',
                                                                 id: nanoid(),
@@ -163,8 +160,7 @@ export const getSettings = (data: any) => {
                                                     .addSettingsInputRow({
                                                         id: nanoid(),
                                                         parentId: 'pnl24bf6-f76d-4139-a850-cbf06c8b71',
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
+                                                                inputs: [
                                                             {
                                                                 type: 'colorPicker',
                                                                 id: nanoid(),
@@ -185,8 +181,7 @@ export const getSettings = (data: any) => {
                                                     .addSettingsInputRow({
                                                         id: nanoid(),
                                                         parentId: 'pnl24bf6-f76d-4139-a850-cbf06c8b71',
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
+                                                                inputs: [
                                                             {
                                                                 type: 'numberField',
                                                                 id: nanoid(),
@@ -219,8 +214,7 @@ export const getSettings = (data: any) => {
                                                                     id: 'dimensionsStyleRowWidth',
                                                                     parentId: 'dimensionsStylePnl',
                                                                     inline: true,
-                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                    inputs: [
+                                                                                                        inputs: [
                                                                         {
                                                                             type: 'textField',
                                                                             id: 'dimensionsStyleRowWidth',
@@ -255,8 +249,7 @@ export const getSettings = (data: any) => {
                                                                     id: 'dimensionsStyleRowHeight',
                                                                     parentId: 'dimensionsStylePnl',
                                                                     inline: true,
-                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                    inputs: [
+                                                                                                        inputs: [
                                                                         {
                                                                             type: 'textField',
                                                                             id: 'dimensionsStyleRowHeight',
@@ -328,8 +321,7 @@ export const getSettings = (data: any) => {
                                                 id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        id: nanoid(),
+                                                                id: nanoid(),
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         label: 'Style',
@@ -352,7 +344,6 @@ export const getSettings = (data: any) => {
                         id: securityTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
