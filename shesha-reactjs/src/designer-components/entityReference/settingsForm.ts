@@ -70,7 +70,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInput({
                   inputType: 'switch',
@@ -91,7 +90,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
@@ -121,13 +119,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     { value: 'icon', label: 'Icon' },
                     { value: 'textTitle', label: 'Text Title' },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: mainSettingsTabId,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: mainSettingsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.displayType) !== "icon";',
                     _mode: 'code',
@@ -148,7 +144,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: mainSettingsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
                     _mode: 'code',
@@ -326,7 +321,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: mainSettingsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.displayType) !== "displayProperty";',
                     _mode: 'code',
@@ -378,7 +372,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: mainSettingsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";',
                     _mode: 'code',
@@ -400,7 +393,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: mainSettingsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
                     _mode: 'code',

@@ -65,7 +65,6 @@ export const getSettings = (data: IKanbanProps) => {
                       },
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -91,7 +90,6 @@ export const getSettings = (data: IKanbanProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -117,7 +115,6 @@ export const getSettings = (data: IKanbanProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -151,7 +148,6 @@ export const getSettings = (data: IKanbanProps) => {
                       },
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -185,7 +181,6 @@ export const getSettings = (data: IKanbanProps) => {
                       },
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson(),
             ],
@@ -199,7 +194,6 @@ export const getSettings = (data: IKanbanProps) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: columnsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'autocomplete',
@@ -225,7 +219,6 @@ export const getSettings = (data: IKanbanProps) => {
                     _value: false,
                   } as any,
                   inputType: 'RefListItemSelectorSettingsModal',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson(),
             ],
@@ -1326,7 +1319,6 @@ export const getSettings = (data: IKanbanProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',

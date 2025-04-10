@@ -36,7 +36,6 @@ export const getSettings = (data: any) => {
                   },
                   styledLabel: true,
                   jsSetting: true,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -53,7 +52,6 @@ export const getSettings = (data: any) => {
                   parentId: commonTabId,
                   label: "Disable Refresh Data",
                   tooltip: "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   jsSetting: true,
                   availableConstantsExpression: "    return metadataBuilder.object(\"constants\").addAllStandard().build();",
                   placeholder: "",

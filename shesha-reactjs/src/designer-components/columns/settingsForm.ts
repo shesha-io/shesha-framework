@@ -90,7 +90,6 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   parentId: appearanceId,
                   inline: true,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'numberField',
@@ -532,7 +531,7 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
                   id: nanoid(),
                   inputType: 'columnsList',
                   propertyName: 'columns',

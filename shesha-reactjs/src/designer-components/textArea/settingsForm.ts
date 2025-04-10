@@ -696,7 +696,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   propertyName: 'validate.required',
                   label: 'Required',
@@ -727,7 +726,6 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -752,7 +750,6 @@ export const getSettings = (data: any) => {
                       tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
                     }
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson()
             ]
@@ -764,7 +761,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'codeEditor',
                   propertyName: 'onChangeCustom',
@@ -774,7 +770,6 @@ export const getSettings = (data: any) => {
                   parentId: eventsTabId
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'codeEditor',
                   propertyName: 'onFocusCustom',
@@ -784,7 +779,6 @@ export const getSettings = (data: any) => {
                   parentId: eventsTabId
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'codeEditor',
                   propertyName: 'onBlurCustom',
