@@ -60,7 +60,6 @@ export const getSettings = (data: ISwitchComponentProps) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: `return getSettingValue(data.readOnly)`, _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'editModeSelector',

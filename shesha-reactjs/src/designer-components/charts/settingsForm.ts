@@ -91,11 +91,6 @@ export const getSettings = (data: any) => {
                       type: 'numberField',
                       step: 1,
                       min: 300,
-                      readOnly: {
-                        _code: 'return  getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
                     },
                     {
                       id: nanoid(),
@@ -107,11 +102,6 @@ export const getSettings = (data: any) => {
                       type: 'numberField',
                       step: 1,
                       min: 200,
-                      readOnly: {
-                        _code: 'return  getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
                     },
                   ],
                 })
