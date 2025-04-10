@@ -157,7 +157,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
           </a>
         ) : (
           hideFileName && (
-            <a onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })} style={{ color: color }}>
+            <a
+              onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })}
+              style={{ color: color }}
+            >
               <DownloadOutlined title="Download" />
             </a>
           )
@@ -205,7 +208,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
               </span>
             ) : (
               <div className="thumbnail-item-name">
-                {(listType === 'text' || !hideFileName) && <a onClick={() => downloadFile({ fileId: file.id, fileName: file.name })}>{`${file.name} (${filesize(file.size)})`}</a>}
+                {(listType === 'text' || !hideFileName) && (
+                  <a
+                    style={{ marginRight: '5px' }}
+                    onClick={() => downloadFile({ fileId: file.id, fileName: file.name })}
+                  >{`${file.name} (${filesize(file.size)})`}</a>
+                )}
                 {showTextControls && fileControls(theme.application.primaryColor)}
               </div>
             )}

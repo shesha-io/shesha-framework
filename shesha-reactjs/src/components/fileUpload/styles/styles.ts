@@ -26,7 +26,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     borderBottomStyle,
     borderRight,
     borderRightWidth,
-    backgroundColor = '#fff',
+    backgroundColor,
     backgroundPosition,
     backgroundRepeat,
     backgroundSize,
@@ -202,7 +202,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .ant-upload-list-item-container {
-        background: ${backgroundImage ?? (backgroundColor || '#fff')} !important;
+        background: ${backgroundImage ?? (backgroundColor)} !important;
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         border-radius: ${borderRadius} !important;

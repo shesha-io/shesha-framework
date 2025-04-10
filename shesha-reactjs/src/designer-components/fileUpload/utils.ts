@@ -7,7 +7,7 @@ export const defaultStyles = (): IStyleType => {
         dimensions: { width: '54px', height: '54px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
         background: {
             type: 'color',
-            color: '#fff',
+            color: '',
             repeat: 'no-repeat',
             size: 'cover',
             position: 'center',
