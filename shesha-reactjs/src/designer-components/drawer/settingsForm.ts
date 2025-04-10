@@ -29,7 +29,6 @@ export const getSettings = (data: any) => {
                   label: 'Component Name',
                   size: 'large',
                   jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
@@ -49,7 +48,6 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addCollapsiblePanel({
                   id: 'placement-s4gmBg31azZC0UjZjpfTm',

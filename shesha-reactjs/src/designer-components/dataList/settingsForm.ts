@@ -282,8 +282,7 @@ export const getSettings = (data: any) => {
                         hidden: false,
                       }],
                       hideLabel: true,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    })
+                        })
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: "groupPnl",
@@ -302,8 +301,7 @@ export const getSettings = (data: any) => {
 
                       ],
                       hideLabel: true,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    })
+                        })
                     .toJson()
                   ]
                 }
@@ -457,8 +455,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                readOnly: false,
-                hidden: { _code: 'return getSettingValue(data?.canDeleteInline) !== "js";', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.canDeleteInline) !== "js";', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),

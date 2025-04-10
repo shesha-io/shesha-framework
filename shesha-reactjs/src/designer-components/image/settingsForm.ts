@@ -46,7 +46,6 @@ export const getSettings = (data) => {
                                 propertyName: 'alt',
                                 label: 'Alt Text',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'textField',
@@ -68,7 +67,6 @@ export const getSettings = (data) => {
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'editModeSelector',
@@ -93,7 +91,6 @@ export const getSettings = (data) => {
                                 propertyName: 'allowPreview',
                                 label: 'Allow Preview',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'switch',
@@ -136,7 +133,6 @@ export const getSettings = (data) => {
                                         value: "base64",
                                     }
                                 ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: "image-url",
@@ -153,7 +149,6 @@ export const getSettings = (data) => {
                                     _mode: "code",
                                     _value: false
                                 },
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: "1ad43b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -170,7 +165,6 @@ export const getSettings = (data) => {
                                     _mode: "code",
                                     _value: false
                                 },
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: "image-storedFile",
@@ -180,7 +174,6 @@ export const getSettings = (data) => {
                                     _mode: "code",
                                     _value: false
                                 },
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'textField',
@@ -200,7 +193,6 @@ export const getSettings = (data) => {
                         id: '6eBJvoll3xtLJxdvOAlnB',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
                                 propertyName: 'validate.required',
                                 label: 'Required',
@@ -248,8 +240,7 @@ export const getSettings = (data) => {
                                                         id: 'dimensionsStyleRowWidth',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
+                                                                                inputs: [
                                                             {
                                                                 type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
@@ -284,8 +275,7 @@ export const getSettings = (data) => {
                                                         id: 'dimensionsStyleRowHeight',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
+                                                                                inputs: [
                                                             {
                                                                 type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
@@ -334,8 +324,7 @@ export const getSettings = (data) => {
                                                         .addSettingsInputRow({
                                                             id: "size-position-Row-controls",
                                                             parentId: 'size-position-Pnl',
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                            inputs: [
+                                                                                        inputs: [
                                                                 {
                                                                     type: 'dropdown',
                                                                     id: 'image-object-fit',
@@ -373,8 +362,7 @@ export const getSettings = (data) => {
                                                         .addSettingsInputRow({
                                                             id: "filter-controls",
                                                             parentId: 'size-position-Pnl',
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                            inputs: [
+                                                                                        inputs: [
                                                                 {
                                                                     id: 'e34507ac-593a-44b7-bcfa-638ad7aff222',
                                                                     parentId: 'size-position-Pnl',
@@ -430,8 +418,7 @@ export const getSettings = (data) => {
                                                         })
                                                         .addSettingsInput({
                                                             parentId: 'size-position-Pnl',
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                            id: 'opacity-filter',
+                                                                                        id: 'opacity-filter',
                                                             label: 'Opacity',
                                                             propertyName: 'opacity',
                                                             inputType: 'numberField',
@@ -455,8 +442,7 @@ export const getSettings = (data) => {
                                                         id: `borderStyleRow`,
                                                         parentId: 'borderStylePnl',
                                                         hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
+                                                                inputs: [
                                                             {
                                                                 type: 'button',
                                                                 id: 'borderStyleRow-hideBorder',
@@ -497,8 +483,7 @@ export const getSettings = (data) => {
                                                         id: 'shadowStyleRow',
                                                         parentId: 'shadowStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
+                                                                                inputs: [
                                                             {
                                                                 type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
@@ -584,8 +569,7 @@ export const getSettings = (data) => {
                                                 id: 'stylePnl-M500-911MFR',
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                                                id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         label: 'Style',
@@ -604,7 +588,6 @@ export const getSettings = (data) => {
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                                 inputType: 'permissions',
                                 propertyName: 'permissions',

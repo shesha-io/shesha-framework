@@ -186,8 +186,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     id: nanoid(),
                     components: [...new DesignerToolbarSettings()
                       .addSettingsInput({
-                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                        id: nanoid(),
+                              id: nanoid(),
                         inputType: 'codeEditor',
                         propertyName: 'style',
                         parentId: styleRouterId,
@@ -249,7 +248,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'pnlLayout',
-                                readOnly: false,
                                 inputs: [
                                   {
                                     type: 'numberField',
@@ -437,7 +435,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: appearanceTabId,
-                        readOnly: false,
                         hidden: {
                           _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                           _mode: 'code',
@@ -465,7 +462,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: false,
                         hidden: {
                           _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
                           _mode: 'code',
@@ -491,7 +487,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: false,
                         hidden: {
                           _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
                           _mode: 'code',
@@ -537,7 +532,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: false,
                         hidden: {
                           _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                           _mode: 'code',
@@ -563,7 +557,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: false,
                         inputs: [
                           {
                             id: nanoid(),
@@ -583,7 +576,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: false,
                         inputs: [
                           {
                             id: nanoid(),
@@ -639,7 +631,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: false,
                         inputs: [
                           {
                             id: nanoid(),
@@ -683,7 +674,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        readOnly: false,
                         inputs: [
                           {
                             id: nanoid(),

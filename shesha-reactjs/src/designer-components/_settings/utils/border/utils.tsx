@@ -149,7 +149,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
             id: nanoid(),
             parentId: 'borderStylePnl',
             inline: true,
-            readOnly: false,
             hidden: { _code: generateCode('borderType', false, isResponsive, path), _mode: 'code', _value: false } as any,
             inputs: [
                 {
@@ -201,7 +200,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                         id: nanoid(),
                         parentId: 'borderStylePnl',
                         inline: true,
-                        readOnly: false,
                         inputs: [
                             {
                                 id: nanoid(),
@@ -269,7 +267,6 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
             id: nanoid(),
             parentId: 'borderStylePnl',
             inline: true,
-            readOnly: false,
             hidden: { _code: generateCode('radiusType', false, isResponsive, path), _mode: 'code', _value: false } as any,
             inputs: [
                 {
@@ -291,7 +288,6 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
             id: nanoid(),
             parentId: 'borderStylePnl',
             inline: true,
-            readOnly: false,
             inputs: radiusCorners.map(cornerValue => {
                 const corner = cornerValue.value as string;
 

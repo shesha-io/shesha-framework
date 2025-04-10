@@ -56,7 +56,6 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -92,7 +91,6 @@ export const getSettings = (data: ISwitchComponentProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
@@ -140,8 +138,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                               id: nanoid(),
                               parentId: 'dimensionsStylePnl',
                               inline: true,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
+                                          inputs: [
                                 {
                                   type: 'dropdown',
                                   id: nanoid(),
@@ -171,8 +168,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
+                                          id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
                               label: 'Style',

@@ -57,7 +57,6 @@ export const getSettings = (data: IRateProps) => {
                     },
                   ],
                   hidden: { _code: 'return  getSettingValue(data?.hideLabel);', _mode: 'code', _value: false } as any,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -78,7 +77,6 @@ export const getSettings = (data: IRateProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -115,7 +113,6 @@ export const getSettings = (data: IRateProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
@@ -159,8 +156,7 @@ export const getSettings = (data: IRateProps) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
+                                          id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
                               hideLabel: false,

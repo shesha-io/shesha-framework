@@ -41,7 +41,6 @@ export const getSettings = () => {
                 .addSettingsInputRow({
                   id: 'description-is-dragger-row ',
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
@@ -63,7 +62,6 @@ export const getSettings = () => {
                 })
                 .addSettingsInputRow({
                   id: 'b920ef96-ae27-4a01-bfad-list-type',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
                   inputs: [
                     {
@@ -90,7 +88,6 @@ export const getSettings = () => {
                 })
                 .addSettingsInputRow({
                   id: 'display-row-1',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
                   inputs: [
                     {
@@ -112,7 +109,6 @@ export const getSettings = () => {
                 })
                 .addSettingsInputRow({
                   id: 'display-row-2',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
                   inputs: [
                     {
@@ -152,7 +148,6 @@ export const getSettings = () => {
                 .addSettingsInputRow({
                   id: 'owner-name-row',
                   parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
@@ -173,7 +168,6 @@ export const getSettings = () => {
                 .addSettingsInputRow({
                   id: 'owner-id-owner-type-row',
                   parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
 
                     {
@@ -198,7 +192,6 @@ export const getSettings = () => {
                 .addSettingsInputRow({
                   id: 'allowed-file-types-row',
                   parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: 'allowed-file-types-row',
@@ -290,8 +283,7 @@ export const getSettings = () => {
                             parentId: 'fontStylePnl',
                             inline: true,
                             propertyName: 'font',
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
+                                      inputs: [
                               {
                                 type: 'dropdown',
                                 id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
@@ -363,8 +355,7 @@ export const getSettings = () => {
                             id: 'dimensionsStyleRowWidth',
                             parentId: 'dimensionsStylePnl',
                             inline: true,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
+                                      inputs: [
                               {
                                 type: 'textField',
                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
@@ -399,8 +390,7 @@ export const getSettings = () => {
                             id: 'dimensionsStyleRowHeight',
                             parentId: 'dimensionsStylePnl',
                             inline: true,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
+                                      inputs: [
                               {
                                 type: 'textField',
                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
@@ -525,8 +515,7 @@ export const getSettings = () => {
                                   title: "Stored File"
                                 }
                               ],
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
+                                        })
                             .addSettingsInputRow({
                               id: "backgroundStyleRow-color",
                               parentId: "backgroundStylePnl",
@@ -539,8 +528,7 @@ export const getSettings = () => {
                                 jsSetting: false,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
+                                        })
                             .addSettingsInputRow({
                               id: "backgroundStyle-gradientColors",
                               parentId: "backgroundStylePnl",
@@ -554,8 +542,7 @@ export const getSettings = () => {
                               ],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                               hideLabel: true,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
+                                        })
                             .addSettingsInputRow({
                               id: "backgroundStyle-url",
                               parentId: "backgroundStylePnl",
@@ -567,8 +554,7 @@ export const getSettings = () => {
                                 label: "URL",
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
+                                        })
                             .addSettingsInputRow({
                               id: "backgroundStyle-image",
                               parentId: 'backgroundStylePnl',
@@ -580,14 +566,12 @@ export const getSettings = () => {
                                 jsSetting: false,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
+                                        })
                             .addSettingsInputRow({
                               id: "backgroundStyleRow-storedFile",
                               parentId: 'backgroundStylePnl',
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
+                                          inputs: [
                                 {
                                   type: 'textField',
                                   id: 'backgroundStyle-storedFile',
@@ -602,8 +586,7 @@ export const getSettings = () => {
                               parentId: 'backgroundStyleRow',
                               inline: true,
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
+                                          inputs: [
                                 {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-size',
@@ -627,8 +610,7 @@ export const getSettings = () => {
                             .addSettingsInputRow({
                               id: 'backgroundStyleRow-repeat',
                               parentId: 'backgroundStyleRow',
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [{
+                                          inputs: [{
                                 type: 'radio',
                                 id: 'backgroundStyleRow-repeat-radio',
                                 label: 'Repeat',
@@ -659,8 +641,7 @@ export const getSettings = () => {
                             id: 'shadowStyleRow',
                             parentId: 'shadowStylePnl',
                             inline: true,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
+                                      inputs: [
                               {
                                 type: 'numberField',
                                 id: 'shadowStyleRow-offsetX',
@@ -723,8 +704,7 @@ export const getSettings = () => {
                         id: 'stylePnl-M500-911MFR',
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInput({
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            id: 'custom-css-412c-8461-4c8d55e5c073',
+                                      id: 'custom-css-412c-8461-4c8d55e5c073',
                             inputType: 'codeEditor',
                             propertyName: 'style',
                             hideLabel: false,
@@ -748,8 +728,7 @@ export const getSettings = () => {
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: 'b920ef96-thumbnail-4a01-bfad-bob7d07218da',
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
+                                      parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
                             inputs: [
                               {
                                 id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
@@ -791,8 +770,7 @@ export const getSettings = () => {
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
                                   hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
-                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  inputs: [
+                                    inputs: [
                                     {
                                       type: 'textField',
                                       id: 'width-s4gmBg31azZC0UjZjpfTm',
@@ -828,8 +806,7 @@ export const getSettings = () => {
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
                                   hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
-                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  inputs: [
+                                    inputs: [
                                     {
                                       type: 'textField',
                                       id: 'height-s4gmBg31azZC0UjZjpfTm',
@@ -919,7 +896,6 @@ export const getSettings = () => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',

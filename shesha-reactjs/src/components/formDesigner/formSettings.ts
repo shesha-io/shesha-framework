@@ -104,7 +104,6 @@ export const getSettings = () => {
                                                 })
                                                 .addSettingsInputRow({
                                                     id: 'endpint-additional-fields-to-fetch',
-                                                    readOnly: false,
                                                     inputs: [
                                                         {
                                                             id: "oamRBlEs6O2Jlc2FGL_gY",
@@ -174,7 +173,7 @@ export const getSettings = () => {
                                                 _mode: "code",
                                                 _code: "    return data?.dataLoaderType !== 'custom';",
                                                 _value: false
-                                            }, readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            },
                                             inputs: [
                                                 {
                                                     type: 'codeEditor',
@@ -193,7 +192,6 @@ export const getSettings = () => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'on-beforeload-data-on-after-load-data',
-                                            readOnly: false,
                                             inputs: [
                                                 {
                                                     id: nanoid(),
@@ -267,7 +265,6 @@ export const getSettings = () => {
                                             id: nanoid(),
                                             parentId: 'root',
                                             hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             inputs: [
                                                 {
                                                     type: 'radio',
@@ -286,7 +283,6 @@ export const getSettings = () => {
                                         .addSettingsInputRow({
                                             id: nanoid(),
                                             parentId: 'root',
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             inputs: [
                                                 {
                                                     type: 'endpointsAutocomplete',
@@ -327,7 +323,6 @@ export const getSettings = () => {
                                             id: nanoid(),
                                             parentId: 'root',
                                             hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
-                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             inputs: [
                                                 {
                                                     type: 'switch',
@@ -340,7 +335,6 @@ export const getSettings = () => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'on-prepare-submit-data-on-before-sumbit',
-                                            readOnly: false,
                                             inputs: [
                                                 {
                                                     id: nanoid(),
@@ -381,7 +375,6 @@ export const getSettings = () => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'on-submit-success-submit-fail',
-                                            readOnly: false,
                                             inputs: [
                                                 {
                                                     id: nanoid(),

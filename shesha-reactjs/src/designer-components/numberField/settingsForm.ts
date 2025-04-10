@@ -68,12 +68,10 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'editModeSelector',
@@ -97,7 +95,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'numberField',
@@ -128,7 +125,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: 'suffix-s4gmBg31azZC0UjZjpfTm',
@@ -149,7 +145,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInput({
                   id: 'f6f4a345-a529-4720-a90b-d84532e556fb',
@@ -164,7 +159,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.highPrecision)',
                     _mode: 'code',
@@ -187,7 +181,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return !getSettingValue(data?.highPrecision)',
                     _mode: 'code',
@@ -217,7 +210,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
                   propertyName: 'validate.required',
                   label: 'Required',
@@ -248,7 +240,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson(),
             ],
@@ -260,7 +251,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
                   inputType: 'codeEditor',
                   propertyName: 'onChangeCustom',
@@ -270,7 +260,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
                   inputType: 'codeEditor',
                   propertyName: 'onFocusCustom',
@@ -280,7 +269,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
                   inputType: 'codeEditor',
                   propertyName: 'onBlurCustom',
@@ -886,7 +874,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',
