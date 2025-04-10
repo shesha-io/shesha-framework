@@ -26,6 +26,7 @@ interface IShaDrawer {
   footerStyle?: CSSProperties;
   placement?: 'top' | 'right' | 'bottom' | 'left';
   width?: string | number;
+  height?: string | number;
   readOnly?: boolean;
   background?: CSSProperties;
 }
@@ -39,6 +40,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     id,
     placement,
     width,
+    height,
     componentName: name,
     readOnly,
     label,
@@ -145,7 +147,8 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     <Drawer
       open={state?.open}
       placement={placement}
-      width={width}
+      width={placement === 'top' || placement === 'bottom' ? '100%' : width}
+      height={placement === 'top' || placement === 'bottom' ? height : '100%'}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
