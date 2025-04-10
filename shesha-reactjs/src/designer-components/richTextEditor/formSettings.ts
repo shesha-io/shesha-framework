@@ -41,7 +41,7 @@ export const getSettings = (data: any) => {
                 },
                 styledLabel: true,
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -55,7 +55,6 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -76,7 +75,6 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -85,7 +83,6 @@ export const getSettings = (data: any) => {
                 label: 'Edit Mode',
                 parentId: commonTabId,
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -94,7 +91,7 @@ export const getSettings = (data: any) => {
                 label: 'Placeholder',
                 parentId: commonTabId,
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .toJson()
             ]
@@ -122,7 +119,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -143,7 +140,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -158,7 +155,7 @@ export const getSettings = (data: any) => {
                   { label: 'Insert as plain text', value: 'insert_as_text' },
                   { label: 'Insert only text', value: 'Insert only text' }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .toJson()
             ]
@@ -189,7 +186,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -202,7 +199,7 @@ export const getSettings = (data: any) => {
                   { label: 'None', value: 'null' },
                   { label: 'Inline Mode', value: 'inline' }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -217,7 +214,7 @@ export const getSettings = (data: any) => {
                   { label: 'Middle', value: 'middle' },
                   { label: 'Large', value: 'large' }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -241,7 +238,7 @@ export const getSettings = (data: any) => {
                     hidden: { _code: 'return !getSettingValue(data?.toolbarSticky);', _mode: 'code', _value: false } as any,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -264,7 +261,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -287,7 +284,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -301,7 +298,7 @@ export const getSettings = (data: any) => {
                   { label: 'rtl', value: 'rtl' },
                   { label: 'ltr', value: 'ltr' }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -315,7 +312,7 @@ export const getSettings = (data: any) => {
                   { label: 'Paragraph (P)', value: 'P' },
                   { label: 'Block (DIV)', value: 'DIV' }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -330,7 +327,7 @@ export const getSettings = (data: any) => {
                   { label: 'Split code', value: '3' }
                 ],
                 defaultValue: ['1'],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -353,7 +350,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -376,7 +373,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .toJson()
             ]
@@ -399,7 +396,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -424,7 +421,7 @@ export const getSettings = (data: any) => {
                     hidden: { _code: 'return getSettingValue(data?.autoHeight);', _mode: 'code', _value: false } as any,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -447,7 +444,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -462,7 +459,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -487,7 +484,7 @@ export const getSettings = (data: any) => {
                     hidden: { _code: 'return getSettingValue(data?.autoWidth);', _mode: 'code', _value: false } as any,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -510,7 +507,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .toJson()
             ]
@@ -592,7 +589,7 @@ export const getSettings = (data: any) => {
                   { label: 'preview', value: 'preview' },
                   { label: 'print', value: 'print' }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .toJson()
             ]
@@ -666,7 +663,7 @@ export const getSettings = (data: any) => {
             id: securityTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',

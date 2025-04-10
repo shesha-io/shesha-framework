@@ -59,12 +59,10 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     type: 'switch',
@@ -87,7 +85,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: itemsTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     type: 'autocomplete',
@@ -109,7 +106,6 @@ export const getSettings = (data: any) => {
                 parentId: itemsTabId,
                 referenceList: { _code: 'return getSettingValue(data?.referenceList);', _mode: 'code', _value: false } as any,
                 inputType: 'RefListItemSelectorSettingsModal',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -326,7 +322,6 @@ export const getSettings = (data: any) => {
             id: securityTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',

@@ -49,7 +49,6 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -64,7 +63,6 @@ export const getSettings = (data: any) => {
                     layout: 'horizontal',
                   },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -76,7 +74,6 @@ export const getSettings = (data: any) => {
             id: securityId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',

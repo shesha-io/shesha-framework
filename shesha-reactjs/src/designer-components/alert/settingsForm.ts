@@ -171,7 +171,6 @@ export const getSettings = (data: IAlertComponentProps) => {
             id: securityTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',
