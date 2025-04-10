@@ -134,8 +134,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     parentId: securityTabId,
                                     jsSetting: true,
                                     tooltip: 'Enter a list of permissions that should be associated with this component',
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                })
+                                    })
                                 .toJson()
                         ]
                     },
@@ -155,8 +154,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         parentId: layoutTabId,
                                         tooltip: 'The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.',
                                         jsSetting: true,
-                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    },
+                                            },
                                     {
                                         id: nanoid(),
                                         propertyName: 'maxHeight',
@@ -165,8 +163,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         parentId: layoutTabId,
                                         tooltip: 'The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.',
                                         jsSetting: true,
-                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    }
+                                            }
                                 ]
                             })
                             .addCollapsiblePanel({
@@ -261,8 +258,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     inputType: 'columnsConfig',
                                     jsSetting: true,
                                     parentId: commonTabId,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                })
+                                    })
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     inputs: [
@@ -290,8 +286,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     label: 'Can Edit Inline',
                                     inputType: 'dropdown',
                                     parentId: crudTabId,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    dropdownOptions: [
+                                        dropdownOptions: [
                                         { value: 'yes', label: 'Yes' },
                                         { value: 'no', label: 'No' },
                                         { value: 'inherit', label: 'Inherit' },
@@ -469,8 +464,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     parentId: crudTabId,
                                     tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
+                                        description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                                     exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                                 })
                                 .addSettingsInput({
@@ -479,8 +473,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     label: 'Can Delete Inline',
                                     inputType: 'dropdown',
                                     parentId: crudTabId,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    dropdownOptions: [
+                                        dropdownOptions: [
                                         { value: 'yes', label: 'Yes' },
                                         { value: 'no', label: 'No' },
                                         { value: 'inherit', label: 'Inherit' },
@@ -535,8 +528,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     parentId: 'root',
                                     label: "On Double Click",
                                     jsSetting: false,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                })
+                                    })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowSaveSuccessAction',

@@ -515,7 +515,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                                 max: 24,
                                 defaultValue: 16,
                                 step: 1,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               },
                               {
                                 id: nanoid(),
@@ -528,7 +527,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                                 max: 24,
                                 defaultValue: 8,
                                 step: 1,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               }
                             ]
                           })

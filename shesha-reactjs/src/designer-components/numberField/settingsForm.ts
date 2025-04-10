@@ -318,11 +318,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 parentId: 'fontStylePnl',
                                 inline: true,
                                 propertyName: 'font',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'dropdown',
@@ -388,11 +383,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 id: 'dimensionsStyleRowWidth',
                                 parentId: 'dimensionsStylePnl',
                                 inline: true,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -427,11 +417,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 id: 'dimensionsStyleRowHeight',
                                 parentId: 'dimensionsStylePnl',
                                 inline: true,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -539,11 +524,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 inputType: 'radio',
                                 tooltip: 'Select a type of background',
                                 buttonGroupOptions: backgroundTypeOptions,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-color',
@@ -561,11 +541,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 hidden: {
                                   _code:
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -589,11 +564,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                   _value: false,
                                 } as any,
                                 hideLabel: true,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyle-url',
@@ -610,11 +580,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 hidden: {
                                   _code:
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -637,11 +602,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-storedFile',
@@ -649,11 +609,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 hidden: {
                                   _code:
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -674,11 +629,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 hidden: {
                                   _code:
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -708,11 +658,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'radio',
@@ -751,11 +696,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 id: 'shadowStyleRow',
                                 parentId: 'shadowStylePnl',
                                 inline: true,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'numberField',
@@ -844,11 +784,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',

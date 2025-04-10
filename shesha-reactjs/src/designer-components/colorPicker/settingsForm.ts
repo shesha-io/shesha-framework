@@ -58,12 +58,10 @@ export const getSettings = (data: any) => {
                                         jsSetting: true,
                                     },
                                 ],
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'editModeSelector',
@@ -93,7 +91,6 @@ export const getSettings = (data: any) => {
                         id: securityTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
@@ -123,7 +120,6 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: mainSettingsTabId,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'switch',
@@ -145,7 +141,6 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: mainSettingsTabId,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -265,7 +260,6 @@ export const getSettings = (data: any) => {
                         id: eventsTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'onChangeCustom',
