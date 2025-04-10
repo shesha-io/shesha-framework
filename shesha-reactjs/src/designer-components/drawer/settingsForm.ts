@@ -709,11 +709,6 @@ export const getSettings = (data: any) => {
                                             title: 'Stored File',
                                           },
                                         ],
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-color',
@@ -731,11 +726,6 @@ export const getSettings = (data: any) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -759,11 +749,6 @@ export const getSettings = (data: any) => {
                                           _value: false,
                                         } as any,
                                         hideLabel: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyle-url',
@@ -780,11 +765,6 @@ export const getSettings = (data: any) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "url";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -807,11 +787,6 @@ export const getSettings = (data: any) => {
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-storedFile',
@@ -819,11 +794,6 @@ export const getSettings = (data: any) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "storedFile";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -842,11 +812,6 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStyleRow',
                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
@@ -944,11 +909,6 @@ export const getSettings = (data: any) => {
                                         id: 'shadowStyleRow',
                                         parentId: 'shadowStylePnl',
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'numberField',
@@ -1072,11 +1032,6 @@ export const getSettings = (data: any) => {
                                             title: 'Stored File',
                                           },
                                         ],
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerbackgroundStyleRow-color',
@@ -1094,11 +1049,6 @@ export const getSettings = (data: any) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1122,11 +1072,6 @@ export const getSettings = (data: any) => {
                                           _value: false,
                                         } as any,
                                         hideLabel: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerBackgroundStyle-url',
@@ -1143,11 +1088,6 @@ export const getSettings = (data: any) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "url";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1170,11 +1110,6 @@ export const getSettings = (data: any) => {
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerbackgroundStyleRow-storedFile',
@@ -1182,11 +1117,6 @@ export const getSettings = (data: any) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "storedFile";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1205,11 +1135,6 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStyleRow',
                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
@@ -1307,11 +1232,6 @@ export const getSettings = (data: any) => {
                                         id: 'footershadowStyleRow',
                                         parentId: 'shadowStylePnl',
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'numberField',

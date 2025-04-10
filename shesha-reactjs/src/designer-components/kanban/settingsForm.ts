@@ -273,11 +273,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         parentId: 'fontStylePnl',
                                         inline: true,
                                         propertyName: 'font',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'dropdown',
@@ -365,11 +360,6 @@ export const getSettings = (data: IKanbanProps) => {
                                             title: 'Stored File',
                                           },
                                         ],
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-colors',
@@ -387,11 +377,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -415,11 +400,6 @@ export const getSettings = (data: IKanbanProps) => {
                                           _value: false,
                                         } as any,
                                         hideLabel: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyle-urls',
@@ -436,11 +416,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -463,11 +438,6 @@ export const getSettings = (data: IKanbanProps) => {
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-storedFiles',
@@ -475,11 +445,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -503,11 +468,6 @@ export const getSettings = (data: IKanbanProps) => {
                                           _value: false,
                                         } as any,
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
@@ -580,11 +540,6 @@ export const getSettings = (data: IKanbanProps) => {
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-repeat',
                                         parentId: 'backgroundStyleRow',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'radio',
@@ -623,11 +578,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         id: 'shadowStyleRow',
                                         parentId: 'shadowStylePnl',
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'numberField',
@@ -703,11 +653,6 @@ export const getSettings = (data: IKanbanProps) => {
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'button',
@@ -777,11 +722,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         id: 'columnStyles.dimensionsStyleRowWidth',
                                         parentId: 'columnStyles.dimensionsStylePnl',
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'textField',
@@ -817,11 +757,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         id: 'columnStyles.dimensionsStyleRowHeight',
                                         parentId: 'columnStyles.dimensionsStylePnl',
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'textField',
@@ -904,11 +839,6 @@ export const getSettings = (data: IKanbanProps) => {
                                             title: 'Stored File',
                                           },
                                         ],
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-colors',
@@ -926,11 +856,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -954,11 +879,6 @@ export const getSettings = (data: IKanbanProps) => {
                                           _value: false,
                                         } as any,
                                         hideLabel: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyle-urls',
@@ -975,11 +895,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "url";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1002,11 +917,6 @@ export const getSettings = (data: IKanbanProps) => {
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-storedFiles',
@@ -1014,11 +924,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "storedFile";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1042,11 +947,6 @@ export const getSettings = (data: IKanbanProps) => {
                                           _value: false,
                                         } as any,
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
@@ -1119,11 +1019,6 @@ export const getSettings = (data: IKanbanProps) => {
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-repeat',
                                         parentId: 'backgroundStyleRow',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'radio',
@@ -1162,11 +1057,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         id: 'columnStyles.shadowStyleRow',
                                         parentId: 'columnStyles.shadowStylePnl',
                                         inline: true,
-                                        readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'numberField',
@@ -1239,11 +1129,6 @@ export const getSettings = (data: IKanbanProps) => {
                                         hidden: {
                                           _code:
                                             'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.border?.hideBorder);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
