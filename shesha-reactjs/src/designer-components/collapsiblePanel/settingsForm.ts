@@ -37,7 +37,6 @@ export const getSettings = () => {
                             .addSettingsInputRow({
                                 id: 'label-customHeader-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.hasCustomHeader);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'textField',
@@ -60,7 +59,6 @@ export const getSettings = () => {
                             .addSettingsInputRow({
                                 id: 'expandIconPosition-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.expandIconPosition);', _mode: 'code', _value: 'end' } as any,
                                 inputs: [
                                     {
                                         id: 'panel57a40a33-7e08-4ce4-9f08-a34d24a83338',
@@ -114,7 +112,6 @@ export const getSettings = () => {
                             .addSettingsInputRow({
                                 id: 'collapsedByDefault-ghost-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.ghost);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: 'panel-wYzLo-lK468vwxVVBDMh',
@@ -142,7 +139,6 @@ export const getSettings = () => {
                             .addSettingsInputRow({
                                 id: 'isSimpleDesign-hideTopBar-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.hideCollapseContent);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: 'panelcfd7d45e-smpl-4a27-987b-dc525c412448',
@@ -168,7 +164,6 @@ export const getSettings = () => {
                             .addSettingsInputRow({
                                 id: 'hide-when-empty-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                readOnly: { _code: 'return  getSettingValue(data?.hideWhenEmpty);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
