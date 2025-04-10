@@ -259,11 +259,6 @@ export const getSettings = (data: any) => {
                           _mode: 'code',
                           _value: false,
                         } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                         inputs: [
                           {
                             type: 'dropdown',
@@ -462,11 +457,6 @@ export const getSettings = (data: any) => {
                         parentId: 's4gmBg31azZC0UjZjpfTm',
                         hidden: {
                           _code: 'return  !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,

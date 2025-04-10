@@ -349,11 +349,6 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         hidden: false,
                         validate: { required: true },
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -371,11 +366,6 @@ export const getSettings = (data: any) => {
                           _mode: 'code',
                           _value: false,
                         } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -390,11 +380,6 @@ export const getSettings = (data: any) => {
                         hidden: {
                           _code:
                             'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -430,11 +415,6 @@ export const getSettings = (data: any) => {
                         settingsValidationErrors: [],
                         useRawValues: true,
                         width: '100%',
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -442,11 +422,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -477,11 +452,6 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         defaultValue: false,
                         validate: { required: true },
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -489,11 +459,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -528,11 +493,6 @@ export const getSettings = (data: any) => {
                           _mode: 'code',
                           _value: false,
                         } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -557,11 +517,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -590,11 +545,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -651,11 +601,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return !getSettingValue(data?.allowFilter)',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
