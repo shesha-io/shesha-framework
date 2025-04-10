@@ -33,7 +33,6 @@ export const getPositionInputs = () => positions.map(value => {
         id: `borderStyleRow-${label}`,
         parentId: 'borderStylePnl',
         inline: true,
-        readOnly: false,
         hidden: { _code: code, _mode: 'code', _value: false } as any,
         inputs: [
             {
