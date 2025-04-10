@@ -309,7 +309,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       >
         {isStub
           ? (isDragger
-            ? <Dragger disabled><DraggerStub /></Dragger>
+            ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
             : <div
               className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
             >
@@ -321,10 +321,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             </div>)
           : (props.disabled
             ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
-            : isDragger ?
-              <Dragger {...props}>
-                <DraggerStub />
-              </Dragger>
+            : isDragger
+              ? <Dragger {...props}><DraggerStub styles={styles} /></Dragger>
               : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
         }
       </ConfigProvider>

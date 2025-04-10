@@ -1,10 +1,7 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { InboxOutlined } from '@ant-design/icons';
-import { useStyles } from './styles/styles';
 
-export const DraggerStub: FC = () => {
-  const { styles } = useStyles();
-
+export const DraggerStub = ({styles}) => {
   return (
     <div>
         <p className={styles.antUploadDragIcon}>

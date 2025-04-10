@@ -1,21 +1,24 @@
-import React, { FC, useRef } from 'react';
-import { useStoredFile } from '@/providers';
-import { Upload, App, Button } from 'antd';
-import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
+import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { getFileIcon, isImageType } from '@/icons/fileIcons';
+import { useSheshaApplication, useStoredFile, useTheme } from '@/providers';
 import {
-  InfoCircleOutlined,
-  SyncOutlined,
   DeleteOutlined,
-  LoadingOutlined,
+  DownloadOutlined,
+  EyeOutlined,
+  InfoCircleOutlined,
+  PictureOutlined,
+  SyncOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
+import { App, Button, Space, Upload } from 'antd';
+import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
-import { FileVersionsPopup } from './fileVersionsPopup';
+import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
-import classNames from 'classnames';
-
 const { Dragger } = Upload;
 
 export interface IFileUploadProps {
@@ -29,6 +32,12 @@ export interface IFileUploadProps {
   isStub?: boolean;
   allowedFileTypes?: string[];
   isDragger?: boolean;
+  listType?: listType;
+  thumbnailWidth?: string;
+  thumbnailHeight?: string;
+  borderRadius?: number;
+  hideFileName?: boolean;
+  styles?: any;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -40,6 +49,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
   isStub = false,
   allowedFileTypes = [],
   isDragger = false,
+  listType = 'text',
+  hideFileName = false,
+  styles: stylesProp,
 }) => {
   const {
     fileInfo,
@@ -51,26 +63,56 @@ export const FileUpload: FC<IFileUploadProps> = ({
     succeeded: { downloadZip: downloadZipSuccess },
     */
   } = useStoredFile();
-  const { styles } = useStyles();
+  const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  const props = {
+    style: stylesProp,
+    model: {
+      layout: listType === 'thumbnail' && !isDragger,
+      isDragger,
+      hideFileName,
+    },
+  };
+  const { styles } = useStyles(props);
+  const { theme } = useTheme();
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
   const { message } = App.useApp();
+  const [imageUrl, setImageUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
+
+  const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
+  useEffect(() => {
+    if (fileInfo && url) {
+      fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
+        .then((response) => {
+          return response.blob();
+        })
+        .then((blob) => {
+          return URL.createObjectURL(blob);
+        })
+        .then((url) => {
+          setImageUrl(url);
+        });
+    }
+  }, [fileInfo]);
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
     uploadFile({ file: file as File }, callback);
   };
 
-  const onDownloadClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
-    downloadFile({ fileId: fileInfo.id, fileName: fileInfo.name });
-  };
-
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
+    e.stopPropagation();
 
     if (!isDragger) {
-      uploadButtonRef.current.click();
+      // Find the hidden input element created by Upload component
+      const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (input) {
+        input.click();
+      }
     } else {
       if (uploadDraggerSpanRef.current) {
         uploadDraggerSpanRef.current.click();
@@ -83,26 +125,93 @@ export const FileUpload: FC<IFileUploadProps> = ({
     deleteFile();
   };
 
-  const fileControls = () => {
+  const onPreview = () => {
+    if (fileInfo) {
+      setPreviewImage({ url, uid: fileInfo?.id, name: fileInfo?.name });
+      setPreviewOpen(true);
+    }
+  };
+
+  const fileControls = (color: string) => {
     return (
-      <React.Fragment>
-        {fileInfo && (
-          <a className={styles.shaUploadHistoryControl}>
-            {false && <InfoCircleOutlined />}
-            <FileVersionsPopup fileId={fileInfo.id} />
-          </a>
-        )}
+      //space between the icons
+      <Space>
+        <a style={{ color: color }}>
+          {false && <InfoCircleOutlined />}
+          <FileVersionsPopup fileId={fileInfo?.id} />
+        </a>
         {allowReplace && (
-          <a className={styles.shaUploadReplaceControl} onClick={onReplaceClick}>
+          <a onClick={onReplaceClick} style={{ color: color }}>
             <SyncOutlined title="Replace" />
           </a>
         )}
+
         {allowDelete && (
-          <a className={styles.shaUploadRemoveControl} onClick={onDeleteClick}>
+          <a onClick={(e) => onDeleteClick(e)} style={{ color: color }}>
             <DeleteOutlined title="Remove" />
           </a>
         )}
-      </React.Fragment>
+        {isImageType(fileInfo?.type) ? (
+          <a onClick={onPreview} style={{ color: color }}>
+            <EyeOutlined title="Preview" />
+          </a>
+        ) : (
+          hideFileName && (
+            <a onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })} style={{ color: color }}>
+              <DownloadOutlined title="Download" />
+            </a>
+          )
+        )}
+      </Space>
+    );
+  };
+
+  const iconRender = (fileInfo) => {
+    const { type, name } = fileInfo;
+    if (isImageType(type)) {
+      if (listType === 'thumbnail' && !isDragger) {
+        return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls} />;
+      }
+    }
+
+    return getFileIcon(type);
+  };
+
+  const styledfileControls = () => {
+    return (
+      fileInfo && (
+        <div className={styles.styledFileControls}>
+          {iconRender(fileInfo)}
+          <div className={styles.overlayThumbnailControls} style={{ fontSize: '15px' }}>
+            {fileControls('#fff')}
+          </div>
+        </div>
+      )
+    );
+  };
+
+  const renderFileItem = (file: any) => {
+    const showThumbnailControls = !isUploading && listType === 'thumbnail';
+    const showTextControls = listType === 'text';
+
+    return (
+      <div>
+        {showThumbnailControls && styledfileControls()}
+        <a title={file.name}>
+          <Space>
+            {isUploading ? (
+              <span>
+                <SyncOutlined spin />
+              </span>
+            ) : (
+              <div className="thumbnail-item-name">
+                {(listType === 'text' || !hideFileName) && <a onClick={() => downloadFile({ fileId: file.id, fileName: file.name })}>{`${file.name} (${filesize(file.size)})`}</a>}
+                {showTextControls && fileControls(theme.application.primaryColor)}
+              </div>
+            )}
+          </Space>
+        </a>
+      </div>
     );
   };
 
@@ -112,6 +221,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
+    style: stylesProp,
     customRequest: onCustomRequest,
     onChange(info) {
       if (info.file.status !== 'uploading') {
@@ -123,63 +233,92 @@ export const FileUpload: FC<IFileUploadProps> = ({
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    itemRender: (_originNode, file, _currFileList) => {
-      return (
-        <div className={file.error ? styles.shaUploadListItemError : ''}>
-          <div className={styles.shaUploadListItemInfo}>
-            {isUploading && <LoadingOutlined className={styles.shaUploadUploading} />}
-            <a target="_blank" title={file.name} onClick={onDownloadClick}>
-              {file.name} ({filesize(file.size)})
-            </a>
-
-            {!isUploading && fileControls()}
-          </div>
-        </div>
-      );
-    },
+    itemRender: (_originNode, file) => renderFileItem(file),
   };
 
-  const showUploadButton = allowUpload && !fileInfo && !isUploading;
-  const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
+  const showUploadButton = allowUpload && !isUploading;
+  // const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
     <Button
-      icon={<UploadOutlined />}
+      icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
       type="link"
       ref={uploadButtonRef}
       style={{ display: !showUploadButton ? 'none' : '' }}
     >
-      (press to upload)
+      {listType === 'text' ? `(press to upload)` : null}
     </Button>
   );
 
   const renderStub = () => {
     if (isDragger) {
-      return <Dragger disabled><DraggerStub /></Dragger>;
-    }
-
-    return <div className={classes}>{uploadButton}</div>;
-  };
-
-  const renderUploader = () => {
-    if (isDragger && allowUpload) {
       return (
-        <Dragger {...fileProps} className={classes}>
-          <span ref={uploadDraggerSpanRef} />
-          <DraggerStub />
+        <Dragger disabled>
+          <DraggerStub styles={styles} />
         </Dragger>
       );
     }
 
     return (
-      <Upload {...fileProps} listType='picture-card' className={classes}>
-        {/* {allowUpload && uploadButton} */}
-      </Upload>
+      <>
+        <div
+          className={
+            listType === 'thumbnail' ? 'ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub' : ''
+          }
+        >
+          {uploadButton}
+        </div>
+        {listType === 'thumbnail' ? <div className="thumbnail-item-name">File name</div> : null}
+      </>
     );
   };
 
+  const renderUploader = () => {
+    const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';
+    if (isDragger && allowUpload) {
+      return (
+        <Dragger {...fileProps}>
+          <span ref={uploadDraggerSpanRef} />
+          <DraggerStub styles={styles} />
+        </Dragger>
+      );
+    }
+    return (
+      <div>
+        <Upload {...fileProps} listType={antListType}>
+          {allowUpload && !fileInfo && uploadButton}
+        </Upload>
+      </div>
+    );
+  };
 
-  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
+  return (
+    <>
+      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
+      {previewOpen && (
+        <Image
+          wrapperStyle={{ display: 'none' }}
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            afterOpenChange: (visible) => !visible,
+            toolbarRender: (original) => {
+              return (
+                <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                  <DownloadOutlined
+                    className={styles.antPreviewDownloadIcon}
+                    onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
+                  />
+                  {original}
+                </div>
+              );
+            },
+          }}
+          src={imageUrl}
+        />
+      )}
+    </>
+  );
 };
 
 export default FileUpload;

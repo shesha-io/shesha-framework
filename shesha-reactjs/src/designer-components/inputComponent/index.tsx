@@ -1,3 +1,4 @@
+
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
@@ -338,4 +339,3 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             />;
     }
 };
-
