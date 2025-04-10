@@ -64,11 +64,6 @@ export const getSettings = (data: any) => {
                         .addSettingsInputRow({
                           id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                           parentId: 's4gmBg31azZC0UjZjpfTm',
-                          readOnly: {
-                            _code: 'return  getSettingValue(data?.readOnly);',
-                            _mode: 'code',
-                            _value: false,
-                          } as any,
                           inputs: [
                             {
                               id: '12d700d6-ed4d-49d5-9cfd-fe8f00w0f3b6',
@@ -240,11 +235,6 @@ export const getSettings = (data: any) => {
                                 id: 'dimensionsStyleRowHeight',
                                 parentId: 'dimensionsStylePnl',
                                 inline: true,
-                                readOnly: {
-                                  _code: 'return getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 hidden: {
                                   _code:
                                     'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.placement) !== "top" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.placement) !== "bottom";',
@@ -518,11 +508,6 @@ export const getSettings = (data: any) => {
                                 hidden: {
                                   _code:
                                     'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                readOnly: {
-                                  _code: 'return getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
