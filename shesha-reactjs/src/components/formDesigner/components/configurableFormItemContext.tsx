@@ -1,7 +1,7 @@
-import React,{ FC, useEffect, useState } from "react";
+import React, { FC } from "react";
 import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
-import { useDataContextManagerActions } from "@/index";
+import { useDataContextManager } from "@/index";
 import { DataBinder } from "@/hocs/dataBinder";
 
 interface IConfigurableFormItem_ContextProps {
@@ -21,16 +21,9 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
     contextName,
     children
   } = props;
-
-  const [, forceUpdate] = useState({});
-
-  const { getDataContext } = useDataContextManagerActions();
+  const { getDataContext } = useDataContextManager();
   const context = getDataContext(contextName);
-  const { getFieldValue, registerListener } = context ?? {};
-
-  useEffect(() => {
-    registerListener(props.componentId, propertyName, () => forceUpdate({}));
-  }, []);
+  const { getFieldValue } = context ?? {};
 
   const value = getFieldValue ? getFieldValue(propertyName) : undefined;
 

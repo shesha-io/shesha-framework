@@ -1,7 +1,7 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
-import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
+import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import { 
@@ -43,7 +43,6 @@ export interface IDataContextBinderProps {
   setFieldValue?: ContextSetFieldValue;
   onChangeData?: ContextOnChangeData;
   actionsOverride?: IDataContextProviderActionsContextOverride;
-  listenersRef: MutableRefObject<IDataContextBinderRef>;
 }
 
 const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props) => {
@@ -55,11 +54,10 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     type, 
     data,
     onChangeData,
-    listenersRef,
   } = props;
 
   const uid = useId();
-  const { onChangeContext, onChangeContextData } = useDataContextManager();
+  const { onChangeContext, onChangeContextData } = useDataContextManagerActions();
   const metadataDispatcher = useMetadataDispatcher();
 
   const apiRef = useRef<any>(props.api);
@@ -79,29 +77,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     metadata: props.metadata ?? Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name, properties: []} as IModelMetadata) // set default metadata if empty
   });
 
-  const listeners = useRef<{ id: string, propertyName: string, listener: () => void }[]>([]);
-
   const metadata = props.metadata ?? state.metadata;
-
-  const fireListener = (propertyName: string) => {
-    listeners.current.forEach(listener => {
-      if (listener.propertyName === propertyName)
-        listener.listener();
-    });
-  };
-
-  const fireAllListeners = () => {
-    listeners.current.forEach(listener => listener.listener());
-  };
-
-  if (listenersRef && !listenersRef.current)
-    listenersRef.current = { fireListener, fireAllListeners };
-
-  const registerListener = (id: string, propertyName: string, listener: () => void) => {
-    if (listeners.current.find(x => x.id === id && x.propertyName === propertyName)) 
-      return;
-    listeners.current.push({ id, propertyName, listener });
-  };
 
   const getFieldValue = useCallback((name: string) => {
     if (props.getFieldValue)
@@ -130,8 +106,6 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
       if (onChangeData)
         onChangeData(newData, changedData, onChangeContextData);
     }
-
-    fireListener(name);
   }, [props.setFieldValue, onChangeData]);
 
   const setData = useDeepCompareCallback((changedData: any) => {
@@ -139,8 +113,6 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
       props.setData(changedData,  onChangeContextData);
     else if (onChangeData)
       onChangeData({...dataRef.current, ...changedData}, {...changedData}, onChangeContextData);
-
-    fireAllListeners();
   }, [props.setData, onChangeData]);
 
   const updateApi = (api: any) => {
@@ -160,7 +132,6 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   };
 
   const actionContext: IDataContextProviderActionsContext ={
-    registerListener,
     setFieldValue,
     getFieldValue,
     setData,

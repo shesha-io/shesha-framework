@@ -69,6 +69,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const toolboxComponents = useFormDesignerComponents();
   const settingsPanelRef = useRef();
+  const componentInitialization = useRef<Boolean>(false);
 
   const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
   const componentEditors = useRef<IComponentSettingsEditorsCache>({});
@@ -150,8 +151,14 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   }, [dispatch]);
 
   const updateComponent = useCallback((payload: IComponentUpdatePayload) => {
-    dispatch(componentUpdateAction(payload));
+    // ToDo: AS - optimize
+    if (componentInitialization.current) {
+      // Do not trigger an update if first component initialization (reduce unnecessary re-renders)
+      componentInitialization.current = false;
+      return; 
+    }
 
+    dispatch(componentUpdateAction(payload));
     const component = flatMarkup.allComponents[payload.componentId];
     if (!component)
       return; // TODO: debug validation, component must be defined
@@ -215,6 +222,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     if (componentId !== state.present.selectedComponentId ||
       componentRef !== state.present.selectedComponentRef)
       dispatch(setSelectedComponentAction({ id: componentId, componentRef }));
+      componentInitialization.current = true;
   }, [dispatch]);
 
   const updateFormSettings = useCallback((settings: IFormSettings) => {

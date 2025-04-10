@@ -96,6 +96,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     private events: FormEvents<Values>;
     private dataSubmitContext: IDataSubmitContext;
 
+    updateData: () => void;
+
     modelMetadata?: IModelMetadata;
     antdForm: FormInstance;
     formMode: FormMode;
@@ -106,8 +108,6 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     initialValues: any;
     parentFormValues: any;
     formArguments?: any;
-
-    dataUpdate: ForceUpdateTrigger;
 
     onFinish: SubmitHandler<Values>;
     onAfterSubmit: AfterSubmitHandler<Values>;
@@ -204,9 +204,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         this.#setInternalFormData(newData);
 
-        //this.forceRootUpdate();
-        if (this.dataUpdate)
-            this.dataUpdate();
+        this.updateData?.();
     };
 
     setParentFormValues = (values: any) => {
@@ -230,13 +228,13 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
     setFieldsValue = (values: Partial<Values>) => {
         this.antdForm.setFieldsValue(values);
-        if (this.dataUpdate)
-          this.dataUpdate();
+        this.updateData?.();
     };
     resetFields = () => {
         this.antdForm.resetFields();
         const values = this.antdForm.getFieldsValue();
         this.#setInternalFormData(values);
+        this.updateData?.();
     };
     getFieldsValue = (): Values => {
         return this.antdForm.getFieldsValue();
@@ -428,10 +426,11 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formArguments = formArguments;
         this.isSettingsForm = isSettingsForm;
 
-        await this.loadFormByRawMarkupAsync();
-
+        // ToDo: AS - recheck if data initialization is ok before markup initialization
         this.initialValues = initialValues;
         this.formData = initialValues;
+
+        await this.loadFormByRawMarkupAsync();
 
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
@@ -504,7 +503,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.log('LOG: loadData', this.useDataLoader);
             this.dataLoadingState = { status: 'ready', hint: null, error: null };
             this.forceRootUpdate();
-
+  
             return this.initialValues;
         }
 

@@ -8,9 +8,10 @@ import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
 import { ConditionalMetadataProvider } from '@/providers';
-import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import { IShaFormInstance } from '@/index';
 
-export type IFormWithFlatMarkupProps = IConfigurableFormRuntimeProps & {
+export type IFormWithFlatMarkupProps = Omit<IConfigurableFormRuntimeProps, 'shaForm'> & {
+  shaForm: IShaFormInstance<any>;
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   persistedFormProps?: IPersistedFormProps;
@@ -27,16 +28,18 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     propertyFilter,
     actions,
     sections,
-  } = props;
-
-  const {
     form,
+    formFlatMarkup,
+    formSettings,
+    persistedFormProps,
+    onMarkupUpdated,
+    shaForm,
   } = props;
 
-  const [shaForm] = useShaForm({ form: props.shaForm });
   const { formInfoBlockVisible } = useAppConfigurator();
-  const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
-  if (!formFlatMarkup) return null;
+  
+  if (!formFlatMarkup) 
+    return null;
 
   const formStatusInfo = persistedFormProps?.versionStatus
     ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
@@ -60,10 +63,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
             actions={actions}
             sections={sections}
           >
-            <ConfigurableFormRenderer
-              shaForm={shaForm}
-              {...props}
-            />
+            <ConfigurableFormRenderer shaForm={shaForm} {...props} />
           </FormProvider>
         </FormFlatMarkupProvider>
       </ConditionalMetadataProvider>

@@ -1,11 +1,11 @@
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, } from "@/providers";
-import React, { FC, PropsWithChildren, useEffect, useRef } from "react";
-import { useDataContextManager } from "../dataContextManager/index";
-import {  DataContextType, ContextOnChangeData, ContextGetFull } from "./contexts";
-import DataContextBinder, { IDataContextBinderRef } from "./dataContextBinder";
+import React, { FC, PropsWithChildren, useRef } from "react";
+import { useDataContextManagerActions } from "../dataContextManager/index";
+import { DataContextType, ContextOnChangeData, ContextGetFull } from "./contexts";
+import DataContextBinder from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";
-import { useAvailableConstantsData } from "../form/utils";
+import { useAvailableConstantsDataNoRefresh } from "../form/utils";
 import { CreateStorageProperty, IStorageProxy } from "./contexts/storageProxy";
 
 export interface IDataContextProviderProps { 
@@ -31,22 +31,12 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     metadata,
   } = props;
 
-  const { onChangeContextData } = useDataContextManager();
+  const { onChangeContextData } = useDataContextManagerActions();
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useRef<any>({});
-  allData.current = useAvailableConstantsData({ topContextId: id });
+  allData.current = useAvailableConstantsDataNoRefresh({ topContextId: id });
 
-  const dataBinderRef = useRef<IDataContextBinderRef>();
-
-  const fireListeners = () => {
-    dataBinderRef.current?.fireAllListeners();
-    onChangeContextData();
-  };
-
-  const storage = useRef<IStorageProxy>(CreateStorageProperty(fireListeners));
-  useEffect(() => {
-    storage.current.updateOnChange(fireListeners);
-  }, [dataBinderRef.current])
+  const storage = useRef<IStorageProxy>(CreateStorageProperty(onChangeContextData));
 
   const initialDataRef = useRef<any>(undefined);
 
@@ -67,9 +57,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
 
   const setFieldValue = (name: string, value: any) => {
     storage.current.setFieldValue(name, value);
-    const changedData = setValueByPropertyName({}, name, value, false);
-    
-    onChangeAction(changedData);
+    onChangeAction(setValueByPropertyName({}, name, value, false));
   };
 
   const getFull: ContextGetFull = () => {
@@ -98,6 +86,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const setData = (changedData: any) => {
     setDataInternal(changedData);
     onChangeAction(changedData);
+    //fireListeners();
   };
 
   if (initialData && initialDataRef.current === undefined) {
@@ -123,7 +112,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       getFieldValue={getFieldValue}
       setData={setData}
       getData={getData}
-      listenersRef={dataBinderRef}
+      //listenersRef={dataBinderRef}
     >
       {children}
     </DataContextBinder>

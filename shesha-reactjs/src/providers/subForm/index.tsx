@@ -46,7 +46,7 @@ import { IFormApi } from '../form/formApi';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ISetFormDataPayload } from '../form/contexts';
 import { deepMergeValues } from '@/utils/object';
-import { ConfigurableItemIdentifierToString, useDataContextManager } from '@/index';
+import { ConfigurableItemIdentifierToString, useDataContextManagerActions } from '@/index';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -79,14 +79,14 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const parent = useParent(false);
 
-  const ctxManager = useDataContextManager();
+  const ctxManager = useDataContextManagerActions(false);
   const contextId = context ? (ctxManager?.getDataContext(context)?.uid ?? context) : undefined;
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { message, notification } = App.useApp();
 
   const form = useForm();
-  const { globalState, setState: setGlobalState } = useGlobalState();
+  const { globalState } = useGlobalState();
   const appContextData = useApplicationContextData();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
 
@@ -110,7 +110,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   // ToDO: Alexs - review and remove
   // update global state on value change
-  useDeepCompareEffect(() => {
+  /*useDeepCompareEffect(() => {
     if (propertyName) {
       // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
       const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(propertyName);
@@ -124,7 +124,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         data: value,
       });
     }
-  }, [value, propertyName]);
+  }, [value, propertyName]);*/
 
   const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
   const prevRenderedEntityTypeForm = useRef<string>(null);
