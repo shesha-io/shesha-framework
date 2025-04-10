@@ -110,11 +110,6 @@ export const getSettings = (data: any) => {
                           } as any,
                           parentId: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
                           components: new DesignerToolbarSettings()
-                            // .addSectionSeparator({
-                            //   id: nanoid(),
-                            //   propertyName: 'okButtonSeparator',
-                            //   label: 'Ok button',
-                            // })
                             .addCollapsiblePanel({
                               id: nanoid(),
                               propertyName: 'okButtonCollapsiblePanel',
