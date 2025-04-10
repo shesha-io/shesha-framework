@@ -42,7 +42,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   } = style || {};
 
-  const { layout, isDragger } = model;
+  const { layout, isDragger, hideFileName } = model;
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const antUploadText = `${prefixCls}-upload-text`;
@@ -67,7 +67,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     font-weight: ${fontWeight};
     text-align: ${textAlign};
   `;
-
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
     css`
@@ -103,7 +102,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .ant-upload-list-picture-card {
-        height: calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px) !important;
+        height: ${hideFileName ? 'var(--thumbnail-height) )' : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
         padding-bottom: 1rem;
       }
 
@@ -138,12 +137,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       .ant-upload-list-item-thumbnail {
         border-radius: ${borderRadius} !important;
         padding: 0 !important;
-        background: ${background ?? backgroundImage ?? backgroundColor} !important;
         ${commonBorderStyles}
       }
 
       .ant-upload-list-item-name {
-        display: block;
         ${commonTextStyles}
         padding: 0 8px !important;
         width: ${(layout && width) ?? '54px'} !important;
@@ -151,6 +148,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 100%;
+      }
+
+      .thumbnail-item-name{
+        ${commonTextStyles}
       }
 
       .thumbnail-stub {
@@ -201,6 +202,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .ant-upload-list-item-container {
+        background: ${backgroundImage ?? (backgroundColor || '#fff')} !important;
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         border-radius: ${borderRadius} !important;
@@ -258,17 +260,19 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       padding: 4px;
 
       .ant-space {
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(24px, auto)) !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-items: center !important;
         gap: 4px !important;
-        place-items: center !important;
-        place-content: center !important;
+        width: 100% !important;
       }
 
       .ant-space-item {
         display: flex;
         justify-content: center;
         align-items: center;
+        flex: 0 0 auto;
       }
 
       a {

@@ -70,6 +70,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
+      hideFileName,
     },
   };
   const { styles } = useStyles(props);
@@ -150,11 +151,17 @@ export const FileUpload: FC<IFileUploadProps> = ({
             <DeleteOutlined title="Remove" />
           </a>
         )}
-        {
+        {isImageType(fileInfo?.type) ? (
           <a onClick={onPreview} style={{ color: color }}>
             <EyeOutlined title="Preview" />
           </a>
-        }
+        ) : (
+          hideFileName && (
+            <a onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })} style={{ color: color }}>
+              <DownloadOutlined title="Download" />
+            </a>
+          )
+        )}
       </Space>
     );
   };
@@ -163,7 +170,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     const { type, name } = fileInfo;
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
-        return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls}/>;
+        return <Image src={imageUrl} alt={name} preview={false} className={styles.thumbnailControls} />;
       }
     }
 
@@ -175,7 +182,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
       fileInfo && (
         <div className={styles.styledFileControls}>
           {iconRender(fileInfo)}
-          <div className={styles.overlayThumbnailControls} style={{fontSize: '15px'}}>{fileControls('#fff')}</div>
+          <div className={styles.overlayThumbnailControls} style={{ fontSize: '15px' }}>
+            {fileControls('#fff')}
+          </div>
         </div>
       )
     );
@@ -191,12 +200,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
         <a title={file.name}>
           <Space>
             {isUploading ? (
-              <span><SyncOutlined spin /></span>
+              <span>
+                <SyncOutlined spin />
+              </span>
             ) : (
-              <>
-                {(listType === 'text' || !hideFileName) && `${file.name} (${filesize(file.size)})`}
+              <div className="thumbnail-item-name">
+                {(listType === 'text' || !hideFileName) && <a onClick={() => downloadFile({ fileId: file.id, fileName: file.name })}>{`${file.name} (${filesize(file.size)})`}</a>}
                 {showTextControls && fileControls(theme.application.primaryColor)}
-              </>
+              </div>
             )}
           </Space>
         </a>
@@ -239,7 +250,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Button>
   );
 
-  
   const renderStub = () => {
     if (isDragger) {
       return (
@@ -249,11 +259,22 @@ export const FileUpload: FC<IFileUploadProps> = ({
       );
     }
 
-    return <div className={listType === 'thumbnail' ? 'ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub' : ''}>{uploadButton}</div>;
+    return (
+      <>
+        <div
+          className={
+            listType === 'thumbnail' ? 'ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub' : ''
+          }
+        >
+          {uploadButton}
+        </div>
+        {listType === 'thumbnail' ? <div className="thumbnail-item-name">File name</div> : null}
+      </>
+    );
   };
 
   const renderUploader = () => {
-    const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';    
+    const antListType = listType === 'thumbnail' ? 'picture-card' : 'text';
     if (isDragger && allowUpload) {
       return (
         <Dragger {...fileProps}>
