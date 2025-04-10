@@ -116,7 +116,7 @@ export interface IShaFormInstance<Values = any> {
     validateFields: () => Promise<Values>;
     //#endregion
 
-    updateData: () => void
+    updateData: () => void;
 }
 
 export interface SubmitRelatedEvents<Values = any> {

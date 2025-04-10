@@ -4,7 +4,7 @@ import { IMatchData } from "@/providers/form/utils";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { evaluateDynamicFilters } from "@/utils/index";
 import { FilterExpression, IStoredFilter } from "../interfaces";
-import { useDataContextManager, useFormData, useGlobalState } from "@/providers/index";
+import { useDataContextManagerActions, useFormData, useGlobalState } from "@/providers/index";
 
 interface IMatchDataWithPreparation extends IMatchData {
     prepare?: (data: any) => any;
@@ -53,7 +53,7 @@ export interface UseFormEvaluatedFilterArgs {
 export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const pageContext = useDataContextManager(false)?.getPageContext();
+    const pageContext = useDataContextManagerActions(false)?.getPageContext();
     
     return useEvaluatedFilter({ 
         ...args, 

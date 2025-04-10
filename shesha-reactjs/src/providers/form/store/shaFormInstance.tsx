@@ -1,5 +1,20 @@
 import React from "react";
-import { AfterSubmitHandler, ForceUpdateTrigger, FormEvents, IDataSubmitContext, InitByFormIdPayload, InitByMarkupPayload, InitByRawMarkupPayload, IShaFormInstance, LoadFormByIdPayload, OnMarkupLoadedHandler, OnValuesChangeHandler, ProcessingState, SubmitDataPayload, SubmitHandler } from "./interfaces";
+import { 
+  AfterSubmitHandler,
+  ForceUpdateTrigger,
+  FormEvents,
+  IDataSubmitContext,
+  InitByFormIdPayload,
+  InitByMarkupPayload,
+  InitByRawMarkupPayload,
+  IShaFormInstance,
+  LoadFormByIdPayload,
+  OnMarkupLoadedHandler,
+  OnValuesChangeHandler,
+  ProcessingState,
+  SubmitDataPayload,
+  SubmitHandler
+} from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
 import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
 import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
@@ -427,10 +442,11 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.isSettingsForm = isSettingsForm;
 
         // ToDo: AS - recheck if data initialization is ok before markup initialization
-        this.initialValues = initialValues;
-        this.formData = initialValues;
 
         await this.loadFormByRawMarkupAsync();
+
+        this.initialValues = initialValues;
+        this.formData = initialValues;
 
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
