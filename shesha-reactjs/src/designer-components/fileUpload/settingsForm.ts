@@ -170,26 +170,6 @@ export const getSettings = () => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
-                  id: 'display-row-2',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
-                  inputs: [
-                    {
-                      id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                      propertyName: 'useSync',
-                      label: 'Synchronous Upload',
-                      type: 'switch',
-                    },
-                    {
-                      id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                      propertyName: 'allowedFileTypes',
-                      label: 'Allowed File Types',
-                      type: 'editableTagGroupProps',
-                      description: 'File types that can be accepted.',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
                   id: 'display-row-3',
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
@@ -208,6 +188,26 @@ export const getSettings = () => {
                       dataSourceType: 'url',
                       dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                       useRawValues: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: 'display-row-2',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
+                  inputs: [
+                    {
+                      id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                      propertyName: 'useSync',
+                      label: 'Synchronous Upload',
+                      type: 'switch',
+                    },
+                    {
+                      id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                      propertyName: 'allowedFileTypes',
+                      label: 'Allowed File Types',
+                      type: 'editableTagGroupProps',
+                      description: 'File types that can be accepted.',
                     },
                   ],
                 })
@@ -307,6 +307,7 @@ export const getSettings = () => {
                                 propertyName: 'font.align',
                                 hideLabel: true,
                                 width: 60,
+                                hidden: { _code: 'return  getSettingValue(data.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                                 dropdownOptions: textAlign,
                               },
                             ],
@@ -323,6 +324,7 @@ export const getSettings = () => {
                       labelAlign: 'right',
                       ghost: true,
                       collapsible: 'header',
+                      hidden: { _code: 'return  getSettingValue(data.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'dimensionsStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -409,6 +411,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return  getSettingValue(data.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'borderStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -451,6 +454,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return  getSettingValue(data.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'backgroundStylePnl',
                         components: [
@@ -616,6 +620,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return  getSettingValue(data.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'shadowStylePnl',
                         components: [...new DesignerToolbarSettings()
