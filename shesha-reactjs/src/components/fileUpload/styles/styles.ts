@@ -260,27 +260,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       padding: 4px;
 
       .ant-space {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        align-items: center !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(24px, auto)) !important;
         gap: 4px !important;
-        width: 100% !important;
-      }
-
-      .ant-space-item {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex: 0 0 auto;
-      }
-
-      a {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 24px;
-        height: 24px;
+        place-items: center !important;
+        place-content: center !important;
       }
 
       &:hover {
