@@ -62,7 +62,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     parentId: commonTabId,
                     label: "Edit Mode",
                     jsSetting: true,
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     defaultValue: 'inherited'
                   },
                   {
@@ -242,7 +241,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     tooltip: "The API url that will be used to fetch the data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API url that will be used to fetch the data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) === "entityName";', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
@@ -284,7 +282,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     tooltip: "The API url that will be used to update data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API url that will be used to update data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
                         name: 'data',
@@ -317,7 +314,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     tooltip: "The API url that will be used to update data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API url that will be used to update data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
                         name: 'data',
@@ -479,8 +475,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                       content: {
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                          .addSettingsInput({
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          .addSettingsInput({        
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'style',
@@ -501,8 +496,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                           })
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: commonTabId,
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            parentId: commonTabId,       
                             inputs: [
                               {
                                 id: nanoid(),

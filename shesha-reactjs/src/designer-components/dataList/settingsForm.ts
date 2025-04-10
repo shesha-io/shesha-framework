@@ -295,8 +295,7 @@ export const getSettings = (data: any) => {
                         jsSetting: false,
                         exposedVariables: [
                           { name: "data", description: "Selected form values", type: "object" },
-                        ],
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        ],    
                       }
 
                       ],
@@ -406,7 +405,6 @@ export const getSettings = (data: any) => {
                       `{ name: "http", description: "axiosHttp", type: "object" }`,
                       `{ name: "message", description: "message framework", type: "object" }`,
                     ],
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   }
                 ],
               })
@@ -463,7 +461,6 @@ export const getSettings = (data: any) => {
                     label: 'Can delete inline expression',
                     type: 'codeEditor',
                     parentId: 'events',
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     description: 'Return true to enable inline deletion and false to disable.',
                     exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
                   }

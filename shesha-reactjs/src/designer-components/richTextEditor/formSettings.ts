@@ -635,8 +635,7 @@ export const getSettings = (data: any) => {
                             label: 'Style',
                             parentId: styleRouterId,
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            exposedVariables: [`{ "name": "data", "description": "Form values", "type": "object" }`],
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            exposedVariables: [`{ "name": "data", "description": "Form values", "type": "object" }`],        
                           })
                           .addSettingsInput({
                             id: nanoid(),
@@ -649,8 +648,7 @@ export const getSettings = (data: any) => {
                               { label: 'Default', value: 'default' },
                               { label: 'Dark', value: 'dark' }
                             ],
-                            defaultValue: ['default'],
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            defaultValue: ['default'],        
                           })
                           .toJson()
                         ]

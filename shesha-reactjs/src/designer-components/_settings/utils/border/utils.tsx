@@ -175,7 +175,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     type: "dropdown",
                     hideLabel: true,
                     width: 60,
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     dropdownOptions: borderStyles,
                 },
                 {
@@ -183,7 +182,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     label: `Color`,
                     propertyName: `${borderProp}.all.color`,
                     type: "colorPicker",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hideLabel: true,
                 }
             ]

@@ -226,8 +226,7 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: pnlFontStyleId,
                               inline: true,
-                              propertyName: 'font',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              propertyName: 'font',         
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -291,8 +290,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inline: true,          
                               inputs: [
                                 {
                                   type: 'textField',
@@ -326,8 +324,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inline: true,         
                               inputs: [
                                 {
                                   type: 'textField',
@@ -391,8 +388,7 @@ export const getSettings = (data: any) => {
                               parentId: borderStylePnlId,
                               hidden: {
                                 _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              } as any,         
                               inputs: [
                                 {
                                   type: 'button',
@@ -590,8 +586,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
-                              inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inline: true,          
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -677,8 +672,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            .addSettingsInput({         
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',

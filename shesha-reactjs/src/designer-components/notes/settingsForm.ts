@@ -47,7 +47,7 @@ export const getSettings = (data: any) => {
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: commonTabId,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+  
                       inputs: [
                         {
                           type: 'switch',
@@ -67,8 +67,7 @@ export const getSettings = (data: any) => {
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
-                      parentId: commonTabId,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      parentId: commonTabId, 
                       inputs: [
                         {
                           id: nanoid(),
@@ -144,8 +143,7 @@ export const getSettings = (data: any) => {
                       label: 'On Created',
                       labelAlign: 'right',
                       parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',  
                       exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
                     }
                   ]

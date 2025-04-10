@@ -149,8 +149,7 @@ export const getSettings = (data: any) => {
                             id: nanoid(),
                             parentId: pnlFontStyleId,
                             inline: true,
-                            propertyName: 'font',
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            propertyName: 'font',       
                             inputs: [
                               {
                                 type: 'dropdown',
@@ -215,8 +214,7 @@ export const getSettings = (data: any) => {
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: dimensionsStylePnlId,
-                            inline: true,
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            inline: true,       
                             inputs: [
                               {
                                 type: 'textField',
@@ -291,8 +289,7 @@ export const getSettings = (data: any) => {
                         { value: 'primary', label: 'Primary color' },
                         { value: 'custom', label: 'Custom color' },
                         { value: 'reflist', label: 'From reflist item' }
-                      ],
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      ],  
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
@@ -307,7 +304,6 @@ export const getSettings = (data: any) => {
                           jsSetting: true,
                         },
                       ],
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
                     .addSettingsInput({
                       id: nanoid(),
@@ -315,8 +311,7 @@ export const getSettings = (data: any) => {
                       label: 'Show Icons',
                       inputType: 'switch',
                       jsSetting: true,
-                      parentId: styleRouterId,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      parentId: styleRouterId, 
                     })
                     .toJson()
                   ]

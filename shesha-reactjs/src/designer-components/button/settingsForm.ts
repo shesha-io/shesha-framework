@@ -319,8 +319,7 @@ export const getSettings = (data) => {
                           .addSettingsInputRow({
                             id: `borderStyleRow`,
                             parentId: 'borderStylePnl',
-                            hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,        
                             inputs: [
                               {
                                 type: 'button',
