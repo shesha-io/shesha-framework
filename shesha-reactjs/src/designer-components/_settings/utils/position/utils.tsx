@@ -1,5 +1,5 @@
 import { IStyleType } from "@/index";
-import { addPx } from "../../utils";
+import { addPx } from '../../../../utils/style';
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
 
 const positions: IRadioOption[] = [

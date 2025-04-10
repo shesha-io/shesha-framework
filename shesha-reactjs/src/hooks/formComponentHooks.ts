@@ -15,13 +15,13 @@ import {
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
 import { useParent } from "@/providers/parentProvider";
 import { isEqual } from "lodash";
-import { getSizeStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getBorderStyle } from "@/designer-components/_settings/utils/border/utils";
 import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
 import { getShadowStyle } from "@/designer-components/_settings/utils/shadow/utils";
 import { useDeepCompareEffect } from "./useDeepCompareEffect";
 import { getBackgroundStyle } from "@/designer-components/_settings/utils/background/utils";
 import { removeUndefinedProps } from "@/utils/object";
+import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 
 export function useActualContextData<T = any>(
   model: T,
@@ -63,13 +63,13 @@ export function useActualContextData<T = any>(
       ? executor(preparedData, contextProxyRef.current)
       : getActualModel(preparedData, contextProxyRef.current, pReadonly, propertyFilter);
     
-    prevActualModelRef.current = JSON.stringify(actualModel)      
+    prevActualModelRef.current = JSON.stringify(actualModel);
     prevParentReadonly.current = pReadonly;    
   }
 
   actualModelRef.current = useMemo(() => {
     return actualModel;
-  }, [prevActualModelRef.current])
+  }, [prevActualModelRef.current]);
 
   if (modelChanged)
     prevModel.current = model;
@@ -156,7 +156,7 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
   const prevCode = useRef(executor);
   const actualDataRef = useRef<T>(undefined);
 
-  if (contextProxyRef.current.changed || prevCode.current != executor) {
+  if (contextProxyRef.current.changed || prevCode.current !== executor) {
     actualDataRef.current = executor(contextProxyRef.current);
   }
 
@@ -165,74 +165,25 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
   return actualDataRef.current;
 };
 
-// export function useRegisterDataContextListeners(componentId: string, touchedProps: Map<string, any>, listener: () => void) {
-//   const dcm = useDataContextManager(false);
-//   if (!dcm) 
-//     return;
-
-//   const touchedContexts = new Map<string, string[]>();
-//   for (let key of touchedProps.keys()) {
-//     const parts = key.split('.');
-//     let context = '';
-//     let propName = '';
-//     if (parts[0] === SheshaCommonContexts.AppContext
-//         || parts[0] === SheshaCommonContexts.PageContext
-//         || parts[0] === SheshaCommonContexts.FormContext) {
-//       context = parts[0];
-//       propName = parts.slice(1).join('.');
-//     }
-//     else if (parts[0] === 'contexts') {
-//       context = parts[1];
-//       propName = parts.slice(2).join('.');
-//     }
-
-//     if (context && propName) {
-//       if (!touchedContexts.has(context)) {
-//         touchedContexts.set(context, [propName]);
-//       } else {
-//         const existing = touchedContexts.get(context);
-//         existing.push(propName);
-//         touchedContexts.set(context, existing);
-//       }
-//     }    
-//   }
-
-//   for (let key of touchedContexts.keys()) {
-//     const dc = dcm.getDataContext(key);
-//     if (!dc)
-//       continue;
-
-//     const propNames = touchedContexts.get(key);
-//     if (!propNames || propNames.length === 0)
-//       continue;
-
-//     for (let propName of propNames) {
-//       dc.registerListener(componentId, propName, listener);
-//     }
-//   }
-// };
-
 export const useModelAppearanceStyles = (model: IStyleType & IConfigurableFormComponent): CSSProperties => {
   
   const app = useSheshaApplication();
 
-  const dimensions = model.dimensions;
-  const border = model.border;
-  const font = model.font;
-  const shadow = model.shadow;
-  const background = model.background;
-
+  const { dimensions, border, font, shadow, background, stylingBox, jsStyle, } = model;
+  
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile' 
       ? {} 
-      : getBackgroundStyle(background, model.jsStyle)
+      : getBackgroundStyle(background, jsStyle)
   );
 
-  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-  const borderStyles = useMemo(() => getBorderStyle(border, model.jsStyle), [border, model.jsStyle]);
+  const styligBox = JSON.parse(stylingBox || '{}');
+
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
+  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(JSON.parse(model.stylingBox || '{}')), [model.stylingBox]);
+  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
 
   useDeepCompareEffect(() => {
     if (background?.storedFile?.id && background?.type === 'storedFile')
@@ -243,10 +194,10 @@ export const useModelAppearanceStyles = (model: IStyleType & IConfigurableFormCo
         })
         .then((blob) => {
           const url =  URL.createObjectURL(blob);
-          const style = getBackgroundStyle(background, model.jsStyle, url);
+          const style = getBackgroundStyle(background, jsStyle, url);
           setBackgroundStyles(style);
         });
-  }, [background, model.jsStyle, app.backendUrl, app.httpHeaders]);
+  }, [background, jsStyle, app.backendUrl, app.httpHeaders]);
 
   const finalStyle = useMemo(()=> {
     const additionalStyles: CSSProperties = removeUndefinedProps({

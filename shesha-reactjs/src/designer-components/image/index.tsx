@@ -21,7 +21,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 
 export interface IImageStyleProps {
   height?: number | string;
@@ -83,7 +83,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
 
     const borderStyles = useMemo(() => getBorderStyle(model?.border, jsStyle), [model.border, jsStyle]);
     const shadowStyles = useMemo(() => getShadowStyle(model?.shadow), [model.shadow]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(model?.dimensions), [model?.dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(model?.dimensions), [model?.dimensions]);
     const filterUnit = filter === 'blur' ? 'px' : filter === 'hue-rotate' ? 'deg' : '%';
 
     const additionalStyles: CSSProperties = removeUndefinedProps({

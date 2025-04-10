@@ -19,7 +19,6 @@ export interface IDataContextsData {
 }
 
 export interface IDataContextManagerActionsContext {
-  regiterListener: (payload: () => void) => void;
   registerDataManager: (payload: IDataContextManagerFullInstance) => void;
   unregisterDataManager: (payload: IDataContextManagerFullInstance) => void;
   registerDataContext: (payload: IRegisterDataContextPayload) => void;
@@ -141,11 +140,9 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     const managers = useRef<IDataContextManagerFullInstance[]>([]);
     const formInstance = useRef<ConfigurableFormInstance>();
 
-    const updateListener = useRef<() => void>(() => {});
-
     const internalUpdate = () => {
       setState({...state, lastUpdate: Date.now()});
-    }
+    };
 
     const onChangeContextData = () => {
       internalUpdate();
@@ -317,14 +314,8 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
             }
         }
     };
-
-    const regiterListener = (payload: () => void) => {
-      updateListener.current = payload;
-    };
-
     const dataContextsManagerActions: IDataContextManagerActionsContext = useMemo(() => {
       return {
-        regiterListener,
         registerDataManager,
         unregisterDataManager,
         registerDataContext,

@@ -15,7 +15,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { useForm, useFormData, useSheshaApplication } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeNullUndefined } from '@/providers/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
@@ -52,7 +52,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const background = model?.background;
 
     const jsStyle = useMemo(() => getStyle(model.style, data), [model.style, data]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});

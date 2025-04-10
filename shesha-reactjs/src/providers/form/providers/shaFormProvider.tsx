@@ -11,7 +11,9 @@ const ShaFormProvider: FC<PropsWithChildren<IShaFormProviderProps>> = ({ childre
     const [state, setState] = React.useState({});
 
     // force update context on change form data
-    useEffect(() => { shaForm.updateData = () => setState({}); }, []);
+    useEffect(() => {
+      shaForm.updateData = () => setState({}); 
+    }, []);
 
     return (
         <ShaFormInstanceContext.Provider value={shaForm}>

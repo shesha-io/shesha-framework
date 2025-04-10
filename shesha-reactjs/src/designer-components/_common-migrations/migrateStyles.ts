@@ -1,5 +1,5 @@
 import { nanoid } from "@/utils/uuid";
-import { addPx } from "../_settings/utils";
+import { addPx } from '../../utils/style';
 import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
 type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };

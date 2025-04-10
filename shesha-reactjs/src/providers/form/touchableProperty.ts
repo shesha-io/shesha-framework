@@ -29,7 +29,7 @@ export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, nam
             return true;
         }
     });
-}
+};
 
 export class TouchableProperty implements IPropertyTouched {
     readonly accessor: PropertyTouchAccessor;

@@ -7,10 +7,10 @@ import { IConfigurableActionConfiguration, useDynamicActionsDispatcher, useShesh
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { initialValues } from './utils';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -72,7 +72,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   const background = prevStyles?.background;
   const styling = JSON.parse(model.stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
   const jsStyle = useMemo(() => getStyle(model.style), [model.style]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);

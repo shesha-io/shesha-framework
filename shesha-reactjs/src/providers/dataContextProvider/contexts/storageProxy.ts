@@ -45,7 +45,7 @@ export const CreateStorageProperty = (onChange: () => void, data?: object) => {
             return undefined;
         }
     });
-}
+};
 
 export class StorageProperty implements IStorageProxy {
     readonly accessor: StorageProxyAccessor;
