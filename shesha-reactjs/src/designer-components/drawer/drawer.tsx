@@ -27,6 +27,7 @@ interface IShaDrawer {
   placement?: 'top' | 'right' | 'bottom' | 'left';
   width?: string | number;
   readOnly?: boolean;
+  background?: CSSProperties;
 }
 
 interface IShaDrawerState {
@@ -54,6 +55,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     headerStyle,
     footerStyle,
     showFooter,
+    background,
   } = props;
   const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
@@ -138,6 +140,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
       </Fragment>
     );
   }
+
   return (
     <Drawer
       open={state?.open}
@@ -147,7 +150,8 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
         footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
-        body: style,
+        body: background,
+        content: style,
       }}
       title={label}
       size="large"
