@@ -884,15 +884,15 @@ export const getSettings = (data: any) => {
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: 'backgroundStyleRow-controls',
+                                        id: 'headerBackgroundStyleRow-controls',
                                         parentId: 'backgroundStyleRow',
+                                        inline: true,
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        inline: true,
                                         readOnly: {
                                           _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
@@ -901,79 +901,57 @@ export const getSettings = (data: any) => {
                                         inputs: [
                                           {
                                             type: 'customDropdown',
-                                            id: 'backgroundStyleRow-size',
+                                            id: 'headerBackgroundStyleRow-size',
                                             label: 'Size',
                                             hideLabel: true,
                                             propertyName: 'headerBackground.size',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'cover',
-                                                label: 'Cover',
-                                              },
-                                              {
-                                                value: 'contain',
-                                                label: 'Contain',
-                                              },
-                                              {
-                                                value: 'auto',
-                                                label: 'Auto',
-                                              },
-                                            ],
+                                            customTooltip:
+                                              'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                            dropdownOptions: sizeOptions,
+                                            hidden: {
+                                              _code:
+                                                'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) === "color";',
+                                              _mode: 'code',
+                                              _value: false,
+                                            } as any,
                                           },
                                           {
                                             type: 'customDropdown',
-                                            id: 'backgroundStyleRow-position',
+                                            id: 'headerBackgroundStyleRow-position',
                                             label: 'Position',
                                             hideLabel: true,
+                                            customTooltip:
+                                              'Position of the background image, two space separated values with units e.g "5em 100px"',
                                             propertyName: 'headerBackground.position',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'center',
-                                                label: 'Center',
-                                              },
-                                              {
-                                                value: 'top',
-                                                label: 'Top',
-                                              },
-                                              {
-                                                value: 'left',
-                                                label: 'Left',
-                                              },
-                                              {
-                                                value: 'right',
-                                                label: 'Right',
-                                              },
-                                              {
-                                                value: 'bottom',
-                                                label: 'Bottom',
-                                              },
-                                              {
-                                                value: 'top left',
-                                                label: 'Top Left',
-                                              },
-                                              {
-                                                value: 'top right',
-                                                label: 'Top Right',
-                                              },
-                                              {
-                                                value: 'bottom left',
-                                                label: 'Bottom Left',
-                                              },
-                                              {
-                                                value: 'bottom right',
-                                                label: 'Bottom Right',
-                                              },
-                                            ],
+                                            dropdownOptions: positionOptions,
                                           },
+                                        ],
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'headerBackgroundStyleRow-repeat',
+                                        parentId: 'backgroundStyleRow',
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
                                           {
                                             type: 'radio',
-                                            id: 'backgroundStyleRow-repeat',
+                                            id: 'headerBackgroundStyleRow-repeat-radios',
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'headerBackground.repeat',
+                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) === "color";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
                                       })
                                       .toJson(),
                                   ],
@@ -1051,7 +1029,7 @@ export const getSettings = (data: any) => {
                                 },
                               })
                               .addCollapsiblePanel({
-                                id: 'footerStyleCollapsiblePanell',
+                                id: 'headerStyleCollapsiblePanell',
                                 propertyName: 'headerStylePanell',
                                 label: 'Custom Styles',
                                 labelAlign: 'right',
@@ -1059,7 +1037,7 @@ export const getSettings = (data: any) => {
                                 parentId: 'styleRouter',
                                 collapsible: 'header',
                                 content: {
-                                  id: 'footerStylePnl',
+                                  id: 'headerStylePnl',
                                   components: new DesignerToolbarSettings()
                                     .addSettingsInput({
                                       readOnly: {
@@ -1276,15 +1254,15 @@ export const getSettings = (data: any) => {
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: 'footerBackground-controls',
+                                        id: 'footerBackgroundStyleRow-controls',
                                         parentId: 'backgroundStyleRow',
+                                        inline: true,
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        inline: true,
                                         readOnly: {
                                           _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
@@ -1293,79 +1271,57 @@ export const getSettings = (data: any) => {
                                         inputs: [
                                           {
                                             type: 'customDropdown',
-                                            id: 'backgroundStyleRow-size',
+                                            id: 'footerBackgroundStyleRow-size',
                                             label: 'Size',
                                             hideLabel: true,
                                             propertyName: 'footerBackground.size',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'cover',
-                                                label: 'Cover',
-                                              },
-                                              {
-                                                value: 'contain',
-                                                label: 'Contain',
-                                              },
-                                              {
-                                                value: 'auto',
-                                                label: 'Auto',
-                                              },
-                                            ],
+                                            customTooltip:
+                                              'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                            dropdownOptions: sizeOptions,
+                                            hidden: {
+                                              _code:
+                                                'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) === "color";',
+                                              _mode: 'code',
+                                              _value: false,
+                                            } as any,
                                           },
                                           {
                                             type: 'customDropdown',
-                                            id: 'footerbackgroundStyleRow-position',
+                                            id: 'footerBackgroundStyleRow-position',
                                             label: 'Position',
                                             hideLabel: true,
+                                            customTooltip:
+                                              'Position of the background image, two space separated values with units e.g "5em 100px"',
                                             propertyName: 'footerBackground.position',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'center',
-                                                label: 'Center',
-                                              },
-                                              {
-                                                value: 'top',
-                                                label: 'Top',
-                                              },
-                                              {
-                                                value: 'left',
-                                                label: 'Left',
-                                              },
-                                              {
-                                                value: 'right',
-                                                label: 'Right',
-                                              },
-                                              {
-                                                value: 'bottom',
-                                                label: 'Bottom',
-                                              },
-                                              {
-                                                value: 'top left',
-                                                label: 'Top Left',
-                                              },
-                                              {
-                                                value: 'top right',
-                                                label: 'Top Right',
-                                              },
-                                              {
-                                                value: 'bottom left',
-                                                label: 'Bottom Left',
-                                              },
-                                              {
-                                                value: 'bottom right',
-                                                label: 'Bottom Right',
-                                              },
-                                            ],
+                                            dropdownOptions: positionOptions,
                                           },
+                                        ],
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'footerBackgroundStyleRow-repeat',
+                                        parentId: 'backgroundStyleRow',
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
                                           {
                                             type: 'radio',
-                                            id: 'backgroundStyleRow-repeat',
+                                            id: 'footer-backgroundStyleRow-repeat-radio',
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'footerBackground.repeat',
+                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) === "color";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
                                       })
                                       .toJson(),
                                   ],
