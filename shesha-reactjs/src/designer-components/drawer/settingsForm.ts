@@ -282,7 +282,7 @@ export const getSettings = (data: any) => {
                                     label: 'Height',
                                     width: 85,
                                     defaultValue: '100%',
-                                    propertyName: 'dimensions.height',
+                                    propertyName: 'height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
