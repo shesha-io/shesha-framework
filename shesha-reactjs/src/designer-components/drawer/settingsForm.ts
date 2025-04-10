@@ -297,11 +297,6 @@ export const getSettings = (data: any) => {
                                 inputType: 'radio',
                                 tooltip: 'Select a type of background',
                                 buttonGroupOptions: backgroundTypeOptions,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-color',
@@ -410,11 +405,6 @@ export const getSettings = (data: any) => {
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -447,11 +437,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'radio',
@@ -799,7 +784,6 @@ export const getSettings = (data: any) => {
                                       .addSettingsInputRow({
                                         id: 'headerBackgroundStyleRow-controls',
                                         parentId: 'backgroundStyleRow',
-                                        inline: true,
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) === "color";',
@@ -839,11 +823,6 @@ export const getSettings = (data: any) => {
                                       .addSettingsInputRow({
                                         id: 'headerBackgroundStyleRow-repeat',
                                         parentId: 'backgroundStyleRow',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'radio',
@@ -1118,7 +1097,6 @@ export const getSettings = (data: any) => {
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
-                                        inline: true,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
@@ -1151,11 +1129,6 @@ export const getSettings = (data: any) => {
                                       .addSettingsInputRow({
                                         id: 'footerBackgroundStyleRow-repeat',
                                         parentId: 'backgroundStyleRow',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'radio',
