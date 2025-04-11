@@ -1,4 +1,4 @@
-import React, { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import {
   confirmModel,
   defaultStyles,
@@ -99,31 +99,29 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     return (
-      <Fragment>
-        <ConfigProvider
-          theme={{
-            components: {
-              Input: {
-                fontFamily: model?.font?.type,
-                fontSize: model?.font?.size,
-                fontWeightStrong: Number(fontStyles.fontWeight)
-              },
+      <ConfigProvider
+        theme={{
+          components: {
+            Input: {
+              fontFamily: model?.font?.type,
+              fontSize: model?.font?.size,
+              fontWeightStrong: Number(fontStyles.fontWeight)
             },
-          }}
-        >
-          <PasswordCombo
-            inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.textField }}
-            placeholder={placeholder}
-            confirmPlaceholder={confirmPlaceholder}
-            formItemProps={getFormItemProps(defaultModel, options)}
-            formItemConfirmProps={getFormItemProps(confirmModel(defaultModel), options)}
-            passwordLength={minLength}
-            errorMessage={message}
-            style={finalStyle}
-            className={styles.textField}
-          />
-        </ConfigProvider>
-      </Fragment>
+          },
+        }}
+      >
+        <PasswordCombo
+          inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.textField }}
+          placeholder={placeholder}
+          confirmPlaceholder={confirmPlaceholder}
+          formItemProps={getFormItemProps(defaultModel, options)}
+          formItemConfirmProps={getFormItemProps(confirmModel(defaultModel), options)}
+          passwordLength={minLength}
+          errorMessage={message}
+          style={finalStyle}
+          className={styles.textField}
+        />
+      </ConfigProvider>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),

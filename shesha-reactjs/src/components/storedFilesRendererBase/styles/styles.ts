@@ -94,6 +94,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         display: flex !important;
         justify-content: center !important;
        }
+        
       .ant-image .anticon {
         border-radius: ${borderRadius ?? '8px'} !important;
         display: block !important;

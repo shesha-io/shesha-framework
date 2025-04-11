@@ -18,6 +18,7 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getPositionStyle } from '../_settings/utils/position/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { addPx } from '../_settings/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -98,7 +99,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       noDefaultStyling: model.noDefaultStyling,
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
-      gap: model.gap,
+      gap: addPx(model.gap),
     };
     return (
       <ParentProvider model={model}>
@@ -173,7 +174,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap || 8,
+          gap: prev?.gap || '8px',
           position: defaultStyles().position,
         };
 
