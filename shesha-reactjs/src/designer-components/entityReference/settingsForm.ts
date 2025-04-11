@@ -6,7 +6,6 @@ import { IEntityReferenceControlProps } from './entityReference';
 export const getSettings = (data: IEntityReferenceControlProps) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const mainSettingsTabId = nanoid();
   const appearanceTabId = nanoid();
   const dataTabId = nanoid();
   const securityId = nanoid();
@@ -72,41 +71,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   ],
                 })
                 .addSettingsInput({
-                  inputType: 'switch',
-                  id: hiddenId,
-                  propertyName: 'hidden',
-                  parentId: commonTabId,
-                  label: 'Hide',
-                  jsSetting: true,
-                  layout: 'horizontal',
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityId,
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'mainSettings',
-            title: 'Main Settings',
-            id: mainSettingsTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'displayType',
                   label: 'Display Type',
@@ -119,11 +83,13 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     { value: 'icon', label: 'Icon' },
                     { value: 'textTitle', label: 'Text Title' },
                   ],
-                  parentId: mainSettingsTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: commonTabId,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: mainSettingsTabId,
+                  parentId: commonTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.displayType) !== "icon";',
                     _mode: 'code',
@@ -134,7 +100,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       id: nanoid(),
                       propertyName: 'iconName',
                       label: 'Icon',
-                      parentId: mainSettingsTabId,
+                      parentId: commonTabId,
                       type: 'iconPicker',
                       jsSetting: true,
                       allowClear: true,
@@ -143,7 +109,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: mainSettingsTabId,
+                  parentId: commonTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
                     _mode: 'code',
@@ -154,126 +121,20 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       id: nanoid(),
                       propertyName: 'textTitle',
                       label: 'Text Title',
-                      parentId: mainSettingsTabId,
+                      parentId: commonTabId,
                       type: 'textField',
                       jsSetting: true,
                     },
                   ],
                 })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'appearance',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addCollapsiblePanel({
-                  id: nanoid(),
-                  propertyName: 'customStyle',
-                  label: 'Custom Styles',
-                  labelAlign: 'right',
-                  ghost: true,
-                  parentId: styleRouterId,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
-                      .addSettingsInput({
-                              id: nanoid(),
-                        inputType: 'codeEditor',
-                        propertyName: 'style',
-                        parentId: styleRouterId,
-                        label: 'Style',
-                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                      })
-                      .toJson()
-                    ]
-                  }
-                })
-                .addPropertyRouter({
-                  id: styleRouterId,
-                  propertyName: 'propertyRouter1',
-                  componentName: 'propertyRouter',
-                  label: 'Property router1',
-                  labelAlign: 'right',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  propertyRouteName: {
-                    _mode: 'code',
-                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: '',
-                  },
-                  components: [
-                    ...new DesignerToolbarSettings()
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'stylingBox',
-                        label: 'Margin & Padding',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addStyleBox({
-                                id: nanoid(),
-                                label: 'Margin Padding',
-                                hideLabel: true,
-                                propertyName: 'stylingBox',
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlLayout',
-                        label: 'Layout',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: 'pnlLayout',
-                                inputs: [
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    propertyName: 'labelCol',
-                                    label: 'Label Col',
-                                    size: 'small',
-                                    jsSetting: true,
-                                    min: 0,
-                                    max: 24,
-                                    defaultValue: 8,
-                                  },
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    propertyName: 'wrapperCol',
-                                    label: 'Wrapper Col',
-                                    size: 'small',
-                                    jsSetting: true,
-                                    min: 0,
-                                    max: 24,
-                                    defaultValue: 16,
-                                  },
-                                ],
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .toJson(),
-                  ],
+                .addSettingsInput({
+                  inputType: 'switch',
+                  id: hiddenId,
+                  propertyName: 'hidden',
+                  parentId: commonTabId,
+                  label: 'Hide',
+                  jsSetting: true,
+                  layout: 'horizontal',
                 })
                 .toJson(),
             ],
@@ -292,7 +153,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   label: 'Entity Type',
                   description: 'The entity type you want to use for the chart.',
                   labelAlign: 'right',
-                  parentId: 'root',
+                  parentId: dataTabId,
                   hidden: false,
                   dataSourceType: 'url',
                   validate: { required: true },
@@ -309,7 +170,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   propertyName: 'getEntityUrl',
                   label: 'Get Entity URL',
                   labelAlign: 'right',
-                  parentId: mainSettingsTabId,
+                  parentId: dataTabId,
                   hidden: false,
                   dataSourceType: 'url',
                   validate: { required: true },
@@ -320,7 +181,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: mainSettingsTabId,
+                  parentId: dataTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.displayType) !== "displayProperty";',
                     _mode: 'code',
@@ -331,12 +193,13 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       id: nanoid(),
                       propertyName: 'displayProperty',
                       label: 'Display Property',
-                      parentId: mainSettingsTabId,
+                      parentId: dataTabId,
                       type: 'propertyAutocomplete',
                       allowClear: true,
                       jsSetting: true,
                       width: '100%',
                       modelType: '{{data.entityType}}',
+                      autoFillProps: false,
                     },
                   ],
                 })
@@ -344,7 +207,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   id: nanoid(),
                   propertyName: 'entityReferenceType',
                   label: 'Entity Reference Type',
-                  parentId: mainSettingsTabId,
+                  parentId: dataTabId,
                   inputType: 'dropdown',
                   allowClear: true,
                   jsSetting: true,
@@ -371,7 +234,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: mainSettingsTabId,
+                  parentId: dataTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";',
                     _mode: 'code',
@@ -382,7 +246,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       id: nanoid(),
                       propertyName: 'formType',
                       label: 'Form Type',
-                      parentId: mainSettingsTabId,
+                      parentId: dataTabId,
                       type: 'formTypeAutocomplete',
                       jsSetting: true,
                       width: '100%',
@@ -392,7 +256,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: mainSettingsTabId,
+                  parentId: dataTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
                     _mode: 'code',
@@ -403,7 +268,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       id: nanoid(),
                       propertyName: 'formIdentifier',
                       label: 'Form Identifier',
-                      parentId: mainSettingsTabId,
+                      parentId: dataTabId,
                       type: 'formAutocomplete',
                       jsSetting: true,
                       allowClear: true,
@@ -547,8 +412,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         inputs: [
                           {
                             id: nanoid(),
-                            propertyName: 'customFooterButtons',
-                            label: 'Custom Footer Buttons',
+                            propertyName: 'buttons',
+                            label: 'Configure Modal Buttons',
                             parentId: dataTabId,
                             type: 'buttonGroupConfigurator',
                             jsSetting: true,
@@ -592,6 +457,10 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         parentId: dataTabId,
                         jsSetting: true,
                         inputType: 'labelValueEditor',
+                        labelTitle: 'Key',
+                        valueTitle: 'Value',
+                        labelName: 'key',
+                        valueName: 'value',
                         tooltip:
                           'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                           'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
@@ -743,6 +612,141 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 .toJson(),
             ],
           },
+          {
+            key: 'appearance',
+            title: 'Appearance',
+            id: appearanceTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'customStyle',
+                  label: 'Custom Styles',
+                  labelAlign: 'right',
+                  ghost: true,
+                  parentId: styleRouterId,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        id: nanoid(),
+                        inputType: 'codeEditor',
+                        propertyName: 'style',
+                        parentId: styleRouterId,
+                        label: 'Style',
+                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                      })
+                      .toJson()
+                    ]
+                  }
+                })
+                .addPropertyRouter({
+                  id: styleRouterId,
+                  propertyName: 'propertyRouter1',
+                  componentName: 'propertyRouter',
+                  label: 'Property router1',
+                  labelAlign: 'right',
+                  parentId: appearanceTabId,
+                  hidden: false,
+                  propertyRouteName: {
+                    _mode: 'code',
+                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                    _value: '',
+                  },
+                  components: [
+                    ...new DesignerToolbarSettings()
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'stylingBox',
+                        label: 'Margin & Padding',
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addStyleBox({
+                                id: nanoid(),
+                                label: 'Margin Padding',
+                                hideLabel: true,
+                                propertyName: 'stylingBox',
+                              })
+                              .toJson(),
+                          ],
+                        },
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlLayout',
+                        label: 'Layout',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: 'pnlLayout',
+                                readOnly: false,
+                                inputs: [
+                                  {
+                                    type: 'numberField',
+                                    id: nanoid(),
+                                    propertyName: 'labelCol',
+                                    label: 'Label Col',
+                                    size: 'small',
+                                    jsSetting: true,
+                                    min: 0,
+                                    max: 24,
+                                    defaultValue: 8,
+                                  },
+                                  {
+                                    type: 'numberField',
+                                    id: nanoid(),
+                                    propertyName: 'wrapperCol',
+                                    label: 'Wrapper Col',
+                                    size: 'small',
+                                    jsSetting: true,
+                                    min: 0,
+                                    max: 24,
+                                    defaultValue: 16,
+                                  },
+                                ],
+                              })
+                              .toJson(),
+                          ],
+                        },
+                      })
+                      .toJson(),
+                  ],
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  parentId: securityId,
+                })
+                .toJson(),
+            ],
+          }
         ],
       })
       .toJson(),

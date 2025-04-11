@@ -42,67 +42,81 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
-    var additionalStylesJS = removeUndefinedProps({
+    var allStylesJS: React.CSSProperties = removeUndefinedProps({
       ...jsStyle,
       ...stylingBoxAsCSS,
     });
     const paddingStyles = removeUndefinedProps({
-      paddingTop: additionalStylesJS.paddingTop,
-      paddingRight: additionalStylesJS.paddingRight,
-      paddingBottom: additionalStylesJS.paddingBottom,
-      paddingLeft: additionalStylesJS.paddingLeft,
-      padding: additionalStylesJS.padding,
+      paddingTop: allStylesJS.paddingTop,
+      paddingRight: allStylesJS.paddingRight,
+      paddingBottom: allStylesJS.paddingBottom,
+      paddingLeft: allStylesJS.paddingLeft,
+      padding: allStylesJS.padding,
     });
-    additionalStylesJS = Object.keys(additionalStylesJS)
+    allStylesJS = Object.keys(allStylesJS)
       .filter((key) => !paddingStyles[key])
       .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
+        obj[key] = allStylesJS[key];
         return obj;
       }, {});
     const marginStyles = removeUndefinedProps({
-      marginTop: additionalStylesJS.marginTop,
-      marginRight: additionalStylesJS.marginRight,
-      marginBottom: additionalStylesJS.marginBottom,
-      marginLeft: additionalStylesJS.marginLeft,
-      margin: additionalStylesJS.margin,
+      marginTop: allStylesJS.marginTop,
+      marginRight: allStylesJS.marginRight,
+      marginBottom: allStylesJS.marginBottom,
+      marginLeft: allStylesJS.marginLeft,
+      margin: allStylesJS.margin,
     });
-    additionalStylesJS = Object.keys(additionalStylesJS)
+    allStylesJS = Object.keys(allStylesJS)
       .filter((key) => !marginStyles[key])
       .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
+        obj[key] = allStylesJS[key];
         return obj;
       }, {});
     const borderStyles = removeUndefinedProps({
-      borderTop: additionalStylesJS.borderTop,
-      borderRight: additionalStylesJS.borderRight,
-      borderBottom: additionalStylesJS.borderBottom,
-      borderLeft: additionalStylesJS.borderLeft,
-      border: additionalStylesJS.border,
-      borderRadius: additionalStylesJS.borderRadius,
-      borderColor: additionalStylesJS.borderColor,
-      borderWidth: additionalStylesJS.borderWidth,
-      borderStyle: additionalStylesJS.borderStyle,
+      borderTop: allStylesJS.borderTop,
+      borderRight: allStylesJS.borderRight,
+      borderBottom: allStylesJS.borderBottom,
+      borderLeft: allStylesJS.borderLeft,
+      border: allStylesJS.border,
+      borderRadius: allStylesJS.borderRadius,
+      borderColor: allStylesJS.borderColor,
+      borderWidth: allStylesJS.borderWidth,
+      borderStyle: allStylesJS.borderStyle,
     });
-    additionalStylesJS = Object.keys(additionalStylesJS)
+    allStylesJS = Object.keys(allStylesJS)
       .filter((key) => !borderStyles[key])
       .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
+        obj[key] = allStylesJS[key];
         return obj;
       }, {});
     const background = removeUndefinedProps({
-      backgroundColor: additionalStylesJS.backgroundColor,
-      background: additionalStylesJS.background,
+      backgroundColor: allStylesJS.backgroundColor,
+      background: allStylesJS.background,
     });
-    additionalStylesJS = Object.keys(additionalStylesJS)
+    allStylesJS = Object.keys(allStylesJS)
       .filter((key) => !background[key])
       .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
+        obj[key] = allStylesJS[key];
+        return obj;
+      }, {});
+    const dimensionStyles = removeUndefinedProps({
+      width: allStylesJS.width,
+      minWidth: allStylesJS.minWidth,
+      maxWidth: allStylesJS.maxWidth,
+      height: allStylesJS.height,
+      minHeight: allStylesJS.minHeight,
+      maxHeight: allStylesJS.maxHeight,
+    });
+    allStylesJS = Object.keys(allStylesJS)
+      .filter((key) => !dimensionStyles[key])
+      .reduce((obj, key) => {
+        obj[key] = allStylesJS[key];
         return obj;
       }, {});
 
-    const additionStyles = JSON.stringify(additionalStylesJS);
-    const additionalStylesWithoutQuotes = additionStyles.replace(/"([^"]+)":/g, '$1:').replace(/'([^']+)':/g, '$1:');
-    const finalStyle = `return ${additionalStylesWithoutQuotes}`;
+    const allStylesStr = JSON.stringify(allStylesJS);
+    const allStylesWithoutQuotes = allStylesStr.replace(/"([^"]+)":/g, '$1:').replace(/'([^']+)':/g, '$1:');
+    const finalStyle = `return ${allStylesWithoutQuotes}`;
 
     return (
       <ConfigurableFormItem model={model}>
@@ -112,13 +126,14 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
               style={{
                 padding: 0,
                 margin: 0,
-                height: 'fit-content',
-                width: 'fit-content',
+                boxSizing: 'border-box',
+                width: marginStyles.marginLeft || marginStyles.marginRight ? 'auto' : dimensionStyles.width ?? 'fit-content',
                 borderRadius: '5px',
                 ...paddingStyles,
                 ...marginStyles,
                 ...borderStyles,
                 ...background,
+                ...dimensionStyles,
               }}
             >
               <EntityReference {...model} value={value} style={finalStyle} />
