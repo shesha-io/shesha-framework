@@ -33,6 +33,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, iconPrefixCls, toke
         padding: 0;
         margin: 0;
     }
+
+    .content-box {
+        box-sizing: content-box;
+    }
   `); 
   return {
     shaStatistic,

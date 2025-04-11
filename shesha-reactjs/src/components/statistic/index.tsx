@@ -14,8 +14,26 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
     }
   });
 
-  return (<div className={styles['container-div-zero-padding-margin']} onClick={e => rest.onClick(e)}>
-    <Statistic className={classNames(styles.shaStatistic, className)} {...rest} />
+  const marginStyles = {
+    margin: rest.style.margin,
+    marginRight: rest.style.marginRight,
+    marginLeft: rest.style.marginLeft,
+    marginTop: rest.style.marginTop,
+    marginBottom: rest.style.marginBottom,
+  };
+  
+  const restStyle = { ...rest.style };
+  delete restStyle.margin;
+  delete restStyle.marginRight;
+  delete restStyle.marginLeft;
+  delete restStyle.marginTop;
+  delete restStyle.marginBottom;
+  
+
+  return (<div className={classNames(styles['container-div-zero-padding-margin'], styles['content-box'])} onClick={e => rest.onClick(e)} style={{
+    ...marginStyles,
+  }}>
+    <Statistic className={classNames(styles.shaStatistic, className)} {...{...rest, style: restStyle}} />
   </div>);
 };
 
