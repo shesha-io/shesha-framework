@@ -39,6 +39,12 @@ export interface IBorderValue {
             color?: string;
             style?: IBorderType;
         };
+        middle?: {
+            width?: string | number;
+            unit?: string;
+            color?: string;
+            style?: IBorderType;
+        };
     };
     radiusType?: string;
     borderType?: string;

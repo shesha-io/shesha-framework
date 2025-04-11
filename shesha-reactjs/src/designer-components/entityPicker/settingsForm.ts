@@ -1,9 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { borderStyles, getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
 
@@ -98,6 +98,30 @@ export const getSettings = (data) => {
                   },
                 ],
               })
+
+              .addSettingsInputRow({
+                id: 'default-value-s4gmBg31azZC0UjZjpfTm',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                readOnly: false,
+                hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'propertyAutocomplete',
+                    id: 'hpm6rN_aj-L_KaG5MLIZt',
+                    propertyName: 'displayEntityKey',
+                    label: 'Display Property',
+                    labelAlign: 'right',
+                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
+                    hidden: false,
+                    isDynamic: false,
+                    description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
+                    validate: {},
+                    modelType: '{{data.entityType}}',
+                    autoFillProps: false,
+                    settingsValidationErrors: [],
+                  },
+                ],
+              })
               .addSettingsInputRow({
                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -118,28 +142,6 @@ export const getSettings = (data) => {
                     label: 'Hide',
                     jsSetting: true,
                     layout: 'horizontal',
-                  },
-                ],
-              })
-              .addSettingsInputRow({
-                id: 'default-value-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                    hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    type: 'propertyAutocomplete',
-                    id: 'hpm6rN_aj-L_KaG5MLIZt',
-                    propertyName: 'displayEntityKey',
-                    label: 'Display Property',
-                    labelAlign: 'right',
-                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
-                    hidden: false,
-                    isDynamic: false,
-                    description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
-                    validate: {},
-                    modelType: '{{data.entityType}}',
-                    autoFillProps: false,
-                    settingsValidationErrors: [],
                   },
                 ],
               })
@@ -179,7 +181,7 @@ export const getSettings = (data) => {
                     label: 'Value Format',
                     dropdownOptions: [
                       {
-                        label: 'Simple Id',
+                        label: 'Simple ID',
                         value: 'simple',
                       },
                       {
@@ -299,7 +301,7 @@ export const getSettings = (data) => {
                         id: nanoid(),
                         hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false } as any,
                         propertyName: 'submitHttpVerb',
-                        label: 'Submit Http Verb',
+                        label: 'Submit HTTP Verb',
                         dropdownOptions: [
                           { label: 'POST', value: 'POST' },
                           { label: 'PUT', value: 'PUT' },
@@ -319,7 +321,7 @@ export const getSettings = (data) => {
                       id: '264903ff-b525-4a6e-893f-d560b219df9d',
                       propertyName: 'modalWidth',
                       inputType: 'customDropdown',
-                      label: 'Dialog Width (%)',
+                      label: 'Dialog Width',
                       allowClear: true,
                       customDropdownMode: 'single',
                       dropdownOptions: [
@@ -456,6 +458,7 @@ export const getSettings = (data) => {
                                 hideLabel: true,
                                 width: 60,
                                 dropdownOptions: textAlign,
+                                hidden: { _code: 'return  getSettingValue(data?.mode) === "multiple";', _mode: 'code', _value: false } as any,
                               },
                             ],
                           })
@@ -558,26 +561,10 @@ export const getSettings = (data) => {
                       content: {
                         id: 'borderStylePnl',
                         components: [...new DesignerToolbarSettings()
-                          .addSettingsInputRow({
-                            id: `borderStyleRow`,
-                            parentId: 'borderStylePnl',
-                            hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,        
-                            inputs: [
-                              {
-                                type: 'button',
-                                id: 'borderStyleRow-hideBorder',
-                                label: "Border",
-                                hideLabel: true,
-                                propertyName: "border.hideBorder",
-                                icon: "EyeOutlined",
-                                iconAlt: "EyeInvisibleOutlined"
-                              },
-                            ]
-                          })
                           .addContainer({
                             id: 'borderStyleRow',
                             parentId: 'borderStylePnl',
-                            components: getBorderInputs() as any
+                            components: getBorderInputs('', true, true) as any
                           })
                           .addContainer({
                             id: 'borderRadiusStyleRow',
@@ -588,6 +575,7 @@ export const getSettings = (data) => {
                         ]
                       }
                     })
+
                     .addCollapsiblePanel({
                       id: 'backgroundStyleCollapsiblePanel',
                       propertyName: 'pnlBackgroundStyle',
@@ -608,34 +596,9 @@ export const getSettings = (data) => {
                               propertyName: "background.type",
                               inputType: "radio",
                               tooltip: "Select a type of background",
-                              buttonGroupOptions: [
-                                {
-                                  value: "color",
-                                  icon: "FormatPainterOutlined",
-                                  title: "Color"
-                                },
-                                {
-                                  value: "gradient",
-                                  icon: "BgColorsOutlined",
-                                  title: "Gradient"
-                                },
-                                {
-                                  value: "image",
-                                  icon: "PictureOutlined",
-                                  title: "Image"
-                                },
-                                {
-                                  value: "url",
-                                  icon: "LinkOutlined",
-                                  title: "URL"
-                                },
-                                {
-                                  value: "storedFile",
-                                  icon: "DatabaseOutlined",
-                                  title: "Stored File"
-                                }
-                              ],
-                                        })
+                              buttonGroupOptions: backgroundTypeOptions,
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
                             .addSettingsInputRow({
                               id: "backgroundStyleRow-color",
                               parentId: "backgroundStylePnl",
@@ -705,73 +668,27 @@ export const getSettings = (data) => {
                               id: "backgroundStyleRow-controls",
                               parentId: 'backgroundStyleRow',
                               inline: true,
-                                          inputs: [
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
                                 {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-size',
                                   label: "Size",
+                                  customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                   hideLabel: true,
                                   propertyName: "background.size",
-                                  dropdownOptions: [
-                                    {
-                                      value: "cover",
-                                      label: "Cover"
-                                    },
-                                    {
-                                      value: "contain",
-                                      label: "Contain"
-                                    },
-                                    {
-                                      value: "auto",
-                                      label: "Auto"
-                                    }
-                                  ],
+                                  dropdownOptions: sizeOptions,
                                 },
                                 {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-position',
                                   label: "Position",
                                   hideLabel: true,
+                                  customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
-                                  dropdownOptions: [
-                                    {
-                                      value: "center",
-                                      label: "Center"
-                                    },
-                                    {
-                                      value: "top",
-                                      label: "Top"
-                                    },
-                                    {
-                                      value: "left",
-                                      label: "Left"
-                                    },
-                                    {
-                                      value: "right",
-                                      label: "Right"
-                                    },
-                                    {
-                                      value: "bottom",
-                                      label: "Bottom"
-                                    },
-                                    {
-                                      value: "top left",
-                                      label: "Top Left"
-                                    },
-                                    {
-                                      value: "top right",
-                                      label: "Top Right"
-                                    },
-                                    {
-                                      value: "bottom left",
-                                      label: "Bottom Left"
-                                    },
-                                    {
-                                      value: "bottom right",
-                                      label: "Bottom Right"
-                                    }
-                                  ],
-                                }
+                                  dropdownOptions: positionOptions,
+                                },
                               ]
                             })
                             .addSettingsInputRow({
@@ -894,6 +811,52 @@ export const getSettings = (data) => {
                             propertyName: 'style',
                             label: 'Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                          })
+                          .toJson()
+                        ]
+                      }
+                    })
+                    .addCollapsiblePanel({
+                      id: 'entityPickerDividerCollapsiblePanel',
+                      propertyName: 'entityPickerDivider',
+                      label: 'Entity Picker Divider',
+                      labelAlign: 'right',
+                      ghost: true,
+                      content: {
+                        id: 'entityPickerDividerPnl',
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: 'borderStylePnl',
+                            inline: true,
+                            readOnly: false,
+                            inputs: [
+                              {
+                                id: nanoid(),
+                                type: 'textField',
+                                label: "Width",
+                                hideLabel: true,
+                                propertyName: 'dividerWidth',
+                              },
+                              {
+                                id: nanoid(),
+                                label: "Style",
+                                propertyName: 'dividerStyle',
+                                type: "dropdown",
+                                hideLabel: true,
+                                width: 60,
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                dropdownOptions: borderStyles,
+                              },
+                              {
+                                id: nanoid(),
+                                label: `Color`,
+                                propertyName: 'dividerColor',
+                                type: "colorPicker",
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hideLabel: true,
+                              }
+                            ]
                           })
                           .toJson()
                         ]
