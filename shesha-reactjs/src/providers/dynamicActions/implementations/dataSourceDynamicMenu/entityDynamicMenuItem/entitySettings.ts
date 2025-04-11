@@ -6,8 +6,7 @@ export const getSettings = () => {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
                 id: 'uEFBpy19tApJMiBuFyj9s',
-                readOnly: false,
-                inputs: [
+                    inputs: [
                     {
                         id: 'c1ffda30-8eea-4621-aae7-0af583143df6',
                         type: 'autocomplete',
@@ -51,8 +50,7 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: 'n4enebtmhFgvkP5ukQK1f-row',
-                readOnly: false,
-                hidden: {
+                    hidden: {
                     _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
                     _mode: 'code',
                     _value: false
@@ -92,8 +90,7 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: 'Vl0092ZM-SeCukk5VlgXm-row',
-                readOnly: false,
-                inputs: [
+                    inputs: [
                     {
                         id: 'Vl0092ZM-SeCukk5VlgXm',
                         type: 'dropdown',

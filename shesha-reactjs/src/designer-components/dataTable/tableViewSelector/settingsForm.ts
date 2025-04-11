@@ -61,7 +61,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',

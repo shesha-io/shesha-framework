@@ -41,7 +41,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 },
                 styledLabel: true,
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
               .addLabelConfigurator({
                 id: nanoid(),
@@ -53,7 +53,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -62,7 +61,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     parentId: commonTabId,
                     label: "Edit Mode",
                     jsSetting: true,
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     defaultValue: 'inherited'
                   },
                   {
@@ -95,12 +93,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                   { label: "Name", value: "name" },
                   { label: "Dynamic", value: "dynamic" }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -116,7 +112,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -140,12 +135,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                   { label: "form", value: "form" },
                   { label: "api", value: "api" }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -166,7 +159,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -183,7 +175,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -201,7 +192,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -242,7 +232,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     tooltip: "The API url that will be used to fetch the data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API url that will be used to fetch the data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) === "entityName";', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
@@ -272,7 +261,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -284,7 +272,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     tooltip: "The API url that will be used to update data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API url that will be used to update data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
                         name: 'data',
@@ -317,7 +304,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     tooltip: "The API url that will be used to update data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API url that will be used to update data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
                         name: 'data',
@@ -350,7 +336,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 label: "Unique State ID",
                 tooltip: "A unique identifier used to maintain component state across sessions. Enable this if you need to preserve the component's state when the page reloads.",
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -369,7 +354,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "Triggered after successfully creating a new sub-form object in the back-end",
                 mode: "dialog",
                 description: "Triggered after successfully creating a new sub-form object in the back-end",
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 exposedVariables: [
                   {
                     name: 'response',
@@ -411,7 +395,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "Triggered after successfully updating the sub-form object in the back-end",
                 mode: "dialog",
                 description: "Triggered after successfully updating the sub-form object in the back-end",
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 exposedVariables: [
                   {
                     name: 'response',
@@ -479,8 +462,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                       content: {
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                          .addSettingsInput({
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          .addSettingsInput({        
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'style',
@@ -501,8 +483,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                           })
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: commonTabId,
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            parentId: commonTabId,       
                             inputs: [
                               {
                                 id: nanoid(),
@@ -515,7 +496,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                                 max: 24,
                                 defaultValue: 16,
                                 step: 1,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               },
                               {
                                 id: nanoid(),
@@ -528,7 +508,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                                 max: 24,
                                 defaultValue: 8,
                                 step: 1,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               }
                             ]
                           })
@@ -549,7 +528,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
             components: [...new DesignerToolbarSettings()
               // Permissions - from Security section in map
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',
