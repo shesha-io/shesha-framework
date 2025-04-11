@@ -108,6 +108,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             ...positionstyle,
             ...stylingBoxAsCSS,
             ...finalStyle,
+            overflow: model.overflow,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
           }}
           style={{

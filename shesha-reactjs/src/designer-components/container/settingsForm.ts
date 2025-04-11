@@ -2,6 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import {
   ALIGN_ITEMS,
+  ALIGN_ITEMS_GRID,
   ALIGN_SELF,
   FLEX_DIRECTION,
   FLEX_WRAP,
@@ -205,7 +206,6 @@ export const getSettings = (data) => {
                                 propertyName: 'flexWrap',
                                 dropdownOptions: FLEX_WRAP
                               },
-
                             ],
                           })
                           .addSettingsInputRow({
@@ -236,6 +236,122 @@ export const getSettings = (data) => {
                             ],
                           })
                           .addContainer({
+                            id: 'button-display-Bg31azZC0UjZjpfTm',
+                            parentId: 'displayCollapsiblePanel',
+                            components: [
+                              ...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  inline: true,
+                                  parentId: 'button-display-Bg31azZC0UjZjpfTm',
+                                  inputs: [
+                                    {
+                                      type: 'radio',
+                                      id: 'button-display-Bg31azZC0UjZjpfTm',
+                                      label: 'Flex Direction',
+                                      hideLabel: true,
+                                      propertyName: 'flexDirection',
+                                      buttonGroupOptions: [
+                                        {
+                                          title: 'Row',
+                                          value: 'row',
+                                          icon: 'row'
+                                        },
+                                        {
+                                          title: 'Column',
+                                          value: 'column',
+                                          icon: 'column'
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      type: 'radio',
+                                      id: 'button-display-Bg31azZC0UjZjpfTm',
+                                      label: 'Align Items',
+                                      hideLabel: true,
+                                      propertyName: 'alignItems',
+                                      buttonGroupOptions: [
+                                        {
+                                          title: 'Start',
+                                          value: 'start',
+                                          icon: 'alignVerticalTop'
+                                        },
+                                        {
+                                          title: 'Center',
+                                          value: 'center',
+                                          icon: 'alignVerticalCenter'
+                                        },
+                                        {
+                                          title: 'End',
+                                          value: 'end',
+                                          icon: 'alignVerticalBottom'
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      id: 'justify-items-s4gmBg31azZC0UjZjpfTm',
+                                      type: 'radio',
+                                      label: 'Justify Items',
+                                      hideLabel: true,
+                                      // hidden: {
+                                      //   _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
+                                      //   _mode: 'code',
+                                      //   _value: false,
+                                      // } as any,
+                                      propertyName: 'justifyItems',
+                                      buttonGroupOptions: [
+                                        {
+                                          title: 'Left',
+                                          value: 'left',
+                                          icon: 'alignHorizontalLeft'
+                                        },
+                                        {
+                                          title: 'Center',
+                                          value: 'center',
+                                          icon: 'alignHorizontalCenter'
+                                        },
+                                        {
+                                          title: 'Right',
+                                          value: 'right',
+                                          icon: 'alignHorizontalRight'
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      id: 'justify-content-s4gmBg31azZC0UjZjpfTm',
+                                      type: 'radio',
+                                      label: 'Justify Content',
+                                      hideLabel: true,
+                                      // hidden: {
+                                      //   _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
+                                      //   _mode: 'code',
+                                      //   _value: false,
+                                      // } as any,
+                                      propertyName: 'justifyContent',
+                                      buttonGroupOptions: [
+                                        {
+                                          title: 'Left',
+                                          value: 'left',
+                                          icon: 'alignHorizontalLeft'
+                                        },
+                                        {
+                                          title: 'Center',
+                                          value: 'center',
+                                          icon: 'alignHorizontalCenter'
+                                        },
+                                        {
+                                          title: 'Right',
+                                          value: 'right',
+                                          icon: 'alignHorizontalRight'
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                })
+                                .toJson()
+                            ]
+                          })
+                          .addContainer({
                             id: 'non-block-26voxhs-HxJ5k5ngYE',
                             parentId: 'displayCollapsiblePanel',
                             hidden: {
@@ -257,7 +373,7 @@ export const getSettings = (data) => {
                                       id: 'align-items-s4gmBg31azZC0UjZjpfTm',
                                       label: 'Align Items',
                                       propertyName: 'alignItems',
-                                      dropdownOptions: ALIGN_ITEMS
+                                      dropdownOptions: [...ALIGN_ITEMS, ...ALIGN_ITEMS_GRID]
                                     },
                                     {
                                       type: 'dropdown',
@@ -352,7 +468,11 @@ export const getSettings = (data) => {
                                   {
                                     label: "Scroll",
                                     value: "scroll",
-                                  }
+                                  },
+                                  {
+                                    label: "Visible",
+                                    value: "visible",
+                                  },
                                 ]
                               }
                             ],
