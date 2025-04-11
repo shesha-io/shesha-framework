@@ -6,8 +6,7 @@ export const getSettings = () => {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
                 id: 'endpointsAutocomplete-labelValueEditor-row',
-                readOnly: false,
-                inputs: [
+                    inputs: [
                     {
                         id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D',
                         type: 'endpointsAutocomplete',
@@ -37,8 +36,7 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D-row',
-                readOnly: false,
-                hidden: {
+                    hidden: {
                     _code: 'return !getSettingValue(data?.dataSourceUrl);',
                     _mode: 'code',
                     _value: false
@@ -69,8 +67,7 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: 'Vl0_92oM-SeCukk5VlgXm-row',
-                readOnly: false,
-                inputs: [
+                    inputs: [
                     {
                         id: 'Vl0_92oM-SeCukk5VlgXm',
                         type: 'dropdown',
