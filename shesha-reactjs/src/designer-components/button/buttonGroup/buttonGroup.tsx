@@ -3,6 +3,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
     Button,
+    ConfigProvider,
     Divider,
     Dropdown,
     Menu,
@@ -241,7 +242,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         ...borderStyles,
         ...backgroundStyles,
         ...shadowStyles,
-        ...stylingBoxAsCSS
+        ...stylingBoxAsCSS,
+        ...jsStyle
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
@@ -357,14 +359,24 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
 
         return (
-            <div className={styles.shaResponsiveButtonGroupContainer} style={finalStyle}>
-                <Menu
-                    mode="horizontal"
-                    items={menuItems}
-                    className={classNames(styles.shaResponsiveButtonGroup, `space-${spaceSize}`)}
-                    style={{ width: '30px' }}
-                />
-            </div>
+            <ConfigProvider
+                theme={{
+                    components: {
+                        Menu: {
+                            itemHeight: 'max-content' as any
+                        },
+                    },
+                }}
+            >
+                <div className={styles.shaResponsiveButtonGroupContainer} style={finalStyle}>
+                    <Menu
+                        mode="horizontal"
+                        items={menuItems}
+                        className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
+                        style={{ width: '30px' }}
+                    />
+                </div>
+            </ConfigProvider>
         );
     }
 };
