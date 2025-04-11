@@ -38,7 +38,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       jsSetting: true,
                     }
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -59,7 +58,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       ]
                     }
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -76,7 +74,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       jsSetting: true,
                     }
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -91,7 +88,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       jsSetting: true,
                     }
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: { _code: 'return getSettingValue(data?.readOnly) || getSettingValue(data?.banner);', _mode: 'code', _value: true } as any,
 
                 })
@@ -119,7 +115,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       } as any
                     }
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -142,7 +137,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       jsSetting: true,
                     }
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -167,7 +161,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson()]
           }
@@ -178,7 +171,6 @@ export const getSettings = (data: IAlertComponentProps) => {
             id: securityTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',
@@ -207,7 +199,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                     id: nanoid(),
                     components: [...new DesignerToolbarSettings()
                       .addSettingsInput({
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+    
                         id: nanoid(),
                         inputType: 'codeEditor',
                         propertyName: 'style',

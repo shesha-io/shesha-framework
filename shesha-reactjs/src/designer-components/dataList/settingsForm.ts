@@ -84,7 +84,6 @@ export const getSettings = (data: any) => {
                   required: true
                 },
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -94,7 +93,6 @@ export const getSettings = (data: any) => {
                 label: "Hide",
                 jsSetting: true,
                 value: 'checked',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -112,7 +110,6 @@ export const getSettings = (data: any) => {
                 label: "Permissions",
                 tooltip: "Enter a list of permissions that should be associated with this component",
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -135,7 +132,6 @@ export const getSettings = (data: any) => {
                   { label: 'Horizontal', value: 'horizontal' },
                   { label: 'Wrap', value: 'wrap' },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -146,7 +142,6 @@ export const getSettings = (data: any) => {
                 tooltip: "You can use any unit (%, px, em, etc)",
                 hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -157,7 +152,6 @@ export const getSettings = (data: any) => {
                 tooltip: "You can use any unit (%, px, em, etc)",
                 hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -168,7 +162,6 @@ export const getSettings = (data: any) => {
                 tooltip: "You can use any unit (%, px, em, etc)",
                 hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -179,7 +172,6 @@ export const getSettings = (data: any) => {
                 tooltip: "You can use any unit (%, px, em, etc)",
                 hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -197,7 +189,6 @@ export const getSettings = (data: any) => {
                   { label: '25%', value: '0.25' },
                   { label: '(Custom)', value: 'custom' },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -207,7 +198,6 @@ export const getSettings = (data: any) => {
                 label: "Custom List Item Width (px)",
                 hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal" || getSettingValue(data?.listItemWidth) !== "custom";', _mode: 'code', _value: false } as any,
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -218,7 +208,6 @@ export const getSettings = (data: any) => {
                 hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                 jsSetting: true,
                 value: 'checked',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -228,7 +217,6 @@ export const getSettings = (data: any) => {
                 label: "Primary Text",
                 jsSetting: true,
                 defaultValue: "No Data",
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -238,7 +226,6 @@ export const getSettings = (data: any) => {
                 label: "Secondary Text",
                 jsSetting: true,
                 defaultValue: "No data is available for this data list",
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -247,7 +234,6 @@ export const getSettings = (data: any) => {
                 parentId: 'root',
                 label: 'Icon',
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addCollapsiblePanel({
                 id: 'groupCollapsiblePanel',
@@ -282,8 +268,7 @@ export const getSettings = (data: any) => {
                         hidden: false,
                       }],
                       hideLabel: true,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    })
+                        })
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: "groupPnl",
@@ -296,14 +281,12 @@ export const getSettings = (data: any) => {
                         jsSetting: false,
                         exposedVariables: [
                           { name: "data", description: "Selected form values", type: "object" },
-                        ],
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        ],    
                       }
 
                       ],
                       hideLabel: true,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    })
+                        })
                     .toJson()
                   ]
                 }
@@ -328,12 +311,10 @@ export const getSettings = (data: any) => {
                   { label: 'View type', value: 'view' },
                   { label: 'Expression', value: 'expression' },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: '',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
                   _mode: 'code',
@@ -355,7 +336,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: '',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
                   _mode: 'code',
@@ -379,7 +359,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: '',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";',
                   _mode: 'code',
@@ -408,7 +387,6 @@ export const getSettings = (data: any) => {
                       `{ name: "http", description: "axiosHttp", type: "object" }`,
                       `{ name: "message", description: "message framework", type: "object" }`,
                     ],
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   }
                 ],
               })
@@ -425,7 +403,6 @@ export const getSettings = (data: any) => {
                   { label: 'Single', value: 'single' },
                   { label: 'Multiple', value: 'multiple' },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -433,7 +410,6 @@ export const getSettings = (data: any) => {
                 label: 'Can edit inline',
                 inputType: 'dropdown',
                 parentId: 'events',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 dropdownOptions: [
                   { value: 'yes', label: 'Yes' },
                   { value: 'no', label: 'No' },
@@ -447,7 +423,6 @@ export const getSettings = (data: any) => {
                 label: 'Can delete inline',
                 inputType: 'dropdown',
                 parentId: 'events',
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 dropdownOptions: [
                   { value: 'yes', label: 'Yes' },
                   { value: 'no', label: 'No' },
@@ -457,8 +432,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                readOnly: false,
-                hidden: { _code: 'return getSettingValue(data?.canDeleteInline) !== "js";', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.canDeleteInline) !== "js";', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -466,7 +440,6 @@ export const getSettings = (data: any) => {
                     label: 'Can delete inline expression',
                     type: 'codeEditor',
                     parentId: 'events',
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     description: 'Return true to enable inline deletion and false to disable.',
                     exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
                   }
@@ -486,7 +459,6 @@ export const getSettings = (data: any) => {
                 parentId: 'root',
                 label: "On Double Click",
                 jsSetting: false,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -496,7 +468,6 @@ export const getSettings = (data: any) => {
                 parentId: 'events',
                 tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
                 hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                 exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
               })
