@@ -79,12 +79,17 @@ export const ReactTable: FC<IReactTableProps> = ({
   noDataSecondaryText = "No data is available for this table",
   noDataIcon,
   onRowsRendering,
-  onRowsReordered
+  onRowsReordered,
+  showExpandedView,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
     allColumns: columns,
   });
+
+  const [activeCell, setActiveCell] = useState();
+  const [allowExpandedView, setAllowExpandedView] = useState<Boolean>(false);
+  const [isCellContentOverflowing, setIsCellContentOverflowing] = useState<Boolean>(false);
   const { styles } = useStyles();
   const { styles: mainStyles } = useMainStyles();
 
@@ -378,6 +383,51 @@ export const ReactTable: FC<IReactTableProps> = ({
     return result;
   }, [containerStyle, minHeight, maxHeight]);
 
+  const renderExpandedContentView = (cellRef) => {
+    const cellRect = cellRef?.current?.getBoundingClientRect();
+    return (
+      <div
+        onMouseEnter={(event) => {
+          event.stopPropagation();
+          setAllowExpandedView(true);
+        }}
+        onMouseLeave={(event) => {
+          event.stopPropagation();
+          setAllowExpandedView(false);
+          setActiveCell(null);
+        }}
+        style={{
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          opacity: allowExpandedView && isCellContentOverflowing ? 1 : 0,
+          transform: allowExpandedView && isCellContentOverflowing ? 'scale(1)' : 'scale(0.95)',
+          visibility: allowExpandedView && isCellContentOverflowing  ? 'visible' : 'hidden',
+          position: 'fixed',
+          minWidth: 80,
+          width: cellRect?.width,
+          backgroundColor: '#fff',
+          border: '1px #dddddd solid',
+          borderRadius: 8,
+          padding: activeCell !== null && allowExpandedView && 10,
+          boxShadow: '0px 2px 2px 0px rgba(0, 0, 0, .15)',
+          top: `${cellRect?.top + 20}px`,
+          left: `${cellRect?.left + 20}px`,
+          zIndex: 50,
+          transformOrigin: 'center',
+          pointerEvents: activeCell !== null && allowExpandedView ? 'auto' : 'none',
+        }}
+      >
+        <p style={{
+           whiteSpace: 'normal',
+           overflow: 'visible',
+           wordBreak: 'break-word',
+           margin: 0,        
+        }}>
+        {cellRef?.current?.innerText}
+        </p>
+      </div>
+    );
+  };
+
   const renderRow = (row: Row<any>, rowIndex: number) => {
     const id = row.original?.id;
     return (
@@ -387,6 +437,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         onClick={handleSelectRow}
         onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
         row={row}
+        showExpandedView={showExpandedView}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
         allowEdit={canEditInline}
@@ -398,6 +449,9 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        onMouseOver={(activeCell, isContentOverflowing) => {
+setActiveCell(activeCell); setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText); 
+}}
       />
     );
   };
@@ -532,6 +586,12 @@ export const ReactTable: FC<IReactTableProps> = ({
               overflowX: 'unset',
             }}
             {...getTableBodyProps()}
+            onMouseEnter={() => {
+ setAllowExpandedView(true); 
+}}
+            onMouseLeave={() => {
+ setAllowExpandedView(false); 
+}}
           >
             {rows?.length === 0 && !loading && (
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
@@ -569,6 +629,7 @@ export const ReactTable: FC<IReactTableProps> = ({
             </ConditionalWrap>
           </div>
           {canAddInline && newRowCapturePosition === 'bottom' && renderNewRowEditor()}
+          {renderExpandedContentView(activeCell)}
         </div>
       </div>
     </Spin>
