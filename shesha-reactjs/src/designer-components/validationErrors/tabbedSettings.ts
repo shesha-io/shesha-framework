@@ -66,23 +66,6 @@ export const getSettings = (data: any) => {
               })
               .toJson()
             ]
-          }
-          ,
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
-              })
-              .toJson()
-            ]
           },
           {
             key: 'appearance',
@@ -120,7 +103,7 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: pnlFontStyleId,
                               inline: true,
-                              propertyName: 'font',          
+                              propertyName: 'font',
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -184,7 +167,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -218,7 +201,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -269,7 +252,7 @@ export const getSettings = (data: any) => {
                               parentId: borderStylePnlId,
                               hidden: {
                                 _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,          
+                              } as any,
                               inputs: [
                                 {
                                   type: 'button',
@@ -442,7 +425,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -528,7 +511,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({          
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
@@ -536,7 +519,7 @@ export const getSettings = (data: any) => {
                               label: 'Style',
                               tooltip: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .addSettingsInput({         
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'textField',
                               jsSetting: true,
@@ -553,6 +536,22 @@ export const getSettings = (data: any) => {
                   ]
                 })
                 .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
+              })
+              .toJson()
             ]
           }
         ]

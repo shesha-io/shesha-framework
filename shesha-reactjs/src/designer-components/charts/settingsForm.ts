@@ -54,257 +54,6 @@ export const getSettings = (data: any) => {
             ],
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
-                  jsSetting: true,
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'appearance',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'width',
-                      parentId: 'root',
-                      label: 'Width',
-                      description:
-                        'The width (px) of the chart. If not provided, the default width will be used. Minimum width is 300px. For responsiveness, setting the width will automatically set the height to proportionate value.',
-                      type: 'numberField',
-                      step: 1,
-                      min: 300,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'height',
-                      parentId: 'root',
-                      label: 'Height',
-                      description:
-                        'The height (px) of the chart. If not provided, the default height will be used. Minimum height is 200px. For responsiveness, setting the height will automatically set the width to proportionate value.',
-                      type: 'numberField',
-                      step: 1,
-                      min: 200,
-                    },
-                  ],
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showBorder',
-                  label: 'Show Border',
-                  parentId: 'root',
-                  defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'chartType',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  label: 'Chart Type',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Pie chart', value: 'pie' },
-                    { label: 'Line chart', value: 'line' },
-                    { label: 'Bar chart', value: 'bar' },
-                    { label: 'Polar area chart', value: 'polarArea' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'line',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'isDoughnut',
-                  label: 'Is Doughnut',
-                  parentId: appearanceTabId,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.chartType) !== `pie`',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                  defaultValue: false,
-
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'simpleOrPivot',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  label: 'Simple / Pivot',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Simple', value: 'simple' },
-                    { label: 'Pivot', value: 'pivot' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'simple',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'stacked',
-                  label: 'Stacked',
-                  parentId: appearanceTabId,
-                  hidden: {
-                    _code:
-                      'return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                  defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'textField',
-                  propertyName: 'title',
-                  parentId: appearanceTabId,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showTitle) !== true',
-                    _mode: 'code',
-                    _value: false,
-                  },
-                  label: 'Title',
-                  description: 'The title of the chart (if any)',
-                  labelAlign: 'right',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showTitle',
-                  label: 'Show Title',
-                  description: 'Show the title of the chart',
-                  parentId: appearanceTabId,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showLegend',
-                  label: 'Show Legend',
-                  description:
-                    'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
-                  parentId: appearanceTabId,
-                  defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'legendPosition',
-                  parentId: appearanceTabId,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showLegend) !== true',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                  label: 'Legend Position',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Top', value: 'top' },
-                    { label: 'Bottom', value: 'bottom' },
-                    { label: 'Left', value: 'left' },
-                    { label: 'Right', value: 'right' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'top',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showXAxisScale',
-                  label: 'Show X Axis',
-                  parentId: appearanceTabId,
-                  defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showXAxisTitle',
-                  label: 'Show X Axis Title',
-                  parentId: appearanceTabId,
-                  defaultValue: true,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showXAxisScale) !== true',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showYAxisScale',
-                  label: 'Show Y Axis',
-                  parentId: appearanceTabId,
-                  defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showYAxisTitle',
-                  label: 'Show Y Axis Title',
-                  parentId: appearanceTabId,
-                  defaultValue: true,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showYAxisScale) !== true',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'numberField',
-                  propertyName: 'tension',
-                  parentId: chartSettingsId,
-                  label: 'Tension',
-                  defaultValue: 0,
-                  min: 0,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.chartType) !== `line`',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'strokeWidth',
-                  parentId: chartSettingsId,
-                  inputType: 'numberField',
-                  label: 'Stroke width',
-                  defaultValue: 0.0,
-                  description:
-                    'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
-                  step: 0.1,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'strokeColor',
-                  parentId: 'root',
-                  label: 'Stroke Color',
-                  allowClear: true,
-                  inputType: 'colorPicker',
-                })
-                .toJson(),
-            ],
-          },
-          {
             key: 'data',
             title: 'Data',
             id: dataTabId,
@@ -660,6 +409,257 @@ export const getSettings = (data: any) => {
                 .toJson(),
             ],
           },
+          {
+            key: 'appearance',
+            title: 'Appearance',
+            id: appearanceTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: appearanceTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'width',
+                      parentId: 'root',
+                      label: 'Width',
+                      description:
+                        'The width (px) of the chart. If not provided, the default width will be used. Minimum width is 300px. For responsiveness, setting the width will automatically set the height to proportionate value.',
+                      type: 'numberField',
+                      step: 1,
+                      min: 300,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'height',
+                      parentId: 'root',
+                      label: 'Height',
+                      description:
+                        'The height (px) of the chart. If not provided, the default height will be used. Minimum height is 200px. For responsiveness, setting the height will automatically set the width to proportionate value.',
+                      type: 'numberField',
+                      step: 1,
+                      min: 200,
+                    },
+                  ],
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'showBorder',
+                  label: 'Show Border',
+                  parentId: 'root',
+                  defaultValue: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'chartType',
+                  parentId: appearanceTabId,
+                  hidden: false,
+                  label: 'Chart Type',
+                  inputType: 'dropdown',
+                  allowClear: true,
+                  dropdownOptions: [
+                    { label: 'Pie chart', value: 'pie' },
+                    { label: 'Line chart', value: 'line' },
+                    { label: 'Bar chart', value: 'bar' },
+                    { label: 'Polar area chart', value: 'polarArea' },
+                  ],
+                  validate: { required: true },
+                  defaultValue: 'line',
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'isDoughnut',
+                  label: 'Is Doughnut',
+                  parentId: appearanceTabId,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.chartType) !== `pie`',
+                    _mode: 'code',
+                    _value: true,
+                  },
+                  defaultValue: false,
+
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'simpleOrPivot',
+                  parentId: appearanceTabId,
+                  hidden: false,
+                  label: 'Simple / Pivot',
+                  inputType: 'dropdown',
+                  allowClear: true,
+                  dropdownOptions: [
+                    { label: 'Simple', value: 'simple' },
+                    { label: 'Pivot', value: 'pivot' },
+                  ],
+                  validate: { required: true },
+                  defaultValue: 'simple',
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'stacked',
+                  label: 'Stacked',
+                  parentId: appearanceTabId,
+                  hidden: {
+                    _code:
+                      'return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)',
+                    _mode: 'code',
+                    _value: true,
+                  },
+                  defaultValue: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'textField',
+                  propertyName: 'title',
+                  parentId: appearanceTabId,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.showTitle) !== true',
+                    _mode: 'code',
+                    _value: false,
+                  },
+                  label: 'Title',
+                  description: 'The title of the chart (if any)',
+                  labelAlign: 'right',
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'showTitle',
+                  label: 'Show Title',
+                  description: 'Show the title of the chart',
+                  parentId: appearanceTabId,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'showLegend',
+                  label: 'Show Legend',
+                  description:
+                    'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
+                  parentId: appearanceTabId,
+                  defaultValue: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'legendPosition',
+                  parentId: appearanceTabId,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.showLegend) !== true',
+                    _mode: 'code',
+                    _value: true,
+                  },
+                  label: 'Legend Position',
+                  inputType: 'dropdown',
+                  allowClear: true,
+                  dropdownOptions: [
+                    { label: 'Top', value: 'top' },
+                    { label: 'Bottom', value: 'bottom' },
+                    { label: 'Left', value: 'left' },
+                    { label: 'Right', value: 'right' },
+                  ],
+                  validate: { required: true },
+                  defaultValue: 'top',
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'showXAxisScale',
+                  label: 'Show X Axis',
+                  parentId: appearanceTabId,
+                  defaultValue: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'showXAxisTitle',
+                  label: 'Show X Axis Title',
+                  parentId: appearanceTabId,
+                  defaultValue: true,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.showXAxisScale) !== true',
+                    _mode: 'code',
+                    _value: true,
+                  },
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'showYAxisScale',
+                  label: 'Show Y Axis',
+                  parentId: appearanceTabId,
+                  defaultValue: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'showYAxisTitle',
+                  label: 'Show Y Axis Title',
+                  parentId: appearanceTabId,
+                  defaultValue: true,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.showYAxisScale) !== true',
+                    _mode: 'code',
+                    _value: true,
+                  },
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'numberField',
+                  propertyName: 'tension',
+                  parentId: chartSettingsId,
+                  label: 'Tension',
+                  defaultValue: 0,
+                  min: 0,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.chartType) !== `line`',
+                    _mode: 'code',
+                    _value: true,
+                  },
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'strokeWidth',
+                  parentId: chartSettingsId,
+                  inputType: 'numberField',
+                  label: 'Stroke width',
+                  defaultValue: 0.0,
+                  description:
+                    'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
+                  step: 0.1,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'strokeColor',
+                  parentId: 'root',
+                  label: 'Stroke Color',
+                  allowClear: true,
+                  inputType: 'colorPicker',
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  parentId: securityTabId,
+                  jsSetting: true,
+                })
+                .toJson(),
+            ],
+          }
         ],
       })
       .toJson(),
