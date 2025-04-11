@@ -42,7 +42,6 @@ export const getSettings = (data: any) => {
                   },
                   styledLabel: true,
                   jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -61,7 +60,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
@@ -82,11 +80,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: appearanceTabId,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                   inputs: [
                     {
                       id: nanoid(),
@@ -98,11 +91,6 @@ export const getSettings = (data: any) => {
                       type: 'numberField',
                       step: 1,
                       min: 300,
-                      readOnly: {
-                        _code: 'return  getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
                     },
                     {
                       id: nanoid(),
@@ -114,11 +102,6 @@ export const getSettings = (data: any) => {
                       type: 'numberField',
                       step: 1,
                       min: 200,
-                      readOnly: {
-                        _code: 'return  getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
                     },
                   ],
                 })
@@ -129,11 +112,6 @@ export const getSettings = (data: any) => {
                   label: 'Show Border',
                   parentId: 'root',
                   defaultValue: true,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -151,11 +129,6 @@ export const getSettings = (data: any) => {
                   ],
                   validate: { required: true },
                   defaultValue: 'line',
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -169,11 +142,7 @@ export const getSettings = (data: any) => {
                     _value: true,
                   },
                   defaultValue: false,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
+
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -189,11 +158,6 @@ export const getSettings = (data: any) => {
                   ],
                   validate: { required: true },
                   defaultValue: 'simple',
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -208,11 +172,6 @@ export const getSettings = (data: any) => {
                     _value: true,
                   },
                   defaultValue: true,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -227,11 +186,6 @@ export const getSettings = (data: any) => {
                   label: 'Title',
                   description: 'The title of the chart (if any)',
                   labelAlign: 'right',
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -240,11 +194,6 @@ export const getSettings = (data: any) => {
                   label: 'Show Title',
                   description: 'Show the title of the chart',
                   parentId: appearanceTabId,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -255,11 +204,6 @@ export const getSettings = (data: any) => {
                     'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
                   parentId: appearanceTabId,
                   defaultValue: true,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -281,11 +225,6 @@ export const getSettings = (data: any) => {
                   ],
                   validate: { required: true },
                   defaultValue: 'top',
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -294,11 +233,6 @@ export const getSettings = (data: any) => {
                   label: 'Show X Axis',
                   parentId: appearanceTabId,
                   defaultValue: true,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -312,11 +246,6 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _value: true,
                   },
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -325,11 +254,6 @@ export const getSettings = (data: any) => {
                   label: 'Show Y Axis',
                   parentId: appearanceTabId,
                   defaultValue: true,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -343,11 +267,6 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _value: true,
                   },
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -362,11 +281,6 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _value: true,
                   },
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -378,11 +292,6 @@ export const getSettings = (data: any) => {
                   description:
                     'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
                   step: 0.1,
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -391,11 +300,6 @@ export const getSettings = (data: any) => {
                   label: 'Stroke Color',
                   allowClear: true,
                   inputType: 'colorPicker',
-                  readOnly: {
-                    _code: 'return  getSettingValue(data?.readOnly);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .toJson(),
             ],
@@ -421,7 +325,6 @@ export const getSettings = (data: any) => {
                   ],
                   validate: { required: true },
                   defaultValue: 'entityType',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addContainer({
                   id: dataSettingsForUrlId,
@@ -446,11 +349,6 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         hidden: false,
                         validate: { required: true },
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -468,11 +366,6 @@ export const getSettings = (data: any) => {
                           _mode: 'code',
                           _value: false,
                         } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -487,11 +380,6 @@ export const getSettings = (data: any) => {
                         hidden: {
                           _code:
                             'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -527,11 +415,6 @@ export const getSettings = (data: any) => {
                         settingsValidationErrors: [],
                         useRawValues: true,
                         width: '100%',
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -539,11 +422,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -574,11 +452,6 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         defaultValue: false,
                         validate: { required: true },
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -586,11 +459,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -625,11 +493,6 @@ export const getSettings = (data: any) => {
                           _mode: 'code',
                           _value: false,
                         } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -654,11 +517,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -687,11 +545,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -748,11 +601,6 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _code: 'return !getSettingValue(data?.allowFilter)',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,

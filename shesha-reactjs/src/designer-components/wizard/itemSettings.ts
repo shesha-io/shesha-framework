@@ -19,8 +19,7 @@ export const getItemSettings = () => {
           components: [...new DesignerToolbarSettings()
             .addSettingsInputRow({
               id: 'wizard-settings-tabs-common-name-row',
-              readOnly: false,
-              inputs: [
+                inputs: [
                 {
                   id: 'wizard-settings-tabs-common-name',
                   type: 'textField',
@@ -45,8 +44,7 @@ export const getItemSettings = () => {
             })
             .addSettingsInputRow({
               id: 'wizard-settings-tabs-common-subTitle-row',
-              readOnly: false,
-              inputs: [
+                inputs: [
                 {
                   id: 'wizard-settings-tabs-common-subTitle',
                   type: 'textField',
@@ -69,8 +67,7 @@ export const getItemSettings = () => {
             })
             .addSettingsInputRow({
               id: 'wizard-settings-tabs-common-key-row',
-              readOnly: false,
-              inputs: [
+                inputs: [
                 {
                   id: 'wizard-settings-tabs-common-key',
                   type: 'textField',
@@ -100,8 +97,7 @@ export const getItemSettings = () => {
             })
             .addSettingsInputRow({
               id: 'wizard-settings-tabs-common-icon-row',
-              readOnly: false,
-              inputs: [
+                inputs: [
                 {
                   id: 'wizard-settings-tabs-common-icon',
                   type: 'iconPicker',
@@ -150,8 +146,7 @@ export const getItemSettings = () => {
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'wizard-settings-tabs-common-nextButtonText',
                         type: 'textField',
@@ -173,8 +168,7 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: 'wizard-settings-tabs-common-nextButtonBeforeActionRow',
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                         type: 'configurableActionConfigurator',
@@ -215,8 +209,7 @@ export const getItemSettings = () => {
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'backButtonText',
                         type: 'textField',
@@ -238,8 +231,7 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
                         type: 'configurableActionConfigurator',
@@ -277,8 +269,7 @@ export const getItemSettings = () => {
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'doneButtonText',
                         type: 'textField',
@@ -301,8 +292,7 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
                         type: 'configurableActionConfigurator',
@@ -340,8 +330,7 @@ export const getItemSettings = () => {
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'onCancelText',
                         type: 'textField',
@@ -364,8 +353,7 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
                         type: 'configurableActionConfigurator',
@@ -424,8 +412,7 @@ export const getItemSettings = () => {
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: 'f9f25102-bdc7-41bc-b4bc-87eea6a86fc5',
                         type: 'textField',
@@ -448,8 +435,7 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                    readOnly: false,
-                    inputs: [
+                            inputs: [
                       {
                         id: '78f2f5ee-9826-4567-a938-d7bc03ba90ac',
                         type: 'codeEditor',

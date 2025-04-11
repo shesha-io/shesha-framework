@@ -150,7 +150,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
             id: nanoid(),
             parentId: 'borderStylePnl',
             inline: true,
-            readOnly: false,
             hidden: { _code: generateCode('borderType', false, isResponsive, path), _mode: 'code', _value: false } as any,
             inputs: [
                 {
@@ -177,7 +176,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                     type: "dropdown",
                     hideLabel: true,
                     width: 60,
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     dropdownOptions: borderStyles,
                 },
                 {
@@ -185,7 +183,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                     label: `Color`,
                     propertyName: `${borderProp}.all.color`,
                     type: "colorPicker",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hideLabel: true,
                 }
             ]
@@ -202,7 +199,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                         id: nanoid(),
                         parentId: 'borderStylePnl',
                         inline: true,
-                        readOnly: false,
                         inputs: [
                             {
                                 id: nanoid(),
@@ -230,7 +226,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                                 type: "dropdown",
                                 hideLabel: true,
                                 width: 60,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 dropdownOptions: borderStyles,
                             },
                             {
@@ -238,7 +233,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                                 label: `Color`,
                                 propertyName: `${borderProp}.${side}.color`,
                                 type: "colorPicker",
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
                             }
                         ]
@@ -270,7 +264,6 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
             id: nanoid(),
             parentId: 'borderStylePnl',
             inline: true,
-            readOnly: false,
             hidden: { _code: generateCode('radiusType', false, isResponsive, path), _mode: 'code', _value: false } as any,
             inputs: [
                 {
@@ -292,7 +285,6 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
             id: nanoid(),
             parentId: 'borderStylePnl',
             inline: true,
-            readOnly: false,
             inputs: radiusCorners.map(cornerValue => {
                 const corner = cornerValue.value as string;
 

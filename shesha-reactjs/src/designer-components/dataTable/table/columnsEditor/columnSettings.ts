@@ -341,8 +341,7 @@ export const getColumnSettings = (data?: any) => ({
                                                     id: 'dimensionsStyleRowWidth',
                                                     parentId: 'dimensionsStylePnl',
                                                     inline: true,
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    inputs: [
+                                                                        inputs: [
                                                         {
                                                             "id": "minWidth1",
                                                             "type": "numberField",
@@ -369,8 +368,7 @@ export const getColumnSettings = (data?: any) => ({
                                                         _mode: "code",
                                                         _value: false
                                                     },
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    inputs: [
+                                                                        inputs: [
                                                         {
                                                             "id": "minHeight1",
                                                             "type": "numberField",
