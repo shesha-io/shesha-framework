@@ -33,7 +33,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                       type: 'textField',
                       id: nanoid(),
                       propertyName: 'componentName',
-                      label: 'Component name',
+                      label: 'Component Name',
                       size: 'small',
                       jsSetting: true,
                     }
@@ -173,7 +173,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'customStyle',
-                  label: 'Custom Style',
+                  label: 'Custom Styles',
                   labelAlign: 'right',
                   ghost: true,
                   parentId: appearanceTabId,

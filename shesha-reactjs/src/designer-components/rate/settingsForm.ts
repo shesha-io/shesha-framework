@@ -147,7 +147,7 @@ export const getSettings = (data: IRateProps) => {
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
                         propertyName: 'customStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: 'styleRouter',
