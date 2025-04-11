@@ -163,23 +163,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                   ],
                 })
                 .toJson()]
-          }
-          ,
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityTabId
-              })
-              .toJson()
-            ]
           },
           {
             key: 'appearance',
@@ -199,7 +182,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                     id: nanoid(),
                     components: [...new DesignerToolbarSettings()
                       .addSettingsInput({
-    
+
                         id: nanoid(),
                         inputType: 'codeEditor',
                         propertyName: 'style',
@@ -212,6 +195,22 @@ export const getSettings = (data: IAlertComponentProps) => {
                   }
                 })
                 .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityTabId
+              })
+              .toJson()
             ]
           }
         ]
