@@ -276,7 +276,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
         >
           {uploadButton}
         </div>
-        {listType === 'thumbnail' ? <div className="thumbnail-item-name">File name</div> : null}
+        {listType === 'thumbnail' && !hideFileName ? <div className="thumbnail-item-name">File name</div> : null}
       </>
     );
   };
