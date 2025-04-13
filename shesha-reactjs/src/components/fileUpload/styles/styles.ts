@@ -287,6 +287,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: center !important;
       justify-content: center !important;
       font-size: ${fontSize || '14px'} !important;
+
+      .anticon {
+        font-size: ${fontSize || '14px'} !important;
+      width: 100% !important;
+      height: 100% !important;
+      }
     `
   );
 
