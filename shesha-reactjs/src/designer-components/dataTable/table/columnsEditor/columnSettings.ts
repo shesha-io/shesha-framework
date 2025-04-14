@@ -153,18 +153,20 @@ export const getColumnSettings = (data?: any) => ({
                             "inputs": [
                                 {
                                     "id": "anchored1",
-                                    "type": "dropdown",
+                                    "type": "radio",
                                     "propertyName": "anchored",
                                     "label": "Anchored",
                                     "jsSetting": true,
-                                    "dropdownOptions": [
+                                    "buttonGroupOptions": [
                                         {
-                                            "label": "Left",
-                                            "value": "left"
+                                            "title": "Left",
+                                            "value": "left",
+                                            "icon": "LeftOutlined"
                                         },
                                         {
-                                            "label": "Right",
-                                            "value": "right"
+                                            "title": "Right",
+                                            "value": "right",
+                                            "icon": "RightOutlined"
                                         }
                                     ],
                                     "allowClear": true
