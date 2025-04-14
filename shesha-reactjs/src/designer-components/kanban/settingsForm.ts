@@ -695,11 +695,6 @@ export const getSettings = (data: IKanbanProps) => {
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                         inputType: 'codeEditor',
                                         propertyName: 'headerStyles',
@@ -1214,11 +1209,6 @@ export const getSettings = (data: IKanbanProps) => {
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         id: 'column-custom-css-412c-8461-4c8d55e5c073',
                                         inputType: 'codeEditor',
                                         propertyName: 'columnStyle',
