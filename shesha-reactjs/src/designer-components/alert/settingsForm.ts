@@ -190,7 +190,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'customStyle',
-                  label: 'Custom Style',
+                  label: 'Custom Styles',
                   labelAlign: 'right',
                   ghost: true,
                   parentId: appearanceTabId,

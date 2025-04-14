@@ -138,7 +138,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,         
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -172,7 +172,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,         
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -223,7 +223,7 @@ export const getSettings = (data: any) => {
                               parentId: borderStylePnlId,
                               hidden: {
                                 _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,         
+                              } as any,
                               inputs: [
                                 {
                                   type: 'button',
@@ -419,7 +419,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -497,7 +497,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'style',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
@@ -505,7 +505,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({          
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',

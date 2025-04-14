@@ -661,7 +661,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'style',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
@@ -669,7 +669,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({         
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
