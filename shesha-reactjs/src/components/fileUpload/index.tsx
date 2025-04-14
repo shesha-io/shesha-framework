@@ -309,14 +309,15 @@ export const FileUpload: FC<IFileUploadProps> = ({
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible,
             toolbarRender: (original) => {
               return (
                 <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                  <DownloadOutlined
-                    className={styles.antPreviewDownloadIcon}
-                    onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
-                  />
+                  {hideFileName && (
+                    <DownloadOutlined
+                      className={styles.antPreviewDownloadIcon}
+                      onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
+                    />
+                  )}
                   {original}
                 </div>
               );
