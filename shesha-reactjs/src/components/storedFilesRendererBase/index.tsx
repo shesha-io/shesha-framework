@@ -8,7 +8,6 @@ import {
   Upload,
   Image,
   UploadFile,
-  ConfigProvider,
 } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
 import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
@@ -298,36 +297,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   return (
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
       layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
-      <ConfigProvider
-        theme={{
-          components: {
-            Upload: {
-              actionsColor: primaryColor,
-            },
-          },
-        }}
-      >
-        {isStub
-          ? (isDragger
-            ? <Dragger disabled><DraggerStub /></Dragger>
-            : <div
-              className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-            >
-              {renderUploadContent()}
-              {listType !== 'text' && !rest.hideFileName &&
-                <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
-                  {'file name'}
-                </span>}
-            </div>)
-          : (props.disabled
-            ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
-            : isDragger ?
-              <Dragger {...props}>
-                <DraggerStub />
-              </Dragger>
-              : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
-        }
-      </ConfigProvider>
+      {isStub
+        ? (isDragger
+          ? <Dragger disabled><DraggerStub /></Dragger>
+          : <div
+            className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+          >
+            {renderUploadContent()}
+            {listType !== 'text' && !rest.hideFileName &&
+              <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
+                {'file name'}
+              </span>}
+          </div>)
+        : (props.disabled
+          ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
+          : isDragger ?
+            <Dragger {...props}>
+              <DraggerStub />
+            </Dragger>
+            : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
+      }
       {previewImage && (
         <Image
           wrapperStyle={{ display: 'none' }}

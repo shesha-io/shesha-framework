@@ -241,7 +241,7 @@ export const getSettings = (data: any) => {
                               inputType: 'codeEditor',
                               propertyName: 'titleStyle',
                               hideLabel: true,
-                              label: 'Custom Style',
+                              label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .toJson()
@@ -315,7 +315,7 @@ export const getSettings = (data: any) => {
                               inputType: 'codeEditor',
                               propertyName: 'valueStyle',
                               hideLabel: false,
-                              label: 'Custom Style',
+                              label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .toJson()

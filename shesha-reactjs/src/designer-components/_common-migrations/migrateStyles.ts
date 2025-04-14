@@ -72,7 +72,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 weight: prevStyles?.fontWeight as string || defaults?.font?.weight || '400',
             },
             dimensions: {
-                width: prev.block ? '100%' : addPx(prevStyles?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
+                width: prev.block ? '100%' : addPx(prevStyles?.width) || addPx(prev?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
                 height: addPx(prevStyles?.height) || heightFromSize || addPx(prev?.dimensions?.height) || defaults?.dimensions?.height,
                 minHeight: addPx(prev?.dimensions?.minHeight) || defaults?.dimensions?.minHeight,
                 maxHeight: addPx(prev?.dimensions?.maxHeight) || defaults?.dimensions?.maxHeight,
