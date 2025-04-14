@@ -827,7 +827,7 @@ export const getSettings = (data) => {
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: 'borderStylePnl',
+                            parentId: 'entityPickerDividerPnl',
                             inline: true,
                             readOnly: false,
                             inputs: [
