@@ -33,19 +33,21 @@ export const getSettings = () => {
                   label: 'Property name',
                   validate: { required: true },
                   styledLabel: true,
-                  jsSetting: false,
+                  jsSetting: true,
                 })
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
                   label: 'Label',
                   hideLabel: true,
+                  jsSetting: true,
                 })
                 .addSettingsInput({
                   id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
                   propertyName: 'description',
                   label: 'Tooltip',
                   inputType: 'textArea',
+                  jsSetting: true,
                 })
                 .addSettingsInputRow({
                   id: 'b920ef96-ae27-4a01-bfad-list-type',
@@ -67,6 +69,7 @@ export const getSettings = () => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      jsSetting: true,
                     },
                     {
                       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412447',
@@ -79,6 +82,7 @@ export const getSettings = () => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -116,6 +120,7 @@ export const getSettings = () => {
                       propertyName: 'hidden',
                       label: 'Hide',
                       type: 'switch',
+                      jsSetting: true,
                     },
                     {
                       id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
@@ -128,6 +133,7 @@ export const getSettings = () => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -146,6 +152,7 @@ export const getSettings = () => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      jsSetting: true,
                     },
                     {
                       id: '332d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -157,6 +164,7 @@ export const getSettings = () => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      jsSetting: true,
                     },
                   ],
                 })
