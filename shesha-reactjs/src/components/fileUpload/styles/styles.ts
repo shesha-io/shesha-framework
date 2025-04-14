@@ -102,7 +102,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .ant-upload-list-picture-card {
-        height: ${hideFileName ? 'var(--thumbnail-height) )' : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
+        height: ${hideFileName ? 'var(--thumbnail-height)' : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
         padding-bottom: 1rem;
       }
 
