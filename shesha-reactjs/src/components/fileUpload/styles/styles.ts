@@ -257,7 +257,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 4px;
 
       .ant-space {
         display: grid !important;
@@ -281,8 +280,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-radius: ${borderRadius} !important;
       padding: 0 !important;
       background: ${background ?? backgroundImage ?? backgroundColor} !important;
-      width: ${width || '90px'} !important;
-      height: ${height || '90px'} !important;
+      width: ${width || '54px'} !important;
+      height: ${height || '54px'} !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
