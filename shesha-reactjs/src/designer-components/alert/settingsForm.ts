@@ -33,7 +33,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                       type: 'textField',
                       id: nanoid(),
                       propertyName: 'componentName',
-                      label: 'Component name',
+                      label: 'Component Name',
                       size: 'small',
                       jsSetting: true,
                     }
@@ -163,8 +163,40 @@ export const getSettings = (data: IAlertComponentProps) => {
                   ],
                 })
                 .toJson()]
-          }
-          ,
+          },
+          {
+            key: 'appearance',
+            title: 'Appearance',
+            id: appearanceTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'customStyle',
+                  label: 'Custom Styles',
+                  labelAlign: 'right',
+                  ghost: true,
+                  parentId: appearanceTabId,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInput({
+
+                        id: nanoid(),
+                        inputType: 'codeEditor',
+                        propertyName: 'style',
+                        hideLabel: false,
+                        label: 'Style',
+                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                      })
+                      .toJson()
+                    ]
+                  }
+                })
+                .toJson()
+            ]
+          },
           {
             key: 'security',
             title: 'Security',
@@ -179,39 +211,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                 parentId: securityTabId
               })
               .toJson()
-            ]
-          },
-          {
-            key: 'appearance',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addCollapsiblePanel({
-                  id: nanoid(),
-                  propertyName: 'customStyle',
-                  label: 'Custom Style',
-                  labelAlign: 'right',
-                  ghost: true,
-                  parentId: appearanceTabId,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
-                      .addSettingsInput({
-    
-                        id: nanoid(),
-                        inputType: 'codeEditor',
-                        propertyName: 'style',
-                        hideLabel: false,
-                        label: 'Style',
-                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                      })
-                      .toJson()
-                    ]
-                  }
-                })
-                .toJson()
             ]
           }
         ]
