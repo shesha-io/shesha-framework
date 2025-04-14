@@ -61,21 +61,23 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId,
-                permissions: data.permissions,
-                tooltip: "Enter a list of permissions that should be associated with this component"
-              })
-              .toJson()
+            key: 'data',
+            title: 'Data',
+            id: dataTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+
+                  id: nanoid(),
+                  inputType: 'columnsList',
+                  propertyName: 'columns',
+                  label: 'Columns',
+                  labelAlign: 'right',
+                  tooltip: 'Configure columns',
+                  parentId: dataTabId,
+                  size: 'small',
+                })
+                .toJson()
             ]
           },
           {
@@ -523,23 +525,21 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'data',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-
-                  id: nanoid(),
-                  inputType: 'columnsList',
-                  propertyName: 'columns',
-                  label: 'Columns',
-                  labelAlign: 'right',
-                  tooltip: 'Configure columns',
-                  parentId: dataTabId,
-                  size: 'small',
-                })
-                .toJson()
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId,
+                permissions: data.permissions,
+                tooltip: "Enter a list of permissions that should be associated with this component"
+              })
+              .toJson()
             ]
           }
         ]

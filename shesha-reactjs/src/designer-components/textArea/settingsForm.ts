@@ -172,19 +172,104 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
-              })
-              .toJson()
+            key: 'validation',
+            title: 'Validation',
+            id: validationId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'validate.required',
+                  label: 'Required',
+                  inputType: 'switch',
+                  size: 'small',
+                  layout: 'horizontal',
+                  jsSetting: true,
+                  parentId: validationId
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: validationId,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'validate.minLength',
+                      label: 'Min Length',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'validate.maxLength',
+                      label: 'Max Length',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: validationId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: "validate.message",
+                      parentId: validationId,
+                      label: "Message",
+                      validate: {},
+                      version: 3,
+                      type: "textField",
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'codeEditor',
+                      id: nanoid(),
+                      propertyName: 'validate.validator',
+                      label: 'Validator',
+                      labelAlign: 'right',
+                      tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
+                    }
+                  ],
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  parentId: eventsTabId
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  parentId: eventsTabId
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  parentId: eventsTabId
+                })
+                .toJson()
             ]
           },
           {
@@ -687,106 +772,21 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'validation',
-            title: 'Validation',
-            id: validationId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'validate.required',
-                  label: 'Required',
-                  inputType: 'switch',
-                  size: 'small',
-                  layout: 'horizontal',
-                  jsSetting: true,
-                  parentId: validationId
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: validationId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'validate.minLength',
-                      label: 'Min Length',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'validate.maxLength',
-                      label: 'Max Length',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: validationId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: "validate.message",
-                      parentId: validationId,
-                      label: "Message",
-                      validate: {},
-                      version: 3,
-                      type: "textField",
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'codeEditor',
-                      id: nanoid(),
-                      propertyName: 'validate.validator',
-                      label: 'Validator',
-                      labelAlign: 'right',
-                      tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
-                    }
-                  ],
-                })
-                .toJson()
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
+              })
+              .toJson()
             ]
-          },
-          {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: eventsTabId
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onFocusCustom',
-                  label: 'On Focus',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                  parentId: eventsTabId
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onBlurCustom',
-                  label: 'On Blur',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
-                  parentId: eventsTabId
-                })
-                .toJson()
-            ]
-          },
+          }
         ]
       })
       .toJson(),
