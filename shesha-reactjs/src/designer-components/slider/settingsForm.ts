@@ -48,7 +48,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     type:'editModeSelector',
@@ -78,7 +77,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     type: 'numberField',
@@ -92,7 +90,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     type: 'numberField',

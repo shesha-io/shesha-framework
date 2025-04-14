@@ -107,7 +107,8 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     ...(['dashed', 'default'].includes(item.buttonType) && backgroundStyles),
     ...(['primary', 'default'].includes(item.buttonType) && shadowStyles),
     ...jsStyle,
-    ...stylingBoxAsCSS
+    ...stylingBoxAsCSS,
+    justifyContent: font?.align,
   };
 
   return (

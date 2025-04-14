@@ -82,6 +82,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: 
         ...(['primary', 'default'].includes(buttonType) && shadowStyles),
         ...(['dashed', 'default'].includes(buttonType) && getBackgroundStyle(background, jsStyle, imageUrl)),
         ...jsStyle,
+        justifyContent: font?.align,
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
@@ -167,7 +168,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
                     type={item.buttonType}
                     title={item.tooltip}
                     disabled={item.readOnly}
-
+                    className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
                 >
                     {item.label ? item.label : undefined}
                     {item.downIcon ? <ShaIcon iconName={item.downIcon as IconType} /> : undefined}
@@ -313,6 +314,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                 ...(['primary', 'default'].includes(item.buttonType) && shadowStyles),
                 ...(['dashed', 'default'].includes(item.buttonType) && backgroundStyle),
                 ...jsStyle,
+                justifyContent: font?.align,
             };
 
             return prepareItem({ ...item, styles: newStyles }, disabled);
