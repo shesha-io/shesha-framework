@@ -8,7 +8,7 @@ import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
-import { ConfigProvider, Tabs, TabsProps } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
@@ -164,17 +164,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     }, [tabs]);
 
     return model.hidden ? null : (
-      <ConfigProvider
-        theme={{
-          components: {
-            Tabs: {
-              titleFontSize: font.size
-            }
-          },
-        }}
-      >
-        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
-      </ConfigProvider>
+      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
     );
   },
   initModel: (model) => {
