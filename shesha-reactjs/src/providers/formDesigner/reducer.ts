@@ -250,7 +250,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
         nestedComponents[clone.id] = clone;
 
-        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === component.type);
+        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c?.type === component.type);
         const containers = toolboxComponent?.customContainerNames ?? [];
 
         const { formFlatMarkup } = state;
