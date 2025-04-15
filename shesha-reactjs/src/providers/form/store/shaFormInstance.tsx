@@ -442,11 +442,10 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.isSettingsForm = isSettingsForm;
 
         // ToDo: AS - recheck if data initialization is ok before markup initialization
-
-        await this.loadFormByRawMarkupAsync();
-
         this.initialValues = initialValues;
         this.formData = initialValues;
+
+        await this.loadFormByRawMarkupAsync();
 
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);

@@ -76,12 +76,25 @@ export class StorageArrayProperty extends Array implements IStorageProxy {
         super();
         this.accessor = new StorageProxyAccessor(onChange, initialData);
 
-        if (Array.isArray(initialData)) {
+        /*if (Array.isArray(initialData)) {
           this[Symbol.iterator] = () => {
-            const data = this.accessor.getData();
+            const data = this.accessor.getData() as Array<any>;
             let index = 0;
             return {
-                [Symbol.iterator]: null,
+                [Symbol.iterator]: data[Symbol.iterator],
+                [Symbol.toStringTag]: data[Symbol.toStringTag],
+                [Symbol.dispose]: data[Symbol.dispose],
+                map: data.map,
+                filter: data.filter,
+                take: (data as any).take,
+                drop: (data as any).drop,
+                flatMap: data.flatMap,
+                reduce: data.reduce,
+                toArray: (data as any).toArray,
+                forEach: data.forEach,
+                some: data.some,
+                every: data.every,
+                find: data.find,
                 next() {
                     const result = {
                         value: data[index],
@@ -92,7 +105,7 @@ export class StorageArrayProperty extends Array implements IStorageProxy {
                 }
             };
           };
-        }
+        }*/
     }
 }
 
