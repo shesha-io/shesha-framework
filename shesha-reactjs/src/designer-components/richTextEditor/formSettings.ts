@@ -47,7 +47,16 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   parentId: commonTabId,
                   propertyName: 'hideLabel',
+                  hideLabel: true,  
                   label: 'Label',
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'textField',
+                  propertyName: 'placeholder',
+                  label: 'Placeholder',
+                  parentId: commonTabId,
                   jsSetting: true,
                 })
                 .addSettingsInputRow({
@@ -71,14 +80,6 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'textField',
-                  propertyName: 'placeholder',
-                  label: 'Placeholder',
-                  parentId: commonTabId,
-                  jsSetting: true,
-                })
                 .toJson(),
             ],
           },
@@ -96,14 +97,14 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'saveHeightInStorage',
-                      label: 'Save height in storage',
+                      label: 'Save Height In Storage',
                       jsSetting: true,
                     },
                     {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'saveModeInStorage',
-                      label: 'Save mode in storage',
+                      label: 'Save Mode In Storage',
                       jsSetting: true,
                     },
                   ],
@@ -116,14 +117,14 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'askBeforePasteHTML',
-                      label: 'Ask before paste HTML',
+                      label: 'Ask Before Paste HTML',
                       jsSetting: true,
                     },
                     {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'askBeforePasteFromWord',
-                      label: 'Ask before paste from Word/Excel',
+                      label: 'Ask Before Paste From Word/Excel',
                       jsSetting: true,
                     },
                   ],
@@ -132,7 +133,7 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   inputType: 'dropdown',
                   propertyName: 'defaultActionOnPaste',
-                  label: 'Default insert method',
+                  label: 'Default Insert Method',
                   parentId: stateTabId,
                   jsSetting: true,
                   dropdownOptions: [
@@ -159,7 +160,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'toolbar',
-                      label: 'Show toolbar?',
+                      label: 'Show Toolbar?',
                       defaultValue: true,
                       jsSetting: true,
                     },
@@ -167,7 +168,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'textIcons',
-                      label: 'Text icons?',
+                      label: 'Text Icons?',
                       defaultValue: false,
                       jsSetting: true,
                     },
@@ -215,7 +216,7 @@ export const getSettings = (data: any) => {
                       type: 'numberField',
                       id: nanoid(),
                       propertyName: 'toolbarStickyOffset',
-                      label: 'Sticky offset',
+                      label: 'Sticky Offset',
                       min: 0,
                       jsSetting: true,
                       hidden: {
@@ -234,7 +235,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'autofocus',
-                      label: 'Auto-focus',
+                      label: 'Auto-Focus',
                       defaultValue: false,
                       jsSetting: true,
                     },
@@ -242,7 +243,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'useSearch',
-                      label: 'Use search',
+                      label: 'Use Search',
                       defaultValue: true,
                       jsSetting: true,
                     },
@@ -256,7 +257,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'iframe',
-                      label: 'Iframe mode',
+                      label: 'Iframe Mode',
                       defaultValue: false,
                       jsSetting: true,
                     },
@@ -264,7 +265,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'spellcheck',
-                      label: 'Spell-check',
+                      label: 'Spell-Check',
                       defaultValue: false,
                       jsSetting: true,
                     },
@@ -300,7 +301,7 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   inputType: 'dropdown',
                   propertyName: 'defaultMode',
-                  label: 'Default mode',
+                  label: 'Default Mode',
                   parentId: optionsTabId,
                   jsSetting: true,
                   dropdownOptions: [
@@ -318,7 +319,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'showCharsCounter',
-                      label: 'Show characters counter',
+                      label: 'Show Characters Counter',
                       defaultValue: true,
                       jsSetting: true,
                     },
@@ -326,7 +327,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'showWordsCounter',
-                      label: 'Show words counter',
+                      label: 'Show Words Counter',
                       defaultValue: true,
                       jsSetting: true,
                     },
@@ -340,7 +341,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'showXPathInStatusbar',
-                      label: 'Show path to selected element',
+                      label: 'Show Path To Selected Element',
                       defaultValue: true,
                       jsSetting: true,
                     },
@@ -348,153 +349,8 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'insertImageAsBase64URI',
-                      label: 'Insert image as Base64 URI',
+                      label: 'Insert Image As Base64 URI',
                       defaultValue: false,
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'sizes',
-            title: 'Sizes',
-            id: sizesTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: sizesTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'autoHeight',
-                      label: 'Auto height',
-                      defaultValue: true,
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: sizesTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'allowResizeY',
-                      label: 'Allow Height resize',
-                      defaultValue: true,
-                      jsSetting: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.autoHeight);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'height',
-                      label: 'Height(px)',
-                      min: 0,
-                      jsSetting: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.autoHeight);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: sizesTabId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'minHeight',
-                      label: 'Min height(px)',
-                      min: 0,
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'maxHeight',
-                      label: 'Max height(px)',
-                      min: 0,
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: sizesTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'autoWidth',
-                      label: 'Auto width',
-                      defaultValue: true,
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: sizesTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'allowResizeX',
-                      label: 'Allow Width resize',
-                      defaultValue: true,
-                      jsSetting: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.autoWidth);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'width',
-                      label: 'Width(px)',
-                      min: 0,
-                      jsSetting: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.autoWidth);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: sizesTabId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'minWidth',
-                      label: 'Min width(px)',
-                      min: 0,
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'maxWidth',
-                      label: 'Max width(px)',
-                      min: 0,
                       jsSetting: true,
                     },
                   ],
@@ -512,10 +368,10 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   inputType: 'dropdown',
                   propertyName: 'disablePlugins',
-                  label: 'Disabled plugins',
+                  label: 'Disabled Plugins',
                   parentId: pluginsTabId,
                   jsSetting: true,
-                  mode: 'multiple',
+                  dropdownMode: 'multiple',
                   //allowSearch: true,
                   dropdownOptions: [
                     { label: 'add-new-line', value: 'add-new-line' },
@@ -617,6 +473,109 @@ export const getSettings = (data: any) => {
                           { label: 'Dark', value: 'dark' },
                         ],
                         defaultValue: ['default'],
+                      })
+                      .addCollapsiblePanel({
+                        id: 'dimensionsStyleCollapsiblePanel',
+                        propertyName: 'pnlDimensions',
+                        label: 'Dimensions',
+                        parentId: 'styleRouter',
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: 'dimensionsStylePnl',
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: sizesTabId,
+                                inputs: [
+                                  {
+                                    type: 'switch',
+                                    id: nanoid(),
+                                    propertyName: 'autoHeight',
+                                    label: 'Auto height',
+                                    jsSetting: true,
+                                  },
+                                  {
+                                    type: 'switch',
+                                    id: nanoid(),
+                                    propertyName: 'autoWidth',
+                                    label: 'Auto width',
+                                    jsSetting: true,
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: 'dimensionsStyleRowWidth',
+                                parentId: 'dimensionsStylePnl',
+                                inputs: [
+                                  {
+                                    type: 'switch',
+                                    id: nanoid(),
+                                    propertyName: 'allowResizeX',
+                                    label: 'Allow Width resize',
+                                    defaultValue: true,
+
+                                    jsSetting: true,
+                                    hidden: {
+                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Width',
+                                    width: 85,
+                                    propertyName: 'width',
+                                    icon: 'widthIcon',
+                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                    hidden: {
+                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: 'dimensionsStyleRowHeight',
+                                parentId: 'dimensionsStylePnl',
+                                inputs: [
+                                  {
+                                    type: 'switch',
+                                    id: nanoid(),
+                                    propertyName: 'allowResizeY',
+                                    label: 'Allow Height resize',
+                                    defaultValue: true,
+                                    jsSetting: true,
+                                    hidden: {
+                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Height',
+                                    width: 85,
+                                    propertyName: 'height',
+                                    icon: 'heightIcon',
+                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                    hidden: {
+                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                ],
+                              })
+                              .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
