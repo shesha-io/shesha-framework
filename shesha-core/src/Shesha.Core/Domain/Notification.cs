@@ -43,5 +43,10 @@ namespace Shesha.Domain
         /// 
         /// </summary>
         public virtual NotificationTopic NotificationTopic { get; set; }
+
+        /// <summary>
+        /// Notification category (any string reference that can be used for analysys)
+        /// </summary>
+        public string Category { get; set; } = string.Empty;
     }
 }
