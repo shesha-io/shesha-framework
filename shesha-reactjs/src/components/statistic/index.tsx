@@ -11,30 +11,39 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
   const { styles } = useStyles({
     token: {
       fontSize: rest.valueStyle?.fontSize,
-    }
+    },
   });
 
-  const marginStyles = {
-    margin: rest.style.margin,
-    marginRight: rest.style.marginRight,
-    marginLeft: rest.style.marginLeft,
-    marginTop: rest.style.marginTop,
-    marginBottom: rest.style.marginBottom,
-  };
-  
-  const restStyle = { ...rest.style };
-  delete restStyle.margin;
-  delete restStyle.marginRight;
-  delete restStyle.marginLeft;
-  delete restStyle.marginTop;
-  delete restStyle.marginBottom;
-  
+  const marginStyles = rest.style
+    ? {
+        margin: rest.style.margin,
+        marginRight: rest.style.marginRight,
+        marginLeft: rest.style.marginLeft,
+        marginTop: rest.style.marginTop,
+        marginBottom: rest.style.marginBottom,
+      }
+    : {};
 
-  return (<div className={classNames(styles['container-div-zero-padding-margin'], styles['content-box'])} onClick={e => rest.onClick(e)} style={{
-    ...marginStyles,
-  }}>
-    <Statistic className={classNames(styles.shaStatistic, className)} {...{...rest, style: restStyle}} />
-  </div>);
+  const restStyle = rest.style ? { ...rest.style } : {};
+  if (restStyle) {
+    delete restStyle.margin;
+    delete restStyle.marginRight;
+    delete restStyle.marginLeft;
+    delete restStyle.marginTop;
+    delete restStyle.marginBottom;
+  }
+
+  return (
+    <div
+      className={classNames(styles['container-div-zero-padding-margin'], styles['content-box'])}
+      onClick={rest.onClick ? (e) => rest.onClick(e) : undefined}
+      style={{
+        ...marginStyles,
+      }}
+    >
+      <Statistic className={classNames(styles.shaStatistic, className)} {...{ ...rest, style: restStyle }} />
+    </div>
+  );
 };
 
 export default ShaStatistic;
