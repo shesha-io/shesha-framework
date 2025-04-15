@@ -10,7 +10,7 @@ import {
 } from '@/interfaces';
 import { UndoableActionCreators } from '@/utils/undoable';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
-import { IFlatComponentsStructure, IFormSettings } from '../form/models';
+import { FormMode, IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { IComponentSettingsEditorsCache, IDataSource } from '../formDesigner/models';
 import {
   addDataSourceAction,
@@ -27,6 +27,7 @@ import {
   setActiveDataSourceAction,
   setDebugModeAction,
   setFlatComponentsAction,
+  setFormModeAction,
   setReadOnlyAction,
   setSelectedComponentAction,
   setValidationErrorsAction,
@@ -53,6 +54,7 @@ import {
 } from './contexts';
 import formReducer from './reducer';
 import { useCallback } from 'react';
+import { useContextSelector } from 'use-context-selector';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -241,6 +243,10 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(setActiveDataSourceAction(datasourceId));
   }, [dispatch]);
 
+  const setFormMode = useCallback((value: FormMode) => {
+    dispatch(setFormModeAction(value));
+  }, [dispatch]);
+
   //#endregion
 
   const configurableFormActions: IFormDesignerActionsContext = useMemo(() => {
@@ -267,7 +273,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       removeDataSource,
       setActiveDataSource,
       setReadOnly,
-
+      setFormMode,
       getCachedComponentEditor,
     };
   }, [
@@ -307,8 +313,12 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   );
 };
 
+function useFormDesignerStateSelector(selector: (state: IFormDesignerStateContext) => any) {
+  return useContextSelector(FormDesignerStateContext, selector);
+}
+
 function useFormDesignerState(require: boolean = true) {
-  const context = useContext(FormDesignerStateContext);
+  const context = useContextSelector(FormDesignerStateContext, state => state);
 
   if (require && context === undefined) {
     throw new Error('useFormDesignerState must be used within a FormDesignerProvider');
@@ -340,4 +350,4 @@ function useFormDesignerUndoableState(require: boolean = true) {
   };
 }
 
-export { FormDesignerProvider, useFormDesignerUndoableState, useFormDesignerActions, useFormDesignerState };
+export { FormDesignerProvider, useFormDesignerUndoableState, useFormDesignerActions, useFormDesignerState, useFormDesignerStateSelector };

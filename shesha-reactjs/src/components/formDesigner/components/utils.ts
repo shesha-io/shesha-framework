@@ -43,7 +43,7 @@ export interface ICustomAddressEventHandler extends ICustomEventHandler {
   onSelect: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>;
 };
 
-type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
+export type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
 
 export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): EventHandlerAttributes<T> => {
   const onCustomEvent = (event: any, key: string) => {
@@ -57,9 +57,7 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
     onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
     onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
     onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
-    onClick: (event) => {
-      onCustomEvent(event, 'onClickCustom');
-    },
+    onClick: (event) => onCustomEvent(event, 'onClickCustom'),
   };
 };
 
@@ -90,10 +88,8 @@ export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComp
   },
 });
 
-export const customOnChangeValueEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext, changeEvent: Function = null) => ({
+export const customOnChangeValueEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext) => ({
   onChange: (value: any) => {
-    if (typeof changeEvent === 'function')
-      changeEvent(value);
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, {value}));

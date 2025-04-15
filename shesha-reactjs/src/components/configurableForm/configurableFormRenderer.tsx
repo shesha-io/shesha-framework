@@ -11,7 +11,7 @@ import { Button, Form, Result } from 'antd';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IConfigurableFormRendererProps } from './models';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useSheshaApplication } from '@/providers';
 import { useStyles } from './styles/styles';
 import Link from 'next/link';
@@ -39,9 +39,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  
-
-  const { isDragging = false } = useFormDesignerState(false) ?? {};
+  const isDragging = useFormDesignerStateSelector(x => x.isDragging) ?? false;
 
   const onValuesChangeInternal = (_changedValues: any, values: any) => {
     shaForm.setFormData({ values: values, mergeValues: true });
