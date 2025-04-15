@@ -225,7 +225,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 allowClear={props.allowClear ?? true}
             />;
         case 'contextPropertyAutocomplete':
-            return <ContextPropertyAutocomplete {...{ ...props }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
+            return <ContextPropertyAutocomplete 
+              {...{ ...props }} 
+              style={{}}
+              readOnly={readOnly} 
+              defaultModelType="defaultType"
+              id="contextPropertyAutocomplete" 
+              componentName={formData.componentName}
+              propertyName={formData.propertyName}
+              contextName={formData.context}
+            />;
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}

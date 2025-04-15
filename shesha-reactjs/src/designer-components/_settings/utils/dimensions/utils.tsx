@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
 import { addPx } from "@/utils/style";
@@ -7,7 +7,7 @@ const getDimension = (main: string | number, left: any, right: any) => {
   return `calc(${addPx(main)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: React.CSSProperties) => {
+export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties): CSSProperties => {
   return {
     width: dimensions?.width
       ? getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight)

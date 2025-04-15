@@ -2,6 +2,7 @@ import { CSSProperties, useMemo, useRef, useState } from "react";
 import { 
   IApplicationContext,
   IConfigurableFormComponent,
+  IFormComponentStyles,
   IStyleType,
   executeScriptSync,
   getActualModel,
@@ -165,11 +166,14 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
   return actualDataRef.current;
 };
 
-export const useModelAppearanceStyles = (model: IStyleType & IConfigurableFormComponent): CSSProperties => {
+export const useModelAppearanceStyles = <TModel,>(
+  model: TModel & IStyleType & IConfigurableFormComponent,
+  calculateStyle?: (model: TModel, styles: IFormComponentStyles) => CSSProperties
+): CSSProperties => {
   
   const app = useSheshaApplication();
 
-  const { dimensions, border, font, shadow, background, stylingBox, jsStyle, } = model;
+  const { dimensions, border, font, shadow, background, stylingBox, jsStyle } = model;
   
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile' 
@@ -199,18 +203,25 @@ export const useModelAppearanceStyles = (model: IStyleType & IConfigurableFormCo
         });
   }, [background, jsStyle, app.backendUrl, app.httpHeaders]);
 
-  const finalStyle = useMemo(()=> {
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles
-    });
-  
-    return removeUndefinedProps({ ...additionalStyles, fontWeight: additionalStyles.fontWeight || 400 });
-  }, [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles]);
+  const finalStyle = useMemo(()=> removeUndefinedProps(
+    calculateStyle
+    ? calculateStyle(model, {
+      stylingBoxAsCSS,
+      dimensionsStyles,
+      borderStyles,
+      fontStyles,
+      backgroundStyles,
+      shadowStyles,
+    })
+    : {
+    ...stylingBoxAsCSS,
+    ...dimensionsStyles,
+    ...borderStyles,
+    ...fontStyles,
+    ...backgroundStyles,
+    ...shadowStyles,
+    fontWeight: fontStyles.fontWeight || 400
+  }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles]);
 
   return finalStyle;
 };

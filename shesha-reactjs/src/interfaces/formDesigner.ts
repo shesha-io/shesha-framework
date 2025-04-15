@@ -1,7 +1,7 @@
 import { ColProps, FormInstance } from 'antd';
 import { FormLayout } from 'antd/lib/form/Form';
 import { InternalNamePath } from 'rc-field-form/lib/interface';
-import { FC, MutableRefObject, ReactNode } from 'react';
+import { CSSProperties, FC, MutableRefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
   FormMarkup,
@@ -56,6 +56,15 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
   form: FormInstance;
 }
 
+export interface IFormComponentStyles {
+  stylingBoxAsCSS: CSSProperties;
+  dimensionsStyles: CSSProperties;
+  borderStyles: CSSProperties;
+  fontStyles: CSSProperties;
+  backgroundStyles: CSSProperties;
+  shadowStyles: CSSProperties;
+}
+
 export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
 
 export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
@@ -95,6 +104,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
    * Component factory. Renders the component according to the passed model (props)
    */
   Factory?: FormFactory<TModel, TCalculatedModel>;
+  calculateStyle?: (model: TModel, styles: IFormComponentStyles) => CSSProperties;
   /**
    * A Hook for calculating component-specific values (executed before calculateModel)
    * @param model - component model

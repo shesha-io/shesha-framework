@@ -255,6 +255,7 @@ export interface IConfigurableFormComponent
 
   jsStyle?: CSSProperties;
   appearanceStyle?: CSSProperties;
+  fullStyle?: CSSProperties;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

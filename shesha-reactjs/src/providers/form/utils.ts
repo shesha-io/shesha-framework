@@ -1528,7 +1528,7 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): { [key: string]: any } => {
+export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): CSSProperties => {
   let style = {};
 
   if (!args.length) {

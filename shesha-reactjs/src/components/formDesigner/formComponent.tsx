@@ -6,7 +6,7 @@ import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
-import { useActualContextData, useActualContextExecution, useCalculatedModel } from '@/index';
+import { useActualContextData, useActualContextExecution, useCalculatedModel, useDeepCompareMemo } from '@/index';
 import { useModelAppearanceStyles } from '@/hooks/formComponentHooks';
 import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
 
@@ -63,10 +63,11 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     actualModel.propertyName = undefined;
 
   actualModel.jsStyle = useActualContextExecution(actualModel.style, null, {}); // use default style if empty or error
+  actualModel.appearanceStyle = useModelAppearanceStyles(actualModel, toolboxComponent?.calculateStyle);
+  actualModel.fullStyle = useDeepCompareMemo(() => ({...actualModel.appearanceStyle, ...actualModel.jsStyle}), [actualModel.appearanceStyle, actualModel.jsStyle]);
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
   
-  actualModel.appearanceStyle = useModelAppearanceStyles(actualModel);
 
   const control = useMemo(() => (
     <toolboxComponent.Factory 
@@ -99,7 +100,8 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     }
   }  
 
-  return control;
+  if (shaForm.form.settings.isSettingsForm)
+    return control;
 
   const attributes = {
     'data-sha-c-id': `${componentModel.id}`,
