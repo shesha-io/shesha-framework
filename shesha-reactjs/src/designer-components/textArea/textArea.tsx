@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
-import { ConfigProvider, Input } from 'antd';
+import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import {
@@ -35,6 +35,7 @@ import { useSheshaApplication } from '@/providers';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { useStyles } from './styles';
 
 interface IJsonTextAreaProps {
   value?: any;
@@ -74,6 +75,15 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+
+
+    const { styles } = useStyles({
+      fontWeight: font?.weight,
+      fontFamily: font?.type,
+      textAlign: jsStyle.textAlign,
+      color: jsStyle.color,
+      fontSize: jsStyle.fontSize,
+    });
 
     useEffect(() => {
       const fetchStyles = async () => {
@@ -122,8 +132,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, ...jsStyle });
 
+
     const textAreaProps: TextAreaProps = {
-      className: 'sha-text-area',
+      className: `sha-text-area ${styles.textArea}`,
       placeholder: model.placeholder,
       autoSize: model.autoSize ? { minRows: 2 } : false,
       showCount: model.showCount,
@@ -168,26 +179,15 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           ) : model.readOnly ? (
             <ReadOnlyDisplayFormItem value={value} />
           ) : (
-            <ConfigProvider
-              theme={{
-                components: {
-                  Input: {
-                    fontFamily: model?.font?.type,
-                    fontSize: model?.font?.size,
-                    fontWeightStrong: Number(fontStyles.fontWeight)
-                  },
-                },
-              }}
-            >
-              <Input.TextArea
-                rows={2}
-                {...textAreaProps}
-                disabled={model.readOnly}
-                {...customEvents}
-                value={value}
-                onChange={onChangeInternal}
-              />
-            </ConfigProvider>
+            <Input.TextArea
+              rows={2}
+              {...textAreaProps}
+              disabled={model.readOnly}
+              {...customEvents}
+              className=''
+              value={value}
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>

@@ -43,7 +43,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
@@ -67,7 +66,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
@@ -102,7 +100,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'switch',
@@ -160,7 +157,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'colorPicker',
@@ -183,7 +179,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'dropdown',
@@ -218,7 +213,6 @@ export const getSettings = (data: any) => {
                                 tooltip: 'The canvas width of the circular progress, unit: px',
                                 hidden: { _code: 'return !["circle", "dashboard"].includes(getSettingValue(data?.progressType));', _mode: 'code', _value: false },
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ]
@@ -244,12 +238,10 @@ export const getSettings = (data: any) => {
                                 tooltip: 'The total step count',
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
@@ -265,7 +257,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "circle";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
@@ -281,7 +272,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "dashboard";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
@@ -328,7 +318,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -339,8 +328,7 @@ export const getSettings = (data: any) => {
                                     description: 'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
                                     mode: 'dialog',
                                     jsSetting: true,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  },
+                                      },
                                   {
                                     id: nanoid(),
                                     propertyName: 'format',
@@ -354,8 +342,7 @@ export const getSettings = (data: any) => {
                                       `{ name: 'successPercent', description: 'Success percentage', type: 'number' }`
                                     ],
                                     jsSetting: true,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  }
+                                      }
                                 ]
                               })
                               .toJson()
@@ -385,7 +372,6 @@ export const getSettings = (data: any) => {
                                   `{ name: 'data', description: 'Form values', type: 'object' }`
                                 ],
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ]

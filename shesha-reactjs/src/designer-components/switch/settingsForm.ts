@@ -56,12 +56,10 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: `return getSettingValue(data.readOnly)`, _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'editModeSelector',
@@ -86,19 +84,19 @@ export const getSettings = (data: ISwitchComponentProps) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  parentId: eventsTabId
                 })
                 .toJson()
             ]
@@ -140,8 +138,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                               id: nanoid(),
                               parentId: 'dimensionsStylePnl',
                               inline: true,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
+                                          inputs: [
                                 {
                                   type: 'dropdown',
                                   id: nanoid(),
@@ -162,7 +159,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
                         propertyName: 'customStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: 'styleRouter',
@@ -171,7 +168,6 @@ export const getSettings = (data: ISwitchComponentProps) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
@@ -189,20 +185,18 @@ export const getSettings = (data: ISwitchComponentProps) => {
             ]
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: eventsTabId
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  parentId: securityTabId,
                 })
                 .toJson()
             ]

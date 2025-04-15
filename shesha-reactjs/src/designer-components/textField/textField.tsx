@@ -1,5 +1,5 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { ConfigProvider, Input } from 'antd';
+import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -56,7 +56,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
+    const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
     const dimensions = model?.dimensions;
     const border = model?.border;
     const font = model?.font;
@@ -142,22 +142,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               onChange(...args);
           };
 
-          return <ConfigProvider
-            theme={{
-              components: {
-                Input: {
-                  fontFamily: model?.font?.type,
-                  fontSize: model?.font?.size,
-                  fontWeightStrong: Number(fontStyles.fontWeight)
-                },
-              },
-            }}
-          >
+          return <>
             {inputProps.readOnly
               ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
               : <InputComponentType {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
             }
-          </ConfigProvider>;
+          </>;
         }}
       </ConfigurableFormItem>
     );

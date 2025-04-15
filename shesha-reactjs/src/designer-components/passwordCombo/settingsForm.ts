@@ -52,7 +52,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                     _mode: 'code',
                                     _value: false
                                 } as any,
-                                readOnly: false,
                                 inputs: [{
                                     type: 'textField',
                                     id: 'confirmLabel',
@@ -96,7 +95,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'editModeSelector',
@@ -125,7 +123,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                         id: '6eBJvoll3xtLJxdvOAlnB',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
                                 propertyName: 'validate.required',
                                 label: 'Required',
@@ -157,7 +154,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                         jsSetting: true,
                                     },
                                 ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: 'Scip2BCqWk6HniFIJTgtA',
@@ -180,7 +176,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                         tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
                                     }
                                 ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ]
@@ -221,7 +216,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         parentId: 'fontStylePnl',
                                                         inline: true,
                                                         propertyName: 'font',
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'dropdown',
@@ -286,7 +280,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         id: 'dimensionsStyleRowWidth',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
@@ -322,7 +315,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         id: 'dimensionsStyleRowHeight',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
@@ -372,7 +364,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         id: `borderStyleRow`,
                                                         parentId: 'borderStylePnl',
                                                         hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'button',
@@ -420,7 +411,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
                                                             buttonGroupOptions: backgroundTypeOptions,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-color",
@@ -434,7 +424,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-gradientColors",
@@ -449,7 +438,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             ],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                             hideLabel: true,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-url",
@@ -462,7 +450,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 label: "URL",
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-image",
@@ -475,13 +462,11 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-storedFile",
                                                             parentId: 'backgroundStylePnl',
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     type: 'textField',
@@ -497,7 +482,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     type: 'customDropdown',
@@ -522,7 +506,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         .addSettingsInputRow({
                                                             id: 'backgroundStyleRow-repeat',
                                                             parentId: 'backgroundStyleRow',
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [{
                                                                 type: 'radio',
                                                                 id: 'backgroundStyleRow-repeat-radio',
@@ -553,7 +536,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         id: 'shadowStyleRow',
                                                         parentId: 'shadowStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'numberField',
@@ -631,7 +613,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -640,7 +622,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                 id: 'stylePnl-M500-911MFR',
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
@@ -660,7 +641,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                                 inputType: 'permissions',
                                 propertyName: 'permissions',

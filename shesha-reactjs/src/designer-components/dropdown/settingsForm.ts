@@ -64,12 +64,10 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         jsSetting: true,
                                     },
                                 ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: '5c813b1a-04c5-7758-ac0f-cbcbae6b3bd4',
@@ -209,7 +207,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         ],
                                     })
                                     .addSettingsInput({
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                         id: '16ab0599-914d-4d2d-875c-765a495472f8',
                                         inputType: 'codeEditor',
                                         propertyName: 'incomeCustomJs',
@@ -224,7 +221,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         } as any,
                                     })
                                     .addSettingsInput({
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                         id: '16ab0599-914d-4d2d-875c-765a495472g9',
                                         inputType: 'codeEditor',
                                         propertyName: 'outcomeCustomJs',
@@ -239,7 +235,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         } as any,
                                     })
                                     .addSettingsInput({
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                         id: '16ab0500-914d-4d2d-875c-765a495472g9',
                                         inputType: 'codeEditor',
                                         propertyName: 'labelCustomJs',
@@ -251,7 +246,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     .addSettingsInput({
                                         id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534x0',
                                         parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                         inputType: 'switch',
                                         propertyName: 'disableItemValue',
                                         tooltip: 'Disable reference list from selection',
@@ -307,7 +301,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 mode: 'dialog',
                             })
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '03959ffd-cadb-496c-bf6d-b742f7f6edc5',
                                 hidden: {
                                     _code: 'return  !getSettingValue(data.disableItemValue);',
@@ -333,7 +326,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         id: '6eBJvoll3xtLJxdvOAlnB',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
                                 inputType: 'switch',
                                 propertyName: 'validate.required',
@@ -352,7 +344,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         id: 'Cc47W08MWrKdhoGqFKMI2',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
                                 inputType: 'codeEditor',
                                 propertyName: 'onChangeCustom',
@@ -400,7 +391,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         parentId: 'fontStylePnl',
                                                         inline: true,
                                                         propertyName: 'font',
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'dropdown',
@@ -410,14 +400,14 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 hideLabel: true,
                                                                 dropdownOptions: fontTypes,
                                                             },
-                                                            // {
-                                                            //     type: 'numberField',
-                                                            //     id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
-                                                            //     label: 'Size',
-                                                            //     propertyName: 'font.size',
-                                                            //     hideLabel: true,
-                                                            //     width: 50,
-                                                            // },
+                                                            {
+                                                                type: 'numberField',
+                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Size',
+                                                                propertyName: 'font.size',
+                                                                hideLabel: true,
+                                                                width: 50,
+                                                            },
                                                             {
                                                                 type: 'dropdown',
                                                                 id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
@@ -428,13 +418,13 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 dropdownOptions: fontWeights,
                                                                 width: 100,
                                                             },
-                                                            // {
-                                                            //     type: 'colorPicker',
-                                                            //     id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
-                                                            //     label: 'Color',
-                                                            //     hideLabel: true,
-                                                            //     propertyName: 'font.color',
-                                                            // },
+                                                            {
+                                                                type: 'colorPicker',
+                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Color',
+                                                                hideLabel: true,
+                                                                propertyName: 'font.color',
+                                                            },
                                                             {
                                                                 type: 'dropdown',
                                                                 id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
@@ -471,7 +461,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
                                                             buttonGroupOptions: backgroundTypeOptions,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-color",
@@ -485,7 +474,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-gradientColors",
@@ -500,7 +488,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                             ],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                             hideLabel: true,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-url",
@@ -513,7 +500,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 label: "URL",
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-image",
@@ -526,13 +512,11 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-storedFile",
                                                             parentId: 'backgroundStylePnl',
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     type: 'textField',
@@ -548,7 +532,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     type: 'customDropdown',
@@ -573,7 +556,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         .addSettingsInputRow({
                                                             id: 'backgroundStyleRow-repeat',
                                                             parentId: 'backgroundStyleRow',
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [{
                                                                 type: 'radio',
                                                                 id: 'backgroundStyleRow-repeat-radio',
@@ -604,7 +586,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: 'dimensionsStyleRowWidth',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
@@ -640,7 +621,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: 'dimensionsStyleRowHeight',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
@@ -690,7 +670,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: `borderStyleRow`,
                                                         parentId: 'borderStylePnl',
                                                         hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'button',
@@ -732,7 +711,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: 'shadowStyleRow',
                                                         parentId: 'shadowStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'numberField',
@@ -810,7 +788,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -819,7 +797,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                 id: 'stylePnl-M500-911MFR',
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
@@ -840,7 +817,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                                 inputType: 'permissions',
                                 propertyName: 'permissions',

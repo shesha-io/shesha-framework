@@ -48,8 +48,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                         parentId: 's4gmBg31azZC0UjZjpfTm',
-                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                        inputs: [
+                              inputs: [
                           {
                             id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                             parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -58,8 +57,7 @@ export const getSettings = (data: any) => {
                             label: 'Tooltip',
                             jsSetting: true,
                             hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                          },
+                                    },
                         ],
                       }).toJson(),
                   ]
@@ -67,7 +65,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'orientation-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: 'orientation-s4gmBg31azZC0UjZjpfTm',
@@ -101,7 +98,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'switch',
@@ -154,11 +150,6 @@ export const getSettings = (data: any) => {
                                 parentId: 'fontStylePnlline',
                                 inline: true,
                                 propertyName: 'lineFont',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'numberField',
@@ -224,11 +215,6 @@ export const getSettings = (data: any) => {
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -250,11 +236,7 @@ export const getSettings = (data: any) => {
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
+
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -301,11 +283,6 @@ export const getSettings = (data: any) => {
                                         parentId: 'fontStylePnl',
                                         inline: true,
                                         propertyName: 'font',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'dropdown',
@@ -357,11 +334,6 @@ export const getSettings = (data: any) => {
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         id: 'title-css-412c-8461-4c8d55e5c073',
                                         inputType: 'codeEditor',
                                         propertyName: 'titleStyle',
@@ -423,11 +395,6 @@ export const getSettings = (data: any) => {
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                         inputType: 'codeEditor',
                                         propertyName: 'containerStyle',
@@ -457,7 +424,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',
