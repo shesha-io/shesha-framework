@@ -39,28 +39,28 @@ namespace Shesha.Settings
         }
 
         /// inheritedDoc
-        public async Task<TValue?> GetValueOrNullAsync()
+        public async Task<TValue?> GetValueOrNullAsync(SettingManagementContext? context = null)
         {
-            return await _settingManager.GetOrNullAsync<TValue>(Module, Name);
+            return await _settingManager.GetOrNullAsync<TValue>(Module, Name, context);
         }
 
         /// inheritedDoc
-        public async Task<TValue> GetValueAsync()
+        public async Task<TValue> GetValueAsync(SettingManagementContext? context = null)
         {
-            var value = await GetValueOrNullAsync();
+            var value = await GetValueOrNullAsync(context);
             return value ?? throw new UnexpectedNullSettingValueException(Module, Name);
         }
 
         /// inheritedDoc
-        public TValue? GetValueOrNull()
+        public TValue? GetValueOrNull(SettingManagementContext? context = null)
         {
-            return AsyncHelper.RunSync<TValue?>(() => GetValueOrNullAsync());
+            return AsyncHelper.RunSync<TValue?>(() => GetValueOrNullAsync(context));
         }
 
         /// inheritedDoc
-        public TValue GetValue()
+        public TValue GetValue(SettingManagementContext? context = null)
         {
-            return GetValueOrNull() ?? throw new UnexpectedNullSettingValueException(Module, Name);
+            return GetValueOrNull(context) ?? throw new UnexpectedNullSettingValueException(Module, Name);
         }
 
         /// inheritedDoc

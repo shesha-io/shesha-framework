@@ -1,6 +1,6 @@
-﻿using System;
-using Shesha.Scheduler.Domain.Enums;
+﻿using Shesha.Scheduler.Domain.Enums;
 using Shesha.Utilities;
+using System;
 
 namespace Shesha.Scheduler.Attributes
 {
