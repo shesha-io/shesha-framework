@@ -27,7 +27,7 @@
     <PackageReference Include="NHibernate" Version="5.5.2" />
     <PackageReference Include="NHibernate.Spatial" Version="7.0.0" />
     <PackageReference Include="NHibernate.Spatial.PostGis" Version="7.0.0" />
-    <PackageReference Include="Npgsql" Version="8.0.3" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Npgsql.NetTopologySuite" Version="8.0.3" />
   </ItemGroup>
 

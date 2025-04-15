@@ -18,6 +18,8 @@
 
         public const string DefaultUrl = "Shesha.DefaultUrl";
 
+        public const string PublicUrl = "Shesha.PublicUrl";
+
         public const string DefaultEndpointAccess = "Shesha.DefaultEndpointAccess";
     }
 }
