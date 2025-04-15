@@ -1,4 +1,4 @@
-import { InputNumber, InputNumberProps, ConfigProvider } from 'antd';
+import { InputNumber, InputNumberProps } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { customOnChangeValueEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { useSheshaApplication } from '@/providers';
@@ -29,6 +29,8 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
     fontFamily: model?.font?.type,
     fontWeight: model?.font?.weight,
     textAlign: model?.font?.align,
+    color: model?.font?.color,
+    fontSize: model?.font?.size,
   });
   const dimensions = model?.dimensions;
   const border = model?.border;
@@ -48,14 +50,14 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
       const storedImageUrl =
         background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
-              headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+            headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+          })
+            .then((response) => {
+              return response.blob();
             })
-              .then((response) => {
-                return response.blob();
-              })
-              .then((blob) => {
-                return URL.createObjectURL(blob);
-              })
+            .then((blob) => {
+              return URL.createObjectURL(blob);
+            })
           : '';
 
       const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
@@ -120,28 +122,15 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
 
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          InputNumber: {
-            fontFamily: model?.font?.type,
-            fontSize: model?.font?.size || 14,
-            fontWeightStrong: Number(model.font.weight) ?? 400,
-            colorText: model?.font?.color,
-          },
-        },
-      }}
-    >
-      <InputNumber
-        value={value ?? model?.defaultValue}
-        {...inputProps}
-        stringMode={!model?.highPrecision}
-        style={{ ...finalStyle, ...jsStyle }}
-        className={`sha-input ${styles.numberField}`}
-        onBlur={onBlur}
-        onFocus={onFocus}
-      />
-    </ConfigProvider>
+    <InputNumber
+      value={value ?? model?.defaultValue}
+      {...inputProps}
+      stringMode={!model?.highPrecision}
+      style={{ ...finalStyle, ...jsStyle }}
+      className={`sha-input ${styles.numberField}`}
+      onBlur={onBlur}
+      onFocus={onFocus}
+    />
   );
 };
 

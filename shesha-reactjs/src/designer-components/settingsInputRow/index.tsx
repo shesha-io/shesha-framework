@@ -14,7 +14,7 @@ export interface ISettingsInputRowProps extends Omit<IConfigurableFormComponent,
 
 export interface IInputRowProps {
     inputs: Array<ISettingsInputProps>;
-    readOnly: boolean;
+    readOnly?: boolean;
     inline?: boolean;
     children?: React.ReactNode;
     hidden?: boolean;
