@@ -44,7 +44,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                             readOnly
                                 ? null
                                 : {
-                          title: 'Component',
+                          title: 'Builder Component',
                                     content: () => <Toolbox />,
                           placeholder: 'Component',
                                 }
