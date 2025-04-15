@@ -1,7 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { borderStyles, getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
@@ -160,7 +160,7 @@ export const getSettings = (data) => {
                   .addSettingsInputRow({
                     id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
                     parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-                      inputs: [
+                    inputs: [
                       {
                         type: 'queryBuilder',
                         id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
@@ -174,7 +174,7 @@ export const getSettings = (data) => {
                     ],
                   })
                   .addSettingsInput({
-                      inputType: 'dropdown',
+                    inputType: 'dropdown',
                     id: 'acb2d566-fe48-43bd-84e0-28b7103354c1',
                     propertyName: 'valueFormat',
                     parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
@@ -221,10 +221,10 @@ export const getSettings = (data) => {
                         description: "Return value that will be stored as field value",
                       },
                     ],
-                    })
+                  })
                   .addSettingsInput({
                     id: 'columns-s4gmBg31azZC0UjZjpfTm',
-                      inputType: 'columnsConfig',
+                    inputType: 'columnsConfig',
                     propertyName: 'items',
                     parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
                     label: 'Columns',
@@ -253,7 +253,7 @@ export const getSettings = (data) => {
                   components: [...new DesignerToolbarSettings()
                     .addSettingsInputRow({
                       id: 'data-source-s4gmBg31azZC0UjZjpfTm',
-                          inputs: [
+                      inputs: [
                         {
                           type: 'textField',
                           id: '4b3b0da0-f126-4e37-b5f5-568367dc008f',
@@ -283,7 +283,7 @@ export const getSettings = (data) => {
                     })
                     .addSettingsInputRow({
                       id: 'buttons-s4gmBg31azZC0UjZjpfTm',
-                          inputs: [{
+                      inputs: [{
                         id: nanoid(),
                         propertyName: 'footerButtons',
                         label: 'Buttons Type',
@@ -416,7 +416,7 @@ export const getSettings = (data) => {
                             parentId: 'fontStylePnl',
                             inline: true,
                             propertyName: 'font',
-                                      inputs: [
+                            inputs: [
                               {
                                 type: 'dropdown',
                                 id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
@@ -481,7 +481,7 @@ export const getSettings = (data) => {
                             id: 'dimensionsStyleRowWidth',
                             parentId: 'dimensionsStylePnl',
                             inline: true,
-                                      inputs: [
+                            inputs: [
                               {
                                 type: 'textField',
                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
@@ -516,7 +516,7 @@ export const getSettings = (data) => {
                             id: 'dimensionsStyleRowHeight',
                             parentId: 'dimensionsStylePnl',
                             inline: true,
-                                      inputs: [
+                            inputs: [
                               {
                                 type: 'textField',
                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
@@ -611,7 +611,7 @@ export const getSettings = (data) => {
                                 jsSetting: false,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                        })
+                            })
                             .addSettingsInputRow({
                               id: "backgroundStyle-gradientColors",
                               parentId: "backgroundStylePnl",
@@ -625,7 +625,7 @@ export const getSettings = (data) => {
                               ],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                               hideLabel: true,
-                                        })
+                            })
                             .addSettingsInputRow({
                               id: "backgroundStyle-url",
                               parentId: "backgroundStylePnl",
@@ -637,7 +637,7 @@ export const getSettings = (data) => {
                                 label: "URL",
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                        })
+                            })
                             .addSettingsInputRow({
                               id: "backgroundStyle-image",
                               parentId: 'backgroundStylePnl',
@@ -649,12 +649,12 @@ export const getSettings = (data) => {
                                 jsSetting: false,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                        })
+                            })
                             .addSettingsInputRow({
                               id: "backgroundStyleRow-storedFile",
                               parentId: 'backgroundStylePnl',
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                          inputs: [
+                              inputs: [
                                 {
                                   type: 'textField',
                                   id: 'backgroundStyle-storedFile',
@@ -694,7 +694,7 @@ export const getSettings = (data) => {
                             .addSettingsInputRow({
                               id: 'backgroundStyleRow-repeat',
                               parentId: 'backgroundStyleRow',
-                                          inputs: [{
+                              inputs: [{
                                 type: 'radio',
                                 id: 'backgroundStyleRow-repeat-radio',
                                 label: 'Repeat',
@@ -724,7 +724,7 @@ export const getSettings = (data) => {
                             id: 'shadowStyleRow',
                             parentId: 'shadowStylePnl',
                             inline: true,
-                                      inputs: [
+                            inputs: [
                               {
                                 type: 'numberField',
                                 id: 'shadowStyleRow-offsetX',
@@ -806,57 +806,11 @@ export const getSettings = (data) => {
                         id: 'stylePnl-M500-911MFR',
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInput({
-                                      id: 'custom-css-412c-8461-4c8d55e5c073',
+                            id: 'custom-css-412c-8461-4c8d55e5c073',
                             inputType: 'codeEditor',
                             propertyName: 'style',
                             label: 'Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                          })
-                          .toJson()
-                        ]
-                      }
-                    })
-                    .addCollapsiblePanel({
-                      id: 'entityPickerDividerCollapsiblePanel',
-                      propertyName: 'entityPickerDivider',
-                      label: 'Entity Picker Divider',
-                      labelAlign: 'right',
-                      ghost: true,
-                      content: {
-                        id: 'entityPickerDividerPnl',
-                        components: [...new DesignerToolbarSettings()
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'entityPickerDividerPnl',
-                            inline: true,
-                            readOnly: false,
-                            inputs: [
-                              {
-                                id: nanoid(),
-                                type: 'textField',
-                                label: "Width",
-                                hideLabel: true,
-                                propertyName: 'dividerWidth',
-                              },
-                              {
-                                id: nanoid(),
-                                label: "Style",
-                                propertyName: 'dividerStyle',
-                                type: "dropdown",
-                                hideLabel: true,
-                                width: 60,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                dropdownOptions: borderStyles,
-                              },
-                              {
-                                id: nanoid(),
-                                label: `Color`,
-                                propertyName: 'dividerColor',
-                                type: "colorPicker",
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                hideLabel: true,
-                              }
-                            ]
                           })
                           .toJson()
                         ]
