@@ -74,7 +74,8 @@ export interface IStyleType {
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
   overflow?: OverflowType;
-  position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
+  //Position needs to be revisited
+  // position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   size?: SizeType;
   style?: string;
   stylingBox?: string;
@@ -187,12 +188,12 @@ export interface IComponentMetadata {
  */
 export interface IConfigurableFormComponent
   extends IFormComponentContainer,
-    IHasVersion,
-    IComponentBindingProps,
-    IComponentLabelProps,
-    IComponentVisibilityProps,
-    IComponentRuntimeProps,
-    IComponentMetadata {
+  IHasVersion,
+  IComponentBindingProps,
+  IComponentLabelProps,
+  IComponentVisibilityProps,
+  IComponentRuntimeProps,
+  IComponentMetadata {
   /** Type of the component */
   type: string;
 
