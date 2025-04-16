@@ -240,8 +240,8 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'titleStyle',
-                              hideLabel: true,
-                              label: 'Style',
+                              hideLabel: false,
+                              label: 'Custom Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .toJson()
