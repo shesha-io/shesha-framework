@@ -118,7 +118,7 @@ export const getSettings = (data: any) => {
                       value: 'referenceList',
                     },
                     {
-                      label: 'Api url',
+                      label: 'Api URL',
                       value: 'url',
                     },
                   ],
