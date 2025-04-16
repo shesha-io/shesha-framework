@@ -580,7 +580,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         parentId: styleRouterId,
                         ghost: true,
