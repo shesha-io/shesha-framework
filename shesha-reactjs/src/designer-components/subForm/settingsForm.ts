@@ -134,8 +134,8 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "The list data to be used can be the data that comes with the form of can be fetched from the API",
                 defaultValue: 'form',
                 dropdownOptions: [
-                  { label: "form", value: "Form" },
-                  { label: "api", value: "API" }
+                  { label: "Form", value: "form" },
+                  { label: "API", value: "api" }
                 ],
               })
               .addSettingsInputRow({
