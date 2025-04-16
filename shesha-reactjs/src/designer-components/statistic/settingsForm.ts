@@ -138,17 +138,18 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
+            key: 'events',
+            title: 'Events',
+            id: eventsId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
+                inputType: 'codeEditor',
+                propertyName: 'onClickCustom',
+                label: 'On Click',
+                labelAlign: 'right',
+                tooltip: 'Enter custom eventhandler on click of event. (form, event) are exposed',
+                parentId: eventsId
               })
               .toJson()
             ]
@@ -190,7 +191,7 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: pnlFontStyleId,
                               inline: true,
-                              propertyName: 'titleFont',          
+                              propertyName: 'titleFont',
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -235,11 +236,11 @@ export const getSettings = (data: any) => {
                                 },
                               ],
                             })
-                            .addSettingsInput({          
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'titleStyle',
-                              hideLabel: true,
+                              hideLabel: false,
                               label: 'Custom Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
@@ -264,7 +265,7 @@ export const getSettings = (data: any) => {
                               parentId: pnlFontStyleId,
                               inline: true,
                               propertyName: 'valueFont',
-                              label: 'Value Font',          
+                              label: 'Value Font',
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -309,12 +310,12 @@ export const getSettings = (data: any) => {
                                 },
                               ],
                             })
-                            .addSettingsInput({          
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'valueStyle',
                               hideLabel: false,
-                              label: 'Custom Style',
+                              label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .toJson()
@@ -336,7 +337,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,         
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -370,7 +371,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -436,7 +437,7 @@ export const getSettings = (data: any) => {
                               parentId: borderStylePnlId,
                               hidden: {
                                 _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,          
+                              } as any,
                               inputs: [
                                 {
                                   type: 'button',
@@ -636,7 +637,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
-                              inline: true,         
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -725,7 +726,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({          
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
@@ -744,22 +745,21 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsId,
+            key: 'security',
+            title: 'Security',
+            id: securityId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'codeEditor',
-                propertyName: 'onClickCustom',
-                label: 'On Click',
-                labelAlign: 'right',
-                tooltip: 'Enter custom eventhandler on click of event. (form, event) are exposed',
-                parentId: eventsId
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
               })
               .toJson()
             ]
-          }
+          },
         ]
       })
       .toJson(),

@@ -61,21 +61,23 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId,
-                permissions: data.permissions,
-                tooltip: "Enter a list of permissions that should be associated with this component"
-              })
-              .toJson()
+            key: 'data',
+            title: 'Data',
+            id: dataTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+
+                  id: nanoid(),
+                  inputType: 'columnsList',
+                  propertyName: 'columns',
+                  label: 'Columns',
+                  labelAlign: 'right',
+                  tooltip: 'Configure columns',
+                  parentId: dataTabId,
+                  size: 'small',
+                })
+                .toJson()
             ]
           },
           {
@@ -138,7 +140,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,         
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -172,7 +174,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,         
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -223,7 +225,7 @@ export const getSettings = (data: any) => {
                               parentId: borderStylePnlId,
                               hidden: {
                                 _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,         
+                              } as any,
                               inputs: [
                                 {
                                   type: 'button',
@@ -419,7 +421,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -497,7 +499,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'style',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
@@ -505,7 +507,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({          
+                            .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
@@ -523,23 +525,21 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'data',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-
-                  id: nanoid(),
-                  inputType: 'columnsList',
-                  propertyName: 'columns',
-                  label: 'Columns',
-                  labelAlign: 'right',
-                  tooltip: 'Configure columns',
-                  parentId: dataTabId,
-                  size: 'small',
-                })
-                .toJson()
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId,
+                permissions: data.permissions,
+                tooltip: "Enter a list of permissions that should be associated with this component"
+              })
+              .toJson()
             ]
           }
         ]

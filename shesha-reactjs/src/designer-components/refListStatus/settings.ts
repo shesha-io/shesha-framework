@@ -82,7 +82,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                                id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
+                                        id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
                                         type: 'switch',
                                         propertyName: 'showIcon',
                                         label: 'Show Icon',
@@ -139,7 +139,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                         parentId: 'fontStylePnl',
                                                         inline: true,
                                                         propertyName: 'font',
-                                                                                inputs: [
+                                                        inputs: [
                                                             {
                                                                 type: 'dropdown',
                                                                 id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
@@ -203,7 +203,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                         id: 'dimensionsStyleRowWidth',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                                                inputs: [
+                                                        inputs: [
                                                             {
                                                                 type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
@@ -238,7 +238,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                         id: 'dimensionsStyleRowHeight',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                                                inputs: [
+                                                        inputs: [
                                                             {
                                                                 type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
@@ -287,7 +287,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                         id: `borderStyleRow`,
                                                         parentId: 'borderStylePnl',
                                                         hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                                inputs: [
+                                                        inputs: [
                                                             {
                                                                 type: 'button',
                                                                 id: 'borderStyleRow-hideBorder',
@@ -326,7 +326,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                 components: [
                                                     ...new DesignerToolbarSettings()
                                                         .addSettingsInput({
-                                                                                        id: '1adea529-1f0c-5def-bd41-ee166a5dfcd8',
+                                                            id: '1adea529-1f0c-5def-bd41-ee166a5dfcd8',
                                                             inputType: 'switch',
                                                             propertyName: 'solidBackground',
                                                             label: 'Show Solid Background',
@@ -344,7 +344,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
                                                             buttonGroupOptions: backgroundTypeOptions,
-                                                                                    })
+                                                        })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
@@ -357,7 +357,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                                                                    })
+                                                        })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-gradientColors",
                                                             parentId: "backgroundStylePnl",
@@ -371,7 +371,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             ],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                             hideLabel: true,
-                                                                                    })
+                                                        })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
@@ -383,7 +383,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                 label: "URL",
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                                                                    })
+                                                        })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyle-image",
                                                             parentId: 'backgroundStylePnl',
@@ -395,12 +395,12 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                                                                    })
+                                                        })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-storedFile",
                                                             parentId: 'backgroundStylePnl',
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                                                                        inputs: [
+                                                            inputs: [
                                                                 {
                                                                     type: 'textField',
                                                                     id: 'backgroundStyle-storedFile',
@@ -415,7 +415,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                                                                        inputs: [
+                                                            inputs: [
                                                                 {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-size',
@@ -439,7 +439,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                         .addSettingsInputRow({
                                                             id: 'backgroundStyleRow-repeat',
                                                             parentId: 'backgroundStyleRow',
-                                                                                        inputs: [{
+                                                            inputs: [{
                                                                 type: 'radio',
                                                                 id: 'backgroundStyleRow-repeat-radio',
                                                                 label: 'Repeat',
@@ -469,7 +469,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                         id: 'shadowStyleRow',
                                                         parentId: 'shadowStylePnl',
                                                         inline: true,
-                                                                                inputs: [
+                                                        inputs: [
                                                             {
                                                                 type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
@@ -546,7 +546,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -555,7 +555,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                 id: 'stylePnl-M500-911MFR',
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                                                id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                        id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         label: 'Style',

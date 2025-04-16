@@ -18,7 +18,7 @@ export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
     }
 
     if (input?.weight) {
-        style.fontWeight = input?.weight.split(' - ')[0];
+        style.fontWeight = input?.weight.split(' - ')[0] || 400;
     }
 
     if (input?.color) {
