@@ -1,4 +1,4 @@
 # Release Notes
 
-## 💪 Enhancements
-- Implemented caching for settings to improve performance
+## 🐞 Bug Fixes
+- Fixed update of http headers in the useGet() hook
