@@ -17,15 +17,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
       .${pickerInputGroupInput} {
         width: calc(100% - ${pickerEllipsisBtnWidth});
       }
-  
+        
       .${pickerInputGroupEllipsis} {
         width: ${pickerEllipsisBtnWidth};
-        border-left: 1px solid #d9d9d9;
+      }
+    }  
+      .${pickerInputGroupEllipsis} {
         &:hover {
           border-color: ${token.colorPrimary} !important;
         }
       }
-    }
   
     .global-tablefilter {
       padding-right: unset !important;
