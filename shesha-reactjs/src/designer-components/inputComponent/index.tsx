@@ -99,7 +99,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'tooltip':
             return iconElement(icon, null, tooltip, {}, styles);
         case 'dataSortingEditor':
-            return <SortingEditor {...props} value={value} onChange={onChange} modelType={props.modelType} readOnly={readOnly} />;
+            return <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
         case 'colorPicker':
             return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
         case 'dropdown': {

@@ -4,13 +4,14 @@ import { ColumnSorting, GroupingItem as SortingItem } from '@/providers/dataTabl
 import { MetadataProvider } from '@/providers/index';
 import React, { FC } from 'react';
 import { getNanoId } from '@/utils/uuid';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 const { Option } = Select;
 
 export interface ISortingEditorProps {
     value?: SortingItem[];
     onChange: (newValue?: SortingItem[]) => void;
-    modelType: string;
+    modelType?: string;
     readOnly?: boolean;
     maxItemsCount?: number;
 }
@@ -18,7 +19,10 @@ export interface ISortingEditorProps {
 export const SortingEditor: FC<ISortingEditorProps> = (props) => {
     const { value, onChange, modelType, readOnly: editorReadOnly, maxItemsCount } = props;
     return (
-        <MetadataProvider modelType={modelType}>
+        <ConditionalWrap
+            condition={Boolean(modelType)}
+            wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
+        >
             <ListEditor<SortingItem>
                 value={value}
                 onChange={onChange}
@@ -58,6 +62,6 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                         </div>);
                 }}
             </ListEditor>
-        </MetadataProvider>
+        </ConditionalWrap>
     );
 };
