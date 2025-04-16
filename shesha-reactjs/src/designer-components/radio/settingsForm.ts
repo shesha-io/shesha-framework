@@ -104,7 +104,7 @@ export const getSettings = (data: any) => {
                       value: 'values',
                     },
                     {
-                      label: 'Reference List',
+                      label: 'Reference list',
                       value: 'referenceList',
                     },
                     {
