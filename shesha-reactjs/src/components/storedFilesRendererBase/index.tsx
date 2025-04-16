@@ -299,7 +299,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
       {isStub
         ? (isDragger
-          ? <Dragger disabled><DraggerStub /></Dragger>
+          ? <Dragger disabled><DraggerStub styles={styles}/></Dragger>
           : <div
             className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
           >
@@ -313,7 +313,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
           : isDragger ?
             <Dragger {...props}>
-              <DraggerStub />
+              <DraggerStub styles={styles} />
             </Dragger>
             : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
       }
