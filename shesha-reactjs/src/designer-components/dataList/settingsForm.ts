@@ -4,27 +4,6 @@ import { FormLayout } from "antd/es/form/Form";
 
 export const getSettings = (data: any) => {
 
-  const ENABLE_CRUD_EXPOSED_VARIABLES = [
-    {
-      id: nanoid(),
-      name: 'formData',
-      description: 'Form values',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'globalState',
-      description: 'The global state of the application',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'moment',
-      description: 'The moment.js object',
-      type: 'object',
-    }
-  ].map(item => JSON.stringify(item));
-
   const ROW_SAVE_EXPOSED_VARIABLES = [
     {
       id: nanoid(),
@@ -193,7 +172,6 @@ export const getSettings = (data: any) => {
                   label: "List Item Width",
                   hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
                   jsSetting: false,
-                  defaultValue: '1',
                   dropdownOptions: [
                     { label: '100%', value: '1' },
                     { label: '50%', value: '0.5' },
@@ -441,7 +419,6 @@ export const getSettings = (data: any) => {
                         { value: 'yes', label: 'Yes' },
                         { value: 'no', label: 'No' },
                         { value: 'inherit', label: 'Inherit' },
-                        { value: 'js', label: 'Expression' },
                       ],
                     })
                     .addSettingsInputRow({
@@ -483,19 +460,6 @@ export const getSettings = (data: any) => {
                       inputs: [{
                         id: nanoid(),
                         type: 'codeEditor',
-                        propertyName: 'onListItemSave',
-                        label: 'On List Item Save',
-                        jsSetting: false,
-                      }
-                      ],
-                      hideLabel: true,
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [{
-                        id: nanoid(),
-                        type: 'codeEditor',
                         propertyName: 'onNewListItemInitialize',
                         label: 'New List Item Init',
                         jsSetting: false,
@@ -503,20 +467,7 @@ export const getSettings = (data: any) => {
                       ],
                       hideLabel: true,
                     })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" || getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          type: 'configurableActionConfigurator',
-                          propertyName: 'onListItemSaveSuccessAction',
-                          label: 'On List Item Save Action',
-                          hideLabel: true,
-                        }
-                      ],
-                      hideLabel: true,
-                    }).toJson()
+                    .toJson()
                   ]
                 }
               })
@@ -541,7 +492,6 @@ export const getSettings = (data: any) => {
                         { value: 'yes', label: 'Yes' },
                         { value: 'no', label: 'No' },
                         { value: 'inherit', label: 'Inherit' },
-                        { value: 'js', label: 'Expression' },
                       ],
                     })
                     .addSettingsInputRow({
@@ -584,33 +534,7 @@ export const getSettings = (data: any) => {
                         }
                       ]
                     })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [{
-                        id: nanoid(),
-                        type: 'codeEditor',
-                        propertyName: 'onListItemSave',
-                        label: 'On List Item Save',
-                        jsSetting: false,
-                      }
-                      ],
-                      hideLabel: true,
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          type: 'configurableActionConfigurator',
-                          propertyName: 'onListItemSaveSuccessAction',
-                          label: 'On List Item Save Action',
-                          hideLabel: true,
-                        }
-                      ],
-                      hideLabel: true,
-                    }).toJson()
+                    .toJson()
                   ]
                 }
               })
@@ -653,6 +577,46 @@ export const getSettings = (data: any) => {
                   ]
                 }
               })
+              .addCollapsiblePanel({
+                id: 'createEditContent',
+                propertyName: 'createEditContent',
+                label: 'Create & Edit Methods',
+                labelAlign: 'right',
+                ghost: true,
+                collapsible: 'header',
+                collapsedByDefault: true,
+                content: {
+                  id: 'createEditContent',
+                  components: [...new DesignerToolbarSettings()
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: 'configurableActionConfigurator',
+                          propertyName: 'onListItemSaveSuccessAction',
+                          label: 'On List Item Save Action',
+                          hideLabel: true,
+                        }
+                      ],
+                      hideLabel: true,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      inputs: [{
+                        id: nanoid(),
+                        type: 'codeEditor',
+                        propertyName: 'onListItemSave',
+                        label: 'On List Item Save',
+                        jsSetting: false,
+                      }
+                      ],
+                      hideLabel: true,
+                    })
+                    .toJson()
+                  ]
+                }
+              })
               .toJson()
             ]
           },
@@ -681,8 +645,8 @@ export const getSettings = (data: any) => {
               })
               .addConfigurableActionConfigurator({
                 id: nanoid(),
-                propertyName: 'onRowSaveSuccessAction',
-                label: 'On Row Save Success',
+                propertyName: 'onListItemSaveSuccessAction',
+                label: 'On List Item Save Success',
                 parentId: 'events',
                 description: 'Custom business logic to be executed after successfull saving of new/updated row.',
                 hideLabel: true,
