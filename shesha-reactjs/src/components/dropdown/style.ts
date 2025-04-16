@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx }, { style }: { style: CSSProperties }) => {
+export const useStyles = createStyles(({ css, cx, token }, { style }: { style: CSSProperties }) => {
 
   const dropdown = cx("sha-dropdown", css`
     --ant-color-text: ${style.color} !important;
@@ -10,6 +10,10 @@ export const useStyles = createStyles(({ css, cx }, { style }: { style: CSSPrope
 
     .ant-select-selection-item {
       font-weight: var(--ant-font-weight) !important;
+    }
+
+    &.ant-select-open, &:hover {
+      border-color: ${token.colorPrimary} !important;
     }
   `);
 

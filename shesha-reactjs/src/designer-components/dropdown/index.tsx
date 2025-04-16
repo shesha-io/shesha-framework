@@ -87,9 +87,10 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
+      ...localStyle
     });
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -144,15 +145,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
           : 'listItem',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IDropdownComponentProps>(7, (prev) => {
-      const styles: IInputStyles = {
-        size: prev.size,
-        stylingBox: prev.stylingBox,
-        style: prev.style,
-      };
-
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
+    .add<IDropdownComponentProps>(7, (prev) => ({ ...prev, editMode: prev.editMode ?? 'inherited' }))
     .add<IDropdownComponentProps>(8, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
@@ -166,6 +159,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         fontColor: prev.fontColor,
         backgroundColor: prev.backgroundColor,
         stylingBox: prev.stylingBox,
+        style: prev.style,
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
