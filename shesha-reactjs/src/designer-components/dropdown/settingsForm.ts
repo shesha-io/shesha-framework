@@ -120,11 +120,11 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     },
                                     {
                                         value: "tags",
-                                        label: "tags"
+                                        label: "Tags"
                                     },
                                     {
                                         value: "multiple",
-                                        label: "multiple"
+                                        label: "Multiple"
                                     }
                                 ]
                             })
@@ -143,8 +143,12 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     },
                                     {
                                         value: "referenceList",
-                                        label: "Reference List"
+                                        label: "Reference list"
                                     },
+                                    {
+                                        value: "url",
+                                        label: "Url"
+                                    }
                                 ],
                             })
                             .addContainer({
@@ -171,21 +175,21 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         inputType: 'referenceListAutocomplete',
                                         settingsValidationErrors: [],
                                     })
-                                    .addQueryBuilder({
+                                    .addSettingsInput({
                                         id: 'Scip2BCqWk6HniFIGHwtA',
+                                        inputType: 'queryBuilder',
                                         parentId: '6eBJvoll3xtLJxdvOAlnB',
                                         propertyName: 'filter',
                                         label: 'Items Filter',
                                         isDynamic: true,
                                         validate: {},
                                         settingsValidationErrors: [],
-                                        modelType: 'Shesha.Framework.ReferenceListItem',
-                                        version: 2
+                                        modelType: 'Shesha.Framework.ReferenceListItem'
                                     })
                                     .addSettingsInput({
                                         id: 'Scip2BCqWk6HniFIGHHqA',
                                         parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                        label: "Value format",
+                                        label: "Value Format",
                                         propertyName: "valueFormat",
                                         inputType: "dropdown",
                                         size: "small",
@@ -198,7 +202,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             },
                                             {
                                                 value: "listItem",
-                                                label: "Reference List item"
+                                                label: "Reference list item"
                                             },
                                             {
                                                 value: "custom",
@@ -210,7 +214,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         id: '16ab0599-914d-4d2d-875c-765a495472f8',
                                         inputType: 'codeEditor',
                                         propertyName: 'incomeCustomJs',
-                                        label: 'Key value',
+                                        label: 'Key Value',
                                         labelAlign: 'right',
                                         tooltip: 'Return key from the value',
                                         parentId: '6eBJvoll3xtLJxdvOAlnB',
@@ -238,7 +242,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         id: '16ab0500-914d-4d2d-875c-765a495472g9',
                                         inputType: 'codeEditor',
                                         propertyName: 'labelCustomJs',
-                                        label: 'Item custom label',
+                                        label: 'Item Custom label',
                                         labelAlign: 'right',
                                         tooltip: 'Return label value',
                                         parentId: '6eBJvoll3xtLJxdvOAlnB',
@@ -249,11 +253,32 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         inputType: 'switch',
                                         propertyName: 'disableItemValue',
                                         tooltip: 'Disable reference list from selection',
-                                        label: 'Disable item value',
+                                        label: 'Disable Item Value',
                                         jsSetting: true,
                                         layout: 'horizontal',
                                         version: 'latest'
 
+                                    })
+                                    .addSettingsInputRow({
+                                        id: '03959ffd-cadb-496c-bf6d-b742f7f6edc5',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        inputs: [
+                                            {
+                                                id: 'disabled-values-6eBJvoll3xtLJxdvOAlnB',
+                                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                                type: 'textArea',
+                                                propertyName: 'disabledValues',
+                                                label: 'Disabled Values',
+                                                allowClear: true,
+                                                jsSetting: true,
+                                                hidden: {
+                                                    _code: "return  !getSettingValue(data.disableItemValue);",
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
+                                                tooltip: 'Pass an array of positive integers to disable specific values. For example: [1, 2, 3].',
+                                            }
+                                        ]
                                     })
                                     .addSettingsInput({
                                         id: '03959ffd-cadb-496c-bf6d-b742f7f6edc5',
@@ -284,21 +309,27 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 ]
 
                             })
-                            .addLabelValueEditor({
+                            .addSettingsInputRow({
                                 id: 'Scip2BCqWL4GniFIGHwdQ',
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                propertyName: 'values',
-                                label: 'Values',
-                                labelName: 'label',
-                                labelTitle: 'Label',
-                                valueName: 'value',
-                                valueTitle: 'Value',
-                                hidden: {
-                                    _code: `return  getSettingValue(data.dataSourceType) !== 'values';`,
-                                    _mode: 'code',
-                                    _value: false
-                                },
-                                mode: 'dialog',
+                                inputs: [
+                                    {
+                                        id: 'Scip2BCqWL4GniFIGHwdQ',
+                                        type: 'labelValueEditor',
+                                        propertyName: 'values',
+                                        label: 'Values',
+                                        labelName: 'label',
+                                        labelTitle: 'Label',
+                                        valueName: 'value',
+                                        valueTitle: 'Value',
+                                        hidden: {
+                                            _code: `return  getSettingValue(data.dataSourceType) !== 'values';`,
+                                            _mode: 'code',
+                                            _value: false
+                                        } as any,
+                                        mode: 'dialog',
+                                    }
+                                ]
                             })
                             .addSettingsInput({
                                 id: '03959ffd-cadb-496c-bf6d-b742f7f6edc5',
@@ -800,7 +831,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
-                                                        hideLabel: true,
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })

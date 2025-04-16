@@ -24,7 +24,6 @@ export const Dropdown: FC<IDropdownProps> = ({
     values,
     onChange,
     value: val,
-    hideBorder,
     referenceListId,
     mode,
     defaultValue: defaultVal,
@@ -122,7 +121,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 onChange={onChange}
                 referenceListId={referenceListId}
                 value={value}
-                variant={hideBorder ? 'borderless' : undefined}
+                variant={'borderless'}
                 defaultValue={defaultValue}
                 mode={selectedMode}
                 disabledValues={disableItemValue ? disabledValues : []}
@@ -131,7 +130,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 readOnly={readOnly}
                 size={size}
                 className={styles.dropdown}
-                style={{ borderWidth: '0px', ...style }}
+                style={{ ...style }}
                 allowClear={allowClear}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
@@ -161,11 +160,12 @@ export const Dropdown: FC<IDropdownProps> = ({
             value={options.length > 0 ? value || defaultValue : undefined}
             defaultValue={defaultValue}
             variant={'borderless'}
+            className={styles.dropdown}
             disabled={readOnly}
             mode={selectedMode}
             placeholder={placeholder}
             showSearch
-            style={{ borderWidth: '0px', ...style }}
+            style={{ ...style }}
             size={size}
         >
             {options.map((option, index) => (
