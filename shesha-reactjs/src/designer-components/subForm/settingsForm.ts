@@ -43,6 +43,8 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 jsSetting: true,
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
+
+              //hide label by default
               .addLabelConfigurator({
                 id: nanoid(),
                 propertyName: 'hideLabel',
@@ -137,8 +139,8 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "The list data to be used can be the data that comes with the form of can be fetched from the API",
                 defaultValue: 'form',
                 dropdownOptions: [
-                  { label: "form", value: "form" },
-                  { label: "api", value: "api" }
+                  { label: "form", value: "Form" },
+                  { label: "api", value: "API" }
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
@@ -155,7 +157,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     defaultValue: "entityType",
                     tooltip: "The API mode to use to fetch data",
                     dropdownOptions: [
-                      { label: "Entity Name", value: "entityName" },
+                      { label: "Entity name", value: "entityName" },
                       { label: "URL", value: "url" }
                     ],
                     jsSetting: true,
@@ -238,10 +240,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     type: "codeEditor",
                     propertyName: "getUrl",
                     parentId: dataTabId,
-                    label: "GET Url",
-                    tooltip: "The API url that will be used to fetch the data. Write the code that returns the string",
+                    label: "GET URL",
+                    tooltip: "The API URL that will be used to fetch the data. Write the code that returns the string",
                     mode: "dialog",
-                    description: "The API url that will be used to fetch the data. Write the code that returns the string",
+                    description: "The API URL that will be used to fetch the data. Write the code that returns the string",
                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) === "entityName";', _mode: 'code', _value: false } as any,
                     exposedVariables: [
@@ -280,10 +282,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     type: "codeEditor",
                     propertyName: "postUrl",
                     parentId: dataTabId,
-                    label: "POST Url",
-                    tooltip: "The API url that will be used to update data. Write the code that returns the string",
+                    label: "POST URL",
+                    tooltip: "The API URL that will be used to create new data. Write a function that returns this URL as a string.",
                     mode: "dialog",
-                    description: "The API url that will be used to update data. Write the code that returns the string",
+                    description: "The API URL that will be used to update data. Write the code that returns the string",
                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
@@ -313,10 +315,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     type: "codeEditor",
                     propertyName: "putUrl",
                     parentId: dataTabId,
-                    label: "PUT Url",
-                    tooltip: "The API url that will be used to update data. Write the code that returns the string",
+                    label: "PUT URL",
+                    tooltip: "The API URL that will be used to update data. Write the code that returns the string",
                     mode: "dialog",
-                    description: "The API url that will be used to update data. Write the code that returns the string",
+                    description: "The API URL that will be used to update data. Write the code that returns the string",
                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
@@ -479,26 +481,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                       content: {
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                          .addSettingsInput({
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            id: nanoid(),
-                            inputType: 'codeEditor',
-                            propertyName: 'style',
-                            hideLabel: false,
-                            label: 'Style',
-                            description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            exposedVariables: [
-                              {
-                                name: 'data',
-                                description: 'Form data',
-                                type: 'object',
-                              }
-                            ],
-                            wrapInTemplate: true,
-                            templateSettings: {
-                              functionName: 'getStyle'
-                            },
-                          })
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: commonTabId,
