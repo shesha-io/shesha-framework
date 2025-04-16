@@ -1,9 +1,8 @@
 import { ProfileOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useFormData } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -31,13 +30,12 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
   name: 'Checkbox group',
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-    const { data } = useFormData();
+  calculateModel: (model, allData) => ({ eventHandlers: getEventHandlers(model, allData)}),
+  Factory: ({ model, calculatedModel }) => {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          const customEvents = getEventHandlers(model, allData);
+          const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (e: any) => {
             if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
             if (typeof onChange === 'function') onChange(e);
@@ -54,7 +52,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
           return (
             <RefListCheckboxGroup
               {...model}
-              style={getStyle(model?.style, data)}
+              style={model.fullStyle}
               value={value}
               onChange={onChangeInternal}
               onFocus={onFocusInternal}

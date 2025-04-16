@@ -3,9 +3,9 @@ import { IToolboxComponent } from '@/interfaces';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxProps } from 'antd';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles, useFormData } from '@/providers';
+import { IInputStyles } from '@/providers';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
 import {
@@ -16,9 +16,19 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { getEventHandlers } from '@/components/formDesigner/components/utils';
+import { EventHandlerAttributes, getEventHandlers } from '@/components/formDesigner/components/utils';
 
-const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
+interface ICheckboxComponentCalulatedValues {
+  eventHandlers?: EventHandlerAttributes<any>;
+}
+
+interface ExtendedCheckboxProps extends CheckboxProps {
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onChange?: (e: any) => void;
+}
+
+const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxComponentCalulatedValues> = {
   type: 'checkbox',
   isInput: true,
   isOutput: true,
@@ -26,35 +36,29 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-    const { data } = useFormData();
-
-    interface ExtendedCheckboxProps extends CheckboxProps {
-      onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
-      onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-    }
-
+  calculateModel: (model, allData) => ({eventHandlers: getEventHandlers(model, allData)}),
+  Factory: ({ model, calculatedModel }) => {
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
-          const customEvents = getEventHandlers(model, allData);
-          const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange({ ...args[0], currentTarget: { value: args[0].target.checked } });
-            if (typeof onChange === 'function') onChange(...args);
+          const events: ExtendedCheckboxProps = {
+            onBlur: calculatedModel.eventHandlers.onBlur,
+            onFocus: calculatedModel.eventHandlers.onFocus,
+            onChange: (...args: any[]) => {
+              calculatedModel.eventHandlers.onChange({ ...args[0], currentTarget: { value: args[0].target.checked } });
+              if (typeof onChange === 'function') onChange(...args);
+            }
           };
+
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} />
           ) : (
             <Checkbox
               className="sha-checkbox"
               disabled={model.readOnly}
-              style={getStyle(model?.style, data)}
+              style={model.jsStyle}
               checked={value}
-              onChange={onChangeInternal}
-              onBlur={customEvents.onBlur}
-              onFocus={customEvents.onFocus}
-              {...({} as ExtendedCheckboxProps)}
+              {...events}
             />
           );
         }}
