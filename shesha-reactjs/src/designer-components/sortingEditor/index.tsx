@@ -7,8 +7,9 @@ import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { evaluateString } from '@/providers/form/utils';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
-import { useFormData } from '@/providers/index';
+import { MetadataProvider, useFormData } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
     modelType: string;
@@ -30,11 +31,16 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
 
         const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
         const readOnly = model.readOnly;
-        
+
         return (
-            <ConfigurableFormItem model={model}>
-                {(value, onChange) => <SortingEditor value={value} onChange={onChange} modelType={modelType} readOnly={readOnly} maxItemsCount={maxItemsCount}/>}
-            </ConfigurableFormItem>
+            <ConditionalWrap
+                condition={Boolean(modelType)}
+                wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
+            >
+                <ConfigurableFormItem model={model}>
+                    {(value, onChange) => <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={maxItemsCount} />}
+                </ConfigurableFormItem>
+            </ConditionalWrap>
         );
     },
     settingsFormMarkup: settingsForm,
