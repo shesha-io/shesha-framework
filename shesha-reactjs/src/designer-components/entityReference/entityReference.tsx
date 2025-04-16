@@ -39,22 +39,106 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     if (hidden) return null;
 
     const jsStyle = getStyle(passedModel.style, passedModel);
-
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const additionalStyles = JSON.stringify(
-      removeUndefinedProps({
-        ...jsStyle,
-        ...stylingBoxAsCSS,
-      })
-    );
-    const additionalStylesWithoutQuotes = additionalStyles.replace(/"([^"]+)":/g, '$1:').replace(/'([^']+)':/g, '$1:');
-    const finalStyle = `return ${additionalStylesWithoutQuotes}`;
+
+    var allStylesJS: React.CSSProperties = removeUndefinedProps({
+      ...jsStyle,
+      ...stylingBoxAsCSS,
+    });
+    const paddingStyles = removeUndefinedProps({
+      paddingTop: allStylesJS.paddingTop,
+      paddingRight: allStylesJS.paddingRight,
+      paddingBottom: allStylesJS.paddingBottom,
+      paddingLeft: allStylesJS.paddingLeft,
+      padding: allStylesJS.padding,
+    });
+    allStylesJS = Object.keys(allStylesJS)
+      .filter((key) => !paddingStyles[key])
+      .reduce((obj, key) => {
+        obj[key] = allStylesJS[key];
+        return obj;
+      }, {});
+    const marginStyles = removeUndefinedProps({
+      marginTop: allStylesJS.marginTop,
+      marginRight: allStylesJS.marginRight,
+      marginBottom: allStylesJS.marginBottom,
+      marginLeft: allStylesJS.marginLeft,
+      margin: allStylesJS.margin,
+    });
+    allStylesJS = Object.keys(allStylesJS)
+      .filter((key) => !marginStyles[key])
+      .reduce((obj, key) => {
+        obj[key] = allStylesJS[key];
+        return obj;
+      }, {});
+    const borderStyles = removeUndefinedProps({
+      borderTop: allStylesJS.borderTop,
+      borderRight: allStylesJS.borderRight,
+      borderBottom: allStylesJS.borderBottom,
+      borderLeft: allStylesJS.borderLeft,
+      border: allStylesJS.border,
+      borderRadius: allStylesJS.borderRadius,
+      borderColor: allStylesJS.borderColor,
+      borderWidth: allStylesJS.borderWidth,
+      borderStyle: allStylesJS.borderStyle,
+    });
+    allStylesJS = Object.keys(allStylesJS)
+      .filter((key) => !borderStyles[key])
+      .reduce((obj, key) => {
+        obj[key] = allStylesJS[key];
+        return obj;
+      }, {});
+    const background = removeUndefinedProps({
+      backgroundColor: allStylesJS.backgroundColor,
+      background: allStylesJS.background,
+    });
+    allStylesJS = Object.keys(allStylesJS)
+      .filter((key) => !background[key])
+      .reduce((obj, key) => {
+        obj[key] = allStylesJS[key];
+        return obj;
+      }, {});
+    const dimensionStyles = removeUndefinedProps({
+      width: allStylesJS.width,
+      minWidth: allStylesJS.minWidth,
+      maxWidth: allStylesJS.maxWidth,
+      height: allStylesJS.height,
+      minHeight: allStylesJS.minHeight,
+      maxHeight: allStylesJS.maxHeight,
+    });
+    allStylesJS = Object.keys(allStylesJS)
+      .filter((key) => !dimensionStyles[key])
+      .reduce((obj, key) => {
+        obj[key] = allStylesJS[key];
+        return obj;
+      }, {});
+
+    const allStylesStr = JSON.stringify(allStylesJS);
+    const allStylesWithoutQuotes = allStylesStr.replace(/"([^"]+)":/g, '$1:').replace(/'([^']+)':/g, '$1:');
+    const finalStyle = `return ${allStylesWithoutQuotes}`;
 
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
-          return <EntityReference {...model} value={value} style={finalStyle} />;
+          return (
+            <div
+              style={{
+                padding: 0,
+                margin: 0,
+                boxSizing: 'border-box',
+                width: marginStyles.marginLeft || marginStyles.marginRight ? 'auto' : dimensionStyles.width ?? 'fit-content',
+                borderRadius: '5px',
+                ...paddingStyles,
+                ...marginStyles,
+                ...borderStyles,
+                ...background,
+                ...dimensionStyles,
+              }}
+            >
+              <EntityReference {...model} value={value} style={finalStyle} />
+            </div>
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -92,7 +176,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       .add<IEntityReferenceControlProps>(7, (prev) => ({ ...migratePrevStyles(prev) }))
       .add<IEntityReferenceControlProps>(8, (prev) => ({
         ...prev,
-        iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes) ?? 'DoubleLeftOutlined',
+        iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes),
       })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
 
 export const getSettings = (data: any) => {
@@ -39,6 +39,21 @@ export const getSettings = (data: any) => {
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
+                .addSettingsInputRow({
+                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  hidden: { _code: 'return  getSettingValue(data?.hasChildren);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'palceholder-s4gmBg31azZC0UjZjpfTm',
+                      type: 'textArea',
+                      propertyName: 'content',
+                      label: 'Content',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
                 .addSettingsInput({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -47,7 +62,12 @@ export const getSettings = (data: any) => {
                   label: 'Content',
                   size: 'small',
                   jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code:
+                      'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.hasChildren);',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                 })
                 .addSettingsInput({
                   id: 'href-s4gmBg31azZC0UjZjpfTm',
@@ -57,12 +77,10 @@ export const getSettings = (data: any) => {
                   label: 'Href',
                   size: 'small',
                   jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'switch',
@@ -90,7 +108,6 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
@@ -115,7 +132,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
@@ -194,11 +210,6 @@ export const getSettings = (data: any) => {
                                 parentId: 'fontStylePnl',
                                 inline: true,
                                 propertyName: 'font',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'dropdown',
@@ -233,15 +244,6 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     propertyName: 'font.color',
                                   },
-                                  {
-                                    type: 'dropdown',
-                                    id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                    label: 'Align',
-                                    propertyName: 'font.align',
-                                    hideLabel: true,
-                                    width: 60,
-                                    dropdownOptions: textAlign,
-                                  },
                                 ],
                               })
                               .toJson(),
@@ -254,11 +256,6 @@ export const getSettings = (data: any) => {
                         hidden: {
                           _code:
                             'return  getSettingValue(data?.direction) !== "horizontal" || !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -276,11 +273,11 @@ export const getSettings = (data: any) => {
                                 value: 'center',
                               },
                               {
-                                label: 'Flex Start',
+                                label: 'Flex start',
                                 value: 'flex-start',
                               },
                               {
-                                label: 'Flex End',
+                                label: 'Flex end',
                                 value: 'flex-end',
                               },
                               {
@@ -292,15 +289,15 @@ export const getSettings = (data: any) => {
                                 value: 'right',
                               },
                               {
-                                label: 'Space Between',
+                                label: 'Space between',
                                 value: 'space-between',
                               },
                               {
-                                label: 'Space Around',
+                                label: 'Space around',
                                 value: 'space-around',
                               },
                               {
-                                label: 'Space Evenly',
+                                label: 'Space evenly',
                                 value: 'space-evenly',
                               },
                               {
@@ -330,11 +327,11 @@ export const getSettings = (data: any) => {
                                 value: 'end',
                               },
                               {
-                                label: 'Flex End',
+                                label: 'Flex end',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'Flex Start',
+                                label: 'Flex start',
                                 value: 'flex-start',
                               },
                               {
@@ -354,11 +351,11 @@ export const getSettings = (data: any) => {
                                 value: 'revert',
                               },
                               {
-                                label: 'Self End',
+                                label: 'Self end',
                                 value: 'self-end',
                               },
                               {
-                                label: 'Self Start',
+                                label: 'Self start',
                                 value: 'self-start',
                               },
                               {
@@ -384,7 +381,7 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'Baseline',
+                                label: 'baseline',
                                 value: 'baseline',
                               },
                               {
@@ -396,11 +393,11 @@ export const getSettings = (data: any) => {
                                 value: 'end',
                               },
                               {
-                                label: 'Flex End',
+                                label: 'Flex end',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'Flex Start',
+                                label: 'Flex start',
                                 value: 'flex-start',
                               },
                               {
@@ -432,11 +429,11 @@ export const getSettings = (data: any) => {
                                 value: 'right',
                               },
                               {
-                                label: 'Self End',
+                                label: 'Self end',
                                 value: 'self-end',
                               },
                               {
-                                label: 'Self Start',
+                                label: 'Self start',
                                 value: 'self-start',
                               },
                               {
@@ -460,11 +457,6 @@ export const getSettings = (data: any) => {
                         parentId: 's4gmBg31azZC0UjZjpfTm',
                         hidden: {
                           _code: 'return  !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -492,11 +484,6 @@ export const getSettings = (data: any) => {
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
@@ -522,7 +509,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',

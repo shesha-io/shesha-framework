@@ -114,7 +114,6 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       ...shadowStyles,
       ...stylingBoxAsCSS,
       ...borderStyles,
-      ...backgroundStyles,
       ...jsStyle,
     });
 
@@ -132,6 +131,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
 
     return (
       <ShaDrawer
+        background={backgroundStyles}
         style={additionalStyles}
         headerStyle={additionalHeaderStyles}
         footerStyle={additionalFooterStyles}

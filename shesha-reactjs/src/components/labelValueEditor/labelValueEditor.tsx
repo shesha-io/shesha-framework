@@ -9,7 +9,7 @@ import {
   Modal,
   Row,
   Tabs
-  } from 'antd';
+} from 'antd';
 import { BorderlessTableOutlined } from '@ant-design/icons';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ILabelValueEditorPropsBase } from './interfaces';

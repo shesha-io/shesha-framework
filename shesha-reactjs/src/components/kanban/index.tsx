@@ -9,7 +9,7 @@ import { useKanbanActions } from './utils';
 import { addPx } from '@/designer-components/_settings/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, createFormId, items, componentName, editFormId, stylingBox } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
   const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
@@ -28,7 +28,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-  const styling = JSON.parse(stylingBox || '{}');
+  const styling = JSON.parse(props.columnStyles.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
