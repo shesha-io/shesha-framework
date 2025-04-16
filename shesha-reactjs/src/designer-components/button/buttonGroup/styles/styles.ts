@@ -7,8 +7,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const a = css`
 
         .${shaButtonMenu} {
-        
-            --ant-menu-item-height: max-content !important;
             .${prefixCls}-menu-submenu.${prefixCls}-menu-submenu-popup & {
                 padding: unset !important;
                 button {
@@ -37,73 +35,66 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   */
 
   const shaResponsiveButtonGroupContainer = cx("sha-responsive-button-group-container", css`
-
           .${shaResponsiveButtonGroup} {
-            .css-var-Rj6.ant-menu-css-var {
-              --ant-menu-item-height: max-content !important;
-            }
-              
             line-height: unset;
             min-height: 30px;
             .${prefixCls}-menu-item,
             .${prefixCls}-menu-vertical,
             .${prefixCls}-menu-submenu,
-            .${prefixCls}-menu-sub,
-            .${prefixCls}-menu-item-only-child {
-              padding: unset !important;
-            }
+          .${prefixCls}-menu-sub,
+          .${prefixCls}-menu-item-only-child {
+            padding: unset !important;
+          }
       
-            &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-item::after,
-            &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-submenu::after {
-              content: unset;
-            }
+          &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-item::after,
+          &.${prefixCls}-menu-horizontal > .${prefixCls}-menu-submenu::after {
+            content: unset;
+          }
       
-            .${prefixCls}-menu-item.${prefixCls}-menu-item-only-child {
-              --ant-menu-item-height: unset !important;
-              padding: unset !important;
-            }
+          .${prefixCls}-menu-item.${prefixCls}-menu-item-only-child {
+            padding: unset !important;
+          }
       
-            .${prefixCls}-menu-overflow-item-rest {
-              margin-left: 8px;
-            }
+          .${prefixCls}-menu-overflow-item-rest {
+            margin-left: 8px;
+          }
       
-            &.space-small {
-              --ant-menu-item-height: max-content !important;
-              .${prefixCls}-menu-overflow-item,
-              .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
-                padding-left: 6px !important;
-        
-                &:first-child,
-                &:last-child {
-                  padding: unset !important;
-                }
-              }
-            }
+          &.space-small {
+            .${prefixCls}-menu-overflow-item,
+            .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
+              padding-left: 6px !important;
       
-            &.space-middle {
-              .${prefixCls}-menu-overflow-item,
-              .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
-                padding-left: 8px !important;
-        
-                &:first-child,
-                &:last-child {
-                  padding: unset !important;
-                }
-              }
-            }
-      
-            &.space-large {
-              .${prefixCls}-menu-overflow-item,
-              .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
-                padding-left: 12px !important;
-        
-                &:first-child,
-                &:last-child {
-                  padding: unset !important;
-                }
+              &:first-child,
+              &:last-child {
+                padding: unset !important;
               }
             }
           }
+      
+          &.space-middle {
+            .${prefixCls}-menu-overflow-item,
+            .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
+              padding-left: 8px !important;
+      
+              &:first-child,
+              &:last-child {
+                padding: unset !important;
+              }
+            }
+          }
+      
+          &.space-large {
+            .${prefixCls}-menu-overflow-item,
+            .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
+              padding-left: 12px !important;
+      
+              &:first-child,
+              &:last-child {
+                padding: unset !important;
+              }
+            }
+          }
+        }
   `);
   return {
     shaResponsiveButtonGroupContainer,
