@@ -168,7 +168,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                          id: nanoid(),
+                              id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
                               label: 'Style',

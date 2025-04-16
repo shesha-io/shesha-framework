@@ -22,22 +22,22 @@ namespace Shesha.Settings
         /// <summary>
         /// Get setting value
         /// </summary>
-        Task<TValue?> GetValueOrNullAsync();
+        Task<TValue?> GetValueOrNullAsync(SettingManagementContext? context = null);
 
         /// <summary>
         /// Get setting value
         /// </summary>
-        Task<TValue> GetValueAsync();
+        Task<TValue> GetValueAsync(SettingManagementContext? context = null);
 
         /// <summary>
         /// Get setting value
         /// </summary>
-        TValue? GetValueOrNull();
+        TValue? GetValueOrNull(SettingManagementContext? context = null);
 
         /// <summary>
         /// Get setting value
         /// </summary>
-        TValue GetValue();
+        TValue GetValue(SettingManagementContext? context = null);
 
         /// <summary>
         /// Set setting value

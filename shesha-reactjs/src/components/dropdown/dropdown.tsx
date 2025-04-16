@@ -11,6 +11,7 @@ import {
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
+import { useStyles } from './style';
 
 
 export const Dropdown: FC<IDropdownProps> = ({
@@ -40,12 +41,14 @@ export const Dropdown: FC<IDropdownProps> = ({
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
 
+    const { styles } = useStyles({ style });
+
     const selectedMode = mode === 'single' ? undefined : mode;
 
     //quick fix not to default to empty string or null while working with multi-mode
     const defaultValue = Array.isArray(defaultVal)
-      ? defaultVal
-      : defaultVal ? evaluateString(defaultVal, { formData, formMode, globalState }) || undefined: undefined;
+        ? defaultVal
+        : defaultVal ? evaluateString(defaultVal, { formData, formMode, globalState }) || undefined : undefined;
 
     const value = typeof val === 'string'
         ? (evaluateString(val, { formData, formMode, globalState }) ?? undefined) as any
@@ -127,11 +130,11 @@ export const Dropdown: FC<IDropdownProps> = ({
                 placeholder={placeholder}
                 readOnly={readOnly}
                 size={size}
-                style={{borderWidth: '0px', ...style}}
+                className={styles.dropdown}
+                style={{ borderWidth: '0px', ...style }}
                 allowClear={allowClear}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
-
                 incomeValueFunc={incomeValueFunc}
                 outcomeValueFunc={outcomeValueFunc}
             />
@@ -162,7 +165,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             mode={selectedMode}
             placeholder={placeholder}
             showSearch
-            style={{borderWidth: '0px', ...style}}
+            style={{ borderWidth: '0px', ...style }}
             size={size}
         >
             {options.map((option, index) => (
