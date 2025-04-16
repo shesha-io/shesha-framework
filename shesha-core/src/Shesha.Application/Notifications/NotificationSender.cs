@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
@@ -15,10 +14,7 @@ using Shesha.NHibernate;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
 using Shesha.Notifications.MessageParticipants;
-using Shesha.Reflection;
 using Shesha.Services;
-using Stubble.Core;
-using Stubble.Core.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,34 +35,7 @@ namespace Shesha.Notifications
         private readonly IRepository<NotificationTemplate, Guid> _messageTemplateRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         private readonly INotificationManager _notificationManager;
-        private readonly StubbleVisitorRenderer _stubbleRenderer = new StubbleBuilder().Configure(settings =>
-        {
-            settings.SetIgnoreCaseOnKeyLookup(true);
-            settings.AddValueGetter(typeof(GenericEntityReference), (object value, string key, bool ignoreCase) => {
-                if (value is GenericEntityReference entityRef)
-                {
-                    var entity = (Entity<Guid>)entityRef;
-                    if (entity == null)
-                        return null;
-                    
-                    var propAccessor = ReflectionHelper.GetPropertyValueAccessor(entity, key);
-                    return propAccessor.IsValueAvailable
-                        ? propAccessor.Value
-                        : null;
-                }
-                else
-                    return null;
-            });
-            settings.AddValueGetter(typeof(NotificationData), (object value, string key, bool ignoreCase) => {
-                if (value is NotificationData notificationData)
-                {
-                    return notificationData[key];
-                }
-                else
-                    return null;
-            });
-            
-        }).Build();
+        private readonly INotificationTemplateProcessor _templateProcessor;
 
         public ILogger Logger { get; set; }
 
@@ -79,9 +48,12 @@ namespace Shesha.Notifications
             IRepository<NotificationTemplate, Guid> messageTemplateRepository,
             IRepository<Notification, Guid> notificationRepository,
             IRepository<StoredFile, Guid> storedFileRepository,
-            INotificationManager notificationManager)
+            INotificationManager notificationManager,
+            INotificationTemplateProcessor templateProcessor)
         {
             _channelSender = channelSender;
+            _notificationMessageRepository = notificationMessageRepository;
+            _attachmentRepository = attachmentRepository;
             _unitOfWorkManager = unitOfWorkManager;
             _fileService = fileService;
             _channelSenders = channelSenders;
@@ -89,8 +61,8 @@ namespace Shesha.Notifications
             _notificationRepository = notificationRepository;
             _storedFileRepository = storedFileRepository;
             _notificationManager = notificationManager;
-            _attachmentRepository = attachmentRepository;
-            _notificationMessageRepository = notificationMessageRepository;
+            _templateProcessor = templateProcessor;
+            
             Logger = NullLogger.Instance;
         }
 
@@ -125,6 +97,7 @@ namespace Shesha.Notifications
         /// <param name="cc"></param>
         /// <param name="triggeringEntity"></param>
         /// <param name="channel"></param>
+        /// <param name="category"></param>
         /// <returns></returns>
         public async Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
@@ -135,7 +108,8 @@ namespace Shesha.Notifications
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
-            NotificationChannelConfig? channel = null) where TData : NotificationData
+            NotificationChannelConfig? channel = null,
+            string? category = null) where TData : NotificationData
         {
             // Check if the notification type is disabled
             if (type.Disable) 
@@ -156,7 +130,8 @@ namespace Shesha.Notifications
                 ToPerson = receiver.GetPerson(),
                 NotificationData = JsonSerializer.Serialize(data),
                 TriggeringEntity = triggeringEntity,
-                Priority = priority
+                Priority = priority,
+                Category = category ?? string.Empty,
             });
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -255,10 +230,10 @@ namespace Shesha.Notifications
         /// <summary>
         /// Generate content based on template (uses mustache syntax)
         /// </summary>
-        protected async Task<string?> GenerateContentAsync<TData>(string? template, TData data)
+        protected async Task<string?> GenerateContentAsync<TData>(string? template, TData data) where TData: class
         {
             return !string.IsNullOrWhiteSpace(template)
-                ? await _stubbleRenderer.RenderAsync(template, data)
+                ? await _templateProcessor.GenerateAsync(template, data)
                 : template;
         }
 
@@ -388,13 +363,14 @@ namespace Shesha.Notifications
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
-            NotificationChannelConfig? channel = null) where TData : NotificationData
+            NotificationChannelConfig? channel = null,
+            string? category = null) where TData : NotificationData
         {
             var sender = senderPerson != null 
                 ? new PersonMessageParticipant(senderPerson)
                 : null;
             var receiver = new PersonMessageParticipant(receiverPerson);            
-            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel);            
+            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel, category);
         }
     }
 }

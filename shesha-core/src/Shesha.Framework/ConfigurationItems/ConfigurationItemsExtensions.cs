@@ -81,6 +81,7 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         public static async Task<TItem> GetItemByIdAsync<TItem>(this IRepository<TItem, Guid> repository, ConfigurationItemIdentifier id, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem 
         {
+            // TODO: make result nullable and add an override with not nullable result
             return await repository.GetAll().GetItemByIdAsync(id, mode);
         }
 
