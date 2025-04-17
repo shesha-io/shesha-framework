@@ -44,9 +44,9 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                             readOnly
                                 ? null
                                 : {
-                                    title: 'Builder Widgets',
+                          title: 'Builder Components',
                                     content: () => <Toolbox />,
-                                    placeholder: 'Builder Widgets',
+                          placeholder: 'Builder Components',
                                 }
                         }
                         rightSidebarProps={{
