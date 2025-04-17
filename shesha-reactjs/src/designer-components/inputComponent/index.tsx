@@ -334,7 +334,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 variant={variant}
                 placeholder={placeholder}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip, {}, styles)}</span>}
-                value={value?.value ? value.value : value || defaultValue}
+                value={value}
                 type={textType}
             />;
     }
