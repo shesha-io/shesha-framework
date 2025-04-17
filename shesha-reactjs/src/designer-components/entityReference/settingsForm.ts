@@ -70,32 +70,30 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'displayType',
-                  label: 'Display Type',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  size: 'small',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    { value: 'displayProperty', label: 'Display Property' },
-                    { value: 'icon', label: 'Icon' },
-                    { value: 'textTitle', label: 'Text Title' },
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  parentId: commonTabId,
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.displayType) !== "icon";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                   inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'displayType',
+                      label: 'Display Type',
+                      type: 'dropdown',
+                      allowClear: true,
+                      size: 'small',
+                      jsSetting: true,
+                      dropdownOptions: [
+                        { value: 'displayProperty', label: 'Display Property' },
+                        { value: 'icon', label: 'Icon' },
+                        { value: 'textTitle', label: 'Text Title' },
+                      ],
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      parentId: commonTabId,
+                    },
                     {
                       id: nanoid(),
                       propertyName: 'iconName',
@@ -104,19 +102,17 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       type: 'iconPicker',
                       jsSetting: true,
                       allowClear: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.displayType) !== "icon";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                  inputs: [
                     {
                       id: nanoid(),
                       propertyName: 'textTitle',
@@ -124,6 +120,16 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       parentId: commonTabId,
                       type: 'textField',
                       jsSetting: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                   ],
                 })
@@ -218,30 +224,24 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   ],
                   defaultValue: 'Quickview',
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'formSelectionMode',
-                  label: 'Form Selection Mode',
-                  parentId: dataTabId,
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  jsSetting: true,
-                  dropdownOptions: [
-                    { value: 'name', label: 'Name' },
-                    { value: 'dynamic', label: 'Dynamic' },
-                  ],
-                  defaultValue: 'name',
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                   inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'formSelectionMode',
+                      label: 'Form Selection Mode',
+                      parentId: dataTabId,
+                      type: 'dropdown',
+                      allowClear: true,
+                      jsSetting: true,
+                      dropdownOptions: [
+                        { value: 'name', label: 'Name' },
+                        { value: 'dynamic', label: 'Dynamic' },
+                      ],
+                      defaultValue: 'name',
+                    },
                     {
                       id: nanoid(),
                       propertyName: 'formType',
@@ -251,19 +251,17 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       jsSetting: true,
                       width: '100%',
                       allowClear: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                  inputs: [
                     {
                       id: nanoid(),
                       propertyName: 'formIdentifier',
@@ -272,6 +270,16 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       type: 'formAutocomplete',
                       jsSetting: true,
                       allowClear: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                   ],
                 })
@@ -281,6 +289,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   label: 'Dialog Settings',
                   labelAlign: 'right',
                   parentId: dataTabId,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                   components: [
                     ...new DesignerToolbarSettings()
                       .addSectionSeparator({
@@ -292,6 +305,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: appearanceTabId,
+                        readOnly: {
+                          _code: 'return getSettingValue(data?.readOnly);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         hidden: {
                           _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                           _mode: 'code',
@@ -314,6 +332,41 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             ],
                             width: '100%',
                           },
+                          ,
+                          {
+                            id: nanoid(),
+                            propertyName: 'additionalProperties',
+                            label: 'Additional Properties',
+                            parentId: dataTabId,
+                            jsSetting: true,
+                            type: 'labelValueEditor',
+                            labelTitle: 'Key',
+                            valueTitle: 'Value',
+                            labelName: 'key',
+                            valueName: 'value',
+                            tooltip:
+                              'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+                              'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
+                              'Id initial value is already initialised with {{entityReference.id}} but you can override it',
+                            exposedVariables: [
+                              { name: 'data', description: 'This form data', type: 'object' },
+                              { name: 'form', description: 'Form instance', type: 'object' },
+                              {
+                                name: 'formMode',
+                                description: 'Current form mode',
+                                type: "'designer' | 'edit' | 'readonly'",
+                              },
+                              { name: 'globalState', description: 'Global state', type: 'object' },
+                              {
+                                name: 'entityReference.id',
+                                description: 'Id of entity reference entity',
+                                type: 'object',
+                              },
+                              { name: 'entityReference.entity', description: 'Entity', type: 'object' },
+                              { name: 'moment', description: 'moment', type: '' },
+                              { name: 'http', description: 'axiosHttp', type: '' },
+                            ].map((item) => JSON.stringify(item)),
+                          }
                         ],
                       })
                       .addSettingsInputRow({
@@ -339,17 +392,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             ],
                             width: '100%',
                           },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             id: nanoid(),
                             propertyName: 'customWidth',
@@ -365,6 +407,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -374,22 +421,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             type: 'textField',
                             jsSetting: true,
                           },
-                        ],
-                        hidden: {
-                          _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             id: nanoid(),
                             propertyName: 'footerButtons',
@@ -404,7 +435,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                               { value: 'none', label: 'None' },
                             ],
                           },
-                        ],
+                        ]
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -450,40 +481,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           _value: false,
                         } as any,
                       })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'additionalProperties',
-                        label: 'Additional Properties',
-                        parentId: dataTabId,
-                        jsSetting: true,
-                        inputType: 'labelValueEditor',
-                        labelTitle: 'Key',
-                        valueTitle: 'Value',
-                        labelName: 'key',
-                        valueName: 'value',
-                        tooltip:
-                          'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
-                          'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
-                          'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                        exposedVariables: [
-                          { name: 'data', description: 'This form data', type: 'object' },
-                          { name: 'form', description: 'Form instance', type: 'object' },
-                          {
-                            name: 'formMode',
-                            description: 'Current form mode',
-                            type: "'designer' | 'edit' | 'readonly'",
-                          },
-                          { name: 'globalState', description: 'Global state', type: 'object' },
-                          {
-                            name: 'entityReference.id',
-                            description: 'Id of entity reference entity',
-                            type: 'object',
-                          },
-                          { name: 'entityReference.entity', description: 'Entity', type: 'object' },
-                          { name: 'moment', description: 'moment', type: '' },
-                          { name: 'http', description: 'axiosHttp', type: '' },
-                        ].map((item) => JSON.stringify(item)),
-                      })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -524,8 +521,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                 jsSetting: true,
                               })
                               .toJson(),
-                          ]
-                        }
+                          ],
+                        },
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -565,17 +562,12 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                 parentId: dataTabId,
                                 jsSetting: false,
                               })
-                              .toJson()
-                          ]
-                        }
+                              .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
                   ],
-                  hidden: {
-                    _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addContainer({
                   id: nanoid(),
@@ -628,19 +620,25 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   collapsible: 'header',
                   content: {
                     id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
-                      .addSettingsInput({
-                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                        id: nanoid(),
-                        inputType: 'codeEditor',
-                        propertyName: 'style',
-                        parentId: styleRouterId,
-                        label: 'Style',
-                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                      })
-                      .toJson()
-                    ]
-                  }
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInput({
+                          readOnly: {
+                            _code: 'return  getSettingValue(data?.readOnly);',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          id: nanoid(),
+                          inputType: 'codeEditor',
+                          propertyName: 'style',
+                          parentId: styleRouterId,
+                          label: 'Style',
+                          description:
+                            'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                        })
+                        .toJson(),
+                    ],
+                  },
                 })
                 .addPropertyRouter({
                   id: styleRouterId,
@@ -746,7 +744,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 })
                 .toJson(),
             ],
-          }
+          },
         ],
       })
       .toJson(),
