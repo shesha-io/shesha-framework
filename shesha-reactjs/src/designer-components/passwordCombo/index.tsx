@@ -98,6 +98,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     return (
+
       <PasswordCombo
         inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.passwordCombo }}
         placeholder={placeholder}
