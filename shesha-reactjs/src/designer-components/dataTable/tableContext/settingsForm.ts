@@ -399,7 +399,8 @@ export const getSettings = (data: any) => {
                             version: 0,
                             modelType: "{{data.entityType}}",
                             validate: {},
-                            settingsValidationErrors: []
+                            settingsValidationErrors: [],
+                            jsSetting: true,
                           }
                         ]
                       })
@@ -429,6 +430,7 @@ export const getSettings = (data: any) => {
                             version: 0,
                             validate: {},
                             settingsValidationErrors: [],
+                            jsSetting: true,
                             modelType: "{{data.entityType}}"
                           }
                         ]
