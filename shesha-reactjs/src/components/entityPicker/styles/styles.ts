@@ -1,7 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { style?: CSSProperties }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }: { style?: CSSProperties }) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
@@ -17,12 +17,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
       .${pickerInputGroupInput} {
         width: calc(100% - ${pickerEllipsisBtnWidth});
       }
-  
+        
       .${pickerInputGroupEllipsis} {
         width: ${pickerEllipsisBtnWidth};
-        border-left: 1px solid #d9d9d9;
       }
-    }
+    }  
+      .${pickerInputGroupEllipsis} {
+        &:hover {
+          border-color: ${token.colorPrimary} !important;
+        }
+      }
   
     .global-tablefilter {
       padding-right: unset !important;
@@ -67,8 +71,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
   const entitySelect = cx("entity-select", css`
         --ant-color-text: ${style?.color || '#000'} !important;
         width: calc(100% - 32px) !important;
-        &:hover: {
-                color: colorTextSecondary,
+        &:hover {
+                border-color: ${token.colorPrimary} !important;
               }
 
         .ant-select-selector > ant-select-selection-search, ant-select-selection-placeholder {
@@ -89,6 +93,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
             font-weight: ${style?.fontWeight} !important;
             color: ${style?.color || '#000'} !important;
             font-family: ${style?.fontFamily || 'inherit'} !important;  
+            
           }
       `);
 

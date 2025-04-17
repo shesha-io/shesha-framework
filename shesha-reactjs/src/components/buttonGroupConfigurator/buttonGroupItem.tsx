@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
-import { Button, Tooltip, Typography } from 'antd';
+import { Button, Flex, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher, useSheshaApplication } from '@/providers';
@@ -114,7 +114,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   return (
     <>
       {item.itemSubType === 'button' && (
-        <>
+        <Flex>
           <Button
             title={tooltip}
             type={buttonType}
@@ -134,7 +134,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
               <QuestionCircleOutlined className={styles.helpIcon} style={{ marginLeft: '2px' }} />
             </Tooltip>
           )}
-        </>
+        </Flex>
       )}
       {item.itemSubType === 'separator' && (<Text type="secondary">— separator —</Text>)}
       {isDynamicItem(item) && (<DynamicGroupDetails {...item} />)}

@@ -149,10 +149,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     {
                                         value: "referenceList",
                                         label: "Reference list"
-                                    },
-                                    {
-                                        value: "url",
-                                        label: "URL"
                                     }
                                 ],
                             })
@@ -297,24 +293,15 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             }
                                         ]
                                     })
-                                    .addSettingsInputRow({
-                                        id: 'data-source-url-6eBJvoll3xtLJxdvOAlnB',
-                                        inputs: [{
-                                            id: '99629618-d725-4690-b744-97a4b0ae3b19',
-                                            type: 'textField',
-                                            propertyName: 'dataSourceUrl',
-                                            label: 'Data Source Url',
-                                            labelAlign: 'right',
-                                            parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                            language: 'typescript',
-                                            hidden: {
-                                                "_code": "return  getSettingValue(data.dataSourceType) !== 'url';",
-                                                "_mode": "code",
-                                                "_value": false
-                                            } as any,
-                                        }]
+                                    .addSettingsInput({
+                                        id: '03959ffd-cadb-496c-bf6d-b742f7f6edc5',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        inputType: 'textArea',
+                                        propertyName: 'ignoredValues',
+                                        label: 'Ignored Values',
+                                        allowClear: true,
+                                        tooltip: 'Pass an array of positive integers to ignore specific values. For example: [1, 2, 3].',
                                     })
-
                                     .toJson()
                                 ]
 
