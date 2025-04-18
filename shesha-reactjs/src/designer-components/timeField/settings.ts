@@ -426,6 +426,24 @@ export const getSettings = (data: any) => {
                                 },
                                 availableConstantsExpression: "return metadataBuilder.object(\"constants\").addAllStandard().addString(\"timeString\", \"Time string value\").addObject(\"value\", \"Component current value\", undefined).build();"
                             })
+                            .addSettingsInput({
+                                id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                                inputType: 'codeEditor',
+                                propertyName: 'onFocusCustom',
+                                label: 'On Focus',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on focus of event.',
+                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                            })
+                            .addSettingsInput({
+                                id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                                inputType: 'codeEditor',
+                                propertyName: 'onBlurCustom',
+                                label: 'On Blur',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on blur of event.',
+                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                            })
                             .toJson()
                         ]
                     },

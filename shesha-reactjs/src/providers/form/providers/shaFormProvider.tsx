@@ -38,7 +38,7 @@ const useShaFormRef = (): MutableRefObject<IShaFormInstance> => {
     return useRef<IShaFormInstance>();
 };
 
-const useShaFormUpdateDate = (): object => useContext(ShaFormDataUpdateContext);
+const useShaFormDataUpdate = (): object => useContext(ShaFormDataUpdateContext);
 
 const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
     const context = useContext(ShaFormInstanceContext);
@@ -53,6 +53,6 @@ const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
 export {
     FormProviderWithDelayedUpdates as ShaFormProvider,
     useShaFormInstance,
-    useShaFormUpdateDate,
+    useShaFormDataUpdate as useShaFormUpdateDate,
     useShaFormRef,
 };

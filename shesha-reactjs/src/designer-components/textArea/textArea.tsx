@@ -7,9 +7,9 @@ import React, { CSSProperties } from 'react';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps } from './interfaces';
-import { ConfigurableFormItem, ValidationErrors } from '@/components';
+import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { EventHandlerAttributes, getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -22,6 +22,7 @@ import { removeUndefinedProps } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { useStyles } from './styles';
 
 interface IJsonTextAreaProps {
   value?: any;
@@ -37,7 +38,7 @@ const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
 
 interface ITextFieldComponentCalulatedValues {
   defaultValue?: string;
-  eventHandlers?: EventHandlerAttributes<any>;
+  eventHandlers?: IEventHandlers;
 }
 
 const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldComponentCalulatedValues> = {
@@ -49,25 +50,19 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  calculateModel: (model, allData) => {
-    return {
+  calculateModel: (model, allData) => ({
       defaultValue: model.initialValue
         ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
         : undefined,
-      eventHandlers: getEventHandlers(model, allData)
-    };
-  },
+      eventHandlers: getAllEventHandlers(model, allData)
+  }),
   Factory: ({ model, calculatedModel }) => {
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
-
     const { styles } = useStyles({
       fontWeight: model.font.weight,
       fontFamily: model.font.type,
-      textAlign: model.fullStyle?.textAlign,
-      color: model.fullStyle?.color,
-      fontSize: model.fullStyle?.fontSize,
+      textAlign: model.allStyles.fullStyle?.textAlign,
+      color: model.allStyles.fullStyle?.color,
+      fontSize: model.allStyles.fullStyle?.fontSize,
     });
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -81,10 +76,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
       color: model.fontColor,
       fontWeight: model.fontWeight,
       fontSize: model.fontSize,
-      ...model.appearanceStyle,
+      ...model.allStyles.appearanceStyle,
     });
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, ...model.jsStyle });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, ...model.allStyles.jsStyle });
 
     const textAreaProps: TextAreaProps = {
       className: `sha-text-area ${styles.textArea}`,
@@ -114,7 +109,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
 
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange(args[0]);
+            customEvents.onChange({value: args[0].currentTarget.value}, args[0]);
             if (typeof onChange === 'function') onChange(...args);
           };
 

@@ -2,8 +2,6 @@ import React, { FC } from 'react';
 import { TimeRangePicker, TimePicker } from '@/components/antd';
 import moment, { Moment, isMoment } from 'moment';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { useFormData } from '@/providers';
-import { getStyle } from '@/providers/form/utils';
 import { getNumericValue } from '@/utils/string';
 import { TimeSteps } from '@/components/antd/timepicker';
 import { useStyles } from './styles/styles';
@@ -57,7 +55,6 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   allowClear = false,
   ...rest
 }) => {
-  const { data: formData } = useFormData();
   const { styles } = useStyles();
 
   const evaluatedValue = getMoment(value, format);
@@ -66,14 +63,12 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   const minuteStepLocal = getNumericValue(minuteStep);
   const secondStepLocal = getNumericValue(secondStep);
 
-
   //Should be a factors? if not shouldn't we delete the toolTips
   const steps: TimeSteps = {
     hourStep: 1 <= hourStepLocal && hourStepLocal <= 23 ? hourStepLocal as TimeSteps['hourStep'] : 1, // value should be in range 1..23
     minuteStep: 1 <= minuteStepLocal && minuteStepLocal <= 59 ? minuteStepLocal as TimeSteps['minuteStep'] : 1, // value should be in range 1..59
     secondStep: 1 <= secondStepLocal && secondStepLocal <= 59 ? secondStepLocal as TimeSteps['secondStep'] : 1, // value should be in range 1..59
   };
-
    
   const getRangePickerValues = (value: string | [string, string]) =>
       Array.isArray(value) && value?.length === 2 ? value?.map((v) => getMoment(v, format)) : [null, null];
@@ -105,7 +100,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         format={format}
         value={getRangePickerValues(value || defaultValue) as RangeValue}
         {...steps}
-        style={getStyle(style, formData)}
+        style={style}
         className={styles.shaTimepicker}
         showNow={showNow}
         allowClear={allowClear}
@@ -123,7 +118,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       format={format}
       value={evaluatedValue|| (defaultValue && moment(defaultValue))}
       {...steps}
-      style={getStyle(style, formData)}
+      style={style}
       className={styles.shaTimepicker}
       placeholder={placeholder}
       showNow={showNow}

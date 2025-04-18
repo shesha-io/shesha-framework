@@ -18,7 +18,7 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { defaultStyles } from './utils';
-import { addPx } from '../../utils/style';
+import { addPx } from '@/utils/style';
 
 const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   type: 'markdown',

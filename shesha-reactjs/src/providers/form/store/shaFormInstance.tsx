@@ -32,11 +32,12 @@ import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { useMetadataDispatcher } from "@/providers";
+import { isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
+import { isPropertySettings } from "@/designer-components/_settings/utils";
 
 interface ShaFormInstanceArguments {
     forceRootUpdate: ForceUpdateTrigger;
@@ -47,11 +48,65 @@ interface ShaFormInstanceArguments {
     antdForm: FormInstance;
 }
 
+interface IPropertiesWithScripts {
+  [index: string]: string;
+}
+
+interface IComponentsWithScripts {
+  [index: string]: IPropertiesWithScripts;
+}
+
+// ToDo: AS - add other events
+const scriptProps = ['onChangeCustom', 'onFocusCustom', 'onBlurCustom', 'onClickCustom'];
+
 class PublicFormApi<Values = any> implements IFormApi<Values> {
     #form: IShaFormInstance;
     constructor(form: IShaFormInstance) {
         this.#form = form;
     }
+
+    getPropertiesWithScript = (keyword: string): IComponentsWithScripts => {
+        const proceed = (addComponent: IPropertiesWithScripts, obj: any, propertyName: string) => {
+            for(const propName in obj) {
+                if (Object.hasOwn(obj, propName)) {
+                    const fullPropName = propertyName ? `${propertyName}.${propName}` : propName;
+                    const propValue = obj[propName];
+                    if (!propValue) continue;
+                    if (scriptProps.includes(propName) && (!keyword || propValue.includes(keyword))) {
+                        addComponent[fullPropName] = propValue;
+                        continue;
+                    }
+                    if (propValue && typeof propValue === 'object') {
+                        if (isPropertySettings(propValue)) {
+                            if (propValue._mode === 'code' && (!keyword || propValue._code?.includes(keyword))) {
+                                addComponent[fullPropName] = propValue._code;
+                            }
+                            continue;
+                        }
+                        if (isScriptActionConfiguration(propValue) && (!keyword || propValue.actionArguments.expression?.includes(keyword))) {
+                            addComponent[fullPropName] = propValue.actionArguments.expression || '';
+                            continue;
+                        }
+                        proceed(addComponent, propValue, fullPropName);
+                    }
+                }
+            }
+        };
+      
+        const components: IComponentsWithScripts = {};
+        for(const componentId in this.#form.flatStructure.allComponents) {
+            if (Object.hasOwn(this.#form.flatStructure.allComponents, componentId)) {
+                const component = this.#form.flatStructure.allComponents[componentId];
+                const addComponent: IPropertiesWithScripts = {};
+                proceed(addComponent, component, '');
+                if (!isEmpty(addComponent)) {
+                    components[component.componentName] = addComponent;
+                }
+            }
+        };
+        return components;
+    };
+
     addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
         const delayedUpdateData = this.#form?.getDelayedUpdates();
         if (delayedUpdateData?.length > 0)

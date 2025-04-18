@@ -6,7 +6,7 @@ import { DataContextType, ContextOnChangeData, ContextGetFull } from "./contexts
 import DataContextBinder from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";
 import { useAvailableConstantsDataNoRefresh } from "../form/utils";
-import { CreateStorageProperty, IStorageProxy } from "./contexts/storageProxy";
+import { GetShaContextDataAccessor, IShaDataAccessor } from "./contexts/shaDataAccessProxy";
 
 export interface IDataContextProviderProps { 
   id: string;
@@ -36,7 +36,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const allData = useRef<any>({});
   allData.current = useAvailableConstantsDataNoRefresh({ topContextId: id });
 
-  const storage = useRef<IStorageProxy>(CreateStorageProperty(onChangeContextData));
+  const storage = useRef<IShaDataAccessor>(GetShaContextDataAccessor(onChangeContextData));// CreateStorageProperty(onChangeContextData));
 
   const initialDataRef = useRef<any>(undefined);
 

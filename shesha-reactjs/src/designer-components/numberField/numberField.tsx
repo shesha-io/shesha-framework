@@ -67,7 +67,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       max: model?.validate?.maxValue ?? Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
-      style: model.style ? model.jsStyle : { width: '100%' },
+      style: model.style ? model.allStyles.jsStyle : { width: '100%' },
       step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
       ...calculatedModel.eventHandlers,
       defaultValue: calculatedModel.defaultValue,
@@ -90,7 +90,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
               value={value ?? model?.defaultValue}
               {...inputProps}
               stringMode={!model?.highPrecision}
-              style={{ ...model.appearanceStyle, ...model.jsStyle }}
+              style={model.allStyles.fullStyle}
               className={`sha-input ${styles.numberField}`}
               onChange={onChangeInternal}
             />

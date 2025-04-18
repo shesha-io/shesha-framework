@@ -45,6 +45,11 @@ export interface ICustomAddressEventHandler extends ICustomEventHandler {
 
 export type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
 
+export interface IEventHandlers<T = any> extends Pick<DOMAttributes<T>, 'onBlur' | 'onFocus' | 'onClick'>{
+  onChange: (values: object, event?: any) => void;
+};
+
+/** @deprecated use getAllEventHandlers instead */
 export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): EventHandlerAttributes<T> => {
   const onCustomEvent = (event: any, key: string) => {
     const expression = model?.[key];
@@ -56,6 +61,29 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
   return {
     onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
     onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
+    onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
+    onClick: (event) => onCustomEvent(event, 'onClickCustom'),
+  };
+};
+
+export const getAllEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers<T> => {
+  const onCustomEvent = (event: any, key: string) => {
+    const expression = model?.[key];
+    if (Boolean(expression)) {
+      return executeScriptSync(expression, addContextData(context, {event, value: event?.currentTarget.value}));
+    }
+  };
+
+  const onChange = (values: object, event: any) => {
+    const expression = model?.onChangeCustom;
+    if (Boolean(expression)) {
+      return executeScriptSync(expression, addContextData(context, { event, ...values }));
+    }
+  };
+
+  return {
+    onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
+    onChange: (values: object, event?: any) => onChange(values, event),
     onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
     onClick: (event) => onCustomEvent(event, 'onClickCustom'),
   };

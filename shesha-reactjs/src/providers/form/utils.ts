@@ -79,9 +79,8 @@ import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
 import { useShaFormInstance, useShaFormUpdateDate } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
-import { removeGhostKeys } from '@/utils/form';
-import { isEmpty } from 'lodash';
 import { TouchableProxy } from './touchableProxy';
+import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -269,11 +268,9 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     message: () => message,
     fileSaver: () => FileSaver,
     data: () => {
-      if (!shaFormInstance?.data || isEmpty(shaFormInstance.data))
-        return EMPTY_DATA;
-
-      const data = shaFormInstance.data;
-      return removeGhostKeys(data);
+      return !shaFormInstance
+        ? EMPTY_DATA 
+        : GetShaFormDataAccessor(shaFormInstance);
     },
     form: () => {
       return shaFormInstance;

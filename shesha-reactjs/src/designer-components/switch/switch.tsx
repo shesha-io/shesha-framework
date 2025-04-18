@@ -1,5 +1,5 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -8,14 +8,14 @@ import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
-import { SwitchSize } from 'antd/lib/switch';
+import { SwitchChangeEventHandler, SwitchSize } from 'antd/lib/switch';
 import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 
 interface ISwitchComponentCalulatedValues {
-  eventHandlers?: {onChange: (value: any) => void};
+  eventHandlers: IEventHandlers;
 }
 
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponentCalulatedValues> = {
@@ -25,21 +25,15 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  calculateModel: (model, allData) => {
-    return {
-      eventHandlers: customOnChangeValueEventHandler(model, allData)
-    };
-  },
+  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
-          const customEvent = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
-            if (typeof onChange === 'function')
-              onChange(args[0]);
+          const customEvents = calculatedModel.eventHandlers;
+          const onChangeInternal: SwitchChangeEventHandler = (checked: boolean, event) => {
+            customEvents.onChange({ value: checked }, event);
+            if (typeof onChange === 'function') onChange(checked);
           };
 
           return model.readOnly ? (
@@ -48,7 +42,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
             <Switch 
               className="sha-switch"
               disabled={model.readOnly}
-              style={model.fullStyle}
+              style={model.allStyles.fullStyle}
               size={model.size as SwitchSize}
               checked={value}
               defaultChecked={model.defaultChecked}

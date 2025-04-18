@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { DataTableProvider, evaluateString, getUrlKeyParam, useActualContextData, useAvailableConstantsData, useDataTableStore, useDeepCompareMemo } from '@/index';
+import { DataTableProvider, evaluateString, getUrlKeyParam, useActualContextData, useDataTableStore, useDeepCompareMemo, useShaFormInstance } from '@/index';
 import { Select, Typography } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
@@ -274,7 +274,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 };
 
 const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
-  const allData = useAvailableConstantsData();
+  const { formData } = useShaFormInstance();
   const disableRefresh = useRef<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();
@@ -306,7 +306,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
           queryParams.forEach(({ param, value }) => {
             const valueAsString = value as string;
             if (param?.length && valueAsString.length) {
-              queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data: allData.data }) : value;
+              queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data: formData }) : value;
             }
           });
         } else
@@ -319,7 +319,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
         queryParamObj['selectedValue'] = props.value;
     }
     return queryParamObj;
-  }, [props.dataSourceType, queryParams, allData.data, searchText]);
+  }, [props.dataSourceType, queryParams, formData, searchText]);
 
 
   const key = getUrlKeyParam(props.dataSourceUrl);

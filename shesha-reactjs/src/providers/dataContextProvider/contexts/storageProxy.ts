@@ -10,11 +10,11 @@ export interface IStorageProxy {
 }
 
 export const CreateStorageProperty = (onChange: () => void, data?: object) => {
-    const prop = (Array.isArray(data))
+    const property = (Array.isArray(data))
         ? new StorageArrayProperty(onChange, data)
         : new StorageProperty(onChange, data);
 
-    return new Proxy(prop, {
+    return new Proxy(property, {
         get(target, name) {
             const propertyName = name.toString();
 

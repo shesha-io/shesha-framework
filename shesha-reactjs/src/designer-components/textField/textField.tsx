@@ -3,7 +3,7 @@ import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useMemo } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { EventHandlerAttributes, getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
@@ -13,7 +13,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon, ValidationErrors } from '@/components';
+import { IconType, ShaIcon } from '@/components';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
@@ -21,7 +21,7 @@ import { defaultStyles } from './utils';
 
 interface ITextFieldComponentCalulatedValues {
   defaultValue?: string;
-  eventHandlers?: EventHandlerAttributes<any>;
+  eventHandlers?: IEventHandlers;
 }
 
 const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextFieldComponentCalulatedValues> = {
@@ -42,18 +42,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       defaultValue: model.initialValue 
         ? evaluateString(model.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) 
         : undefined,
-      eventHandlers: getEventHandlers(model, allData)
+      eventHandlers: getAllEventHandlers(model, allData)
     };
   },
   Factory: ({ model, calculatedModel }) => {
-    
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
-
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
-
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
 
     if (model.hidden) return null;
 
@@ -67,7 +61,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       disabled: model.readOnly,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
-      style: { ...model.appearanceStyle, ...model.jsStyle },
+      style: model.allStyles.fullStyle,
       defaultValue: calculatedModel.defaultValue,
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
@@ -79,8 +73,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange(args[0]);
-            onChange(...args);
+            customEvents.onChange({value: args[0].currentTarget.value}, args[0]);
+            if (typeof onChange === 'function') onChange(...args);
           };
 
           return inputProps.readOnly
@@ -92,12 +86,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-  initModel: (model) => {
-    return {
-      ...model,
-      textType: 'text'
-    };
-  },
+  initModel: (model) => ({ ...model, textType: 'text' }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -121,12 +110,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-  linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
-    return {
-      ...model,
-      textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text',
-    };
-  },
+  linkToModelMetadata: (model, metadata): ITextFieldComponentProps => (
+    { ...model, textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text' }
+  ),
 };
 
 export default TextFieldComponent;

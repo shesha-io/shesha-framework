@@ -1,4 +1,4 @@
-import { CSSProperties, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { 
   IApplicationContext,
   IConfigurableFormComponent,
@@ -10,6 +10,7 @@ import {
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useDataContextManager,
+  useDeepCompareMemo,
   useSheshaApplication,
   wrapConstantsData
 } from "..";
@@ -166,14 +167,13 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
   return actualDataRef.current;
 };
 
-export const useModelAppearanceStyles = <TModel,>(
-  model: TModel & IStyleType & IConfigurableFormComponent,
-  calculateStyle?: (model: TModel, styles: IFormComponentStyles) => CSSProperties
-): CSSProperties => {
-  
+export const useFormComponentStyles = <TModel,>(
+  model: TModel & IStyleType & IConfigurableFormComponent
+): IFormComponentStyles => {
   const app = useSheshaApplication();
+  const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
 
-  const { dimensions, border, font, shadow, background, stylingBox, jsStyle } = model;
+  const { dimensions, border, font, shadow, background, stylingBox } = model;
   
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile' 
@@ -203,25 +203,30 @@ export const useModelAppearanceStyles = <TModel,>(
         });
   }, [background, jsStyle, app.backendUrl, app.httpHeaders]);
 
-  const finalStyle = useMemo(()=> removeUndefinedProps(
-    calculateStyle
-    ? calculateStyle(model, {
-      stylingBoxAsCSS,
-      dimensionsStyles,
-      borderStyles,
-      fontStyles,
-      backgroundStyles,
-      shadowStyles,
-    })
-    : {
+  const appearanceStyle = useMemo(()=> removeUndefinedProps(
+    {
     ...stylingBoxAsCSS,
     ...dimensionsStyles,
     ...borderStyles,
     ...fontStyles,
     ...backgroundStyles,
     ...shadowStyles,
-    fontWeight: fontStyles.fontWeight || 400
+    fontWeight: fontStyles.fontWeight || 400,
   }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles]);
 
-  return finalStyle;
+  const fullStyle = useDeepCompareMemo(() => ({...appearanceStyle, ...jsStyle}), [appearanceStyle, jsStyle]);
+
+  const allStyles: IFormComponentStyles = useMemo(() => ({
+    stylingBoxAsCSS,
+    dimensionsStyles,
+    borderStyles,
+    fontStyles,
+    backgroundStyles,
+    shadowStyles,
+    jsStyle,
+    appearanceStyle,
+    fullStyle
+  }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, jsStyle, appearanceStyle, fullStyle]);
+
+  return allStyles;
 };

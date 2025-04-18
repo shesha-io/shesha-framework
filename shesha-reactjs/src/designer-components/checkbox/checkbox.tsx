@@ -16,16 +16,17 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { EventHandlerAttributes, getEventHandlers } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 interface ICheckboxComponentCalulatedValues {
-  eventHandlers?: EventHandlerAttributes<any>;
+  eventHandlers?: IEventHandlers<any>;
 }
 
 interface ExtendedCheckboxProps extends CheckboxProps {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onChange?: (e: any) => void;
+  onChange?: (e: CheckboxChangeEvent) => void;
 }
 
 const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxComponentCalulatedValues> = {
@@ -36,7 +37,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  calculateModel: (model, allData) => ({eventHandlers: getEventHandlers(model, allData)}),
+  calculateModel: (model, allData) => ({eventHandlers: getAllEventHandlers(model, allData)}),
   Factory: ({ model, calculatedModel }) => {
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
@@ -44,23 +45,16 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
           const events: ExtendedCheckboxProps = {
             onBlur: calculatedModel.eventHandlers.onBlur,
             onFocus: calculatedModel.eventHandlers.onFocus,
-            onChange: (...args: any[]) => {
-              calculatedModel.eventHandlers.onChange({ ...args[0], currentTarget: { value: args[0].target.checked } });
-              if (typeof onChange === 'function') onChange(...args);
+            onChange: (e: CheckboxChangeEvent) => {
+              calculatedModel.eventHandlers.onChange({ value: e.target.checked }, e);
+              if (typeof onChange === 'function') onChange(e);
             }
           };
 
-          return model.readOnly ? (
-            <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} />
-          ) : (
-            <Checkbox
-              className="sha-checkbox"
-              disabled={model.readOnly}
-              style={model.jsStyle}
-              checked={value}
-              {...events}
-            />
-          );
+          return model.readOnly 
+            ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} />
+            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />
+          ;
         }}
       </ConfigurableFormItem>
     );

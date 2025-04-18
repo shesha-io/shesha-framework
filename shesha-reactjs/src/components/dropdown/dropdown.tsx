@@ -6,6 +6,7 @@ import { Select } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
+import { useStyles } from './style';
 
 
 export const Dropdown: FC<IDropdownProps> = ({

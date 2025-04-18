@@ -148,7 +148,7 @@ export const getSettings = (data: any) => {
                 propertyName: 'onClickCustom',
                 label: 'On Click',
                 labelAlign: 'right',
-                tooltip: 'Enter custom eventhandler on click of event. (form, event) are exposed',
+                tooltip: 'Enter custom eventhandler on click of event.',
                 parentId: eventsId
               })
               .toJson()

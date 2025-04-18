@@ -6,8 +6,8 @@ import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
-import { useActualContextData, useActualContextExecution, useCalculatedModel, useDeepCompareMemo } from '@/index';
-import { useModelAppearanceStyles } from '@/hooks/formComponentHooks';
+import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
 
 export interface IFormComponentProps {
@@ -45,7 +45,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
 
-  const actualModel = useActualContextData<IConfigurableFormComponent>(
+  const actualModel = useActualContextData<IConfigurableFormComponent & IStyleType>(
     deviceModel,
     undefined,
     undefined,
@@ -62,12 +62,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
     actualModel.propertyName = undefined;
 
-  actualModel.jsStyle = useActualContextExecution(actualModel.style, null, {}); // use default style if empty or error
-  actualModel.appearanceStyle = useModelAppearanceStyles(actualModel, toolboxComponent?.calculateStyle);
-  actualModel.fullStyle = useDeepCompareMemo(() => ({...actualModel.appearanceStyle, ...actualModel.jsStyle}), [actualModel.appearanceStyle, actualModel.jsStyle]);
+  actualModel.allStyles = useFormComponentStyles(actualModel);
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
-  
 
   const control = useMemo(() => (
     <toolboxComponent.Factory 
@@ -78,7 +75,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       shaApplication={shaApplication}
       key={actualModel.id}
     />
-  ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
+  ), [actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
   if (!toolboxComponent)
     return <ComponentError errors={{
@@ -88,6 +85,10 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   
   if (shaForm.formMode === 'designer') {
     const validationResult: IModelValidation = { hasErrors: false, errors: [] };
+    if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
+      validationResult.hasErrors = true;
+      validationResult.errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
+    }
     toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
       validationResult.hasErrors = true;
       validationResult.errors.push({ propertyName, error });

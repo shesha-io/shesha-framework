@@ -22,24 +22,26 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   isInput: false,
   name: 'Button',
   icon: <BorderOutlined />,
-  calculateStyle: (model, styles) => ({
-    ...styles.dimensionsStyles,
-    ...(['primary', 'default'].includes(model.buttonType) && styles.borderStyles),
-    ...styles.fontStyles,
-    ...(['dashed', 'default'].includes(model.buttonType) && styles.backgroundStyles),
-    ...(['primary', 'default'].includes(model.buttonType) && styles.shadowStyles),
-    ...styles.stylingBoxAsCSS,
-    ...model.jsStyle,
-    justifyContent: model.font?.align
-  }),
   Factory: ({ model, form }) => {
     const { style, ...restProps } = model;
+
+    const finalStyle = {
+      ...model.allStyles.dimensionsStyles,
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.borderStyles),
+      ...model.allStyles.fontStyles,
+      ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles.backgroundStyles),
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
+      ...model.allStyles.stylingBoxAsCSS,
+      ...model.allStyles.jsStyle,
+      justifyContent: model.font?.align
+    };
+    
     return (
       <ConfigurableButton
         {...restProps}
         readOnly={model.readOnly}
         block={restProps?.block}
-        style={model.fullStyle}
+        style={finalStyle}
         form={form}
       />
     );
