@@ -23,11 +23,11 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
   ownerId: string;
@@ -61,7 +61,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     const background = model?.background;
     const jsStyle = getStyle(model.style, model);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});

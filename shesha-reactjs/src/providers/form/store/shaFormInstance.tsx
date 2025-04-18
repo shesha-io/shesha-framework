@@ -128,6 +128,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     setFormData = (payload: ISetFormDataPayload) => {
         this.#form.setFormData(payload);
     };
+    getFormData = () => {
+        return this.#form.formData;
+    };
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
     };

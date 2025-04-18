@@ -45,7 +45,7 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import { IFormApi } from '../form/formApi';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ISetFormDataPayload } from '../form/contexts';
-import { deepMergeValues } from '@/utils/object';
+import { deepMergeValues, setValueByPropertyName } from '@/utils/object';
 import { ConfigurableItemIdentifierToString, useDataContextManagerActions } from '@/index';
 
 interface IFormLoadingState {
@@ -98,14 +98,21 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const actualPostUrl = useActualContextExecution(props.postUrl);
   const actualPutUrl = useActualContextExecution(props.putUrl);
 
+  var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
+
   const onChangeInternal = (newValue: any) => {
     if (onChange)
       onChange(newValue);
+    else
+      // onChange is empty only if propertyName is not set and need to set value directly to the form data
+      parentFormApi.setFieldsValue(newValue);
   };
 
   const onClearInternal = () => {
     if (onChange)
       onChange({});
+    else
+      parentFormApi.clearFieldsValue();
   };
 
   // ToDO: Alexs - review and remove
@@ -485,17 +492,20 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     return typeof span === 'number' ? { span } : span;
   };
 
-  var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
+  const getSubFormData: any = () => {
+    const data = parentFormApi.getFormData();
+    return props.propertyName && data ? data[props.propertyName] : data;
+  };
 
   const subFormApi: IFormApi<any> = {
     addDelayedUpdateData: function (data: any): IDelayedUpdateGroup[] {
       return parentFormApi.addDelayedUpdateData(data);
     },
     setFieldValue: function (name: string, value: any): void {
-      onChangeInternal(deepMergeValues(value, { [name]: value }));
+      onChangeInternal(deepMergeValues(getSubFormData(), setValueByPropertyName({}, name, value)));
     },
     setFieldsValue: function (values: any): void {
-      onChangeInternal(deepMergeValues(value, values));
+      onChangeInternal(deepMergeValues(getSubFormData(), values));
     },
     clearFieldsValue: function (): void {
       onChangeInternal({});
@@ -510,9 +520,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         onChangeInternal(payload.values);
       }
     },
+    getFormData: function (): any {
+      return getSubFormData();
+    },
     formSettings: parentFormApi.formSettings,
     formMode: parentFormApi.formMode,
-    data: value,
+    data: parentFormApi.data[props.propertyName],
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
   };
 

@@ -128,7 +128,7 @@ export class ShaDataAccessor implements IShaDataAccessor {
 }
 
 export function GetShaFormDataAccessor(shaInstance: IFormApi): IShaDataAccessor {
-  return CreateDataAccessor(() => shaInstance.data, shaInstance.setFieldsValue, shaInstance.setFieldValue);
+  return CreateDataAccessor(() => shaInstance.getFormData(), shaInstance.setFieldsValue, shaInstance.setFieldValue);
 };
 
 

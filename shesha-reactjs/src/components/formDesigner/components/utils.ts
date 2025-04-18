@@ -10,6 +10,7 @@ import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { IApplicationContext, executeScriptSync } from '@/index';
 import { ObservableProxy } from '@/providers/form/observableProxy';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
+import { TouchableProxy } from '@/providers/form/touchableProxy';
 
 type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
 
@@ -26,7 +27,7 @@ export interface ICustomEventHandler {
 
 export const addContextData = (context: any, additionalContext: any) => {
   // if context is an ObservableProxy
-  if (context instanceof ObservableProxy) {
+  if (context instanceof ObservableProxy || context instanceof TouchableProxy) {
     for(const propName in additionalContext) {
       if (additionalContext.hasOwnProperty(propName)) {
         context.addAccessor(propName, () => additionalContext[propName]);

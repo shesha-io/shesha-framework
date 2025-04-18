@@ -8,7 +8,7 @@ import {
     CloseOutlined
 } from "@ant-design/icons";
 import { IDropdownOption } from "../background/interfaces";
-import { addPx } from '../../../../utils/style';
+import { addPx } from '@/utils/style';
 import { nanoid } from "@/utils/uuid";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";

@@ -18,7 +18,7 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getPositionStyle } from '../_settings/utils/position/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
-import { addPx } from '../_settings/utils';
+import { addPx } from '@/utils/style';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
