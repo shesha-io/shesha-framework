@@ -38,7 +38,21 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
                 wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
             >
                 <ConfigurableFormItem model={model}>
-                    {(value, onChange) => <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={maxItemsCount} />}
+                    {(value, onChange) => {
+                        // Ensure value is properly initialized even when jsSetting is enabled
+                        // This fixes the persistence issue with Sort By and Grouping in dataTableContext
+                        const handleChange = (newValue) => {
+                            // Make sure we're passing a properly structured value for the jsSetting scenario
+                            onChange(newValue);
+                        };
+                        
+                        return <SortingEditor 
+                            value={value} 
+                            onChange={handleChange} 
+                            readOnly={readOnly} 
+                            maxItemsCount={maxItemsCount} 
+                        />;
+                    }}
                 </ConfigurableFormItem>
             </ConditionalWrap>
         );

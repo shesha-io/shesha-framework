@@ -1,7 +1,7 @@
 import { Space, Select } from 'antd';
 import { ListEditor, PropertyAutocomplete } from '@/components/index';
 import { ColumnSorting, GroupingItem as SortingItem } from '@/providers/dataTable/interfaces';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { getNanoId } from '@/utils/uuid';
 
 const { Option } = Select;
@@ -15,6 +15,25 @@ export interface ISortingEditorProps {
 
 export const SortingEditor: FC<ISortingEditorProps> = (props) => {
     const { value, onChange, readOnly: editorReadOnly, maxItemsCount } = props;
+    
+    // Ensure value is properly initialized when component is first rendered
+    useEffect(() => {
+        if (value === null || value === undefined) {
+            onChange([]);
+        }
+    }, []);
+
+    const handleItemChange = (newItem: SortingItem, originalItem?: SortingItem) => {
+        // Make sure properties are properly set
+        if (newItem && !newItem.id) {
+            newItem.id = getNanoId();
+        }
+        
+        if (newItem && !newItem.sorting) {
+            newItem.sorting = 'asc';
+        }
+    };
+
     return (
         <ListEditor<SortingItem>
             value={value}
@@ -22,6 +41,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
             initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sorting: 'asc' })}
             readOnly={editorReadOnly}
             maxItemsCount={maxItemsCount}
+            onItemChange={handleItemChange}
         >
             {({ item, itemOnChange, readOnly }) => {
                 return (
