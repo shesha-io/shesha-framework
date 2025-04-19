@@ -20,19 +20,24 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
     useEffect(() => {
         if (value === null || value === undefined) {
             onChange([]);
+        } else if (Array.isArray(value)) {
+            // Ensure all items have proper structure
+            const fixedItems = value.map(item => ({
+                id: item.id || getNanoId(),
+                propertyName: item.propertyName || '',
+                sorting: item.sorting || 'asc'
+            }));
+            
+            // Only update if there were changes
+            const needsUpdate = fixedItems.some((item, idx) => 
+                !value[idx]?.id || !value[idx]?.sorting
+            );
+            
+            if (needsUpdate) {
+                onChange(fixedItems);
+            }
         }
     }, []);
-
-    const handleItemChange = (newItem: SortingItem, originalItem?: SortingItem) => {
-        // Make sure properties are properly set
-        if (newItem && !newItem.id) {
-            newItem.id = getNanoId();
-        }
-        
-        if (newItem && !newItem.sorting) {
-            newItem.sorting = 'asc';
-        }
-    };
 
     return (
         <ListEditor<SortingItem>
@@ -41,7 +46,18 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
             initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sorting: 'asc' })}
             readOnly={editorReadOnly}
             maxItemsCount={maxItemsCount}
-            onItemChange={handleItemChange}
+            // Make sure each item has proper structure before adding or updating
+            onItemChange={(newItem) => {
+                if (newItem && !newItem.id) {
+                    newItem.id = getNanoId();
+                }
+                
+                if (newItem && !newItem.sorting) {
+                    newItem.sorting = 'asc';
+                }
+                
+                return newItem;
+            }}
         >
             {({ item, itemOnChange, readOnly }) => {
                 return (

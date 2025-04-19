@@ -1,6 +1,6 @@
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GroupOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';
@@ -10,6 +10,7 @@ import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index'
 import { MetadataProvider, useFormData } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { GroupingItem as SortingItem } from '@/providers/dataTable/interfaces';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
     modelType: string;
@@ -31,6 +32,9 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
 
         const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
         const readOnly = model.readOnly;
+        
+        // Track initialization state
+        const [isInitialized, setIsInitialized] = useState(false);
 
         return (
             <ConditionalWrap
@@ -39,15 +43,28 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
             >
                 <ConfigurableFormItem model={model}>
                     {(value, onChange) => {
-                        // Ensure value is properly initialized even when jsSetting is enabled
-                        // This fixes the persistence issue with Sort By and Grouping in dataTableContext
-                        const handleChange = (newValue) => {
-                            // Make sure we're passing a properly structured value for the jsSetting scenario
+                        // Handle initialization and value updates in one place
+                        useEffect(() => {
+                            if (!isInitialized) {
+                                // Initialize if value is null, undefined or not an array
+                                if (!value || !Array.isArray(value)) {
+                                    onChange([]);
+                                }
+                                setIsInitialized(true);
+                            }
+                        }, [value, isInitialized]);
+                        
+                        // Custom change handler to ensure proper value updates
+                        const handleChange = (newValue?: SortingItem[]) => {
+                            // Ensure newValue is always an array (or undefined if intentionally clearing)
+                            if (newValue === null) newValue = [];
+                            
+                            // Update the form value - this ensures proper persistence with jsSetting
                             onChange(newValue);
                         };
                         
                         return <SortingEditor 
-                            value={value} 
+                            value={Array.isArray(value) ? value : []} 
                             onChange={handleChange} 
                             readOnly={readOnly} 
                             maxItemsCount={maxItemsCount} 
