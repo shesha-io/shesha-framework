@@ -221,7 +221,7 @@
             "labelAlign": "right",
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
-            "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
+            "description": "Enter custom eventhandler on changing of event.",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -298,7 +298,7 @@
             "labelAlign": "right",
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
-            "description": "Enter custom eventhandler on focus of event. (form, event) are exposed",
+            "description": "Enter custom eventhandler on focus of event.",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [
@@ -370,7 +370,7 @@
             "labelAlign": "right",
             "parentId": "Scip2BCqWk6HniFIJTgtA",
             "hidden": false,
-            "description": "Enter custom eventhandler on blur of event. (form, event) are exposed",
+            "description": "Enter custom eventhandler on blur of event.",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [

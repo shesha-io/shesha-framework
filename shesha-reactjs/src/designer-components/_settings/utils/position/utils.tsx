@@ -1,6 +1,6 @@
 import { IStyleType } from "@/index";
-import { addPx } from "../../utils";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
+import { addPx } from "@/utils/style";
 
 const positions: IRadioOption[] = [
     { value: 'top', title: '', icon: 'UpSquareOutlined' },

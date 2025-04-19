@@ -3,7 +3,7 @@ import { useStyles } from './styles/styles';
 import Show from '../show';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
 
 export interface ISectionSeparatorProps {
   id?: string;

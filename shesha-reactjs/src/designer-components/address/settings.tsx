@@ -40,10 +40,11 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={model}
-          onValuesChange={onValuesChange}
+          onValuesChange={onValuesChange} 
+          componentName={values.componentName}
+          propertyName={values.propertyName}
+          contextName={values.context}
         />
-
         <SettingsFormItem name="label" label="Label" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>

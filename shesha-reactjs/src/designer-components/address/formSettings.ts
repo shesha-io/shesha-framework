@@ -327,7 +327,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 propertyName: 'onChangeCustom',
                                 label: 'On Change',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on changing of event.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })
@@ -337,7 +337,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 propertyName: 'onSelectCustom',
                                 label: 'On Select',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on selection of address. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on selection of address.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })
@@ -347,7 +347,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 propertyName: 'onFocusCustom',
                                 label: 'On Focus',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on focusing of event. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on focusing of event.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })

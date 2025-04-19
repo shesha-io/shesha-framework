@@ -17,7 +17,7 @@ import { useStyles } from './styles/styles';
 import { getStyle, IInputStyles, IStyleType, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -25,7 +25,7 @@ import { getBackgroundStyle } from '@/designer-components/_settings/utils/backgr
 import { isValidGuid } from '../formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { CSSProperties } from 'styled-components';
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -115,8 +115,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const jsStyle = getStyle(model.style, model);
   const containerJsStyle = getStyle(model.container?.style, model.container);
 
-  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-  const containerDimensions = useMemo(() => getSizeStyle(model.container?.dimensions), [model.container?.dimensions]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
+  const containerDimensions = useMemo(() => getDimensionsStyle(model.container?.dimensions), [model.container?.dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});

@@ -1,9 +1,8 @@
 import { ProfileOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useFormData } from '@/providers';
-import { IToolboxComponent } from '@/interfaces';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -17,13 +16,17 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { getEventHandlers } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 
-interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style'> {
-  style?: string;
+interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style'>, IConfigurableFormComponent {
 }
 
-const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
+interface ICheckboxGoupComopnentCalulatedValues {
+  eventHandlers: IEventHandlers;
+  dataSourceUrl?: string;
+}
+
+const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICheckboxGoupComopnentCalulatedValues> = {
   type: 'checkboxGroup',
   isInput: true,
   isOutput: true,
@@ -31,34 +34,33 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
   name: 'Checkbox group',
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-    const { data } = useFormData();
+  calculateModel: (model, allData) => ({ 
+    eventHandlers: getAllEventHandlers(model, allData),
+    dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
+    defaultValue: evaluateValue(model.defaultValue, allData.data),
+  }),
+  Factory: ({ model, calculatedModel }) => {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          const customEvents = getEventHandlers(model, allData);
+          const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (e: any) => {
-            if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
+            if (e.target) 
+              customEvents.onChange({ value: e.target.value }, e);
+            else
+              customEvents.onChange({ value: e }, null);
             if (typeof onChange === 'function') onChange(e);
-          };
-
-          const onFocusInternal = (e: any) => {
-            if (e.target) customEvents.onFocus({ ...e, currentTarget: { value: e.target.value } });
-          };
-
-          const onBlurInternal = (e: any) => {
-            if (e.target) customEvents.onBlur({ ...e, currentTarget: { value: e.target.value } });
           };
 
           return (
             <RefListCheckboxGroup
               {...model}
-              style={getStyle(model?.style, data)}
+              style={model.allStyles.fullStyle}
+              dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value}
+              defaultValue={model.defaultValue}
+              {...calculatedModel.eventHandlers}
               onChange={onChangeInternal}
-              onFocus={onFocusInternal}
-              onBlur={onBlurInternal}
             />
           );
         }}

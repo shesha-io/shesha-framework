@@ -20,7 +20,7 @@ import { customOnChangeValueEventHandler, isValidGuid } from '@/components/formD
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
 import { getSettings } from './settingsForm';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -110,7 +110,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const background = model?.background;
     const jsStyle = getStyle(model.style, model);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});

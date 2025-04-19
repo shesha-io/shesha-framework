@@ -6,7 +6,7 @@ import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
   FormMarkup,
-  useDataContextManager,
+  useDataContextManagerActions,
   useFormData,
   useGlobalState,
   useNestedPropertyMetadatAccessor,
@@ -25,7 +25,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
   const [data, setData] = useState(null);
-  const pageContext = useDataContextManager(false)?.getPageContext();
+  const pageContext = useDataContextManagerActions(false)?.getPageContext();
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
   const evaluatedFilters = useFormEvaluatedFilter({
     filter,

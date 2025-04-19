@@ -14,7 +14,7 @@ import { CSSProperties } from 'styled-components';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -69,7 +69,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const valueStyles = getStyle(valueStyle);
     const titleStyles = getStyle(titleStyle);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle, theme), [border, jsStyle, theme]);
     const valueFontStyles = useMemo(() => getFontStyle(valueFont), [valueFont]);
     const titleFontStyles = useMemo(() => getFontStyle(titleFont), [titleFont]);

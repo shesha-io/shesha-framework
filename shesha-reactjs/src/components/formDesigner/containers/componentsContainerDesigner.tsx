@@ -7,7 +7,7 @@ import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';
-import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
@@ -28,7 +28,8 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     const { styles } = useStyles();
     const parent = useParent();
 
-    const { readOnly, hasDragged } = useFormDesignerState();
+    const readOnly = useFormDesignerStateSelector(x => x.readOnly);
+    const hasDragged = useFormDesignerStateSelector(x => x.hasDragged);
     const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesignerActions();
 
     const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));

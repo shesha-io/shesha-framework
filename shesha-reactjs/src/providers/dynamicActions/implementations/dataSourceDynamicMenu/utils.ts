@@ -1,4 +1,4 @@
-import { evaluateString, useDataContextManager, useFormData, useGlobalState } from '@/index';
+import { evaluateString, useDataContextManagerActions, useFormData, useGlobalState } from '@/index';
 import { Key } from 'react';
 import { IDataSourceArguments } from './model';
 import { buildUrl } from '@/utils/url';
@@ -11,7 +11,7 @@ export const useTemplates = (settings: IDataSourceArguments) => {
   const { dataSourceUrl, queryParams, entityTypeShortAlias, maxResultCount } = settings ?? {};
   const { data } = useFormData();
   const { globalState } = useGlobalState();
-  const pageContext = useDataContextManager(false)?.getPageContext();
+  const pageContext = useDataContextManagerActions(false)?.getPageContext();
 
   const getQueryParams = (): IQueryParams => {
     const queryParamObj: IQueryParams = {};
