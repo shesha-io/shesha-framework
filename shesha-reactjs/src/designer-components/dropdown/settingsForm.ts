@@ -5,7 +5,7 @@ import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IDropdownComponentProps } from './model';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-
+import { nanoid } from '@/utils/uuid';
 export const getSettings = (data: IDropdownComponentProps) => {
 
     return {
@@ -290,21 +290,27 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 ]
 
                             })
-                            .addLabelValueEditor({
-                                id: 'Scip2BCqWL4GniFIGHwdQ',
+                            .addSettingsInputRow({
+                                id: nanoid(),
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                propertyName: 'values',
-                                label: 'Values',
-                                labelName: 'label',
-                                labelTitle: 'Label',
-                                valueName: 'value',
-                                valueTitle: 'Value',
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'labelValueEditor',
+                                        propertyName: 'values',
+                                        label: 'Values',
+                                        labelName: 'label',
+                                        labelTitle: 'Label',
+                                        mode: 'dialog',
+                                        valueName: 'value',
+                                        valueTitle: 'Value',
+                                    }
+                                ],
                                 hidden: {
                                     _code: `return  getSettingValue(data.dataSourceType) !== 'values';`,
                                     _mode: 'code',
                                     _value: false
                                 },
-                                mode: 'dialog',
                             })
                             .addSettingsInput({
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
