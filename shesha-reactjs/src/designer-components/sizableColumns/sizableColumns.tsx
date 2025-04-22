@@ -10,7 +10,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { SizableColumns } from '@/components/sizableColumns';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
@@ -40,7 +40,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     const background = model?.background;
     const jsStyle = getStyle(model.style, data);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);

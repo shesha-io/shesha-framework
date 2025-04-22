@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
-import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
 
 export interface IProps {}
 
 export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
-  const { selectedComponentId, readOnly } = useFormDesignerState();
+  const selectedComponentId = useFormDesignerStateSelector(x => x.selectedComponentId);
+  const readOnly = useFormDesignerStateSelector(x => x.readOnly);
   const { deleteComponent, duplicateComponent } = useFormDesignerActions();
   const { styles } = useStyles();
 

@@ -8,7 +8,7 @@ import {
     CloseOutlined
 } from "@ant-design/icons";
 import { IDropdownOption } from "../background/interfaces";
-import { addPx } from "../../utils";
+import { addPx } from '@/utils/style';
 import { nanoid } from "@/utils/uuid";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
@@ -115,7 +115,8 @@ export const borderSides = [
     { value: "top", icon: "BorderTopOutlined", title: "Top" },
     { value: "right", icon: "BorderRightOutlined", title: "Right" },
     { value: "bottom", icon: "BorderBottomOutlined", title: "Bottom" },
-    { value: "left", icon: "BorderLeftOutlined", title: "Left" }
+    { value: "left", icon: "BorderLeftOutlined", title: "Left" },
+    { value: "middle", icon: "BorderHorizontalOutlined", title: "Middle" }
 ];
 
 
@@ -133,7 +134,7 @@ const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, pa
     return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
 
-export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
+export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMiddle: boolean = false) => {
 
     const borderProp = path ? `${path}.border.border` : 'border.border';
 
@@ -190,7 +191,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
             id: 'borderStyleRow',
             parentId: 'borderStylePnl',
             hidden: { _code: generateCode('borderType', true, isResponsive, path), _mode: 'code', _value: false } as any,
-            components: borderSides.map(sideValue => {
+            components: borderSides.slice(0, hasMiddle ? 5 : 4).map(sideValue => {
                 const side = sideValue.value;
 
                 return new DesignerToolbarSettings()

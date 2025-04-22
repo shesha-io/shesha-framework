@@ -55,7 +55,7 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInput({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfT1',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputType: 'textArea',
                   propertyName: 'content',
@@ -101,7 +101,7 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b1',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hidden: {
                     _code: 'return  !getSettingValue(data?.hasChildren);',
@@ -251,7 +251,7 @@ export const getSettings = (data: any) => {
                         },
                       })
                       .addSettingsInputRow({
-                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b2',
                         parentId: 's4gmBg31azZC0UjZjpfTm',
                         hidden: {
                           _code:
@@ -372,6 +372,17 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        hidden: {
+                          _code: 'return  !getSettingValue(data?.hasChildren);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
                           {
                             type: 'dropdown',
                             id: 'justifyItems-s4gmBg31azZC0UjZjpfTm',
@@ -450,17 +461,6 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
-                        hidden: {
-                          _code: 'return  !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             type: 'textField',
                             id: 'customCss-s4gmBg31azZC0UjZjpfTm',

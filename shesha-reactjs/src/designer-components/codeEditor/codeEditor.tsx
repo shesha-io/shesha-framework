@@ -141,6 +141,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ]
     : undefined;
 
+  const buttonValue = value?.replace('return', '').replace(/;+$/, "");;
+
   return readOnly && !hasValue
     ? (<Typography.Text disabled>No Code</Typography.Text>)
     : (
@@ -151,7 +153,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', fontSize: '12px', width: '100%' } : { width: '100%' }}
         >
-          {<><CodeOutlined /> {hasValue ? value : '...'}</>}
+          {<><CodeOutlined /> {hasValue ? buttonValue : '...'}</>}
         </Button>
         {showDialog && (
           <Modal

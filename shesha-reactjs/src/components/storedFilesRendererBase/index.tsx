@@ -8,7 +8,6 @@ import {
   Upload,
   Image,
   UploadFile,
-  ConfigProvider,
 } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
 import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
@@ -18,7 +17,7 @@ import { useStyles } from './styles/styles';
 import { getStyle, IInputStyles, IStyleType, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -26,7 +25,7 @@ import { getBackgroundStyle } from '@/designer-components/_settings/utils/backgr
 import { isValidGuid } from '../formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { CSSProperties } from 'styled-components';
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -116,8 +115,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const jsStyle = getStyle(model.style, model);
   const containerJsStyle = getStyle(model.container?.style, model.container);
 
-  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-  const containerDimensions = useMemo(() => getSizeStyle(model.container?.dimensions), [model.container?.dimensions]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
+  const containerDimensions = useMemo(() => getDimensionsStyle(model.container?.dimensions), [model.container?.dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -298,36 +297,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   return (
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
       layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
-      <ConfigProvider
-        theme={{
-          components: {
-            Upload: {
-              actionsColor: primaryColor,
-            },
-          },
-        }}
-      >
-        {isStub
-          ? (isDragger
-            ? <Dragger disabled><DraggerStub /></Dragger>
-            : <div
-              className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-            >
-              {renderUploadContent()}
-              {listType !== 'text' && !rest.hideFileName &&
-                <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
-                  {'file name'}
-                </span>}
-            </div>)
-          : (props.disabled
-            ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
-            : isDragger ?
-              <Dragger {...props}>
-                <DraggerStub />
-              </Dragger>
-              : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
-        }
-      </ConfigProvider>
+      {isStub
+        ? (isDragger
+          ? <Dragger disabled><DraggerStub styles={styles}/></Dragger>
+          : <div
+            className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+          >
+            {renderUploadContent()}
+            {listType !== 'text' && !rest.hideFileName &&
+              <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
+                {'file name'}
+              </span>}
+          </div>)
+        : (props.disabled
+          ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
+          : isDragger ?
+            <Dragger {...props}>
+              <DraggerStub styles={styles} />
+            </Dragger>
+            : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
+      }
       {previewImage && (
         <Image
           wrapperStyle={{ display: 'none' }}

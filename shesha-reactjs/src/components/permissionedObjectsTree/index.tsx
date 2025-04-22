@@ -1,7 +1,7 @@
 import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { ApiOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Spin, Tooltip } from 'antd';
+import { ApiOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from '@/apis/permissionedObject';
 import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { useLocalStorage } from '@/hooks';
@@ -9,7 +9,7 @@ import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { ISetGroupingArguments, setGroupingArgumentsForm } from './set-grouping-arguments';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
-import { useAvailableConstantsData } from '@/index';
+import { ShaSpin, useAvailableConstantsData } from '@/index';
 
 export interface IPermissionedObjectsTreeProps {
   objectsType?: string;
@@ -181,7 +181,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   };
 
   return (
-    <Spin spinning={isFetchingData} tip={'Fetching data...'} indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}>
+    <ShaSpin spinning={isFetchingData} tip={'Fetching data...'}>
       <GrouppedObjectsTree<PermissionedObjectDto>
         items={allItems}
         openedKeys={openedKeys}
@@ -195,7 +195,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
         onChange={onChangeHandler}
         onRenterItem={renderTitle}
       />
-    </Spin>
+    </ShaSpin>
   );
 };
 

@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Auditing;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Newtonsoft.Json.Linq;
 using Shesha.Domain;
@@ -6,6 +7,7 @@ using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.Reflection;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,13 +18,14 @@ using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
+    [Collection(SqlServerCollection.Name)]
     public class EntityModelBinder_Tests : SheshaNhTestBase
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IEntityModelBinder _entityModelBinder;
         private readonly IRepository<Person, Guid> _personRepo;
 
-        public EntityModelBinder_Tests()
+        public EntityModelBinder_Tests(SqlServerFixture fixture) : base(fixture)
         {
             _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
@@ -178,7 +181,7 @@ namespace Shesha.Tests.DynamicEntities
                 {
                     // Child creation is not allowed
                     var errors = new List<ValidationResult>();
-                    var newOrg = new Organisation();
+                    var newOrg = new TestOrganisationDisallowContactUpdate();
                     var json1 = @"{ 'name': 'TestOrganisation', 'primaryContact': { 'firstName': 'TestPerson' } }";
                     var jObject1 = JObject.Parse(json1);
                     var result = await _entityModelBinder.BindPropertiesAsync(jObject1, newOrg, new EntityModelBindingContext());
@@ -356,6 +359,13 @@ namespace Shesha.Tests.DynamicEntities
     public class TestOrganisationAllowContactUpdate : Organisation
     {
         [CascadeUpdateRules(true, true, true, typeof(SimplyFinder))]
+        public override Person PrimaryContact { get; set; }
+    }
+
+    [DiscriminatorValue("Test.Organisaion")]
+    public class TestOrganisationDisallowContactUpdate : Organisation
+    {
+        [CascadeUpdateRules(false, false)]
         public override Person PrimaryContact { get; set; }
     }
 

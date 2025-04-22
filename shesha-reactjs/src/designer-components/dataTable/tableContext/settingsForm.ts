@@ -92,7 +92,7 @@ export const getSettings = (data: any) => {
                           { label: 'Form', value: 'Form' },
                         ],
                         allowClear: true,
-                        validate: { required: true },    
+                        validate: { required: true },
                         jsSetting: true,
                       })
                       .addSettingsInputRow({
@@ -103,7 +103,7 @@ export const getSettings = (data: any) => {
                           _value: false,
                           _code: "return getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: "code"
-                        } as any,    
+                        } as any,
                         inputs: [{
                           id: nanoid(),
                           type: 'autocomplete',
@@ -119,7 +119,7 @@ export const getSettings = (data: any) => {
                           settingsValidationErrors: [],
                           jsSetting: true,
                           useRawValues: true,
-                          width: '100%',     
+                          width: '100%',
                         }]
                       })
                       .addSettingsInputRow({
@@ -130,7 +130,7 @@ export const getSettings = (data: any) => {
                           _value: false,
                           _code: "return getSettingValue(data.sourceType) !== 'Url' && getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: "code"
-                        } as any,    
+                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -175,7 +175,7 @@ export const getSettings = (data: any) => {
                             value: "fetchAll"
                           }
                         ],
-                        validate: { required: true },    
+                        validate: { required: true },
                         jsSetting: true,
                       })
                       .addSettingsInputRow({
@@ -186,7 +186,7 @@ export const getSettings = (data: any) => {
                           _value: false,
                           _code: "return getSettingValue(data.dataFetchingMode) !== 'paging';",
                           _mode: "code"
-                        } as any,    
+                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -228,7 +228,7 @@ export const getSettings = (data: any) => {
                               "single"
                             ],
                             parentId: dataTabId,
-                            validate: { required: true },        
+                            validate: { required: true },
                             jsSetting: true,
                           }
                         ]
@@ -241,7 +241,7 @@ export const getSettings = (data: any) => {
                           _value: false,
                           _code: "const sourceType = getSettingValue(data && data.sourceType);\nconst entityType = getSettingValue(data && data.entityType);\n\nreturn !(sourceType === 'Entity' && Boolean(entityType));",
                           _mode: "code"
-                        },    
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -264,7 +264,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,    
+                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return !getSettingValue(data?.sourceType) || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
@@ -289,7 +289,7 @@ export const getSettings = (data: any) => {
                                 value: "strict"
                               }
                             ],
-                            validate: { required: true },        
+                            validate: { required: true },
                             settingsValidationErrors: [],
                             jsSetting: true,
                             width: '100%',
@@ -299,7 +299,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,    
+                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'strict';",
@@ -334,7 +334,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,    
+                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return getSettingValue(data.sortMode) !== 'strict';",
@@ -375,12 +375,11 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard' || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
                           _mode: "code"
-                        },    
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -389,13 +388,18 @@ export const getSettings = (data: any) => {
                             componentName: "standardSorting",
                             label: "Sort By",
                             labelAlign: "right",
-                            parentId: "root",
+                            parentId: dataTabId,
+                            hidden: {
+                              _value: false,
+                              _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard';",
+                              _mode: "code"
+                            } as any,
+                            customVisibility: null,
                             isDynamic: false,
                             version: 0,
+                            modelType: "{{data.entityType}}",
                             validate: {},
                             settingsValidationErrors: [],
-                            modelType: "{{data.entityType}}",
-                            width: '100%',
                             jsSetting: true,
                           }
                         ]
@@ -403,12 +407,11 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');",
                           _mode: "code"
-                        } as any,    
+                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -418,13 +421,17 @@ export const getSettings = (data: any) => {
                             label: "Grouping",
                             labelAlign: "right",
                             parentId: "root",
+                            hidden: {
+                              _value: false,
+                              _code: "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');\n",
+                              _mode: "code"
+                            } as any,
                             isDynamic: false,
                             version: 0,
                             validate: {},
                             settingsValidationErrors: [],
-                            modelType: "{{data.entityType}}",
-                            width: '100%',
                             jsSetting: true,
+                            modelType: "{{data.entityType}}"
                           }
                         ]
                       })
@@ -437,7 +444,7 @@ export const getSettings = (data: any) => {
                           _code: "return !getSettingValue(data?.sourceType) || !(getSettingValue(data.sourceType) === 'Entity' && getSettingValue(data.sortMode) === 'strict' || getSettingValue(data.sourceType) === 'Form');",
                           _mode: "code"
                         },
-                        isDynamic: false,    
+                        isDynamic: false,
                         inputs: [
                           {
                             id: nanoid(),

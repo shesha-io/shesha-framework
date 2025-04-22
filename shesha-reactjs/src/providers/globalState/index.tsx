@@ -12,7 +12,9 @@ const GlobalStateProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const [globalState] = useState<IGlobalState>(() => {
     // init new instance of global state
-    return new GlobalState(() => forceUpdate({}));
+    return new GlobalState(() => {
+      forceUpdate({});
+    });
   });
 
   return (

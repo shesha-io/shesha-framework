@@ -8,7 +8,7 @@ import React, {
 import { IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
 import { executeFunction, getStyle, useFormData, useGlobalState } from '@/index';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 import { Tooltip } from 'antd';
 
@@ -42,7 +42,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     
     const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
         if (onChange) onChange(iconName);

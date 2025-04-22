@@ -106,19 +106,47 @@ export const getSettings = (data: IRateProps) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
+                  parentId: eventsTabId
                 })
+                .addSettingsInput({
+                    id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                    inputType: 'codeEditor',
+                    propertyName: 'onFocusCustom',
+                    label: 'On Focus',
+                    labelAlign: 'right',
+                    tooltip: 'Enter custom eventhandler on focus of event.',
+                    parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                })
+                .addSettingsInput({
+                    id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                    inputType: 'codeEditor',
+                    propertyName: 'onBlurCustom',
+                    label: 'On Blur',
+                    labelAlign: 'right',
+                    tooltip: 'Enter custom eventhandler on blur of event.',
+                    parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                })
+                .addSettingsInput({
+                  id: '1232d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onClickCustom',
+                  label: 'On Click',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on click of event.',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2'
+              })
                 .toJson()
             ]
           },
@@ -146,7 +174,7 @@ export const getSettings = (data: IRateProps) => {
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
                         propertyName: 'customStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: 'styleRouter',
@@ -155,7 +183,7 @@ export const getSettings = (data: IRateProps) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                          id: nanoid(),
+                              id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
                               hideLabel: false,
@@ -173,23 +201,22 @@ export const getSettings = (data: IRateProps) => {
             ]
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: eventsTabId
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  parentId: securityTabId,
                 })
                 .toJson()
             ]
-          }
+          },
         ]
       })
       .toJson(),

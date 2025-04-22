@@ -54,6 +54,11 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     const result: ThemeConfig = {
       cssVar: true,
       token: { ...themeDefaults, ...theme },
+      components: {
+        Menu: {
+          itemHeight: 'clamp(40px, 40px, 100%)' as any
+        },
+      },
     };
     return result;
   }, [state.theme]);

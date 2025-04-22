@@ -60,6 +60,9 @@ export interface IFormApi<Values = any> {
    */
   setFormData: (payload: ISetFormDataPayload) => void;
 
+  /** Get form data. Need for getting actual form data (using in scripts) */
+  getFormData: () => Values;
+
   /** antd form instance */
   formInstance?: FormInstance<Values>;
   /** Configurable form settings */
@@ -108,6 +111,9 @@ class PublicFormApiWrapper implements IFormApi {
   };
   setFormData = (payload: ISetFormDataPayload) => {
     this.#form?.setFormData(payload);
+  };
+  getFormData = () => {
+    return this.#form?.formData;
   };
   get formInstance(): FormInstance<any> {
     // antd form

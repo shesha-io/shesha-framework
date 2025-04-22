@@ -84,18 +84,19 @@ export const getSettings = (data: ISwitchComponentProps) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
+                  parentId: eventsTabId
                 })
                 .toJson()
             ]
@@ -158,7 +159,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
                         propertyName: 'customStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: 'styleRouter',
@@ -167,7 +168,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                          id: nanoid(),
+                              id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
                               label: 'Style',
@@ -184,19 +185,18 @@ export const getSettings = (data: ISwitchComponentProps) => {
             ]
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: eventsTabId
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  parentId: securityTabId,
                 })
                 .toJson()
             ]

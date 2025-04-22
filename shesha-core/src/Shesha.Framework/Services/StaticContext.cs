@@ -5,6 +5,7 @@ using Shesha.Extensions;
 using Shesha.Utilities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Shesha.Services
 {
@@ -13,12 +14,14 @@ namespace Shesha.Services
     /// </summary>
     public static class StaticContext
     {
-        private static IIocManager _iocManager;
+        private static readonly AsyncLocal<IIocManager> _asyncLocalIocManager = new AsyncLocal<IIocManager>();
 
         /// <summary>
         /// Ioc manager
         /// </summary>
-        public static IIocManager IocManager => _iocManager ?? Abp.Dependency.IocManager.Instance;
+#pragma warning disable SHA001 // Restricted static property access
+        public static IIocManager IocManager => _asyncLocalIocManager.Value ?? Abp.Dependency.IocManager.Instance;
+#pragma warning restore SHA001 // Restricted static property access
 
         /// <summary>
         /// Set IocManager, is used in unit tests only
@@ -26,7 +29,7 @@ namespace Shesha.Services
         /// <param name="iocManager"></param>
         public static void SetIocManager(IIocManager iocManager)
         {
-            _iocManager = iocManager;
+            _asyncLocalIocManager.Value = iocManager;
         }
 
         public static void LogUow(string message)

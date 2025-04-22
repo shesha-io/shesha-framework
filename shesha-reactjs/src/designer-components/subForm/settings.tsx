@@ -78,8 +78,10 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={model}
           onValuesChange={onValuesChange}
+          componentName={model.componentName}
+          propertyName={model.propertyName}
+          contextName={model.context}
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>

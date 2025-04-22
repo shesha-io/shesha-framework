@@ -11,13 +11,14 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getPositionStyle } from '../_settings/utils/position/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { addPx } from '@/utils/style';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -36,7 +37,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const position = model?.position;
     const jsStyle = getStyle(model.style, model);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -98,7 +99,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       noDefaultStyling: model.noDefaultStyling,
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
-      gap: model.gap,
+      gap: addPx(model.gap),
     };
     return (
       <ParentProvider model={model}>
@@ -173,7 +174,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap || 8,
+          gap: prev?.gap || '8px',
           position: defaultStyles().position,
         };
 

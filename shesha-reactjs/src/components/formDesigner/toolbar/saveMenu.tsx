@@ -14,7 +14,7 @@ import {
   MenuProps,
   } from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useHttpClient } from '@/providers';
@@ -34,7 +34,8 @@ export interface ISaveMenuProps {
 
 export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { loadForm, saveForm, formProps } = useFormPersister();
-  const { formFlatMarkup, formSettings } = useFormDesignerState();
+  const formFlatMarkup = useFormDesignerStateSelector(x => x.formFlatMarkup);
+  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
   const toolboxComponents = useFormDesignerComponents();
   const httpClient = useHttpClient();
   const { message, modal } = App.useApp();

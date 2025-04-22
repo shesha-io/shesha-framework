@@ -4,11 +4,9 @@ import { DataNode, EventDataNode } from 'antd/lib/tree';
 import { FC } from 'react';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { Key } from 'rc-tree/lib/interface';
-import { LoadingOutlined } from '@ant-design/icons';
 import {
   App,
   Space,
-  Spin,
   Tag,
   Tooltip,
   Tree
@@ -23,7 +21,7 @@ import {
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
-import { useAvailableConstantsData } from '@/index';
+import { ShaSpin, useAvailableConstantsData } from '@/index';
 
 interface IDataNode {
   title: JSX.Element;
@@ -607,11 +605,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
-      <Spin
-        spinning={isFetchingData || isDeleting || isParentUpdating}
-        tip={getLoadingHint()}
-        indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
-      >
+      <ShaSpin spinning={isFetchingData || isDeleting || isParentUpdating} tip={getLoadingHint()}>
         {!rest.hideSearch && <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />}
         <Tree
           expandedKeys={expanded}
@@ -630,7 +624,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
           selectedKeys={selected}
           height={rest.height}
         />
-      </Spin>
+      </ShaSpin>
     </Space>
   );
 };

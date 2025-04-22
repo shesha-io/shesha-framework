@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useRef, useMemo } from 'react';
+import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useMemo } from 'react';
 import {
   IConfigurableFormComponent,
 } from '@/interfaces';
@@ -12,8 +12,7 @@ import {
   ISetFormDataPayload,
 } from './contexts';
 import { FormMode, IFormActions, IFormSections, IFormSettings } from './models';
-import { getFilteredComponentIds } from './utils';
-import { useDeepCompareMemo } from '@/index';
+import { isComponentFiltered } from '@/index';
 import { FormFlatMarkupProvider, useChildComponentIds, useChildComponents, useComponentModel, useFormMarkup } from './providers/formMarkupProvider';
 import { useFormDesignerActions } from '../formDesigner';
 import { IShaFormInstance } from './store/interfaces';
@@ -65,20 +64,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   propertyFilter,
   ...props
 }) => {
-  const { allComponents } = ShaForm.useMarkup();
-
-  const filteredComponents = useRef<string[]>();
-
-  filteredComponents.current = useDeepCompareMemo(() => {
-    return getFilteredComponentIds(
-      allComponents,
-      propertyFilter
-    );
-  }, [allComponents, propertyFilter]);
-
-  const isComponentFiltered = useCallback((component: IConfigurableFormComponent): boolean => {
-    return filteredComponents.current?.includes(component.id);
-  }, [filteredComponents.current]);
+  const isComponentFilteredLocal = useCallback((component: IConfigurableFormComponent): boolean => {
+    return isComponentFiltered(component, propertyFilter);
+  }, [propertyFilter]);
 
   const setFormMode = useCallback((formMode: FormMode) => {
     props.shaForm.setFormMode(formMode);
@@ -94,7 +82,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   const configurableFormActions: IFormActionsContext = {
     setFormMode,
     setFormData,
-    isComponentFiltered,
+    isComponentFiltered: isComponentFilteredLocal,
   };
   if (formRef)
     formRef.current = { ...configurableFormActions };

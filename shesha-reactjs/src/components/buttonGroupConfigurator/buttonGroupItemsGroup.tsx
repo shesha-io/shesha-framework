@@ -5,7 +5,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '../listEditor';
-import { useActualContextData } from '@/hooks/useActualContextData';
+import { useActualContextData } from '@/hooks';
 
 export interface IContainerRenderArgs {
   index?: number[];

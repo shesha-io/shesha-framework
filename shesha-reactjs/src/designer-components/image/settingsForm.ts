@@ -439,7 +439,7 @@ export const getSettings = (data) => {
                                                 id: 'borderStylePnl',
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
+                                                        id: `borderStyleRow1`,
                                                         parentId: 'borderStylePnl',
                                                         hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
                                                                 inputs: [
