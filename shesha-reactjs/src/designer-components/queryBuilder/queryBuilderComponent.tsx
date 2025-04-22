@@ -6,7 +6,7 @@ import { IQueryBuilderComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { QueryBuilder } from './queryBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -19,8 +19,11 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   isOutput: true,
   canBeJsSetting: true,
   //dataTypes: [DataTypes.string],
-  Factory: ({ model }) => {
-    return <QueryBuilder {...model} readOnly={model.readOnly}></QueryBuilder>;
+  calculateModel: (model, allData) => ({
+    modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null,
+  }),
+  Factory: ({ model, calculatedModel }) => {
+    return <QueryBuilder {...model} modelType={calculatedModel.modelType} readOnly={model.readOnly}></QueryBuilder>;
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
