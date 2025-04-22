@@ -36,7 +36,7 @@ namespace Shesha.Tests.DynamicEntities
         [Fact]
         public async Task Test_EmbeddedResources() 
         {
-            var jsonResourceName = "flatModel.metadata.json";
+            var jsonResourceName = "flatModel-metadata.json";
             var type = this.GetType();
             try
             {
@@ -52,7 +52,7 @@ namespace Shesha.Tests.DynamicEntities
         [Fact]
         public async Task BindFlatModel_TestAsync()
         {
-            var bindingResult = await BindAsync<PersonDynamicDto>("flatModel.json", "flatModel.metadata.json");
+            var bindingResult = await BindAsync<PersonDynamicDto>("flatModel.json", "flatModel-metadata.json");
 
             // Assert
             Assert.True(bindingResult.IsModelSet);
@@ -80,7 +80,7 @@ namespace Shesha.Tests.DynamicEntities
         [Fact]
         public async Task Bind2NestedLevels_TestAsync()
         {
-            var bindingResult = await BindAsync<PersonDynamicDto>("nested2Levels.json", "nested2Levels.metadata.json");
+            var bindingResult = await BindAsync<PersonDynamicDto>("nested2Levels.json", "nested2Levels-metadata.json");
 
             // Assert
             Assert.True(bindingResult.IsModelSet);
@@ -98,7 +98,7 @@ namespace Shesha.Tests.DynamicEntities
         [Fact]
         public async Task Bind3NestedLevels_TestAsync()
         {
-            var bindingResult = await BindAsync<PersonDynamicDto>("nested3Levels.json", "nested3Levels.metadata.json");
+            var bindingResult = await BindAsync<PersonDynamicDto>("nested3Levels.json", "nested3Levels-metadata.json");
 
             // Assert
             Assert.True(bindingResult.IsModelSet);
@@ -123,7 +123,7 @@ namespace Shesha.Tests.DynamicEntities
         [Fact]
         public async Task BindEntityReference_DtoMode_TestAsync()
         {
-            var bindingResult = await BindAsync<PersonDynamicDto>("entityReference_DtoMode.json", "entityReference_DtoMode.metadata.json");
+            var bindingResult = await BindAsync<PersonDynamicDto>("entityReference_DtoMode.json", "entityReference_DtoMode-metadata.json");
 
             // Assert
             Assert.True(bindingResult.IsModelSet);
