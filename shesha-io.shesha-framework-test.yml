@@ -108,9 +108,9 @@ stages:
       displayName: dotnet Restore
       inputs:
         command: 'restore'
-        projects: shesha-functional-tests/backend/**/*.csproj        
-        feedsToUse: 'select'
-        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
+        projects: 'shesha-functional-tests/backend/**/*.csproj'
+        feedsToUse: 'config'
+        nugetConfigPath: './shesha-core/.nuget/NuGet.Config'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
