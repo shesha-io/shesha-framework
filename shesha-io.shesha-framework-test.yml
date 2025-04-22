@@ -111,6 +111,7 @@ stages:
         projects: 'shesha-functional-tests/backend/**/*.csproj'
         feedsToUse: 'config'
         nugetConfigPath: './shesha-core/.nuget/NuGet.Config'
+        workingDirectory: './shesha-core/.nuget'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
