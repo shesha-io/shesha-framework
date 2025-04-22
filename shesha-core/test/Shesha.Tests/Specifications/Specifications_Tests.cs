@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.TestBase;
 using Moq;
 using NHibernate;
 using Shesha.Domain;
@@ -7,6 +6,7 @@ using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.NHibernate.Repositories;
 using Shesha.Specifications;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,13 @@ using Xunit;
 
 namespace Shesha.Tests.Specifications
 {
-    public class Specifications_Tests: AbpIntegratedTestBase<SheshaTestModule>
+    [Collection(SqlServerCollection.Name)]
+    public class Specifications_Tests : SheshaNhTestBase
     {
+        public Specifications_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task Test_NestedContexts_Async()
         {
@@ -85,7 +90,7 @@ namespace Shesha.Tests.Specifications
 
             await Task.Delay(1);
 
-            var allPersonsCount = await repository.CountAsync();
+            var allPersonsCount = await repository.GetAll().CountAsync();
             allPersonsCount.ShouldBe(expectedAllPersonsCount);
 
             using (specAccessor.Use<Age18PlusSpecification, Person>())

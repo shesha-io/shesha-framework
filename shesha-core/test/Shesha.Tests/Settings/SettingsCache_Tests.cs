@@ -1,12 +1,13 @@
 ﻿using Abp.Domain.Repositories;
-using JsonLogic.Net;
 using Moq;
 using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Reflection;
 using Shesha.Services.Settings;
+using Shesha.Services.Settings.Cache;
 using Shesha.Settings;
+using Shesha.Tests.Fixtures;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,13 @@ using Xunit;
 
 namespace Shesha.Tests.Settings
 {
+    [Collection(SqlServerCollection.Name)]
     public class SettingsCache_Tests : SheshaNhTestBase
     {
+        public SettingsCache_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task GetCachedValueTest_Async()
         {
@@ -52,10 +58,14 @@ namespace Shesha.Tests.Settings
                 return new List<Module> { module }.AsQueryable();
             });
 
-            var manager = LocalIocManager.Resolve<ISettingStore>(new {
+            var cacheHolder = Resolve<ISettingCacheHolder>();
+            await cacheHolder.Cache.ClearAsync();
+
+            var manager = Resolve<SettingStore>(new {
                 repository = mockConfigRepo.Object,
                 settingValueRepository = mockValueRepo.Object,
                 moduleRepository = mockModuleRepo.Object,
+                cacheHolder,
             });
 
             var definitionManager = Resolve<ISettingDefinitionManager>();

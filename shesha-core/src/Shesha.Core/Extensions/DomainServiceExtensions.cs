@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Runtime.Session;
@@ -21,7 +20,7 @@ namespace Shesha.Domain
 
         public static async Task<Person> GetCurrentPersonAsync(this DomainService service)
         {
-            var personRepository = IocManager.Instance.Resolve<IRepository<Person, Guid>>();
+            var personRepository = StaticContext.IocManager.Resolve<IRepository<Person, Guid>>();
             var _session = StaticContext.IocManager.Resolve<IAbpSession>();
             var person = await personRepository.FirstOrDefaultAsync(p => p.User != null && p.User.Id == _session.GetUserId());
             return person;
