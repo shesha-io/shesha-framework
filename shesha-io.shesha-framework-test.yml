@@ -95,7 +95,9 @@ stages:
         condition: succeededOrFailed()  
   - job: Job_1
     displayName: Build_Functional_Shesha_API
-    dependsOn: Job_4    
+    dependsOn: 
+      - Job_4
+      - UnitTests_1
     pool:
       name: Azure Pipelines
       vmImage: windows-latest
