@@ -27,7 +27,7 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  id: 'component-name-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputType: 'textField',
                   propertyName: 'componentName',
@@ -36,7 +36,7 @@ export const getSettings = (data: any) => {
                   jsSetting: true,
                 })
                 .addSettingsInputRow({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  id: 'label-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputs: [
                     {

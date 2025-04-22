@@ -86,7 +86,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                             })
                             .addSettingsInput({
                                 inputType: 'textArea',
-                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                id: 'confirm-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 propertyName: 'confirmDescription',
                                 label: 'Tooltip: Confirmation',
