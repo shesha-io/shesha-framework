@@ -3,6 +3,7 @@ import isEqualWith from 'lodash/isEqualWith';
 import { StorageArrayProperty, StorageProperty } from '@/providers/dataContextProvider/contexts/storageProxy';
 import { ObservableProxy } from '..';
 import { TouchableArrayProperty, TouchableProperty } from '@/providers/form/touchableProperty';
+import { ShaArrayAccessProxy, ShaObjectAccessProxy } from '@/providers/dataContextProvider/contexts/shaDataAccessProxy';
 
 /**
  * Custom version of isEqual to handle function comparison
@@ -23,8 +24,13 @@ export function useDeepCompareMemoize(value: Readonly<any>) {
 
   const unproxiedValue = Array.isArray(value)
     ? value.map((item) => 
-      item instanceof StorageProperty || item instanceof StorageArrayProperty || item instanceof TouchableProperty || item instanceof TouchableArrayProperty
-        ? item.getData() 
+      item instanceof StorageProperty 
+      || item instanceof StorageArrayProperty 
+      || item instanceof ShaObjectAccessProxy
+      || item instanceof ShaArrayAccessProxy
+      || item instanceof TouchableProperty 
+      || item instanceof TouchableArrayProperty
+        ? {...item.getData()}
         : item instanceof ObservableProxy
           ? {...item}
           : item

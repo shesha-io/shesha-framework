@@ -27,6 +27,21 @@ export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, nam
         set(target, name, value) {
             target.accessor._data[name] = value;
             return true;
+        },
+        has(target, prop) {
+          const propertyName = prop.toString();
+          return propertyName in target.accessor._data;
+        },
+        ownKeys(target) {
+          const data = target.accessor._data;
+          return data ? Object.keys(data) : [];
+        },
+        getOwnPropertyDescriptor(target, prop) {
+          const propertyName = prop.toString();
+          const data = target.accessor._data;
+          if (data && propertyName in data)
+              return { enumerable: true, configurable: true, writable: true };
+          return undefined;
         }
     });
 };
