@@ -22,7 +22,6 @@ export const getSettings = (data: DynamicViewComponentProps) => {
                         id: 's4gmBg31azZC0UjZjpfTm',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
                                 propertyName: 'componentName',
                                 label: 'Component name',
@@ -36,7 +35,6 @@ export const getSettings = (data: DynamicViewComponentProps) => {
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: '5c813b1a-04c5-4678-ac0f-cbcbae6b3bd4',
@@ -57,7 +55,6 @@ export const getSettings = (data: DynamicViewComponentProps) => {
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                                 inputType: 'permissions',
                                 propertyName: 'permissions',

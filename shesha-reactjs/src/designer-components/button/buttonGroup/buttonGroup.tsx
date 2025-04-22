@@ -241,7 +241,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         ...borderStyles,
         ...backgroundStyles,
         ...shadowStyles,
-        ...stylingBoxAsCSS
+        ...stylingBoxAsCSS,
+        ...jsStyle
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
@@ -361,7 +362,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                 <Menu
                     mode="horizontal"
                     items={menuItems}
-                    className={classNames(styles.shaResponsiveButtonGroup, `space-${spaceSize}`)}
+                    className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
                     style={{ width: '30px' }}
                 />
             </div>

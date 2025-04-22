@@ -23,7 +23,6 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { useSheshaApplication } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
-import { ConfigProvider } from 'antd';
 
 
 const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
@@ -88,9 +87,10 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
+      ...localStyle
     });
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -103,29 +103,16 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
           };
 
           return (
-            <ConfigProvider
-              theme={{
-                components: {
-                  Dropdown: {
-                    fontFamily: model?.font?.type,
-                    fontSize: model?.font?.size,
-                    fontWeightStrong: Number(fontStyles.fontWeight),
-                  },
-                },
+            <Dropdown
+              {...model}
+              style={{
+                ...finalStyle
               }}
-            >
-              <Dropdown
-                {...model}
-                style={{
-                  ...finalStyle
-                }}
-                {...customEvent}
-                value={value}
-                size={model?.size}
-                onChange={onChangeInternal}
-              />
-            </ConfigProvider>
-
+              {...customEvent}
+              value={value}
+              size={model?.size}
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>
@@ -158,15 +145,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
           : 'listItem',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IDropdownComponentProps>(7, (prev) => {
-      const styles: IInputStyles = {
-        size: prev.size,
-        stylingBox: prev.stylingBox,
-        style: prev.style,
-      };
-
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
+    .add<IDropdownComponentProps>(7, (prev) => ({ ...prev, editMode: prev.editMode ?? 'inherited' }))
     .add<IDropdownComponentProps>(8, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
@@ -180,6 +159,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         fontColor: prev.fontColor,
         backgroundColor: prev.backgroundColor,
         stylingBox: prev.stylingBox,
+        style: prev.style,
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })

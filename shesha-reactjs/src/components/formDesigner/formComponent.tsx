@@ -78,7 +78,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   };
 
   if (componentModel.type === 'subForm') {
-    attributes['data-sha-c-form-name'] = `${(componentModel as any)?.formId?.module}/${(componentModel as any)?.formId?.name}`;
+    if ((componentModel as any)?.formSelectionMode !== 'dynamic'){
+      attributes['data-sha-c-form-name'] = `${(componentModel as any)?.formId?.module}/${(componentModel as any)?.formId?.name}`;
+    }
     attributes['data-sha-parent-form-id'] = `${shaForm.form.id}`;
     attributes['data-sha-parent-form-name'] = `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}`;
   }

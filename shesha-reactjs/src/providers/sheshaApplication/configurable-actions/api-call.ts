@@ -32,7 +32,6 @@ const HttpVerbs: Method[] = ['get',
 export const apiCallArgumentsForm = new DesignerToolbarSettings()
   .addSettingsInputRow({
     id: 'httpverb-url-row',
-    readOnly: false,
     inputs: [
       {
         id: nanoid(),
@@ -54,7 +53,6 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
   })
   .addSettingsInputRow({
     id: "parameters-standard-header-row",
-    readOnly: false,
     inputs: [
       {
         id: nanoid(),

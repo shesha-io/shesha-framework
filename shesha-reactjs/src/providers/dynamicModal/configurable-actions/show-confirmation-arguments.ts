@@ -12,7 +12,6 @@ export interface IShowConfirmationArguments {
 export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
   .addSettingsInputRow({
     id: 'title-content-row',
-    readOnly: false,
     inputs: [
       {
         type: 'textField',
@@ -32,7 +31,6 @@ export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
   })
   .addSettingsInputRow({
     id: 'oktext-canceltext-row',
-    readOnly: false,
     inputs: [
       {
         id: nanoid(),

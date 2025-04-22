@@ -42,7 +42,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: { _code: 'return  getSettingValue(data?.hasChildren);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
@@ -63,7 +62,6 @@ export const getSettings = (data: any) => {
                   label: 'Content',
                   size: 'small',
                   jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: {
                     _code:
                       'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.hasChildren);',
@@ -79,12 +77,10 @@ export const getSettings = (data: any) => {
                   label: 'Href',
                   size: 'small',
                   jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'switch',
@@ -112,7 +108,6 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
@@ -137,7 +132,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
@@ -216,11 +210,6 @@ export const getSettings = (data: any) => {
                                 parentId: 'fontStylePnl',
                                 inline: true,
                                 propertyName: 'font',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'dropdown',
@@ -267,11 +256,6 @@ export const getSettings = (data: any) => {
                         hidden: {
                           _code:
                             'return  getSettingValue(data?.direction) !== "horizontal" || !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -388,6 +372,17 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        hidden: {
+                          _code: 'return  !getSettingValue(data?.hasChildren);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
                           {
                             type: 'dropdown',
                             id: 'justifyItems-s4gmBg31azZC0UjZjpfTm',
@@ -466,22 +461,6 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
-                        hidden: {
-                          _code: 'return  !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             type: 'textField',
                             id: 'customCss-s4gmBg31azZC0UjZjpfTm',
@@ -505,11 +484,6 @@ export const getSettings = (data: any) => {
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
@@ -535,7 +509,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',

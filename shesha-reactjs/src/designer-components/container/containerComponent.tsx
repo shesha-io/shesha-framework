@@ -97,8 +97,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
       gap: addPx(model.gap),
-
     };
+    
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
