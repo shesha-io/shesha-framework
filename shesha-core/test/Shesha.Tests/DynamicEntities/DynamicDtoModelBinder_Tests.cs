@@ -11,6 +11,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Exceptions;
 using Shesha.Reflection;
 using Shesha.Tests.DynamicEntities.Mvc;
 using Shesha.Tests.Fixtures;
@@ -30,6 +31,22 @@ namespace Shesha.Tests.DynamicEntities
     {
         public DynamicDtoModelBinder_Tests(SqlServerFixture fixture) : base(fixture)
         {
+        }
+
+        [Fact]
+        public async Task Test_EmbeddedResources() 
+        {
+            var jsonResourceName = "flatModel.metadata.json";
+            var type = this.GetType();
+            try
+            {
+                var content = await GetResourceStringAsync($"{this.GetType().Namespace}.Resources.{jsonResourceName}", this.GetType().Assembly);
+            }
+            catch (ManifestResourceStreamNotFoundException e)
+            {
+                var resources = type.Assembly.GetManifestResourceNames();
+                throw new Exception($"'{jsonResourceName}' is missing, possible names: {resources.Delimited(", ")}");
+            }            
         }
 
         [Fact]
