@@ -304,6 +304,39 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
+                        parentId: dataTabId,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'modalTitle',
+                            label: 'Modal Title',
+                            parentId: dataTabId,
+                            type: 'textField',
+                            jsSetting: true,
+                          },
+                          {
+                            id: nanoid(),
+                            propertyName: 'footerButtons',
+                            label: 'Footer Buttons',
+                            parentId: dataTabId,
+                            type: 'dropdown',
+                            allowClear: true,
+                            jsSetting: true,
+                            dropdownOptions: [
+                              { value: 'default', label: 'Default' },
+                              { value: 'custom', label: 'Custom' },
+                              { value: 'none', label: 'None' },
+                            ],
+                          },
+                        ]
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
                         parentId: appearanceTabId,
                         readOnly: {
                           _code: 'return getSettingValue(data?.readOnly);',
@@ -332,7 +365,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             ],
                             width: '100%',
                           },
-                          ,
                           {
                             id: nanoid(),
                             propertyName: 'additionalProperties',
@@ -403,39 +435,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             width: '100%',
                           },
                         ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'modalTitle',
-                            label: 'Modal Title',
-                            parentId: dataTabId,
-                            type: 'textField',
-                            jsSetting: true,
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'footerButtons',
-                            label: 'Footer Buttons',
-                            parentId: dataTabId,
-                            type: 'dropdown',
-                            allowClear: true,
-                            jsSetting: true,
-                            dropdownOptions: [
-                              { value: 'default', label: 'Default' },
-                              { value: 'custom', label: 'Custom' },
-                              { value: 'none', label: 'None' },
-                            ],
-                          },
-                        ]
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
