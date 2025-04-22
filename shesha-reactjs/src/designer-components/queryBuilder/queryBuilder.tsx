@@ -7,7 +7,7 @@ import { useQueryBuilder } from '@/providers';
 export const QueryBuilder: FC<IQueryBuilderComponentProps> = (props) => {
   const queryBuilder = useQueryBuilder(false);
 
-  return queryBuilder ? (
+  return !props.modelType && queryBuilder ? (
     <QueryBuilderRenderer {...props}></QueryBuilderRenderer>
   ) : (
     <QueryBuilderWithModelType modelType={props.modelType}>
