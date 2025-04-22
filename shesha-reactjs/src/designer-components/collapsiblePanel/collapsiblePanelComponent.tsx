@@ -16,7 +16,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -84,7 +84,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     }), [model?.headerStyles?.style, data, globalState, headerStylingBox]);
 
     const style = useMemo(() => ({
-      ...getSizeStyle(dimensions),
+      ...getDimensionsStyle(dimensions),
       ...(!ghost && getBorderStyle(border, getBodyStyle)),
       ...getFontStyle(font),
       ...(!ghost && getShadowStyle(shadow)),
@@ -92,7 +92,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     }), [dimensions, border, font, shadow, getBodyStyle, ghost]);
 
     const headerStyle = useMemo(() => ({
-      ...getSizeStyle(headerStyles?.dimensions),
+      ...getDimensionsStyle(headerStyles?.dimensions),
       ...(!ghost && getBorderStyle(headerStyles?.border, getHeaderStyle)),
       ...getFontStyle(headerStyles?.font),
       ...getShadowStyle(headerStyles?.shadow),
@@ -167,6 +167,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             panelHeadType={headType}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
+            accentStyle={model?.accentStyle}
           >
             <ComponentsContainer
               containerId={content.id}
@@ -227,13 +228,22 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         customHeader: { id: nanoid(), components: [] }
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
+        const accentStyle = prev?.overflow === undefined;
+
+        return {
+          ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
+          tablet: { ...prev.tablet, accentStyle },
+          mobile: { ...prev.mobile, accentStyle }
+        };
+      })
+      .add<ICollapsiblePanelComponentProps>(9, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
-        const defaultHeaderStyle = defaultHeaderStyles(prev);
+        const defaultHeaderStyle = { ...defaultHeaderStyles(prev) };
 
         return {
           ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle }
+          tablet: { ...newModel.tablet, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
+          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle }
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],

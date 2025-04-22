@@ -77,13 +77,11 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: false,
-                inputs: [
+                    inputs: [
                   {
                     type: 'textField',
                     id: nanoid(),
@@ -106,8 +104,7 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: false,
-                inputs: [
+                    inputs: [
                   {
                     type: 'switch',
                     id: nanoid(),
@@ -130,7 +127,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     type: 'editModeSelector',
@@ -154,8 +150,7 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: false,
-                inputs: [
+                    inputs: [
                   {
                     type: 'switch',
                     id: nanoid(),
@@ -177,20 +172,104 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
-              })
-              .toJson()
+            key: 'validation',
+            title: 'Validation',
+            id: validationId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'validate.required',
+                  label: 'Required',
+                  inputType: 'switch',
+                  size: 'small',
+                  layout: 'horizontal',
+                  jsSetting: true,
+                  parentId: validationId
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: validationId,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'validate.minLength',
+                      label: 'Min Length',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'validate.maxLength',
+                      label: 'Max Length',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: validationId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: "validate.message",
+                      parentId: validationId,
+                      label: "Message",
+                      validate: {},
+                      version: 3,
+                      type: "textField",
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'codeEditor',
+                      id: nanoid(),
+                      propertyName: 'validate.validator',
+                      label: 'Validator',
+                      labelAlign: 'right',
+                      tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
+                    }
+                  ],
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
+                  parentId: eventsTabId
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event.',
+                  parentId: eventsTabId
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event.',
+                  parentId: eventsTabId
+                })
+                .toJson()
             ]
           },
           {
@@ -229,8 +308,7 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: pnlFontStyleId,
                               inline: true,
-                              propertyName: 'font',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              propertyName: 'font',         
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -294,8 +372,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inline: true,          
                               inputs: [
                                 {
                                   type: 'textField',
@@ -329,8 +406,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inline: true,         
                               inputs: [
                                 {
                                   type: 'textField',
@@ -394,8 +470,7 @@ export const getSettings = (data: any) => {
                               parentId: borderStylePnlId,
                               hidden: {
                                 _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              } as any,         
                               inputs: [
                                 {
                                   type: 'button',
@@ -469,7 +544,6 @@ export const getSettings = (data: any) => {
                                     title: "Stored File"
                                   }
                                 ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-color",
@@ -483,7 +557,6 @@ export const getSettings = (data: any) => {
                                   jsSetting: false,
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyle-gradientColors",
@@ -498,7 +571,6 @@ export const getSettings = (data: any) => {
                                 ],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyle-url",
@@ -511,7 +583,6 @@ export const getSettings = (data: any) => {
                                   label: "URL",
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyle-image",
@@ -524,13 +595,11 @@ export const getSettings = (data: any) => {
                                   jsSetting: false,
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-storedFile",
                                 parentId: 'backgroundStylePnl',
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -546,7 +615,6 @@ export const getSettings = (data: any) => {
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -571,7 +639,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [{
                                   type: 'radio',
                                   id: 'backgroundStyleRow-repeat-radio',
@@ -601,8 +668,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
-                              inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inline: true,          
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -680,7 +746,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'style',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
@@ -689,7 +755,6 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
@@ -707,112 +772,21 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'validation',
-            title: 'Validation',
-            id: validationId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: nanoid(),
-                  propertyName: 'validate.required',
-                  label: 'Required',
-                  inputType: 'switch',
-                  size: 'small',
-                  layout: 'horizontal',
-                  jsSetting: true,
-                  parentId: validationId
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: validationId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'validate.minLength',
-                      label: 'Min Length',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'validate.maxLength',
-                      label: 'Max Length',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: validationId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: "validate.message",
-                      parentId: validationId,
-                      label: "Message",
-                      validate: {},
-                      version: 3,
-                      type: "textField",
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'codeEditor',
-                      id: nanoid(),
-                      propertyName: 'validate.validator',
-                      label: 'Validator',
-                      labelAlign: 'right',
-                      tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
-                    }
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .toJson()
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
+              })
+              .toJson()
             ]
-          },
-          {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: eventsTabId
-                })
-                .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onFocusCustom',
-                  label: 'On Focus',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                  parentId: eventsTabId
-                })
-                .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onBlurCustom',
-                  label: 'On Blur',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
-                  parentId: eventsTabId
-                })
-                .toJson()
-            ]
-          },
+          }
         ]
       })
       .toJson(),

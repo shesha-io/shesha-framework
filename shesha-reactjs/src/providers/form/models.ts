@@ -1,7 +1,7 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import React, { ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -183,6 +183,21 @@ export interface IComponentMetadata {
   injectedDefaultValue?: any;
 }
 
+export interface IFormComponentStyles {
+  stylingBoxAsCSS: CSSProperties;
+  dimensionsStyles: CSSProperties;
+  borderStyles: CSSProperties;
+  fontStyles: CSSProperties;
+  backgroundStyles: CSSProperties;
+  shadowStyles: CSSProperties;
+  /** Styles calculated from js style setting */
+  jsStyle: CSSProperties;
+  /** Styles assempled from stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles*/
+  appearanceStyle: CSSProperties;
+  /** Styles assempled from {...appearanceStyle, ...jsStyle} */
+  fullStyle: CSSProperties;
+}
+
 /**
  * Base model of the configurable component
  */
@@ -253,6 +268,8 @@ export interface IConfigurableFormComponent
   tablet?: any;
 
   mobile?: any;
+
+  allStyles?: IFormComponentStyles;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

@@ -1,72 +1,59 @@
 import { Radio, Space } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
-import { useFormData, useGlobalState } from '@/providers';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
-import { evaluateValue } from '@/providers/form/utils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
-  const { data: formData } = useFormData();
-  const { globalState } = useGlobalState();
   const { referenceListId, items = [], value, onChange, defaultValue } = model;
   const { data: refListItems } = useReferenceList(referenceListId);
 
   //#region Data source is url
-  const getEvaluatedUrl = (url: string) => {
-    if (!url) return '';
-    return (() => {
-      // tslint:disable-next-line:function-constructor
-      return new Function('data, globalState', url)(formData, globalState); // Pass data, query, globalState
-    })();
-  };
-
-  const { refetch, data } = useGet({ path: getEvaluatedUrl(model?.dataSourceUrl), lazy: true });
+    const { refetch, data } = useGet({ path: model.dataSourceUrl, lazy: true });
 
   useEffect(() => {
-    if (model?.dataSourceType === 'url' && model?.dataSourceUrl) {
+    if (model.dataSourceType === 'url' && model.dataSourceUrl) {
       refetch();
     }
-  }, [model?.dataSourceType, model?.dataSourceUrl]);
+  }, [model.dataSourceType, model.dataSourceUrl]);
 
   useEffect(() => {
     if (defaultValue) {
-      onChange(evaluateValue(defaultValue, { data: formData, globalState }));
+      onChange(defaultValue);
     }
   }, [defaultValue]);
 
   const reducedData = useMemo(() => {
     const list = Array.isArray(data?.result) ? data?.result : data?.result?.items;
 
-    if (Array.isArray(list) && model?.reducerFunc) {
-      return new Function('data', model?.reducerFunc)(list) as [];
+    if (Array.isArray(list) && model.reducerFunc) {
+      return new Function('data', model.reducerFunc)(list) as [];
     }
 
     return data?.result;
-  }, [data?.result, model?.reducerFunc]);
+  }, [data?.result, model.reducerFunc]);
   //#endregion
 
   const options = useMemo(
-    () => getDataSourceList(model?.dataSourceType, items, refListItems?.items, reducedData) || [],
-    [model?.dataSourceType, items, refListItems?.items, reducedData]
+    () => getDataSourceList(model.dataSourceType, items, refListItems?.items, reducedData) || [],
+    [model.dataSourceType, items, refListItems?.items, reducedData]
   );
 
-  const defaultVal = evaluateValue(defaultValue, { data: formData, globalState });
-  const val = !!value ? `${value}` : defaultVal;
+  const val = value ? `${value}` : defaultValue;
 
   const renderCheckGroup = () => (
     <Radio.Group
       className="sha-radio-group"
       disabled={model.readOnly}
-      defaultValue={defaultVal}
+      defaultValue={defaultValue}
       value={val}
       onBlur={model.onBlur}
       onFocus={model.onFocus}
       onChange={onChange}
-      style={model?.style}
+      style={model.style}
     >
-      <Space direction={model?.direction}>
+      <Space direction={model.direction}>
         {options?.map((checkItem, index) => (
           <Radio key={index} value={`${checkItem.value}`} disabled={model.readOnly}>
             {checkItem.label}

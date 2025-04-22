@@ -50,10 +50,9 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInput({
-                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd1',
                   inputType: 'dropdown',
                   propertyName: 'mode',
                   label: 'Mode',
@@ -73,7 +72,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'editModeSelector',
@@ -120,7 +118,7 @@ export const getSettings = (data: any) => {
                       value: 'referenceList',
                     },
                     {
-                      label: 'Api url',
+                      label: 'Api URL',
                       value: 'url',
                     },
                   ],
@@ -147,7 +145,6 @@ export const getSettings = (data: any) => {
                       mode: 'dialog',
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: 'referenceList-tooltips-s4gmBg31azZC0UjZjpfTm',
@@ -166,7 +163,6 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: 'referenceList-tooltips-s4gmBg31azZC0UjZjpfTm',
@@ -192,7 +188,6 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson(),
             ],
@@ -204,7 +199,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
                   propertyName: 'validate.required',
                   label: 'Required',
@@ -224,33 +218,30 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
                   inputType: 'codeEditor',
                   propertyName: 'onChangeCustom',
                   label: 'On Change',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
                   inputType: 'codeEditor',
                   propertyName: 'onFocusCustom',
                   label: 'On Focus',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on focus of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
                   inputType: 'codeEditor',
                   propertyName: 'onBlurCustom',
                   label: 'On Blur',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on blur of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .toJson(),
@@ -309,11 +300,6 @@ export const getSettings = (data: any) => {
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
@@ -339,7 +325,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',

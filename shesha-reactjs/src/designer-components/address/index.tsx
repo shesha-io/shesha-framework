@@ -6,10 +6,10 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import AutoCompletePlacesControl from './control';
 import { IAddressCompomentProps } from './models';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import ReadOnlyDisplayFormItemWrapper from '@/components/readOnlyDisplayFormItem/wrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
 import { getEventHandlers, useAvailableConstantsData } from '@/index';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -23,11 +23,10 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          return (
-            <ReadOnlyDisplayFormItemWrapper value={value} readOnly={model.readOnly}>
-              <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus}/>
-            </ReadOnlyDisplayFormItemWrapper>
-          );
+          return model.readOnly
+            ? <ReadOnlyDisplayFormItem value={value} />
+            : <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus}/>
+          ;
         }}
       </ConfigurableFormItem>
     );

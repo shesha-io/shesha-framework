@@ -41,7 +41,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 },
                                 styledLabel: true,
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addLabelConfigurator({
                                 id: nanoid(),
@@ -61,8 +60,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         label: 'Placeholder',
                                         parentId: commonTabId,
                                         jsSetting: true,
-                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    },
+                                            },
                                     {
                                         id: nanoid(),
                                         type: 'textArea',
@@ -70,10 +68,8 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         label: 'Tooltip',
                                         parentId: commonTabId,
                                         jsSetting: true,
-                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    }
+                                            }
                                 ],
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
@@ -95,7 +91,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         jsSetting: true,
                                     }
                                 ],
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ]
@@ -106,7 +101,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                         id: securityTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
@@ -127,7 +121,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: configTabId,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'numberField',
@@ -155,7 +148,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 parentId: configTabId,
                                 jsSetting: true,
                                 tooltip: 'API key for authorization. Google Maps key which is required to make successful calls to Google services.',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -165,12 +157,10 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 parentId: configTabId,
                                 tooltip: 'API key for authorization. Go to (https://opencagedata.com/api) to learn about OpenCage. OpenCage key which is required to make successful calls to OpenCage services.',
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: configTabId,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'dropdown',
@@ -202,13 +192,11 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 tooltip: 'Advanced search options, not required if a search priority is not needed. Note this will be discarded unless all values are provided.',
                                 parentId: configTabId,
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: configTabId,
                                 hidden: { _code: 'return !getSettingValue(data?.showPriorityBounds);', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'numberField',
@@ -238,7 +226,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 id: nanoid(),
                                 parentId: configTabId,
                                 hidden: { _code: 'return !getSettingValue(data?.showPriorityBounds);', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         type: 'numberField',
@@ -288,8 +275,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                                 id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        id: nanoid(),
+                                                                id: nanoid(),
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         hideLabel: false,
@@ -326,7 +312,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 label: 'Required',
                                 parentId: validationTabId,
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ]
@@ -337,35 +322,32 @@ export const getSettings = (data: IAddressCompomentProps) => {
                         id: eventsTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'onChangeCustom',
                                 label: 'On Change',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on changing of event.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })
                             .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'onSelectCustom',
                                 label: 'On Select',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on selection of address. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on selection of address.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })
                             .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'onFocusCustom',
                                 label: 'On Focus',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on focusing of event. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on focusing of event.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })

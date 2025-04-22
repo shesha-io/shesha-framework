@@ -2,15 +2,17 @@ import React, { FC } from 'react';
 import { Col, Divider } from 'antd';
 import { CollapsiblePanel } from '@/components';
 import { useDataContextManager } from '@/providers/dataContextManager';
+import { useShaFormInstance, useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
 
 export interface DebugPanelProps {
     formData?: any;
 }
 
-export const DebugPanel: FC<DebugPanelProps> = (props) => {
+export const DebugPanel: FC<DebugPanelProps> = () => {
 
+    useShaFormUpdateDate();
+    const formData = useShaFormInstance(false)?.formData;
     const ctxManager = useDataContextManager(false)?.getRoot();
-
     const contexts = ctxManager.getDataContexts('full');
 
     return (
@@ -18,7 +20,7 @@ export const DebugPanel: FC<DebugPanelProps> = (props) => {
             <Divider />
             <CollapsiblePanel header='Form data' expandIconPosition='start' ghost>
                 <Col span={24}>
-                    <pre>{JSON.stringify(props.formData, null, 2)}</pre>
+                    <pre>{JSON.stringify(formData, null, 2)}</pre>
                 </Col>
             </CollapsiblePanel>
             {contexts.map((ctx, index) =>

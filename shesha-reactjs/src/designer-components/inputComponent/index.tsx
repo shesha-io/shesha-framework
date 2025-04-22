@@ -99,7 +99,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'tooltip':
             return iconElement(icon, null, tooltip, {}, styles);
         case 'dataSortingEditor':
-            return <SortingEditor {...props} value={value} onChange={onChange} modelType={props.modelType} readOnly={readOnly} />;
+            return <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
         case 'colorPicker':
             return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
         case 'dropdown': {
@@ -222,9 +222,20 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 mode={props.mode}
                 readOnly={readOnly}
                 autoFillProps={props.autoFillProps ?? true}
+                allowClear={props.allowClear ?? true}
             />;
         case 'contextPropertyAutocomplete':
-            return <ContextPropertyAutocomplete {...{ ...props }} onValuesChange={onChange} readOnly={readOnly} defaultModelType="defaultType" formData={formData} styledLabel={true} />;
+            return <ContextPropertyAutocomplete 
+              {...{ ...props }}
+              onValuesChange={onChange}
+              style={{}}
+              readOnly={readOnly} 
+              defaultModelType="defaultType"
+              id="contextPropertyAutocomplete" 
+              componentName={formData.componentName}
+              propertyName={formData.propertyName}
+              contextName={formData.context}
+            />;
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
@@ -332,7 +343,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 variant={variant}
                 placeholder={placeholder}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip, {}, styles)}</span>}
-                value={value?.value ? value.value : value || defaultValue}
+                value={value}
                 type={textType}
             />;
     }

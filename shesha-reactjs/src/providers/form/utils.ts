@@ -47,12 +47,14 @@ import {
   ViewType,
   FormRawMarkup,
 } from './models';
-import { isPropertySettings, updateSettingsComponents } from '@/designer-components/_settings/utils';
+import { isPropertySettings, updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
 import {
+  IDataContextManagerActionsContext,
   IDataContextManagerFullInstance,
   IDataContextsData,
   RootContexts,
   useDataContextManager,
+  useDataContextManagerActions,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
 import FileSaver from 'file-saver';
@@ -75,11 +77,10 @@ import { IFormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstance } from './providers/shaFormProvider';
+import { useShaFormInstance, useShaFormUpdateDate } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
-import { removeGhostKeys } from '@/utils/form';
-import { isEmpty } from 'lodash';
 import { TouchableProxy } from './touchableProxy';
+import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -132,7 +133,7 @@ export type GetAvailableConstantsDataArgs = {
 export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi;
   selectedRow?: ISelectionProps;
-  dcm: IDataContextManagerFullInstance;
+  dcm: IDataContextManagerActionsContext;
   closestContextId: string;
   globalState: IAnyObject;
   setGlobalState: (payload: ISetStatePayload) => void;
@@ -199,7 +200,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get closest data context Id
   const closestContextId = useDataContext(false)?.id;
   // get DataContext Manager
-  const dcm = useDataContextManager(false);
+  const dcm = useDataContextManagerActions(false);
   // get selected row if exists
   const selectedRow = useDataTableState(false)?.selectedRow;
 
@@ -267,11 +268,9 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     message: () => message,
     fileSaver: () => FileSaver,
     data: () => {
-      if (!shaFormInstance?.data || isEmpty(shaFormInstance.data))
-        return EMPTY_DATA;
-
-      const data = shaFormInstance.data;
-      return removeGhostKeys(data);
+      return !shaFormInstance
+        ? EMPTY_DATA 
+        : GetShaFormDataAccessor(shaFormInstance);
     },
     form: () => {
       return shaFormInstance;
@@ -289,9 +288,37 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
   return accessors;
 };
 
-export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
+/**
+ * Use this method if you need coonect to Application data without re-rendeting if DataContextx changed
+ * @param args arguments
+ * @returns Application contexts
+ */
+export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
   const fullContext = useAvailableConstantsContexts();
+  const accessors = wrapConstantsData({ fullContext, ...args });
 
+  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
+  if (!contextProxyRef.current)
+    contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
+  else
+    contextProxyRef.current.refreshAccessors(accessors);
+
+  return contextProxyRef.current;
+};
+
+/**
+ * Use this method if you need coonect to Application data re-rendeting if DataContexts changed
+ * @param args arguments
+ * @returns Application contexts
+ */
+export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
+  // use ShaFormUpdateDate to be responsive to changes in form data
+  useShaFormUpdateDate();
+
+  const fullContext = useAvailableConstantsContexts();
+  // override DataContextManager to be responsive to changes in contexts
+  fullContext.dcm = useDataContextManager(); 
+  
   const accessors = wrapConstantsData({ fullContext, ...args });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
@@ -304,9 +331,9 @@ export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = 
 };
 
 export const useApplicationContextData = (): ContextGetData => {
-  const dcm = useDataContextManager(false);
-  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
-  return application?.getData();
+  return useDataContextManagerActions(false)
+    ?.getDataContext(SheshaCommonContexts.ApplicationContext)
+    ?.getData();
 };
 
 const getSettingValue = (
@@ -971,7 +998,7 @@ export const getFunctionExecutor = <TResult = any>(
   return expressionExecuter as FunctionExecutor<TResult>;
 };
 
-const isComponentFiltered = (
+export const isComponentFiltered = (
   component: IConfigurableFormComponent,
   propertyFilter?: (name: string) => boolean
 ): boolean => {
@@ -1498,7 +1525,7 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): { [key: string]: any } => {
+export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): CSSProperties => {
   let style = {};
 
   if (!args.length) {
@@ -1816,7 +1843,7 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
 export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
   if (formSettings?.isSettingsForm)
-    components = updateSettingsComponents(designerComponents, components);
+    components = updateJsSettingsForComponents(designerComponents, components);
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version

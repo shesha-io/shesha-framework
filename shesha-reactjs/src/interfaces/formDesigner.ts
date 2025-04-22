@@ -12,6 +12,8 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
+import { IApplicationContext } from '..';
+import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -43,16 +45,20 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
 
-export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> {
+export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   model: TModel;
   componentRef: MutableRefObject<any>;
-  form: FormInstance<any>;
   children?: JSX.Element;
+  calculatedModel?: TCalculatedModel;
+  shaApplication?: ISheshaApplicationInstance;
+  
+  // for backward compatibility
+  form: FormInstance;
 }
 
-export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<ComponentFactoryArguments<TModel>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
 
-export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent /*, TSettingsContext = any*/> {
+export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   /**
    * Type of the component. Must be unique in the project.
    */
@@ -88,7 +94,22 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Component factory. Renders the component according to the passed model (props)
    */
-  Factory?: FormFactory<TModel>;
+  Factory?: FormFactory<TModel, TCalculatedModel>;
+  /**
+   * A Hook for calculating component-specific values (executed before calculateModel)
+   * @param model - component model
+   * @param allData - application context
+   * @returns - calculated model
+   */
+  useCalculateModel?: (model: TModel, allData: IApplicationContext) => TCalculatedModel;
+  /**
+   * A method for calculating component-specific values
+   * @param useCalculatedModel - model calculated in useCalculateModel method (Hook)
+   * @param model - component model
+   * @param allData - application context
+   * @returns - calculated model
+   */
+  calculateModel?: (model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel;
   /**
    * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
