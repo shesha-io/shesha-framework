@@ -224,7 +224,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 autoFillProps={props.autoFillProps ?? true}
             />;
         case 'contextPropertyAutocomplete':
-            return <ContextPropertyAutocomplete {...{ ...props }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
+            return <ContextPropertyAutocomplete {...{ ...props }} onValuesChange={onChange} readOnly={readOnly} defaultModelType="defaultType" formData={formData} styledLabel={true} />;
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
@@ -239,7 +239,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'multiColorPicker':
             return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
         case 'itemListConfiguratorModal':
-
             return <ItemListConfiguratorModal
                 readOnly={readOnly}
                 initNewItem={onAddNewItem}
