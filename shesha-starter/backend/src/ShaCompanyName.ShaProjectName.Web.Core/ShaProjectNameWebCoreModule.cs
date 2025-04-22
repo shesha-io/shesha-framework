@@ -12,6 +12,7 @@ using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Startup;
+using Shesha.Elmah;
 using Shesha.Import;
 using Shesha.Sms.Clickatell;
 using Shesha.Web.FormsDesigner;
@@ -28,6 +29,7 @@ namespace ShaCompanyName.ShaProjectName
         typeof(SheshaFrameworkModule),
         typeof(SheshaApplicationModule),
         typeof(SheshaFormsDesignerModule),
+        typeof(SheshaElmahModule),
         typeof(SheshaImportModule),
         typeof(SheshaClickatellModule),
         typeof(ShaProjectNameModule),
