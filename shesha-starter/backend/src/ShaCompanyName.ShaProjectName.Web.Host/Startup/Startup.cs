@@ -26,6 +26,7 @@ using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
+using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.FluentMigrator;
@@ -142,7 +143,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
 		public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
 		{
-			app.UseElmah();
+			app.UseSheshaElmah();
 
 			// note: already registered in the ABP
 			AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
