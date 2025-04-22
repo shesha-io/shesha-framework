@@ -3,9 +3,7 @@ import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
-import { repeatOptions } from "../_settings/utils/background/utils";
-import { positionOptions } from "../_settings/utils/background/utils";
-import { sizeOptions } from "../_settings/utils/background/utils";
+import { repeatOptions, positionOptions, sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
