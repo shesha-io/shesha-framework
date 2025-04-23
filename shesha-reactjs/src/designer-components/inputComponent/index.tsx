@@ -14,7 +14,6 @@ import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { IDropdownOption, ISettingsInputProps } from '../settingsInput/interfaces';
-import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
@@ -199,10 +198,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
-            return <QueryBuilderWrapper>
-                <QueryBuilder {...{ ...props }} hideLabel={true}
-                    defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
-            </QueryBuilderWrapper>;
+            return <QueryBuilder {...{ ...props }} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
