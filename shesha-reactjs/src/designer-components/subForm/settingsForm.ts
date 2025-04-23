@@ -186,7 +186,8 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     language: "graphql",
                     description: "Properties in GraphQL-like syntax",
                     jsSetting: true,
-                    mode: "inline"
+                    mode: "inline",
+                    wrapInTemplate: false,
                   }
                 ],
                 hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
