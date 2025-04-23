@@ -1,151 +1,278 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
+import { FormLayout } from 'antd/lib/form/Form';
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 
-export const getSettings = (data: any) =>
-  new DesignerToolbarSettings(data)
-    .addCollapsiblePanel({
-      id: nanoid(),
-      parentId: 'root',
-      propertyName: 'pnlDisplay',
-      label: 'Display',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addContextPropertyAutocomplete({
-              id: nanoid(),
-              propertyName: 'propertyName',
-              label: 'Property name',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-              validate: {
-                required: true,
-              },
-            })
-            .addCheckbox({
-              id: nanoid(),
-              propertyName: 'hidden',
-              label: 'hide',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-            })
-            .addTextField({
-              id: nanoid(),
-              propertyName: 'subText',
-              label: 'Sub Text',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-            })
-            .addButtons({
-              id: nanoid(),
-              propertyName: 'items',
-              label: 'Configure Menu Buttons',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-            })
-            .addCheckbox({
-              id: nanoid(),
-              propertyName: 'showUserInfo',
-              label: 'Show User Info',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5'
-            })
-            .addTextField({
-              id: nanoid(),
-              propertyName: 'popOverTitle',
-              label: 'Popover Title',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-              hidden: {
-                _mode: 'code',
-                _code: 'return data?.showUserInfo != true'
-              }
-            })
-            .addFormAutocomplete({
-              id: nanoid(),
-              propertyName: 'popOverFormId',
-              label: 'Popover Form',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-              hidden: {
-                _mode: 'code',
-                _code: 'return data?.showUserInfo != true'
-              }
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .addCollapsiblePanel({
-      id: nanoid(),
-      propertyName: "pnlStyle",
-      parentId: "root",
-      label: "Style",
-      labelAlign: "left",
-      expandIconPosition: "start",
-      ghost: true,
-      collapsible: "header",
-      content: {
-        id: '64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addCodeEditor({
-              id: nanoid(),
-              propertyName: "subTextStyle",
-              label: "Sub Text Style",
-              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
-              mode: "dialog",
-            })
-            .addColorPicker({
-              id: nanoid(),
-              propertyName: "subTextColor",
-              label: "Sub Text Color",
-              title: "Sub Text Color",
-              allowClear: true,
-              showText: true,
-              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
-            })
-            .addSlider({
-              id: nanoid(),
-              propertyName: "subTextFontSize",
-              label: "Sub Text Size",
-              defaultValue: "12",
-              min: "1",
-              max: "100",
-              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
-            })
-            .addCodeEditor({
-              id: nanoid(),
-              propertyName: "popOverContentStyle",
-              label: "Popover content Style",
-              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
-              mode: "dialog",
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .addCollapsiblePanel({
-      id: nanoid(),
-      propertyName: 'pnlSecurity',
-      parentId: 'root',
-      label: 'Security',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'fccb6b17-656d-43c0-8144-0b91c454da1d',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addPermissionAutocomplete({
-              id: nanoid(),
-              propertyName: 'permissions',
-              label: 'Permissions',
-              labelAlign: 'right',
-              parentId: 'fccb6b17-656d-43c0-8144-0b91c454da1d',
-              hidden: false,
-              validate: {},
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .toJson();
+export const getSettings = (data: any) => {
+  const searchableTabsId = nanoid();
+  const commonTabId = nanoid();
+  const styleTabId = nanoid();
+  const securityTabId = nanoid();
+  const styleRouterId = nanoid();
+
+  return {
+    components: new DesignerToolbarSettings(data)
+      .addSearchableTabs({
+        id: searchableTabsId,
+        propertyName: 'settingsTabs',
+        parentId: 'root',
+        label: 'Settings',
+        hideLabel: true,
+        labelAlign: 'right',
+        size: 'small',
+        tabs: [
+          {
+            key: 'common',
+            title: 'Common',
+            id: commonTabId,
+            components: [...new DesignerToolbarSettings()
+              .addContextPropertyAutocomplete({
+                id: nanoid(),
+                propertyName: 'propertyName',
+                parentId: commonTabId,
+                label: '',
+                styledLabel: true,
+                size: 'small',
+                validate: {
+                  required: true,
+                },
+                jsSetting: true,
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'textField',
+                propertyName: 'subText',
+                label: 'Sub Text',
+                parentId: commonTabId,
+                jsSetting: true,
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                propertyName: 'items',
+                label: 'Configure Menu Buttons',
+                parentId: commonTabId,
+                jsSetting: true,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'buttonGroupConfigurator',
+                    propertyName: 'items',
+                    label: 'Configure Menu Buttons',
+                    parentId: commonTabId,
+                    jsSetting: true,
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'textField',
+                    propertyName: 'popOverTitle',
+                    label: 'Popover Title',
+                    parentId: commonTabId,
+                    hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
+                    jsSetting: true,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                propertyName: 'showUserInfo',
+                label: 'Show User Info',
+                parentId: commonTabId,
+                jsSetting: true,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'showUserInfo',
+                    label: 'Show User Info',
+                    parentId: commonTabId,
+                    jsSetting: true,
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'formAutocomplete',
+                    propertyName: 'popOverFormId',
+                    label: 'Popover Form',
+                    parentId: commonTabId,
+                    hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
+                    jsSetting: true,
+                  }
+                ]
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'switch',
+                propertyName: 'hidden',
+                label: 'Hide',
+                parentId: commonTabId,
+                jsSetting: true,
+              })
+              .toJson()
+            ]
+          },
+          {
+            key: 'appearance',
+            title: 'Appearance',
+            id: styleTabId,
+            components: [...new DesignerToolbarSettings()
+              .addPropertyRouter({
+                id: styleRouterId,
+                propertyName: 'propertyRouter1',
+                componentName: 'propertyRouter',
+                label: 'Property router1',
+                labelAlign: 'right',
+                parentId: styleTabId,
+                hidden: false,
+                propertyRouteName: {
+                  _mode: "code",
+                  _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
+                  _value: ""
+                },
+                components: [
+                  ...new DesignerToolbarSettings()
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'subTextStyle',
+                      label: 'Sub Text Style',
+                      labelAlign: 'right',
+                      ghost: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [...new DesignerToolbarSettings()
+                          .addCollapsiblePanel({
+                            id: 'fontStyleCollapsiblePanel',
+                            propertyName: 'pnlFontStyle',
+                            label: 'Font',
+                            labelAlign: 'right',
+                            parentId: 'styleRouter',
+                            ghost: true,
+                            collapsible: 'header',
+                            content: {
+                              id: 'fontStylePnl',
+                              components: [...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                  id: 'try26voxhs-HxJ5k5ngYE',
+                                  parentId: 'fontStylePnl',
+                                  inline: true,
+                                  propertyName: 'font',
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Family',
+                                      propertyName: 'font.type',
+                                      hideLabel: true,
+                                      dropdownOptions: fontTypes,
+                                    },
+                                    {
+                                      type: 'numberField',
+                                      id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Size',
+                                      propertyName: 'subTextFontSize',
+                                      hideLabel: true,
+                                      width: 50,
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Weight',
+                                      propertyName: 'font.weight',
+                                      hideLabel: true,
+                                      tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                      dropdownOptions: fontWeights,
+                                      width: 100,
+                                    },
+                                    {
+                                      type: 'colorPicker',
+                                      id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Color',
+                                      hideLabel: true,
+                                      propertyName: 'subTextColor',
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Align',
+                                      propertyName: 'font.align',
+                                      hideLabel: true,
+                                      width: 60,
+                                      dropdownOptions: textAlign,
+                                      hidden: { _code: 'return  getSettingValue(data?.mode) === "multiple";', _mode: 'code', _value: false } as any,
+                                    },
+                                  ],
+                                })
+                                .toJson()
+                              ]
+                            }
+                          })
+                          .addSettingsInput({
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            id: nanoid(),
+                            inputType: 'codeEditor',
+                            propertyName: 'subTextStyle',
+                            hideLabel: false,
+                            label: 'Custom Style',
+                            description: 'A script that returns the style of the sub text as an object. This should conform to CSSProperties',
+                          })
+                          .toJson()
+                        ]
+                      }
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'popOverStyle',
+                      label: 'Popover Style',
+                      labelAlign: 'right',
+                      ghost: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInput({
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            id: nanoid(),
+                            inputType: 'codeEditor',
+                            propertyName: 'popOverContentStyle',
+                            label: 'Content Style',
+                            description: 'A script that returns the style of the popover content as an object. This should conform to CSSProperties',
+                          })
+                          .toJson()
+                        ]
+                      }
+                    })
+                    .toJson()
+                ]
+              })
+              .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityTabId
+              })
+              .toJson()
+            ]
+          }
+        ]
+      })
+      .toJson(),
+    formSettings: {
+      colon: false,
+      layout: 'vertical' as FormLayout,
+      labelCol: { span: 24 },
+      wrapperCol: { span: 24 }
+    }
+  };
+};
