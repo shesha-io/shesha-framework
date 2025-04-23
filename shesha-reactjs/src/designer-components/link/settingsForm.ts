@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
 
 export const getSettings = (data: any) => {
@@ -39,35 +39,14 @@ export const getSettings = (data: any) => {
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
-                .addSettingsInputRow({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: { _code: 'return  getSettingValue(data?.hasChildren);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      id: 'palceholder-s4gmBg31azZC0UjZjpfTm',
-                      type: 'textArea',
-                      propertyName: 'content',
-                      label: 'Content',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                  ],
-                })
                 .addSettingsInput({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfT1',
+                  id: 'content-area-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputType: 'textArea',
                   propertyName: 'content',
                   label: 'Content',
                   size: 'small',
                   jsSetting: true,
-                  hidden: {
-                    _code:
-                      'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.hasChildren);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .addSettingsInput({
                   id: 'href-s4gmBg31azZC0UjZjpfTm',
@@ -79,7 +58,7 @@ export const getSettings = (data: any) => {
                   jsSetting: true,
                 })
                 .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                  id: 'layout-options-row1',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputs: [
                     {
@@ -101,41 +80,12 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b1',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: {
-                    _code: 'return  !getSettingValue(data?.hasChildren);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                  inputs: [
-                    {
-                      type: 'dropdown',
-                      id: 'direction-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'direction',
-                      label: 'Direction',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                      dropdownOptions: [
-                        {
-                          label: 'Horizontal',
-                          value: 'horizontal',
-                        },
-                        {
-                          label: 'Vertical',
-                          value: 'vertical',
-                        },
-                      ],
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                  id: 'target-options-row',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputs: [
                     {
                       type: 'dropdown',
-                      id: 'type-s4gmBg31azZC0UjZjpfTm',
+                      id: 'target-dropdown-s4gmBg31azZC0UjZjpfTm',
                       propertyName: 'target',
                       label: 'Target',
                       size: 'small',
@@ -173,6 +123,36 @@ export const getSettings = (data: any) => {
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [
               ...new DesignerToolbarSettings()
+                .addSettingsInputRow({
+                  id: 'direction-options-row',
+                  parentId: 'styleRouter',
+                  hidden: {
+                    _code: 'return  !getSettingValue(data?.hasChildren);',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
+                  inputs: [
+                    {
+                      type: 'dropdown',
+                      id: 'direction-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'direction',
+                      label: 'Direction',
+                      jsSetting: true,
+                      layout: 'horizontal',
+                      defaultValue: 'vertical',
+                      dropdownOptions: [
+                        {
+                          label: 'Horizontal',
+                          value: 'horizontal',
+                        },
+                        {
+                          label: 'Vertical',
+                          value: 'vertical',
+                        },
+                      ],
+                    },
+                  ],
+                })
                 .addPropertyRouter({
                   id: 'styleRouter',
                   propertyName: 'propertyRouter1',
@@ -244,6 +224,15 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     propertyName: 'font.color',
                                   },
+                                  {
+                                    type: 'dropdown',
+                                    id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Align',
+                                    propertyName: 'font.align',
+                                    hideLabel: true,
+                                    width: 60,
+                                    dropdownOptions: textAlign,
+                                  },
                                 ],
                               })
                               .toJson(),
@@ -251,11 +240,11 @@ export const getSettings = (data: any) => {
                         },
                       })
                       .addSettingsInputRow({
-                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b2',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        id: 'layout-options-row2',
+                        parentId: 'styleRouter',
                         hidden: {
                           _code:
-                            'return  getSettingValue(data?.direction) !== "horizontal" || !getSettingValue(data?.hasChildren);',
+                            'return  getSettingValue(data?.direction) !== "horizontal"',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -273,11 +262,11 @@ export const getSettings = (data: any) => {
                                 value: 'center',
                               },
                               {
-                                label: 'Flex start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
-                                label: 'Flex end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
@@ -289,15 +278,15 @@ export const getSettings = (data: any) => {
                                 value: 'right',
                               },
                               {
-                                label: 'Space between',
+                                label: 'Space Between',
                                 value: 'space-between',
                               },
                               {
-                                label: 'Space around',
+                                label: 'Space Around',
                                 value: 'space-around',
                               },
                               {
-                                label: 'Space evenly',
+                                label: 'Space Evenly',
                                 value: 'space-evenly',
                               },
                               {
@@ -327,11 +316,11 @@ export const getSettings = (data: any) => {
                                 value: 'end',
                               },
                               {
-                                label: 'Flex end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'Flex start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
@@ -351,11 +340,11 @@ export const getSettings = (data: any) => {
                                 value: 'revert',
                               },
                               {
-                                label: 'Self end',
+                                label: 'Self End',
                                 value: 'self-end',
                               },
                               {
-                                label: 'Self start',
+                                label: 'Self Start',
                                 value: 'self-start',
                               },
                               {
@@ -375,8 +364,8 @@ export const getSettings = (data: any) => {
                         ],
                       })
                       .addSettingsInputRow({
-                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        id: 'css-class-row',
+                        parentId: 'styleRouter',
                         hidden: {
                           _code: 'return  !getSettingValue(data?.hasChildren);',
                           _mode: 'code',
@@ -388,11 +377,17 @@ export const getSettings = (data: any) => {
                             id: 'justifyItems-s4gmBg31azZC0UjZjpfTm',
                             propertyName: 'justifyItems',
                             label: 'Justify Items',
+                            hidden: {
+                              _code:
+                                'return  getSettingValue(data?.direction) !== "horizontal"',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             jsSetting: true,
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'baseline',
+                                label: 'Baseline',
                                 value: 'baseline',
                               },
                               {
@@ -404,11 +399,11 @@ export const getSettings = (data: any) => {
                                 value: 'end',
                               },
                               {
-                                label: 'Flex end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'Flex start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
@@ -440,11 +435,11 @@ export const getSettings = (data: any) => {
                                 value: 'right',
                               },
                               {
-                                label: 'Self end',
+                                label: 'Self End',
                                 value: 'self-end',
                               },
                               {
-                                label: 'Self start',
+                                label: 'Self Start',
                                 value: 'self-start',
                               },
                               {
