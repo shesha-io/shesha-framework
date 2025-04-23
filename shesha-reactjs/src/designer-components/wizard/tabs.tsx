@@ -2,20 +2,14 @@ import classNames from 'classnames';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useMemo } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
-import { getStyle, pickStyleFromModel, ValidationErrors } from '@/index';
-import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { removeUndefinedProps } from '@/utils/object';
+import { ValidationErrors } from '@/index';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
-import { useSheshaApplication, useForm, useFormData } from '@/providers';
+import { useForm } from '@/providers';
 import { useFormExpression } from '@/hooks/index';
 import { useStyles } from './styles';
 import { useWizard } from './hooks';
@@ -23,7 +17,6 @@ import { useWizard } from './hooks';
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const { formMode } = useForm();
     const { executeBooleanExpression } = useFormExpression();
-    const { data } = useFormData();
 
     const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
     const {
@@ -33,41 +26,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         labelPlacement,
         wizardType = 'default',
     } = model;
-
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-    const jsStyle = getStyle(model.style, data);
-
-    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-
-        const fetchStyles = async () => {
-            const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-                ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-                    { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-                    .then((response) => {
-                        return response.blob();
-                    })
-                    .then((blob) => {
-                        return URL.createObjectURL(blob);
-                    }) : '';
-
-            const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-            setBackgroundStyles(style);
-        };
-
-        fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
     const steps = useMemo(() => {
         return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
@@ -94,25 +52,11 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         });
     }, [visibleSteps, current]);
 
-
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...stylingBoxAsCSS,
-        ...dimensionsStyles,
-        ...borderStyles,
-        ...fontStyles,
-        ...backgroundStyles,
-        ...shadowStyles,
-        ...jsStyle
-    });
     const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
 
     const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
 
-    const { styles } = useStyles({ styles: additionalStyles, colors });
+    const { styles } = useStyles({ styles: model.allStyles.fullStyle, colors });
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
