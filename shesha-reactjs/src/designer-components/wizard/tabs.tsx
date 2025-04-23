@@ -56,7 +56,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
 
     const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
 
-    const { styles } = useStyles({ styles: model.allStyles.fullStyle, colors });
+    const { styles } = useStyles({ styles: model?.allStyles?.fullStyle, colors });
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
