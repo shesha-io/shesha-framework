@@ -198,7 +198,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
-            return <QueryBuilder {...{ ...props }} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
+            return <QueryBuilder {...{ ...props }} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
