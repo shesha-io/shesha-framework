@@ -5,6 +5,7 @@ import { IBorderValue } from '../_settings/utils/border/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 import { IInputStyles } from '@/index';
+import { CSSProperties } from 'react';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean;
@@ -45,7 +46,7 @@ export interface IDrawerProps extends IConfigurableFormComponent {
   tablet?: IInputStyles;
   mobile?: IInputStyles;
 
-
+  customStyle?: CSSProperties;
 
   components?: IConfigurableFormComponent[];
 }

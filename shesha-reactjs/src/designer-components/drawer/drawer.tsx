@@ -147,14 +147,18 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     <Drawer
       open={state?.open}
       placement={placement}
-      width={placement === 'top' || placement === 'bottom' ? '100%' : width}
-      height={placement === 'top' || placement === 'bottom' ? height : '100%'}
+      width={style?.width || width}
+      height={style?.height || height}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
         footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
         body: background,
-        content: style,
+        //content: style,
+        wrapper: {
+          width: placement === 'left' || placement === 'right' ? style?.width || undefined : '100%',
+          height: placement === 'top' || placement === 'bottom' ? style?.height || undefined : '100%',
+        },
       }}
       title={label}
       size="large"

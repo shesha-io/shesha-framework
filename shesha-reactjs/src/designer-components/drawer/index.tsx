@@ -38,12 +38,13 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       footerStyle,
       footerBackground,
       footerShadow,
+      allStyles,
       ...props
     } = model;
 
-    const jsStyle = getStyle(style, data);
+    //const jsStyle = getStyle(style, data);
     const [backgroundStyles, setBackgroundStyles] = useState({});
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, allStyles?.jsStyle), [border]);
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
     const headerJsStyle = getStyle(headerStyle, data);
@@ -58,7 +59,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       const fetchStyles = async () => {
         getBackgroundImageUrl(background, backendUrl, httpHeaders)
           .then(async (url) => {
-            return await getBackgroundStyle(background, jsStyle, url);
+            return await getBackgroundStyle(background, allStyles?.jsStyle, url);
           })
           .then((style) => {
             setBackgroundStyles(style);
@@ -114,7 +115,8 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       ...shadowStyles,
       ...stylingBoxAsCSS,
       ...borderStyles,
-      ...jsStyle,
+      ...model.allStyles.jsStyle
+      ,
     });
 
     const additionalHeaderStyles: CSSProperties = removeUndefinedProps({

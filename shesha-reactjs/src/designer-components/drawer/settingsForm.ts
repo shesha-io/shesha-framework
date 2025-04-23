@@ -595,7 +595,7 @@ export const getSettings = (data: any) => {
                       })
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
-                        propertyName: 'style',
+                        propertyName: 'customStyle',
                         label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
