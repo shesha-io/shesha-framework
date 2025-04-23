@@ -2,7 +2,7 @@ import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'reac
 import { useTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
-import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup, useDataContextManager, useFormData, useGlobalState } from '@/providers';
+import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup, useDataContextManagerActions, useFormData, useGlobalState } from '@/providers';
 import { useGet } from '@/hooks';
 import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
 import { getSettings } from './urlSettings';
@@ -14,7 +14,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
   const [data, setData] = useState(null);
-  const pageContext = useDataContextManager(false)?.getPageContext();
+  const pageContext = useDataContextManagerActions(false)?.getPageContext();
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
 

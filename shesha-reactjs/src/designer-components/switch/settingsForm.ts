@@ -95,7 +95,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   propertyName: 'onChangeCustom',
                   label: 'On Change',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
                   parentId: eventsTabId
                 })
                 .toJson()

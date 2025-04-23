@@ -47,7 +47,8 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
   };
 
   useEffect(() => {
-    setPanelShowing(softInfoBlock);
+    if (displayEditMode)
+      setPanelShowing(softInfoBlock);
   }, [softInfoBlock]);
 
   if (!formProps?.id) {

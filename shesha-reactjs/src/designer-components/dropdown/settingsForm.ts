@@ -5,7 +5,7 @@ import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IDropdownComponentProps } from './model';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-
+import { nanoid } from '@/utils/uuid';
 export const getSettings = (data: IDropdownComponentProps) => {
 
     return {
@@ -307,26 +307,26 @@ export const getSettings = (data: IDropdownComponentProps) => {
 
                             })
                             .addSettingsInputRow({
-                                id: 'Scip2BCqWL4GniFIGHwdQ',
+                                id: nanoid(),
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
                                 inputs: [
                                     {
-                                        id: 'Scip2BCqWL4GniFIGHwdQ',
+                                        id: nanoid(),
                                         type: 'labelValueEditor',
                                         propertyName: 'values',
                                         label: 'Values',
                                         labelName: 'label',
                                         labelTitle: 'Label',
+                                        mode: 'dialog',
                                         valueName: 'value',
                                         valueTitle: 'Value',
-                                        hidden: {
-                                            _code: `return  getSettingValue(data.dataSourceType) !== 'values';`,
-                                            _mode: 'code',
-                                            _value: false
-                                        } as any,
-                                        mode: 'dialog',
                                     }
-                                ]
+                                ],
+                                hidden: {
+                                    _code: `return  getSettingValue(data.dataSourceType) !== 'values';`,
+                                    _mode: 'code',
+                                    _value: false
+                                },
                             })
                             .addSettingsInput({
                                 id: 'ignored-values-cadb-496c-bf6d-b742f7f6edc5',
@@ -377,7 +377,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 propertyName: 'onChangeCustom',
                                 label: 'On Change',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on changing of event.',
                                 parentId: 'Cc47W08MWrKdhoGqFKMI2'
                             })
                             .toJson()
@@ -563,22 +563,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             content: {
                                                 id: 'borderStylePnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'borderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
                                                     .addContainer({
                                                         id: 'borderStyleRow',
                                                         parentId: 'borderStylePnl',

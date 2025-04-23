@@ -64,10 +64,10 @@ export const setValueByPropertyName = (data: any, propertyName: string, value: a
         propName.forEach((item, index) => {
             if (index < propName.length - 1 && item?.length > 0) {
                 if (typeof prop[item] !== 'object') {
-                    prop = prop[item] = {};
+                    prop = prop[item] = Number.isNaN(Number(propName[index + 1])) ? {} : [];
                 } else {
                     if (makeCopy)
-                        prop = prop[item] = { ...prop[item] };
+                        prop = prop[item] = Array.isArray(prop[item]) ? [...prop[item]] : { ...prop[item] };
                     else
                         prop = prop[item];
                 }

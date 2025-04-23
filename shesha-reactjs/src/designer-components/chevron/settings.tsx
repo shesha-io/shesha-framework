@@ -15,7 +15,7 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 interface IChevronSettingsState extends IChevronProps { }
 
 export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
-  const { values, model, onValuesChange } = useSettingsForm<IChevronProps>();
+  const { values, onValuesChange } = useSettingsForm<IChevronProps>();
   const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
 
@@ -25,8 +25,10 @@ export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () =
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={values.readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={model}
           onValuesChange={onValuesChange}
+          componentName={values.componentName}
+          propertyName={values.propertyName}
+          contextName={values.context}
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>

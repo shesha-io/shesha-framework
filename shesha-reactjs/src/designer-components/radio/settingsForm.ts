@@ -155,7 +155,7 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'referenceList-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  id: 'datasource-url-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
@@ -213,7 +213,7 @@ export const getSettings = (data: any) => {
                   propertyName: 'onChangeCustom',
                   label: 'On Change',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
@@ -222,7 +222,7 @@ export const getSettings = (data: any) => {
                   propertyName: 'onFocusCustom',
                   label: 'On Focus',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on focus of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
@@ -231,7 +231,7 @@ export const getSettings = (data: any) => {
                   propertyName: 'onBlurCustom',
                   label: 'On Blur',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on blur of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .toJson(),

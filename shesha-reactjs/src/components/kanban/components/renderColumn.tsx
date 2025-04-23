@@ -1,4 +1,4 @@
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { ConfigurableForm, ShaIcon, useAvailableConstantsData, useConfigurableActionDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
@@ -41,7 +41,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(collapse);
   const { updateUserSettings } = useKanbanActions();
   const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
-  const dimensionsStyles = useMemo(() => getSizeStyle(props.columnStyles.dimensions), [props.columnStyles.dimensions]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(props.columnStyles.dimensions), [props.columnStyles.dimensions]);
   const fontStyles = useMemo(() => getFontStyle(props.font), [props.font]);
   const { styles } = useStyles({ ...props, isCollapsed, dimensionsStyles, fontStyles });
   const { updateKanban } = useKanbanActions();
