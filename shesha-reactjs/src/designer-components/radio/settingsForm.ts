@@ -155,7 +155,7 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'referenceList-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  id: 'datasource-url-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
