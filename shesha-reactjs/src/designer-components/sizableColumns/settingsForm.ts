@@ -13,7 +13,6 @@ export const getSettings = (data: any) => {
   const styleRouterId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
-  const borderStyleRowId = nanoid();
   const backgroundStylePnlId = nanoid();
 
   const propertyNameId = nanoid();

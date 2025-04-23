@@ -36,6 +36,7 @@ export const CustomActions: FC<ICustomActionsProps> = () => {
                 openModal({
                     title: 'Import JSON',
                     formId: { module: 'Shesha', name: 'form-import-json' },
+                    mode: 'edit',
                     formArguments: {
                         itemId: formProps.id,
                     },

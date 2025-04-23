@@ -16,7 +16,6 @@ export const getSettings = (data: any) => {
   const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
-  const borderStyleRowId = nanoid();
 
   const propertyNameId = nanoid();
   const hiddenId = nanoid();
