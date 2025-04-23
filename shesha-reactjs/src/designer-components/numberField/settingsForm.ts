@@ -256,7 +256,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   propertyName: 'onChangeCustom',
                   label: 'On Change',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
@@ -265,7 +265,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   propertyName: 'onFocusCustom',
                   label: 'On Focus',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on focus of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .addSettingsInput({
@@ -274,7 +274,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   propertyName: 'onBlurCustom',
                   label: 'On Blur',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on blur of event.',
                   parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .toJson(),
@@ -463,27 +463,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                           id: 'borderStylePnl',
                           components: [
                             ...new DesignerToolbarSettings()
-                              .addSettingsInputRow({
-                                id: `borderStyleRow`,
-                                parentId: 'borderStylePnl',
-                                hidden: {
-                                  _code:
-                                    'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
-                                  {
-                                    type: 'button',
-                                    id: 'borderStyleRow-hideBorder',
-                                    label: 'Border',
-                                    hideLabel: true,
-                                    propertyName: 'border.hideBorder',
-                                    icon: 'EyeOutlined',
-                                    iconAlt: 'EyeInvisibleOutlined',
-                                  },
-                                ],
-                              })
                               .addContainer({
                                 id: 'borderStyleRow',
                                 parentId: 'borderStylePnl',

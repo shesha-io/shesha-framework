@@ -107,22 +107,26 @@ export const TEXT_JUSTIFY = [
 
 export const ALIGN_ITEMS = [
   { id: nanoid(), label: 'Normal', value: 'normal' },
-  { id: nanoid(), label: 'Stretch', value: 'stretch' },
   { id: nanoid(), label: 'Center', value: 'center' },
-  { id: nanoid(), label: 'Start', value: 'start' },
-  { id: nanoid(), label: 'End', value: 'end' },
-  { id: nanoid(), label: 'Flex start', value: 'flex-start' },
-  { id: nanoid(), label: 'Flex end', value: 'flex-end' },
   { id: nanoid(), label: 'Baseline', value: 'baseline' },
-  { id: nanoid(), label: 'First baseline', value: 'first baseline' },
-  { id: nanoid(), label: 'Last baseline', value: 'last baseline' },
-  { id: nanoid(), label: 'Safe center', value: 'safe center' },
-  { id: nanoid(), label: 'Unsafe center', value: 'unsafe center' },
   { id: nanoid(), label: 'Inherit', value: 'inherit' },
   { id: nanoid(), label: 'Initial', value: 'initial' },
   { id: nanoid(), label: 'Revert', value: 'revert' },
   { id: nanoid(), label: 'Revert layer', value: 'revert-layer' },
   { id: nanoid(), label: 'Unset', value: 'unset' },
+];
+
+export const ALIGN_ITEMS_GRID = [
+  { id: nanoid(), label: 'Stretch', value: 'stretch' },
+  { id: nanoid(), label: 'Start', value: 'start' },
+  { id: nanoid(), label: 'End', value: 'end' },
+  { id: nanoid(), label: 'First baseline', value: 'first baseline' },
+  { id: nanoid(), label: 'Last baseline', value: 'last baseline' },
+];
+
+export const ALIGN_ITEMS_FLEX = [
+  { id: nanoid(), label: 'Flex start', value: 'flex-start' },
+  { id: nanoid(), label: 'Flex end', value: 'flex-end' },
 ];
 
 export const ALIGN_SELF = [
@@ -161,7 +165,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     borderRadius = '8',
     borderStyle = 'none',
     borderWidth = '1px',
-    shadowStyle,
+    shadowStyle
   } = prev || {};
 
 

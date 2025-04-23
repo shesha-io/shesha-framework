@@ -1,9 +1,7 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
-
 export type TimePickerChangeEvent = (value: number | null, timeString: string) => void;
 export type RangePickerChangeEvent = (values: number[] | null, timeString: [string, string]) => void;
 
-export interface ITimePickerProps extends IConfigurableFormComponent {
+export interface ITimePickerProps {
     className?: string;
     defaultValue?: string | [string, string];
     format?: string;
@@ -23,4 +21,6 @@ export interface ITimePickerProps extends IConfigurableFormComponent {
     use12Hours?: boolean;
     hideBorder?: boolean;
     onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
+    style?: React.CSSProperties;
+    readOnly?: boolean;
   }

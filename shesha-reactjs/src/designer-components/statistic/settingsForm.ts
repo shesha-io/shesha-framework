@@ -3,9 +3,7 @@ import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
-import { repeatOptions } from "../_settings/utils/background/utils";
-import { positionOptions } from "../_settings/utils/background/utils";
-import { sizeOptions } from "../_settings/utils/background/utils";
+import { repeatOptions, positionOptions, sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -16,8 +14,6 @@ export const getSettings = (data: any) => {
   const styleRouterId = nanoid();
   const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
-  const borderStylePnlId = nanoid();
-  const borderStyleRowId = nanoid();
   const backgroundStylePnlId = nanoid();
   const fixesRowId = nanoid();
 
@@ -148,7 +144,7 @@ export const getSettings = (data: any) => {
                 propertyName: 'onClickCustom',
                 label: 'On Click',
                 labelAlign: 'right',
-                tooltip: 'Enter custom eventhandler on click of event. (form, event) are exposed',
+                tooltip: 'Enter custom eventhandler on click of event.',
                 parentId: eventsId
               })
               .toJson()
@@ -432,24 +428,6 @@ export const getSettings = (data: any) => {
                         content: {
                           id: 'borderStylePnl',
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: borderStyleRowId,
-                              parentId: borderStylePnlId,
-                              hidden: {
-                                _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,
-                              inputs: [
-                                {
-                                  type: 'button',
-                                  id: `${borderStyleRowId}-hideBorder`,
-                                  label: "Border",
-                                  hideLabel: false,
-                                  propertyName: "border.hideBorder",
-                                  icon: "EyeOutlined",
-                                  iconAlt: "EyeInvisibleOutlined"
-                                },
-                              ]
-                            })
                             .addContainer({
                               id: 'borderStyleRow',
                               parentId: 'borderStylePnl',

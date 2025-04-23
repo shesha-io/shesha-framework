@@ -374,7 +374,7 @@ export const getSettings = (data) => {
                 propertyName: 'onChangeCustom',
                 label: 'On Change',
                 labelAlign: 'right',
-                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                tooltip: 'Enter custom eventhandler on changing of event.',
                 parentId: 'Cc47W08MWrKdhoGqFKMI2'
               })
               .toJson()

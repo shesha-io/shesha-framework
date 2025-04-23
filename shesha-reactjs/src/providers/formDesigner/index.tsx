@@ -10,7 +10,7 @@ import {
 } from '@/interfaces';
 import { UndoableActionCreators } from '@/utils/undoable';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
-import { IFlatComponentsStructure, IFormSettings } from '../form/models';
+import { FormMode, IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { IComponentSettingsEditorsCache, IDataSource } from '../formDesigner/models';
 import {
   addDataSourceAction,
@@ -27,6 +27,7 @@ import {
   setActiveDataSourceAction,
   setDebugModeAction,
   setFlatComponentsAction,
+  setFormModeAction,
   setReadOnlyAction,
   setSelectedComponentAction,
   setValidationErrorsAction,
@@ -53,6 +54,7 @@ import {
 } from './contexts';
 import formReducer from './reducer';
 import { useCallback } from 'react';
+import { useContextSelector } from 'use-context-selector';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -69,6 +71,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const toolboxComponents = useFormDesignerComponents();
   const settingsPanelRef = useRef();
+  const componentInitialization = useRef<Boolean>(false);
 
   const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
   const componentEditors = useRef<IComponentSettingsEditorsCache>({});
@@ -150,8 +153,14 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   }, [dispatch]);
 
   const updateComponent = useCallback((payload: IComponentUpdatePayload) => {
-    dispatch(componentUpdateAction(payload));
+    // ToDo: AS - optimize
+     if (componentInitialization.current) {
+      // Do not trigger an update if first component initialization (reduce unnecessary re-renders)
+      componentInitialization.current = false;
+      return; 
+    }
 
+    dispatch(componentUpdateAction(payload));
     const component = flatMarkup.allComponents[payload.componentId];
     if (!component)
       return; // TODO: debug validation, component must be defined
@@ -215,6 +224,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     if (componentId !== state.present.selectedComponentId ||
       componentRef !== state.present.selectedComponentRef)
       dispatch(setSelectedComponentAction({ id: componentId, componentRef }));
+      componentInitialization.current = true;
   }, [dispatch]);
 
   const updateFormSettings = useCallback((settings: IFormSettings) => {
@@ -231,6 +241,10 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const setActiveDataSource = useCallback((datasourceId: string) => {
     dispatch(setActiveDataSourceAction(datasourceId));
+  }, [dispatch]);
+
+  const setFormMode = useCallback((value: FormMode) => {
+    dispatch(setFormModeAction(value));
   }, [dispatch]);
 
   //#endregion
@@ -259,7 +273,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       removeDataSource,
       setActiveDataSource,
       setReadOnly,
-
+      setFormMode,
       getCachedComponentEditor,
     };
   }, [
@@ -299,8 +313,12 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   );
 };
 
+function useFormDesignerStateSelector(selector: (state: IFormDesignerStateContext) => any) {
+  return useContextSelector(FormDesignerStateContext, selector);
+}
+
 function useFormDesignerState(require: boolean = true) {
-  const context = useContext(FormDesignerStateContext);
+  const context = useContextSelector(FormDesignerStateContext, state => state);
 
   if (require && context === undefined) {
     throw new Error('useFormDesignerState must be used within a FormDesignerProvider');
@@ -332,4 +350,4 @@ function useFormDesignerUndoableState(require: boolean = true) {
   };
 }
 
-export { FormDesignerProvider, useFormDesignerUndoableState, useFormDesignerActions, useFormDesignerState };
+export { FormDesignerProvider, useFormDesignerUndoableState, useFormDesignerActions, useFormDesignerState, useFormDesignerStateSelector };

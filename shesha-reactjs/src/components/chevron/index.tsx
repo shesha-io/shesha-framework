@@ -7,7 +7,7 @@ import { useStyles } from "./styles";
 import { fadeColor } from "@/providers/refList/provider/utils";
 import { IChevronButton, IChevronControlProps } from "./models";
 import classNames from "classnames";
-import { addPx } from "@/designer-components/_settings/utils";
+import { addPx } from '@/utils/style';
 import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
 
 

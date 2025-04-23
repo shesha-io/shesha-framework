@@ -1,27 +1,33 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
+import { addPx } from "@/utils/style";
 
-export const getSizeStyle = (input: IDimensionsValue): React.CSSProperties => {
-    if (!input) return {};
+const getDimension = (main: string | number, left: any, right: any) => {
+  return `calc(${addPx(main)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
+};
 
-    const style: React.CSSProperties = {};
-    const sizeProperties: (keyof IDimensionsValue)[] = ['width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight'];
-
-    sizeProperties.forEach(prop => {
-        const sizeValue = input[prop];
-
-        if (sizeValue) {
-            style[prop] = /^\d+(\.\d+)?$/.test(sizeValue + '') ? `${sizeValue}px` : `${sizeValue}`;
-        }
-
-    });
-
-    if (input?.overflow) {
-        style.overflow = input?.overflow;
-    };
-
-    return style;
+export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties): CSSProperties => {
+  return {
+    width: dimensions?.width
+      ? getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+      : undefined,
+    height: dimensions?.height
+      ? getDimension(dimensions.height, additionalStyles?.marginTop, additionalStyles?.marginBottom)
+      : undefined,
+    minWidth: dimensions?.minWidth
+      ? getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+      : undefined,
+    minHeight: dimensions?.minHeight
+      ? getDimension(dimensions.minHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
+      : undefined,
+    maxWidth: dimensions?.maxWidth
+      ? getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+      : undefined,
+    maxHeight: dimensions?.maxHeight
+      ? getDimension(dimensions.maxHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
+      : undefined,
+  };
 };
 
 export const overflowOptions = [

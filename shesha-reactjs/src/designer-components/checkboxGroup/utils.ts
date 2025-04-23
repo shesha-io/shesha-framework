@@ -1,11 +1,10 @@
 import { CSSProperties } from 'react';
 import { RadioChangeEvent, SpaceProps } from 'antd';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 
 type CheckboxGroupMode = 'single' | 'multiple';
-export interface ICheckboxGroupProps extends Omit<IConfigurableFormComponent, 'style'> {
+export interface ICheckboxGroupProps {
   items?: ILabelValue[];
   mode?: CheckboxGroupMode;
   /**
@@ -26,6 +25,8 @@ export interface ICheckboxGroupProps extends Omit<IConfigurableFormComponent, 's
   style?: CSSProperties;
   dataSourceUrl?: string;
   reducerFunc?: string;
+  readOnly?: boolean;
+  defaultValue?: any | any[];
 }
 
 export const getSpan = (direction: SpaceProps['direction'], size: number) =>

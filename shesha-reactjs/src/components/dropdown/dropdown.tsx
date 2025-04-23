@@ -1,13 +1,8 @@
 import React, { FC, useCallback } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { evaluateString, executeExpression } from '@/providers/form/utils';
+import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
 import { Select } from 'antd';
-import {
-    useForm,
-    useFormData,
-    useGlobalState,
-} from '@/providers';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
@@ -19,14 +14,13 @@ export const Dropdown: FC<IDropdownProps> = ({
     incomeCustomJs,
     outcomeCustomJs,
     labelCustomJs,
-
     dataSourceType,
     values,
     onChange,
-    value: val,
+    value,
     referenceListId,
     mode,
-    defaultValue: defaultVal,
+    defaultValue,
     disableItemValue = false,
     ignoredValues = [],
     disabledValues = [],
@@ -36,22 +30,10 @@ export const Dropdown: FC<IDropdownProps> = ({
     size,
     allowClear = true,
 }) => {
-    const { formMode } = useForm();
-    const { data: formData } = useFormData();
-    const { globalState } = useGlobalState();
 
     const { styles } = useStyles({ style });
-
+  
     const selectedMode = mode === 'single' ? undefined : mode;
-
-    //quick fix not to default to empty string or null while working with multi-mode
-    const defaultValue = Array.isArray(defaultVal)
-        ? defaultVal
-        : defaultVal ? evaluateString(defaultVal, { formData, formMode, globalState }) || undefined : undefined;
-
-    const value = typeof val === 'string'
-        ? (evaluateString(val, { formData, formMode, globalState }) ?? undefined) as any
-        : val;
 
     const getOptions = (): ILabelValue[] => {
         return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
@@ -134,6 +116,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 allowClear={allowClear}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
+
                 incomeValueFunc={incomeValueFunc}
                 outcomeValueFunc={outcomeValueFunc}
             />

@@ -34,8 +34,10 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={model}
           onValuesChange={onValuesChange}
+          componentName={model.componentName}
+          propertyName={model.propertyName}
+          contextName={model.context}
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>

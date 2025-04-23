@@ -18,7 +18,7 @@ import { getSettings } from './settingsForm';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { defaultCardStyles, defaultStyles } from './utils';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 import { useStyles } from './styles';
@@ -50,7 +50,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const font = model?.font;
     const shadow = model?.shadow;
 
-    const dimensionsStyles = getSizeStyle(dimensions);
+    const dimensionsStyles = getDimensionsStyle(dimensions);
     const borderStyles = getBorderStyle(border, jsStyle);
     const fontStyles = getFontStyle(font);
     const shadowStyles = getShadowStyle(shadow);
@@ -63,7 +63,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const styling = JSON.parse(model.stylingBox || '{}');
     const cardStyling = JSON.parse(model?.card?.stylingBox || '{}');
 
-    const cardDimensionsStyles = getSizeStyle(cardDimensions);
+    const cardDimensionsStyles = getDimensionsStyle(cardDimensions);
     const cardBorderStyles = getBorderStyle(cardBorder, cardJsStyle);
     const cardFontStyles = getFontStyle(cardFont);
     const cardShadowStyles = getShadowStyle(cardShadow);

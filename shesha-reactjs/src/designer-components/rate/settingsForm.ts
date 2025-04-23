@@ -117,9 +117,36 @@ export const getSettings = (data: IRateProps) => {
                   propertyName: 'onChangeCustom',
                   label: 'On Change',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
                   parentId: eventsTabId
                 })
+                .addSettingsInput({
+                    id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                    inputType: 'codeEditor',
+                    propertyName: 'onFocusCustom',
+                    label: 'On Focus',
+                    labelAlign: 'right',
+                    tooltip: 'Enter custom eventhandler on focus of event.',
+                    parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                })
+                .addSettingsInput({
+                    id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                    inputType: 'codeEditor',
+                    propertyName: 'onBlurCustom',
+                    label: 'On Blur',
+                    labelAlign: 'right',
+                    tooltip: 'Enter custom eventhandler on blur of event.',
+                    parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                })
+                .addSettingsInput({
+                  id: '1232d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onClickCustom',
+                  label: 'On Click',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on click of event.',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2'
+              })
                 .toJson()
             ]
           },

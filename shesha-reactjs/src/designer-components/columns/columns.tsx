@@ -15,7 +15,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { IColumnsComponentProps, IColumnsInputProps } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -40,7 +40,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const background = model?.background;
     const jsStyle = getStyle(model.style, data);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);

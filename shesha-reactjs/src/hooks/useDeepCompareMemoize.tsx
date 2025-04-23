@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import isEqualWith from 'lodash/isEqualWith';
-import { isArray } from '@/utils/array';
-import { StorageProxy } from '@/providers/dataContextProvider/contexts/storageProxy';
+import { StorageArrayProperty, StorageProperty } from '@/providers/dataContextProvider/contexts/storageProxy';
 import { ObservableProxy } from '..';
+import { TouchableArrayProperty, TouchableProperty } from '@/providers/form/touchableProperty';
 
 /**
  * Custom version of isEqual to handle function comparison
@@ -21,9 +21,9 @@ function isEqual(x: any, y: any) {
 export function useDeepCompareMemoize(value: Readonly<any>) {
   const ref = useRef<any>();
 
-  const unproxiedValue = isArray(value)
+  const unproxiedValue = Array.isArray(value)
     ? value.map((item) => 
-      item instanceof StorageProxy 
+      item instanceof StorageProperty || item instanceof StorageArrayProperty || item instanceof TouchableProperty || item instanceof TouchableArrayProperty
         ? item.getData() 
         : item instanceof ObservableProxy
           ? {...item}
