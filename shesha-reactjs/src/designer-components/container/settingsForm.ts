@@ -2,6 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import {
   ALIGN_ITEMS,
+  ALIGN_ITEMS_GRID,
   ALIGN_SELF,
   FLEX_DIRECTION,
   FLEX_WRAP,
@@ -17,6 +18,8 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
+
+  const getDisplayType = ' getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display)';
 
   return {
 
@@ -170,135 +173,353 @@ export const getSettings = (data) => {
                               { value: 'inline-grid', title: 'Inline grid', icon: 'TableOutlined' }
                             ]
                           })
-                          .addSettingsInputRow({
-                            id: 'flex-try26voxhs-HxJ5k5ngYE',
+                          .addContainer({
+                            id: 'flex-grid-properties-container',
                             parentId: 'displayCollapsiblePanel',
-                            inline: true,
                             hidden: {
-                              _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
+                              _code: 'return' + getDisplayType + ' === "block";',
                               _mode: 'code',
                               _value: false,
                             } as any,
-                                      inputs: [
-                              {
-                                type: 'textField',
-                                id: 'gap-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Gap',
-                                propertyName: 'gap',
-                                description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
-                              },
-                              {
-                                type: 'dropdown',
-                                id: 'flex-direction-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Flex Direction',
-                                propertyName: 'flexDirection',
-                                dropdownOptions: FLEX_DIRECTION,
-                                description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
-
-                              },
-                              {
-                                type: 'dropdown',
-                                id: 'flex-wrap-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Flex Wrap',
-                                propertyName: 'flexWrap',
-                                dropdownOptions: FLEX_WRAP
-                              },
-
-                            ],
+                            components: [
+                              ...new DesignerToolbarSettings()
+                                .addContainer({
+                                  id: 'button-display-Bg31azZC0UjZjpfTm',
+                                  parentId: 'displayCollapsiblePanel',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInputRow({
+                                        id: nanoid(),
+                                        inline: true,
+                                        parentId: 'button-display-Bg31azZC0UjZjpfTm',
+                                        inputs: [
+                                          {
+                                            type: 'radio',
+                                            id: 'button-display-Bg31azZC0UjZjpfTm-flex-direction',
+                                            label: 'Flex Direction',
+                                            hideLabel: true,
+                                            propertyName: 'flexDirection',
+                                            hidden: {
+                                              _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
+                                              _mode: 'code',
+                                              _value: false,
+                                            } as any,
+                                            buttonGroupOptions: [
+                                              {
+                                                title: 'Row',
+                                                value: 'row',
+                                                icon: 'row'
+                                              },
+                                              {
+                                                title: 'Column',
+                                                value: 'column',
+                                                icon: 'column'
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            id: 'justify-content-s4gmBg31azZC0UjZjpfTm-button',
+                                            type: 'radio',
+                                            label: 'Justify Content',
+                                            hideLabel: true,
+                                            hidden: {
+                                              _code: `return (${getDisplayType} == "flex"` +
+                                                ' && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) == "column")' +
+                                                ` || ${getDisplayType} == "inline-grid"`,
+                                              _mode: 'code',
+                                              _value: false,
+                                            } as any,
+                                            propertyName: 'justifyContent',
+                                            buttonGroupOptions: [
+                                              {
+                                                title: 'Left',
+                                                value: 'left',
+                                                icon: 'alignHorizontalLeft'
+                                              },
+                                              {
+                                                title: 'Center',
+                                                value: 'center',
+                                                icon: 'alignHorizontalCenter'
+                                              },
+                                              {
+                                                title: 'Right',
+                                                value: 'right',
+                                                icon: 'alignHorizontalRight'
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            type: 'radio',
+                                            id: 'button-display-Bg31azZC0UjZjpfTm-align-items',
+                                            label: 'Align Items',
+                                            hideLabel: true,
+                                            propertyName: 'alignItems',
+                                            hidden: {
+                                              _code: `return ${getDisplayType} == "flex"` + ' && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) == "column"',
+                                              _mode: 'code',
+                                              _value: false,
+                                            } as any,
+                                            buttonGroupOptions: [
+                                              {
+                                                title: 'Start',
+                                                value: 'start',
+                                                icon: 'alignVerticalTop'
+                                              },
+                                              {
+                                                title: 'Center',
+                                                value: 'center',
+                                                icon: 'alignVerticalCenter'
+                                              },
+                                              {
+                                                title: 'End',
+                                                value: 'end',
+                                                icon: 'alignVerticalBottom'
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            type: 'radio',
+                                            id: 'button-display-Bg31azZC0UjZjpfTm-align-items-column',
+                                            label: 'Align Items',
+                                            hideLabel: true,
+                                            hidden: {
+                                              _code: `return ${getDisplayType} !== "flex"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) !== "column"',
+                                              _mode: 'code',
+                                              _value: false,
+                                            } as any,
+                                            propertyName: 'alignItems',
+                                            buttonGroupOptions: [
+                                              {
+                                                title: 'Start',
+                                                value: 'start',
+                                                icon: 'alignHorizontalLeft'
+                                              },
+                                              {
+                                                title: 'Center',
+                                                value: 'center',
+                                                icon: 'alignHorizontalCenter'
+                                              },
+                                              {
+                                                title: 'End',
+                                                value: 'end',
+                                                icon: 'alignHorizontalRight'
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            type: 'radio',
+                                            id: 'button-display-Bg31azZC0UjZjpfTm-justify-items',
+                                            label: 'Justify Content',
+                                            hideLabel: true,
+                                            propertyName: 'justifyContent',
+                                            hidden: {
+                                              _code: `return ${getDisplayType} !== "flex"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) !== "column"',
+                                              _mode: 'code',
+                                              _value: false,
+                                            } as any,
+                                            buttonGroupOptions: [
+                                              {
+                                                title: 'Start',
+                                                value: 'start',
+                                                icon: 'alignVerticalTop'
+                                              },
+                                              {
+                                                title: 'Center',
+                                                value: 'center',
+                                                icon: 'alignVerticalCenter'
+                                              },
+                                              {
+                                                title: 'End',
+                                                value: 'end',
+                                                icon: 'alignVerticalBottom'
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            type: 'button',
+                                            id: 'button-display-Bg31azZC0UjZjpfTm-advanced',
+                                            label: 'Show Advanced',
+                                            hideLabel: true,
+                                            propertyName: 'showAdvanced',
+                                            icon: 'tuneIcon'
+                                          }
+                                        ]
+                                      })
+                                      .toJson()
+                                  ]
+                                })
+                                .addSettingsInputRow({
+                                  id: 'gap-s4gmBg31azZC0UjZjpfTm-flex',
+                                  parentId: 'displayCollapsiblePanel',
+                                  inline: true,
+                                  hidden: {
+                                    _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
+                                    _mode: 'code',
+                                    _value: false,
+                                  } as any,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'textField',
+                                      id: 'gap-s4gmBg31azZC0UjZjpfTm-flex',
+                                      label: 'Gap',
+                                      propertyName: 'gap',
+                                      description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'flex-wrap-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Flex Wrap',
+                                      propertyName: 'flexWrap',
+                                      dropdownOptions: FLEX_WRAP
+                                    },
+                                  ],
+                                })
+                                .addSettingsInputRow({
+                                  id: 'gap-s4gmBg31azZC0UjZjpfTm-grid',
+                                  parentId: 'displayCollapsiblePanel',
+                                  hidden: {
+                                    _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "grid" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "inline-grid";',
+                                    _mode: 'code',
+                                    _value: false,
+                                  } as any,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'textField',
+                                      id: 'gap-s4gmBg31azZC0UjZjpfTm-grid',
+                                      label: 'Gap',
+                                      propertyName: 'gap',
+                                      description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
+                                    },
+                                    {
+                                      type: 'numberField',
+                                      id: 'grid-columns-count-s4gmBg31azZC0UjZjpfTm',
+                                      propertyName: 'gridColumnsCount',
+                                      parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+                                      label: 'Grid Columns Count',
+                                      description: 'Number of columns each grid should have',
+                                    },
+                                  ],
+                                })
+                                .toJson()
+                            ]
                           })
-                          .addSettingsInputRow({
-                            id: 'grid-26voxhs-HxJ5k5ngYE',
+                          .addContainer({
+                            id: 'non-block-26voxhs-HxJ5k5ngYE',
                             parentId: 'displayCollapsiblePanel',
                             hidden: {
-                              _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "grid" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "inline-grid";',
+                              _code: `return ${getDisplayType} == "block"` +
+                                '|| !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.showAdvanced)',
                               _mode: 'code',
                               _value: false,
                             } as any,
-                                      inputs: [
-                              {
-                                type: 'textField',
-                                id: 'gap-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Gap',
-                                propertyName: 'gap',
-                                description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
-                              },
-                              {
-                                type: 'numberField',
-                                id: 'grid-columns-count-s4gmBg31azZC0UjZjpfTm',
-                                propertyName: 'gridColumnsCount',
-                                parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-                                label: 'Grid Columns Count',
-                                description: 'Number of columns each grid should have',
-                              },
-                            ],
-                          })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'displayCollapsiblePanel',
-                            inline: false,
-                                      inputs: [
-                              {
-                                type: 'dropdown',
-                                id: 'align-items-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Align Items',
-                                propertyName: 'alignItems',
-                                dropdownOptions: ALIGN_ITEMS
-                              },
-                              {
-                                type: 'dropdown',
-                                id: 'align-self-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Align Self',
-                                propertyName: 'alignSelf',
-                                dropdownOptions: ALIGN_SELF
-                              },]
-                          })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'displayCollapsiblePanel',
-                            inline: false,
-                                      inputs: [
-                              {
-                                type: 'dropdown',
-                                id: 'justify-content-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Justify Content',
-                                propertyName: 'justifyContent',
-                                dropdownOptions: JUSTIFY_CONTENT
-                              },
-                              {
-                                type: 'dropdown',
-                                id: 'justify-self-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Justify Self',
-                                propertyName: 'justifySelf',
-                                dropdownOptions: JUSTIFY_SELF
-                              },
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            components: [
+                              ...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: 'displayCollapsiblePanel',
+                                  inline: false,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: 'flex-direction-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Flex Direction',
+                                      propertyName: 'flexDirection',
+                                      hidden: {
+                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      dropdownOptions: FLEX_DIRECTION,
+                                      description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
+
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'align-items-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Align Items',
+                                      propertyName: 'alignItems',
+                                      dropdownOptions: [...ALIGN_ITEMS, ...ALIGN_ITEMS_GRID]
+                                    }
+                                  ]
+                                })
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: 'displayCollapsiblePanel',
+                                  inline: false,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: 'justify-content-s4gmBg31azZC0UjZjpfTm-dropdown',
+                                      label: 'Justify Content',
+                                      propertyName: 'justifyContent',
+                                      dropdownOptions: JUSTIFY_CONTENT
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'justify-self-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Justify Self',
+                                      propertyName: 'justifySelf',
+                                      hidden: {
+                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      dropdownOptions: JUSTIFY_SELF
+                                    },
+                                  ]
+                                })
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: 'displayCollapsiblePanel',
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: 'align-self-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Align Self',
+                                      propertyName: 'alignSelf',
+                                      dropdownOptions: ALIGN_SELF
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: 'justify-items-s4gmBg31azZC0UjZjpfTm',
+                                      label: 'Justify Items',
+                                      propertyName: 'justifyItems',
+                                      hidden: {
+                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      dropdownOptions: JUSTIFY_ITEMS
+                                    }
+                                  ]
+                                })
+                                .toJson()
                             ]
                           })
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: 'displayCollapsiblePanel',
                             inline: false,
-                                      inputs: [
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            inputs: [
                               {
                                 type: 'dropdown',
                                 id: 'text-justify-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Text Justify',
                                 propertyName: 'textJustify',
+                                hidden: {
+                                  _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "block";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
                                 dropdownOptions: TEXT_JUSTIFY
                               },
-                              {
-                                type: 'dropdown',
-                                id: 'justify-items-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Justify Items',
-                                propertyName: 'justifyItems',
-                                dropdownOptions: JUSTIFY_ITEMS
-                              },
-                            ],
-                          })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'displayCollapsiblePanel',
-                            inline: true,
-                                      inputs: [
                               {
                                 type: 'dropdown',
                                 id: 'overflow-s4gmBg31azZC0UjZjpfTm',
@@ -316,10 +537,14 @@ export const getSettings = (data) => {
                                   {
                                     label: "Scroll",
                                     value: "scroll",
-                                  }
+                                  },
+                                  {
+                                    label: "Visible",
+                                    value: "visible",
+                                  },
                                 ]
                               }
-                            ]
+                            ],
                           })
                           .toJson()
                         ]
@@ -340,7 +565,7 @@ export const getSettings = (data) => {
                             id: 'dimensionsStyleRowWidth',
                             parentId: 'dimensionsStylePnl',
                             inline: true,
-                                      inputs: [
+                            inputs: [
                               {
                                 type: 'textField',
                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
@@ -375,7 +600,7 @@ export const getSettings = (data) => {
                             id: 'dimensionsStyleRowHeight',
                             parentId: 'dimensionsStylePnl',
                             inline: true,
-                                      inputs: [
+                            inputs: [
                               {
                                 type: 'textField',
                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
@@ -420,22 +645,7 @@ export const getSettings = (data) => {
                       content: {
                         id: 'borderStylePnl',
                         components: [...new DesignerToolbarSettings()
-                          .addSettingsInputRow({
-                            id: `borderStyleRow`,
-                            parentId: 'borderStylePnl',
-                            hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,       
-                            inputs: [
-                              {
-                                type: 'button',
-                                id: 'borderStyleRow-hideBorder',
-                                label: "Border",
-                                hideLabel: true,
-                                propertyName: "border.hideBorder",
-                                icon: "EyeOutlined",
-                                iconAlt: "EyeInvisibleOutlined"
-                              },
-                            ]
-                          })
+
                           .addContainer({
                             id: 'borderStyleRow',
                             parentId: 'borderStylePnl',
@@ -471,26 +681,26 @@ export const getSettings = (data) => {
                               inputType: "radio",
                               tooltip: "Select a type of background",
                               buttonGroupOptions: backgroundTypeOptions,
-                                        })
+                            })
                             .addSettingsInputRow({
-                              id: "backgroundStyleRow-color",
+                              id: "backgroundStyleRow-color-select",
                               parentId: "backgroundStylePnl",
                               inputs: [{
                                 type: 'colorPicker',
-                                id: 'backgroundStyleRow-color',
+                                id: 'backgroundStyleRow-color-picker',
                                 label: "Color",
                                 propertyName: "background.color",
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                        })
+                            })
                             .addSettingsInputRow({
-                              id: "backgroundStyle-gradientColors",
+                              id: "backgroundStyle-gradientColors-select",
                               parentId: "backgroundStylePnl",
                               inputs: [{
                                 type: 'multiColorPicker',
-                                id: 'backgroundStyle-gradientColors',
+                                id: 'backgroundStyle-gradientColors-picker',
                                 propertyName: "background.gradient.colors",
                                 label: "Colors",
                                 jsSetting: false,
@@ -498,36 +708,36 @@ export const getSettings = (data) => {
                               ],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                               hideLabel: true,
-                                        })
+                            })
                             .addSettingsInputRow({
-                              id: "backgroundStyle-url",
+                              id: "backgroundStyle-url-select",
                               parentId: "backgroundStylePnl",
                               inputs: [{
                                 type: 'textField',
-                                id: 'backgroundStyle-url',
+                                id: 'backgroundStyle-url-input',
                                 propertyName: "background.url",
                                 jsSetting: false,
                                 label: "URL",
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                        })
+                            })
                             .addSettingsInputRow({
-                              id: "backgroundStyle-image",
+                              id: "backgroundStyle-image-select",
                               parentId: 'backgroundStylePnl',
                               inputs: [{
                                 type: 'imageUploader',
-                                id: 'backgroundStyle-image',
+                                id: 'backgroundStyle-image-uploader',
                                 propertyName: 'background.uploadFile',
                                 label: "Image",
                                 jsSetting: false,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                        })
+                            })
                             .addSettingsInputRow({
                               id: "backgroundStyleRow-storedFile",
                               parentId: 'backgroundStylePnl',
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                          inputs: [
+                              inputs: [
                                 {
                                   type: 'textField',
                                   id: 'backgroundStyle-storedFile',
@@ -542,7 +752,7 @@ export const getSettings = (data) => {
                               parentId: 'backgroundStyleRow',
                               inline: true,
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                          inputs: [
+                              inputs: [
                                 {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-size',
@@ -566,7 +776,7 @@ export const getSettings = (data) => {
                             .addSettingsInputRow({
                               id: 'backgroundStyleRow-repeat',
                               parentId: 'backgroundStyleRow',
-                                          inputs: [{
+                              inputs: [{
                                 type: 'radio',
                                 id: 'backgroundStyleRow-repeat-radio',
                                 label: 'Repeat',
@@ -596,7 +806,7 @@ export const getSettings = (data) => {
                             id: 'shadowStyleRow',
                             parentId: 'shadowStylePnl',
                             inline: true,
-                                      inputs: [
+                            inputs: [
                               {
                                 type: 'numberField',
                                 id: 'shadowStyleRow-offsetX',
@@ -684,14 +894,14 @@ export const getSettings = (data) => {
                             label: 'Custom CSS Class',
                           })
                           .addSettingsInput({
-                                      id: 'custom-wrapper-css-412c-8461-4c8d55e5c073',
+                            id: 'custom-wrapper-css-412c-8461-4c8d55e5c073',
                             inputType: 'codeEditor',
                             propertyName: 'wrapperStyle',
                             label: 'Wrapper Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })
                           .addSettingsInput({
-                                      id: 'custom-css-412c-8461-4c8d55e5c073',
+                            id: 'custom-css-412c-8461-4c8d55e5c073',
                             inputType: 'codeEditor',
                             propertyName: 'style',
                             label: 'Style',
