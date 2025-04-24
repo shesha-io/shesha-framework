@@ -8,7 +8,7 @@ import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { SettingComponentContainer } from './settingContainer/settingComponentContainer';
-import { useActualContextData } from '@/hooks/useActualContextData';
+import { useActualContextData } from '@/hooks';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
   exposedVariables?: ICodeExposedVariable[];

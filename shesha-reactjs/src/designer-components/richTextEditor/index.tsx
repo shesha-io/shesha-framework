@@ -88,7 +88,9 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     .add<IRichTextEditorProps>(3, (prev) => {
       const styles = {
         style: prev.style,
-        theme: prev.theme
+        theme: prev.theme,
+        autoHeight: prev.autoHeight || true,
+        autoWidth: prev.autoWidth || true,
       };
   
       return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };

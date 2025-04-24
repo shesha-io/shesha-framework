@@ -7,17 +7,17 @@ import React, {
 } from 'react';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { Button, Form, Result, Spin } from 'antd';
+import { Button, Form, Result } from 'antd';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IConfigurableFormRendererProps } from './models';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useSheshaApplication } from '@/providers';
 import { useStyles } from './styles/styles';
 import Link from 'next/link';
-import { LoadingOutlined } from '@ant-design/icons';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { ShaSpin } from '..';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -39,9 +39,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  
-
-  const { isDragging = false } = useFormDesignerState(false) ?? {};
+  const isDragging = useFormDesignerStateSelector(x => x.isDragging) ?? false;
 
   const onValuesChangeInternal = (_changedValues: any, values: any) => {
     shaForm.setFormData({ values: values, mergeValues: true });
@@ -96,11 +94,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
-      <Spin
-        spinning={showDataSubmitIndicator && dataSubmitState?.status === 'loading'}
-        tip="Saving data..."
-        indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
-      >
+      <ShaSpin spinning={showDataSubmitIndicator && dataSubmitState?.status === 'loading'} tip="Saving data...">
         <Form
           form={form}
           labelWrap
@@ -117,7 +111,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
           {children}
         </Form>
-      </Spin>
+      </ShaSpin>
     </ComponentsContainerProvider>
   );
 };

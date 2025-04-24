@@ -185,4 +185,5 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, Om
   desktop?: any;
   tablet?: any;
   mobile?: any;
+  showAdvanced?: boolean;
 }

@@ -11,7 +11,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { getStyle, isValidGuid, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
 import { removeUndefinedProps } from '@/utils/object';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
@@ -36,7 +36,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     const jsStyle = getStyle(model.style, data);
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -117,7 +117,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
         backgroundColor: legacyColor2Hex(prev.backgroundColor),
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) })),
 };
 
 export default TextComponent;

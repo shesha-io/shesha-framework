@@ -4,7 +4,6 @@ import { nanoid } from '@/utils/uuid';
 export const navigateArgumentsForm = new DesignerToolbarSettings()
   .addSettingsInputRow({
     id: 'navigation-url-form-row',
-    readOnly: false,
     inputs: [
       {
         id: nanoid(),

@@ -2,7 +2,7 @@ import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
-import { getSettings } from './tabbedSettings';
+import { getSettings } from './settingsForm';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IStyleType, useFormData, useSheshaApplication } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
@@ -11,7 +11,7 @@ import { removeUndefinedProps } from '@/utils/object';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { defaultStyles } from './utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
@@ -49,7 +49,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
     const jsStyle = getStyle(model.style, formData);
 
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [jsStyle, border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);

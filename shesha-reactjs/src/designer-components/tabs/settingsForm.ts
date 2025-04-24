@@ -19,10 +19,16 @@ export const getSettings = () => {
         bottomRight: 'return ' + prefix + '"bottom" || ' + prefix + '"right";',
     };
 
+    const searchableTabsId = nanoid();
+    const commonTabId = nanoid();
+    const appearanceTabId = nanoid();
+    const securityTabId = nanoid();
+    const styleRouterId = nanoid();
+
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
-                id: 'W_m7doMyCpCYwAYDfRh6I',
+                id: searchableTabsId,
                 propertyName: 'settingsTabs',
                 parentId: 'root',
                 label: 'Settings',
@@ -33,12 +39,12 @@ export const getSettings = () => {
                     {
                         key: '1',
                         title: 'Common',
-                        id: 's4gmBg31azZC0UjZjpfTm',
+                        id: commonTabId,
                         type: '',
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addSettingsInput({
-                                    id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
+                                    id: nanoid(),
                                     inputType: 'textField',
                                     propertyName: 'componentName',
                                     label: 'Component Name',
@@ -49,7 +55,6 @@ export const getSettings = () => {
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
-                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                     inputs: [
                                         {
                                             id: nanoid(),
@@ -61,7 +66,7 @@ export const getSettings = () => {
                                             dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?._data?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
                                         },
                                         {
-                                            id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
+                                            id: nanoid(),
                                             type: 'dropdown',
                                             propertyName: 'tabType',
                                             label: 'Tab Type',
@@ -77,11 +82,10 @@ export const getSettings = () => {
                                     ]
                                 })
                                 .addSettingsInputRow({
-                                    id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
-                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    id: nanoid(),
                                     inputs: [
                                         {
-                                            id: '4595a895-5078-4986-934b-c5013bf315ad',
+                                            id: nanoid(),
                                             type: 'itemListConfiguratorModal',
                                             propertyName: 'tabs',
                                             label: 'Tabs',
@@ -119,15 +123,15 @@ export const getSettings = () => {
                         key: '2',
                         title: 'Appearance',
                         type: '',
-                        id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                        id: appearanceTabId,
                         components: [...new DesignerToolbarSettings()
                             .addPropertyRouter({
-                                id: 'styleRouter',
+                                id: styleRouterId,
                                 propertyName: 'propertyRouter1',
                                 componentName: 'propertyRouter',
                                 label: 'Property router1',
                                 labelAlign: 'right',
-                                parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                                parentId: appearanceTabId,
                                 hidden: false,
                                 propertyRouteName: {
                                     _mode: "code",
@@ -137,7 +141,7 @@ export const getSettings = () => {
                                 components: [
                                     ...new DesignerToolbarSettings()
                                         .addSettingsInput({
-                                            id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
+                                            id: nanoid(),
                                             inputType: 'dropdown',
                                             propertyName: 'tabPosition',
                                             tooltip: "This will set the position for all buttons",
@@ -153,26 +157,25 @@ export const getSettings = () => {
                                             parentId: 'root'
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'fontStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlFontStyle',
                                             label: 'Font',
                                             labelAlign: 'right',
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             ghost: true,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'fontStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: 'try26voxhs-HxJ5k5ngYE',
+                                                        id: nanoid(),
                                                         parentId: 'fontStylePnl',
                                                         inline: true,
                                                         propertyName: 'font',
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'dropdown',
-                                                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Family',
                                                                 propertyName: 'font.type',
                                                                 hideLabel: true,
@@ -180,7 +183,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
                                                                 hideLabel: true,
@@ -188,7 +191,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'dropdown',
-                                                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Weight',
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
@@ -198,7 +201,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'colorPicker',
-                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
@@ -210,25 +213,24 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'dimensionsStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlDimensions',
                                             label: 'Dimensions',
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             labelAlign: 'right',
                                             ghost: true,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'dimensionsStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: 'dimensionsStyleRowWidth',
+                                                        id: nanoid(),
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
-                                                                id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Width",
                                                                 width: 85,
                                                                 propertyName: "dimensions.width",
@@ -237,7 +239,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Min Width",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -246,7 +248,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Max Width",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -256,14 +258,13 @@ export const getSettings = () => {
                                                         ]
                                                     })
                                                     .addSettingsInputRow({
-                                                        id: 'dimensionsStyleRowHeight',
+                                                        id: nanoid(),
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
-                                                                id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Height",
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
@@ -272,7 +273,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Min Height",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -281,7 +282,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Max Height",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -291,7 +292,7 @@ export const getSettings = () => {
                                                         ]
                                                     })
                                                     .addSettingsInput({
-                                                        id: 'overflow-s4gmBg31azZC0UjZjpfTm',
+                                                        id: nanoid(),
                                                         parentId: 'displayCollapsiblePanel',
                                                         inline: true,
                                                         inputType: 'dropdown',
@@ -305,23 +306,23 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'borderStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlBorderStyle',
                                             label: 'Border',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'borderStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addContainer({
-                                                        id: 'borderStyleRow',
+                                                        id: nanoid(),
                                                         parentId: 'borderStylePnl',
                                                         components: getBorderInputs() as any
                                                     })
                                                     .addContainer({
-                                                        id: 'borderRadiusStyleRow',
+                                                        id: nanoid(),
                                                         parentId: 'borderStylePnl',
                                                         components: getCornerInputs("", true, hideConditions) as any
                                                     })
@@ -330,20 +331,20 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'tab-line-color-collapsible-panel',
+                                            id: nanoid(),
                                             propertyName: 'pnlTabLineColor',
                                             label: 'Line Color',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             hidden: { _code: 'return  getSettingValue(data?.tabType) !== "line";', _mode: 'code', _value: false } as any,
                                             content: {
-                                                id: 'tab-line-color-pnl',
+                                                id: nanoid(),
                                                 components: [
                                                     ...new DesignerToolbarSettings()
                                                         .addSettingsInput({
-                                                            id: 'tab-line-color-row',
+                                                            id: nanoid(),
                                                             parentId: 'tab-line-color-pnl',
                                                             inputType: 'colorPicker',
                                                             label: 'Color',
@@ -355,20 +356,20 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'backgroundStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlBackgroundStyle',
                                             label: 'Background',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                             content: {
-                                                id: 'backgroundStylePnl',
+                                                id: nanoid(),
                                                 components: [
                                                     ...new DesignerToolbarSettings()
                                                         .addSettingsInput({
-                                                            id: "backgroundStyleRow-selectType",
+                                                            id: nanoid(),
                                                             parentId: "backgroundStylePnl",
                                                             label: "Type",
                                                             jsSetting: false,
@@ -376,28 +377,26 @@ export const getSettings = () => {
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
                                                             buttonGroupOptions: backgroundTypeOptions,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyleRow-color",
+                                                            id: nanoid(),
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
                                                                 type: 'colorPicker',
-                                                                id: 'backgroundStyleRow-color',
+                                                                id: nanoid(),
                                                                 label: "Color",
                                                                 propertyName: "background.color",
                                                                 hideLabel: true,
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyle-gradientColors",
+                                                            id: nanoid(),
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
                                                                 type: 'multiColorPicker',
-                                                                id: 'backgroundStyle-gradientColors',
+                                                                id: nanoid(),
                                                                 propertyName: "background.gradient.colors",
                                                                 label: "Colors",
                                                                 jsSetting: false,
@@ -405,43 +404,39 @@ export const getSettings = () => {
                                                             ],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                             hideLabel: true,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyle-url",
+                                                            id: nanoid(),
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
                                                                 type: 'textField',
-                                                                id: 'backgroundStyle-url',
+                                                                id: nanoid(),
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
                                                                 label: "URL",
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyle-image",
+                                                            id: nanoid(),
                                                             parentId: 'backgroundStylePnl',
                                                             inputs: [{
                                                                 type: 'imageUploader',
-                                                                id: 'backgroundStyle-image',
+                                                                id: nanoid(),
                                                                 propertyName: 'background.uploadFile',
                                                                 label: "Image",
                                                                 jsSetting: false,
                                                             }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyleRow-storedFile",
+                                                            id: nanoid(),
                                                             parentId: 'backgroundStylePnl',
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     type: 'textField',
-                                                                    id: 'backgroundStyle-storedFile',
+                                                                    id: nanoid(),
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
                                                                     label: "File ID"
@@ -449,15 +444,14 @@ export const getSettings = () => {
                                                             ]
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyleRow-controls",
+                                                            id: nanoid(),
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     type: 'customDropdown',
-                                                                    id: 'backgroundStyleRow-size',
+                                                                    id: nanoid(),
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
@@ -466,7 +460,7 @@ export const getSettings = () => {
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
-                                                                    id: 'backgroundStyleRow-position',
+                                                                    id: nanoid(),
                                                                     label: "Position",
                                                                     hideLabel: true,
                                                                     customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
@@ -476,12 +470,11 @@ export const getSettings = () => {
                                                             ]
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: 'backgroundStyleRow-repeat',
+                                                            id: nanoid(),
                                                             parentId: 'backgroundStyleRow',
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [{
                                                                 type: 'radio',
-                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                id: nanoid(),
                                                                 label: 'Repeat',
                                                                 hideLabel: true,
                                                                 propertyName: 'background.repeat',
@@ -495,25 +488,24 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'shadowStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlShadowStyle',
                                             label: 'Shadow',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'shadowStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: 'shadowStyleRow',
+                                                        id: nanoid(),
                                                         parentId: 'shadowStylePnl',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-offsetX',
+                                                                id: nanoid(),
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
                                                                 tooltip: 'Offset X',
@@ -523,7 +515,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-offsetY',
+                                                                id: nanoid(),
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
                                                                 tooltip: 'Offset Y',
@@ -533,7 +525,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-blurRadius',
+                                                                id: nanoid(),
                                                                 label: 'Blur',
                                                                 hideLabel: true,
                                                                 tooltip: 'Blur Radius',
@@ -543,7 +535,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-spreadRadius',
+                                                                id: nanoid(),
                                                                 label: 'Spread',
                                                                 hideLabel: true,
                                                                 tooltip: 'Spread Radius',
@@ -553,7 +545,7 @@ export const getSettings = () => {
                                                             },
                                                             {
                                                                 type: 'colorPicker',
-                                                                id: 'shadowStyleRow-color',
+                                                                id: nanoid(),
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'shadow.color',
@@ -565,17 +557,18 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'styleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'stylingBox',
                                             label: 'Margin & Padding',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'stylePnl-M5-911',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addStyleBox({
-                                                        id: 'styleBoxPnl',
+                                                        id: nanoid(),
                                                         label: 'Margin Padding',
                                                         hideLabel: true,
                                                         propertyName: 'stylingBox',
@@ -585,19 +578,18 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'customStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'customStyle',
                                             label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'stylePnl-M500-911MFR',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                        id: nanoid(),
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         hideLabel: false,
@@ -609,37 +601,36 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'tabCardStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'cardStyle',
                                             label: 'Card Styles',
                                             labelAlign: 'right',
                                             collapsedByDefault: true,
-                                            parentId: 'cardStyleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'tab-card-stylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addCollapsiblePanel({
-                                                        id: 'fontStyleCollapsiblePanel',
+                                                        id: nanoid(),
                                                         propertyName: 'tabCardFontStyle',
                                                         label: 'Font',
                                                         labelAlign: 'right',
-                                                        parentId: 'styleRouter',
+                                                        parentId: nanoid(),
                                                         ghost: true,
                                                         collapsible: 'header',
                                                         content: {
-                                                            id: 'cardfontStylePnl',
+                                                            id: nanoid(),
                                                             components: [...new DesignerToolbarSettings()
                                                                 .addSettingsInputRow({
-                                                                    id: 'try26voxhs-HxJ5k5ngYE',
+                                                                    id: nanoid(),
                                                                     parentId: 'cardfontStylePnl',
                                                                     inline: true,
                                                                     propertyName: 'card.font',
-                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
                                                                             type: 'dropdown',
-                                                                            id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: 'Family',
                                                                             propertyName: 'card.font.type',
                                                                             hideLabel: true,
@@ -648,7 +639,7 @@ export const getSettings = () => {
                                                                         },
                                                                         {
                                                                             type: 'numberField',
-                                                                            id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: 'Size',
                                                                             propertyName: 'card.font.size',
                                                                             hideLabel: true,
@@ -657,7 +648,7 @@ export const getSettings = () => {
                                                                         },
                                                                         {
                                                                             type: 'dropdown',
-                                                                            id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: 'Weight',
                                                                             propertyName: 'card.font.weight',
                                                                             hideLabel: true,
@@ -668,7 +659,7 @@ export const getSettings = () => {
                                                                         },
                                                                         {
                                                                             type: 'colorPicker',
-                                                                            id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: 'Color',
                                                                             hideLabel: true,
                                                                             propertyName: 'card.font.color',
@@ -680,25 +671,24 @@ export const getSettings = () => {
                                                         }
                                                     })
                                                     .addCollapsiblePanel({
-                                                        id: 'dimensionCollapsiblePanel',
+                                                        id: nanoid(),
                                                         propertyName: 'card.pnlDimension',
                                                         label: 'Dimension',
                                                         labelAlign: 'right',
                                                         ghost: true,
-                                                        parentId: 'styleRouter',
+                                                        parentId: nanoid(),
                                                         collapsible: 'header',
                                                         content: {
-                                                            id: 'dimensionPnl',
+                                                            id: nanoid(),
                                                             components: [...new DesignerToolbarSettings()
                                                                 .addSettingsInputRow({
-                                                                    id: 'card-width-dimensions-style-row-width',
+                                                                    id: nanoid(),
                                                                     parentId: 'card-width-dimensions-style-pnl',
                                                                     inline: true,
-                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
                                                                             type: 'textField',
-                                                                            id: 'card-width-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: "Width",
                                                                             width: 85,
                                                                             propertyName: "card.dimensions.width",
@@ -707,7 +697,7 @@ export const getSettings = () => {
                                                                         },
                                                                         {
                                                                             type: 'textField',
-                                                                            id: 'card-min-width-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: "Min Width",
                                                                             width: 85,
                                                                             hideLabel: true,
@@ -715,7 +705,7 @@ export const getSettings = () => {
                                                                         },
                                                                         {
                                                                             type: 'textField',
-                                                                            id: 'card-max-width-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: "Max Width",
                                                                             width: 85,
                                                                             hideLabel: true,
@@ -724,14 +714,13 @@ export const getSettings = () => {
                                                                     ]
                                                                 })
                                                                 .addSettingsInputRow({
-                                                                    id: 'card-height-dimensions-style-row-height',
+                                                                    id: nanoid(),
                                                                     parentId: 'card-height-dimensions-style-pnl',
                                                                     inline: true,
-                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
                                                                             type: 'textField',
-                                                                            id: 'card-height-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: "Height",
                                                                             width: 85,
                                                                             propertyName: "card.dimensions.height",
@@ -740,7 +729,7 @@ export const getSettings = () => {
                                                                         },
                                                                         {
                                                                             type: 'textField',
-                                                                            id: 'card-min-height-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: "Min Height",
                                                                             width: 85,
                                                                             hideLabel: true,
@@ -748,7 +737,7 @@ export const getSettings = () => {
                                                                         },
                                                                         {
                                                                             type: 'textField',
-                                                                            id: 'card-max-height-s4gmBg31azZC0UjZjpfTm',
+                                                                            id: nanoid(),
                                                                             label: "Max Height",
                                                                             width: 85,
                                                                             hideLabel: true,
@@ -761,19 +750,19 @@ export const getSettings = () => {
                                                         }
                                                     })
                                                     .addCollapsiblePanel({
-                                                        id: 'backgroundStyleCollapsiblePanel',
+                                                        id: nanoid(),
                                                         propertyName: 'card.pnlBackgroundStyle',
                                                         label: 'Background',
                                                         labelAlign: 'right',
                                                         ghost: true,
-                                                        parentId: 'styleRouter',
+                                                        parentId: nanoid(),
                                                         collapsible: 'header',
                                                         content: {
-                                                            id: 'backgroundStylePnl',
+                                                            id: nanoid(),
                                                             components: [
                                                                 ...new DesignerToolbarSettings()
                                                                     .addSettingsInput({
-                                                                        id: "backgroundStyleRow-selectType",
+                                                                        id: nanoid(),
                                                                         parentId: "backgroundStylePnl",
                                                                         label: "Type",
                                                                         jsSetting: false,
@@ -782,14 +771,13 @@ export const getSettings = () => {
                                                                         defaultValue: "color",
                                                                         tooltip: "Select a type of background",
                                                                         buttonGroupOptions: backgroundTypeOptions,
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     })
                                                                     .addSettingsInputRow({
-                                                                        id: "backgroundStyleRow-color",
+                                                                        id: nanoid(),
                                                                         parentId: "backgroundStylePnl",
                                                                         inputs: [{
                                                                             type: 'colorPicker',
-                                                                            id: 'backgroundStyleRow-color',
+                                                                            id: nanoid(),
                                                                             label: "Color",
                                                                             defaultValue: 'rgba(0,0,0,0.02)',
                                                                             propertyName: "card.background.color",
@@ -797,14 +785,13 @@ export const getSettings = () => {
                                                                             jsSetting: false,
                                                                         }],
                                                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     })
                                                                     .addSettingsInputRow({
-                                                                        id: "backgroundStyle-gradientColors",
+                                                                        id: nanoid(),
                                                                         parentId: "backgroundStylePnl",
                                                                         inputs: [{
                                                                             type: 'multiColorPicker',
-                                                                            id: 'backgroundStyle-gradientColors',
+                                                                            id: nanoid(),
                                                                             propertyName: "card.background.gradient.colors",
                                                                             label: "Colors",
                                                                             jsSetting: false,
@@ -812,43 +799,39 @@ export const getSettings = () => {
                                                                         ],
                                                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                                         hideLabel: true,
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     })
                                                                     .addSettingsInputRow({
-                                                                        id: "backgroundStyle-url",
+                                                                        id: nanoid(),
                                                                         parentId: "backgroundStylePnl",
                                                                         inputs: [{
                                                                             type: 'textField',
-                                                                            id: 'backgroundStyle-url',
+                                                                            id: nanoid(),
                                                                             propertyName: "card.background.url",
                                                                             jsSetting: false,
                                                                             label: "URL",
                                                                         }],
                                                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     })
                                                                     .addSettingsInputRow({
-                                                                        id: "backgroundStyle-image",
+                                                                        id: nanoid(),
                                                                         parentId: 'backgroundStylePnl',
                                                                         inputs: [{
                                                                             type: 'imageUploader',
-                                                                            id: 'backgroundStyle-image',
+                                                                            id: nanoid(),
                                                                             propertyName: 'card.background.uploadFile',
                                                                             label: "Image",
                                                                             jsSetting: false,
                                                                         }],
                                                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     })
                                                                     .addSettingsInputRow({
-                                                                        id: "backgroundStyleRow-storedFile",
+                                                                        id: nanoid(),
                                                                         parentId: 'backgroundStylePnl',
                                                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                         inputs: [
                                                                             {
                                                                                 type: 'textField',
-                                                                                id: 'backgroundStyle-storedFile',
+                                                                                id: nanoid(),
                                                                                 jsSetting: false,
                                                                                 propertyName: "card.background.storedFile.id",
                                                                                 label: "File ID"
@@ -856,15 +839,14 @@ export const getSettings = () => {
                                                                         ]
                                                                     })
                                                                     .addSettingsInputRow({
-                                                                        id: "backgroundStyleRow-controls",
+                                                                        id: nanoid(),
                                                                         parentId: 'backgroundStyleRow',
                                                                         inline: true,
                                                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                         inputs: [
                                                                             {
                                                                                 type: 'customDropdown',
-                                                                                id: 'backgroundStyleRow-size',
+                                                                                id: nanoid(),
                                                                                 label: "Size",
                                                                                 defaultValue: 'cover',
                                                                                 hideLabel: true,
@@ -873,7 +855,7 @@ export const getSettings = () => {
                                                                             },
                                                                             {
                                                                                 type: 'customDropdown',
-                                                                                id: 'backgroundStyleRow-position',
+                                                                                id: nanoid(),
                                                                                 label: "Position",
                                                                                 hideLabel: true,
                                                                                 defaultValue: 'center',
@@ -883,13 +865,12 @@ export const getSettings = () => {
                                                                         ]
                                                                     })
                                                                     .addSettingsInputRow({
-                                                                        id: 'card-bg-repeat-row',
+                                                                        id: nanoid(),
                                                                         parentId: 'backgroundStyleRow',
-                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                         inputs: [
                                                                             {
                                                                                 type: 'radio',
-                                                                                id: 'backgroundStyleRow-repeat',
+                                                                                id: nanoid(),
                                                                                 parentId: 'backgroundStyleRow',
                                                                                 label: 'Repeat',
                                                                                 hideLabel: true,
@@ -903,19 +884,18 @@ export const getSettings = () => {
                                                         }
                                                     })
                                                     .addCollapsiblePanel({
-                                                        id: 'customStyleCollapsiblePanel',
+                                                        id: nanoid(),
                                                         propertyName: 'card.customStyle',
                                                         label: 'Custom Styles',
                                                         labelAlign: 'right',
                                                         ghost: true,
-                                                        parentId: 'styleRouter',
+                                                        parentId: nanoid(),
                                                         collapsible: 'header',
                                                         content: {
-                                                            id: 'stylePnl-M500-911MFR',
+                                                            id: nanoid(),
                                                             components: [...new DesignerToolbarSettings()
                                                                 .addSettingsInput({
-                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                    id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                                    id: nanoid(),
                                                                     inputType: 'codeEditor',
                                                                     propertyName: 'card.style',
                                                                     hideLabel: false,
@@ -936,17 +916,16 @@ export const getSettings = () => {
                     {
                         key: '3',
                         title: 'Security',
-                        id: '6Vw9iiDw9d0MD_Rh5cbIn',
+                        id: securityTabId,
                         type: '',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                id: nanoid(),
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                parentId: securityTabId
                             })
                             .toJson()
                         ]

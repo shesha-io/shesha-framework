@@ -1,12 +1,21 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: any) => {
+  const searchableTabsId = nanoid();
+  const commonTabId = nanoid();
+  const appearanceTabId = nanoid();
+  const securityTabId = nanoid();
+  const styleRouterId = nanoid();
+  const fontStylePnlId = nanoid();
+  const dimensionsStylePnlId = nanoid();
+
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
-        id: 'W_m7doMyCpCYwAYDfRh6I',
+        id: searchableTabsId,
         propertyName: 'settingsTabs',
         parentId: 'root',
         label: 'Settings',
@@ -17,27 +26,27 @@ export const getSettings = (data: any) => {
           {
             key: '1',
             title: 'Common',
-            id: 's4gmBg31azZC0UjZjpfTm',
+            id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  id: 'component-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: commonTabId,
                   propertyName: 'componentName',
                   label: 'Component Name',
                   jsSetting: true,
                 })
                 .addContainer({
-                  id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: commonTabId,
                   hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
                   components: [
                     ...new DesignerToolbarSettings()
                       .addLabelConfigurator({
-                        id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                        id: nanoid(),
                         propertyName: 'hideLabel',
                         label: 'Label',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        parentId: commonTabId,
                         hideLabel: true,
                         labelAlignOptions: [
                           { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
@@ -46,32 +55,29 @@ export const getSettings = (data: any) => {
                         ],
                       })
                       .addSettingsInputRow({
-                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
-                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        id: nanoid(),
+                        parentId: commonTabId,
                         inputs: [
                           {
-                            id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                            id: nanoid(),
+                            parentId: commonTabId,
                             type: 'textArea',
                             propertyName: 'description',
                             label: 'Tooltip',
                             jsSetting: true,
                             hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           },
                         ],
                       }).toJson(),
                   ]
                 })
                 .addSettingsInputRow({
-                  id: 'orientation-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  parentId: commonTabId,
                   inputs: [
                     {
-                      id: 'orientation-s4gmBg31azZC0UjZjpfTm',
-                      parentId: 's4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
+                      parentId: commonTabId,
                       type: 'dropdown',
                       propertyName: 'orientation',
                       label: 'Orientation',
@@ -89,7 +95,7 @@ export const getSettings = (data: any) => {
                     },
                     {
                       type: 'switch',
-                      id: 'inline-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'inline',
                       label: 'Inline',
                       size: 'small',
@@ -99,13 +105,12 @@ export const getSettings = (data: any) => {
                   ]
                 })
                 .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  parentId: commonTabId,
                   inputs: [
                     {
                       type: 'switch',
-                      id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'hidden',
                       label: 'Hide',
                       jsSetting: true,
@@ -119,16 +124,16 @@ export const getSettings = (data: any) => {
           {
             key: '4',
             title: 'Appearance',
-            id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+            id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addPropertyRouter({
-                  id: 'styleRouter',
+                  id: styleRouterId,
                   propertyName: 'propertyRouter1',
                   componentName: 'propertyRouter',
                   label: 'Property router1',
                   labelAlign: 'right',
-                  parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                  parentId: appearanceTabId,
                   hidden: false,
                   propertyRouteName: {
                     _mode: 'code',
@@ -138,31 +143,26 @@ export const getSettings = (data: any) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addCollapsiblePanel({
-                        id: 'lineStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'lineStyle',
                         label: 'Line Style',
                         labelAlign: 'right',
                         ghost: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
-                          id: 'stylePnl-M500-911MFR',
+                          id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInputRow({
-                                id: 'trye26vo0xhs-HxJ5k5ngYE',
+                                id: nanoid(),
                                 parentId: 'fontStylePnlline',
                                 inline: true,
                                 propertyName: 'lineFont',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'numberField',
-                                    id: 'fontSize-s04gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Thickness',
                                     propertyName: 'lineFont.size',
                                     hideLabel: false,
@@ -170,14 +170,14 @@ export const getSettings = (data: any) => {
                                   },
                                   {
                                     type: 'colorPicker',
-                                    id: 'fontColor-s40gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Color',
                                     hideLabel: false,
                                     propertyName: 'lineFont.color',
                                   },
                                   {
                                     type: 'dropdown',
-                                    id: 'type-s4gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Type',
                                     propertyName: 'lineType',
                                     hideLabel: false,
@@ -204,35 +204,30 @@ export const getSettings = (data: any) => {
                         },
                       })
                       .addCollapsiblePanel({
-                        id: 'dimensionsStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'pnlDimensions',
                         label: 'Dimensions',
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         labelAlign: 'right',
                         ghost: true,
                         collapsible: 'header',
                         content: {
-                          id: 'dimensionsStylePnl',
+                          id: dimensionsStylePnlId,
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInputRow({
-                                id: 'dimensionsStyleRowWidth',
-                                parentId: 'dimensionsStylePnl',
+                                id: nanoid(),
+                                parentId: dimensionsStylePnlId,
                                 inline: true,
                                 hidden: {
                                   _code: 'return  getSettingValue(data?.orientation) === "vertical";',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
-                                    id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Width',
                                     width: 85,
                                     propertyName: 'lineWidth',
@@ -242,23 +237,19 @@ export const getSettings = (data: any) => {
                                 ],
                               })
                               .addSettingsInputRow({
-                                id: 'dimensionsStyleRowHeight',
-                                parentId: 'dimensionsStylePnl',
+                                id: nanoid(),
+                                parentId: dimensionsStylePnlId,
                                 inline: true,
                                 hidden: {
                                   _code: 'return  getSettingValue(data?.orientation) === "horizontal";',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
+
                                 inputs: [
                                   {
                                     type: 'textField',
-                                    id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Height',
                                     width: 85,
                                     propertyName: 'lineHeight',
@@ -272,44 +263,39 @@ export const getSettings = (data: any) => {
                         },
                       })
                       .addCollapsiblePanel({
-                        id: 'titleStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'titleStyle',
                         label: 'Title Style',
                         labelAlign: 'right',
                         ghost: true,
                         collapsedByDefault: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
-                          id: 'stylePnl-M500-911MFR',
+                          id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
                               .addCollapsiblePanel({
-                                id: 'fontStyleCollapsiblePanel',
+                                id: nanoid(),
                                 propertyName: 'pnlFontStyle',
                                 label: 'Font',
                                 labelAlign: 'right',
-                                parentId: 'styleRouter',
+                                parentId: styleRouterId,
                                 ghost: true,
                                 collapsible: 'header',
                                 content: {
-                                  id: 'fontStylePnl',
+                                  id: fontStylePnlId,
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInputRow({
-                                        id: 'trye26voxhs-HxJ5k5ngYE',
-                                        parentId: 'fontStylePnl',
+                                        id: nanoid(),
+                                        parentId: fontStylePnlId,
                                         inline: true,
                                         propertyName: 'font',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
                                         inputs: [
                                           {
                                             type: 'dropdown',
-                                            id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                            id: nanoid(),
                                             label: 'Family',
                                             propertyName: 'font.type',
                                             hideLabel: true,
@@ -317,7 +303,7 @@ export const getSettings = (data: any) => {
                                           },
                                           {
                                             type: 'numberField',
-                                            id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                            id: nanoid(),
                                             label: 'Size',
                                             propertyName: 'font.size',
                                             hideLabel: true,
@@ -325,7 +311,7 @@ export const getSettings = (data: any) => {
                                           },
                                           {
                                             type: 'dropdown',
-                                            id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                            id: nanoid(),
                                             label: 'Weight',
                                             propertyName: 'font.weight',
                                             hideLabel: true,
@@ -335,7 +321,7 @@ export const getSettings = (data: any) => {
                                           },
                                           {
                                             type: 'colorPicker',
-                                            id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                            id: nanoid(),
                                             label: 'Color',
                                             hideLabel: true,
                                             propertyName: 'font.color',
@@ -347,22 +333,17 @@ export const getSettings = (data: any) => {
                                 },
                               })
                               .addCollapsiblePanel({
-                                id: 'customStyleCollapsiblePanel',
+                                id: nanoid(),
                                 propertyName: 'customStyle',
                                 label: 'Custom Styles',
                                 labelAlign: 'right',
                                 ghost: true,
                                 content: {
-                                  id: 'stylePnl-M500-911MFR-title',
+                                  id: nanoid(),
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        id: 'title-css-412c-8461-4c8d55e5c073',
+                                        id: nanoid(),
                                         inputType: 'codeEditor',
                                         propertyName: 'titleStyle',
                                         hideLabel: false,
@@ -379,31 +360,31 @@ export const getSettings = (data: any) => {
                         },
                       })
                       .addCollapsiblePanel({
-                        id: 'customStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'customStyle',
                         label: 'Container Style',
                         labelAlign: 'right',
                         ghost: true,
                         collapsedByDefault: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
-                          id: 'stylePnl-M500-911MFR',
+                          id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
                               .addCollapsiblePanel({
-                                id: 'styleCollapsiblePanel',
+                                id: nanoid(),
                                 propertyName: 'stylingBox',
                                 label: 'Margin & Padding',
                                 labelAlign: 'right',
                                 ghost: true,
                                 collapsible: 'header',
                                 content: {
-                                  id: 'stylePnl-M5-911',
+                                  id: nanoid(),
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addStyleBox({
-                                        id: 'stylecontainerBoxPnl',
+                                        id: nanoid(),
                                         label: 'Margin Padding',
                                         hideLabel: true,
                                         propertyName: 'containerStylingBox',
@@ -413,22 +394,17 @@ export const getSettings = (data: any) => {
                                 },
                               })
                               .addCollapsiblePanel({
-                                id: 'customStyleCollapsiblePanel',
+                                id: nanoid(),
                                 propertyName: 'customStyle',
                                 label: 'Custom Styles',
                                 labelAlign: 'right',
                                 ghost: true,
                                 content: {
-                                  id: 'stylePnl-M500-911MFR',
+                                  id: nanoid(),
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        id: 'custom-css-412c-8461-4c8d55e5c073',
+                                        id: nanoid(),
                                         inputType: 'codeEditor',
                                         propertyName: 'containerStyle',
                                         hideLabel: false,
@@ -453,17 +429,16 @@ export const getSettings = (data: any) => {
           {
             key: '5',
             title: 'Security',
-            id: '6Vw9iiDw9d0MD_Rh5cbIn',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                  id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
                   size: 'small',
-                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
+                  parentId: securityTabId,
                 })
                 .toJson(),
             ],

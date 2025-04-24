@@ -11,7 +11,7 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { getDimensionsStyles } from '../_settings/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
@@ -42,7 +42,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       ...getStyle(model?.containerStyle, formData),
     };
 
-    const dimensions = getDimensionsStyles(extractedDimensions, containerAdditionalStyles);
+    const dimensions = getDimensionsStyle(extractedDimensions, containerAdditionalStyles);
 
     const inputProps = {
       ...model,

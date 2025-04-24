@@ -14,7 +14,7 @@ import { CSSProperties } from 'styled-components';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -27,6 +27,7 @@ interface IStatisticComponentProps extends Omit<IInputStyles, 'font'>, IConfigur
   value?: number | string;
   precision?: number;
   title?: string | number;
+  placeholder?: string;
   valueStyle?: string;
   titleStyle?: string;
   prefix?: string;
@@ -68,7 +69,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const valueStyles = getStyle(valueStyle);
     const titleStyles = getStyle(titleStyle);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle, theme), [border, jsStyle, theme]);
     const valueFontStyles = useMemo(() => getFontStyle(valueFont), [valueFont]);
     const titleFontStyles = useMemo(() => getFontStyle(titleFont), [titleFont]);
@@ -124,10 +125,10 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               customEvent.onClick(value);
             };
             return <ShaStatistic
-              value={value || passedModel?.value || 1234}
-              precision={passedModel?.precision || (value || passedModel?.value ? 0 : 2)}
+              value={value || passedModel?.value || passedModel?.placeholder}
+              precision={passedModel?.precision}
               title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-              prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null) || (!(value || passedModel?.value) ? 'R' : null)}</span></div>}
+              prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null)}</span></div>}
               suffix={<div><span style={{ marginRight: 5 }}>{passedModel.suffix && passedModel.suffix}{passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}</span></div>}
               style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
               valueStyle={removeUndefinedProps({
@@ -151,10 +152,10 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
             customEvent.onClick(value);
           };
           return <ShaStatistic
-            value={(value || passedModel?.value) || 1234}
-            precision={passedModel?.precision || (value || passedModel?.value ? 0 : 2)}
+            value={(value || passedModel?.value) || passedModel?.placeholder}
+            precision={passedModel?.precision}
             title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-            prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null) || (!(value || passedModel?.value) ? 'R' : null)}</span></div>}
+            prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null)}</span></div>}
             suffix={<div><span style={{ marginRight: 5 }}>{suffix && suffix}</span>{suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}</div>}
             style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
             valueStyle={removeUndefinedProps({ 
@@ -187,7 +188,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         }
       };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, placeholder: 'R 1,234.00', desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IStatisticComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
 };

@@ -3,9 +3,7 @@ import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
-import { repeatOptions } from "../_settings/utils/background/utils";
-import { positionOptions } from "../_settings/utils/background/utils";
-import { sizeOptions } from "../_settings/utils/background/utils";
+import { repeatOptions, positionOptions, sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -16,8 +14,6 @@ export const getSettings = (data: any) => {
   const styleRouterId = nanoid();
   const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
-  const borderStylePnlId = nanoid();
-  const borderStyleRowId = nanoid();
   const backgroundStylePnlId = nanoid();
   const fixesRowId = nanoid();
 
@@ -51,15 +47,26 @@ export const getSettings = (data: any) => {
                 jsSetting: true,
                 styledLabel: true,
               })
-              .addSettingsInput({
+              .addSettingsInputRow({
                 id: nanoid(),
-                propertyName: 'title',
-                label: 'Title',
                 parentId: commonTabId,
-                size: 'small',
-                inputType: 'textField',
-                jsSetting: true,
-                value: 'Statistic',
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: nanoid(),
+                    propertyName: 'title',
+                    label: 'Title',
+                    jsSetting: true,
+                    value: 'Statistic',
+                  },
+                  {
+                    type: 'textField',
+                    id: nanoid(),
+                    propertyName: 'placeholder',
+                    label: 'Placeholder',
+                    jsSetting: true,
+                  }
+                ]
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -82,7 +89,6 @@ export const getSettings = (data: any) => {
                     min: 0,
                   }
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: fixesRowId,
@@ -103,7 +109,6 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: fixesRowId,
@@ -124,24 +129,23 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
+            key: 'events',
+            title: 'Events',
+            id: eventsId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
+                inputType: 'codeEditor',
+                propertyName: 'onClickCustom',
+                label: 'On Click',
+                labelAlign: 'right',
+                tooltip: 'Enter custom eventhandler on click of event.',
+                parentId: eventsId
               })
               .toJson()
             ]
@@ -184,7 +188,6 @@ export const getSettings = (data: any) => {
                               parentId: pnlFontStyleId,
                               inline: true,
                               propertyName: 'titleFont',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -230,11 +233,10 @@ export const getSettings = (data: any) => {
                               ],
                             })
                             .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'titleStyle',
-                              hideLabel: true,
+                              hideLabel: false,
                               label: 'Custom Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
@@ -260,7 +262,6 @@ export const getSettings = (data: any) => {
                               inline: true,
                               propertyName: 'valueFont',
                               label: 'Value Font',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -306,12 +307,11 @@ export const getSettings = (data: any) => {
                               ],
                             })
                             .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'valueStyle',
                               hideLabel: false,
-                              label: 'Custom Style',
+                              label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .toJson()
@@ -334,7 +334,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
                               inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -369,7 +368,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
                               inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -430,25 +428,6 @@ export const getSettings = (data: any) => {
                         content: {
                           id: 'borderStylePnl',
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: borderStyleRowId,
-                              parentId: borderStylePnlId,
-                              hidden: {
-                                _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'button',
-                                  id: `${borderStyleRowId}-hideBorder`,
-                                  label: "Border",
-                                  hideLabel: false,
-                                  propertyName: "border.hideBorder",
-                                  icon: "EyeOutlined",
-                                  iconAlt: "EyeInvisibleOutlined"
-                                },
-                              ]
-                            })
                             .addContainer({
                               id: 'borderStyleRow',
                               parentId: 'borderStylePnl',
@@ -511,7 +490,6 @@ export const getSettings = (data: any) => {
                                     title: "Stored File"
                                   }
                                 ],
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: `${backgroundStylePnlId}-color`,
@@ -525,7 +503,6 @@ export const getSettings = (data: any) => {
                                   jsSetting: false,
                                 }],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: `${backgroundStylePnlId}-gradient`,
@@ -540,7 +517,6 @@ export const getSettings = (data: any) => {
                                 ],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: `${backgroundStylePnlId}-url`,
@@ -553,7 +529,6 @@ export const getSettings = (data: any) => {
                                   label: "URL",
                                 }],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: `${backgroundStylePnlId}-image`,
@@ -566,13 +541,11 @@ export const getSettings = (data: any) => {
                                   jsSetting: false,
                                 }],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
                               .addSettingsInputRow({
                                 id: `${backgroundStylePnlId}-storedFile`,
                                 parentId: backgroundStylePnlId,
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -588,7 +561,6 @@ export const getSettings = (data: any) => {
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -613,7 +585,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [{
                                   type: 'radio',
                                   id: 'backgroundStyleRow-repeat-radio',
@@ -645,7 +616,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: shadowStylePnlId,
                               inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -735,7 +705,6 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
@@ -754,23 +723,21 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsId,
+            key: 'security',
+            title: 'Security',
+            id: securityId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
-                inputType: 'codeEditor',
-                propertyName: 'onClickCustom',
-                label: 'On Click',
-                labelAlign: 'right',
-                tooltip: 'Enter custom eventhandler on click of event. (form, event) are exposed',
-                parentId: eventsId
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
               })
               .toJson()
             ]
-          }
+          },
         ]
       })
       .toJson(),

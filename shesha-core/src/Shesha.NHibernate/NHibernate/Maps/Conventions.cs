@@ -409,15 +409,14 @@ namespace Shesha.NHibernate.Maps
                                 var idColumn = MappingHelper.GetIdColumnName(idProp);
 
                                 // get Id mapper
-                                var idMapper = _idMapper.Invoke(idProp.PropertyType);
-                                if (idMapper != null)
+                                var idMapper = imMutable
+                                    ? null
+                                    : _idMapper.Invoke(idProp.PropertyType);
+                                classCustomizer.Id(p =>
                                 {
-                                    classCustomizer.Id(p =>
-                                    {
-                                        idMapper.Invoke(p);
-                                        p.Column(idColumn);
-                                    });
-                                }
+                                    idMapper?.Invoke(p);
+                                    p.Column(idColumn);
+                                });
                             }
                         }
                         else

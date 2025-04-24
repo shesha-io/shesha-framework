@@ -1,12 +1,20 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: any) => {
+  const searchableTabsId = nanoid();
+  const commonTabId = nanoid();
+  const appearanceTabId = nanoid();
+  const securityTabId = nanoid();
+  const styleRouterId = nanoid();
+  const fontStylePnlId = nanoid();
+
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
-        id: 'W_m7doMyCpCYwAYDfRh6I',
+        id: searchableTabsId,
         propertyName: 'settingsTabs',
         parentId: 'root',
         label: 'Settings',
@@ -17,14 +25,14 @@ export const getSettings = (data: any) => {
           {
             key: '1',
             title: 'Common',
-            id: 's4gmBg31azZC0UjZjpfTm',
+            id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addContextPropertyAutocomplete({
-                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                  id: nanoid(),
                   propertyName: 'propertyName',
                   label: 'Property Name',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  parentId: commonTabId,
                   styledLabel: true,
                   size: 'small',
                   validate: {
@@ -33,40 +41,44 @@ export const getSettings = (data: any) => {
                   jsSetting: true,
                 })
                 .addLabelConfigurator({
-                  id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                  id: nanoid(),
                   propertyName: 'hideLabel',
                   label: 'Label',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  parentId: commonTabId,
                   hideLabel: true,
                 })
-                .addSettingsInput({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'textArea',
-                  propertyName: 'content',
-                  label: 'Content',
-                  size: 'small',
-                  jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  hidden: { _code: 'return  getSettingValue(data?.hasChildren);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'textArea',
+                      propertyName: 'content',
+                      label: 'Content',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
                 })
                 .addSettingsInput({
-                  id: 'href-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: commonTabId,
                   inputType: 'textField',
                   propertyName: 'href',
                   label: 'Href',
                   size: 'small',
                   jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  parentId: commonTabId,
+
                   inputs: [
                     {
                       type: 'switch',
-                      id: 'hasChildren-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'hasChildren',
                       label: 'Has Children',
                       size: 'small',
@@ -74,7 +86,7 @@ export const getSettings = (data: any) => {
                     },
                     {
                       type: 'switch',
-                      id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'hidden',
                       label: 'Hide',
                       jsSetting: true,
@@ -83,18 +95,17 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: commonTabId,
                   hidden: {
                     _code: 'return  !getSettingValue(data?.hasChildren);',
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
-                      id: 'direction-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'direction',
                       label: 'Direction',
                       jsSetting: true,
@@ -113,13 +124,13 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  parentId: commonTabId,
                   inputs: [
                     {
                       type: 'dropdown',
-                      id: 'type-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
+
                       propertyName: 'target',
                       label: 'Target',
                       size: 'small',
@@ -154,16 +165,46 @@ export const getSettings = (data: any) => {
           {
             key: '4',
             title: 'Appearance',
-            id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+            id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
+                .addSettingsInputRow({
+                  id: 'direction-options-row',
+                  parentId: 'styleRouter',
+                  hidden: {
+                    _code: 'return  !getSettingValue(data?.hasChildren);',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
+                  inputs: [
+                    {
+                      type: 'dropdown',
+                      id: 'direction-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'direction',
+                      label: 'Direction',
+                      jsSetting: true,
+                      layout: 'horizontal',
+                      defaultValue: 'vertical',
+                      dropdownOptions: [
+                        {
+                          label: 'Horizontal',
+                          value: 'horizontal',
+                        },
+                        {
+                          label: 'Vertical',
+                          value: 'vertical',
+                        },
+                      ],
+                    },
+                  ],
+                })
                 .addPropertyRouter({
-                  id: 'styleRouter',
+                  id: styleRouterId,
                   propertyName: 'propertyRouter1',
                   componentName: 'propertyRouter',
                   label: 'Property router1',
                   labelAlign: 'right',
-                  parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                  parentId: appearanceTabId,
                   hidden: false,
                   propertyRouteName: {
                     _mode: 'code',
@@ -173,7 +214,7 @@ export const getSettings = (data: any) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addCollapsiblePanel({
-                        id: 'fontStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'pnlFontStyle',
                         label: 'Font',
                         hidden: {
@@ -182,27 +223,22 @@ export const getSettings = (data: any) => {
                           _value: false,
                         } as any,
                         labelAlign: 'right',
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         ghost: true,
                         collapsible: 'header',
                         content: {
-                          id: 'fontStylePnl',
+                          id: fontStylePnlId,
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInputRow({
-                                id: 'try26voxhs-HxJ5k5ngYE',
-                                parentId: 'fontStylePnl',
+                                id: nanoid(),
+                                parentId: fontStylePnlId,
                                 inline: true,
                                 propertyName: 'font',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'dropdown',
-                                    id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Family',
                                     propertyName: 'font.type',
                                     hideLabel: true,
@@ -210,7 +246,7 @@ export const getSettings = (data: any) => {
                                   },
                                   {
                                     type: 'numberField',
-                                    id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Size',
                                     propertyName: 'font.size',
                                     hideLabel: true,
@@ -218,7 +254,7 @@ export const getSettings = (data: any) => {
                                   },
                                   {
                                     type: 'dropdown',
-                                    id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Weight',
                                     propertyName: 'font.weight',
                                     hideLabel: true,
@@ -228,7 +264,7 @@ export const getSettings = (data: any) => {
                                   },
                                   {
                                     type: 'colorPicker',
-                                    id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                    id: nanoid(),
                                     label: 'Color',
                                     hideLabel: true,
                                     propertyName: 'font.color',
@@ -249,23 +285,19 @@ export const getSettings = (data: any) => {
                         },
                       })
                       .addSettingsInputRow({
-                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        id: nanoid(),
+                        parentId: styleRouterId,
+
                         hidden: {
                           _code:
-                            'return  getSettingValue(data?.direction) !== "horizontal" || !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
+                            'return  getSettingValue(data?.direction) !== "horizontal"',
                           _mode: 'code',
                           _value: false,
                         } as any,
                         inputs: [
                           {
                             type: 'dropdown',
-                            id: 'justifyContent-s4gmBg31azZC0UjZjpfTm',
+                            id: nanoid(),
                             propertyName: 'justifyContent',
                             label: 'Justify Content',
                             jsSetting: true,
@@ -311,7 +343,7 @@ export const getSettings = (data: any) => {
                           },
                           {
                             type: 'dropdown',
-                            id: 'alignItems-s4gmBg31azZC0UjZjpfTm',
+                            id: nanoid(),
                             propertyName: 'alignItems',
                             label: 'Align Items',
                             jsSetting: true,
@@ -375,11 +407,29 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+
+                        hidden: {
+                          _code: 'return  !getSettingValue(data?.hasChildren);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
                           {
                             type: 'dropdown',
-                            id: 'justifyItems-s4gmBg31azZC0UjZjpfTm',
+                            id: nanoid(),
                             propertyName: 'justifyItems',
                             label: 'Justify Items',
+                            hidden: {
+                              _code:
+                                'return  getSettingValue(data?.direction) !== "horizontal"',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             jsSetting: true,
                             layout: 'horizontal',
                             dropdownOptions: [
@@ -453,25 +503,9 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
-                        hidden: {
-                          _code: 'return  !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             type: 'textField',
-                            id: 'customCss-s4gmBg31azZC0UjZjpfTm',
+                            id: nanoid(),
                             propertyName: 'className',
                             label: 'Custom CSS Class',
                             jsSetting: true,
@@ -480,24 +514,19 @@ export const getSettings = (data: any) => {
                       })
 
                       .addCollapsiblePanel({
-                        id: 'customStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'customStyle',
                         label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
-                          id: 'stylePnl-M500-911MFR',
+                          id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'custom-css-412c-8461-4c8d55e5c073',
+                                id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
                                 hideLabel: false,
@@ -518,17 +547,16 @@ export const getSettings = (data: any) => {
           {
             key: '5',
             title: 'Security',
-            id: '6Vw9iiDw9d0MD_Rh5cbIn',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                  id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
                   size: 'small',
-                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
+                  parentId: securityTabId,
                 })
                 .toJson(),
             ],

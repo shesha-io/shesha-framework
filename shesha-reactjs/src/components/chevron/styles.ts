@@ -1,4 +1,4 @@
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {

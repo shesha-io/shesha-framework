@@ -48,8 +48,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     if (mode === 'multiple' || mode === 'tags') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
-            return getLabeledValue(o, allOptions);
-          })
+          return getLabeledValue(o, allOptions);
+        })
         : [getLabeledValue(localValue as TValue, allOptions)];
     } else return getLabeledValue(localValue as TValue, allOptions);
   };
@@ -88,8 +88,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
-          (i) => fetchedItems.findIndex((fi) => String(fi.value) === String(i.value)) === -1
-        )
+        (i) => fetchedItems.findIndex((fi) => String(fi.value) === String(i.value)) === -1
+      )
       : [];
 
     const result = [...fetchedItems, ...selectedItems];
@@ -150,9 +150,9 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return false;
       }}
       {...rest}
-      style={width === undefined ? { ...style } : { ...style, width }}
       onChange={handleChange}
       value={wrapValue(value, options)}
+      style={{ ...style }}
       mode={mode}
     >
       {options?.map(({ value: localValue, label, data, disabled }, index) => (

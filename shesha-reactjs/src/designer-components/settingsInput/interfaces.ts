@@ -92,6 +92,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     entityType?: string;
     useRawValues?: boolean;
     modelType?: string;
+    maxItemsCount?: number;
     httpVerb?: string;
     min?: number;
     max?: number;

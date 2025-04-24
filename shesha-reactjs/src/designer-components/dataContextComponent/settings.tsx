@@ -171,7 +171,6 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
         }}
         onOk={() => setOpen(false)}
         width={'50%'}
-        okButtonProps={{}}
       >
         <PropertiesEditor allowAdd value={items} onChange={(value) => {
           onValuesChange({ items: value?.map((item) => convertModelItemToPropertyMetadata(item)) });

@@ -14,7 +14,8 @@ export {
   ConfigurableFormComponent,
   type IConfigurableFormComponentProps,
 } from './formDesigner/configurableFormComponent';
-export { default as ConfigurableFormItem, type IConfigurableFormItemProps } from './formDesigner/components/formItem';
+export { default as ConfigurableFormItem } from './formDesigner/components/formItem';
+export { type IConfigurableFormItemProps } from './formDesigner/components/model';
 export { default as BooleanDropDown } from './booleanDropDown';
 export { SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';

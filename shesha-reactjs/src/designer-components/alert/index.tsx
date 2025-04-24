@@ -3,7 +3,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData, useGlobalState } from '@/providers';
+import { FormMode } from '@/providers';
 import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
@@ -32,20 +32,25 @@ const defaultTextForPreview = {
   }
 };
 
-const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
+interface IAlertComponentCalulatedValues {
+  evaluatedMessage: string;
+  evaluatedDescription: string;
+  formMode: FormMode;
+}
+
+const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCalulatedValues> = {
   type: 'alert',
   isInput: false,
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
-  Factory: ({ model }) => {
-    const { data: formData } = useFormData();
-    const { globalState } = useGlobalState();
-    const { formMode } = useForm();
-
-    const { text, alertType, description, showIcon, closable, icon, style } = model;
-
-    var evaluatedMessage = evaluateString(text, { data: formData, globalState });
-    var evaluatedDescription = evaluateString(description, formData);
+  calculateModel: (model, allData) => ({
+    evaluatedMessage: evaluateString(model.text, { data: allData.data, globalState: allData.globalState }),
+    evaluatedDescription: evaluateString(model.description, allData.data),
+    formMode: allData.form.formMode,
+  }),
+  Factory: ({ model, calculatedModel }) => {
+    const { alertType, showIcon, closable, icon, style } = model;
+    let { evaluatedMessage, evaluatedDescription, formMode } = calculatedModel;
 
     if (model.hidden) return null;
 
@@ -110,7 +115,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
         type={alertType}
         description={descriptionContent}
         showIcon={showIcon}
-        style={{ ...getStyle(style, formData), padding: '8px' }} // Temporary. Make it configurable
+        style={{ ...getStyle(style, {}), padding: '8px' }} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />

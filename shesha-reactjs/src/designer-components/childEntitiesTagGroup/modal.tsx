@@ -1,6 +1,6 @@
 import { Modal, Skeleton } from 'antd';
 import React, { FC } from 'react';
-import { useAppConfigurator, useDataContextManager } from '@/providers';
+import { useAppConfigurator, useDataContextManagerActions } from '@/providers';
 import { IFormMarkupResponse } from '@/providers/form/api';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import ValidationErrors from '@/components/validationErrors';
@@ -32,7 +32,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   onChange
 }) => {
   const { formInfoBlockVisible } = useAppConfigurator();
-  const context = useDataContextManager().getDataContext(contextId);
+  const context = useDataContextManagerActions().getDataContext(contextId);
 
   const onOk = () => {
     onChange(context.getData());

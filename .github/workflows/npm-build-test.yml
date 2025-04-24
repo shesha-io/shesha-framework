@@ -1,4 +1,5 @@
-name: shesha-reactjs-build-test
+name: shesha-reactjs-build
+description: Attempt to build the shesha-reactjs project to ensure the branch is not broken
 
 on:
   pull_request:
@@ -10,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  build-and-test:
+  build-attempt:
     runs-on: ubuntu-latest
     defaults:
       run:

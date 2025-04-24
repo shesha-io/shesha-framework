@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useState } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useMemo, useState } from 'react';
 import { ShaForm } from '@/providers/form';
 import { Button, Tooltip } from 'antd';
 import { useFormDesignerState, useFormDesignerActions } from '@/providers/formDesigner';
@@ -20,7 +20,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
 
   const componentModel = ShaForm.useComponentModel(props.componentId);
 
-  const tooltip = (
+  const tooltip = useMemo(() => (
     <div>
       {isDebug && (
         <div>
@@ -41,7 +41,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
         <div><strong>Component name: </strong>{componentModel.componentName}</div>
       )}
     </div>
-  );
+  ), [componentModel]);
 
   const onClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();

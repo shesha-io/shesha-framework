@@ -3,7 +3,6 @@ import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
     Button,
-    ConfigProvider,
     Divider,
     Dropdown,
     Menu,
@@ -34,7 +33,7 @@ import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { removeNullUndefined } from '@/providers/utils';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -63,7 +62,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: 
     const shadow = model?.shadow;
     const jsStyle = getStyle(model.style, appContext.data);
 
-    const dimensionsStyles = getSizeStyle(dimensions);
+    const dimensionsStyles = getDimensionsStyle(dimensions);
     const borderStyles = getBorderStyle(border, jsStyle);
     const fontStyles = getFontStyle(font);
     const shadowStyles = getShadowStyle(shadow);
@@ -204,7 +203,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form, dimensions, shadow, border, background, style, stylingBox } = props;
     const jsStyle = getStyle(style, props);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -242,7 +241,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         ...borderStyles,
         ...backgroundStyles,
         ...shadowStyles,
-        ...stylingBoxAsCSS
+        ...stylingBoxAsCSS,
+        ...jsStyle
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
@@ -299,7 +299,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
             const shadow = item?.shadow;
             const background = item.background;
 
-            const dimensionsStyles = getSizeStyle(dimensions);
+            const dimensionsStyles = getDimensionsStyle(dimensions);
             const borderStyles = getBorderStyle(border, jsStyle);
             const fontStyles = getFontStyle(font);
             const shadowStyles = getShadowStyle(shadow);
@@ -358,24 +358,14 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
 
         return (
-            <ConfigProvider
-                theme={{
-                    components: {
-                        Menu: {
-                            itemHeight: 'max-content' as any
-                        },
-                    },
-                }}
-            >
-                <div className={styles.shaResponsiveButtonGroupContainer} style={finalStyle}>
-                    <Menu
-                        mode="horizontal"
-                        items={menuItems}
-                        className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
-                        style={{ width: '30px' }}
-                    />
-                </div>
-            </ConfigProvider>
+            <div className={styles.shaResponsiveButtonGroupContainer} style={finalStyle}>
+                <Menu
+                    mode="horizontal"
+                    items={menuItems}
+                    className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
+                    style={{ width: '30px' }}
+                />
+            </div>
         );
     }
 };

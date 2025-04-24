@@ -32,7 +32,6 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const { data: formData } = useFormData();
-    
     const { namePrefix } = useFormItem();
 
     if (model.hidden && formMode !== 'designer') return null;
@@ -61,7 +60,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onCreated: migrateFormApi.withoutFormData(prev?.onCreated),
       onUpdated: migrateFormApi.withoutFormData(prev?.onUpdated),
     }))
-  ,
+        .add<ISubFormComponentProps>(4, prev => ({ ...prev, hideLabel: true })),
   settingsFormMarkup: (props) => getSettings(props),
   initModel: model => {
     const customProps: ISubFormComponentProps = {
