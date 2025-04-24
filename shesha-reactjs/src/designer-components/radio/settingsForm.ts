@@ -120,7 +120,7 @@ export const getSettings = (data: any) => {
                       value: 'referenceList',
                     },
                     {
-                      label: 'API Url',
+                      label: 'API URL',
                       value: 'url',
                     },
                   ],

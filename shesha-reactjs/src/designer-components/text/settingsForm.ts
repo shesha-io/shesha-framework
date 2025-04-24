@@ -584,6 +584,27 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
+                              .addSettingsInputRow({
+                                id: `borderStyleRow-main`,
+                                parentId: 'borderStylePnl',
+                                hidden: {
+                                  _code:
+                                    'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'button',
+                                    id: 'borderStyleRow-hideBorder',
+                                    label: 'Border',
+                                    hideLabel: true,
+                                    propertyName: 'border.hideBorder',
+                                    icon: 'EyeOutlined',
+                                    iconAlt: 'EyeInvisibleOutlined',
+                                  },
+                                ],
+                              })
                               .addContainer({
                                 id: nanoid(),
                                 parentId: styleRouterId,
