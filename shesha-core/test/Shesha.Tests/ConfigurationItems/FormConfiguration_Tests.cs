@@ -72,7 +72,7 @@ namespace Shesha.Tests.ConfigurationItems
         {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-missing-form-module");
-            var srcForm = await src.AddFormAsync(async c =>
+            var srcForm = await src.AddFormAsync(c =>
             {
                 c.ModelType = "test-modelType";
                 c.Markup = "{ components: [], settings: {} }";
@@ -84,6 +84,7 @@ namespace Shesha.Tests.ConfigurationItems
                 c.SetIsLast(true);
                 c.VersionStatus = ConfigurationItemVersionStatus.Live;
                 c.Module = srcModule;
+                return Task.CompletedTask;
             }).ConfigureAwait(true);
 
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
@@ -140,7 +141,7 @@ namespace Shesha.Tests.ConfigurationItems
         {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-existing-form-module");
-            var srcForm = await src.AddFormAsync(async c => {
+            var srcForm = await src.AddFormAsync(c => {
                 c.ModelType = "test-modelType";
                 c.Markup = "src-markup";
                 c.Name = "test-import-existing-form";
@@ -151,6 +152,7 @@ namespace Shesha.Tests.ConfigurationItems
                 c.SetIsLast(true);
                 c.VersionStatus = ConfigurationItemVersionStatus.Live;
                 c.Module = srcModule;
+                return Task.CompletedTask;
             });
 
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
@@ -227,7 +229,7 @@ namespace Shesha.Tests.ConfigurationItems
         {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-existing-form-as-draft-module");
-            var srcForm = await src.AddFormAsync(async c => {
+            var srcForm = await src.AddFormAsync(c => {
                 c.ModelType = "test-modelType";
                 c.Markup = "src-markup";
                 c.Name = "test-import-existing-form-as-draft";
@@ -238,6 +240,7 @@ namespace Shesha.Tests.ConfigurationItems
                 c.SetIsLast(true);
                 c.VersionStatus = ConfigurationItemVersionStatus.Live;
                 c.Module = srcModule;
+                return Task.CompletedTask;
             });
 
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
@@ -312,7 +315,7 @@ namespace Shesha.Tests.ConfigurationItems
         {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-same-form-twice-module");
-            var srcForm = await src.AddFormAsync(async c => {
+            var srcForm = await src.AddFormAsync(c => {
                 c.ModelType = "test-modelType";
                 c.Markup = "src-markup";
                 c.Name = "test-import-same-form-twice";
@@ -323,6 +326,7 @@ namespace Shesha.Tests.ConfigurationItems
                 c.SetIsLast(true);
                 c.VersionStatus = ConfigurationItemVersionStatus.Live;
                 c.Module = srcModule;
+                return Task.CompletedTask;
             });
 
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
