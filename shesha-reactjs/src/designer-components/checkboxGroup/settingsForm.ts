@@ -39,7 +39,7 @@ export const getSettings = (data: any) => {
                   hideLabel: true,
                 })
                 .addSettingsInputRow({
-                  id: 'pwlceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  id: 'tooltip-row-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputs: [
                     {
@@ -58,6 +58,7 @@ export const getSettings = (data: any) => {
                   label: 'Mode',
                   size: 'small',
                   jsSetting: true,
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
                   dropdownOptions: [
                     {
                       label: 'Single',
@@ -98,7 +99,7 @@ export const getSettings = (data: any) => {
           {
             key: '2',
             title: 'Data',
-            id: '6eBJvoll3xtLJxdvOAlnB',
+            id: 'data-tab-id',
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
@@ -108,6 +109,7 @@ export const getSettings = (data: any) => {
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
+                  parentId: 'data-tab-id',
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -124,8 +126,8 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'pwloeholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: 'values-items-row',
+                  parentId: 'data-tab-id',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "values";',
                     _mode: 'code',
@@ -136,7 +138,7 @@ export const getSettings = (data: any) => {
                       id: '582715b9-624b-4189-812c-6144cafb7405',
                       type: 'labelValueEditor',
                       propertyName: 'items',
-                      parentId: '1y9SNudmMM0Wd1Sc_YI1ng',
+                      parentId: 'data-tab-id',
                       label: 'Items',
                       labelTitle: 'Label',
                       labelName: 'label',
@@ -147,8 +149,8 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'referenceList-tooltips-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: 'reference-list-row',
+                  parentId: 'data-tab-id',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "referenceList";',
                     _mode: 'code',
@@ -165,8 +167,8 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'referenceList-tooltips-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: 'datasource-url-row',
+                  parentId: 'data-tab-id',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
                     _mode: 'code',
@@ -195,7 +197,7 @@ export const getSettings = (data: any) => {
           {
             key: '3',
             title: 'Validation',
-            id: '6eBJvoll3xtLJxdvOAlnB',
+            id: 'validation-tab-id',
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
@@ -206,7 +208,7 @@ export const getSettings = (data: any) => {
                   size: 'small',
                   layout: 'horizontal',
                   jsSetting: true,
-                  parentId: '6eBJvoll3xtLJxdvOAlnB',
+                  parentId: 'validation-tab-id',
                 })
                 .toJson(),
             ],
@@ -269,12 +271,13 @@ export const getSettings = (data: any) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addSettingsInput({
-                        id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                        id: 'direction-dropdown',
                         inputType: 'dropdown',
                         propertyName: 'direction',
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        parentId: 'styleRouter',
                         defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
@@ -305,6 +308,7 @@ export const getSettings = (data: any) => {
                                 propertyName: 'style',
                                 hideLabel: false,
                                 label: 'Style',
+                                parentId: 'stylePnl-M500-911MFR',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
