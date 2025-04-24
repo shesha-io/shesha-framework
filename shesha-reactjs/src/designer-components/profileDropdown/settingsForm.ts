@@ -57,7 +57,8 @@ export const getSettings = (data: any) =>
               hidden: {
                 _mode: 'code',
                 _code: 'return data?.showUserInfo != true'
-              }
+              },
+              convertToFullId: false
             })
             .toJson(),
         ],
