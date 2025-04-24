@@ -5,9 +5,7 @@ import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/c
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ITimePickerProps } from './models';
@@ -17,7 +15,6 @@ import { getSettings } from './settings';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
-const settingsForm = settingsFormJson as FormMarkup;
 
 interface ITimePickerComponentProps extends Omit<ITimePickerProps, 'defaultValue' | 'style'>, IConfigurableFormComponent {
 
@@ -45,22 +42,22 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (value: any | null, timeString: string | [string, string]) => {
-            customEvents.onChange({value, timeString});
+            customEvents.onChange({ value, timeString });
             if (typeof onChange === 'function') onChange(value, timeString);
           };
-          return <TimePickerWrapper 
+          return <TimePickerWrapper
             {...model}
             {...customEvents}
             style={model.allStyles.fullStyle}
             value={value}
-            onChange={onChangeInternal} 
+            onChange={onChangeInternal}
           />;
         }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model) => {
     const customModel: ITimePickerComponentProps = {
       ...model,
