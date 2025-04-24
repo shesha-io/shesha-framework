@@ -85,7 +85,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 tooltip: 'When checked the DisplayName/RefList Name will be shown.',
                                 size: 'small',
                                 defaultValue: true,
-                                parentId: securityTabId
+                                parentId: commonTabId
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
@@ -98,7 +98,6 @@ export const getSettings = (data: IRefListStatusProps) => {
                                         label: 'Show Icon',
                                         size: 'small',
                                         tooltip: 'When checked the icon will display on the left side of the DisplayName',
-                                        parentId: securityTabId
                                     },
                                     {
                                         id: nanoid(),
@@ -327,7 +326,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             size: 'small',
                                                             defaultValue: true,
                                                             tooltip: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
-                                                            parentId: securityTabId
+                                                            parentId: backgroundStylePnlId
                                                         })
                                                         .addSettingsInput({
                                                             id: nanoid(),

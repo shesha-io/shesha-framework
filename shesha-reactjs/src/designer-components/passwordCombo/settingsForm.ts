@@ -13,6 +13,8 @@ export const getSettings = (data: IPasswordComponentProps) => {
     const appearanceTabId = nanoid();
     const styleRouterId = nanoid();
     const fontStylePnlId = nanoid();
+    const pnlDimensions = nanoid();
+    const borderStylePnl = nanoid();
 
     return {
         components: new DesignerToolbarSettings(data)
@@ -263,7 +265,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: nanoid(),
+                                            id: pnlDimensions,
                                             propertyName: 'pnlDimensions',
                                             label: 'Dimensions',
                                             parentId: styleRouterId,
@@ -275,7 +277,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
                                                         id: nanoid(),
-                                                        parentId: nanoid(),
+                                                        parentId: pnlDimensions,
                                                         inline: true,
                                                         inputs: [
                                                             {
@@ -355,16 +357,16 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: nanoid(),
+                                                id: borderStylePnl,
                                                 components: [...new DesignerToolbarSettings()
                                                     .addContainer({
                                                         id: nanoid(),
-                                                        parentId: nanoid(),
+                                                        parentId: borderStylePnl,
                                                         components: getBorderInputs() as any
                                                     })
                                                     .addContainer({
                                                         id: nanoid(),
-                                                        parentId: nanoid(),
+                                                        parentId: borderStylePnl,
                                                         components: getCornerInputs() as any
                                                     })
                                                     .toJson()

@@ -15,6 +15,14 @@ export const getSettings = () => {
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
+  const styleDimensionsPnlId = nanoid();
+  const containerStylePnlId = nanoid();
+  const containerDimensionsStylePnlId = nanoid();
+  const pnlBorderStyle = nanoid();
+  const pnlBackgroundStyle = nanoid();
+  const pnlShadowStyleId = nanoid();
+  const customStylePnlId = nanoid();
+  const pnlFontStyleId = nanoid();
 
   return {
     components: new DesignerToolbarSettings()
@@ -285,11 +293,11 @@ export const getSettings = () => {
                       ghost: true,
                       collapsible: 'header',
                       content: {
-                        id: nanoid(),
+                        id: pnlFontStyleId,
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: styleRouterId,
+                            parentId: pnlFontStyleId,
                             inline: true,
                             propertyName: 'font',
                             inputs: [
@@ -358,11 +366,11 @@ export const getSettings = () => {
                       collapsible: 'header',
                       hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
-                        id: nanoid(),
+                        id: styleDimensionsPnlId,
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: styleRouterId,
+                            parentId: styleDimensionsPnlId,
                             inline: true,
                             inputs: [
                               {
@@ -442,16 +450,16 @@ export const getSettings = () => {
                       collapsible: 'header',
                       hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
-                        id: nanoid(),
+                        id: pnlBorderStyle,
                         components: [...new DesignerToolbarSettings()
                           .addContainer({
                             id: nanoid(),
-                            parentId: styleRouterId,
+                            parentId: pnlBorderStyle,
                             components: getBorderInputs() as any
                           })
                           .addContainer({
                             id: nanoid(),
-                            parentId: styleRouterId,
+                            parentId: pnlBorderStyle,
                             components: getCornerInputs() as any
                           })
                           .toJson()
@@ -468,12 +476,12 @@ export const getSettings = () => {
                       collapsible: 'header',
                       hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
-                        id: nanoid(),
+                        id: pnlBackgroundStyle,
                         components: [
                           ...new DesignerToolbarSettings()
                             .addSettingsInput({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               label: "Type",
                               jsSetting: false,
                               propertyName: "background.type",
@@ -509,7 +517,7 @@ export const getSettings = () => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               inputs: [{
                                 type: 'colorPicker',
                                 id: nanoid(),
@@ -522,7 +530,7 @@ export const getSettings = () => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               inputs: [{
                                 type: 'multiColorPicker',
                                 id: nanoid(),
@@ -535,7 +543,7 @@ export const getSettings = () => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               inputs: [{
                                 type: 'textField',
                                 id: nanoid(),
@@ -547,7 +555,7 @@ export const getSettings = () => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               inputs: [{
                                 type: 'imageUploader',
                                 id: nanoid(),
@@ -559,7 +567,7 @@ export const getSettings = () => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
@@ -573,7 +581,7 @@ export const getSettings = () => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               inline: true,
                               hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               inputs: [
@@ -599,7 +607,7 @@ export const getSettings = () => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: pnlBackgroundStyle,
                               inputs: [{
                                 type: 'radio',
                                 id: nanoid(),
@@ -625,11 +633,11 @@ export const getSettings = () => {
                       collapsible: 'header',
                       hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
-                        id: nanoid(),
+                        id: pnlShadowStyleId,
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: styleRouterId,
+                            parentId: pnlShadowStyleId,
                             inline: true,
                             inputs: [
                               {
@@ -691,10 +699,11 @@ export const getSettings = () => {
                       collapsible: 'header',
                       hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
-                        id: nanoid(),
+                        id: customStylePnlId,
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInput({
                             id: nanoid(),
+                            parentId: customStylePnlId,
                             inputType: 'codeEditor',
                             propertyName: 'style',
                             hideLabel: false,
@@ -714,11 +723,11 @@ export const getSettings = () => {
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
-                        id: nanoid(),
+                        id: containerStylePnlId,
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: styleRouterId,
+                            parentId: containerStylePnlId,
                             inputs: [
                               {
                                 id: nanoid(),
@@ -753,11 +762,11 @@ export const getSettings = () => {
                             labelAlign: 'right',
                             collapsible: 'header',
                             content: {
-                              id: nanoid(),
+                              id: containerDimensionsStylePnlId,
                               components: [...new DesignerToolbarSettings()
                                 .addSettingsInputRow({
                                   id: nanoid(),
-                                  parentId: styleRouterId,
+                                  parentId: containerDimensionsStylePnlId,
                                   inline: true,
                                   hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
                                   inputs: [
@@ -837,7 +846,7 @@ export const getSettings = () => {
                             collapsible: 'header',
                             parentId: styleRouterId,
                             content: {
-                              id: nanoid(),
+                              id: 'containerStylingBoxPanel',
                               components: [
                                 ...new DesignerToolbarSettings()
                                   .addStyleBox({
@@ -845,6 +854,7 @@ export const getSettings = () => {
                                     label: 'Margin Padding',
                                     hideLabel: true,
                                     propertyName: 'container.stylingBox',
+                                    parentId: 'containerStylingBoxPanel'
                                   })
                                   .toJson()
                               ]
@@ -858,7 +868,7 @@ export const getSettings = () => {
                             parentId: styleRouterId,
                             collapsible: 'header',
                             content: {
-                              id: nanoid(),
+                              id: 'containerCustomStylePanel',
                               components: [...new DesignerToolbarSettings()
                                 .addSettingsInput({
                                   id: nanoid(),
@@ -867,6 +877,7 @@ export const getSettings = () => {
                                   hideLabel: false,
                                   label: 'Style',
                                   description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                  parentId: 'containerCustomStylePanel'
                                 })
                                 .toJson()
                               ]
