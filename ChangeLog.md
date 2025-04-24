@@ -1,4 +1,4 @@
 # Release Notes
 
-## 🐞 Bug Fixes
-- Fixed update of http headers in the useGet() hook
+## 💪 Enhancements
+- Added functionality to show form info in the User Profile component
