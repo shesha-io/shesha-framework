@@ -1,5 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
+
 export const getSettings = (data: any) => {
   return {
     components: new DesignerToolbarSettings(data)
@@ -38,7 +39,7 @@ export const getSettings = (data: any) => {
                   hideLabel: true,
                 })
                 .addSettingsInputRow({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  id: 'tooltip-row-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputs: [
                     {
@@ -92,12 +93,13 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                  id: 'data-source-dropdown',
                   inputType: 'dropdown',
                   propertyName: 'dataSourceType',
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
+                  parentId: 'data-s4gmBg31azZC0UjZjpfTm',
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -114,8 +116,8 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'paloeholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: 'values-items-row',
+                  parentId: 'data-s4gmBg31azZC0UjZjpfTm',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "values";',
                     _mode: 'code',
@@ -126,7 +128,7 @@ export const getSettings = (data: any) => {
                       id: '58f715b9-624b-4189-812c-6144cafb7405',
                       type: 'labelValueEditor',
                       propertyName: 'items',
-                      parentId: '1y9SNudmMM0Wd1Sc_YI1ng',
+                      parentId: 'data-s4gmBg31azZC0UjZjpfTm',
                       label: 'Items',
                       labelTitle: 'Label',
                       labelName: 'label',
@@ -137,8 +139,8 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'referenceList-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: 'reference-list-row',
+                  parentId: 'data-s4gmBg31azZC0UjZjpfTm',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "referenceList";',
                     _mode: 'code',
@@ -155,8 +157,8 @@ export const getSettings = (data: any) => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'datasource-url-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: 'datasource-url-row',
+                  parentId: 'data-s4gmBg31azZC0UjZjpfTm',
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
                     _mode: 'code',
@@ -259,12 +261,13 @@ export const getSettings = (data: any) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addSettingsInput({
-                        id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                        id: 'direction-dropdown',
                         inputType: 'dropdown',
                         propertyName: 'direction',
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        parentId: 'styleRouter',
                         defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
@@ -295,6 +298,7 @@ export const getSettings = (data: any) => {
                                 propertyName: 'style',
                                 hideLabel: false,
                                 label: 'Style',
+                                parentId: 'stylePnl-M500-911MFR',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
