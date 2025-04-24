@@ -1,20 +1,20 @@
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
-import { BarChartOutlined } from '@ant-design/icons';
+import { RadarChartOutlined } from '@ant-design/icons';
 import React from 'react';
 import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
-import { getSettings } from './settingsFormIndivitual';
+import { getSettings } from './settingsFormIndividual';
 
 const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   type: 'polarAreaChart',
   name: 'Polar Area Chart',
   isInput: false,
   isOutput: true,
-  icon: <BarChartOutlined />,
+  icon: <RadarChartOutlined />,
   Factory: ({ model }) => {
     if (model.hidden) return null;
     

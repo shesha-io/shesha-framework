@@ -1,20 +1,20 @@
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
-import { BarChartOutlined } from '@ant-design/icons';
+import { PieChartOutlined } from '@ant-design/icons';
 import React from 'react';
 import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
-import { getSettings } from './settingsFormIndivitual';
+import { getSettings } from './settingsFormIndividual';
 
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
   name: 'Pie Chart',
   isInput: false,
   isOutput: true,
-  icon: <BarChartOutlined />,
+  icon: <PieChartOutlined />,
   Factory: ({ model }) => {
     if (model.hidden) return null;
     

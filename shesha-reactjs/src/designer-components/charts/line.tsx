@@ -7,7 +7,7 @@ import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
-import { getSettings } from './settingsFormIndivitual';
+import { getSettings } from './settingsFormIndividual';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
