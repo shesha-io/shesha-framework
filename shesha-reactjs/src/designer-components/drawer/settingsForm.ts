@@ -8,6 +8,7 @@ import {
   repeatOptions,
   sizeOptions,
 } from '../_settings/utils/background/utils';
+
 export const getSettings = (data: any) => {
   return {
     components: new DesignerToolbarSettings(data)
@@ -135,7 +136,6 @@ export const getSettings = (data: any) => {
                                   .toJson(),
                               },
                             })
-
                             .addCollapsiblePanel({
                               id: nanoid(),
                               propertyName: 'cancelButtonCollapsiblePanel',
@@ -252,14 +252,13 @@ export const getSettings = (data: any) => {
                                     id: 'height-dimensions-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Height',
                                     width: 85,
-                                    defaultValue: '50%',
+                                    defaultValue: '100%',
                                     propertyName: 'dimensions.height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                 ],
                               })
-
                               .toJson(),
                           ],
                         },
@@ -606,9 +605,10 @@ export const getSettings = (data: any) => {
                           ],
                         },
                       })
+                      // Header Styles Section - Updated to use headerStyles namespace
                       .addCollapsiblePanel({
                         id: 'headerStyleCollapsiblePanel',
-                        propertyName: 'headerStyle',
+                        propertyName: 'headerStyles',
                         label: 'Header Styles',
                         collapsedByDefault: true,
                         labelAlign: 'right',
@@ -616,7 +616,7 @@ export const getSettings = (data: any) => {
                         parentId: 'styleRouter',
                         collapsible: 'header',
                         hidden: {
-                          _code: 'return  !getSettingValue(data?.showHeader);',
+                          _code: 'return !getSettingValue(data?.showHeader);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -641,7 +641,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnl-header',
                                         label: 'Type',
                                         jsSetting: false,
-                                        propertyName: 'headerBackground.type',
+                                        propertyName: 'headerStyles.background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
                                         buttonGroupOptions: [
@@ -680,14 +680,14 @@ export const getSettings = (data: any) => {
                                             type: 'colorPicker',
                                             id: 'backgroundStyleRow-color-picker-header',
                                             label: 'Color',
-                                            propertyName: 'headerBackground.color',
+                                            propertyName: 'headerStyles.background.color',
                                             hideLabel: true,
                                             jsSetting: false,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "color";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -699,14 +699,14 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'multiColorPicker',
                                             id: 'backgroundStyle-gradientColors-picker-header',
-                                            propertyName: 'headerBackground.gradient.colors',
+                                            propertyName: 'headerStyles.background.gradient.colors',
                                             label: 'Colors',
                                             jsSetting: false,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "gradient";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -719,14 +719,14 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'textField',
                                             id: 'backgroundStyle-url-field-header',
-                                            propertyName: 'headerBackground.url',
+                                            propertyName: 'headerStyles.background.url',
                                             jsSetting: false,
                                             label: 'URL',
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "url";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -738,14 +738,14 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'imageUploader',
                                             id: 'backgroundStyle-image-uploader-header',
-                                            propertyName: 'headerBackground.uploadFile',
+                                            propertyName: 'headerStyles.background.uploadFile',
                                             label: 'Image',
                                             jsSetting: false,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "image";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -755,7 +755,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnl-header',
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "storedFile";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -764,7 +764,7 @@ export const getSettings = (data: any) => {
                                             type: 'textField',
                                             id: 'backgroundStyle-storedFile-header',
                                             jsSetting: false,
-                                            propertyName: 'headerBackground.storedFile.id',
+                                            propertyName: 'headerStyles.background.storedFile.id',
                                             label: 'File ID',
                                           },
                                         ],
@@ -774,7 +774,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnl-header',
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) === "color";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -785,13 +785,13 @@ export const getSettings = (data: any) => {
                                             id: 'headerBackgroundStyleRow-size-header',
                                             label: 'Size',
                                             hideLabel: true,
-                                            propertyName: 'headerBackground.size',
+                                            propertyName: 'headerStyles.background.size',
                                             customTooltip:
                                               'Size of the background image, two space separated values with units e.g "100% 100px"',
                                             dropdownOptions: sizeOptions,
                                             hidden: {
                                               _code:
-                                                'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) === "color";',
+                                                'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";',
                                               _mode: 'code',
                                               _value: false,
                                             } as any,
@@ -803,7 +803,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             customTooltip:
                                               'Position of the background image, two space separated values with units e.g "5em 100px"',
-                                            propertyName: 'headerBackground.position',
+                                            propertyName: 'headerStyles.background.position',
                                             dropdownOptions: positionOptions,
                                           },
                                         ],
@@ -817,14 +817,14 @@ export const getSettings = (data: any) => {
                                             id: 'headerBackgroundStyleRow-repeat-radios-header',
                                             label: 'Repeat',
                                             hideLabel: true,
-                                            propertyName: 'headerBackground.repeat',
+                                            propertyName: 'headerStyles.background.repeat',
                                             inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) === "color";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -857,7 +857,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'offsetHorizontalIcon',
-                                            propertyName: 'headerShadow.offsetX',
+                                            propertyName: 'headerStyles.shadow.offsetX',
                                           },
                                           {
                                             type: 'numberField',
@@ -866,7 +866,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'offsetVerticalIcon',
-                                            propertyName: 'headerShadow.offsetY',
+                                            propertyName: 'headerStyles.shadow.offsetY',
                                           },
                                           {
                                             type: 'numberField',
@@ -875,7 +875,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'blurIcon',
-                                            propertyName: 'headerShadow.blurRadius',
+                                            propertyName: 'headerStyles.shadow.blurRadius',
                                           },
                                           {
                                             type: 'numberField',
@@ -884,14 +884,14 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'spreadIcon',
-                                            propertyName: 'headerShadow.spreadRadius',
+                                            propertyName: 'headerStyles.shadow.spreadRadius',
                                           },
                                           {
                                             type: 'colorPicker',
                                             id: 'HeadershadowStyleRow-color-header',
                                             label: 'Color',
                                             hideLabel: true,
-                                            propertyName: 'headerShadow.color',
+                                            propertyName: 'headerStyles.shadow.color',
                                           },
                                         ],
                                       })
@@ -902,7 +902,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInput({
                                 id: 'custom-css-header',
                                 inputType: 'codeEditor',
-                                propertyName: 'headerStyle',
+                                propertyName: 'headerStyles.style',
                                 hideLabel: false,
                                 label: 'Style',
                                 description:
@@ -912,9 +912,10 @@ export const getSettings = (data: any) => {
                           ],
                         },
                       })
+                      // Footer Styles Section - Updated to use footerStyles namespace
                       .addCollapsiblePanel({
                         id: 'footerStyleCollapsiblePanel',
-                        propertyName: 'footerStyle',
+                        propertyName: 'footerStyles',
                         label: 'Footer Styles',
                         collapsedByDefault: true,
                         labelAlign: 'right',
@@ -922,7 +923,7 @@ export const getSettings = (data: any) => {
                         parentId: 'styleRouter',
                         collapsible: 'header',
                         hidden: {
-                          _code: 'return  !getSettingValue(data?.showFooter);',
+                          _code: 'return !getSettingValue(data?.showFooter);',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -947,7 +948,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnl-footer',
                                         label: 'Type',
                                         jsSetting: false,
-                                        propertyName: 'footerBackground.type',
+                                        propertyName: 'footerStyles.background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
                                         buttonGroupOptions: [
@@ -986,14 +987,14 @@ export const getSettings = (data: any) => {
                                             type: 'colorPicker',
                                             id: 'backgroundStyleRow-color-footer',
                                             label: 'Color',
-                                            propertyName: 'footerBackground.color',
+                                            propertyName: 'footerStyles.background.color',
                                             hideLabel: true,
                                             jsSetting: false,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "color";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1005,14 +1006,14 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'multiColorPicker',
                                             id: 'backgroundStyle-gradientColors-footer',
-                                            propertyName: 'footerBackground.gradient.colors',
+                                            propertyName: 'footerStyles.background.gradient.colors',
                                             label: 'Colors',
                                             jsSetting: false,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "gradient";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "gradient";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1025,14 +1026,14 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'textField',
                                             id: 'backgroundStyle-url-footer',
-                                            propertyName: 'footerBackground.url',
+                                            propertyName: 'footerStyles.background.url',
                                             jsSetting: false,
                                             label: 'URL',
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "url";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "url";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1044,14 +1045,14 @@ export const getSettings = (data: any) => {
                                           {
                                             type: 'imageUploader',
                                             id: 'backgroundStyle-image-footer',
-                                            propertyName: 'footerBackground.uploadFile',
+                                            propertyName: 'footerStyles.background.uploadFile',
                                             label: 'Image',
                                             jsSetting: false,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "image";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "image";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1061,7 +1062,7 @@ export const getSettings = (data: any) => {
                                         parentId: 'backgroundStylePnl-footer',
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "storedFile";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "storedFile";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1070,7 +1071,7 @@ export const getSettings = (data: any) => {
                                             type: 'textField',
                                             id: 'footerbackgroundStyle-storedFile',
                                             jsSetting: false,
-                                            propertyName: 'footerBackground.storedFile.id',
+                                            propertyName: 'footerStyles.background.storedFile.id',
                                             label: 'File ID',
                                           },
                                         ],
@@ -1081,7 +1082,7 @@ export const getSettings = (data: any) => {
                                         inline: true,
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) === "color";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1091,13 +1092,13 @@ export const getSettings = (data: any) => {
                                             id: 'footerBackgroundStyleRow-size',
                                             label: 'Size',
                                             hideLabel: true,
-                                            propertyName: 'footerBackground.size',
+                                            propertyName: 'footerStyles.background.size',
                                             customTooltip:
                                               'Size of the background image, two space separated values with units e.g "100% 100px"',
                                             dropdownOptions: sizeOptions,
                                             hidden: {
                                               _code:
-                                                'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) === "color";',
+                                                'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) === "color";',
                                               _mode: 'code',
                                               _value: false,
                                             } as any,
@@ -1109,7 +1110,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             customTooltip:
                                               'Position of the background image, two space separated values with units e.g "5em 100px"',
-                                            propertyName: 'footerBackground.position',
+                                            propertyName: 'footerStyles.background.position',
                                             dropdownOptions: positionOptions,
                                           },
                                         ],
@@ -1123,14 +1124,14 @@ export const getSettings = (data: any) => {
                                             id: 'footer-backgroundStyleRow-repeat-radio',
                                             label: 'Repeat',
                                             hideLabel: true,
-                                            propertyName: 'footerBackground.repeat',
+                                            propertyName: 'footerStyles.background.repeat',
                                             inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) === "color";',
+                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1163,7 +1164,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'offsetHorizontalIcon',
-                                            propertyName: 'footerShadow.offsetX',
+                                            propertyName: 'footerStyles.shadow.offsetX',
                                           },
                                           {
                                             type: 'numberField',
@@ -1172,7 +1173,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'offsetVerticalIcon',
-                                            propertyName: 'footerShadow.offsetY',
+                                            propertyName: 'footerStyles.shadow.offsetY',
                                           },
                                           {
                                             type: 'numberField',
@@ -1181,7 +1182,7 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'blurIcon',
-                                            propertyName: 'footerShadow.blurRadius',
+                                            propertyName: 'footerStyles.shadow.blurRadius',
                                           },
                                           {
                                             type: 'numberField',
@@ -1190,14 +1191,14 @@ export const getSettings = (data: any) => {
                                             hideLabel: true,
                                             width: 80,
                                             icon: 'spreadIcon',
-                                            propertyName: 'footerShadow.spreadRadius',
+                                            propertyName: 'footerStyles.shadow.spreadRadius',
                                           },
                                           {
                                             type: 'colorPicker',
                                             id: 'footerShadowStyleRow-color',
                                             label: 'Color',
                                             hideLabel: true,
-                                            propertyName: 'footerShadow.color',
+                                            propertyName: 'footerStyles.shadow.color',
                                           },
                                         ],
                                       })
@@ -1208,7 +1209,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInput({
                                 id: 'custom-css-footer',
                                 inputType: 'codeEditor',
-                                propertyName: 'footerStyle',
+                                propertyName: 'footerStyles.style',
                                 hideLabel: false,
                                 label: 'Style',
                                 description:
