@@ -28,6 +28,10 @@ interface IShaDrawer {
   width?: string | number;
   readOnly?: boolean;
   background?: CSSProperties;
+  dimensions?: {
+    width?: string | number;
+    height?: string | number;
+  };
 }
 
 interface IShaDrawerState {
@@ -38,7 +42,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
   const {
     id,
     placement,
-    width,
+    dimensions,
     componentName: name,
     readOnly,
     label,
@@ -145,13 +149,18 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     <Drawer
       open={state?.open}
       placement={placement}
-      width={width}
+      width={dimensions?.width}
+      height={dimensions?.height}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
         footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
         body: background,
-        content: style,
+        content: { ...style, height: undefined, width: undefined },
+        wrapper: {
+          width: style?.width || props.dimensions?.width,
+          height: style?.height || props.dimensions?.height,
+        },
       }}
       title={label}
       size="large"
