@@ -39,8 +39,6 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
   const {
     id,
     placement,
-    width,
-    height,
     componentName: name,
     readOnly,
     label,
@@ -142,23 +140,26 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
       </Fragment>
     );
   }
+  console.log('width', style?.width);
+  console.log('height', style?.height);
+  console.log('style', props);
 
   return (
     <Drawer
       open={state?.open}
       placement={placement}
-      width={style?.width || width}
-      height={style?.height || height}
+      // width='100%'
+      // height='100%'
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
         footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
         body: background,
-        //content: style,
-        wrapper: {
-          width: placement === 'left' || placement === 'right' ? style?.width || undefined : '100%',
-          height: placement === 'top' || placement === 'bottom' ? style?.height || undefined : '100%',
-        },
+        content: style,
+        // wrapper: {
+        //   width: style?.width,
+        //   height: style?.height,
+        // },
       }}
       title={label}
       size="large"

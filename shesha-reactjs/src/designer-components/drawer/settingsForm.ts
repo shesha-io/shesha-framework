@@ -229,20 +229,14 @@ export const getSettings = (data: any) => {
                                 id: 'dimensionsStyleRowWidth',
                                 parentId: 'dimensionsStylePnl',
                                 inline: true,
-                                hidden: {
-                                  _code:
-                                    'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.placement) !== "right" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.placement) !== "left";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
                                     id: 'width-dimensions-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
-                                    defaultValue: '100%',
-                                    propertyName: 'width',
+                                    defaultValue: '50%',
+                                    propertyName: 'dimensions.width',
                                     icon: 'widthIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
@@ -252,20 +246,14 @@ export const getSettings = (data: any) => {
                                 id: 'dimensionsStyleRowHeight',
                                 parentId: 'dimensionsStylePnl',
                                 inline: true,
-                                hidden: {
-                                  _code:
-                                    'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.placement) !== "top" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.placement) !== "bottom";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'textField',
                                     id: 'height-dimensions-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Height',
                                     width: 85,
-                                    defaultValue: '100%',
-                                    propertyName: 'height',
+                                    defaultValue: '50%',
+                                    propertyName: 'dimensions.height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },

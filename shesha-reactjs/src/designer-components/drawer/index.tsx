@@ -39,6 +39,8 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       footerBackground,
       footerShadow,
       allStyles,
+      width,
+      height,
       ...props
     } = model;
 
@@ -115,8 +117,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       ...shadowStyles,
       ...stylingBoxAsCSS,
       ...borderStyles,
-      ...model.allStyles.jsStyle
-      ,
+      ...model?.allStyles?.jsStyle,
     });
 
     const additionalHeaderStyles: CSSProperties = removeUndefinedProps({
