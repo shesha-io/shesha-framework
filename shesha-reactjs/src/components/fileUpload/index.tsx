@@ -36,6 +36,7 @@ export interface IFileUploadProps {
   borderRadius?: number;
   hideFileName?: boolean;
   styles?: any;
+  primaryColor?: string;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -49,6 +50,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   listType = 'text',
   hideFileName = false,
   styles: stylesProp,
+  primaryColor,
 }) => {
   const {
     fileInfo,
@@ -58,13 +60,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
     isInProgress: { uploadFile: isUploading },
   } = useStoredFile();
   const { backendUrl, httpHeaders } = useSheshaApplication();
-
   const props = {
     style: stylesProp,
+    primaryColor,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
       hideFileName,
+      listType,
     },
   };
   const { styles } = useStyles(props);
@@ -135,17 +138,21 @@ export const FileUpload: FC<IFileUploadProps> = ({
           <DeleteOutlined title="Remove" />
         </a>
       )}
-      {isImageType(fileInfo?.type) ? (
-        <a onClick={onPreview} style={{ color: color }}>
-          <EyeOutlined title="Preview" />
-        </a>
-      ) : (
-        hideFileName && (
-          <a onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })} style={{ color: color }}>
-            <DownloadOutlined title="Download" />
+      {listType === 'thumbnail' &&
+        (isImageType(fileInfo?.type) ? (
+          <a onClick={onPreview} style={{ color: color }}>
+            <EyeOutlined title="Preview" />
           </a>
-        )
-      )}
+        ) : (
+          hideFileName && (
+            <a
+              onClick={() => downloadFile({ fileId: fileInfo?.id, fileName: fileInfo?.name })}
+              style={{ color: color }}
+            >
+              <DownloadOutlined title="Download" />
+            </a>
+          )
+        ))}
     </Space>
   );
 
@@ -185,9 +192,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
                 {(listType === 'text' || !hideFileName) && (
                   <a
                     style={{ marginRight: '5px' }}
-                    onClick={() => downloadFile({ fileId: file.id, fileName: file.name })}
+                    onClick={
+                      isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })
+                    }
                   >
-                    {`${file.name} (${filesize(file.size)})`}
+                    {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file.size)})`}
                   </a>
                 )}
                 {showTextControls && fileControls(theme.application.primaryColor)}
@@ -284,12 +293,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
             onVisibleChange: (visible) => setPreviewOpen(visible),
             toolbarRender: (original) => (
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                {hideFileName && (
+                {
                   <DownloadOutlined
                     className={styles.antPreviewDownloadIcon}
                     onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
                   />
-                )}
+                }
                 {original}
               </div>
             ),

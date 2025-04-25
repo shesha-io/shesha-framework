@@ -2,9 +2,22 @@ import { DesignerToolbarSettings } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 
 export const getItemSettings = () => {
+  // Generate unique IDs for major components
+  const searchableTabsId = nanoid();
+  const commonTabId = nanoid();
+  const securityTabId = nanoid();
+
+  // Button content IDs
+  const nextButtonContentId = nanoid();
+  const backButtonContentId = nanoid();
+  const doneButtonContentId = nanoid();
+  const cancelButtonContentId = nanoid();
+  const beforeRenderContentId = nanoid();
+  const otherSettingsContentId = nanoid();
+
   return new DesignerToolbarSettings()
     .addSearchableTabs({
-      id: 'wizard-settings-tabs',
+      id: searchableTabsId,
       propertyName: 'settingsTabs',
       parentId: 'root',
       label: 'Settings',
@@ -15,13 +28,13 @@ export const getItemSettings = () => {
         {
           key: '1',
           title: 'Common',
-          id: 'wizard-settings-tabs-common',
+          id: commonTabId,
           components: [...new DesignerToolbarSettings()
             .addSettingsInputRow({
-              id: 'wizard-settings-tabs-common-name-row',
-                inputs: [
+              id: nanoid(),
+              inputs: [
                 {
-                  id: 'wizard-settings-tabs-common-name',
+                  id: nanoid(),
                   type: 'textField',
                   propertyName: 'name',
                   label: 'Component Name',
@@ -32,7 +45,7 @@ export const getItemSettings = () => {
                   },
                 },
                 {
-                  id: 'wizard-settings-tabs-common-title',
+                  id: nanoid(),
                   type: 'textField',
                   propertyName: 'title',
                   label: 'Title',
@@ -43,10 +56,10 @@ export const getItemSettings = () => {
               ]
             })
             .addSettingsInputRow({
-              id: 'wizard-settings-tabs-common-subTitle-row',
-                inputs: [
+              id: nanoid(),
+              inputs: [
                 {
-                  id: 'wizard-settings-tabs-common-subTitle',
+                  id: nanoid(),
                   type: 'textField',
                   propertyName: 'subTitle',
                   label: 'Sub Title',
@@ -55,7 +68,7 @@ export const getItemSettings = () => {
                   jsSetting: true,
                 },
                 {
-                  id: 'wizard-settings-tabs-common-description',
+                  id: nanoid(),
                   propertyName: 'description',
                   type: 'textArea',
                   label: 'Description',
@@ -66,10 +79,10 @@ export const getItemSettings = () => {
               ]
             })
             .addSettingsInputRow({
-              id: 'wizard-settings-tabs-common-key-row',
-                inputs: [
+              id: nanoid(),
+              inputs: [
                 {
-                  id: 'wizard-settings-tabs-common-key',
+                  id: nanoid(),
                   type: 'textField',
                   propertyName: 'key',
                   label: 'Key',
@@ -78,7 +91,7 @@ export const getItemSettings = () => {
                   jsSetting: true,
                 },
                 {
-                  id: 'wizard-settings-tabs-common-status',
+                  id: nanoid(),
                   type: 'dropdown',
                   propertyName: 'status',
                   label: 'Status',
@@ -96,10 +109,10 @@ export const getItemSettings = () => {
               ]
             })
             .addSettingsInputRow({
-              id: 'wizard-settings-tabs-common-icon-row',
-                inputs: [
+              id: nanoid(),
+              inputs: [
                 {
-                  id: 'wizard-settings-tabs-common-icon',
+                  id: nanoid(),
                   type: 'iconPicker',
                   propertyName: 'icon',
                   label: 'Icon',
@@ -109,7 +122,7 @@ export const getItemSettings = () => {
                   settingsValidationErrors: [],
                 },
                 {
-                  id: 'wizard-settings-tabs-common-allowCancel',
+                  id: nanoid(),
                   type: 'switch',
                   propertyName: 'allowCancel',
                   label: 'Allow Cancel',
@@ -123,7 +136,7 @@ export const getItemSettings = () => {
             })
             .addSettingsInput({
               inputType: 'switch',
-              id: 'd5a6f5a9-8b0c-4c6d-8f7e-6a3f7b1b2b4d',
+              id: nanoid(),
               propertyName: 'canSkipTo',
               label: 'Can Skip To',
               labelAlign: 'right',
@@ -134,7 +147,7 @@ export const getItemSettings = () => {
               jsSetting: true,
             })
             .addCollapsiblePanel({
-              id: 'nextButtonCollapsiblePanel',
+              id: nanoid(),
               propertyName: 'nextButtonCollapsiblePanel',
               label: 'Next Button',
               labelAlign: 'right',
@@ -142,22 +155,22 @@ export const getItemSettings = () => {
               ghost: true,
               collapsible: 'header',
               content: {
-                id: 'nextButtonContent',
+                id: nextButtonContentId,
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: 'wizard-settings-tabs-common-nextButtonText',
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'nextButtonText',
                         label: 'Text',
                         labelAlign: 'right',
-                        parentId: 'nextButtonContent',
+                        parentId: nextButtonContentId,
                         jsSetting: true,
                       },
                       {
-                        id: 'wizard-settings-tabs-common-nextButtonCustomEnabled',
+                        id: nanoid(),
                         type: 'codeEditor',
                         propertyName: 'nextButtonCustomEnabled',
                         label: 'Custom Enabled',
@@ -167,10 +180,10 @@ export const getItemSettings = () => {
                       }]
                   })
                   .addSettingsInputRow({
-                    id: 'wizard-settings-tabs-common-nextButtonBeforeActionRow',
-                            inputs: [
+                    id: nanoid(),
+                    inputs: [
                       {
-                        id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'beforeNextActionConfiguration',
                         label: 'Before Next Action',
@@ -181,7 +194,7 @@ export const getItemSettings = () => {
                         settingsValidationErrors: [],
                       },
                       {
-                        id: 'ac7c19c4-f75a-4ce0-b96a-1698b6bdb289',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'afterNextActionConfiguration',
                         hideLabel: true,
@@ -197,7 +210,7 @@ export const getItemSettings = () => {
               }
             })
             .addCollapsiblePanel({
-              id: 'backButtonCollapsiblePanel',
+              id: nanoid(),
               propertyName: 'backButtonCollapsiblePanel',
               label: 'Back Button',
               labelAlign: 'right',
@@ -205,22 +218,22 @@ export const getItemSettings = () => {
               ghost: true,
               collapsible: 'header',
               content: {
-                id: 'backButtonContent',
+                id: backButtonContentId,
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: 'backButtonText',
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'backButtonText',
                         label: 'Text',
                         labelAlign: 'right',
-                        parentId: 'backButtonContent',
+                        parentId: backButtonContentId,
                         jsSetting: true,
                       },
                       {
-                        id: 'f39e604f-b2c9-4e6a-9101-fc12d32b7b3a',
+                        id: nanoid(),
                         type: 'codeEditor',
                         propertyName: 'backButtonCustomEnabled',
                         label: 'Custom Enabled',
@@ -231,9 +244,9 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'beforeBackActionConfiguration',
                         label: 'Before Back Action',
@@ -242,7 +255,7 @@ export const getItemSettings = () => {
                         jsSetting: false,
                       },
                       {
-                        id: '59bb6f37-55b9-496e-8eff-dc20f610baee',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'afterBackActionConfiguration',
                         label: 'After Back Action',
@@ -257,7 +270,7 @@ export const getItemSettings = () => {
               }
             })
             .addCollapsiblePanel({
-              id: 'doneButtonCollapsiblePanel',
+              id: nanoid(),
               propertyName: 'doneButtonCollapsiblePanel',
               label: 'Done Button',
               labelAlign: 'right',
@@ -265,22 +278,22 @@ export const getItemSettings = () => {
               ghost: true,
               collapsible: 'header',
               content: {
-                id: 'doneButtonContent',
+                id: doneButtonContentId,
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: 'doneButtonText',
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'doneButtonText',
                         label: 'Text',
                         labelAlign: 'right',
-                        parentId: 'doneButtonContent',
+                        parentId: doneButtonContentId,
                         jsSetting: true,
                       },
                       {
-                        id: 'f39e604f-b2c9-4e6a-9101-fc12d32b7b3a',
+                        id: nanoid(),
                         type: 'codeEditor',
                         propertyName: 'doneButtonCustomEnabled',
                         label: 'Custom Enabled',
@@ -292,9 +305,9 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'beforeDoneActionConfiguration',
                         label: 'Before Done Action',
@@ -303,7 +316,7 @@ export const getItemSettings = () => {
                         jsSetting: false,
                       },
                       {
-                        id: 'D5133335-4349-459A-8E9E-4371C814C111',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'afterDoneActionConfiguration',
                         label: 'After Done Action',
@@ -318,7 +331,7 @@ export const getItemSettings = () => {
               }
             })
             .addCollapsiblePanel({
-              id: 'onCancelCollapsiblePanel',
+              id: nanoid(),
               propertyName: 'onCancelCollapsiblePanel',
               label: 'Cancel Button',
               labelAlign: 'right',
@@ -326,22 +339,22 @@ export const getItemSettings = () => {
               ghost: true,
               collapsible: 'header',
               content: {
-                id: 'onCancelContent',
+                id: cancelButtonContentId,
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: 'onCancelText',
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'cancelButtonText',
                         label: 'Text',
                         labelAlign: 'right',
-                        parentId: 'onCancelContent',
+                        parentId: cancelButtonContentId,
                         jsSetting: true,
                       },
                       {
-                        id: 'f39e604f-b2c9-4e6a-9101-fc12d32b7b3a',
+                        id: nanoid(),
                         type: 'codeEditor',
                         propertyName: 'cancelButtonCustomEnabled',
                         label: 'Custom Enabled',
@@ -353,9 +366,9 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'beforeCancelActionConfiguration',
                         label: 'Before Cancel Action',
@@ -364,7 +377,7 @@ export const getItemSettings = () => {
                         jsSetting: false,
                       },
                       {
-                        id: 'D5133335-4349-459A-8E9E-4371C814C111',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'afterCancelActionConfiguration',
                         label: 'After Cancel Action',
@@ -379,7 +392,7 @@ export const getItemSettings = () => {
               }
             })
             .addCollapsiblePanel({
-              id: 'onBeforeRenderCollapsiblePanel',
+              id: nanoid(),
               propertyName: 'onBeforeRenderCollapsiblePanel',
               label: 'On Before Render',
               labelAlign: 'right',
@@ -387,10 +400,10 @@ export const getItemSettings = () => {
               ghost: true,
               collapsible: 'header',
               content: {
-                id: 'onBeforeRenderContent',
+                id: beforeRenderContentId,
                 components: [...new DesignerToolbarSettings()
                   .addConfigurableActionConfigurator({
-                    id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
+                    id: nanoid(),
                     propertyName: 'onBeforeRenderActionConfiguration',
                     label: 'Action Configuration',
                     hideLabel: true,
@@ -400,7 +413,7 @@ export const getItemSettings = () => {
               }
             })
             .addCollapsiblePanel({
-              id: 'otherSettingsCollapsiblePanel',
+              id: nanoid(),
               propertyName: 'otherSettingsCollapsiblePanel',
               label: 'Other',
               labelAlign: 'right',
@@ -408,13 +421,13 @@ export const getItemSettings = () => {
               ghost: true,
               collapsible: 'header',
               content: {
-                id: 'otherSettingsContent',
+                id: otherSettingsContentId,
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: 'f9f25102-bdc7-41bc-b4bc-87eea6a86fc5',
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'className',
                         label: 'Class Name',
@@ -423,7 +436,7 @@ export const getItemSettings = () => {
                       },
                       {
                         type: 'codeEditor',
-                        id: 'd2f01684-31e5-41a3-b32a-c23abc20e700',
+                        id: nanoid(),
                         propertyName: 'style',
                         label: 'Style',
                         parentId: 'root',
@@ -435,9 +448,9 @@ export const getItemSettings = () => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                            inputs: [
+                    inputs: [
                       {
-                        id: '78f2f5ee-9826-4567-a938-d7bc03ba90ac',
+                        id: nanoid(),
                         type: 'codeEditor',
                         propertyName: 'customVisibility',
                         label: 'Custom Visibility',
@@ -450,7 +463,7 @@ export const getItemSettings = () => {
                       },
                       {
                         type: 'codeEditor',
-                        id: '377bbbee-d7f6-42bf-8f08-fc9303424518',
+                        id: nanoid(),
                         propertyName: 'customEnabled',
                         label: 'Custom Enabled',
                         labelAlign: 'right',
@@ -471,7 +484,7 @@ export const getItemSettings = () => {
         {
           key: '2',
           title: 'Security',
-          id: nanoid(),
+          id: securityTabId,
           components: [...new DesignerToolbarSettings()
             .addSettingsInput({
               id: nanoid(),

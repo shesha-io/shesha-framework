@@ -5,14 +5,23 @@ import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IDateFieldProps } from './interfaces';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: IDateFieldProps) => {
+    const searchableTabsId = nanoid();
+    const commonTabId = nanoid();
+    const formatsTabId = nanoid();
+    const controlVisibilityTabId = nanoid();
+    const eventsTabId = nanoid();
+    const validationTabId = nanoid();
+    const appearanceTabId = nanoid();
+    const securityTabId = nanoid();
+    const styleRouterId = nanoid();
 
     return {
-
         components: new DesignerToolbarSettings(data)
             .addSearchableTabs({
-                id: 'W_m7doMyCpCYwAYDfRh6I',
+                id: searchableTabsId,
                 propertyName: 'settingsTabs',
                 parentId: 'root',
                 label: 'Settings',
@@ -23,13 +32,13 @@ export const getSettings = (data: IDateFieldProps) => {
                     {
                         key: '1',
                         title: 'Common',
-                        id: 's4gmBg31azZC0UjZjpfTm',
+                        id: commonTabId,
                         components: [...new DesignerToolbarSettings()
                             .addContextPropertyAutocomplete({
-                                id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                                id: nanoid(),
                                 propertyName: 'propertyName',
                                 label: 'Property Name',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                parentId: commonTabId,
                                 styledLabel: true,
                                 size: 'small',
                                 validate: {
@@ -38,18 +47,18 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                             })
                             .addLabelConfigurator({
-                                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                                id: nanoid(),
                                 propertyName: 'hideLabel',
                                 label: 'Label',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                parentId: commonTabId,
                                 hideLabel: true,
                             })
                             .addSettingsInputRow({
-                                id: 'palceholder-tooltip-w2gmBg31azZD0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                id: nanoid(),
+                                parentId: commonTabId,
                                 inputs: [
                                     {
-                                        id: '56b40a33-7e10-4ce4-9f08-a34d24a83338',
+                                        id: nanoid(),
                                         propertyName: 'picker',
                                         label: 'Picker',
                                         type: 'dropdown',
@@ -76,11 +85,10 @@ export const getSettings = (data: IDateFieldProps) => {
                                                 value: "year",
                                                 label: "year"
                                             }
-
                                         ]
                                     },
                                     {
-                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
+                                        id: nanoid(),
                                         type: 'switch',
                                         propertyName: 'range',
                                         label: 'Range?',
@@ -89,19 +97,19 @@ export const getSettings = (data: IDateFieldProps) => {
                                 ],
                             })
                             .addSettingsInput({
-                                id: 'e92bcf3c-a70a-4aeb-b6ac-5643eb5b4fe2',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                id: nanoid(),
+                                parentId: commonTabId,
                                 inputType: 'switch',
                                 propertyName: 'resolveToUTC',
                                 label: 'Resolve to UTC',
                                 jsSetting: true,
                             })
                             .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                id: nanoid(),
+                                parentId: commonTabId,
                                 inputs: [
                                     {
-                                        id: '57a40a33-7e10-4ce4-9f08-a34d24a83338',
+                                        id: nanoid(),
                                         propertyName: 'placeholder',
                                         label: 'Placeholder',
                                         type: 'textField',
@@ -109,7 +117,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                         jsSetting: true,
                                     },
                                     {
-                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
+                                        id: nanoid(),
                                         type: 'textArea',
                                         propertyName: 'description',
                                         label: 'Tooltip',
@@ -118,11 +126,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                 ],
                             })
                             .addSettingsInputRow({
-                                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                id: nanoid(),
+                                parentId: commonTabId,
                                 inputs: [
                                     {
-                                        id: '5c813b1a-04c5-7758-ac0f-cbcbae6b3bd4',
+                                        id: nanoid(),
                                         type: 'editModeSelector',
                                         propertyName: 'editMode',
                                         label: 'Edit Mode',
@@ -130,7 +138,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                         jsSetting: true,
                                     },
                                     {
-                                        id: '5c813b1a-04c5-4678-ac0f-cbcbae6b3bd4',
+                                        id: nanoid(),
                                         type: 'switch',
                                         propertyName: 'hidden',
                                         label: 'Hide',
@@ -145,67 +153,67 @@ export const getSettings = (data: IDateFieldProps) => {
                     {
                         key: '2',
                         title: 'Formats',
-                        id: '6eBJvoll3xtLJxdvOAlnB',
+                        id: formatsTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                id: '3be9da3f-f47e-48ae-b4c3-d5cc36e534d9',
+                                id: nanoid(),
                                 propertyName: 'dateFormat',
                                 label: 'Date Format',
                                 size: 'small',
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "DD/MM/YYYY",
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                                parentId: formatsTabId
                             })
                             .addSettingsInput({
-                                id: '5be9da3f-f47e-48ae-b4c3-d5cc36e534d9',
+                                id: nanoid(),
                                 propertyName: 'timeFormat',
                                 label: 'Time Format',
                                 size: 'small',
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "HH:mm:ss",
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                                parentId: formatsTabId
                             })
                             .addSettingsInput({
-                                id: '5be9da3f-f47e-48ae-b7c3-d5cc36e534d9',
+                                id: nanoid(),
                                 propertyName: 'yearFormat',
                                 label: 'Year Format',
                                 size: 'small',
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY",
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                                parentId: formatsTabId
                             })
                             .addSettingsInput({
-                                id: '5be9da3f-f42e-48ae-b7c3-d5cc36e534d9',
+                                id: nanoid(),
                                 propertyName: 'quarterFormat',
                                 label: 'Quarter Format',
                                 size: 'small',
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY-\\QQ",
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                                parentId: formatsTabId
                             })
                             .addSettingsInput({
-                                id: '5ee9da3f-f47e-48ae-b7c3-d5cc36e534d9',
+                                id: nanoid(),
                                 propertyName: 'monthFormat',
                                 label: 'Month Format',
                                 size: 'small',
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY-MM",
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                                parentId: formatsTabId
                             })
                             .addSettingsInput({
-                                id: '5be9da3f-f57e-48ae-b7c3-d5cc36e534d9',
+                                id: nanoid(),
                                 propertyName: 'weekFormat',
                                 label: 'Week Format',
                                 size: 'small',
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY-wo",
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                                parentId: formatsTabId
                             })
                             .toJson()
                         ]
@@ -213,20 +221,20 @@ export const getSettings = (data: IDateFieldProps) => {
                     {
                         key: '3',
                         title: 'Control Visibility',
-                        id: '6eBJvoll3xtHJxdvOAlnB',
+                        id: controlVisibilityTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e554d9',
+                                id: nanoid(),
                                 inputType: 'switch',
                                 propertyName: 'showTime',
                                 label: 'Show Time',
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
-                                parentId: '6eBJvoll3xtHJxdvOAlnB'
+                                parentId: controlVisibilityTabId
                             })
                             .addSettingsInput({
-                                id: '3be9da3f-f47e-48ae-c4c3-f5cc36e554d9',
+                                id: nanoid(),
                                 inputType: 'switch',
                                 propertyName: 'defaultToMidnight',
                                 label: 'Default time to midnight',
@@ -234,24 +242,25 @@ export const getSettings = (data: IDateFieldProps) => {
                                 layout: 'horizontal',
                                 defaultValue: true,
                                 jsSetting: true,
-                                parentId: '6eBJvoll3xtHJxdvOAlnB',
+                                parentId: controlVisibilityTabId,
                                 hidden: { _code: 'return  !getSettingValue(data?.showTime);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInput({
-                                id: '3be9da3f-f47e-49ae-b4c3-f5cc36e554d9',
+                                id: nanoid(),
                                 inputType: 'switch',
                                 propertyName: 'showNow',
                                 label: 'Show Today/Now',
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
-                                parentId: '6eBJvoll3xtHJxdvOAlnB'
+                                parentId: controlVisibilityTabId
                             })
                             .addSettingsInput({
-                                id: 'ac88293a-af3b-45a2-a57c-7703d882b473',
+                                id: nanoid(),
                                 inputType: 'dropdown',
                                 propertyName: 'disabledDateMode',
                                 label: 'Disabled date mode',
+                                parentId: controlVisibilityTabId,
                                 dropdownOptions: [
                                     { value: 'none', label: 'None' },
                                     { value: 'functionTemplate', label: 'Function template' },
@@ -259,10 +268,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                 ]
                             })
                             .addSettingsInput({
-                                id: 'ac88293a-af3b-45a2-a57c-8803d882b473',
+                                id: nanoid(),
                                 inputType: 'dropdown',
                                 propertyName: 'disabledDateTemplate',
                                 label: 'Disabled date templates',
+                                parentId: controlVisibilityTabId,
                                 hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'functionTemplate'", _mode: 'code', _value: false } as any,
                                 dropdownOptions: [
                                     { value: "return current && current < moment().startOf('day');", label: 'Disable past dates' },
@@ -270,10 +280,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                 ]
                             })
                             .addSettingsInput({
-                                id: '41613cbd-1943-4df7-b2e3-e9842ba2c2b3',
+                                id: nanoid(),
                                 inputType: 'dropdown',
                                 propertyName: 'disabledTimeMode',
                                 label: 'Disabled time mode',
+                                parentId: controlVisibilityTabId,
                                 defaultValue: 'none',
                                 dropdownOptions: [
                                     { value: 'none', label: 'None' },
@@ -287,10 +298,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                 }
                             })
                             .addSettingsInput({
-                                id: '692081a5-7e96-401e-90e0-9da5b5bfd836',
+                                id: nanoid(),
                                 inputType: 'dropdown',
                                 propertyName: 'disabledTimeTemplate',
                                 label: 'Disabled time templates',
+                                parentId: controlVisibilityTabId,
                                 hidden: {
                                     _code: "return  getSettingValue(data.disabledTimeMode) !== 'timeFunctionTemplate';",
                                     _mode: 'code',
@@ -301,23 +313,22 @@ export const getSettings = (data: IDateFieldProps) => {
                                     { value: "disabledFutureTime", label: 'Disable future times' }
                                 ]
                             })
-
                             .toJson()
                         ]
                     },
                     {
                         key: '4',
                         title: 'Events',
-                        id: 'Cc47W08MWrKdhoGqFKMI2',
+                        id: eventsTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
+                                id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'onChangeCustom',
                                 label: 'On Change',
                                 labelAlign: 'right',
                                 tooltip: 'Enter custom eventhandler on changing of event.',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                                parentId: eventsTabId
                             })
                             .toJson()
                         ]
@@ -325,17 +336,17 @@ export const getSettings = (data: IDateFieldProps) => {
                     {
                         key: '5',
                         title: 'Validation',
-                        id: '6eBJvoll3xtLJxdvOAlnB',
+                        id: validationTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                                id: nanoid(),
                                 inputType: 'switch',
                                 propertyName: 'validate.required',
                                 label: 'Required',
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                                parentId: validationTabId
                             })
                             .toJson()
                         ]
@@ -343,15 +354,15 @@ export const getSettings = (data: IDateFieldProps) => {
                     {
                         key: '6',
                         title: 'Appearance',
-                        id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                        id: appearanceTabId,
                         components: [...new DesignerToolbarSettings()
                             .addPropertyRouter({
-                                id: 'styleRouter',
+                                id: styleRouterId,
                                 propertyName: 'propertyRouter1',
                                 componentName: 'propertyRouter',
                                 label: 'Property router1',
                                 labelAlign: 'right',
-                                parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                                parentId: appearanceTabId,
                                 hidden: false,
                                 propertyRouteName: {
                                     _mode: "code",
@@ -361,25 +372,25 @@ export const getSettings = (data: IDateFieldProps) => {
                                 components: [
                                     ...new DesignerToolbarSettings()
                                         .addCollapsiblePanel({
-                                            id: 'fontStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlFontStyle',
                                             label: 'Font',
                                             labelAlign: 'right',
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             ghost: true,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'fontStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: 'try26voxhs-HxJ5k5ngYE',
-                                                        parentId: 'fontStylePnl',
+                                                        id: nanoid(),
+                                                        parentId: nanoid(),
                                                         inline: true,
                                                         propertyName: 'font',
                                                         inputs: [
                                                             {
                                                                 type: 'dropdown',
-                                                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Family',
                                                                 propertyName: 'font.type',
                                                                 hideLabel: true,
@@ -387,7 +398,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
                                                                 hideLabel: true,
@@ -395,7 +406,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'dropdown',
-                                                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Weight',
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
@@ -405,14 +416,14 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'colorPicker',
-                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
                                                             },
                                                             {
                                                                 type: 'dropdown',
-                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: 'Align',
                                                                 propertyName: 'font.align',
                                                                 hideLabel: true,
@@ -426,24 +437,24 @@ export const getSettings = (data: IDateFieldProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'dimensionsStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlDimensions',
                                             label: 'Dimensions',
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             labelAlign: 'right',
                                             ghost: true,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'dimensionsStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: 'dimensionsStyleRowWidth',
-                                                        parentId: 'dimensionsStylePnl',
+                                                        id: nanoid(),
+                                                        parentId: nanoid(),
                                                         inline: true,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
-                                                                id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Width",
                                                                 width: 85,
                                                                 propertyName: "dimensions.width",
@@ -453,7 +464,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Min Width",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -462,7 +473,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Max Width",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -472,13 +483,13 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         ]
                                                     })
                                                     .addSettingsInputRow({
-                                                        id: 'dimensionsStyleRowHeight',
-                                                        parentId: 'dimensionsStylePnl',
+                                                        id: nanoid(),
+                                                        parentId: nanoid(),
                                                         inline: true,
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
-                                                                id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Height",
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
@@ -487,7 +498,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Min Height",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -496,7 +507,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'textField',
-                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                id: nanoid(),
                                                                 label: "Max Height",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -510,40 +521,24 @@ export const getSettings = (data: IDateFieldProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'borderStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlBorderStyle',
                                             label: 'Border',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'borderStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'borderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
                                                     .addContainer({
-                                                        id: 'borderStyleRow',
-                                                        parentId: 'borderStylePnl',
+                                                        id: nanoid(),
+                                                        parentId: nanoid(),
                                                         components: getBorderInputs() as any
                                                     })
                                                     .addContainer({
-                                                        id: 'borderRadiusStyleRow',
-                                                        parentId: 'borderStylePnl',
+                                                        id: nanoid(),
+                                                        parentId: nanoid(),
                                                         components: getCornerInputs() as any
                                                     })
                                                     .toJson()
@@ -551,20 +546,20 @@ export const getSettings = (data: IDateFieldProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'backgroundStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlBackgroundStyle',
                                             label: 'Background',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'backgroundStylePnl',
+                                                id: nanoid(),
                                                 components: [
                                                     ...new DesignerToolbarSettings()
                                                         .addSettingsInput({
-                                                            id: "backgroundStyleRow-selectType",
-                                                            parentId: "backgroundStylePnl",
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             label: "Type",
                                                             jsSetting: false,
                                                             propertyName: "background.type",
@@ -573,11 +568,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             buttonGroupOptions: backgroundTypeOptions,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyleRow-color",
-                                                            parentId: "backgroundStylePnl",
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             inputs: [{
                                                                 type: 'colorPicker',
-                                                                id: 'backgroundStyleRow-color',
+                                                                id: nanoid(),
                                                                 label: "Color",
                                                                 propertyName: "background.color",
                                                                 hideLabel: true,
@@ -586,11 +581,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyle-gradientColors",
-                                                            parentId: "backgroundStylePnl",
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             inputs: [{
                                                                 type: 'multiColorPicker',
-                                                                id: 'backgroundStyle-gradientColors',
+                                                                id: nanoid(),
                                                                 propertyName: "background.gradient.colors",
                                                                 label: "Colors",
                                                                 jsSetting: false,
@@ -600,11 +595,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             hideLabel: true,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyle-url",
-                                                            parentId: "backgroundStylePnl",
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             inputs: [{
                                                                 type: 'textField',
-                                                                id: 'backgroundStyle-url',
+                                                                id: nanoid(),
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
                                                                 label: "URL",
@@ -612,11 +607,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyle-image",
-                                                            parentId: 'backgroundStylePnl',
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             inputs: [{
                                                                 type: 'imageUploader',
-                                                                id: 'backgroundStyle-image',
+                                                                id: nanoid(),
                                                                 propertyName: 'background.uploadFile',
                                                                 label: "Image",
                                                                 jsSetting: false,
@@ -624,13 +619,13 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyleRow-storedFile",
-                                                            parentId: 'backgroundStylePnl',
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     type: 'textField',
-                                                                    id: 'backgroundStyle-storedFile',
+                                                                    id: nanoid(),
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
                                                                     label: "File ID"
@@ -638,14 +633,14 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             ]
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: "backgroundStyleRow-controls",
-                                                            parentId: 'backgroundStyleRow',
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                             inline: true,
                                                             inputs: [
                                                                 {
                                                                     type: 'customDropdown',
-                                                                    id: 'backgroundStyleRow-size',
+                                                                    id: nanoid(),
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
@@ -653,7 +648,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
-                                                                    id: 'backgroundStyleRow-position',
+                                                                    id: nanoid(),
                                                                     label: "Position",
                                                                     hideLabel: true,
                                                                     propertyName: "background.position",
@@ -662,11 +657,11 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             ]
                                                         })
                                                         .addSettingsInputRow({
-                                                            id: 'backgroundStyleRow-repeat',
-                                                            parentId: 'backgroundStyleRow',
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
                                                             inputs: [{
                                                                 type: 'radio',
-                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                id: nanoid(),
                                                                 label: 'Repeat',
                                                                 hideLabel: true,
                                                                 propertyName: 'background.repeat',
@@ -680,24 +675,24 @@ export const getSettings = (data: IDateFieldProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'shadowStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'pnlShadowStyle',
                                             label: 'Shadow',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'shadowStylePnl',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: 'shadowStyleRow',
-                                                        parentId: 'shadowStylePnl',
+                                                        id: nanoid(),
+                                                        parentId: nanoid(),
                                                         inline: true,
                                                         inputs: [
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-offsetX',
+                                                                id: nanoid(),
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
                                                                 tooltip: 'Offset X',
@@ -707,7 +702,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-offsetY',
+                                                                id: nanoid(),
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
                                                                 tooltip: 'Offset Y',
@@ -717,7 +712,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-blurRadius',
+                                                                id: nanoid(),
                                                                 label: 'Blur',
                                                                 hideLabel: true,
                                                                 tooltip: 'Blur Radius',
@@ -727,7 +722,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'numberField',
-                                                                id: 'shadowStyleRow-spreadRadius',
+                                                                id: nanoid(),
                                                                 label: 'Spread',
                                                                 hideLabel: true,
                                                                 tooltip: 'Spread Radius',
@@ -737,7 +732,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             },
                                                             {
                                                                 type: 'colorPicker',
-                                                                id: 'shadowStyleRow-color',
+                                                                id: nanoid(),
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'shadow.color',
@@ -749,17 +744,17 @@ export const getSettings = (data: IDateFieldProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'styleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'stylingBox',
                                             label: 'Margin & Padding',
                                             labelAlign: 'right',
                                             ghost: true,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'stylePnl-M5-911',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addStyleBox({
-                                                        id: 'styleBoxPnl',
+                                                        id: nanoid(),
                                                         label: 'Margin Padding',
                                                         hideLabel: true,
                                                         propertyName: 'stylingBox',
@@ -769,18 +764,18 @@ export const getSettings = (data: IDateFieldProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'customStyleCollapsiblePanel',
+                                            id: nanoid(),
                                             propertyName: 'customStyle',
                                             label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
-                                            parentId: 'styleRouter',
+                                            parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
-                                                id: 'stylePnl-M500-911MFR',
+                                                id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                        id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                        id: nanoid(),
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         hideLabel: true,
@@ -797,15 +792,15 @@ export const getSettings = (data: IDateFieldProps) => {
                     {
                         key: '7',
                         title: 'Security',
-                        id: '6Vw9iiDw9d0MD_Rh5cbIn',
+                        id: securityTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                id: nanoid(),
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                parentId: securityTabId
                             })
                             .toJson()
                         ]

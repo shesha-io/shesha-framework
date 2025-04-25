@@ -9,7 +9,7 @@ import { CodeSandboxSquareFilled } from '@ant-design/icons';
 import { Card } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ICardComponentProps } from './interfaces';
-import { getSettings } from './new-cardSettings';
+import { getSettings } from './settingsForm';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import classNames from 'classnames';
 import { useStyles } from './styles';
@@ -89,7 +89,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
           className={classNames(model.className, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
           extra={extra}
-          style={{...removeNullUndefined(newStyles), ...getLayoutStyle(model, { data, globalState })}}
+          style={{ ...removeNullUndefined(newStyles), ...getLayoutStyle(model, { data, globalState }) }}
         >
           <ComponentsContainer
             containerId={model?.content?.id}

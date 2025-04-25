@@ -24,7 +24,7 @@ export const getSettings = (data: any) => {
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputs: [
                     {
-                      id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                      id: 'component-name-s4gmBg31azZC0UjZjpfTm',
                       type: 'textField',
                       propertyName: 'componentName',
                       label: 'Component Name',

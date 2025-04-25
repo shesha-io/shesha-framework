@@ -168,8 +168,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             />;
         case 'button':
             return <Button style={{ maxWidth: "100%" }} disabled={readOnly} defaultValue={defaultValue}
-                type={'primary'} size={size}
-                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt, null, tooltipAlt, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
+                type={value === true ? 'primary' : 'default'} size={size}
+                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt || icon, null, tooltipAlt, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
@@ -221,15 +221,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 allowClear={props.allowClear ?? true}
             />;
         case 'contextPropertyAutocomplete':
-            return <ContextPropertyAutocomplete 
-              {...{ ...props }} 
-              style={{}}
-              readOnly={readOnly} 
-              defaultModelType="defaultType"
-              id="contextPropertyAutocomplete" 
-              componentName={formData.componentName}
-              propertyName={formData.propertyName}
-              contextName={formData.context}
+            return <ContextPropertyAutocomplete
+                {...{ ...props }}
+                onValuesChange={onChange}
+                style={{}}
+                readOnly={readOnly}
+                defaultModelType="defaultType"
+                id="contextPropertyAutocomplete"
+                componentName={formData.componentName}
+                propertyName={formData.propertyName}
+                contextName={formData.context}
             />;
         case 'formAutocomplete':
             return <FormAutocomplete
@@ -245,7 +246,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'multiColorPicker':
             return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
         case 'itemListConfiguratorModal':
-
             return <ItemListConfiguratorModal
                 readOnly={readOnly}
                 initNewItem={onAddNewItem}

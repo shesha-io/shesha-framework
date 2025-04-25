@@ -13,7 +13,6 @@ export const getSettings = (data: any) => {
   const styleRouterId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
-  const borderStyleRowId = nanoid();
   const backgroundStylePnlId = nanoid();
 
   const propertyNameId = nanoid();
@@ -220,24 +219,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: borderStylePnlId,
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: borderStyleRowId,
-                              parentId: borderStylePnlId,
-                              hidden: {
-                                _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,
-                              inputs: [
-                                {
-                                  type: 'button',
-                                  id: `${borderStyleRowId}-hideBorder`,
-                                  label: "Border",
-                                  hideLabel: true,
-                                  propertyName: "border.hideBorder",
-                                  icon: "EyeOutlined",
-                                  iconAlt: "EyeInvisibleOutlined"
-                                },
-                              ]
-                            })
+
                             .addContainer({
                               id: 'borderStyleRow',
                               parentId: 'borderStylePnl',
