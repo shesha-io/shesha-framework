@@ -16,10 +16,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const { gap, layout, hideFileName, isDragger, isStub } = model;
 
   const padding = isStub ? {
-    paddingTop: paddingTop || '2px',
-    paddingLeft: paddingLeft || '2px',
-    paddingRight: paddingRight || '2px',
-    paddingBottom: paddingBottom || '2px'
+    paddingTop: paddingTop ?? '2px',
+    paddingLeft: paddingLeft ?? '2px',
+    paddingRight: paddingRight ?? '2px',
+    paddingBottom: paddingBottom ?? '2px'
   } : {};
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
@@ -48,21 +48,25 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     margin-left: ${marginLeft};
     margin-right: ${marginRight};
     margin-bottom: ${marginBottom};
+    padding-top: ${paddingTop ?? '2px'};
+    padding-left: ${paddingLeft ?? '2px'};
+    padding-right: ${paddingRight ?? '2px'};
+    padding-bottom: ${paddingBottom ?? '2px'};
     ${padding}
     ${restContainerStyles}
     max-height: auto;
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
-        color: ${primaryColor || token.colorPrimary} !important;
+        color: ${primaryColor ?? token.colorPrimary} !important;
       };
     }
   
     .ant-upload-list-item {
       --ant-line-width: 0px !important;
       --ant-padding-xs: 0px !important;
-      --font-size: ${fontSize || '14px'} !important;
-      --ant-font-size: ${fontSize || '14px'} !important;
+      --font-size: ${fontSize ?? '14px'} !important;
+      --ant-font-size: ${fontSize ?? '14px'} !important;
       display: flex;
       width: ${layout ? (width ?? '54px') : ''};
       height: ${layout ? (height ?? '54px') : ''};
@@ -76,12 +80,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-item-thumbnail {
-      background: ${backgroundImage ?? (backgroundColor || '#fff')} !important;
+      background: ${backgroundImage ?? (backgroundColor ?? '#fff')} !important;
       border: ${borderWidth} ${borderStyle} ${borderColor};
-      border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
-      border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
-      border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
-      border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
+      border-top: ${borderTopWidth ?? borderWidth} ${borderTopStyle ?? borderStyle} ${borderTopColor ?? borderColor};
+      border-right: ${borderRightWidth ?? borderWidth} ${borderRightStyle ?? borderStyle} ${borderRightColor ?? borderColor};
+      border-left: ${borderLeftWidth ?? borderWidth} ${borderLeftStyle ?? borderStyle} ${borderLeftColor ?? borderColor};
+      border-bottom: ${borderBottomWidth ?? borderWidth} ${borderBottomStyle ?? borderStyle} ${borderBottomColor ?? borderColor};
       box-shadow: ${boxShadow};
       ${rest}
 
@@ -146,7 +150,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
   
     .ant-btn {
-      color: ${primaryColor || token.colorPrimary} !important;
+      color: ${primaryColor ?? token.colorPrimary} !important;
       padding: 0;
       * {
         font-size: ${fontSize ?? '14px'} !important;
@@ -163,10 +167,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .${prefixCls}-upload-list {
       --ant-margin-xs: ${gap ?? '8px'} !important;
       overflow-y: auto;
-      padding-top: ${paddingTop || '2px'};
-      padding-left: ${paddingLeft || '2px'};
-      padding-right: ${paddingRight || '2px'};
-      padding-bottom: ${paddingBottom || '2px'};
     }
       
     .ant-upload-list-item-uploading {
