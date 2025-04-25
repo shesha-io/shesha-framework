@@ -68,6 +68,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         top: 0;
         width: 100% !important;
         height: 100% !important;
+        border-radius: ${borderRadius ?? '8px'} !important;
         ${rest}
       }
     }
@@ -80,6 +81,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-left: ${borderLeftWidth ?? borderWidth} ${borderLeftStyle ?? borderStyle} ${borderLeftColor ?? borderColor};
       border-bottom: ${borderBottomWidth ?? borderWidth} ${borderBottomStyle ?? borderStyle} ${borderBottomColor ?? borderColor};
       box-shadow: ${boxShadow};
+      border-radius: ${borderRadius ?? '8px'} !important;
       ${rest}
 
       img {
@@ -305,6 +307,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       .${prefixCls}-upload-list-item {
         width: 100% !important;
         height: 100% !important;
+        border-radius: ${borderRadius ?? '8px'} !important;
       }
     }
 
