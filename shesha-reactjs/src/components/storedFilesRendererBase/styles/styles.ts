@@ -13,14 +13,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     minWidth: containerMinWidth, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
     paddingLeft, paddingRight, paddingBottom, ...restContainerStyles } = containerStyles;
 
-  const { gap, layout, hideFileName, isDragger, isStub } = model;
-
-  const padding = isStub ? {
-    paddingTop: paddingTop ?? '2px',
-    paddingLeft: paddingLeft ?? '2px',
-    paddingRight: paddingRight ?? '2px',
-    paddingBottom: paddingBottom ?? '2px'
-  } : {};
+  const { gap, layout, hideFileName, isDragger } = model;
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
@@ -52,7 +45,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-left: ${paddingLeft ?? '2px'};
     padding-right: ${paddingRight ?? '2px'};
     padding-bottom: ${paddingBottom ?? '2px'};
-    ${padding}
+    overflow: hidden;
     ${restContainerStyles}
     max-height: auto;
     
@@ -235,7 +228,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       overflow-x: auto;
       overflow-y: clip !important;
       align-items: center !important;
-      padding: 0 ${borderWidth ?? '2px'} !important;
       height: max-content !important;
       width: var(--container-width) !important;
       min-width: var(--container-min-width) !important;
@@ -260,7 +252,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
     width: max-content;
     max-width: var(--container-max-width) !important;
-    padding: ${borderWidth ?? '2px'} !important;
     width: max-content !important;
     height: var(--container-height) !important;
     max-height: var(--container-max-height) !important;
