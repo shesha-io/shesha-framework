@@ -16,7 +16,6 @@ export const getSettings = (data: any) => {
   const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
-  const borderStyleRowId = nanoid();
 
   const propertyNameId = nanoid();
   const hiddenId = nanoid();
@@ -81,7 +80,7 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                    inputs: [
+                inputs: [
                   {
                     type: 'textField',
                     id: nanoid(),
@@ -104,7 +103,7 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                    inputs: [
+                inputs: [
                   {
                     type: 'switch',
                     id: nanoid(),
@@ -150,7 +149,7 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                    inputs: [
+                inputs: [
                   {
                     type: 'switch',
                     id: nanoid(),
@@ -308,7 +307,7 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: pnlFontStyleId,
                               inline: true,
-                              propertyName: 'font',         
+                              propertyName: 'font',
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -372,7 +371,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -406,7 +405,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
-                              inline: true,         
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -465,24 +464,7 @@ export const getSettings = (data: any) => {
                         content: {
                           id: borderStylePnlId,
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: borderStyleRowId,
-                              parentId: borderStylePnlId,
-                              hidden: {
-                                _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false
-                              } as any,         
-                              inputs: [
-                                {
-                                  type: 'button',
-                                  id: `${borderStyleRowId}-hideBorder`,
-                                  label: "Border",
-                                  hideLabel: true,
-                                  propertyName: "border.hideBorder",
-                                  icon: "EyeOutlined",
-                                  iconAlt: "EyeInvisibleOutlined"
-                                },
-                              ]
-                            })
+
                             .addContainer({
                               id: 'borderStyleRow',
                               parentId: 'borderStylePnl',
@@ -668,7 +650,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
-                              inline: true,          
+                              inline: true,
                               inputs: [
                                 {
                                   type: 'numberField',
