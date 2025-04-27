@@ -1,7 +1,7 @@
 import { Space, Select } from 'antd';
 import { ListEditor, PropertyAutocomplete } from '@/components/index';
 import { ColumnSorting, GroupingItem as SortingItem } from '@/providers/dataTable/interfaces';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { getNanoId } from '@/utils/uuid';
 
 const { Option } = Select;
@@ -15,6 +15,30 @@ export interface ISortingEditorProps {
 
 export const SortingEditor: FC<ISortingEditorProps> = (props) => {
     const { value, onChange, readOnly: editorReadOnly, maxItemsCount } = props;
+    
+    // Ensure value is properly initialized when component is first rendered
+    useEffect(() => {
+        if (value === null || value === undefined) {
+            onChange([]);
+        } else if (Array.isArray(value)) {
+            // Ensure all items have proper structure
+            const fixedItems = value.map(item => ({
+                id: item.id || getNanoId(),
+                propertyName: item.propertyName || '',
+                sorting: item.sorting || 'asc'
+            }));
+            
+            // Only update if there were changes
+            const needsUpdate = fixedItems.some((item, idx) => 
+                !value[idx]?.id || !value[idx]?.sorting
+            );
+            
+            if (needsUpdate) {
+                onChange(fixedItems);
+            }
+        }
+    }, []);
+
     return (
         <ListEditor<SortingItem>
             value={value}
@@ -22,6 +46,18 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
             initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sorting: 'asc' })}
             readOnly={editorReadOnly}
             maxItemsCount={maxItemsCount}
+            // Make sure each item has proper structure before adding or updating
+            onItemChange={(newItem) => {
+                if (newItem && !newItem.id) {
+                    newItem.id = getNanoId();
+                }
+                
+                if (newItem && !newItem.sorting) {
+                    newItem.sorting = 'asc';
+                }
+                
+                return newItem;
+            }}
         >
             {({ item, itemOnChange, readOnly }) => {
                 return (
