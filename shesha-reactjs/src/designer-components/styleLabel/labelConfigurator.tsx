@@ -31,8 +31,8 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
         />
         <SettingInput
           id={nanoid()}
-          label={`Hide Label`}
-          tooltip={`Hide Label`}
+          label={`Show Label`}
+          tooltip={`Show Label`}
           hideLabel={!value}
           hidden={!value}
           propertyName="hideLabel"
@@ -40,7 +40,6 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
           jsSetting={false}
           type="button"
           icon='EyeOutlined'
-          tooltipAlt='Hide Label'
         />
         <SettingInput
           id={nanoid()}
@@ -53,7 +52,6 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
           hidden={value}
           type="button"
           icon='EyeInvisibleOutlined'
-          tooltipAlt='Show Label'
         />
       </div>
       <SettingInput
