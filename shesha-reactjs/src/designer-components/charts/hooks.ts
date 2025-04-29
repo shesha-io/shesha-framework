@@ -1,7 +1,7 @@
 import { useChartDataStateContext } from "@/providers";
 import { useMemo } from "react";
 import { IChartData } from "./model";
-import { aggregateData, aggregateValues, getPredictableColor, getPropertyValue, stringifyValues } from "./utils";
+import { aggregateValues, getPredictableColor, getPropertyValue, stringifyValues } from "./utils";
 
 /**
  * Create title for the chart based on the chart type
@@ -41,7 +41,7 @@ export const useProcessedChartData = (): IChartData => {
     filteredData: data, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, strokeWidth, tension, simpleOrPivot
   } = useChartDataStateContext();
   const memoData = useMemo(() => stringifyValues(data), [data]);
-  var labels = [...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
+  let labels = [...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
   
   let datasets;
   

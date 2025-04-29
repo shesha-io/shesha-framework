@@ -53,7 +53,6 @@ export interface IChartDataAtionsContext {
   setControlProps?: (controlProps: IChartsProps) => void;
   setData?: (data: object[]) => void;
   setFilterdData?: (data: object[]) => void;
-  setChartFilters?: (filters: IFilter[]) => void;
   onFilter?: () => void;
   /** Sets the data that will be retrieved directly from the backend */
   setUrlTypeData?: (data: object) => void;
