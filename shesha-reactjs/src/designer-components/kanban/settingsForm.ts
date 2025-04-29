@@ -197,13 +197,11 @@ export const getSettings = (data: IKanbanProps) => {
                   parentId: columnsTabId,
                   inputs: [
                     {
-                      type: 'autocomplete',
+                      type: 'referenceListAutocomplete',
                       id: nanoid(),
                       propertyName: 'referenceList',
                       label: 'Reference List',
                       tooltip: 'Make sure to reselect the reference list if any changes are made to its items',
-                      dataSourceType: 'entitiesList',
-                      entityType: 'Shesha.Framework.ReferenceList',
                       filter: { and: [{ '==': [{ var: 'isLast' }, true] }] },
                     },
                   ],

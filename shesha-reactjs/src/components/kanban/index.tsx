@@ -1,5 +1,5 @@
 import { ConfigurableForm, DataTypes, pickStyleFromModel, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
-import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
+import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { App, Flex, Form, Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
