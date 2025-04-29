@@ -97,16 +97,20 @@ export function useCalculatedModel<T = any>(
 
   const prevModel = useRef<T>();
   const calculatedModelRef = useRef<T>();
+  const useCalculatedModelRef = useRef<T>();
   
-  const calculatedModel = useCalculateModel(model, contextProxyRef.current as any);
+  const useCalculatedModel = useCalculateModel(model, contextProxyRef.current as any);
 
   const modelChanged = !isEqual(prevModel.current, model);
-  if (contextProxyRef.current.changed || modelChanged) {
+  const useCalculatedModelChanged = !isEqual(useCalculatedModelRef.current, useCalculatedModel);
+  if (contextProxyRef.current.changed || modelChanged || useCalculatedModelChanged) {
       calculatedModelRef.current = calculateModel
-        ? calculateModel(model, contextProxyRef.current as any, calculatedModel)
+        ? calculateModel(model, contextProxyRef.current as any, useCalculatedModel)
         : null;
   }
 
+  if (useCalculatedModelChanged)
+    useCalculatedModelRef.current = useCalculatedModel;
   if (modelChanged)
     prevModel.current =  model;
 

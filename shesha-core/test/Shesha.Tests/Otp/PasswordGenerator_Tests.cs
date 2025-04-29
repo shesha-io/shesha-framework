@@ -22,6 +22,7 @@ namespace Shesha.Tests.Otp
             };
             var otpSettingsMock = new Mock<ISettingAccessor<OtpSettings>>();
             otpSettingsMock.Setup(s => s.GetValueOrNull(null)).Returns(otpSettings);
+            otpSettingsMock.Setup(s => s.GetValue(null)).Returns(otpSettings);
 
             settings.SetupGet(s => s.OneTimePins).Returns(otpSettingsMock.Object);
 

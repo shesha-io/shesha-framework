@@ -6,6 +6,7 @@ using Abp.Timing;
 using Newtonsoft.Json.Linq;
 using Shesha.JsonLogic;
 using Shesha.Reflection;
+using Shesha.Tests.Fixtures;
 using Shesha.Tests.TestingUtils;
 using System;
 using System.Collections.Generic;
@@ -14,14 +15,19 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Shesha.Tests.JsonLogic
 {
     /// <summary>
     /// Base class of tests <see cref="JsonLogic2LinqConverter"/>
     /// </summary>
-    public abstract class JsonLogic2LinqConverterBaseTests: SheshaNhTestBase
+    public abstract class JsonLogic2LinqConverterBaseTests : SheshaNhTestBase
     {
+        protected JsonLogic2LinqConverterBaseTests(IDatabaseFixture fixture) : base(fixture)
+        {
+        }
+
         protected Expression<Func<T, bool>>? ConvertToExpression<T>(string jsonLogicExpression)
         {
             var converter = Resolve<IJsonLogic2LinqConverter>();
