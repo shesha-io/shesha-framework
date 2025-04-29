@@ -2,7 +2,7 @@ import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
-import { getSettings } from './tabbedSettings';
+import { getSettings } from './settingsForm';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IStyleType, useFormData, useSheshaApplication } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';

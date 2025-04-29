@@ -7,8 +7,8 @@ import React, { FC, useRef } from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components';
-import { DEFAULT_FORM_SETTINGS, FormItemProvider, useForm } from '@/providers';
-import { getActualModel, upgradeComponent, useAvailableConstantsData } from '@/providers/form/utils';
+import { DEFAULT_FORM_SETTINGS, FormItemProvider, IConfigurableFormComponent, useForm } from '@/providers';
+import { upgradeComponent, useAvailableConstantsData } from '@/providers/form/utils';
 import { getInjectables } from './utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
@@ -20,6 +20,7 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
 import MultiEntityCell from './default/multiEntityCell';
+import FormComponentMemo from '@/components/formDesigner/formComponent';
 
 export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
   const { columnConfig } = props;
@@ -68,7 +69,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const component = toolboxComponents[customComponent.type];
   const injectables = getInjectables(props);
 
-  const componentModel = useDeepCompareMemo(() => {
+  const componentModel: IConfigurableFormComponent  = useDeepCompareMemo(() => {
     // migrate component
     const model = upgradeComponent(
       customComponent.settings,
@@ -77,25 +78,15 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       { allComponents: { 'component': customComponent.settings }, componentRelations: {} }
     );
 
-    // calcualte JS properties
-    const actualModel = getActualModel(
-      model,
-      {
-        ...allData,
-        formMode: props.readOnly ? 'readonly' : undefined, // imitate form mode according to cell mode
-        tableRow: injectables.injectedTableRow
-      },
-      props.readOnly);
-
     let editorModel: IColumnEditorProps = {
-      ...actualModel,
+      ...model,
       ...injectables,
       id: props.columnConfig.columnId,
       type: customComponent.type,
       propertyName: columnConfig.propertyName,
       label: null,
       hideLabel: true,
-      readOnly: actualModel.readOnly === undefined ? props.readOnly : actualModel.readOnly,
+      readOnly: model.readOnly === undefined ? props.readOnly : model.readOnly,
     };
 
     const adapter = editorAdapters[customComponent.type];
@@ -120,11 +111,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
       <FormItemProvider namePrefix=''> 
-        <component.Factory
-          model={componentModel}
-          componentRef={componentRef}
-          form={allData.form?.formInstance}
-        />
+        <FormComponentMemo componentModel={componentModel} componentRef={componentRef} />
       </FormItemProvider>
     </CustomErrorBoundary>
   );

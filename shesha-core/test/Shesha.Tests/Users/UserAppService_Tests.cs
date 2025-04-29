@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Net.Mail;
 using Castle.MicroKernel.Registration;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using NHibernate.Linq;
@@ -16,19 +12,25 @@ using Shesha.Domain.Enums;
 using Shesha.Models.TokenAuth;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
+using Shesha.Tests.Fixtures;
 using Shesha.Users;
 using Shesha.Users.Dto;
 using Shouldly;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Shesha.Tests.Users
 {
-    public class DomainModel_Tests : SheshaNhTestBase
+    [Collection(SqlServerCollection.Name)]
+    public class UserAppService_Tests : SheshaNhTestBase
     {
         private readonly IRepository<User, Int64> _userRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public DomainModel_Tests()
+        public UserAppService_Tests(SqlServerFixture fixture) : base(fixture)
         {
             _userRepository = Resolve<IRepository<User, Int64>>();
             _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
@@ -151,6 +153,9 @@ namespace Shesha.Tests.Users
 
             #region OTP hack 
 
+            var emailSenderMock = new Mock<IEmailSender>();
+            LocalIocManager.IocContainer.Register(Component.For<IEmailSender>().Instance(emailSenderMock.Object).IsDefault());
+
             var storage = new Dictionary<Guid, string>();
             var otpStorage = new Mock<IOtpStorage>();
             otpStorage.Setup(s => s.SaveAsync(It.IsAny<OtpDto>())).Returns<OtpDto>(dto =>
@@ -171,7 +176,7 @@ namespace Shesha.Tests.Users
             #endregion
 
             // get IUserAppService with hacked otp storage
-            var userAppService = LocalIocManager.Resolve<IUserAppService>();
+            var userAppService = LocalIocManager.Resolve<UserAppService>();
 
 
             // create new user 
@@ -192,7 +197,9 @@ namespace Shesha.Tests.Users
             firstLoginAttempt.ShouldBeTrue("Failed to login as a new user");
 
             // send OTP for password reset
-            var response = await userAppService.SendEmailLinkAsync(userName);
+            var response = await WithUnitOfWorkAsync(async() => {
+                return await userAppService.SendEmailLinkAsync(userName);
+            });
             response.ShouldBeTrue();
             var token = "";
 
@@ -207,7 +214,7 @@ namespace Shesha.Tests.Users
                 var verifyResponse = await userAppService.ValidateResetCodeAsync(new ResetPasswordValidateCodeInput()
                 {
                     Code = currentPin,
-                    Username = userName,
+                    Username = Convert.ToBase64String(Encoding.UTF8.GetBytes(userName)),
                     Method = (long)RefListPasswordResetMethods.EmailLink
                 });
 
@@ -217,13 +224,12 @@ namespace Shesha.Tests.Users
             }
 
             // change password
-            var resetPasswordResponse =
-                await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
-                {
-                    Username = userName,
-                    Token = token,
-                    NewPassword = newPassword
-                });
+            var resetPasswordResponse = await WithUnitOfWorkAsync(async() => await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
+            {
+                Username = userName,
+                Token = token,
+                NewPassword = newPassword
+            }));
 
             // try to login using old password
             var failedAttempt = await ValidateCredentialsAsync(userName, oldPassword);
@@ -313,7 +319,7 @@ namespace Shesha.Tests.Users
             LocalIocManager.Register<TokenAuthConfiguration>();
             var tokenAuthConfig = LocalIocManager.Resolve<TokenAuthConfiguration>();
             
-            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("SheshaTest_C421AAEE0D114E9C"));
+            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ZQJK9FR81M9NDCKX161B2L9RXDBHL7GS"));
             tokenAuthConfig.Issuer = "SheshaTest";
             tokenAuthConfig.Audience = "SheshaTest";
             tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);

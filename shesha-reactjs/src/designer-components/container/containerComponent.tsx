@@ -98,6 +98,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       flexWrap: model.flexWrap,
       gap: addPx(model.gap),
     };
+    
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
@@ -173,7 +174,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap || '8px',
+          gap: prev?.gap || 8
         };
 
         return {

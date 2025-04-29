@@ -8,7 +8,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IPropertyAutocompleteComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
-import { MetadataProvider, useFormData } from '@/providers';
+import { MetadataProvider } from '@/providers';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 
@@ -20,11 +20,12 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
   icon: <FileSearchOutlined />,
   isInput: true,
   isOutput: true,
-  Factory: ({ model }) => {
-    const { data: formData } = useFormData();
-    const { modelType: modelTypeExpression } = model;
-
-    const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
+  calculateModel: (model, allData) => ({
+    modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null,
+    dropdownStyle: getStyle(model.dropdownStyle, allData.data),
+  }),
+  Factory: ({ model, calculatedModel }) => {
+    const modelType = calculatedModel.modelType;
 
     return (
       <ConditionalWrap
@@ -36,8 +37,8 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
             return (
               <PropertyAutocomplete
                 id={model.id}
-                style={getStyle(model?.style, formData)}
-                dropdownStyle={getStyle(model?.dropdownStyle, formData)}
+                style={model.allStyles.fullStyle}
+                dropdownStyle={calculatedModel.dropdownStyle}
                 size={model.size}
                 mode={model.mode}
                 readOnly={model.readOnly}

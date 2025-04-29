@@ -1,5 +1,4 @@
-﻿using Abp.TestBase;
-using Moq;
+﻿using Moq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
@@ -7,6 +6,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
 using Shesha.Tests.DynamicEntities.Dtos;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,13 @@ using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
-    public class DynamicDto_Tests : AbpIntegratedTestBase<SheshaTestModule>//SheshaNhTestBase
+    [Collection(SqlServerCollection.Name)]
+    public class DynamicDto_Tests : SheshaNhTestBase
     {
+        public DynamicDto_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task BuildFullDynamicDto_TestAsync()
         {

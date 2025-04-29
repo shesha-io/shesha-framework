@@ -1,0 +1,13 @@
+<Project>
+	<PropertyGroup>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<NoWarn>$(NoWarn);CS1591;612;618;809;AsyncFixer01;8618;</NoWarn>		
+	</PropertyGroup>
+    <ItemGroup>
+		<PackageReference Include="SheshaCodeAnalyzers" Version="1.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+    </ItemGroup>
+</Project>
