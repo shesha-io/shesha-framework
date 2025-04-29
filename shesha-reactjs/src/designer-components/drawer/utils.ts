@@ -14,38 +14,13 @@ export const defaultStyles = (): any => {
             borderType: 'all',
             radiusType: 'all'
         },
+        style: '',
+        shadow: {
+            offsetX: 0,
+            offsetY: 0,
+            color: '#000',
+            blurRadius: 0,
+            spreadRadius: 0
+        }
     };
-};
-
-export const initialStyle = {
-    footerBackground: {
-        type: 'color',
-        color: '#fff',
-        repeat: 'no-repeat',
-        size: 'cover',
-        position: 'center',
-        gradient: { direction: 'to right', colors: {} }
-    },
-    headerBackground: {
-        type: 'color',
-        color: '#fff',
-        repeat: 'no-repeat',
-        size: 'cover',
-        position: 'center',
-        gradient: { direction: 'to right', colors: {} }
-    },
-    headerShadow: {
-        offsetX: 0,
-        offsetY: 0,
-        color: '#000',
-        blurRadius: 0,
-        spreadRadius: 0
-    },
-    footerShadow: {
-        offsetX: 0,
-        offsetY: 0,
-        color: '#000',
-        blurRadius: 0,
-        spreadRadius: 0
-    },  
 };
