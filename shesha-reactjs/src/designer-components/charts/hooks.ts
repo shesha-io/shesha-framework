@@ -26,107 +26,6 @@ export const useGeneratedTitle = (): string => {
 };
 
 /**
- * Prepare line chart data
- * @param data raw data
- * @param xProperty x-axis property
- * @param yProperty y-axis property
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @returns prepared line chart data
- */
-export const useLineChartData = (): IChartData => {
-  const {
-    filteredData: data, xProperty, yProperty, aggregationMethod, strokeColor, strokeWidth
-  } = useChartDataStateContext();
-  const memoData = useMemo(() => stringifyValues(data), [data]);
-  const aggregatedData = aggregateData(memoData, xProperty, yProperty, aggregationMethod);
-
-  return {
-    labels: aggregatedData?.map(item => item.x),
-    datasets: [
-      {
-        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
-        data: aggregatedData?.map(item => item.y),
-        borderColor: strokeColor || 'fff',
-        backgroundColor: getPredictableColor(yProperty),
-        fill: false,
-        pointRadius: 5,
-        borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
-      }
-    ]
-  };
-};
-
-/**
- * Prepare bar chart data
- * @param data raw data
- * @param xProperty x-axis property
- * @param yProperty y-axis property
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @returns prepared bar chart data
- */
-export const useBarChartData = (): IChartData => {
-  const {
-    filteredData: data, xProperty, yProperty, aggregationMethod, strokeColor, strokeWidth
-  } = useChartDataStateContext();
-  const memoData = useMemo(() => stringifyValues(data), [data]);
-  const aggregatedData = aggregateData(memoData, xProperty, yProperty, aggregationMethod);
-
-  return {
-    labels: aggregatedData?.map(item => item.x),
-    datasets: [
-      {
-        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
-        data: aggregatedData?.map(item => item.y),
-        backgroundColor: aggregatedData?.map(item => getPredictableColor(item.x.toString())),
-        borderColor: strokeColor || 'fff',
-        borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0
-      }
-    ]
-  };
-};
-
-/**
- * prepare polar area chart data
- * @param data raw data
- * @param legendProperty legend property
- * @param valueProperty value property
- * @param strokeColor stroke color
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @returns prepared polar area chart data
- */
-export const usePieOrPolarAreaChartData = (): IChartData => {
-  const {
-    filteredData: data, legendProperty, valueProperty, aggregationMethod, strokeColor, strokeWidth
-  } = useChartDataStateContext();
-  const memoData = useMemo(() => stringifyValues(data), [data]);
-  const labels = [...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
-
-  const datasets = [{
-    label: `${valueProperty} (${aggregationMethod})`,
-    data: labels?.map((label: string) => {
-      const filteredData = memoData?.filter((item: { [key: string]: any }) => getPropertyValue(item, legendProperty) === label);
-      const values: number[] = filteredData?.map((item: { [key: string]: any }) => getPropertyValue(item, valueProperty) as number);
-
-      // Aggregation logic
-      if (aggregationMethod === 'sum') return values.reduce((acc, val) => acc + (val || 0), 0);
-      if (aggregationMethod === 'count') return values.length;
-      if (aggregationMethod === 'average') return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
-      if (aggregationMethod === 'min') return Math.min(...values);
-      if (aggregationMethod === 'max') return Math.max(...values);
-      return 0;
-    }),
-    backgroundColor: labels?.map((label: string) => getPredictableColor(label)),
-    borderColor: strokeColor || 'fff',
-    borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
-  }];
-
-  return {
-    labels,
-    datasets
-  };
-};
-
-/**
  * Prepare pivot chart data
  * @param data raw data
  * @param axisProperty axis property
@@ -137,45 +36,72 @@ export const usePieOrPolarAreaChartData = (): IChartData => {
  * @param refLists reference lists for the legend property
  * @returns prepared pivot chart data
  */
-export const usePivotChartData = (): IChartData => {
+export const useProcessedChartData = (): IChartData => {
   const {
-    filteredData: data, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, strokeWidth, tension
+    filteredData: data, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, strokeWidth, tension, simpleOrPivot
   } = useChartDataStateContext();
   const memoData = useMemo(() => stringifyValues(data), [data]);
   var labels = [...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
-  const legendItems = [...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
-
-  var datasets = legendItems?.map(legend => {
-    const strLegend = typeof legend === 'string' ? legend : legend + '';
-    const barBackgroundColor = getPredictableColor(strLegend);
-    let colors: string[] = [];
-    const legendDisplayValue = legend;
-    return {
-      label: legendDisplayValue,
+  
+  let datasets;
+  
+  if (simpleOrPivot === 'simple' || !legendProperty) {
+    // Simple mode - single dataset like bar or line chart
+    const barBackgroundColor = getPredictableColor(valueProperty);
+    // Generate different colors for each data point based on the label
+    const colors = labels.map(label => getPredictableColor(typeof label === 'string' ? label : label + ''));
+    
+    datasets = [{
+      label: `${valueProperty} (${aggregationMethod})`,
       data: labels?.map(label => {
         const matchingItems = memoData.filter((item: { [key: string]: any }) => {
-          return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, legendProperty) === legend;
+          return getPropertyValue(item, axisProperty) === label;
         });
-        switch (chartType) {
-          case 'bar':
-          case 'line':
-            colors.push(barBackgroundColor);
-            break;
-          default:
-            const strLabel = typeof label === 'string' ? label : legend + '';
-            colors.push(getPredictableColor(strLabel));
-            break;
-        }
         return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
       }),
       fill: false,
-      borderColor: strokeColor || 'fff',
+      borderColor: chartType === 'line' ? barBackgroundColor : strokeColor || 'fff',
       backgroundColor: colors,
       pointRadius: 5,
       borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
       tension: typeof (tension) === 'number' ? tension : 0.0
-    };
-  });
+    }];
+  } else {
+    // Pivot mode - multiple datasets based on legend property
+    const legendItems = [...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
+
+    datasets = legendItems?.map(legend => {
+      const strLegend = typeof legend === 'string' ? legend : legend + '';
+      const barBackgroundColor = getPredictableColor(strLegend);
+      let colors: string[] = [];
+      const legendDisplayValue = legend;
+      return {
+        label: legendDisplayValue,
+        data: labels?.map(label => {
+          const matchingItems = memoData.filter((item: { [key: string]: any }) => {
+            return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, legendProperty) === legend;
+          });
+          switch (chartType) {
+            case 'bar':
+            case 'line':
+              colors.push(barBackgroundColor);
+              break;
+            default:
+              const strLabel = typeof label === 'string' ? label : label + '';
+              colors.push(getPredictableColor(strLabel));
+              break;
+          }
+          return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
+        }),
+        fill: false,
+        borderColor: strokeColor || 'fff',
+        backgroundColor: colors,
+        pointRadius: 5,
+        borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
+        tension: typeof (tension) === 'number' ? tension : 0.0
+      };
+    });
+  }
 
   // Ensure dataset labels and data labels are not null or undefined
   datasets = datasets?.map((dataset) => ({

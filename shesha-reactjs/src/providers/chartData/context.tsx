@@ -1,4 +1,4 @@
-import { IChartsProps, IFilter, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
@@ -46,9 +46,7 @@ export interface IChartDataContext {
 
   isLoaded?: boolean;
 
-  chartFilters?: IFilter[];
   filteredData?: object[];
-  isFilterVisible?: boolean;
 }
 
 export interface IChartDataAtionsContext {
@@ -97,9 +95,7 @@ export const INITIAL_STATE: IChartDataContext = {
 
   isLoaded: false,
 
-  chartFilters: [],
   filteredData: [],
-  isFilterVisible: false,
 };
 
 export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);

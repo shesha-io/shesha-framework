@@ -15,16 +15,8 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetFilterdDataAction(filteredData));
   };
 
-  const setChartFilters = (filters: IFilter[]) => {
-    dispatch(SetChartFiltersAction(filters));
-  };
-
   const setIsLoaded = (isLoaded: boolean) => {
     dispatch(SetIsLoadedAction(isLoaded));
-  };
-
-  const setIsFilterVisible = (isFilterVisible: boolean) => {
-    dispatch(SetIsFilterVisibleAction(isFilterVisible));
   };
 
   const setControlProps = (controlProps: IChartsProps) => {
@@ -40,9 +32,7 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
       <ChartDataActionsContext.Provider value={{
         setData,
         setFilterdData,
-        setChartFilters,
         setIsLoaded,
-        setIsFilterVisible,
         setControlProps,
         setUrlTypeData
       }}>
