@@ -313,8 +313,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           dataRequestAbortController.current = null;
 
           if (dataResponse.success) {
-            onChangeInternal(dataResponse?.result);
-            dispatch(fetchDataSuccessAction({ entityId: dataResponse?.result?.id }));
+            const newValue = value?.['_className'] !== undefined && dataResponse.result['_className'] === undefined
+              ? {...dataResponse.result, _className: value?.['_className']}
+              : dataResponse.result;
+            onChangeInternal(newValue);
+            dispatch(fetchDataSuccessAction({ entityId: newValue?.id }));
           } else {
             onClearInternal();
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));

@@ -31,7 +31,7 @@ namespace Shesha.Users.Dto
 
         public string[] RoleNames { get; set; }
 
-        public long[] SupportedPasswordResetMethods { get; set; }
+        public long[]? SupportedPasswordResetMethods { get; set; }
 
         [Required]
         [StringLength(AbpUserBase.MaxPlainPasswordLength)]

@@ -5,6 +5,7 @@ using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.JsonLogic;
 using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using Shesha.Tests.JsonLogic.Models;
 using Shesha.Utilities;
 using System;
@@ -18,8 +19,13 @@ namespace Shesha.Tests.JsonLogic
     /// <summary>
     /// JsonLogic2LinqConverter tests
     /// </summary>
+    [Collection(SqlServerCollection.Name)]
     public class JsonLogic2LinqConverter_ValueTests : JsonLogic2LinqConverterBaseTests
     {
+        public JsonLogic2LinqConverter_ValueTests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         #region string operations
 
         private readonly string _stringField_Equals_expression = @"{

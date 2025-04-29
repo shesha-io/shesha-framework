@@ -1,9 +1,9 @@
 ﻿using Abp.Authorization;
-using Abp.Dependency;
 using Abp.Runtime.Session;
 using Hangfire.Dashboard;
 using Shesha.Authorization;
 using Shesha.Authorization.Users;
+using Shesha.Services;
 
 namespace Shesha.Scheduler.Hangfire
 {
@@ -16,17 +16,18 @@ namespace Shesha.Scheduler.Hangfire
             if (string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(username))
                 return false;
 
-            var userManager = IocManager.Instance.Resolve<UserManager>();
+            var iocResolver = StaticContext.IocManager;
+            var userManager = iocResolver.Resolve<UserManager>();
             var user = userManager.FindByNameOrEmail(username);
 
             if (user == null) 
                 return false;
 
-            var session = IocManager.Instance.Resolve<IAbpSession>();
+            var session = iocResolver.Resolve<IAbpSession>();
             var isGranted = false;
             using (session.Use(user.TenantId, user.Id))
             {
-                var permissionChecker = IocManager.Instance.Resolve<IPermissionChecker>();
+                var permissionChecker = iocResolver.Resolve<IPermissionChecker>();
                 if (permissionChecker == null)
                     return false;
 
