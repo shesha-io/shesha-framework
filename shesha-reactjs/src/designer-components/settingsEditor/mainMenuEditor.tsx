@@ -71,7 +71,11 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
     };
 
     if (!isModalOpen) {
-      return <Button onClick={() => setIsModalOpen(true)}>Open Main Menu Editor</Button>;
+      return (
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+          Open Main Menu Editor
+        </Button>
+      );
     }
 
     return (
