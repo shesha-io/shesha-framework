@@ -2,11 +2,7 @@
 import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
-import { IBorderValue } from '../_settings/utils/border/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
-import { IFontValue } from '../_settings/utils/font/interfaces';
-import { IBackgroundValue } from '../_settings/utils/background/interfaces';
-import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
@@ -88,10 +84,6 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   strong?: boolean;
   value?: any;
   textAlign?: string;
-  border?: IBorderValue;
-  shadow?: IShadowValue;
-  font?: IFontValue;
-  background?: IBackgroundValue;
-  dimensions?: IDimensionsValue;
   styles?: CSSProperties;
+  shadow?: IShadowValue;
 }
