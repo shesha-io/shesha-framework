@@ -9,7 +9,7 @@ import { useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
+  const { gap, groupingProperty, createFormId, componentName, editFormId } = props;
 
   const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
@@ -25,7 +25,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [settings, setSettings] = useState({});
-  const { storeSettings } = useRefListItemGroupConfigurator();
+  const { storeSettings, items: refListItems } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
   const styling = JSON.parse(props.columnStyles.stylingBox || '{}');
@@ -50,8 +50,8 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   }, [isInDesigner, modelType, groupingProperty, tableData]);
 
   useEffect(() => {
-    setColumns(items);
-  }, [items]);
+    setColumns(refListItems);
+  }, [refListItems]);
 
   useEffect(() => {
     const initializeSettings = async () => {
@@ -156,7 +156,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
 
   return (
     <>
-      {!items || items.length === 0 ? (
+      {!columns || columns.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
         <Flex style={{...stylingBoxAsCSS, overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>

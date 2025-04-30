@@ -320,7 +320,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 propertyMeta={propertyMeta}
             />;
         case 'RefListItemSelectorSettingsModal':
-            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList?._data} readOnly={false} />;
+            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList} readOnly={false} />;
 
         case 'Password':
             return <Password

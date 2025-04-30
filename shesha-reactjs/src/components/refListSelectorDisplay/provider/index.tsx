@@ -42,9 +42,10 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     readOnly: readOnly,
   });
 
+
   useEffect(() => {
     if (props?.items?.length && props.items.some(x =>x.referenceList === props?.referenceList )) return;  
-    getReferenceList({ refListId: { module: "Shesha", name:props?.referenceList?._displayName } }).promise.then((t)=>{
+    getReferenceList({ refListId: { module: props?.referenceList?.module, name:props?.referenceList?.name } }).promise.then((t)=>{
       dispatch(setItems(t?.items));
     });
   }, [props?.referenceList]);
