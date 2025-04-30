@@ -59,7 +59,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const headerComponents = model?.header?.components ?? [];
 
-    const headerStyles = useFormComponentStyles({ ...model.headerStyles, id: nanoid(), type: '' }).fullStyle;
+    const headerStyles = useFormComponentStyles({ ...model.headerStyles, id: model.id, type: model.type }).fullStyle;
 
     const extra = ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
       <ComponentsContainer

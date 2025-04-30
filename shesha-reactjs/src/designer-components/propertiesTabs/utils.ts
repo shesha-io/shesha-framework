@@ -98,7 +98,7 @@ export const filterDynamicComponents = (components, query, data) => {
                 ghost: false,
                 accentStyle: true,
                 headerStyles: getHeaderStyles(),
-                hidden: hasVisibleChildren
+                hidden: !hasVisibleChildren
             };
         }
 
