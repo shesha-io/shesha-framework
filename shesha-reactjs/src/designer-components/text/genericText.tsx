@@ -62,7 +62,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
       ...style,
       color: contentType === 'custom' ? style.color : undefined,
       fontSize: textType === 'title' ? undefined : style?.fontSize,
-      justifyContent: style.textAlign,
+      justifyContent: style?.textAlign,
     },
   };
 

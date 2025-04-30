@@ -169,7 +169,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'button':
             return <Button style={{ maxWidth: "100%" }} disabled={readOnly} defaultValue={defaultValue}
                 type={value === true ? 'primary' : 'default'} size={size}
-                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt || icon, null, tooltipAlt, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
+                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt || icon, null, tooltipAlt || tooltip, {}, styles)} onClick={() => onChange(!value)} />;
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
