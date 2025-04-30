@@ -81,6 +81,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
     return (
       <div style={{ height: model.height }}>
         <Modal
+          title="Main Menu Editor"
           width={isSmall ? '90%' : '60%'}
           styles={{ body: { height: '80vh' } }}
           open={isModalOpen}
