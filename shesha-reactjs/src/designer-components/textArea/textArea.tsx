@@ -58,8 +58,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
   }),
   Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles({
-      fontWeight: model.font.weight,
-      fontFamily: model.font.type,
+      fontWeight: model.font?.weight,
+      fontFamily: model.font?.type,
       textAlign: model.allStyles.fullStyle?.textAlign,
       color: model.allStyles.fullStyle?.color,
       fontSize: model.allStyles.fullStyle?.fontSize,

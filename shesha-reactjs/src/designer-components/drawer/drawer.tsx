@@ -6,7 +6,6 @@ import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/u
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { IConfigurableFormComponent } from '@/providers';
-
 interface IShaDrawer {
   id?: string;
   componentName?: string;
@@ -27,7 +26,12 @@ interface IShaDrawer {
   placement?: 'top' | 'right' | 'bottom' | 'left';
   width?: string | number;
   readOnly?: boolean;
-  background?: CSSProperties;
+  backgroundStyles?: CSSProperties;
+  dimensions?: {
+    width?: string | number;
+    height?: string | number;
+  };
+  stylingBoxAsCSS?: CSSProperties;
 }
 
 interface IShaDrawerState {
@@ -38,7 +42,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
   const {
     id,
     placement,
-    width,
+    dimensions,
     componentName: name,
     readOnly,
     label,
@@ -55,11 +59,13 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     headerStyle,
     footerStyle,
     showFooter,
-    background,
+    backgroundStyles,
+    stylingBoxAsCSS,
   } = props;
   const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
   const { executeAction } = useConfigurableActionDispatcher();
+  const { paddingTop, paddingRight, paddingBottom, paddingLeft, ...rest } = stylingBoxAsCSS;
 
   const openDrawer = () => setState((prev) => ({ ...prev, open: true }));
 
@@ -145,13 +151,27 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     <Drawer
       open={state?.open}
       placement={placement}
-      width={width}
+      width={dimensions?.width}
+      height={dimensions?.height}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
         footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
-        body: background,
-        content: style,
+        body: backgroundStyles as CSSProperties,
+        content: {
+          ...style,
+          height: undefined,
+          width: undefined,
+          paddingTop,
+          paddingRight,
+          paddingBottom,
+          paddingLeft,
+        },
+        wrapper: {
+          width: style?.width || props.dimensions?.width,
+          height: style?.height || props.dimensions?.height,
+          ...rest,
+        },
       }}
       title={label}
       size="large"

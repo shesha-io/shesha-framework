@@ -34,22 +34,6 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task Test_EmbeddedResources() 
-        {
-            var jsonResourceName = "flatModel-metadata.json";
-            var type = this.GetType();
-            try
-            {
-                var content = await GetResourceStringAsync($"{this.GetType().Namespace}.Resources.{jsonResourceName}", this.GetType().Assembly);
-            }
-            catch (ManifestResourceStreamNotFoundException e)
-            {
-                var resources = type.Assembly.GetManifestResourceNames();
-                throw new Exception($"'{jsonResourceName}' is missing, possible names: {resources.Delimited(", ")}");
-            }            
-        }
-
-        [Fact]
         public async Task BindFlatModel_TestAsync()
         {
             var bindingResult = await BindAsync<PersonDynamicDto>("flatModel.json", "flatModel-metadata.json");
