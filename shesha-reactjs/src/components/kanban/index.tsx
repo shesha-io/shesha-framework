@@ -9,7 +9,7 @@ import { useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, createFormId, componentName, editFormId } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
   const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
@@ -25,7 +25,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [settings, setSettings] = useState({});
-  const { storeSettings, items: refListItems } = useRefListItemGroupConfigurator();
+  const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
   const styling = JSON.parse(props.columnStyles.stylingBox || '{}');
@@ -50,8 +50,8 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   }, [isInDesigner, modelType, groupingProperty, tableData]);
 
   useEffect(() => {
-    setColumns(refListItems);
-  }, [refListItems]);
+    setColumns(items);
+  }, [items]);
 
   useEffect(() => {
     const initializeSettings = async () => {

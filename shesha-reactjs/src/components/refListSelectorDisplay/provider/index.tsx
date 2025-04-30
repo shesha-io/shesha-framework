@@ -33,7 +33,6 @@ export interface IRefListItemGroupConfiguratorProviderProps {
 
 const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConfiguratorProviderProps>> = (props) => {
   const { children, readOnly } = props;
- // const { refetch } = useGet({ path: '', lazy: true });
   const { getReferenceList } = useReferenceListDispatcher();
 
   const [state, dispatch] = useReducer(RefListItemGroupReducer, {
@@ -41,7 +40,6 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     items: props.items,
     readOnly: readOnly,
   });
-
 
   useEffect(() => {
     if (props?.items?.length && props.items.some(x =>x.referenceList === props?.referenceList )) return;  
