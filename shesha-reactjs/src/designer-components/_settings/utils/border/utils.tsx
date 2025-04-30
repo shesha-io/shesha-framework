@@ -148,7 +148,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
         })
         .addSettingsInputRow({
             id: nanoid(),
-            parentId: 'borderStylePnl',
             inline: true,
             hidden: { _code: generateCode('borderType', false, isResponsive, path), _mode: 'code', _value: false } as any,
             inputs: [
@@ -188,8 +187,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
             ]
         })
         .addContainer({
-            id: 'borderStyleRow',
-            parentId: 'borderStylePnl',
+            id: nanoid(),
             hidden: { _code: generateCode('borderType', true, isResponsive, path), _mode: 'code', _value: false } as any,
             components: borderSides.slice(0, hasMiddle ? 5 : 4).map(sideValue => {
                 const side = sideValue.value;
@@ -197,7 +195,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                 return new DesignerToolbarSettings()
                     .addSettingsInputRow({
                         id: nanoid(),
-                        parentId: 'borderStylePnl',
                         inline: true,
                         inputs: [
                             {
@@ -262,13 +259,11 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
         })
         .addSettingsInputRow({
             id: nanoid(),
-            parentId: 'borderStylePnl',
             inline: true,
             hidden: { _code: generateCode('radiusType', false, isResponsive, path), _mode: 'code', _value: false } as any,
             inputs: [
                 {
                     id: `borderRadiusStyleRow-all`,
-                    parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
                     width: 80,
@@ -283,14 +278,12 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
         .addSettingsInputRow({
             hidden: { _code: generateCode('radiusType', true, isResponsive, path), _mode: 'code', _value: false } as any,
             id: nanoid(),
-            parentId: 'borderStylePnl',
             inline: true,
             inputs: radiusCorners.map(cornerValue => {
                 const corner = cornerValue.value as string;
 
                 return {
                     id: `borderRadiusStyleRow-${corner}`,
-                    parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
                     width: 80,
