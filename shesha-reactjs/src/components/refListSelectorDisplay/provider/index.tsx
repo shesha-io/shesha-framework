@@ -4,20 +4,19 @@ import {
   RefListItemGroupConfiguratorActionsContext,
   RefListItemGroupConfiguratorStateContext,
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
-  IUpdateChildItemsPayload
+  IUpdateChildItemsPayload,
 } from '@/components/refListSelectorDisplay/provider/contexts';
 import {
   selectItemAction,
   setItems,
   storeSettingsAction,
   updateChildItemsAction,
-  updateItemAction
+  updateItemAction,
 } from '@/components/refListSelectorDisplay/provider/actions';
 import { RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import RefListItemGroupReducer from '@/components/refListSelectorDisplay/provider/reducers';
 import { getItemById } from '@/components/refListSelectorDisplay/provider/utils';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
-
 
 export interface IRefListItemGroupConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -42,8 +41,10 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
   });
 
   useEffect(() => {
-    if (props?.items?.length && props.items.some(x =>x.referenceList === props?.referenceList )) return;  
-    getReferenceList({ refListId: { module: props?.referenceList?.module, name:props?.referenceList?.name } }).promise.then((t)=>{
+    if (props?.items?.length && props.items.some((x) => x.referenceList === props?.referenceList)) return;
+    getReferenceList({
+      refListId: { module: props?.referenceList?.module, name: props?.referenceList?.name },
+    }).promise.then((t) => {
       dispatch(setItems(t?.items));
     });
   }, [props?.referenceList]);
@@ -65,12 +66,8 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
   };
 
   const storeSettings = async (columnId: string, isCollapsed: boolean) => {
-  
-      dispatch(storeSettingsAction({ columnId: columnId, isCollapsed: isCollapsed }));
-
+    dispatch(storeSettingsAction({ columnId: columnId, isCollapsed: isCollapsed }));
   };
-  
-  
 
   return (
     <RefListItemGroupConfiguratorStateContext.Provider value={state}>
@@ -103,7 +100,9 @@ function useRefListItemGroupConfiguratorActions() {
   const context = useContext(RefListItemGroupConfiguratorActionsContext);
 
   if (context === undefined) {
-    throw new Error('useRefListItemGroupConfiguratorActions must be used within a RefListItemGroupConfiguratorProvider');
+    throw new Error(
+      'useRefListItemGroupConfiguratorActions must be used within a RefListItemGroupConfiguratorProvider'
+    );
   }
 
   return context;
