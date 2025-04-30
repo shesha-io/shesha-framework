@@ -628,6 +628,12 @@ namespace Shesha.Reflection
             return propertiesWithoutHiddenOnes;
         }
 
+        /// <summary>
+        /// Get extension methods of the specified <paramref name="extendedType"/> declared in a specified <paramref name="assembly"/>
+        /// </summary>
+        /// <param name="assembly">Assembly to search extension methods in</param>
+        /// <param name="extendedType">Type to search extended methods for</param>
+        /// <returns></returns>
         public static List<MethodInfo> GetExtensionMethods(Assembly assembly, Type extendedType)
         {
             var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;

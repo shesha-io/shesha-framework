@@ -5,27 +5,25 @@ using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
-using Abp.TestBase;
 using NHibernate;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.MultiTenancy;
 using Shesha.NHibernate.UoW;
-using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Tests
 {
-    public abstract class SheshaNhTestBase<TStartupModule> : AbpIntegratedTestBase<TStartupModule> where TStartupModule : AbpModule
+    public abstract class SheshaNhTestBase<TStartupModule> : ShaIntegratedTestBase<TStartupModule> where TStartupModule : AbpModule
     {
-        protected SheshaNhTestBase(): base()
+        protected SheshaNhTestBase(IDatabaseFixture fixture) : base(fixture)
         {
             LoginAsHostAdmin();
 
-            StaticContext.SetIocManager(LocalIocManager);
             EntityHelper.RefreshStore(LocalIocManager);
         }
 
@@ -228,6 +226,8 @@ namespace Shesha.Tests
 
     public abstract class SheshaNhTestBase : SheshaNhTestBase<SheshaTestModule>
     {
-
+        protected SheshaNhTestBase(IDatabaseFixture fixture) : base(fixture)
+        {
+        }
     }
 }
