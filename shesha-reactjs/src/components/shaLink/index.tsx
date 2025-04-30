@@ -1,4 +1,5 @@
 import React, {
+  CSSProperties,
   FC,
   PropsWithChildren,
   ReactNode,
@@ -22,6 +23,8 @@ export interface IShaLinkProps {
   displayName?: string;
 
   className?: string;
+
+  style?: CSSProperties;
 }
 
 export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
@@ -32,6 +35,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   displayName,
   children,
   className,
+  style,
 }) => {
   const { router, getFormUrl } = useShaRouting();
 
@@ -53,7 +57,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   const childrenOrDisplayText = children || displayName;
 
   return (
-    <Button type="link" onClick={changeRoute} href={url} className={className}>
+    <Button type="link" onClick={changeRoute} href={url} className={className} style={style}>
       {icon}
       {childrenOrDisplayText && <span> {childrenOrDisplayText}</span>}
     </Button>
