@@ -2,6 +2,10 @@ import cleanDeep from "clean-deep";
 import { mergeWith } from "lodash";
 import moment from "moment";
 
+export const unproxyValue = (value: any) => {
+  return value && Boolean(value['getAccessorValue']) ? value.getAccessorValue() : value;
+};
+
 export const deepMergeValues = (target: any, source: any) => {
   return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
       // handle null
