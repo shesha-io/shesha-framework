@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useMemo, useRef } from "react";
 import DataContextBinder from "../dataContextBinder";
 import { SheshaCommonContexts } from "../../dataContextManager/models";
-import { DataTypes, IObjectMetadata, useDataContextManager } from "@/index";
+import { DataTypes, IObjectMetadata, useDataContextManagerActions } from "@/index";
 import { WebStorageProxy } from "./webStorageProxy";
 import { webStorageCode } from '@/publicJsApis';
 
@@ -13,7 +13,7 @@ export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => 
     dataType: DataTypes.object
   } as IObjectMetadata), []);
 
-  const manager = useDataContextManager();
+  const manager = useDataContextManagerActions();
   const localStorage = useRef<WebStorageProxy>(new WebStorageProxy('localStorage'));
   localStorage.current.updateOnChangeHandler(manager.onChangeContextData);
   const sessionStorage = useRef<WebStorageProxy>(new WebStorageProxy('sessionStorage'));

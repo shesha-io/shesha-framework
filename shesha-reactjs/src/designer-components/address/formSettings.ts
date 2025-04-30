@@ -6,6 +6,7 @@ import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
 import { EXPOSED_VARIABLES } from './utils';
 
 export const getSettings = (data: IAddressCompomentProps) => {
+    // Generate unique IDs for tabs structure
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
     const configTabId = nanoid();
@@ -13,6 +14,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
     const eventsTabId = nanoid();
     const securityTabId = nanoid();
     const styleRouterId = nanoid();
+    const appearanceTabId = nanoid();
 
     return {
         components: new DesignerToolbarSettings(data)
@@ -60,7 +62,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         label: 'Placeholder',
                                         parentId: commonTabId,
                                         jsSetting: true,
-                                            },
+                                    },
                                     {
                                         id: nanoid(),
                                         type: 'textArea',
@@ -68,7 +70,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         label: 'Tooltip',
                                         parentId: commonTabId,
                                         jsSetting: true,
-                                            }
+                                    }
                                 ],
                             })
                             .addSettingsInputRow({
@@ -246,7 +248,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                     {
                         key: 'appearance',
                         title: 'Appearance',
-                        id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                        id: appearanceTabId,
                         components: [...new DesignerToolbarSettings()
                             .addPropertyRouter({
                                 id: styleRouterId,
@@ -254,7 +256,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 componentName: 'propertyRouter',
                                 label: 'Property router1',
                                 labelAlign: 'right',
-                                parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                                parentId: appearanceTabId,
                                 hidden: false,
                                 propertyRouteName: {
                                     _mode: "code",
@@ -275,7 +277,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                                 id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                                id: nanoid(),
+                                                        id: nanoid(),
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         hideLabel: false,
@@ -327,7 +329,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 propertyName: 'onChangeCustom',
                                 label: 'On Change',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on changing of event.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })
@@ -337,7 +339,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 propertyName: 'onSelectCustom',
                                 label: 'On Select',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on selection of address. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on selection of address.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })
@@ -347,7 +349,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 propertyName: 'onFocusCustom',
                                 label: 'On Focus',
                                 labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on focusing of event. (form, event) are exposed',
+                                tooltip: 'Enter custom eventhandler on focusing of event.',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })

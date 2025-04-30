@@ -1,24 +1,17 @@
-import { EditOutlined } from '@ant-design/icons';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
-import { IInputStyles } from '@/providers/form/models';
-import { IToolboxComponent } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
-import { IMarkdownProps } from './interfaces';
-import Markdown from './markdown';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
-import { getFontStyle } from '../_settings/utils/font/utils';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { IToolboxComponent } from '@/interfaces';
+import { IInputStyles } from '@/providers/form/models';
 import { removeUndefinedProps } from '@/utils/object';
-import { getStyle, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
+import { EditOutlined } from '@ant-design/icons';
+import React, { CSSProperties } from 'react';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { IMarkdownProps } from './interfaces';
+import Markdown from './markdown';
+import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { addPx } from '../_settings/utils';
 
 const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   type: 'markdown',
@@ -27,69 +20,26 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   isInput: false,
   isOutput: true,
   Factory: ({ model }) => {
-    const data = model;
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const { font, style, border, background, shadow, stylingBox, dimensions } = model;
-    const jsStyle = getStyle(style, data);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    const styling = JSON.parse(stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const { allStyles, content: contentProp } = model;
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
-      ...jsStyle,
+      ...allStyles?.stylingBoxAsCSS,
+      ...allStyles?.borderStyles,
+      ...allStyles?.fontStyles,
+      ...allStyles?.backgroundStyles,
+      ...allStyles?.shadowStyles,
+      ...allStyles?.jsStyle,
     });
 
-    const dimensionStyles = {
-      width: dimensions?.width ? `calc(${addPx(dimensions.width)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
-      minWidth: dimensions?.minWidth ? `calc(${addPx(dimensions.minWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
-      maxWidth: dimensions?.maxWidth ? `calc(${addPx(dimensions.maxWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
-  };
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        const storedImageUrl =
-          background?.storedFile?.id && background?.type === 'storedFile'
-            ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
-                headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-              })
-                .then((response) => {
-                  return response.blob();
-                })
-                .then((blob) => {
-                  return URL.createObjectURL(blob);
-                })
-            : '';
-
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
-
-    if (
-      model?.background?.type === 'storedFile' &&
-      model?.background.storedFile?.id &&
-      !isValidGuid(model?.background.storedFile.id)
-    ) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
     return (
       <ConfigurableFormItem model={{ ...model, label: undefined, hideLabel: true }}>
         {(value) => {
-          const content = model.content || value;
-          return <div style={{ ...dimensionStyles }}>
-            <Markdown {...model} content={content} style={{...additionalStyles}} />
-            </div>;
+          const content = contentProp || value;
+          return (
+            <div style={{ ...allStyles?.dimensionsStyles }}>
+              <Markdown {...model} content={content} style={{ ...additionalStyles }} />
+            </div>
+          );
         }}
       </ConfigurableFormItem>
     );

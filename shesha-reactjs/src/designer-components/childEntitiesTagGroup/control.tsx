@@ -13,7 +13,6 @@ import { useParent } from '@/providers/parentProvider/index';
 import { useDeepCompareMemo } from '@/index';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { getValueByPropertyName } from '@/utils/object';
-import { isArray } from '@/utils/array';
 
 const { confirm } = Modal;
 
@@ -65,7 +64,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   };
 
   const options = useDeepCompareMemo(() => {
-    if (isArray(value) && value.length) {
+    if (Array.isArray(value) && value.length) {
       const opts: IChildEntitiesTagGroupSelectOptions[] = [];
       value.forEach(item => {
         opts.push({

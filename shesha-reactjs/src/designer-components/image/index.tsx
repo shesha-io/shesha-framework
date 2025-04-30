@@ -3,25 +3,22 @@ import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models'
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { evaluateValue, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React, { CSSProperties, useMemo } from 'react';
+import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IStyleType, StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IStyleType, StoredFileProvider } from '@/providers';
 import { ImageField, ImageSourceType } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
-import { useTheme } from 'antd-style';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { useTheme } from 'antd-style';
 
 export interface IImageStyleProps {
   height?: number | string;
@@ -68,47 +65,36 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   icon: <FileImageOutlined />,
   isInput: true,
   isOutput: true,
-  Factory: ({ model }) => {
-    const { data } = useFormData();
-    const { formSettings } = useForm();
-    const { globalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
-    const ownerId = evaluateValue(model.ownerId, { data, globalState });
+  calculateModel: (model, allData) => ({
+    ownerId: evaluateValue(model.ownerId, allData),
+    dataId: allData.data?.Id,
+    formModelType: allData.form.formSettings?.modelType,
+  }),
+  Factory: ({ model, calculatedModel }) => {
     const theme = useTheme();
 
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const { filter, filterIntensity } = model;
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const jsStyle = getStyle(model.style, data);
-
-    const borderStyles = useMemo(() => getBorderStyle(model?.border, jsStyle), [model.border, jsStyle]);
-    const shadowStyles = useMemo(() => getShadowStyle(model?.shadow), [model.shadow]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(model?.dimensions), [model?.dimensions]);
-    const filterUnit = filter === 'blur' ? 'px' : filter === 'hue-rotate' ? 'deg' : '%';
-
-    const additionalStyles: CSSProperties = removeUndefinedProps({
+    const finalStyles = removeUndefinedProps({
+      ...model.allStyles.jsStyle,
       objectFit: model.objectFit,
       objectPosition: model.objectPosition,
-      filter: `${filter ? `${filter}(${filterIntensity || 0}${filterUnit})` : 'none'}`,
+      filter: `${model.filter ? `${model.filter}(${model.filterIntensity || 0}${model.filter === 'blur' ? 'px' : model.filter === 'hue-rotate' ? 'deg' : '%'})` : 'none'}`,
       borderWidth: model.borderSize || 0,
       borderRadius: model.borderRadius,
       borderStyle: model.borderType || 'solid',
       borderColor: model.borderColor || theme.colorBorder,
       opacity: model.opacity,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...shadowStyles,
-      ...stylingBoxAsCSS
+      ...model.allStyles.dimensionsStyles,
+      ...model.allStyles.borderStyles,
+      ...model.allStyles.shadowStyles,
+      ...model.allStyles.stylingBoxAsCSS
     });
-
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const uploadedFileUrl = model.base64 || value;
 
-          const readonly = model?.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
+          const readonly = model.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
 
           const val = model.dataSource === 'storedFile'
             ? model.storedFileId || value?.id || value
@@ -122,14 +108,13 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
                 value={val}
                 onChange={onChange}
                 fileId={val}
-                baseUrl={backendUrl}
-                ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+                ownerId={Boolean(calculatedModel.ownerId) ? calculatedModel.ownerId : Boolean(calculatedModel.dataId) ? calculatedModel.dataId : ''}
                 ownerType={
-                  Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+                  Boolean(model.ownerType) ? model.ownerType : Boolean(calculatedModel.formModelType) ? calculatedModel.formModelType : ''
                 }
                 fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
-              //uploadMode={model.useSync ? 'sync' : 'async'}
+                //uploadMode={model.useSync ? 'sync' : 'async'}
               >
                 {child}
               </StoredFileProvider>
@@ -142,14 +127,14 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               wrap={fileProvider}
             >
               <ImageField
-                allowedFileTypes={model?.allowedFileTypes}
+                allowedFileTypes={model.allowedFileTypes}
                 imageSource={model.dataSource}
-                styles={finalStyle}
+                styles={finalStyles}
                 value={val}
                 readOnly={readonly}
                 onChange={onChange}
-                allowPreview={model?.allowPreview}
-                alt={model?.alt}
+                allowPreview={model.allowPreview}
+                alt={model.alt}
               />
             </ConditionalWrap>
           );

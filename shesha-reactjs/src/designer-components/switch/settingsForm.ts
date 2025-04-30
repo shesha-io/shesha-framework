@@ -9,6 +9,9 @@ export const getSettings = (data: ISwitchComponentProps) => {
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
+  const styleRouterId = nanoid();
+  const dimensionsStylePnlId = nanoid();
+  const customStylePnlId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -95,7 +98,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   propertyName: 'onChangeCustom',
                   label: 'On Change',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
                   parentId: eventsTabId
                 })
                 .toJson()
@@ -108,7 +111,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addPropertyRouter({
-                  id: 'styleRouter',
+                  id: styleRouterId,
                   propertyName: 'propertyRouter1',
                   componentName: 'propertyRouter',
                   label: 'Property router1',
@@ -122,23 +125,22 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-
                       .addCollapsiblePanel({
-                        id: 'dimensionsStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'pnlDimensions',
                         label: 'Dimensions',
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         labelAlign: 'right',
                         ghost: true,
                         collapsible: 'header',
                         content: {
-                          id: 'dimensionsStylePnl',
+                          id: dimensionsStylePnlId,
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: 'dimensionsStylePnl',
+                              parentId: dimensionsStylePnlId,
                               inline: true,
-                                          inputs: [
+                              inputs: [
                                 {
                                   type: 'dropdown',
                                   id: nanoid(),
@@ -157,15 +159,15 @@ export const getSettings = (data: ISwitchComponentProps) => {
                         }
                       })
                       .addCollapsiblePanel({
-                        id: 'customStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'customStyle',
                         label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
-                          id: nanoid(),
+                          id: customStylePnlId,
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                               id: nanoid(),

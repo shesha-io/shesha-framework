@@ -1,5 +1,5 @@
 import { useDynamicModals, useHttpClient } from "@/providers";
-import { useFormDesignerState } from "@/providers/formDesigner";
+import { useFormDesignerStateSelector } from "@/providers/formDesigner";
 import { useFormPersister } from "@/providers/formPersisterProvider";
 import { downloadAsJson } from "@/utils/configurationFramework/actions";
 import { MenuOutlined } from "@ant-design/icons";
@@ -18,7 +18,7 @@ export const CustomActions: FC<ICustomActionsProps> = () => {
     const { formProps, loadForm } = useFormPersister();
     const { open: openModal } = useDynamicModals();
     const { message } = App.useApp();
-    const { readOnly } = useFormDesignerState();
+    const readOnly = useFormDesignerStateSelector(x => x.readOnly);
 
     const items: MenuItem[] = [
         {
@@ -36,6 +36,7 @@ export const CustomActions: FC<ICustomActionsProps> = () => {
                 openModal({
                     title: 'Import JSON',
                     formId: { module: 'Shesha', name: 'form-import-json' },
+                    mode: 'edit',
                     formArguments: {
                         itemId: formProps.id,
                     },

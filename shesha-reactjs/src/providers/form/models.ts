@@ -1,7 +1,7 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import React, { ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -74,7 +74,8 @@ export interface IStyleType {
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
   overflow?: OverflowType;
-  position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
+  //Position needs to be revisited
+  // position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   size?: SizeType;
   style?: string;
   stylingBox?: string;
@@ -182,17 +183,32 @@ export interface IComponentMetadata {
   injectedDefaultValue?: any;
 }
 
+export interface IFormComponentStyles {
+  stylingBoxAsCSS: CSSProperties;
+  dimensionsStyles: CSSProperties;
+  borderStyles: CSSProperties;
+  fontStyles: CSSProperties;
+  backgroundStyles: CSSProperties;
+  shadowStyles: CSSProperties;
+  /** Styles calculated from js style setting */
+  jsStyle: CSSProperties;
+  /** Styles assempled from stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles*/
+  appearanceStyle: CSSProperties;
+  /** Styles assempled from {...appearanceStyle, ...jsStyle} */
+  fullStyle: CSSProperties;
+}
+
 /**
  * Base model of the configurable component
  */
 export interface IConfigurableFormComponent
   extends IFormComponentContainer,
-    IHasVersion,
-    IComponentBindingProps,
-    IComponentLabelProps,
-    IComponentVisibilityProps,
-    IComponentRuntimeProps,
-    IComponentMetadata {
+  IHasVersion,
+  IComponentBindingProps,
+  IComponentLabelProps,
+  IComponentVisibilityProps,
+  IComponentRuntimeProps,
+  IComponentMetadata {
   /** Type of the component */
   type: string;
 
@@ -252,6 +268,8 @@ export interface IConfigurableFormComponent
   tablet?: any;
 
   mobile?: any;
+
+  allStyles?: IFormComponentStyles;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

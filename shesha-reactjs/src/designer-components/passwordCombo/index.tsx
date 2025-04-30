@@ -15,7 +15,7 @@ import { PasswordCombo } from './passwordCombo';
 import { IInputStyles, useForm, useSheshaApplication } from '@/providers';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -51,7 +51,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     const background = model?.background;
     const jsStyle = getStyle(model.style, model);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -98,6 +98,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     return (
+
       <PasswordCombo
         inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.passwordCombo }}
         placeholder={placeholder}

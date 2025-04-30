@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 import { IFormValidationErrors, IToolboxComponentGroup } from '@/interfaces';
-import { IFlatComponentsStructure, IFormSettings } from '../form/models';
+import { FormMode, IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
 import {
   IAddDataPropertyPayload,
@@ -32,6 +32,7 @@ export enum FormActionEnums {
 
   SetFlatComponentsAction = 'SET_FLAT_COMPONENTS',
   SetDebugMode = 'SET_DEBUG_MODE',
+  SetFormMode = 'SET_FORM_MODE',
   StartDraggingNewItem = 'START_DRAGGING_NEW_ITEM',
   EndDraggingNewItem = 'END_DRAGGING_NEW_ITEM',
   StartDragging = 'START_DRAGGING',
@@ -98,6 +99,7 @@ export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IF
 );
 
 export const setDebugModeAction = createAction<boolean, boolean>(FormActionEnums.SetDebugMode, (p) => p);
+export const setFormModeAction = createAction<FormMode, FormMode>(FormActionEnums.SetFormMode, (p) => p);
 
 export const startDraggingNewItemAction = createAction(FormActionEnums.StartDraggingNewItem);
 export const endDraggingNewItemAction = createAction(FormActionEnums.EndDraggingNewItem);

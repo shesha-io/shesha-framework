@@ -5,7 +5,7 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IRadioProps } from './utils';
 import { IToolboxComponent } from '@/interfaces';
 import {
@@ -14,16 +14,21 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useFormData } from '@/providers';
+import { IConfigurableFormComponent } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { getEventHandlers } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 
-interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'> {
-  style?: string;
+interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent {
 }
 
-const Radio: IToolboxComponent<IEnhancedRadioProps> = {
+interface IRadioComopnentCalulatedValues {
+  eventHandlers: IEventHandlers;
+  dataSourceUrl?: string;
+  defaultValue?: any;
+}
+
+const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValues> = {
   type: 'radio',
   name: 'Radio',
   icon: <CheckCircleOutlined />,
@@ -31,31 +36,32 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
   isOutput: true,
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
+  calculateModel: (model, allData) => ({ 
+    eventHandlers: getAllEventHandlers(model, allData),
+    dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
+    defaultValue: evaluateValue(model.defaultValue, allData.data),
+  }),
+  Factory: ({ model, calculatedModel }) => {
     const { style, ...restProps } = model;
-
-    const { data: formData } = useFormData();
 
     return (
       <ConfigurableFormItem model={restProps}>
         {(value, onChange) => {
-          const customEvents = getEventHandlers(model, allData);
+          const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (e: any) => {
             if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
             if (typeof onChange === 'function') onChange(e);
           };
 
-          const onFocusInternal = (e: any) => {
-            if (e.target) customEvents.onFocus({ ...e, currentTarget: { value: e.target.value } });
-          };
-
-          const onBlurInternal = (e: any) => {
-            if (e.target) customEvents.onBlur({ ...e, currentTarget: { value: e.target.value } });
-          };
-
           return (
-            <RadioGroup {...restProps} style={getStyle(style, formData)} value={value} onChange={onChangeInternal} onFocus={onFocusInternal} onBlur={onBlurInternal} />
+            <RadioGroup 
+              {...restProps}
+              style={model.allStyles.fullStyle}
+              value={value}
+              defaultValue={model.defaultValue}
+              {...customEvents}
+              onChange={onChangeInternal} 
+            />
           );
         }}
       </ConfigurableFormItem>

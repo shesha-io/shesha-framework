@@ -1,21 +1,21 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
-import { Button, Tooltip, Typography } from 'antd';
+import { Button, Flex, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher, useSheshaApplication } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { initialValues } from './utils';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
-import { useActualContextData } from '@/hooks/useActualContextData';
+import { useActualContextData } from '@/hooks';
 
 const { Text } = Typography;
 
@@ -72,7 +72,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   const background = prevStyles?.background;
   const styling = JSON.parse(model.stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
   const jsStyle = useMemo(() => getStyle(model.style), [model.style]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
@@ -114,7 +114,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   return (
     <>
       {item.itemSubType === 'button' && (
-        <>
+        <Flex>
           <Button
             title={tooltip}
             type={buttonType}
@@ -134,7 +134,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
               <QuestionCircleOutlined className={styles.helpIcon} style={{ marginLeft: '2px' }} />
             </Tooltip>
           )}
-        </>
+        </Flex>
       )}
       {item.itemSubType === 'separator' && (<Text type="secondary">— separator —</Text>)}
       {isDynamicItem(item) && (<DynamicGroupDetails {...item} />)}

@@ -6,7 +6,7 @@ import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn from './components/renderColumn';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
