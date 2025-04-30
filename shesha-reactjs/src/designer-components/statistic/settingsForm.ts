@@ -15,7 +15,6 @@ export const getSettings = (data: any) => {
   const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const backgroundStylePnlId = nanoid();
-  const fixesRowId = nanoid();
 
   const shadowStylePnlId = nanoid();
 
@@ -91,12 +90,12 @@ export const getSettings = (data: any) => {
                 ],
               })
               .addSettingsInputRow({
-                id: fixesRowId,
-                parentId: nanoid(),
+                id: nanoid(),
+                parentId: commonTabId,
                 inputs: [
                   {
                     type: 'textField',
-                    id: fixesRowId,
+                    id: nanoid(),
                     propertyName: 'prefix',
                     label: 'Prefix',
                     jsSetting: true,
@@ -111,12 +110,12 @@ export const getSettings = (data: any) => {
                 ],
               })
               .addSettingsInputRow({
-                id: fixesRowId,
-                parentId: nanoid(),
+                id: nanoid(),
+                parentId: commonTabId,
                 inputs: [
                   {
                     type: 'textField',
-                    id: fixesRowId,
+                    id: nanoid(),
                     propertyName: 'suffix',
                     label: 'Suffix',
                     jsSetting: true,
