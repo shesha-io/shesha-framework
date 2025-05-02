@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { IInputStyles } from '@/providers/form/models';
 import {
   executeExpression,
   getStyle,
@@ -12,7 +12,6 @@ import {
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { IAutocompleteComponentProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -23,8 +22,10 @@ import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
 import { toSizeCssProp } from '@/utils/form';
 import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import useStyle from '@/components/antd/comment/style';
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -117,8 +118,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     );
   }
   ,
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
@@ -160,7 +161,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IAutocompleteComponentProps>(7, (prev) => {
+    .add<IAutocompleteComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    
+    .add<IAutocompleteComponentProps>(8, (prev) => {
       return { 
         ...prev,
         mode: prev.mode || 'single',
