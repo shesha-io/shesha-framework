@@ -667,6 +667,7 @@ export const getSettings = () => {
                             labelAlign: 'right',
                             collapsedByDefault: true,
                             parentId: styleRouterId,
+                            ghost: true,
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
@@ -730,6 +731,7 @@ export const getSettings = () => {
                             label: 'Dimensions',
                             labelAlign: 'right',
                             collapsedByDefault: true,
+                            ghost: true,
                             parentId: styleRouterId,
                             collapsible: 'header',
                             content: {
@@ -778,6 +780,7 @@ export const getSettings = () => {
                             label: 'Border',
                             labelAlign: 'right',
                             collapsedByDefault: true,
+                            ghost: true,
                             parentId: styleRouterId,
                             hidden: {
                               _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost)' +
@@ -802,6 +805,7 @@ export const getSettings = () => {
                             label: 'Background',
                             labelAlign: 'right',
                             collapsedByDefault: true,
+                            ghost: true,
                             hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                             parentId: styleRouterId,
                             collapsible: 'header',
@@ -956,6 +960,7 @@ export const getSettings = () => {
                             propertyName: 'stylingBox',
                             label: 'Margin and Padding',
                             labelAlign: 'right',
+                            ghost: true,
                             parentId: styleRouterId,
                             collapsible: 'header',
                             content: {
@@ -976,6 +981,7 @@ export const getSettings = () => {
                             label: 'Custom Styles',
                             labelAlign: 'right',
                             collapsedByDefault: true,
+                            ghost: true,
                             parentId: styleRouterId,
                             collapsible: 'header',
                             content: {
