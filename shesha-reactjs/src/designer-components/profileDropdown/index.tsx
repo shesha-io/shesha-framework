@@ -13,7 +13,7 @@ import {
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { getAccountMenuItems, getMenuItem } from './utils';
@@ -31,6 +31,9 @@ interface IProfileDropdown extends IConfigurableFormComponent {
   subText?: string;
   subTextColor?: string;
   subTextFontSize?: string;
+  subTextFontWeight?: string;
+  subTextFontFamily?: string;
+  subTextTextAlign?: CSSProperties['textAlign'];
   subTextStyle?: string;
   showUserInfo?: boolean;
   popOverTitle?: string;
@@ -51,6 +54,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       subText,
       subTextColor,
       subTextFontSize,
+      subTextFontWeight,
+      subTextFontFamily,
+      subTextTextAlign,
       subTextStyle,
       showUserInfo,
       popOverTitle,
@@ -72,6 +78,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const subTextStyling = {
       color: subTextColor,
       fontSize: subTextFontSize,
+      fontWeight: subTextFontWeight,
+      fontFamily: subTextFontFamily,
+      textAlign: subTextTextAlign,
       ...getStyle(subTextStyle, formData, globalState),
     };
 
@@ -139,6 +148,16 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
+  migrator: (m) => m
+    .add<IProfileDropdown>(1, (prev) => (
+      {
+        ...prev, subTextFontWeight: 'normal',
+        subTextFontFamily: 'Arial',
+        subTextTextAlign: 'left',
+        subTextColor: '#000000',
+        subTextFontSize: '12px',
+      }
+    )),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 

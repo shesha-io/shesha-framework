@@ -1,9 +1,14 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { nanoid } from '@/utils/uuid';
 
 export const getItemSettings = () => {
+    const searchableTabsId = nanoid();
+    const commonTabId = nanoid();
+    const securityTabId = nanoid();
+
     return new DesignerToolbarSettings()
         .addSearchableTabs({
-            id: 'W_m7doMyCpCYwAYDfRh6I',
+            id: searchableTabsId,
             propertyName: 'settingsTabs',
             parentId: 'root',
             label: 'Settings',
@@ -15,16 +20,15 @@ export const getItemSettings = () => {
                 {
                     key: '1',
                     title: 'Common',
-                    id: 's4gmBg31azZC0UjZjpfTm',
+                    id: commonTabId,
                     type: '',
                     components: [
                         ...new DesignerToolbarSettings()
                             .addSettingsInputRow({
-                                id: 'name-title-frfwfwefvrr',
-                                readOnly: false,
+                                id: nanoid(),
                                 inputs: [
                                     {
-                                        id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
+                                        id: nanoid(),
                                         type: 'textField',
                                         propertyName: 'name',
                                         label: 'Name',
@@ -33,7 +37,7 @@ export const getItemSettings = () => {
                                         parentId: 'root'
                                     },
                                     {
-                                        id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
+                                        id: nanoid(),
                                         type: 'textField',
                                         propertyName: 'title',
                                         label: 'Title',
@@ -44,11 +48,10 @@ export const getItemSettings = () => {
                                 ]
                             })
                             .addSettingsInputRow({
-                                id: 'key-className-row',
-                                readOnly: false,
+                                id: nanoid(),
                                 inputs: [
                                     {
-                                        id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
+                                        id: nanoid(),
                                         type: 'textField',
                                         propertyName: 'key',
                                         label: 'Key',
@@ -57,7 +60,7 @@ export const getItemSettings = () => {
                                         parentId: 'root'
                                     },
                                     {
-                                        id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
+                                        id: nanoid(),
                                         type: 'textField',
                                         propertyName: 'className',
                                         label: 'Class Name',
@@ -68,11 +71,10 @@ export const getItemSettings = () => {
                                 ]
                             })
                             .addSettingsInputRow({
-                                id: 'animated-icon-row',
-                                readOnly: false,
+                                id: nanoid(),
                                 inputs: [
                                     {
-                                        id: 'caed91a6-3e9e-4f04-9800-7d9c7a3ffb80',
+                                        id: nanoid(),
                                         type: 'switch',
                                         propertyName: 'animated',
                                         label: 'Animated',
@@ -83,7 +85,7 @@ export const getItemSettings = () => {
                                         validate: {}
                                     },
                                     {
-                                        id: '4595a895-5078-4986-934b-c5013bf315ad',
+                                        id: nanoid(),
                                         type: 'iconPicker',
                                         propertyName: 'icon',
                                         label: 'Icon',
@@ -96,11 +98,10 @@ export const getItemSettings = () => {
                             })
 
                             .addSettingsInputRow({
-                                id: 'hidden-forceRender-row',
-                                readOnly: false,
+                                id: nanoid(),
                                 inputs: [
                                     {
-                                        id: '81da0da4-00db-4d6b-9f16-b364a6f9d9e1',
+                                        id: nanoid(),
                                         type: 'switch',
                                         propertyName: 'forceRender',
                                         label: 'Force Render',
@@ -111,7 +112,7 @@ export const getItemSettings = () => {
                                         jsSetting: true
                                     },
                                     {
-                                        id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
+                                        id: nanoid(),
                                         type: 'switch',
                                         propertyName: 'hidden',
                                         label: 'Hide',
@@ -124,11 +125,10 @@ export const getItemSettings = () => {
                                 ]
                             })
                             .addSettingsInputRow({
-                                id: 'selectMode-destroyInactiveTabPane-row',
-                                readOnly: false,
+                                id: nanoid(),
                                 inputs: [
                                     {
-                                        id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
+                                        id: nanoid(),
                                         type: 'editModeSelector',
                                         propertyName: 'editMode',
                                         parentId: 'root',
@@ -136,7 +136,7 @@ export const getItemSettings = () => {
                                         jsSetting: true
                                     },
                                     {
-                                        id: "8615d12f - 6ea0- 4b11 - a1a1 - 6088c7160fd9",
+                                        id: nanoid(),
                                         type: "dropdown",
                                         propertyName: "selectMode",
                                         parentId: "root",
@@ -165,7 +165,7 @@ export const getItemSettings = () => {
 
                             .addSettingsInput(
                                 {
-                                    id: 'a8b12318-65a5-4b98-bcce-834b6a40b2fd',
+                                    id: nanoid(),
                                     inputType: 'switch',
                                     propertyName: 'destroyInactiveTabPane',
                                     label: 'Destroy Inactive Tab Pane',
@@ -182,18 +182,17 @@ export const getItemSettings = () => {
                 {
                     key: '2',
                     title: 'Security',
-                    id: '6Vw9iiDw9d0MD_Rh5cbIn',
+                    id: securityTabId,
                     type: '',
                     components: [...new DesignerToolbarSettings()
                         .addSettingsInput({
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                            id: nanoid(),
                             inputType: 'permissions',
                             propertyName: 'permissions',
                             label: 'Permissions',
                             size: 'small',
                             jsSetting: true,
-                            parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                            parentId: securityTabId
                         })
                         .toJson()
                     ]

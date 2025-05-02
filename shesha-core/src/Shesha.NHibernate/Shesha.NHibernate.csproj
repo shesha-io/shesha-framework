@@ -44,6 +44,7 @@
     <PackageReference Include="NHibernate" Version="5.5.2" />
     <PackageReference Include="NHibernate.Extensions.NpgSql" Version="8.0.0" />
     <PackageReference Include="NHibernate.Spatial" Version="7.0.0" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>

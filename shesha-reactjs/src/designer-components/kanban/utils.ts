@@ -25,7 +25,6 @@ export const defaultStyles = (): IStyleType => {
         radius: { all: 0 },
       },
       shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
-      position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
       stylingBox: '{"marginBottom":"5","paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}',
     };
   };

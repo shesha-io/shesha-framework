@@ -5,6 +5,7 @@ import { IFormValidationErrors, IToolboxComponentGroup } from '@/interfaces';
 import { camelcaseDotNotation } from '@/utils/string';
 import undoable from '@/utils/undoable';
 import {
+  FormMode,
   IComponentRelations,
   IComponentsDictionary,
   IConfigurableFormComponent,
@@ -92,6 +93,16 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         : {
           ...state,
           readOnly: payload,
+        };
+    },
+    [FormActionEnums.SetFormMode]: (state: IFormDesignerStateContext, action: ReduxActions.Action<FormMode>) => {
+      const { payload } = action;
+
+      return state.formMode === payload
+        ? state
+        : {
+          ...state,
+          formMode: payload,
         };
     },
     [FormActionEnums.SetFlatComponentsAction]: (
@@ -250,7 +261,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
         nestedComponents[clone.id] = clone;
 
-        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === component.type);
+        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c?.type === component.type);
         const containers = toolboxComponent?.customContainerNames ?? [];
 
         const { formFlatMarkup } = state;

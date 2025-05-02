@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
-import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
+import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import { 
@@ -22,6 +22,11 @@ import {
 } from "./contexts";
 import ConditionalWrap from "@/components/conditionalWrapper/index";
 import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
+
+export interface  IDataContextBinderRef {
+  fireListener: (propertyName: string) => void;
+  fireAllListeners: () => void;
+}
 
 export interface IDataContextBinderProps { 
   id: string;
@@ -52,7 +57,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   } = props;
 
   const uid = useId();
-  const { onChangeContext, onChangeContextData } = useDataContextManager();
+  const { onChangeContext, onChangeContextData } = useDataContextManagerActions();
   const metadataDispatcher = useMetadataDispatcher();
 
   const apiRef = useRef<any>(props.api);
@@ -93,21 +98,20 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
 
   const setFieldValue = useDeepCompareCallback((name: string, value: any) => {
     if (props.setFieldValue)
-      return props.setFieldValue(name, value, onChangeContextData);
+      props.setFieldValue(name, value, onChangeContextData);
+    else {
+      const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
+      const changedData = setValueByPropertyName({}, name, value);
 
-    const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
-    const changedData = setValueByPropertyName({}, name, value);
-
-    if (onChangeData)
-      onChangeData(newData, changedData, onChangeContextData);
-
+      if (onChangeData)
+        onChangeData(newData, changedData, onChangeContextData);
+    }
   }, [props.setFieldValue, onChangeData]);
 
   const setData = useDeepCompareCallback((changedData: any) => {
-    if (props.setData)
-      return props.setData(changedData,  onChangeContextData);
-
-    if (onChangeData)
+    if (props.setData) 
+      props.setData(changedData,  onChangeContextData);
+    else if (onChangeData)
       onChangeData({...dataRef.current, ...changedData}, {...changedData}, onChangeContextData);
   }, [props.setData, onChangeData]);
 

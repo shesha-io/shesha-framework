@@ -1,13 +1,11 @@
 import React from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
-import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import settingsFormJson from './settingsForm.json';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ITimePickerProps } from './models';
@@ -17,9 +15,17 @@ import { getSettings } from './settings';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
-const settingsForm = settingsFormJson as FormMarkup;
 
-export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
+interface ITimePickerComponentProps extends Omit<ITimePickerProps, 'defaultValue' | 'style'>, IConfigurableFormComponent {
+
+}
+
+interface ITimePickerComponentCalulatedValues {
+  defaultValue?: string;
+  eventHandlers?: IEventHandlers;
+}
+
+export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, ITimePickerComponentCalulatedValues> = {
   type: 'timePicker',
   name: 'Time Picker',
   isInput: true,
@@ -27,38 +33,44 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
   canBeJsSetting: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-
+  calculateModel: (model, allData) => ({
+    eventHandlers: getAllEventHandlers(model, allData),
+  }),
+  Factory: ({ model, calculatedModel }) => {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          const customEvent = customTimeEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function')
-              onChange(...args);
+          const customEvents = calculatedModel.eventHandlers;
+          const onChangeInternal = (value: any | null, timeString: string | [string, string]) => {
+            customEvents.onChange({ value, timeString });
+            if (typeof onChange === 'function') onChange(value, timeString);
           };
-          return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+          return <TimePickerWrapper
+            {...model}
+            {...customEvents}
+            style={model.allStyles.fullStyle}
+            value={value}
+            onChange={onChangeInternal}
+          />;
         }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model) => {
-    const customModel: ITimePickerProps = {
+    const customModel: ITimePickerComponentProps = {
       ...model,
       format: DATE_TIME_FORMAT,
     };
     return customModel;
   },
   migrator: (m) => m
-    .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
-    .add<ITimePickerProps>(2, (prev) => migrateReadOnly(prev))
-    .add<ITimePickerProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<ITimePickerProps>(4, (prev) => {
+    .add<ITimePickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ITimePickerComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<ITimePickerComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<ITimePickerComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<ITimePickerComponentProps>(4, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,
@@ -68,7 +80,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
-  linkToModelMetadata: (model, metadata): ITimePickerProps => {
+  linkToModelMetadata: (model, metadata): ITimePickerComponentProps => {
 
     return {
       ...model,

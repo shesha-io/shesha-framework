@@ -1,11 +1,11 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Uow;
 using Shesha.Application.Services;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Permissions;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Collections;
@@ -23,9 +23,9 @@ namespace Shesha.Swagger
 
         public IEnumerator<UrlDescriptor> GetEnumerator()
         {
-            var entityConfigs = IocManager.Instance.Resolve<IModelConfigurationManager>();
-            var pmo = IocManager.Instance.Resolve<IPermissionedObjectManager>();
-            var _uowManager = IocManager.Instance.Resolve<IUnitOfWorkManager>();
+            var entityConfigs = StaticContext.IocManager.Resolve<IModelConfigurationManager>();
+            var pmo = StaticContext.IocManager.Resolve<IPermissionedObjectManager>();
+            var _uowManager = StaticContext.IocManager.Resolve<IUnitOfWorkManager>();
 
             var types = SwaggerHelper.ServiceTypesFunc();
 

@@ -1,9 +1,8 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, CSSProperties } from 'react';
 import { Button, FormInstance } from 'antd';
 import { ShaIcon, IconType } from '@/components';
 import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
-import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';

@@ -1,22 +1,18 @@
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { IToolboxComponent } from '@/interfaces';
+import { IInputStyles } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { removeUndefinedProps } from '@/utils/object';
 import { SwapOutlined } from '@ant-design/icons';
+import React, { CSSProperties } from 'react';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import ShaDrawer from './drawer';
 import { IDrawerProps } from './models';
-import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { IInputStyles, useFormData, useSheshaApplication } from '@/providers';
-import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { removeUndefinedProps } from '@/utils/object';
-import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
-import { ValidationErrors } from '@/components';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { defaultStyles, initialStyle } from './utils';
+import { defaultStyles } from './utils';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
@@ -24,97 +20,28 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   name: 'Drawer',
   icon: <SwapOutlined />,
   Factory: ({ model }) => {
-    const { data } = useFormData();
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const { allStyles, style, headerStyles, footerStyles, ...props } = model;
+
     const {
-      size,
-      border,
-      background,
-      headerBackground,
-      style,
-      shadow,
-      headerShadow,
-      headerStyle,
-      footerStyle,
-      footerBackground,
-      footerShadow,
-      ...props
-    } = model;
+      backgroundStyles: headerBackgroundStyles,
+      shadowStyles: headerShadowStyles,
+      jsStyle: headerJsStyle,
+    } = useFormComponentStyles(headerStyles);
+    const {
+      backgroundStyles: footerBackgroundStyles,
+      shadowStyles: footerShadowStyles,
+      jsStyle: footerJsStyle,
+    } = useFormComponentStyles(footerStyles);
+    const jsStyle = allStyles?.jsStyle;
+    const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
 
-    const jsStyle = getStyle(style, data);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    const headerJsStyle = getStyle(headerStyle, data);
-    const [headerBackgroundStyles, setHeaderBackgroundStyles] = useState({});
-    const headerShadowStyles = useMemo(() => getShadowStyle(headerShadow), [headerShadow]);
-
-    const footerJsStyle = getStyle(footerStyle, data);
-    const footerShadowStyles = useMemo(() => getShadowStyle(footerShadow), [footerShadow]);
-    const [footerBackgroundStyles, setFooterBackgroundStyles] = useState({});
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        getBackgroundImageUrl(background, backendUrl, httpHeaders)
-          .then(async (url) => {
-            return await getBackgroundStyle(background, jsStyle, url);
-          })
-          .then((style) => {
-            setBackgroundStyles(style);
-          });
-      };
-      fetchStyles();
-    }, [background, backendUrl, httpHeaders]);
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        getBackgroundImageUrl(headerBackground, backendUrl, httpHeaders)
-          .then(async (url) => {
-            return await getBackgroundStyle(headerBackground, headerJsStyle, url);
-          })
-          .then((style) => {
-            setHeaderBackgroundStyles(style);
-          });
-      };
-      fetchStyles();
-    }, [headerBackground, backendUrl, httpHeaders]);
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        getBackgroundImageUrl(footerBackground, backendUrl, httpHeaders)
-          .then(async (url) => {
-            return await getBackgroundStyle(footerBackground, footerJsStyle, url);
-          })
-          .then((style) => {
-            setFooterBackgroundStyles(style);
-          });
-      };
-      fetchStyles();
-    }, [footerBackground, backendUrl, httpHeaders]);
-
-    if (
-      (model?.background?.type === 'storedFile' &&
-        model?.background.storedFile?.id &&
-        !isValidGuid(model?.background.storedFile.id)) ||
-      (model?.headerBackground?.type === 'storedFile' &&
-        model?.headerBackground.storedFile?.id &&
-        !isValidGuid(model?.headerBackground.storedFile.id)) ||
-      (model?.footerBackground?.type === 'storedFile' &&
-        model?.footerBackground.storedFile?.id &&
-        !isValidGuid(model?.footerBackground.storedFile.id))
-    ) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const borderStyles = allStyles?.borderStyles;
+    const shadowStyles = allStyles?.shadowStyles;
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...shadowStyles,
-      ...stylingBoxAsCSS,
       ...borderStyles,
-      ...backgroundStyles,
+      stylingBoxAsCSS,
       ...jsStyle,
     });
 
@@ -132,6 +59,8 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
 
     return (
       <ShaDrawer
+        stylingBoxAsCSS={stylingBoxAsCSS}
+        backgroundStyles={allStyles?.backgroundStyles}
         style={additionalStyles}
         headerStyle={additionalHeaderStyles}
         footerStyle={additionalFooterStyles}
@@ -167,9 +96,21 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       })
       .add<IDrawerProps>(4, (prev) => ({
         ...migratePrevStyles(prev, defaultStyles()),
-        desktop: { ...migratePrevStyles(prev, defaultStyles()).desktop, ...initialStyle },
-        tablet: { ...migratePrevStyles(prev, defaultStyles()).tablet, ...initialStyle },
-        mobile: { ...migratePrevStyles(prev, defaultStyles()).mobile, ...initialStyle },
+        desktop: {
+          ...migratePrevStyles(prev, defaultStyles()).desktop,
+          headerStyles: defaultStyles(),
+          footerStyles: defaultStyles(),
+        },
+        tablet: {
+          ...migratePrevStyles(prev, defaultStyles()).tablet,
+          headerStyles: defaultStyles(),
+          footerStyles: defaultStyles(),
+        },
+        mobile: {
+          ...migratePrevStyles(prev, defaultStyles()).mobile,
+          headerStyles: defaultStyles(),
+          footerStyles: defaultStyles(),
+        },
       })),
   initModel: (model) => {
     const customProps: IDrawerProps = {

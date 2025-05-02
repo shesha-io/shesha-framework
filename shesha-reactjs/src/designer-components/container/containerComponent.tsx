@@ -1,6 +1,6 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { IContainerComponentProps, IToolboxComponent } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, pickStyleFromModel } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -11,13 +11,13 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
-import { getPositionStyle } from '../_settings/utils/position/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { addPx } from '@/utils/style';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -33,14 +33,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const border = model?.border;
     const shadow = model?.shadow;
     const background = model?.background;
-    const position = model?.position;
     const jsStyle = getStyle(model.style, model);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-    const positionstyle = useMemo(() => getPositionStyle(position), [position]);
 
     useEffect(() => {
       const fetchStyles = async () => {
@@ -85,7 +83,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
 
     if (model.hidden) return null;
 
-    const flexAndGridStyles: ICommonContainerProps = {
+    const flexAndGridStyles = {
       display: model.display,
       flexDirection: model.flexDirection,
       direction: model.direction,
@@ -98,25 +96,27 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       noDefaultStyling: model.noDefaultStyling,
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
-      gap: model.gap,
+      gap: addPx(model.gap),
     };
+    
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
           containerId={model.id}
           wrapperStyle={{
-            ...positionstyle,
             ...stylingBoxAsCSS,
             ...finalStyle,
+            overflow: model.overflow,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
           }}
           style={{
             ...getStyle(model?.style, formData),
+            ...dimensionsStyles,
+            ...flexAndGridStyles as any
           }}
           noDefaultStyling={model.noDefaultStyling}
           className={model.className}
           dynamicComponents={model?.isDynamic ? model?.components : []}
-          {...flexAndGridStyles}
         />
       </ParentProvider>
     );
@@ -157,7 +157,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           maxHeight: prev.maxHeight,
           maxWidth: prev.maxWidth
         };
-        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+        const showAdvanced = prev.showAdvanced ?? false;
+        return { ...prev, showAdvanced: showAdvanced, desktop: { ...styles, showAdvanced }, tablet: { ...styles, showAdvanced }, mobile: { ...styles, showAdvanced } };
       })
       .add<IContainerComponentProps>(6, (prev) => {
         const flexAndGridStyles = {
@@ -173,12 +174,11 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap || 8,
-          position: defaultStyles().position,
+          gap: prev?.gap || 8
         };
 
         return {
-          ...prev, position: defaultStyles().position, desktop: { ...prev.desktop, ...flexAndGridStyles },
+          ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
           tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
         };
       })

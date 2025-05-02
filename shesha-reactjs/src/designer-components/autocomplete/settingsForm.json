@@ -116,9 +116,6 @@
               }
             ],
             "dataSourceType": "values",
-            "defaultValue": [
-              "single"
-            ],
             "version": 6,
             "referenceListId": null,
             "valueFormat": "listItem"
@@ -938,7 +935,6 @@
             "propertyName": "borderRadius",
             "label": "Border Radius",
             "parentId": "G670M5i5T85_M0HrSligg",
-            "defaultValue": "8",
             "version": 3
           },
           {

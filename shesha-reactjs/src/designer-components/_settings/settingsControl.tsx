@@ -1,8 +1,7 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { useStyles } from './styles/styles';
-import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
@@ -12,7 +11,7 @@ import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 import { Button } from 'antd';
 import { CodeOutlined, CodeFilled } from '@ant-design/icons';
 
-export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
+export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement | ReactNode;
 
 export interface ISettingsControlProps<Value = any> {
   propertyName: string;
@@ -69,10 +68,8 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   const valueOnChange = (val: any) => {
-    if (!isEqual(setting?._value, val)) {
       const newValue = { ...setting, _value: val };
       onInternalChange(newValue);
-    }
   };
 
   const onSwitchMode = () => {
@@ -116,7 +113,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         className={`${styles.jsSwitch} inlineJS`}
         type='text'
         danger={mode === 'value' && !!code}
-        ghost
         size='small'
         icon={mode === 'code' && !!code ? <CodeFilled /> : !!code ? <CodeFilled /> : <CodeOutlined />}
         color='lightslategrey'

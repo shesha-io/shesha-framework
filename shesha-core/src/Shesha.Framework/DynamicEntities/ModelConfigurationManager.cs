@@ -570,11 +570,16 @@ namespace Shesha.DynamicEntities
         {
             var cacheKey = $"{@namespace}|{name}";
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {
-                var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
-                if (modelConfig == null)
-                    return null;
+                using (var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
+                {
+                    var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
+                    if (modelConfig == null)
+                        return null;
 
-                return await GetModelConfigurationAsync(modelConfig, hardCodedProps);
+                    var result = await GetModelConfigurationAsync(modelConfig, hardCodedProps);
+                    await uow.CompleteAsync();
+                    return result;
+                }                    
             });
 
             return result;

@@ -9,7 +9,8 @@ import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
-import { addPx, getDimensionsStyles } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   const { data } = useFormData();
   const {
@@ -80,7 +81,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     ...shadowStyles,
   });
 
-  const dimensionStyles = getDimensionsStyles(dimensions, additionalStyles);
+  const dimensionStyles = getDimensionsStyle(dimensions, additionalStyles);
 
   const { styles } = useStyles({ dimensions: dimensionStyles });
 

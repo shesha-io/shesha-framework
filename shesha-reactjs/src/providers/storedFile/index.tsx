@@ -83,7 +83,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     propertyName,
     fileId,
     children,
-    baseUrl,
+    baseUrl: modelBackendUrl,
     uploadMode = 'async',
     onChange,
     value,
@@ -96,7 +96,9 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   });
   const { message } = App.useApp();
 
-  const { httpHeaders: headers } = useSheshaApplication();
+  const { backendUrl, httpHeaders: headers } = useSheshaApplication();
+
+  const baseUrl = modelBackendUrl || backendUrl;
 
   const fileFetcher = useStoredFileGet({
     lazy: true,

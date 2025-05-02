@@ -10,7 +10,7 @@ import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { Alert } from 'antd';
 import { useDataTableStore } from '@/index';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
@@ -29,7 +29,7 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     const store = useDataTableStore(false);
 
     const size = useMemo(() => _size, [_size]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...dimensionsStyles,

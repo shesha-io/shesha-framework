@@ -36,7 +36,6 @@ export const getSettings = (data: any) => {
                   },
                   styledLabel: true,
                   jsSetting: true,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -102,7 +101,6 @@ export const getSettings = (data: any) => {
                         ],
                         allowClear: true,
                         validate: { required: true },
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         jsSetting: true,
                       })
                       .addSettingsInputRow({
@@ -114,7 +112,6 @@ export const getSettings = (data: any) => {
                           _code: "return getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: "code"
                         } as any,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         inputs: [{
                           id: nanoid(),
                           type: 'autocomplete',
@@ -131,7 +128,6 @@ export const getSettings = (data: any) => {
                           jsSetting: true,
                           useRawValues: true,
                           width: '100%',
-                          readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         }]
                       })
                       .addSettingsInputRow({
@@ -143,7 +139,6 @@ export const getSettings = (data: any) => {
                           _code: "return getSettingValue(data.sourceType) !== 'Url' && getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: "code"
                         } as any,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -244,7 +239,6 @@ export const getSettings = (data: any) => {
                             ],
                             parentId: dataTabId,
                             validate: { required: true },
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             jsSetting: true,
                           },
                         ]
@@ -258,7 +252,6 @@ export const getSettings = (data: any) => {
                           _code: "const sourceType = getSettingValue(data && data.sourceType);\nconst entityType = getSettingValue(data && data.entityType);\n\nreturn !(sourceType === 'Entity' && Boolean(entityType));",
                           _mode: "code"
                         },
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -282,7 +275,6 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: dataTabId,
                         inline: true,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         hidden: {
                           _value: false,
                           _code: "return !getSettingValue(data?.sourceType) || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
@@ -308,7 +300,6 @@ export const getSettings = (data: any) => {
                               }
                             ],
                             validate: { required: true },
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             settingsValidationErrors: [],
                             jsSetting: true,
                             width: '100%',
@@ -319,7 +310,6 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: dataTabId,
                         inline: true,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         hidden: {
                           _value: false,
                           _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'strict';",
@@ -355,7 +345,6 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: dataTabId,
                         inline: true,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         hidden: {
                           _value: false,
                           _code: "return getSettingValue(data.sortMode) !== 'strict';",
@@ -396,13 +385,11 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard' || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
                           _mode: "code"
                         },
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -411,13 +398,18 @@ export const getSettings = (data: any) => {
                             componentName: "standardSorting",
                             label: "Sort By",
                             labelAlign: "right",
-                            parentId: "root",
+                            parentId: dataTabId,
+                            hidden: {
+                              _value: false,
+                              _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard';",
+                              _mode: "code"
+                            } as any,
+                            customVisibility: null,
                             isDynamic: false,
                             version: 0,
+                            modelType: "{{data.entityType}}",
                             validate: {},
                             settingsValidationErrors: [],
-                            modelType: "{{data.entityType}}",
-                            width: '100%',
                             jsSetting: true,
                           }
                         ]
@@ -425,13 +417,11 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');",
                           _mode: "code"
                         } as any,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -441,13 +431,17 @@ export const getSettings = (data: any) => {
                             label: "Grouping",
                             labelAlign: "right",
                             parentId: "root",
+                            hidden: {
+                              _value: false,
+                              _code: "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');\n",
+                              _mode: "code"
+                            } as any,
                             isDynamic: false,
                             version: 0,
                             validate: {},
                             settingsValidationErrors: [],
-                            modelType: "{{data.entityType}}",
-                            width: '100%',
                             jsSetting: true,
+                            modelType: "{{data.entityType}}"
                           }
                         ]
                       })
@@ -461,7 +455,6 @@ export const getSettings = (data: any) => {
                           _mode: "code"
                         },
                         isDynamic: false,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -503,7 +496,6 @@ export const getSettings = (data: any) => {
             id: securityTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',

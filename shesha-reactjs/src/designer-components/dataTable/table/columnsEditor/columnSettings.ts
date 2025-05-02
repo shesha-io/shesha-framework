@@ -153,18 +153,20 @@ export const getColumnSettings = (data?: any) => ({
                             "inputs": [
                                 {
                                     "id": "anchored1",
-                                    "type": "dropdown",
+                                    "type": "radio",
                                     "propertyName": "anchored",
                                     "label": "Anchored",
                                     "jsSetting": true,
-                                    "dropdownOptions": [
+                                    "buttonGroupOptions": [
                                         {
-                                            "label": "Left",
-                                            "value": "left"
+                                            "title": "Left",
+                                            "value": "left",
+                                            "icon": "LeftOutlined"
                                         },
                                         {
-                                            "label": "Right",
-                                            "value": "right"
+                                            "title": "Right",
+                                            "value": "right",
+                                            "icon": "RightOutlined"
                                         }
                                     ],
                                     "allowClear": true
@@ -339,8 +341,7 @@ export const getColumnSettings = (data?: any) => ({
                                                     id: 'dimensionsStyleRowWidth',
                                                     parentId: 'dimensionsStylePnl',
                                                     inline: true,
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    inputs: [
+                                                                        inputs: [
                                                         {
                                                             "id": "minWidth1",
                                                             "type": "numberField",
@@ -367,8 +368,7 @@ export const getColumnSettings = (data?: any) => ({
                                                         _mode: "code",
                                                         _value: false
                                                     },
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    inputs: [
+                                                                        inputs: [
                                                         {
                                                             "id": "minHeight1",
                                                             "type": "numberField",

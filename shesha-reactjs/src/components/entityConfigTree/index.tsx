@@ -6,14 +6,12 @@ import {
   Checkbox,
   Dropdown,
   MenuProps,
-  Spin,
   Tag
 } from 'antd';
 import { ClassOutlined } from '@/icons/classOutlined';
 import {
   DatabaseFilled,
   EyeInvisibleOutlined,
-  LoadingOutlined,
   QuestionCircleOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
@@ -25,6 +23,7 @@ import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramewor
 import { useStyles } from './styles/styles';
 import SectionSeparator from '../sectionSeparator';
 import { useConfigurableFormActions } from '@/providers/form/actions';
+import { ShaSpin } from '..';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -204,11 +203,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   ];
 
   return (
-    <Spin
-      spinning={isFetchingData}
-      tip={'Fetching data...'}
-      indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
-    >
+    <ShaSpin spinning={isFetchingData} tip={'Fetching data...'}>
       <div className="sha-page-heading sha-paging-height">
         <div className="sha-page-heading-left" style={{width: 'calc(100% - 60px)'}}>
           <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
@@ -274,7 +269,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           }}
         />
       </div>
-    </Spin>
+    </ShaSpin>
   );
 };
 

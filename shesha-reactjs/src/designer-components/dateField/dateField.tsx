@@ -20,7 +20,7 @@ import { defaultStyles } from '../textField/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { useSheshaApplication } from '@/providers';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { removeUndefinedProps } from '@/utils/object';
@@ -45,7 +45,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const background = model?.background;
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, localStyle), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});

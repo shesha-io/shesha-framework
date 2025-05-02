@@ -65,7 +65,7 @@ const CreateModal: FC<ICreateModalProps> = ({
       <FormInfo formProps={formInfo} visible={!!formInfo}>
         <Skeleton loading={loading}>
           <ValidationErrors error={saveError} />
-          <ParentProvider model={{}} formMode='edit'>
+          <ParentProvider model={null} formMode='edit'>
             <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
               <ComponentsContainer containerId={'root'} />
             </ComponentsContainerProvider>

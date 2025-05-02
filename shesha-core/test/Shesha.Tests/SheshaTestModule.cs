@@ -17,11 +17,9 @@ using Microsoft.Extensions.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate;
-using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
-using Shesha.Tests.DynamicEntities;
-using Shesha.Tests.Interceptors;
+using Shesha.Tests.Fixtures;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Collections.Generic;
@@ -42,8 +40,6 @@ namespace Shesha.Tests
         )]
     public class SheshaTestModule : AbpModule
     {
-        private const string ConnectionStringName = "TestDB";
-
         public SheshaTestModule(SheshaNHibernateModule nhModule)
         {
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
@@ -53,11 +49,20 @@ namespace Shesha.Tests
         {
             IocManager.MockWebHostEnvirtonment();
 
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var connectionString = config.GetConnectionString(ConnectionStringName).NotNullOrWhiteSpace($"Connection string '{ConnectionStringName}' is unavailable");
-
             var nhConfig = Configuration.Modules.ShaNHibernate();
-            nhConfig.UseMsSql(connectionString);
+
+            var dbFixture = IocManager.IsRegistered<IDatabaseFixture>()
+                ? IocManager.Resolve<IDatabaseFixture>()
+                : null;
+            if (dbFixture != null /*&& false*/)
+            {
+                nhConfig.UseDbms(c => dbFixture.DbmsType, c => dbFixture.ConnectionString);
+            }
+            else
+            {
+                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                nhConfig.UseDbms(c => config.GetDbmsType(), c => config.GetRequiredConnectionString("TestDB"));
+            }
 
             Configuration.UnitOfWork.Timeout = TimeSpan.FromMinutes(30);
             Configuration.UnitOfWork.IsTransactional = false;
@@ -108,15 +113,10 @@ namespace Shesha.Tests
 
             if (!IocManager.IsRegistered<ApplicationPartManager>())
                 IocManager.IocContainer.Register(Component.For<ApplicationPartManager>().ImplementedBy<ApplicationPartManager>());
-
-            StaticContext.SetIocManager(IocManager);
         }
 
         public override void Initialize()
         {
-            IocManager.Register(typeof(AbpAsyncDeterminationInterceptor<ShurikInterceptor>), DependencyLifeStyle.Transient);
-            IocManager.IocContainer.Kernel.ComponentRegistered += ShurikInterceptor.Configure;
-
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
