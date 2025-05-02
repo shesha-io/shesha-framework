@@ -91,7 +91,7 @@ export const getSettings = () => {
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'display-row-1',
+                   id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
                     {
@@ -747,7 +747,7 @@ export const getSettings = () => {
                         label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
