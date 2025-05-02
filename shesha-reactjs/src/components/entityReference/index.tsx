@@ -1,14 +1,10 @@
-import moment from 'moment';
-import React, { FC, useEffect, useMemo, useState } from 'react';
-import { get } from '@/utils/fetchers';
-import { Button, App, Spin } from 'antd';
 import { entitiesGet } from '@/apis/entities';
+import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IKeyValue } from '@/interfaces/keyValue';
-import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { IKeyValue } from '@/interfaces/keyValue';
+import { isPropertiesArray } from '@/interfaces/metadata';
 import {
   ButtonGroupItemProps,
   FormIdentifier,
@@ -19,11 +15,14 @@ import {
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
-import { useStyles } from './styles/styles';
-import { isPropertiesArray } from '@/interfaces/metadata';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { getFormApi } from '@/providers/form/formApi';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import { get } from '@/utils/fetchers';
+import { App, Button, Spin } from 'antd';
+import moment from 'moment';
+import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
@@ -71,7 +70,7 @@ export interface IEntityReferenceProps {
   onSuccess?: IConfigurableActionConfiguration;
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
-  style?: string;
+  style?: CSSProperties;
   displayType?: 'textTitle' | 'icon' | 'displayProperty';
   iconName?: ShaIconTypes;
   textTitle?: string;
@@ -80,7 +79,6 @@ export interface IEntityReferenceProps {
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { globalState } = useGlobalState();
-  const { styles } = useStyles();
   const { notification, message } = App.useApp();
 
   const localForm = useForm(false);
@@ -104,8 +102,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityId = props.value?.id ?? props.value;
   const entityType = props.entityType ?? props.value?._className;
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
-
-  const style = getStyle(props.style, formData);
 
   useEffect(() => {
     if (
@@ -206,19 +202,19 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   };
 
   const displayTextByType = useMemo(() => {
-    return props.displayType === 'icon'
-      ? <ShaIcon iconName={props.iconName} />
-      : props.displayType === 'textTitle'
-        ? props.textTitle
-        : displayText;
+    return props.displayType === 'icon' ? (
+      <ShaIcon iconName={props.iconName} />
+    ) : props.displayType === 'textTitle' ? (
+      props.textTitle
+    ) : (
+      displayText
+    );
   }, [props.displayType, props.iconName, props.textTitle, displayText]);
-
-  const navigationStyling = { ...style, marginTop: style?.marginTop ? style.marginTop : '3px' };
 
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
-        <Button className={styles.entityReferenceBtn} type="link">
+        <Button type="link">
           <span>
             <Spin size="small" /> Loading...
           </span>
@@ -227,8 +223,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
-        <Button className={styles.entityReferenceBtn} disabled style={style} type="link">
-          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+        <Button disabled style={props.style} type="link">
+          <ShaLink linkToForm={formIdentifier} params={{ id: entityId }}>
             {displayTextByType}
           </ShaLink>
         </Button>
@@ -236,11 +232,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <Button className={styles.entityReferenceBtn} style={navigationStyling} type="link">
-          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-            {displayTextByType}
-          </ShaLink>
-        </Button>
+        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props?.style}>
+          {displayTextByType}
+        </ShaLink>
       );
 
     if (props.entityReferenceType === 'Quickview')
@@ -264,7 +258,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     return (
-      <Button className={styles.entityReferenceBtn} style={style} type="link" onClick={dialogExecute}>
+      <Button style={props.style} type="link" onClick={dialogExecute}>
         {displayTextByType}
       </Button>
     );
@@ -272,14 +266,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (
-      <Button className={styles.entityReferenceBtn} type="link" disabled>
+      <Button type="link" disabled>
         Form identifier is not configured
       </Button>
     );
 
   if (!props.value)
     return (
-      <Button className={styles.entityReferenceBtn} type="link" disabled>
+      <Button type="link" disabled>
         {displayText}
       </Button>
     );
