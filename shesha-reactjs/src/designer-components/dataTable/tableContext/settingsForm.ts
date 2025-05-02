@@ -46,26 +46,33 @@ export const getSettings = (data: any) => {
                   label: "Tooltip",
                   jsSetting: true,
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: "codeEditor",
-                  propertyName: "disableRefresh",
                   parentId: commonTabId,
-                  label: "Disable Refresh Data",
-                  tooltip: "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  jsSetting: true,
-                  availableConstantsExpression: "    return metadataBuilder.object(\"constants\").addAllStandard().build();",
-                  placeholder: "",
-                  language: "typescript",
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: "switch",
-                  propertyName: "hidden",
-                  parentId: commonTabId,
-                  label: "Hide",
-                  jsSetting: true,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: "codeEditor",
+                      propertyName: "disableRefresh",
+                      parentId: commonTabId,
+                      label: "Disable Refresh Data",
+                      tooltip: "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
+                      availableConstantsExpression: "    return metadataBuilder.object(\"constants\").addAllStandard().build();",
+                      placeholder: "",
+                      language: "typescript",
+                    },
+                    {
+                      id: nanoid(),
+                      type: "switch",
+                      propertyName: "hidden",
+                      parentId: commonTabId,
+                      label: "Hide",
+                      jsSetting: true,
+                    }
+                  ]
                 })
                 .toJson()
             ]
@@ -163,28 +170,6 @@ export const getSettings = (data: any) => {
                           }
                         ]
                       })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'dropdown',
-                        propertyName: "dataFetchingMode",
-                        label: "Data Fetching Mode",
-                        labelAlign: "right",
-                        parentId: dataTabId,
-                        allowClear: true,
-                        dropdownOptions: [
-                          {
-                            label: "Paging",
-                            value: "paging"
-                          },
-                          {
-                            label: "Fetch all",
-                            value: "fetchAll"
-                          }
-                        ],
-                        validate: { required: true },
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                        jsSetting: true,
-                      })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -196,6 +181,28 @@ export const getSettings = (data: any) => {
                         } as any,
                         readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'dropdown',
+                            propertyName: "dataFetchingMode",
+                            label: "Data Fetching Mode",
+                            labelAlign: "right",
+                            parentId: dataTabId,
+                            allowClear: true,
+                            dropdownOptions: [
+                              {
+                                label: "Paging",
+                                value: "paging"
+                              },
+                              {
+                                label: "Fetch all",
+                                value: "fetchAll"
+                              }
+                            ],
+                            validate: { required: true },
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            jsSetting: true,
+                          },
                           {
                             id: nanoid(),
                             propertyName: 'defaultPageSize',
@@ -239,7 +246,7 @@ export const getSettings = (data: any) => {
                             validate: { required: true },
                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             jsSetting: true,
-                          }
+                          },
                         ]
                       })
                       .addSettingsInputRow({
