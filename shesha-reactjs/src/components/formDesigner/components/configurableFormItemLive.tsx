@@ -16,7 +16,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-  const { formData } = useShaFormInstance();
+  const { getPublicFormApi } = useShaFormInstance();
+  const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
@@ -40,7 +41,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
-    rules: model.hidden ? [] : getValidationRules(model, { formData }),
+    rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     //layout: model.layout, this property appears to have been removed from the Ant component

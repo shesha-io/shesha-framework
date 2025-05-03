@@ -1111,7 +1111,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
             rule,
             value,
             callback,
-            options?.formData
+            options?.getFormData ? options?.getFormData() : options?.formData
           ),
       });
   }
