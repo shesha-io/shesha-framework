@@ -1,27 +1,27 @@
-import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect, useState } from 'react';
+import { DraggerStub } from '@/components/fileUpload/stubs';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getFileIcon, isImageType } from '@/icons/fileIcons';
+import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
+import { IFormComponentStyles } from '@/providers/form/models';
+import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { addPx } from '@/utils/style';
+import { nanoid } from '@/utils/uuid';
+import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
+  App,
   Button,
   ButtonProps,
-  App,
-  Upload,
   Image,
+  Upload,
   UploadFile,
 } from 'antd';
-import { DraggerStub } from '@/components/fileUpload/stubs';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
-import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import { useStyles } from './styles/styles';
-import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { getFileIcon, isImageType } from '@/icons/fileIcons';
+import React, { FC, useEffect, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
-import { CSSProperties } from 'styled-components';
-import { addPx } from '@/utils/style';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { nanoid } from '@/utils/uuid';
+import { useStyles } from './styles/styles';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -63,7 +63,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   gap?: number;
   container?: IStyleType;
   primaryColor?: string;
-  allStyles?: CSSProperties;
+  allStyles?: IFormComponentStyles;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -108,7 +108,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const { styles } = useStyles({
     containerStyles: { ...{ ...containerDimensionsStyles, width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
-    style: model?.allStyles, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    style: model?.allStyles?.fullStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
 
@@ -260,7 +260,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               </span>}
           </div>)
         : (props.disabled
-          ? <Upload {...props} style={model?.allStyles} listType={listTypeAndLayout} />
+          ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
           : isDragger ?
             <Dragger {...props}>
               <DraggerStub styles={styles} />
