@@ -10,7 +10,7 @@ const evaluateString = (expression: string, data: any): any => {
     }
 };
 
-const getHeaderStyles = () => (
+export const getHeaderStyles = () => (
     {
         "font": {
             "color": "darkslategrey",
@@ -48,14 +48,14 @@ const getHeaderStyles = () => (
     }
 );
 
-export const filterDynamicComponents = (components, query, data) => {
+export const filterDynamicComponents = (components: any[], query: string, data: any) => {
     if (!components || !Array.isArray(components)) return [];
 
     const lowerCaseQuery = query.toLowerCase();
 
     // Helper function to evaluate hidden property
-    const evaluateHidden = (hidden, directMatch, hasVisibleChildren) => {
-        return hidden || (!directMatch && !hasVisibleChildren);
+    const evaluateHidden = (hidden: any, directMatch: boolean, hasVisibleChildren: boolean) => {
+        return hidden ?? (!directMatch && !hasVisibleChildren);
     };
 
     // Helper function to check if text matches query
@@ -73,7 +73,7 @@ export const filterDynamicComponents = (components, query, data) => {
         );
 
         // Handle propertyRouter
-        if (c.componentName === 'propertyRouter') {
+        if (c.type === 'propertyRouter') {
             const filteredComponents = filterDynamicComponents(c.components, query, data);
 
             return {
@@ -85,30 +85,25 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle collapsiblePanel
         if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data);
+            const contentComponents = filterDynamicComponents(c.content?.components ?? [], query, data);
             const hasVisibleChildren = contentComponents.length > 0;
 
-            return {
+            const newComponent = {
                 ...c,
                 collapsible: c.collapsible ?? 'header',
                 content: {
                     ...c.content,
                     components: contentComponents
                 },
-                ghost: false,
-                accentStyle: true,
-                headerStyles: getHeaderStyles(),
+                ghost: true,
                 hidden: !hasVisibleChildren
             };
+            return newComponent;
         }
 
         // Handle settingsInputRow
         if (c.type === 'settingsInputRow') {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
+            const filteredInputs = filterDynamicComponents(c.inputs, query, data);
 
             return {
                 ...c,
@@ -127,22 +122,7 @@ export const filterDynamicComponents = (components, query, data) => {
                 components: filteredComponents,
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
-        }
-
-        // Handle inputs array if present
-        if (c.inputs) {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
-
-            return {
-                ...c,
-                inputs: filteredInputs,
-                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
-            };
-        }
+        };
 
         // Handle basic component
         return {
