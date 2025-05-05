@@ -194,7 +194,7 @@ export const useFormComponentStyles = <TModel,>(
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
 
   useDeepCompareEffect(() => {
-    if (background?.storedFile?.id && background?.type === 'storedFile')
+    if (background?.storedFile?.id && background?.type === 'storedFile'){
       fetch(`${app.backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
         { headers: { ...app.httpHeaders, "Content-Type": "application/octet-stream" } })
         .then((response) => {
@@ -205,6 +205,9 @@ export const useFormComponentStyles = <TModel,>(
           const style = getBackgroundStyle(background, jsStyle, url);
           setBackgroundStyles(style);
         });
+      }else{
+        setBackgroundStyles(getBackgroundStyle(background, jsStyle));
+      }
   }, [background, jsStyle, app.backendUrl, app.httpHeaders]);
 
   const appearanceStyle = useMemo(()=> removeUndefinedProps(
