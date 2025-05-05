@@ -13,7 +13,7 @@ import { isEqual, uniqWith } from 'lodash';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
-  const {allowClear = true } = props;
+  const { allowClear = true } = props;
 
   // sources
   const source = useDataTableStore(false);
@@ -83,7 +83,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           // request full details for values
           setLoadingValues(true);
           const selectedFilter = filterKeysFunc(props.value);
-          source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
+          source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
         }
         if (loadingValues && source?.tableData?.length) {
           // update local store with full details
@@ -163,10 +163,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selectedValuesList = useMemo(() => {
     return selected.current?.map((row, index) => renderOption(row, 10 + index));
   }, [selected.current]);
-  
+
   const freeTextValuesList = useMemo(() => {
     return props.allowFreeText && autocompleteText && source.tableData.findIndex(x => x[displayPropName]?.toLowerCase() === autocompleteText.toLowerCase()) === -1
-      ? renderOption({[keyPropName]: autocompleteText, [displayPropName]: autocompleteText}, 'freeText')
+      ? renderOption({ [keyPropName]: autocompleteText, [displayPropName]: autocompleteText }, 'freeText')
       : null;
   }, [autocompleteText, source.tableData]);
 
@@ -245,29 +245,28 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         title={title}
         onDropdownVisibleChange={onDropdownVisibleChange}
         value={keys}
-        className="sha-dropdown"
+        className="sha-autocomplete"
         dropdownStyle={{ ...props.style, height: 'auto' }}
         showSearch={!props.disableSearch}
         notFoundContent={props.notFoundContent}
         defaultActiveFirstOption={false}
         filterOption={false}
         onSearch={handleSearch}
-        //defaultValue={wrapValue(defaultValue, options)}
         onChange={handleChange}
         allowClear={allowClear}
         loading={source?.isInProgress?.fetchTableData}
         placeholder={props.placeholder}
         disabled={props.readOnly}
-        variant={props.hideBorder ? 'borderless' : undefined}
+        variant={'borderless'}
         onSelect={handleSelect}
-        style={props.style}
+        style={{ ...props.style }}
         size={props.size}
         ref={selectRef}
-        mode={props.value && props.mode === 'multiple' ? props.mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
+        mode={props.value && props.mode === 'multiple' ? props.mode : undefined}
       >
-        {freeTextValuesList /* this is need for showing free text value */}
+        {freeTextValuesList}
         {list}
-        {!open && selectedValuesList /* this is need for showing selected value(s) */}
+        {!open && selectedValuesList}
       </Select>
     </>
   );
@@ -354,6 +353,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
     >
       <AutocompleteInner
         {...props}
+        style={props.style}
         uid={uid}
         disableRefresh={disableRefresh}
         fields={fields}

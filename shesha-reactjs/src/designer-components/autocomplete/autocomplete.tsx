@@ -1,13 +1,11 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import {
   executeExpression,
-  getStyle,
-  pickStyleFromModel,
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
@@ -18,14 +16,12 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
-import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
-import { toSizeCssProp } from '@/utils/form';
+import { getValueByPropertyName } from '@/utils/object';
 import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import useStyle from '@/components/antd/comment/style';
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -35,27 +31,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-  Factory: ({ model }) => {
+  Factory: ({ model, calculatedModel }) => {
     const allData = useAvailableConstantsData();
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles: React.CSSProperties = removeUndefinedProps({
-      height: toSizeCssProp(model.height),
-      width: toSizeCssProp(model.width),
-      fontWeight: model.fontWeight,
-      borderWidth: model.borderSize,
-      borderRadius: model.borderRadius,
-      borderStyle: model.borderType,
-      borderColor: model.borderColor,
-      backgroundColor: model.backgroundColor,
-      fontSize: model.fontSize,
-      overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
-      ...stylingBoxAsCSS,
-    });
-    const jsStyle = getStyle(model.style, allData.data);
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+    const [localModel, setLocalModel] = useState<any>();
 
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
@@ -100,7 +78,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function')
               onChange(...args);
           };
-
+          
           return <Autocomplete
             {...model}
             grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
@@ -108,7 +86,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             outcomeValueFunc={outcomeValueFunc}
             displayValueFunc={displayValueFunc}
             filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-            style={finalStyle}
+            style={model?.allStyles?.fullStyle}
+            size={model?.size ?? 'middle'}
             value={value}
             onChange={onChangeInternal} 
             allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
