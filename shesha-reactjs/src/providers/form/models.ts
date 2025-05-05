@@ -484,6 +484,7 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
 
 export interface IFormValidationRulesOptions {
   formData?: any;
+  getFormData?: () => any;
 }
 
 /** Default form settings */
