@@ -99,7 +99,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
-    --primary-color: ${token.colorPrimary}; 
+    --primary-color: ${token.colorPrimary};
+    --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
 

@@ -10,13 +10,14 @@ const evaluateString = (expression: string, data: any): any => {
     }
 };
 
-export const getHeaderStyles = () => (
+const getHeaderStyles = () => (
     {
         "font": {
-            "color": "darkslategrey",
+            "color": "#000",
             "size": 14,
             "weight": "500",
             "align": "left",
+            "type": "Segoe UI"
         },
         "background": {
             "type": "color",
@@ -34,28 +35,62 @@ export const getHeaderStyles = () => (
             "radiusType": "all",
             "borderType": "custom",
             "border": {
+                "all": {},
+                "top": {},
+                "right": {},
                 "bottom": {
                     "width": "2px",
                     "style": "solid",
                     "color": "var(--primary-color)"
                 },
+                "left": {}
             },
             "radius": {
-                "all": 0
+                "all": 8
             }
         },
-        "stylingBox": "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\"}"
+        stylingBox: "{\"paddingLeft\":\"8\",\"paddingBottom\":\"8\",\"paddingTop\":\"8\",\"paddingRight\":\"8\"}"
     }
 );
 
-export const filterDynamicComponents = (components: any[], query: string, data: any) => {
+const getBodyStyles = () => ({
+    fullStyle: {
+        "paddingTop": "8px",
+        "paddingRight": "8px",
+        "paddingBottom": "8px",
+        "paddingLeft": "8px",
+        "marginBottom": "5px",
+        "width": "calc(auto - 0px - 0px)",
+        "height": "calc(auto - 0px - 5px)",
+        "minWidth": "calc(0px - 0px - 0px)",
+        "minHeight": "calc(0px - 0px - 5px)",
+        "maxWidth": "calc(auto - 0px - 0px)",
+        "maxHeight": "calc(auto - 0px - 5px)",
+        "borderWidth": "1px",
+        "borderStyle": "none",
+        "borderColor": "#d9d9d9",
+        "borderTopRightRadius": "0px",
+        "borderBottomRightRadius": "0px",
+        "borderBottomLeftRadius": "0px",
+        "borderTopLeftRadius": "0px",
+        "fontWeight": "400",
+        "textAlign": "left",
+        "backgroundSize": "cover",
+        "backgroundPosition": "center",
+        "backgroundRepeat": "no-repeat",
+        "backgroundColor": "#fff",
+        "boxShadow": "0px 0px 0px 0px rgba(0, 0, 0, 0.15)"
+    }
+});
+
+export const filterDynamicComponents = (components, query, data) => {
     if (!components || !Array.isArray(components)) return [];
 
     const lowerCaseQuery = query.toLowerCase();
 
     // Helper function to evaluate hidden property
-    const evaluateHidden = (hidden: any, directMatch: boolean, hasVisibleChildren: boolean) => {
-        return hidden ?? (!directMatch && !hasVisibleChildren);
+    const evaluateHidden = (hidden, directMatch, hasVisibleChildren) => {
+        return hidden || (!directMatch && !hasVisibleChildren);
     };
 
     // Helper function to check if text matches query
@@ -73,7 +108,7 @@ export const filterDynamicComponents = (components: any[], query: string, data: 
         );
 
         // Handle propertyRouter
-        if (c.type === 'propertyRouter') {
+        if (c.componentName === 'propertyRouter') {
             const filteredComponents = filterDynamicComponents(c.components, query, data);
 
             return {
@@ -85,25 +120,32 @@ export const filterDynamicComponents = (components: any[], query: string, data: 
 
         // Handle collapsiblePanel
         if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components ?? [], query, data);
+            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data);
             const hasVisibleChildren = contentComponents.length > 0;
 
-            const newComponent = {
+            return {
                 ...c,
                 collapsible: c.collapsible ?? 'header',
                 content: {
                     ...c.content,
                     components: contentComponents
                 },
-                ghost: true,
-                hidden: !hasVisibleChildren
+                ghost: false,
+                collapsedByDefault: true,
+                headerStyles: getHeaderStyles(),
+                allStyles: getBodyStyles(),
+                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
+                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
-            return newComponent;
         }
 
         // Handle settingsInputRow
         if (c.type === 'settingsInputRow') {
-            const filteredInputs = filterDynamicComponents(c.inputs, query, data);
+            const filteredInputs = c.inputs?.filter(input =>
+                matchesQuery(input.label) ||
+                matchesQuery(input.propertyName) ||
+                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
+            ) || [];
 
             return {
                 ...c,
@@ -122,7 +164,22 @@ export const filterDynamicComponents = (components: any[], query: string, data: 
                 components: filteredComponents,
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
-        };
+        }
+
+        // Handle inputs array if present
+        if (c.inputs) {
+            const filteredInputs = c.inputs?.filter(input =>
+                matchesQuery(input.label) ||
+                matchesQuery(input.propertyName) ||
+                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
+            ) || [];
+
+            return {
+                ...c,
+                inputs: filteredInputs,
+                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
+            };
+        }
 
         // Handle basic component
         return {

@@ -6,6 +6,7 @@ import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabsComponentProps } from './models';
+import { useThemeState } from '@/providers';
 
 interface SearchableTabsProps {
     model: ITabsComponentProps;
@@ -19,6 +20,8 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const { styles } = useStyles();
+    const { theme } = useThemeState();
+
 
     const newFilteredTabs = tabs
         .map((tab: any) => {

@@ -33,6 +33,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { data } = useFormData();
     const isFormSettings = formSettings?.isSettingsForm;
 
+    console.log(model);
     const {
       label,
       expandIconPosition,
