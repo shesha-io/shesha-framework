@@ -4,10 +4,8 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { useEffect, useMemo, useState } from 'react';
 import { useFormExpression } from '@/hooks';
-import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
 
@@ -20,13 +18,13 @@ interface IWizardComponent {
   done: () => void;
   content: (description: string, index: number) => string;
   next: () => void;
+  setStep: (stepIndex) => void;
   visibleSteps: IWizardStepProps[];
 }
 
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const allData = useAvailableConstantsData();
-  const dataContext = useDataContext();
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
 
@@ -316,15 +314,5 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 
-  /* Data Context section */
-
-  useDeepCompareEffect(() => {
-    dataContext.setData({ current, visibleSteps });
-  }, [current, visibleSteps]);
-
-  dataContext.updateApi({ back, cancel, done, content, next, setStep }); // update context api to use relevant State
-
-  /* Data Context section */
-
-  return { back, components, current, currentStep, cancel, done, content, next, visibleSteps };
+  return { components, current, currentStep, visibleSteps, back, cancel, done, content, next, setStep };
 };
