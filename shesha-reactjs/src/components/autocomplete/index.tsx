@@ -239,14 +239,18 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
+  //specifying a width for dropdownStyles causes its width to go out of sync with the rest of the component
+  const {width, ...restOfDropdownStyles} = props.style;
+
   return (
     <>
       <Select
         title={title}
         onDropdownVisibleChange={onDropdownVisibleChange}
         value={keys}
-        className="sha-autocomplete"
-        dropdownStyle={{ ...props.style, height: 'auto' }}
+        className='sha-dropdown'
+        style={{ ...props.style }}
+        dropdownStyle={{ ...restOfDropdownStyles, height: 'auto' }}
         showSearch={!props.disableSearch}
         notFoundContent={props.notFoundContent}
         defaultActiveFirstOption={false}
@@ -259,7 +263,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         disabled={props.readOnly}
         variant={'borderless'}
         onSelect={handleSelect}
-        style={{ ...props.style }}
         size={props.size}
         ref={selectRef}
         mode={props.value && props.mode === 'multiple' ? props.mode : undefined}

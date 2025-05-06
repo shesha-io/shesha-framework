@@ -31,9 +31,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
-    const [localModel, setLocalModel] = useState<any>();
 
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
