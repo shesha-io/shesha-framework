@@ -328,7 +328,8 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'On Change',
                                 labelAlign: 'right',
                                 tooltip: 'Enter custom eventhandler on changing of event.',
-                                parentId: eventsTabId
+                                parentId: eventsTabId,
+                                availableConstantsExpression: '    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"dateString\", \"Date string value\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();',
                             })
                             .toJson()
                         ]
