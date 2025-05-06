@@ -46,40 +46,27 @@ const getHeaderStyles = () => (
                 "left": {}
             },
             "radius": {
-                "all": 8
+                "all": '0'
             }
         },
-        stylingBox: "{\"paddingLeft\":\"8\",\"paddingBottom\":\"8\",\"paddingTop\":\"8\",\"paddingRight\":\"8\"}"
+        stylingBox: "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"0\"}"
     }
 );
 
 const getBodyStyles = () => ({
-    fullStyle: {
-        "paddingTop": "8px",
-        "paddingRight": "8px",
-        "paddingBottom": "8px",
-        "paddingLeft": "8px",
-        "marginBottom": "5px",
-        "width": "calc(auto - 0px - 0px)",
-        "height": "calc(auto - 0px - 5px)",
-        "minWidth": "calc(0px - 0px - 0px)",
-        "minHeight": "calc(0px - 0px - 5px)",
-        "maxWidth": "calc(auto - 0px - 0px)",
-        "maxHeight": "calc(auto - 0px - 5px)",
-        "borderWidth": "1px",
-        "borderStyle": "none",
-        "borderColor": "#d9d9d9",
-        "borderTopRightRadius": "0px",
-        "borderBottomRightRadius": "0px",
-        "borderBottomLeftRadius": "0px",
-        "borderTopLeftRadius": "0px",
-        "fontWeight": "400",
-        "textAlign": "left",
-        "backgroundSize": "cover",
-        "backgroundPosition": "center",
-        "backgroundRepeat": "no-repeat",
-        "backgroundColor": "#fff",
-        "boxShadow": "0px 0px 0px 0px rgba(0, 0, 0, 0.15)"
+    border: {
+        radiusType: "all",
+        borderType: "all",
+        border: {
+            all: { width: '0px', style: 'none', color: '' },
+            top: {},
+            right: {},
+            bottom: {},
+            left: {}
+        },
+        radius: {
+            all: 0
+        }
     }
 });
 
@@ -134,6 +121,7 @@ export const filterDynamicComponents = (components, query, data) => {
                 collapsedByDefault: true,
                 headerStyles: getHeaderStyles(),
                 allStyles: getBodyStyles(),
+                border: getBodyStyles().border,
                 stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
@@ -163,21 +151,6 @@ export const filterDynamicComponents = (components, query, data) => {
                 ...c,
                 components: filteredComponents,
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
-            };
-        }
-
-        // Handle inputs array if present
-        if (c.inputs) {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
-
-            return {
-                ...c,
-                inputs: filteredInputs,
-                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
             };
         }
 
