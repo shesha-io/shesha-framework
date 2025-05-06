@@ -12,6 +12,7 @@ import { IBackgroundValue } from '@/designer-components/_settings/utils/backgrou
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -79,6 +80,10 @@ export interface IStyleType {
   size?: SizeType;
   style?: string;
   stylingBox?: string;
+  primaryTextColor?: ColorValueType;
+  primaryBgColor?: ColorValueType;
+  secondaryBgColor?: ColorValueType;
+  secondaryTextColor?: ColorValueType;
 }
 
 export interface IInputStyles extends IStyleType {
