@@ -760,6 +760,7 @@ export const getSettings = () => {
                             label: 'Dimensions',
                             parentId: styleRouterId,
                             labelAlign: 'right',
+                            ghost: true,
                             collapsible: 'header',
                             content: {
                               id: containerDimensionsStylePnlId,
@@ -844,6 +845,7 @@ export const getSettings = () => {
                             label: 'Margin & Padding',
                             labelAlign: 'right',
                             collapsible: 'header',
+                            ghost: true,
                             parentId: styleRouterId,
                             content: {
                               id: 'containerStylingBoxPanel',
@@ -865,6 +867,7 @@ export const getSettings = () => {
                             propertyName: 'containerCustomStylePanel',
                             label: 'Custom Styles',
                             labelAlign: 'right',
+                            ghost: true,
                             parentId: styleRouterId,
                             collapsible: 'header',
                             content: {
