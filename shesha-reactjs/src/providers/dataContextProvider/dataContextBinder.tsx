@@ -22,6 +22,7 @@ import {
 } from "./contexts";
 import ConditionalWrap from "@/components/conditionalWrapper/index";
 import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
+import { isEmpty } from "lodash";
 
 export interface  IDataContextBinderRef {
   fireListener: (propertyName: string) => void;
@@ -61,6 +62,10 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const metadataDispatcher = useMetadataDispatcher();
 
   const apiRef = useRef<any>(props.api);
+
+  // update api if presented in the props (another way - leave props.api empty and call updateApi method)
+  if (!isEmpty(props.api))
+    apiRef.current = props.api;
   
   // use ref to get actual data value inside methods
   const dataRef = useRef<any>();
