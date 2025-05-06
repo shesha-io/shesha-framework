@@ -101,7 +101,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         const cardBackgroundStyle = await getBackgroundStyle(cardBackground, cardJsStyle, cardStoredImageUrl);
 
         setCardFinalStyle({ ...cardStyle, ...(tabType === 'card' && cardBackgroundStyle) });
-        setFinalStyle({ ...style, ...backgroundStyle });
+        setFinalStyle({ ...style, ...backgroundStyle, overflow: model?.overflow });
       };
 
       fetchTabStyles();

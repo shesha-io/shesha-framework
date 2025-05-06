@@ -63,7 +63,7 @@ export const getSettings = () => {
                                             label: 'Default Active Tab',
                                             labelAlign: 'right',
                                             parentId: 'root',
-                                            dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?._data?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
+                                            dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
                                         },
                                         {
                                             id: nanoid(),
