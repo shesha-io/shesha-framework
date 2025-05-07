@@ -10,7 +10,7 @@ const evaluateString = (expression: string, data: any): any => {
     }
 };
 
-const getHeaderStyles = (primaryColor) => (
+const getHeaderStyles = () => (
     {
         "font": {
             "color": "darkslategrey",
@@ -37,7 +37,7 @@ const getHeaderStyles = (primaryColor) => (
                 "bottom": {
                     "width": "2px",
                     "style": "solid",
-                    "color": primaryColor
+                    "color": "var(--primary-color)"
                 },
             },
             "radius": {
@@ -48,7 +48,7 @@ const getHeaderStyles = (primaryColor) => (
     }
 );
 
-export const filterDynamicComponents = (components, query, data, primaryColor) => {
+export const filterDynamicComponents = (components, query, data) => {
     if (!components || !Array.isArray(components)) return [];
 
     const lowerCaseQuery = query.toLowerCase();
@@ -74,7 +74,7 @@ export const filterDynamicComponents = (components, query, data, primaryColor) =
 
         // Handle propertyRouter
         if (c.componentName === 'propertyRouter') {
-            const filteredComponents = filterDynamicComponents(c.components, query, data, primaryColor);
+            const filteredComponents = filterDynamicComponents(c.components, query, data);
 
             return {
                 ...c,
@@ -85,7 +85,7 @@ export const filterDynamicComponents = (components, query, data, primaryColor) =
 
         // Handle collapsiblePanel
         if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data, primaryColor);
+            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data);
             const hasVisibleChildren = contentComponents.length > 0;
 
             return {
@@ -96,25 +96,9 @@ export const filterDynamicComponents = (components, query, data, primaryColor) =
                     components: contentComponents
                 },
                 ghost: false,
-                collapsedByDefault: true,
-                headerStyles: getHeaderStyles(primaryColor),
-                border: {
-                    "hideBorder": false,
-                    "radiusType": "all",
-                    "borderType": "all",
-                    "border": {
-                        "all": {
-                            "width": "1px",
-                            "style": "none",
-                            "color": "#d9d9d9"
-                        },
-                    },
-                    "radius": {
-                        "all": 0
-                    }
-                },
-                "stylingBox": "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
-                "hidden": evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
+                accentStyle: true,
+                headerStyles: getHeaderStyles(),
+                hidden: !hasVisibleChildren
             };
         }
 
@@ -135,7 +119,7 @@ export const filterDynamicComponents = (components, query, data, primaryColor) =
 
         // Handle components with nested components
         if (c.components) {
-            const filteredComponents = filterDynamicComponents(c.components, query, data, primaryColor);
+            const filteredComponents = filterDynamicComponents(c.components, query, data);
             const hasVisibleChildren = filteredComponents.length > 0;
 
             return {

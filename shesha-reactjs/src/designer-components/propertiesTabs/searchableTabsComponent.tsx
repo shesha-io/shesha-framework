@@ -6,7 +6,6 @@ import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabsComponentProps } from './models';
-import { useTheme } from '@/providers';
 
 interface SearchableTabsProps {
     model: ITabsComponentProps;
@@ -20,18 +19,17 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const { styles } = useStyles();
-    const { theme } = useTheme();
 
     const newFilteredTabs = tabs
         .map((tab: any) => {
-            const filteredComponents = tab.children ? tab.children : filterDynamicComponents(tab.components, searchQuery, data, theme.application.primaryColor);
+            const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery, data);
             const hasVisibleComponents = Array.isArray(filteredComponents)
                 ? filteredComponents.some(comp => !comp.hidden)
                 : !!filteredComponents;
 
             return {
                 ...tab,
-                label: tab.label || tab.title,
+                label: tab.label ?? tab.title,
                 components: filteredComponents,
                 children: tab.components.length === 0 ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" /> : <ParentProvider model={model}>
                     <ComponentsContainer
