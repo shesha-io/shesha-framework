@@ -304,7 +304,7 @@ export const getSettings = () => {
                                                         {
                                                             id: nanoid(),
                                                             type: 'switch',
-                                                            label: "Show Scrolls",
+                                                            label: "Hide Scroll Bar",
                                                             propertyName: 'hideScrollBar'
                                                         }
                                                         ]
