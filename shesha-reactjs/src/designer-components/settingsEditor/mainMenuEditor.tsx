@@ -90,8 +90,15 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
     };
 
     const onOk = () => {
+      if (form.formData === undefined) {
+        message.error('Menu configuration is empty!');
+        return;
+      }
       setMenuProps(form.formData);
       saveMainMenu(form.formData)
+        .then(() => {
+          changeMainMenu(form.formData);
+        })
         .then(() => {
           message.success('Menu saved successfully!');
         })
