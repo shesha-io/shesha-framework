@@ -283,7 +283,7 @@ export const getSettings = (data: any) => {
                             modelType: '{{data.entityType}}',
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             width: '100%',
-                            jsSetting: true,
+                            jsSetting: false,
                           },
                         ],
                       })
