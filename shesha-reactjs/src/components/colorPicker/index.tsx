@@ -47,7 +47,7 @@ export const readThemeColor = (theme: IConfigurableTheme) => ({
   'info': theme.application?.infoColor,
   'processing': theme.application?.processingColor,
   'primaryTextColor': theme?.text?.default,
-  'secondaryTextcolor': theme?.text?.secondary
+  'secondaryTextColor': theme?.text?.secondary
 });
 
 export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly, size, style, defaultValue }) => {
