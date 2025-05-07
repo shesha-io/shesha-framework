@@ -178,11 +178,6 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: dataTabId,
                         inline: false,
-                        hidden: {
-                          _value: false,
-                          _code: "return getSettingValue(data.dataFetchingMode) !== 'paging';",
-                          _mode: 'code',
-                        } as any,
                         readOnly: {
                           _code: 'return getSettingValue(data?.readOnly);',
                           _mode: 'code',
@@ -221,6 +216,11 @@ export const getSettings = (data: any) => {
                             label: 'Default Page Size',
                             type: 'dropdown',
                             allowClear: true,
+                            hidden: {
+                              _value: false,
+                              _code: "return getSettingValue(data.dataFetchingMode) !== 'paging';",
+                              _mode: 'code',
+                            } as any,
                             dropdownOptions: [
                               {
                                 label: '5',
