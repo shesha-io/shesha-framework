@@ -21,5 +21,7 @@
         public const string PublicUrl = "Shesha.PublicUrl";
 
         public const string DefaultEndpointAccess = "Shesha.DefaultEndpointAccess";
+
+        public const string EnableStressTestingSettings = "Shesha.EnableStressTestingSettings";
     }
 }
