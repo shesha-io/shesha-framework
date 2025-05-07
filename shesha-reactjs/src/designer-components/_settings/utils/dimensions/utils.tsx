@@ -2,6 +2,7 @@ import React, { CSSProperties } from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
 import { addPx } from "@/utils/style";
+import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 
 const getDimension = (main: string | number, left: any, right: any) => {
   return `calc(${addPx(main)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
@@ -30,9 +31,9 @@ export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyle
   };
 };
 
-export const overflowOptions = [
-    { value: "visible", label: "Visible", icon: <EyeOutlined /> },
-    { value: "hidden", label: "Hidden", icon: <EyeInvisibleOutlined /> },
-    { value: "scroll", label: "Scroll", icon: <ColumnWidthOutlined /> },
-    { value: "auto", label: "Auto", icon: <BorderlessTableOutlined /> },
+export const overflowOptions: IDropdownOption[] = [
+  { value: "visible", label: "Visible", icon: <EyeOutlined /> },
+  { value: "hidden", label: "Hidden", icon: <EyeInvisibleOutlined /> },
+  { value: "scroll", label: "Scroll", icon: <ColumnWidthOutlined /> },
+  { value: "auto", label: "Auto", icon: <BorderlessTableOutlined /> },
 ];

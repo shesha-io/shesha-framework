@@ -16,6 +16,7 @@ import {
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = (data) => {
   // Generate unique IDs for major components
@@ -526,6 +527,20 @@ export const getSettings = (data) => {
                                 .toJson()
                             ]
                           })
+                          .addSettingsInput(
+                            {
+                              inputType: 'dropdown',
+                              id: nanoid(),
+                              label: 'Text Justify',
+                              propertyName: 'textJustify',
+                              hidden: {
+                                _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "block";',
+                                _mode: 'code',
+                                _value: false,
+                              } as any,
+                              dropdownOptions: TEXT_JUSTIFY
+                            }
+                          )
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: displayCollapsiblePanelId,
@@ -535,38 +550,15 @@ export const getSettings = (data) => {
                               {
                                 type: 'dropdown',
                                 id: nanoid(),
-                                label: 'Text Justify',
-                                propertyName: 'textJustify',
-                                hidden: {
-                                  _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "block";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                dropdownOptions: TEXT_JUSTIFY
-                              },
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
                                 label: 'Overflow',
                                 propertyName: 'overflow',
-                                dropdownOptions: [
-                                  {
-                                    label: "Auto",
-                                    value: "auto",
-                                  },
-                                  {
-                                    label: "Hidden",
-                                    value: "hidden",
-                                  },
-                                  {
-                                    label: "Scroll",
-                                    value: "scroll",
-                                  },
-                                  {
-                                    label: "Visible",
-                                    value: "visible",
-                                  },
-                                ]
+                                dropdownOptions: overflowOptions
+                              },
+                              {
+                                id: nanoid(),
+                                type: 'switch',
+                                label: "Hide Scroll Bar",
+                                propertyName: 'hideScrollBar'
                               }
                             ],
                           })

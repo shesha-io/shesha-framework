@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor, overflow }) => {
+export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
     const {
         borderWidth,
         borderStyle,
@@ -15,12 +15,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         backgroundPosition,
         backgroundRepeat,
         boxShadow,
-        width,
-        height,
-        minWidth,
-        minHeight,
-        maxWidth,
-        maxHeight,
         marginTop = '0px',
         marginBottom = '0px',
         marginRight = '-1px',
@@ -83,12 +77,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 border: ${borderMap.default};
                 ${rest};
                 box-shadow: ${boxShadow} !important;
-                width: ${width};
-                max-width: ${isLeft || isRight ? width : maxWidth};
-                min-width: ${minWidth};
-                height: ${height};
-                max-height: ${maxHeight};
-                min-height: ${minHeight};
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
                 border-right:${isRight ? '0px solid transparent' : borderMap.right} !important;
                 border-bottom      : ${isBottom ? 'none' : borderMap.bottom} !important;
@@ -103,9 +91,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${backgroundSize} !important;
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
-                overflow: ${overflow?.type || 'visible'} !important;
-                overscroll-behavior: contain;
-                scroll-bar-width: ${overflow?.hideScrollBar ? 'none' : null}
             }
 
             .ant-tabs-tab {
@@ -163,12 +148,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
             .ant-tabs-nav {
                 --ant-tabs-ink-bar-color: ${tabLineColor || token.colorPrimary} !important;
                 margin: 0;
-                width: ${isTop || isBottom ? width : 'auto'};
-                height: ${isTop || isBottom ? 'auto' : height};
-                max-width: ${isTop || isBottom ? maxWidth : 'auto'};
-                max-height: ${isTop || isBottom ? 'auto' : maxHeight};
-                min-width: ${isTop || isBottom ? minWidth : '0'};
-                min-height: ${isTop || isBottom ? '0' : minHeight};
                 margin: ${isTop ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isBottom ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isLeft ? `${marginTop} 0 ${marginBottom} ${marginLeft}` : `${marginTop} ${marginRight} ${marginBottom} 0`};
             }
 

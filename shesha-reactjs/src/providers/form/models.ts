@@ -110,7 +110,6 @@ export interface IInputStyles extends IStyleType {
   backgroundStoredFileId?: string;
   style?: string;
   overflow?: CSSProperties['overflow'];
-  scrollBarWidth?: CSSProperties['scrollbarWidth'];
 };
 
 export type ConfigurableFormComponentTypes =
