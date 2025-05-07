@@ -279,7 +279,9 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addSettingsInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
-    return this.addProperty(props, 'settingsInputRow');
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    return this.addProperty(obj, 'settingsInputRow');
   }
 
   public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {
