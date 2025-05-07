@@ -291,15 +291,23 @@ export const getSettings = () => {
                                                             }
                                                         ]
                                                     })
-                                                    .addSettingsInput({
+                                                    .addSettingsInputRow({
                                                         id: nanoid(),
-                                                        parentId: 'displayCollapsiblePanel',
-                                                        inline: true,
-                                                        inputType: 'dropdown',
-                                                        label: 'Overflow',
-                                                        defaultValue: 'auto',
-                                                        propertyName: 'dimensions.overflow',
-                                                        dropdownOptions: overflowOptions
+                                                        inputs: [{
+                                                            id: nanoid(),
+                                                            type: 'dropdown',
+                                                            label: 'Overflow',
+                                                            defaultValue: 'auto',
+                                                            propertyName: 'overflow',
+                                                            dropdownOptions: overflowOptions
+                                                        },
+                                                        {
+                                                            id: nanoid(),
+                                                            type: 'switch',
+                                                            label: "Show Scrolls",
+                                                            propertyName: 'hideScrollBar'
+                                                        }
+                                                        ]
                                                     })
                                                     .toJson()
                                                 ]
@@ -363,7 +371,6 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
-                                            hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: nanoid(),
                                                 components: [
@@ -756,6 +763,7 @@ export const getSettings = () => {
                                                         labelAlign: 'right',
                                                         ghost: true,
                                                         parentId: nanoid(),
+                                                        hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                                         collapsible: 'header',
                                                         content: {
                                                             id: nanoid(),

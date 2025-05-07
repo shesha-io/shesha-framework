@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
+export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor, overflow }) => {
     const {
         borderWidth,
         borderStyle,
@@ -33,7 +33,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         borderTopRightRadius,
         borderBottomRightRadius,
         borderBottomLeftRadius,
-        overflow,
         fontSize,
         fontWeight,
         color,
@@ -92,7 +91,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 min-height: ${minHeight};
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
                 border-right:${isRight ? '0px solid transparent' : borderMap.right} !important;
-                border-bottom: ${isBottom ? 'none' : borderMap.bottom} !important;
+                border-bottom      : ${isBottom ? 'none' : borderMap.bottom} !important;
                 border-top: ${isTop ? 'none' : borderMap.top} !important;
                 background: ${backgroundImage || backgroundColor} !important;
                 margin: ${isTop ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isBottom ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isLeft ? `${marginTop} ${marginRight} ${marginBottom} 0` : `${marginTop} 0 ${marginBottom} ${marginLeft}`};
@@ -104,7 +103,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${backgroundSize} !important;
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
-                overflow: ${overflow} !important;
+                overflow: ${overflow?.type || 'visible'} !important;
+                overscroll-behavior: contain;
+                scroll-bar-width: ${overflow?.hideScrollBar ? 'none' : null}
             }
 
             .ant-tabs-tab {

@@ -72,7 +72,6 @@ export const getSettings = () => {
                                         parentId: 'root',
                                         inputType: 'dropdown',
                                         jsSetting: true,
-                                        hidden: { _code: 'return  getSettingValue(data?.hidden);', _mode: 'code', _value: false } as any,
                                         dropdownOptions: [
                                             { value: 'default', label: 'Default' },
                                             { value: 'navigation', label: 'Navigation' }
@@ -631,6 +630,7 @@ export const getSettings = () => {
                                                                 type: 'colorPicker',
                                                                 propertyName: 'primaryTextColor',
                                                                 hideLabel: false,
+                                                                defaultValue: '#fff',
                                                                 label: 'Primary Text Color'
                                                             }
                                                         ]
