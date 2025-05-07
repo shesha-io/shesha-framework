@@ -101,7 +101,7 @@ export const getSettings = (data: any) => {
                         label: 'Data Source Type',
                         inputType: 'dropdown',
                         dropdownOptions: [
-                          { label: 'Url', value: 'Url' },
+                          { label: 'URL', value: 'Url' },
                           { label: 'Entity', value: 'Entity' },
                           { label: 'Form', value: 'Form' },
                         ],
