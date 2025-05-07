@@ -68,10 +68,17 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           style={{
             ...getStyle(model?.style, formData),
             overflow: model.overflow,
-            scrollbarWidth: model.hideScrollBar ? 'none' : 'thin',
-            ...dimensionsStyles,
+            scrollbarWidth: 'thin',
+            ...(model.hideScrollBar && {
+              '::-webkit-scrollbar': { display: 'none' },
+              msOverflowStyle: 'none',
+            }),
+            height: '100%',
+            width: '100%',
             ...flexAndGridStyles as any
           }}
+          width={'100%'}
+          height={'100%'}
           noDefaultStyling={model.noDefaultStyling}
           className={model.className}
           dynamicComponents={model?.isDynamic ? model?.components : []}

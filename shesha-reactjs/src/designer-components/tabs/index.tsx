@@ -35,7 +35,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
-    const cardStyles = useFormComponentStyles({ ...model.card, id: nanoid(), type: '' });
+    const cardStyles = useFormComponentStyles({ ...model.card } as any);
 
     const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles, } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: { type: overflow, hideScrollBar } });
 
@@ -87,7 +87,11 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
               <ComponentsContainer style={{
                 ...model.allStyles.dimensionsStyles,
                 overflow: overflow,
-                scrollbarWidth: hideScrollBar ? 'none' : 'thin',
+                scrollbarWidth: 'thin',
+                ...(model.hideScrollBar && {
+                  '::-webkit-scrollbar': { display: 'none' },
+                  msOverflowStyle: 'none',
+                })
               }}
                 wrapperStyle={{
                   ...model.allStyles.dimensionsStyles,
