@@ -144,13 +144,15 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
 
 export interface IConfigurableFormComponentProps {
   id: string;
+  model?: IConfigurableFormComponent;
 }
 
-export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id }) => {
+export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({id, model}) => {
   const isDrawing = useIsDrawingForm();
 
   const componentRef = useRef(null);
-  const componentModel = ShaForm.useComponentModel(id);
+  const componentMarkupModel = ShaForm.useComponentModel(id);
+  const componentModel = model?.isDynamic ? model : componentMarkupModel;
 
   const ComponentRenderer = !isDrawing || componentModel?.isDynamic
     ? FormComponent

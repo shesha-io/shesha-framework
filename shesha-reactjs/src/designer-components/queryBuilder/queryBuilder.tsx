@@ -8,10 +8,10 @@ export const QueryBuilder: FC<IQueryBuilderComponentProps> = (props) => {
   const queryBuilder = useQueryBuilder(false);
 
   return !props.modelType && queryBuilder ? (
-    <QueryBuilderRenderer {...props}></QueryBuilderRenderer>
+    <QueryBuilderRenderer {...props} />
   ) : (
     <QueryBuilderWithModelType modelType={props.modelType}>
-      <QueryBuilderRenderer {...props}></QueryBuilderRenderer>
+      <QueryBuilderRenderer {...props} />
     </QueryBuilderWithModelType>
   );
 };

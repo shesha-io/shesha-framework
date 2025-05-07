@@ -320,7 +320,7 @@ export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = 
   // override DataContextManager to be responsive to changes in contexts
   fullContext.dcm = useDataContextManager(); 
   
-  const accessors = wrapConstantsData({ fullContext, ...args });
+  const accessors = wrapConstantsData({ fullContext, ...args, topContextId: 'all' });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
   if (!contextProxyRef.current)
@@ -1111,7 +1111,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
             rule,
             value,
             callback,
-            options?.formData
+            options?.getFormData ? options?.getFormData() : options?.formData
           ),
       });
   }

@@ -264,6 +264,7 @@ export const getSettings = (data) => {
                 labelAlign: 'right',
                 parentId: dataTabId,
                 collapsible: 'header',
+                ghost: true,
                 hidden: { _code: 'return !getSettingValue(data?.allowNewRecord);', _mode: 'code', _value: false } as any,
                 content: {
                   id: modalSettingsPnlId,

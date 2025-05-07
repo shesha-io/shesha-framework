@@ -207,7 +207,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           font-weight: ${fontWeight} !important;
           font-family: ${fontFamily} !important;
         }
-        ${listType !== 'thumbnail' && style}
+        ${listType === 'thumbnail' && style}
       }
 
       .ant-upload-list-item-container {
