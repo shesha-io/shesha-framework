@@ -4,6 +4,7 @@ import { IComponentsContainerProps } from './componentsContainer';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
 import { useStyles } from '../styles/styles';
 import classNames from 'classnames';
+import { useDeepCompareMemo } from '@/hooks';
 
 export interface IComponentsContainerDynamicProps extends Omit<IComponentsContainerProps, 'dynamicComponents'>,
   Required<Pick<IComponentsContainerProps, 'dynamicComponents'>> {
@@ -23,22 +24,22 @@ export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props)
 
   const { styles } = useStyles();
   
-  const renderComponents = () => {
+  const renderComponents = useDeepCompareMemo(() => {
     const renderedComponents = dynamicComponents.map((c) => (
-      <ConfigurableFormComponent id={c.id} key={c.id} />
+      <ConfigurableFormComponent id={c.id} model={c} key={c.id} />
     ));
 
     return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
-  };
+  }, [dynamicComponents]);
 
   const style = { ...getAlignmentStyle(props), ...incomingStyle };
 
   return noDefaultStyling ? (
-    <div style={{ ...style, textJustify: 'auto' }}>{renderComponents()}</div>
+    <div style={{ ...style, textJustify: 'auto' }}>{renderComponents}</div>
   ) : (
     <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
       <div className={styles.shaComponentsContainerInner} style={style}>
-        {renderComponents()}
+        {renderComponents}
       </div>
     </div>
   );
