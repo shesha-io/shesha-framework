@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
@@ -205,7 +205,16 @@ export const getSettings = () => {
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
-                                                            }
+                                                            },
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: nanoid(),
+                                                                label: 'Align',
+                                                                propertyName: 'font.align',
+                                                                hideLabel: true,
+                                                                width: 60,
+                                                                dropdownOptions: textAlign,
+                                                            },
                                                         ],
                                                     })
                                                     .toJson()
@@ -670,7 +679,16 @@ export const getSettings = () => {
                                                                             label: 'Color',
                                                                             hideLabel: true,
                                                                             propertyName: 'card.font.color',
-                                                                        }
+                                                                        },
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: nanoid(),
+                                                                            label: 'Align',
+                                                                            propertyName: 'card.font.align',
+                                                                            hideLabel: true,
+                                                                            width: 60,
+                                                                            dropdownOptions: textAlign,
+                                                                        },
                                                                     ],
                                                                 })
                                                                 .toJson()

@@ -29,6 +29,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         borderBottomLeftRadius,
         fontSize,
         fontWeight,
+        textAlign,
         color,
         fontFamily,
         rest
@@ -113,6 +114,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}` :
                     isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}` :
                         isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
+
+                .ant-tabs-tab-btn {
+                    width: 100%;
+                }
             }
 
             .ant-tabs-tab-active {
@@ -137,11 +142,13 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 max-height: ${cardMaxHeight};
                 z-index: 2;
 
-                * {
+                .ant-tabs-tab-btn {
                 color: ${color ?? token.colorPrimary} !important;
                 font-size: ${fontSize} !important;
                 font-weight: ${fontWeight} !important;
                 font-family: ${fontFamily} !important;
+                text-align: ${textAlign} !important;
+                width: 100%;
                 }
             }
 
