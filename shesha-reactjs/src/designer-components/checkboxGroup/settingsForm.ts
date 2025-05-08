@@ -190,7 +190,7 @@ export const getSettings = (data: any) => {
                       type: 'codeEditor',
                       id: nanoid(),
                       propertyName: 'dataSourceUrl',
-                      label: 'Data Source Url',
+                      label: 'Data Source URL',
                       jsSetting: true,
                     },
                     {
