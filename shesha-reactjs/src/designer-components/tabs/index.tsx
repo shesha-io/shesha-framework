@@ -35,7 +35,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
-    const cardStyles = useFormComponentStyles({ ...model.card } as any);
+    const cardStyles = useFormComponentStyles({ ...model.card });
 
     const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles, } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: { type: overflow, hideScrollBar } });
 
