@@ -2,6 +2,7 @@ import React from 'react';
 import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
 import { Autocomplete } from '@/components/autocomplete';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
+import { getValueByPropertyName } from '@/utils/object';
 
 export type EntityAutocompleteWidgetType = BaseWidget & SelectFieldSettings;
 const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
@@ -27,6 +28,7 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
         onChange={onChange}
         style={{ minWidth: '150px' }}
         size="small"
+        outcomeValueFunc={(value: any) => getValueByPropertyName(value, 'id') ?? value}
       />
     );
   },

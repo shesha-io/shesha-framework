@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Shesha.Services;
+using Shouldly;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Shesha.Services;
-using Shouldly;
 using Xunit;
 
 namespace Shesha.Tests.CompressionHelper
 {
+    [Trait("RunOnPipeline", "yes")]
     public class CompressionServiceComplex_Tests
     {
         [Fact]

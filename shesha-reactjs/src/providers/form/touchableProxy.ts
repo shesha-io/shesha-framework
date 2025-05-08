@@ -1,3 +1,4 @@
+import { unproxyValue } from "@/utils/object";
 import { ProxyPropertiesAccessors, ProxyWithRefresh, ValueAccessor } from "./observableProxy";
 import { CreateTouchableProperty, IPropertyTouched } from "./touchableProperty";
 
@@ -57,7 +58,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                 return;
             const props = key.split('.');
             let prop = props.shift();
-            let data = this.getPropertyValue(prop);
+            let data = unproxyValue(this.getPropertyValue(prop));
             if (data === null || data === undefined) {
                 changed = true;
                 return;
@@ -75,11 +76,8 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                 data = data[prop];
             }
 
-            if (typeof data === 'object') {
-                if (value === null || typeof value !== 'object')
-                    changed = true;
-                return;
-            }
+            if (typeof data === 'object' && (value === null || typeof value !== 'object'))
+                changed = true;
 
             if (data !== value)
                 changed = true;

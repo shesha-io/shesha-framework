@@ -1,31 +1,27 @@
-import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { DraggerStub } from '@/components/fileUpload/stubs';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getFileIcon, isImageType } from '@/icons/fileIcons';
+import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
+import { IFormComponentStyles } from '@/providers/form/models';
+import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { addPx } from '@/utils/style';
+import { nanoid } from '@/utils/uuid';
+import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
+  App,
   Button,
   ButtonProps,
-  App,
-  Upload,
   Image,
+  Upload,
   UploadFile,
 } from 'antd';
-import { DraggerStub } from '@/components/fileUpload/stubs';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
-import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import { useStyles } from './styles/styles';
-import { getStyle, IInputStyles, IStyleType, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
-import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
+import React, { FC, useEffect, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
-import { removeUndefinedProps } from '@/utils/object';
-import { CSSProperties } from 'styled-components';
-import { addPx } from '@/utils/style';
+import { useStyles } from './styles/styles';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -67,6 +63,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   gap?: number;
   container?: IStyleType;
   primaryColor?: string;
+  allStyles?: IFormComponentStyles;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -99,66 +96,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
+  const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
 
   const model = rest;
   const hasFiles = !!fileList.length;
-  const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const dimensions = model?.dimensions;
-  const border = model?.border;
-  const font = model?.font;
-  const shadow = model?.shadow;
-  const background = model?.background;
-  const jsStyle = getStyle(model.style, model);
-  const containerJsStyle = getStyle(model.container?.style, model.container);
-
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-  const containerDimensions = useMemo(() => getDimensionsStyle(model.container?.dimensions), [model.container?.dimensions]);
-  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-  const fontStyles = useMemo(() => getFontStyle(font), [font]);
-  const [backgroundStyles, setBackgroundStyles] = useState({});
-  const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-  useEffect(() => {
-
-    const fetchStyles = async () => {
-      const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-        ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-          { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-          .then((response) => {
-            return response.blob();
-          })
-          .then((blob) => {
-            return URL.createObjectURL(blob);
-          }) : '';
-
-      const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-      setBackgroundStyles(style);
-    };
-
-    fetchStyles();
-  }, [background, backendUrl, httpHeaders, jsStyle]);
-
-  const styling = JSON.parse(model.container?.stylingBox || '{}');
-  const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-  const additionalStyles: CSSProperties = removeUndefinedProps({
-    ...dimensionsStyles,
-    ...borderStyles,
-    ...fontStyles,
-    ...backgroundStyles,
-    ...shadowStyles
-  });
-
-
-  const finalStyle = removeUndefinedProps(additionalStyles);
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container, id: nanoid(), type: '' });
 
   const { styles } = useStyles({
-    containerStyles: { ...{ ...containerDimensions, width: layout === 'vertical' ? '' : addPx(containerDimensions.width), height: layout === 'horizontal' ? '' : addPx(containerDimensions.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
-    style: finalStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    containerStyles: { ...{ ...containerDimensionsStyles, width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
+    style: model?.allStyles?.fullStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
 
@@ -299,7 +249,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
       {isStub
         ? (isDragger
-          ? <Dragger disabled><DraggerStub styles={styles}/></Dragger>
+          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
           : <div
             className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
           >
@@ -310,7 +260,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               </span>}
           </div>)
         : (props.disabled
-          ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
+          ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
           : isDragger ?
             <Dragger {...props}>
               <DraggerStub styles={styles} />

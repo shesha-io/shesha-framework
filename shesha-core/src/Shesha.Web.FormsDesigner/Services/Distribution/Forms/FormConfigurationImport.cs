@@ -6,6 +6,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
+using Shesha.Web.FormsDesigner.Exceptions;
 using System;
 using System.Threading.Tasks;
 
@@ -21,6 +22,9 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public FormConfigurationImport(IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo, 
             IFormManager formManger, 
@@ -35,6 +39,9 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             _permissionedObjectManager = permissionedObjectManager;
         }
 
+        /// <summary>
+        /// Iten type
+        /// </summary>
         public string ItemType => FormConfiguration.ItemTypeName;
 
         /// inheritedDoc
@@ -46,7 +53,23 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             if (!(item is DistributedFormConfiguration formItem))
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(DistributedFormConfiguration)}. Actual type is {item.GetType().FullName}");
 
-            return await ImportFormAsync(formItem, context);
+            var form = await ImportFormAsync(formItem, context);
+            await _unitOfWorkManager.Current.SaveChangesAsync();
+
+            return form;
+        }
+
+        private bool FormsAreEqual(FormConfiguration? form, DistributedFormConfiguration item) 
+        {
+            return form != null &&
+                (form.Module == null ? string.IsNullOrWhiteSpace(item.ModuleName) : form.Module.Name == item.ModuleName) &&
+                form.Markup == item.Markup &&
+                form.Name == item.Name &&
+                form.Label == item.Label &&
+                form.Description == item.Description &&
+                form.ModelType == item.ModelType &&
+                form.Suppress == item.Suppress &&
+                form.IsTemplate == item.IsTemplate;
         }
 
         /// inheritedDoc
@@ -54,6 +77,9 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         {
             // check if form exists
             var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.IsLast);
+
+            if (FormsAreEqual(existingForm, item))
+                return existingForm;
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;

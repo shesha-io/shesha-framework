@@ -81,6 +81,7 @@ import { useShaFormInstance, useShaFormUpdateDate } from './providers/shaFormPro
 import { QueryStringParams } from '@/utils/url';
 import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
+import { unproxyValue } from '@/utils/object';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -319,7 +320,7 @@ export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = 
   // override DataContextManager to be responsive to changes in contexts
   fullContext.dcm = useDataContextManager(); 
   
-  const accessors = wrapConstantsData({ fullContext, ...args });
+  const accessors = wrapConstantsData({ fullContext, ...args, topContextId: 'all' });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
   if (!contextProxyRef.current)
@@ -348,17 +349,19 @@ const getSettingValue = (
   if (!processedObjects)
     processedObjects = [];
 
-  if (!value || typeof propertyFilter === 'function' && !propertyFilter(propertyName))
+  const unproxiedValue = unproxyValue(value);
+
+  if (!unproxiedValue || typeof propertyFilter === 'function' && !propertyFilter(propertyName))
     return value;
 
-  if (typeof value === 'object'
-    && processedObjects.indexOf(value) === -1 // skip already processed objects to avoid infinite loop
+  if (typeof unproxiedValue === 'object'
+    && processedObjects.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
   ) {
     // If array - update all items
-    if (Array.isArray(value)) {
-      const v = value.length === 0
-        ? value
-        : value.map((x) => {
+    if (Array.isArray(unproxiedValue)) {
+      const v = unproxiedValue.length === 0
+        ? unproxiedValue
+        : unproxiedValue.map((x) => {
           /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
           return getActualModel(x, allData, parentReadOnly, propertyFilter, processedObjects);
         });
@@ -368,11 +371,11 @@ const getSettingValue = (
 
 
     // update setting value to actual
-    if (isPropertySettings(value)) {
-      const v = value._mode === 'code'
-        ? Boolean(value._code) ? calcFunction(value, allData) : undefined
-        : value._mode === 'value'
-          ? value._value
+    if (isPropertySettings(unproxiedValue)) {
+      const v = unproxiedValue._mode === 'code'
+        ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
+        : unproxiedValue._mode === 'value'
+          ? unproxiedValue._value
           : undefined;
       processedObjects.push(v);
       return v;
@@ -380,7 +383,7 @@ const getSettingValue = (
 
     // update nested objects
     /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
-    const v = getActualModel(value, allData, parentReadOnly, propertyFilter, processedObjects);
+    const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processedObjects);
     processedObjects.push(v);
     return v;
   }
@@ -1108,7 +1111,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
             rule,
             value,
             callback,
-            options?.formData
+            options?.getFormData ? options?.getFormData() : options?.formData
           ),
       });
   }

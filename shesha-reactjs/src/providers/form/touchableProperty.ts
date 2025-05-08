@@ -1,3 +1,5 @@
+import { unproxyValue } from "@/utils/object";
+
 export interface IPropertyTouch {
   propertyName: string;
   value: any;
@@ -27,6 +29,21 @@ export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, nam
         set(target, name, value) {
             target.accessor._data[name] = value;
             return true;
+        },
+        has(target, prop) {
+          const propertyName = prop.toString();
+          return propertyName in target.accessor._data;
+        },
+        ownKeys(target) {
+          const data = target.accessor._data;
+          return data ? Object.keys(data) : [];
+        },
+        getOwnPropertyDescriptor(target, prop) {
+          const propertyName = prop.toString();
+          const data = target.accessor._data;
+          if (data && propertyName in data)
+              return { enumerable: true, configurable: true, writable: true };
+          return undefined;
         }
     });
 };
@@ -37,7 +54,7 @@ export class TouchableProperty implements IPropertyTouched {
     getData = () => this.accessor.getData();
 
     touched (propName: string, fullPropName: string, value: any) {
-        this.accessor.touched(propName, fullPropName,value);
+        this.accessor.touched(propName, fullPropName, value);
     }
 
     constructor(data: any, parent: IPropertyTouched, name: string) {
@@ -51,7 +68,7 @@ export class TouchableArrayProperty extends Array implements IPropertyTouched {
     getData = () => this.accessor.getData();
 
     touched (propName: string, fullPropName: string, value: any) {
-        this.accessor.touched(propName, fullPropName,value);
+        this.accessor.touched(propName, fullPropName, value);
     }
 
     constructor(data: any, parent: IPropertyTouched, name: string) {
@@ -122,18 +139,17 @@ class PropertyTouchAccessor implements IPropertyTouched {
 
     createChild = (accessor: string) => {
         const child = this._data[accessor];
-        
-        if (typeof child === 'function')
-            return child;
+        const unproxiedValue = unproxyValue(child);
 
-        this.addTouchedProp(accessor);
 
-        if (child !== null && typeof child === 'object')
+        if (typeof unproxiedValue === 'function')
+            return unproxiedValue;
+
+        this.touched(accessor, accessor, unproxiedValue);
+
+        if (unproxiedValue !== null && typeof unproxiedValue === 'object')
             return CreateTouchableProperty(child, this, accessor);
           
-        if (this._parent && this._parent.touched) 
-            this._parent.touched(this._accessor, this._accessor + '.' + accessor, child);
-
         return child;
     };
 }

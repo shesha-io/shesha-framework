@@ -578,7 +578,7 @@ export const getSettings = (data: any) => {
                 }
               })
               .addCollapsiblePanel({
-                id: 'createEditContent',
+                id: 'createEditPanel',
                 propertyName: 'createEditContent',
                 label: 'Create & Edit Methods',
                 labelAlign: 'right',
@@ -586,7 +586,7 @@ export const getSettings = (data: any) => {
                 collapsible: 'header',
                 collapsedByDefault: true,
                 content: {
-                  id: 'createEditContent',
+                  id: 'createEditContentId',
                   components: [...new DesignerToolbarSettings()
                     .addSettingsInputRow({
                       id: nanoid(),
@@ -665,4 +665,4 @@ export const getSettings = (data: any) => {
       wrapperCol: { span: 24 }
     }
   };
-}; 
+};
