@@ -107,11 +107,11 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         jsSetting: true,
                                         dropdownOptions: [
                                             {
-                                                label: 'text',
+                                                label: 'Text',
                                                 value: 'text',
                                             },
                                             {
-                                                label: 'password',
+                                                label: 'Password',
                                                 value: 'password',
                                             },
                                         ],
