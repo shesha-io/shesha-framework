@@ -50,7 +50,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                             .addLabelConfigurator({
                                 id: nanoid(),
                                 propertyName: 'hideLabel',
-                                label: 'label',
+                                label: 'Label',
                                 parentId: commonTabId,
                                 hideLabel: true,
                             })
@@ -128,19 +128,20 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                         title: 'Data',
                         id: dataTabId,
                         components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
+                            .addCodeEditor({
                                 id: nanoid(),
                                 propertyName: 'defaultValue',
                                 label: 'Default Value',
                                 size: 'small',
                                 jsSetting: true,
-                                tooltip: "Enter default value for component. Multiple values are exposed.",
-                                parentId: nanoid()
+                                parentId: nanoid(),
+                                availableConstantsExpression: "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard(\"shesha:selectedRow\").build();"
+
                             })
                             .addSettingsInput({
                                 id: nanoid(),
                                 parentId: nanoid(),
-                                label: "Data Source type",
+                                label: "Data Source Type",
                                 propertyName: "dataSourceType",
                                 inputType: "dropdown",
                                 size: "small",
@@ -148,11 +149,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 dropdownOptions: [
                                     {
                                         value: "entitiesList",
-                                        label: "Entities List"
+                                        label: "Entities list"
                                     },
                                     {
                                         value: "url",
-                                        label: "Url"
+                                        label: "URL"
                                     },
                                 ]
                             })
@@ -174,7 +175,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInput({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        label: "Data Source Url",
+                                        label: "Data Source URL",
                                         propertyName: "dataSourceUrl",
                                         inputType: "textField",
                                         size: "small",
@@ -241,7 +242,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         inputType: 'textField',
                                         propertyName: 'quickviewGetEntityUrl',
                                         parentId: dataTabId,
-                                        label: 'Get Entity Url',
+                                        label: 'Get Entity URL',
                                         size: 'small',
                                         hidden: {
                                             _code: 'return !getSettingValue(data?.quickviewEnabled);',
@@ -250,19 +251,25 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         },
                                         version: 5
                                     })
-                                    .addSettingsInput({
+                                    .addSettingsInputRow({
                                         id: nanoid(),
-                                        inputType: 'textField',
-                                        propertyName: 'quickviewDisplayPropertyName',
                                         parentId: dataTabId,
-                                        label: 'Display Property Name',
-                                        size: 'small',
                                         hidden: {
                                             _code: 'return !getSettingValue(data?.quickviewEnabled);',
                                             _mode: 'code',
                                             _value: false
                                         },
-                                        version: 5
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'propertyAutocomplete',
+                                                propertyName: 'quickviewDisplayPropertyName',
+                                                parentId: dataTabId,
+                                                modelType: '{{data.entityType}}',
+                                                label: 'Display Property Name',
+                                                version: 5
+                                            }
+                                        ],
                                     })
                                     .addSettingsInput({
                                         id: nanoid(),
@@ -395,7 +402,8 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 label: 'On Change',
                                 labelAlign: 'right',
                                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                                parentId: eventsTabId
+                                parentId: eventsTabId,
+                                availableConstantsExpression: "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard()\n        .addObject(\"value\", \"Component current value\")\n        .addObject(\"option\", \"Meta data of component current value\")        \t\n        .build();"
                             })
                             .toJson()
                         ]
@@ -509,7 +517,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 propertyName: "dimensions.width",
                                                                 icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
                                                             },
                                                             {
                                                                 type: 'textField',
