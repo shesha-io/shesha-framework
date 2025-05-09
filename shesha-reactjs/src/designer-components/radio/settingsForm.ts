@@ -110,6 +110,7 @@ export const getSettings = (data: any) => {
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
+                  parentId: 'data-s4gmBg31azZC0UjZjpfTm',
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -179,7 +180,7 @@ export const getSettings = (data: any) => {
                       type: 'codeEditor',
                       id: nanoid(),
                       propertyName: 'dataSourceUrl',
-                      label: 'Data Source Url',
+                      label: 'Data Source URL',
                       jsSetting: true,
                     },
                     {
@@ -277,6 +278,7 @@ export const getSettings = (data: any) => {
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        parentId: 'styleRouter',
                         defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
@@ -307,6 +309,7 @@ export const getSettings = (data: any) => {
                                 propertyName: 'style',
                                 hideLabel: false,
                                 label: 'Style',
+                                parentId: 'stylePnl-M500-911MFR',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
