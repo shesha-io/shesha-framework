@@ -1,6 +1,6 @@
-import { IChartData, IChartsProps, IFilter } from "@/designer-components/charts/model";
-import React, { FC, PropsWithChildren, useContext, useReducer } from "react";
-import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetUrlTypeDataAction } from "./actions";
+import { IChartData, IChartsProps } from "@/designer-components/charts/model";
+import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from "react";
+import { SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsLoadedAction, SetUrlTypeDataAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
 
@@ -15,16 +15,8 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetFilterdDataAction(filteredData));
   };
 
-  const setChartFilters = (filters: IFilter[]) => {
-    dispatch(SetChartFiltersAction(filters));
-  };
-
   const setIsLoaded = (isLoaded: boolean) => {
     dispatch(SetIsLoadedAction(isLoaded));
-  };
-
-  const setIsFilterVisible = (isFilterVisible: boolean) => {
-    dispatch(SetIsFilterVisibleAction(isFilterVisible));
   };
 
   const setControlProps = (controlProps: IChartsProps) => {
@@ -37,15 +29,13 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
 
   return (
     <ChartDataStateContext.Provider value={state}>
-      <ChartDataActionsContext.Provider value={{
+      <ChartDataActionsContext.Provider value={useMemo(() => ({
         setData,
         setFilterdData,
-        setChartFilters,
         setIsLoaded,
-        setIsFilterVisible,
         setControlProps,
         setUrlTypeData
-      }}>
+      }), [])}>
         {children}
       </ChartDataActionsContext.Provider>
     </ChartDataStateContext.Provider>

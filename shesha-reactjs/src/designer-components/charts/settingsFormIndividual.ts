@@ -50,6 +50,22 @@ export const getSettings = (data: any) => {
                   label: 'Hide',
                   inputType: 'switch',
                 })
+                
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'simpleOrPivot',
+                  parentId: commonTabId,
+                  hidden: false,
+                  label: 'Simple / Pivot',
+                  inputType: 'dropdown',
+                  allowClear: true,
+                  dropdownOptions: [
+                    { label: 'Simple', value: 'simple' },
+                    { label: 'Pivot', value: 'pivot' },
+                  ],
+                  validate: { required: true },
+                  defaultValue: 'simple',
+                })
                 .toJson(),
             ],
           },
@@ -337,6 +353,43 @@ export const getSettings = (data: any) => {
                       })
                       .addSettingsInput({
                         id: nanoid(),
+                        inputType: 'switch',
+                        propertyName: 'allowFilter',
+                        label: 'Allow Chart Filter',
+                        parentId: dataTabId,
+                        description: 'Allow users to filter the chart data directly from the chart.',
+                        defaultValue: false,
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        inline: true,
+                        hidden: {
+                          _code: 'return !getSettingValue(data?.allowFilter)',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'filterProperties',
+                            label: 'Filter Property list',
+                            type: 'propertyAutocomplete',
+                            labelAlign: 'right',
+                            mode: 'multiple',
+                            parentId: dataTabId,
+                            isDynamic: true,
+                            description:
+                              'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
+                            modelType: '{{data.entityType}}',
+                            autoFillProps: false,
+                            settingsValidationErrors: [],
+                            width: '100%',
+                          },
+                        ],
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
                         propertyName: 'aggregationMethod',
                         parentId: dataTabId,
                         label: 'Aggregation Method',
@@ -352,19 +405,32 @@ export const getSettings = (data: any) => {
                         validate: { required: true },
                         defaultValue: 'count',
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'filters',
-                        label: 'Entity filter',
-                        labelAlign: 'right',
                         parentId: dataTabId,
-                        inputType: 'queryBuilder',
-                        hidden: false,
-                        isDynamic: false,
-                        validate: {},
-                        settingsValidationErrors: [],
-                        modelType: '{{data.entityType}}',
-                        fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                        inline: true,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.dataMode) === `url` || !getSettingValue(data?.entityType)',
+                          _mode: 'code',
+                          _value: false,  
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'filters',
+                            label: 'Entity filter',
+                            labelAlign: 'right',
+                            parentId: dataTabId,
+                            type: 'queryBuilder',
+                            hidden: false,
+                            isDynamic: false,
+                            validate: {},
+                            settingsValidationErrors: [],
+                            modelType: '{{data.entityType}}',
+                            fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                            width: '100%',
+                          }
+                        ]
                       })
                       .toJson(),
                   ],
@@ -416,23 +482,6 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  propertyName: 'chartType',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  label: 'Chart Type',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Pie chart', value: 'pie' },
-                    { label: 'Line chart', value: 'line' },
-                    { label: 'Bar chart', value: 'bar' },
-                    { label: 'Polar area chart', value: 'polarArea' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'line',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
                   inputType: 'switch',
                   propertyName: 'isDoughnut',
                   label: 'Is Doughnut',
@@ -443,22 +492,6 @@ export const getSettings = (data: any) => {
                     _value: true,
                   },
                   defaultValue: false,
-
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'simpleOrPivot',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  label: 'Simple / Pivot',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Simple', value: 'simple' },
-                    { label: 'Pivot', value: 'pivot' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'simple',
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -496,15 +529,21 @@ export const getSettings = (data: any) => {
                   description: 'Show the title of the chart',
                   parentId: appearanceTabId,
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showLegend',
-                  label: 'Show Legend',
-                  description:
-                    'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
                   parentId: appearanceTabId,
-                  defaultValue: true,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'showLegend',
+                      label: 'Show Legend',
+                      description:
+                        'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
+                      parentId: appearanceTabId,
+                      defaultValue: true,
+                    }
+                  ]
                 })
                 .addSettingsInput({
                   id: nanoid(),

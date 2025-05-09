@@ -29,7 +29,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data || !data.datasets || !data.labels) {
+  if (!data?.datasets || !data?.labels) {
     if (!data)
       throw new Error('PolarAreaChart: No data to display. Please check the data source.');
 
@@ -38,7 +38,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
   }
 
   data.datasets.forEach((dataset: { data: any[] }) => {
-    dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
+    dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
   });
 
   if (dataMode === 'url') {
@@ -68,7 +68,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         }
       },
       legend: {
-        display: showLegend ? true : false,
+        display: !!showLegend,
         position: legendPosition ?? 'top',
       },
       title: {

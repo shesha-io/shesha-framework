@@ -110,6 +110,10 @@ import SettingsInput from '@/designer-components/settingsInput';
 import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
+import BarChartComponent from '@/designer-components/charts/bar';
+import LineChartComponent from '@/designer-components/charts/line';
+import PieChartComponent from '@/designer-components/charts/pie';
+import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import DividerComponent from '@/designer-components/_legacyComponents/divider';
 
@@ -141,7 +145,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
     },
     {
       name: 'Advanced',

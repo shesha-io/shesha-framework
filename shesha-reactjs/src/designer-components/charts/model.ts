@@ -95,9 +95,3 @@ export type TOperator =
     'ends_with' |
     'is' |
     'is_not';
-
-export interface IFilter {
-    property: string;
-    operator: TOperator;
-    value: string | number;
-}

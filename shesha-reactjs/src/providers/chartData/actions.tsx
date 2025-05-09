@@ -1,4 +1,4 @@
-import { IChartData, IFilter } from "@/designer-components/charts/model";
+import { IChartData } from "@/designer-components/charts/model";
 import { createAction } from "redux-actions";
 
 export enum ChartDataActionsEnum {
@@ -15,11 +15,7 @@ export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: I
 
 export const SetFilterdDataAction = createAction(ChartDataActionsEnum.SetFilterdData, (filteredData: object[]) => ({ filteredData }));
 
-export const SetChartFiltersAction = createAction(ChartDataActionsEnum.SetChartFilters, (chartFilters: IFilter[]) => ({ chartFilters }));
-
 export const SetIsLoadedAction = createAction(ChartDataActionsEnum.SetIsLoaded, (isLoaded: boolean) => ({ isLoaded }));
-
-export const SetIsFilterVisibleAction = createAction(ChartDataActionsEnum.SetIsFilterVisible, (isFilterVisible: boolean) => ({ isFilterVisible }));
 
 export const SetControlPropsAction = createAction(ChartDataActionsEnum.SetControlProps, (controlProps: object) => ({ ...controlProps }));
 
