@@ -128,8 +128,9 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                         title: 'Data',
                         id: dataTabId,
                         components: [...new DesignerToolbarSettings()
-                            .addCodeEditor({
+                            .addSettingsInput({
                                 id: nanoid(),
+                                inputType: 'codeEditor',
                                 propertyName: 'defaultValue',
                                 label: 'Default Value',
                                 size: 'small',
@@ -199,8 +200,9 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         size: "small",
                                         jsSetting: true,
                                     })
-                                    .addLabelValueEditor({
+                                    .addSettingsInput({
                                         id: nanoid(),
+                                        inputType: 'labelValueEditor',
                                         parentId: dataTabId,
                                         propertyName: 'queryParams',
                                         label: 'Query Param',
@@ -351,8 +353,20 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         settingsValidationErrors: [],
                                         modelType: "{{data.entityTypeShortAlias}}",
                                         fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
-                                        version: 2
                                     })
+                                    .addQueryBuilder({
+                                        id: 'n4enebtmhFgvkP5ukQK1f',
+                                        propertyName: 'filters',
+                                        label: 'Entity filter',
+                                        labelAlign: 'right',
+                                        parentId: 'root',
+                                        hidden: false,
+                                        isDynamic: false,
+                                        validate: {},
+                                        settingsValidationErrors: [],
+                                        modelType: '{{data.entityType}}',
+                                        fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                                      })
                                     .toJson()
                                 ]
                             })
@@ -403,7 +417,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 labelAlign: 'right',
                                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
                                 parentId: eventsTabId,
-                                availableConstantsExpression: "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard()\n        .addObject(\"value\", \"Component current value\")\n        .addObject(\"option\", \"Meta data of component current value\")        \t\n        .build();"
+                                availableConstantsExpression: "return metadataBuilder\n     .object(\"constants\")\n     .addAllStandard()\n      .addObject(\"value\", \"Component current value\")\n        .addObject(\"option\", \"Meta data of component current value\")        \t\n        .build();"
                             })
                             .toJson()
                         ]
