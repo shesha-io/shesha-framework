@@ -8,7 +8,7 @@ import {
   useSheshaApplication,
   validateConfigurableComponentSettings,
 } from '@/index';
-import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
+import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelectorDisplay/provider';
 import { removeUndefinedProps } from '@/utils/object';
 import { FormOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';

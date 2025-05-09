@@ -3,12 +3,12 @@ import {
   ISettingsUpdatePayload,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
-  REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
-} from './contexts';
-import { RefListItemGroupActionEnums } from './actions';
-import { IRefListItemGroup } from './models';
+  REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE
+} from '@/components/refListSelectorDisplay/provider/contexts';
+import { RefListItemGroupActionEnums } from '@/components/refListSelectorDisplay/provider/actions';
+import { IRefListItemGroup } from '@/components/refListSelectorDisplay/provider/models';
 import { handleActions } from 'redux-actions';
-import { getItemPositionById } from './utils';
+import { getItemPositionById } from '@/components/refListSelectorDisplay/provider/utils';
 
 const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorStateContext, any>(
   {

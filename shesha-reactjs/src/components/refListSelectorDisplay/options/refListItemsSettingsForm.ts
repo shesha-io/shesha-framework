@@ -37,7 +37,7 @@ export const getSettings = () => {
                             .addConfigurableActionConfigurator({
                                 id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                                 propertyName: 'actionConfiguration',
-                                label: 'onDrop Action Configuration',
+                                label: 'Action Configuration',
                                 hidden: false,
                                 jsSetting: false,
                                 parentId: '345c2181-fb9f-48ed-9631-864ac357807b',

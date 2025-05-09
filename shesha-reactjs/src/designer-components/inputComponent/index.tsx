@@ -28,7 +28,7 @@ import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfi
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
-import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
+import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
 import { editModes, getEditor, iconElement } from './utils';
 
@@ -320,7 +320,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 propertyMeta={propertyMeta}
             />;
         case 'RefListItemSelectorSettingsModal':
-            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList?._data} readOnly={false} />;
+            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList} readOnly={false} />;
 
         case 'Password':
             return <Password

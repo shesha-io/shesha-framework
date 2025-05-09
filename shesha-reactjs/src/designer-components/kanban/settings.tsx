@@ -1,5 +1,5 @@
 import { Autocomplete, CodeEditor, ColorPicker, FormAutocomplete, PropertyAutocomplete, Show } from '@/components';
-import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
+import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { Checkbox, Input } from 'antd';
 import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '../_settings/settingsForm';

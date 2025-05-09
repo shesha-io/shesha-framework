@@ -1,8 +1,8 @@
 import { Alert } from 'antd';
 import React, { FC, ReactNode } from 'react';
-import { useStyles } from './styles/styles';
-import { useRefListItemGroupConfigurator } from '../provider';
-import RefListItemProperties from './properties';
+import { useStyles } from '@/components/refListSelectorDisplay/options/styles/styles';
+import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
+import RefListItemProperties from '@/components/refListSelectorDisplay/options/properties';
 
 export interface IRefListItemGroupConfiguratorProps {
   render?: ReactNode | (() => ReactNode);
