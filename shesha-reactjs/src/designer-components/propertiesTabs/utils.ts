@@ -12,41 +12,63 @@ const evaluateString = (expression: string, data: any): any => {
 
 const getHeaderStyles = () => (
     {
-        "font": {
-            "color": "darkslategrey",
-            "size": 14,
-            "weight": "500",
-            "align": "left",
+        font: {
+            color: "darkslategray",
+            size: 14,
+            weight: "500",
+            align: "left",
+            type: "Segoe UI"
         },
-        "background": {
-            "type": "color",
-            "color": "#fff"
+        background: {
+            type: "color",
+            color: "#fff"
         },
-        "dimensions": {
-            "width": "auto",
-            "height": "auto",
-            "minHeight": "0",
-            "maxHeight": "auto",
-            "minWidth": "0",
-            "maxWidth": "auto"
+        dimensions: {
+            width: "auto",
+            height: "auto",
+            minHeight: "0",
+            maxHeight: "auto",
+            minWidth: "0",
+            maxWidth: "auto"
         },
-        "border": {
-            "radiusType": "all",
-            "borderType": "custom",
-            "border": {
-                "bottom": {
-                    "width": "2px",
-                    "style": "solid",
-                    "color": "var(--primary-color)"
+        border: {
+            radiusType: "all",
+            borderType: "custom",
+            border: {
+                all: {},
+                top: {},
+                right: {},
+                bottom: {
+                    width: "2px",
+                    style: "solid",
+                    color: "var(--primary-color)"
                 },
+                left: {}
             },
-            "radius": {
-                "all": 0
+            radius: {
+                all: '0'
             }
         },
-        "stylingBox": "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\"}"
+        stylingBox: "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"0\"}"
     }
 );
+
+const getBodyStyles = () => ({
+    border: {
+        radiusType: "all",
+        borderType: "all",
+        border: {
+            all: { width: '0px', style: 'none', color: '' },
+            top: {},
+            right: {},
+            bottom: {},
+            left: {}
+        },
+        radius: {
+            all: 0
+        }
+    }
+});
 
 export const filterDynamicComponents = (components, query, data) => {
     if (!components || !Array.isArray(components)) return [];
@@ -96,9 +118,12 @@ export const filterDynamicComponents = (components, query, data) => {
                     components: contentComponents
                 },
                 ghost: false,
-                accentStyle: true,
+                collapsedByDefault: true,
                 headerStyles: getHeaderStyles(),
-                hidden: !hasVisibleChildren
+                allStyles: getBodyStyles(),
+                border: getBodyStyles().border,
+                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
+                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }
 
@@ -126,21 +151,6 @@ export const filterDynamicComponents = (components, query, data) => {
                 ...c,
                 components: filteredComponents,
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
-            };
-        }
-
-        // Handle inputs array if present
-        if (c.inputs) {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
-
-            return {
-                ...c,
-                inputs: filteredInputs,
-                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
             };
         }
 
