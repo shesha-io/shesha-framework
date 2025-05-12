@@ -12,6 +12,7 @@ export const getSettings = (data: any) => {
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
   const customStylePanelId = nanoid();
+  const stylePanelId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -110,7 +111,7 @@ export const getSettings = (data: any) => {
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
-                  parentId: 'data-s4gmBg31azZC0UjZjpfTm',
+                  parentId: commonTabId,
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -278,7 +279,7 @@ export const getSettings = (data: any) => {
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
@@ -309,7 +310,7 @@ export const getSettings = (data: any) => {
                                 propertyName: 'style',
                                 hideLabel: false,
                                 label: 'Style',
-                                parentId: 'stylePnl-M500-911MFR',
+                                parentId: stylePanelId,
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
