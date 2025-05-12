@@ -119,6 +119,7 @@ export const getItemSettings = () => {
                   labelAlign: 'right',
                   parentId: 'root',
                   hidden: false,
+                  jsSetting: true,
                   settingsValidationErrors: [],
                 },
                 {

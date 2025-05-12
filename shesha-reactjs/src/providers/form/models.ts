@@ -67,16 +67,14 @@ export interface IComponentValidationRules {
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 export type PositionType = 'relative' | 'fixed';
-export type OverflowType = 'hidden' | 'visible' | 'scroll' | 'auto';
 export interface IStyleType {
   border?: IBorderValue;
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
-  overflow?: OverflowType;
-  //Position needs to be revisited
-  // position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
+  overflow?: CSSProperties['overflow'];
+  hideScrollBar?: boolean;
   size?: SizeType;
   style?: string;
   stylingBox?: string;
@@ -111,6 +109,7 @@ export interface IInputStyles extends IStyleType {
   backgroundBase64?: string;
   backgroundStoredFileId?: string;
   style?: string;
+  overflow?: CSSProperties['overflow'];
 };
 
 export type ConfigurableFormComponentTypes =
