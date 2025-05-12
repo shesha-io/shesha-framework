@@ -16,6 +16,7 @@ export const defaultStyles = (): IStyleType => {
             borderType: 'all',
             radiusType: 'all'
         },
-        dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+        dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+        stylingBox: '{"paddingLeft":"0","paddingBottom":"0","paddingTop":"0","paddingRight":"0"}',
     };
 };
