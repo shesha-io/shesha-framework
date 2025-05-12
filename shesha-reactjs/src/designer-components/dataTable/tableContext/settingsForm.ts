@@ -101,7 +101,7 @@ export const getSettings = (data: any) => {
                         label: 'Data Source Type',
                         inputType: 'dropdown',
                         dropdownOptions: [
-                          { label: 'Url', value: 'Url' },
+                          { label: 'URL', value: 'Url' },
                           { label: 'Entity', value: 'Entity' },
                           { label: 'Form', value: 'Form' },
                         ],
@@ -178,11 +178,6 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: dataTabId,
                         inline: false,
-                        hidden: {
-                          _value: false,
-                          _code: "return getSettingValue(data.dataFetchingMode) !== 'paging';",
-                          _mode: 'code',
-                        } as any,
                         readOnly: {
                           _code: 'return getSettingValue(data?.readOnly);',
                           _mode: 'code',
@@ -221,6 +216,11 @@ export const getSettings = (data: any) => {
                             label: 'Default Page Size',
                             type: 'dropdown',
                             allowClear: true,
+                            hidden: {
+                              _value: false,
+                              _code: "return getSettingValue(data.dataFetchingMode) !== 'paging';",
+                              _mode: 'code',
+                            } as any,
                             dropdownOptions: [
                               {
                                 label: '5',
@@ -283,7 +283,7 @@ export const getSettings = (data: any) => {
                             modelType: '{{data.entityType}}',
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             width: '100%',
-                            jsSetting: true,
+                            jsSetting: false,
                           },
                         ],
                       })

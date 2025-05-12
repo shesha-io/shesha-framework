@@ -59,7 +59,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const headerComponents = model?.header?.components ?? [];
 
-    const headerStyles = useFormComponentStyles({ ...model.headerStyles, id: model.id, type: model.type }).fullStyle;
+    const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles.border } }).fullStyle;
 
     const extra = ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
       <ComponentsContainer
@@ -83,9 +83,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       };
     })();
 
-    if (hidden) return null;
-
-    return (
+    return hidden ? null : (
       <ParentProvider model={model}>
         <PanelContext.Provider value={panelPosition}>
           <CollapsiblePanel

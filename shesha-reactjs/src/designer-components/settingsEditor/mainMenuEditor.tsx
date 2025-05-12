@@ -15,7 +15,7 @@ import { IConfigurableMainMenu, useMainMenu } from '@/providers/mainMenu';
 import { deepCopyViaJson } from '@/utils/object';
 import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 import { getSettings } from './settingsForm';
-import { Button, Modal } from 'antd';
+import { App, Button, Modal } from 'antd';
 import { useMedia } from 'react-use';
 
 export interface IMainMenuEditorComponentProps extends IConfigurableFormComponent {
@@ -29,14 +29,15 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-    const [isModalOpen, setIsModalOpen] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const isSmall = useMedia('(max-width: 480px)');
+    const { message } = App.useApp();
 
     const [menuProps, setMenuProps] = useState<IConfigurableMainMenu>(undefined);
 
     const { applicationKey = null } = useSheshaApplication();
     const { selectedApplication = null, saveStatus, editorMode } = useSettingsEditor(false) ?? {};
-    const { changeMainMenu } = useMainMenu();
+    const { changeMainMenu, saveMainMenu } = useMainMenu();
     const form = useForm();
     const initialValues = useRef<IConfigurableMainMenu>();
 
@@ -72,24 +73,53 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
 
     if (!isModalOpen) {
       return (
-        <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Open Main Menu Editor
-        </Button>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+          <Button type="primary" onClick={() => setIsModalOpen(true)} size="large">
+            <EditOutlined /> Configure Menu
+          </Button>
+        </div>
       );
     }
+
+    const onCancel = () => {
+      setIsModalOpen(false);
+      setMenuProps(initialValues.current);
+      form.setFormData({ values: initialValues.current, mergeValues: false });
+      message.info('Menu configuration not changed!');
+      setIsModalOpen(false);
+    };
+
+    const onOk = () => {
+      if (form.formData === undefined) {
+        message.error('Menu configuration is empty!');
+        return;
+      }
+      setMenuProps(form.formData);
+      saveMainMenu(form.formData)
+        .then(() => {
+          changeMainMenu(form.formData);
+        })
+        .then(() => {
+          message.success('Menu saved successfully!');
+        })
+        .catch((error) => {
+          console.error(error);
+          message.error('Failed to save menu changes!');
+        })
+        .finally(() => {
+          setIsModalOpen(false);
+        });
+    };
 
     return (
       <div style={{ height: model.height }}>
         <Modal
-          title="Main Menu Editor"
+          title="Sidebar Menu Configuration"
           width={isSmall ? '90%' : '60%'}
           styles={{ body: { height: '80vh' } }}
           open={isModalOpen}
-          onCancel={() => setIsModalOpen(false)}
-          onOk={() => {
-            setMenuProps(form.formData);
-            setIsModalOpen(false);
-          }}
+          onCancel={onCancel}
+          onOk={onOk}
         >
           <SidebarConfigurator value={menuProps?.items} onChange={onChange} readOnly={editorMode === 'readonly'} />
         </Modal>

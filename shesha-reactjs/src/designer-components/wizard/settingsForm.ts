@@ -72,7 +72,6 @@ export const getSettings = () => {
                                         parentId: 'root',
                                         inputType: 'dropdown',
                                         jsSetting: true,
-                                        hidden: { _code: 'return  getSettingValue(data?.hidden);', _mode: 'code', _value: false } as any,
                                         dropdownOptions: [
                                             { value: 'default', label: 'Default' },
                                             { value: 'navigation', label: 'Navigation' }
@@ -119,7 +118,7 @@ export const getSettings = () => {
                                         type: 'dropdown',
                                         tooltip: 'This will be the default step that is active',
                                         jsSetting: true,
-                                        dropdownOptions: { _code: 'return  getSettingValue(data?.steps)?._data?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
+                                        dropdownOptions: { _code: 'return  getSettingValue(data?.steps)?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
                                     }
                                 ]
                             })
@@ -631,6 +630,7 @@ export const getSettings = () => {
                                                                 type: 'colorPicker',
                                                                 propertyName: 'primaryTextColor',
                                                                 hideLabel: false,
+                                                                defaultValue: '#fff',
                                                                 label: 'Primary Text Color'
                                                             }
                                                         ]

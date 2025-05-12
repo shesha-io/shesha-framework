@@ -3,10 +3,10 @@ import { IStyleType } from "@/index";
 export const defaultStyles = (): IStyleType => {
     return {
         background: { type: 'color', color: '#fff' },
-        font: { weight: '400', size: 14, type: 'Segoe UI' },
+        font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
         border: {
             border: {
-                all: { width: '1px', style: 'none', color: '#d9d9d9' },
+                all: { width: '1px', style: 'solid', color: '#d9d9d9' },
                 top: { width: '1px', style: 'solid', color: '#d9d9d9' },
                 bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
                 left: { width: '1px', style: 'solid', color: '#d9d9d9' },
@@ -16,7 +16,6 @@ export const defaultStyles = (): IStyleType => {
             borderType: 'all',
             radiusType: 'all'
         },
-        dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
-        stylingBox: '{"paddingLeft":"0","paddingBottom":"0","paddingTop":"0","paddingRight":"0"}',
+        dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
     };
 };
