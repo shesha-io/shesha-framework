@@ -135,13 +135,13 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 label: 'Default Value',
                                 size: 'small',
                                 jsSetting: true,
-                                parentId: nanoid(),
+                                parentId: dataTabId,
                                 availableConstantsExpression: "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard(\"shesha:selectedRow\").build();"
 
                             })
                             .addSettingsInput({
                                 id: nanoid(),
-                                parentId: nanoid(),
+                                parentId: dataTabId,
                                 label: "Data Source Type",
                                 propertyName: "dataSourceType",
                                 inputType: "dropdown",
