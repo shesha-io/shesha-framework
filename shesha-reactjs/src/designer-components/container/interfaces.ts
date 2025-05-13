@@ -1,5 +1,5 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
-import { IConfigurableFormComponent, IInputStyles, OverflowType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export type JustifyContent =
   | 'center'
@@ -165,7 +165,6 @@ export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   borderColor?: string;
   borderStyle?: string;
   borderRadius?: string | number;
-  overflow?: OverflowType;
   shadowStyle?: string;
   style?: React.CSSProperties;
 }
