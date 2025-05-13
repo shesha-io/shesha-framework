@@ -54,7 +54,12 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
     <div className={styles.shaStatusTagContainer}>
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
-        <RefTag color={solidBackground && itemData?.color} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...(itemData?.color && solidBackground ? {} : style) }} styles={styles}>
+        <RefTag
+          color={solidBackground && itemData?.color}
+          icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
+          style={!solidBackground || !itemData?.color ? style : undefined}
+          styles={styles}
+        >
           {showReflistName && itemData?.item}
         </RefTag>
       </DescriptionTooltip>
