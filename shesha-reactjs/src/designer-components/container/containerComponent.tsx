@@ -13,6 +13,8 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
 import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
+import classNames from 'classnames';
+import { useStyles } from './styles';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -22,13 +24,14 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-
+    const { styles } = useStyles();
     const {
       dimensionsStyles,
       borderStyles,
       backgroundStyles,
       shadowStyles,
-      stylingBoxAsCSS
+      stylingBoxAsCSS,
+      overflowStyles
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -55,6 +58,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
       gap: addPx(model.gap),
+      width: '100%',
+      height: '100%',
     };
 
     return (
@@ -68,19 +73,11 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           style={{
             ...getStyle(model?.style, formData),
             overflow: model.overflow,
-            scrollbarWidth: 'thin',
-            ...(model.hideScrollBar && {
-              '::-webkit-scrollbar': { display: 'none' },
-              msOverflowStyle: 'none',
-            }),
-            height: '100%',
-            width: '100%',
+            ...overflowStyles,
             ...flexAndGridStyles as any
           }}
-          width={'100%'}
-          height={'100%'}
           noDefaultStyling={model.noDefaultStyling}
-          className={model.className}
+          className={classNames(model.className, styles.container)}
           dynamicComponents={model?.isDynamic ? model?.components : []}
         />
       </ParentProvider>

@@ -8,7 +8,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   hideCollapseContent,
   isSimpleDesign,
   ghost,
-  accentStyle
+  accentStyle,
+  overflow
 }) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
@@ -53,7 +54,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     paddingBottom,
     paddingLeft,
     paddingRight,
-    overflow,
     border,
     ...rest
   } = bodyStyle;
@@ -128,7 +128,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       background-position: ${backgroundPosition};
       background-repeat: ${backgroundRepeat};
       position: relative;
-      overflow: ${overflow ?? 'auto'};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;
@@ -142,6 +141,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       > .ant-collapse-content-box {
         --ant-collapse-content-padding: 0px !important;
         padding: 0px !important;
+        height: 100%;
+        width: 100%;
+        overflow: ${overflow?.overflow ?? 'auto'};
+        ${overflow};
       }
     }
 
@@ -158,6 +161,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
+      width: ${width};
+      min-width: ${minWidth};
+      max-width: ${maxWidth};
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight};

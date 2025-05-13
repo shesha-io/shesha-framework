@@ -108,6 +108,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
             accentStyle={model?.accentStyle}
+            overflowStyle={model.allStyles.overflowStyles}
           >
             <ComponentsContainer
               containerId={content.id}

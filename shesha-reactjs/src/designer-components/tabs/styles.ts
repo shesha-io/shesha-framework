@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
+export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor, overflow }) => {
     const {
         borderWidth,
         borderStyle,
@@ -32,7 +32,12 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         textAlign,
         color,
         fontFamily,
-        rest
+        width,
+        height,
+        minWidth,
+        minHeight,
+        maxWidth,
+        maxHeight
     } = styles;
 
     const {
@@ -73,10 +78,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
     const content = cx(
         'content',
         css`
+        width: max-content;
             .ant-tabs-content-holder {
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
                 border: ${borderMap.default};
-                ${rest};
                 box-shadow: ${boxShadow} !important;
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
                 border-right:${isRight ? '0px solid transparent' : borderMap.right} !important;
@@ -92,6 +97,16 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${backgroundSize} !important;
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
+                
+                .ant-tabs-content {
+                    width: ${width} !important;
+                    height: ${height} !important;
+                    min-width: ${minWidth} !important;
+                    min-height: ${minHeight} !important;
+                    max-width: ${maxWidth} !important;
+                    max-height: ${maxHeight} !important;
+                    ${overflow};
+                }
             }
 
             .ant-tabs-tab {

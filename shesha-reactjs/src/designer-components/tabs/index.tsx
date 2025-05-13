@@ -31,13 +31,13 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
 
-    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor, overflow, hideScrollBar } = model;
+    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
     const cardStyles = useFormComponentStyles({ ...model.card });
 
-    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles, } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: { type: overflow, hideScrollBar } });
+    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles, } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: model.allStyles.overflowStyles });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -84,18 +84,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
           children: (
             <ParentProvider model={item}>
-              <ComponentsContainer style={{
-                ...model.allStyles.dimensionsStyles,
-                overflow: overflow,
-                scrollbarWidth: 'thin',
-                ...(model.hideScrollBar && {
-                  '::-webkit-scrollbar': { display: 'none' },
-                  msOverflowStyle: 'none',
-                })
-              }}
-                wrapperStyle={{
-                  ...model.allStyles.dimensionsStyles,
-                }}
+              <ComponentsContainer
                 containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
             </ParentProvider>
           ),
@@ -103,7 +92,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         tabItems.push(tab);
       });
       return tabItems;
-    }, [tabs, overflow, hideScrollBar]);
+    }, [tabs]);
 
     return model.hidden ? null : (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
