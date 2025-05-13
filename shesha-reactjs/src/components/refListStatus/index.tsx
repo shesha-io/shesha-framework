@@ -22,9 +22,13 @@ const Icon = ({ type, ...rest }) => {
 };
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
-  const { styles } = useStyles();
-  const { value, referenceListId, showIcon, solidBackground, showReflistName, style } = props;
 
+  const { value, referenceListId, showIcon, solidBackground, showReflistName, style } = props;
+  const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
+  const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
+  const { fontSize, fontWeight, textAlign } = style;
+  const fontStyles = { fontSize, fontWeight, textAlign };
+  const { styles } = useStyles({ dimensionsStyles, fontStyles });
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
 
   if (listItem?.error && !listItem?.loading) {
@@ -50,12 +54,9 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
     <div className={styles.shaStatusTagContainer}>
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
-
-
-        <RefTag color={solidBackground && itemData?.color} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...(itemData?.color && solidBackground ? {} : style) }}>
+        <RefTag color={solidBackground && itemData?.color} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...(itemData?.color && solidBackground ? {} : style) }} styles={styles}>
           {showReflistName && itemData?.item}
         </RefTag>
-
       </DescriptionTooltip>
     </div>
   );
