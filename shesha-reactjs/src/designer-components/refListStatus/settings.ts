@@ -9,6 +9,7 @@ import { nanoid } from '@/utils/uuid';
 export const getSettings = (data: IRefListStatusProps) => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
+    const dataTabId = nanoid();
     const appearanceTabId = nanoid();
     const securityTabId = nanoid();
     const styleRouterId = nanoid();
@@ -68,52 +69,62 @@ export const getSettings = (data: IRefListStatusProps) => {
                             })
                             .addSettingsInput({
                                 id: nanoid(),
-                                inputType: 'referenceListAutocomplete',
-                                propertyName: 'referenceListId',
-                                label: 'Reference List',
-                                parentId: commonTabId,
-                                validate: {
-                                    required: true,
-                                },
-                                jsSetting: true,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
                                 inputType: 'switch',
-                                propertyName: 'showReflistName',
-                                label: 'Show Reflist Item Name',
-                                tooltip: 'When checked the DisplayName/RefList Name will be shown.',
-                                size: 'small',
-                                defaultValue: true,
-                                parentId: commonTabId
-                            })
-                            .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: commonTabId,
-                                inputs: [
-                                    {
-                                        id: nanoid(),
-                                        type: 'switch',
-                                        propertyName: 'showIcon',
-                                        label: 'Show Icon',
-                                        size: 'small',
-                                        tooltip: 'When checked the icon will display on the left side of the DisplayName',
-                                    },
-                                    {
-                                        id: nanoid(),
-                                        type: 'switch',
-                                        propertyName: 'hidden',
-                                        label: 'Hide',
-                                        jsSetting: true,
-                                        layout: 'horizontal',
-                                    }
-                                ],
+                                propertyName: 'hidden',
+                                label: 'Hide',
+                                jsSetting: true,
+                                layout: 'horizontal',
                             })
                             .toJson()
                         ]
                     },
                     {
                         key: '2',
+                        title: 'Data',
+                        id: dataTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataTabId,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'referenceListAutocomplete',
+                                        propertyName: 'referenceListId',
+                                        label: 'Reference List',
+                                        parentId: dataTabId,
+                                        validate: {
+                                            required: true,
+                                        },
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'showReflistName',
+                                        label: ' Show Reference List Item Name',
+                                        tooltip: 'When checked the DisplayName/RefList Name will be shown.',
+                                        size: 'small',
+                                        defaultValue: true,
+                                        parentId: dataTabId
+                                    },
+
+                                ],
+                            })
+
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'switch',
+                                propertyName: 'showIcon',
+                                label: 'Show Icon',
+                                size: 'small',
+                                tooltip: 'When checked the icon will display on the left side of the DisplayName',
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '3',
                         title: 'Appearance',
                         id: appearanceTabId,
                         components: [...new DesignerToolbarSettings()

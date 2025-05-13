@@ -1,4 +1,3 @@
-import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import React, { CSSProperties, FC } from 'react';
 import RefTag from './tag';
 import { Alert, Skeleton } from 'antd';
@@ -41,10 +40,6 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   const itemData = listItem?.data;
 
-  const memoizedColor = solidBackground
-    ? convertCssColorNameToHex(itemData?.color ?? '')
-    : itemData?.color?.toLowerCase();
-
   const canShowIcon = showIcon && itemData?.icon;
 
   if (typeof itemData?.itemValue === 'undefined' && !listItem?.loading) return null;
@@ -57,7 +52,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
 
 
-        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...style, ...(memoizedColor && (!style?.backgroundColor && !style?.backgroundImage) ? { backgroundColor: memoizedColor, border: 'none', color: '#fff' } : {}) }}>
+        <RefTag color={solidBackground && itemData?.color} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...(itemData?.color && solidBackground ? {} : style) }}>
           {showReflistName && itemData?.item}
         </RefTag>
 
