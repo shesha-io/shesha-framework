@@ -48,7 +48,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               showIcon={model.showIcon}
               showReflistName={showReflistName}
               solidBackground={solidBackground}
-              style={model.allStyles.fullStyle} />
+              style={model.allStyles?.fullStyle ?? {}} />
           );
         }}
       </ConfigurableFormItem>

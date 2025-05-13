@@ -23,7 +23,14 @@ const Icon = ({ type, ...rest }) => {
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
-  const { value, referenceListId, showIcon, solidBackground, showReflistName, style } = props;
+  const {
+    value,
+    referenceListId,
+    showIcon,
+    solidBackground,
+    showReflistName,
+    style = {},
+  } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
   const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
   const { fontSize, fontWeight, textAlign } = style;
