@@ -3,7 +3,6 @@ import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   headerStyle = {} as CSSProperties,
-  panelHeadType,
   bodyStyle = {} as CSSProperties,
   hideCollapseContent,
   isSimpleDesign,
@@ -167,11 +166,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight};
-      border-top: ${accentStyle && (panelHeadType === 'default' || panelHeadType === 'parent') ?
-      `3px` : headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${accentStyle && (panelHeadType === 'default' || panelHeadType === 'parent') ?
+      border-top: ${accentStyle ?
+      `3px` : headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${accentStyle ?
         'var(--primary-color)' : headerBorderTopColor || headerBorderColor};
       border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
-      border-left: ${accentStyle && panelHeadType === 'child' ? `3px` : headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${accentStyle && panelHeadType === 'child' ? 'var(--primary-color)' : headerBorderLeftColor || headerBorderColor};
+      border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
       border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
       padding-top: ${headerPaddingTop} !important;
       padding-right: ${headerPaddingRight} !important;
@@ -206,8 +205,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
           border-bottom-right-radius: unset; 
           border: none;
           ${accentStyle && `border-bottom: 2px solid ${token.colorPrimary};`}
-          ${accentStyle && (panelHeadType === 'default' || panelHeadType === 'parent') && `border-top: 3px solid var(--primary-color);`}
-          ${accentStyle && panelHeadType === 'child' && `border-left: 3px solid  var(--primary-color);`}
+          ${accentStyle && `border-top: 3px solid var(--primary-color);`}
           font-weight: ${fontWeight || '500'};
         
         }
@@ -237,7 +235,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         > .ant-collapse-header {
           --ant-collapse-header-padding: ${headerStyle?.padding || '12px 16px'} !important;
           padding: 12px 16px !important;
-          font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
+          font-size: 14px;
         }
       }
     }
@@ -259,9 +257,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
 
     > .ant-collapse-item > .ant-collapse-header {
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
-      ${accentStyle && (panelHeadType === 'default' || panelHeadType === 'parent') && `border-top: 3px solid var(--primary-color);`}
-      ${accentStyle && panelHeadType === 'child' && `border-left: 3px solid  var(--primary-color);`}
-      font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
+      ${accentStyle && `border-top: 3px solid var(--primary-color);`}
+      font-size: 14px;
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight}

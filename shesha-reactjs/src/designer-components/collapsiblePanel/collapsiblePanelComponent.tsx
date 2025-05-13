@@ -1,5 +1,5 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { CollapsiblePanel, headerType } from '@/components/panel';
+import { CollapsiblePanel } from '@/components/panel';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
@@ -9,7 +9,7 @@ import { evaluateString, validateConfigurableComponentSettings } from '@/provide
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from '@/utils/uuid';
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -19,19 +19,14 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultHeaderStyles, defaultStyles } from './utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
-type PanelContextType = 'parent' | 'child' | undefined;
-
-const PanelContext = createContext<PanelContextType>(undefined);
-
 const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentProps> = {
   type: 'collapsiblePanel',
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode, formSettings } = useForm();
+    const { formMode } = useForm();
     const { data } = useFormData();
-    const isFormSettings = formSettings?.isSettingsForm;
 
     const {
       label,
@@ -51,7 +46,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       hidden,
     } = model;
 
-    const panelContextState = useContext(PanelContext);
 
     const evaluatedLabel = useMemo(() => (
       typeof label === 'string' ? evaluateString(label, data) : label
@@ -69,53 +63,36 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       />
     ) : null;
 
-    const panelPosition = !!panelContextState ? 'child' : 'parent';
-
-    const headType: headerType = (() => {
-      if (isFormSettings) {
-        return 'default';
-      } else {
-        if (panelPosition === 'parent') {
-          return 'parent';
-        } else {
-          return 'child';
-        };
-      };
-    })();
-
     return hidden ? null : (
       <ParentProvider model={model}>
-        <PanelContext.Provider value={panelPosition}>
-          <CollapsiblePanel
-            header={hasCustomHeader ? (
-              <ComponentsContainer
-                containerId={customHeader.id}
-                dynamicComponents={isDynamic ? customHeader?.components : []}
-              />
-            ) : evaluatedLabel}
-            expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
-            collapsedByDefault={collapsedByDefault}
-            extra={extra}
-            collapsible={collapsible === 'header' ? 'header' : 'icon'}
-            showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
-            ghost={ghost}
-            bodyStyle={model.allStyles.fullStyle}
-            headerStyle={headerStyles}
-            className={className}
-            bodyColor={bodyColor}
-            isSimpleDesign={isSimpleDesign}
-            panelHeadType={headType}
-            hideCollapseContent={hideCollapseContent}
-            hideWhenEmpty={hideWhenEmpty}
-            accentStyle={model?.accentStyle}
-            overflowStyle={model.allStyles.overflowStyles}
-          >
+        <CollapsiblePanel
+          header={hasCustomHeader ? (
             <ComponentsContainer
-              containerId={content.id}
-              dynamicComponents={isDynamic ? content.components : []}
+              containerId={customHeader.id}
+              dynamicComponents={isDynamic ? customHeader?.components : []}
             />
-          </CollapsiblePanel>
-        </PanelContext.Provider>
+          ) : evaluatedLabel}
+          expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
+          collapsedByDefault={collapsedByDefault}
+          extra={extra}
+          collapsible={collapsible === 'header' ? 'header' : 'icon'}
+          showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
+          ghost={ghost}
+          bodyStyle={model.allStyles.fullStyle}
+          headerStyle={headerStyles}
+          className={className}
+          bodyColor={bodyColor}
+          isSimpleDesign={isSimpleDesign}
+          hideCollapseContent={hideCollapseContent}
+          hideWhenEmpty={hideWhenEmpty}
+          accentStyle={model?.accentStyle}
+          overflowStyle={model.allStyles.overflowStyles}
+        >
+          <ComponentsContainer
+            containerId={content.id}
+            dynamicComponents={isDynamic ? content.components : []}
+          />
+        </CollapsiblePanel>
       </ParentProvider>
     );
   },
