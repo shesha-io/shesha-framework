@@ -78,7 +78,14 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
     const content = cx(
         'content',
         css`
-        width: max-content;
+        
+            width: ${width} !important;
+            min-width: ${minWidth} !important;
+            max-width: ${maxWidth} !important;
+            height: calc(${height} - ${cardHeight}) !important;
+            min-height: calc(${minHeight} - ${cardHeight}) !important;
+            max-height: calc(${maxHeight} - ${cardHeight}) !important;
+
             .ant-tabs-content-holder {
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
                 border: ${borderMap.default};
@@ -97,13 +104,15 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${backgroundSize} !important;
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
+
+                .ant-tabs-content ant-tabs-content-left {
+                    width: 100%;
+                    height: 100%;
+                }
                 
                 .ant-tabs-content {
-                    width: ${width} !important;
                     height: ${height} !important;
-                    min-width: ${minWidth} !important;
                     min-height: ${minHeight} !important;
-                    max-width: ${maxWidth} !important;
                     max-height: ${maxHeight} !important;
                     ${overflow};
                 }
