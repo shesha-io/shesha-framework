@@ -105,7 +105,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
 
-                .ant-tabs-content ant-tabs-content-left {
+                .ant-tabs-content {
                     width: 100%;
                     height: 100%;
                 }

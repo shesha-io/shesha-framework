@@ -7,7 +7,6 @@ import { useFormData } from '@/providers';
 import { useForm } from '@/providers/form';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
-import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from '@/utils/uuid';
 import React, { useMemo } from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
@@ -55,6 +54,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles.border } }).fullStyle;
 
+    const isIconHidden = expandIconPosition === 'hide';
     const extra = ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
       <ComponentsContainer
         containerId={model.header?.id}
@@ -72,11 +72,11 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
               dynamicComponents={isDynamic ? customHeader?.components : []}
             />
           ) : evaluatedLabel}
-          expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
+          expandIconPosition={isIconHidden ? undefined : expandIconPosition}
+          showArrow={collapsible !== 'disabled' && !isIconHidden}
           collapsedByDefault={collapsedByDefault}
           extra={extra}
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
-          showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
           ghost={ghost}
           bodyStyle={model.allStyles.fullStyle}
           headerStyle={headerStyles}
