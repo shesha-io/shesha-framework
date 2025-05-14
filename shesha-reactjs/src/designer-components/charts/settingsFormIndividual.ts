@@ -7,7 +7,6 @@ export const getSettings = (data: any) => {
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
   const dataTabId = nanoid();
-  const chartSettingsId = nanoid();
   const dataSettingsId = nanoid();
   const dataSettingsForUrlId = nanoid();
   const securityTabId = nanoid();
