@@ -212,7 +212,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       allowClear: true,
                       jsSetting: true,
                       width: '100%',
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return getSettingValue(data?.entityType);',
+                        _mode: 'code',
+                        _value: false
+                      } as any,
                       autoFillProps: false,
                     },
                   ],

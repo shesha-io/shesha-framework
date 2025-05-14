@@ -1,8 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -267,7 +266,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 type: 'propertyAutocomplete',
                                                 propertyName: 'quickviewDisplayPropertyName',
                                                 parentId: dataTabId,
-                                                modelType: '{{data.entityType}}',
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
                                                 label: 'Display Property Name',
                                                 version: 5
                                             }
@@ -327,12 +330,16 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         propertyName: 'entityDisplayProperty',
                                         label: 'Display Property',
                                         parentId: dataTabId,
-                                        modelType: "{{data.entityTypeShortAlias}}",
+                                        modelType: {
+                                            _code: 'return getSettingValue(data?.entityType);',
+                                            _mode: 'code',
+                                            _value: false
+                                        } as any,
                                         isDynamic: false,
                                         autoFillProps: false,
                                         settingsValidationErrors: [],
                                         hidden: {
-                                            _code: 'return !getSettingValue(data.entityTypeShortAlias);',
+                                            _code: 'return !getSettingValue(data?.entityType);',
                                             _mode: 'code',
                                             _value: false
                                         },
@@ -341,7 +348,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                             required: true,
                                         }
                                     })
-                                    .addQueryBuilder({
+                                    .addSettingsInput({
                                         id: nanoid(),
                                         parentId: dataTabId,
                                         propertyName: 'filter',
@@ -349,24 +356,19 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         isDynamic: true,
                                         jsSetting: true,
                                         validate: {},
-                                        hidden: false,
+                                        hidden: {
+                                            _code: 'return !getSettingValue(data?.entityType);',
+                                            _mode: 'code',
+                                            _value: false
+                                        },
                                         settingsValidationErrors: [],
-                                        modelType: "{{data.entityTypeShortAlias}}",
+                                        modelType: {
+                                            _code: 'return getSettingValue(data?.entityType);',
+                                            _mode: 'code',
+                                            _value: false
+                                        } as any,
                                         fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                                     })
-                                    .addQueryBuilder({
-                                        id: 'n4enebtmhFgvkP5ukQK1f',
-                                        propertyName: 'filters',
-                                        label: 'Entity filter',
-                                        labelAlign: 'right',
-                                        parentId: 'root',
-                                        hidden: false,
-                                        isDynamic: false,
-                                        validate: {},
-                                        settingsValidationErrors: [],
-                                        modelType: '{{data.entityType}}',
-                                        fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                                      })
                                     .toJson()
                                 ]
                             })

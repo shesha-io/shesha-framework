@@ -133,7 +133,11 @@ export const getSettings = (data) => {
                     isDynamic: false,
                     description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
                     validate: {},
-                    modelType: '{{data.entityType}}',
+                    modelType: {
+                      _code: 'return getSettingValue(data?.entityType);',
+                      _mode: 'code',
+                      _value: false
+                    } as any,
                     autoFillProps: false,
                     settingsValidationErrors: [],
                   },
@@ -184,7 +188,11 @@ export const getSettings = (data) => {
                         propertyName: 'filters',
                         label: 'Entity Filter',
                         jsSetting: true,
-                        modelType: '{{data.entityType}}',
+                        modelType: {
+                          _code: 'return getSettingValue(data?.entityType);',
+                          _mode: 'code',
+                          _value: false
+                        } as any,
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                         hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
                       },
@@ -246,7 +254,11 @@ export const getSettings = (data) => {
                     parentId: dataPanelId,
                     label: 'Columns',
                     items: [],
-                    modelType: '{{data.entityType}}',
+                    modelType: {
+                      _code: 'return getSettingValue(data?.entityType);',
+                      _mode: 'code',
+                      _value: false
+                    } as any,
                     parentComponentType: 'entityPicker',
                   }).toJson()]
               })
