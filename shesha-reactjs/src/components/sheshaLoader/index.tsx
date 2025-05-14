@@ -11,8 +11,10 @@ interface ISheshaLoader {
 
 const SheshaLoader: FC<ISheshaLoader> = ({ message = 'Initializing' }) => (
   <Flex vertical justify="center" align="center" style={{ height: '100vh' }}>
-    <Image src={`/images/SheshaLoadingAnimation.gif`} alt="Shesha Loading Animation" width={200} height={200} />
-    <Title className="loading" level={3}>{message}</Title>
+    <Image src="/images/SheshaLoadingAnimation.gif" alt="Shesha Loading Animation" width={200} height={200} />
+    <Title className="loading" level={3}>
+      {message}
+    </Title>
   </Flex>
 );
 
