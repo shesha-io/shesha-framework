@@ -341,8 +341,35 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                             required: true,
                                         }
                                     })
-                                    .addQueryBuilder({
+                                    .addSettingsInputRow({
                                         id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: {
+                                            _code: 'return !getSettingValue(data.entityTypeShortAlias);',
+                                            _mode: 'code',
+                                            _value: false
+                                        },
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                propertyName: 'entityDisplayProperty',
+                                                label: 'Display Property',
+                                                parentId: dataTabId,
+                                                modelType: "{{data.entityTypeShortAlias}}",
+                                                isDynamic: false,
+                                                autoFillProps: false,
+                                                settingsValidationErrors: [],
+                                                type: 'propertyAutocomplete',
+                                                size: 'small',
+                                                validate: {
+                                                    required: true,
+                                                }
+                                            }
+                                        ],
+                                    })
+                                    .addSettingsInput({
+                                        id: nanoid(),
+                                        inputType: 'queryBuilder',
                                         parentId: dataTabId,
                                         propertyName: 'filter',
                                         label: 'Entity Filter',
@@ -354,32 +381,8 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         modelType: "{{data.entityTypeShortAlias}}",
                                         fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                                     })
-                                    .addQueryBuilder({
-                                        id: 'n4enebtmhFgvkP5ukQK1f',
-                                        propertyName: 'filters',
-                                        label: 'Entity filter',
-                                        labelAlign: 'right',
-                                        parentId: 'root',
-                                        hidden: false,
-                                        isDynamic: false,
-                                        validate: {},
-                                        settingsValidationErrors: [],
-                                        modelType: '{{data.entityType}}',
-                                        fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                                      })
                                     .toJson()
                                 ]
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: nanoid(),
-                                inputType: 'switch',
-                                propertyName: 'useRawValues',
-                                label: 'Use raw values',
-                                size: 'small',
-                                layout: 'horizontal',
-                                jsSetting: true,
-                                parentId: dataTabId
                             })
                             .toJson()
                         ]
