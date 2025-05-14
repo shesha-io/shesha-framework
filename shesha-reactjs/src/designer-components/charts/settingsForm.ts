@@ -416,7 +416,6 @@ export const getSettings = (data: any) => {
                         labelAlign: 'right',
                         parentId: dataTabId,
                         inputType: 'queryBuilder',
-                        hidden: false,
                         isDynamic: false,
                         validate: {},
                         settingsValidationErrors: [],
@@ -425,6 +424,7 @@ export const getSettings = (data: any) => {
                           _mode: 'code',
                           _value: false
                         } as any,
+                        hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                       })
                       .toJson(),
