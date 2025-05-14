@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
 
@@ -91,35 +91,6 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       jsSetting: true,
                       layout: 'horizontal',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  hidden: {
-                    _code: 'return  !getSettingValue(data?.hasChildren);',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                  inputs: [
-                    {
-                      type: 'dropdown',
-                      id: nanoid(),
-                      propertyName: 'direction',
-                      label: 'Direction',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                      dropdownOptions: [
-                        {
-                          label: 'Horizontal',
-                          value: 'horizontal',
-                        },
-                        {
-                          label: 'Vertical',
-                          value: 'vertical',
-                        },
-                      ],
                     },
                   ],
                 })
@@ -269,15 +240,6 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     propertyName: 'font.color',
                                   },
-                                  {
-                                    type: 'dropdown',
-                                    id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                    label: 'Align',
-                                    propertyName: 'font.align',
-                                    hideLabel: true,
-                                    width: 60,
-                                    dropdownOptions: textAlign,
-                                  },
                                 ],
                               })
                               .toJson(),
@@ -289,8 +251,7 @@ export const getSettings = (data: any) => {
                         parentId: styleRouterId,
 
                         hidden: {
-                          _code:
-                            'return  getSettingValue(data?.direction) !== "horizontal"',
+                          _code: 'return  getSettingValue(data?.direction) !== "horizontal"',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -425,8 +386,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'justifyItems',
                             label: 'Justify Items',
                             hidden: {
-                              _code:
-                                'return  getSettingValue(data?.direction) !== "horizontal"',
+                              _code: 'return  getSettingValue(data?.direction) !== "horizontal"',
                               _mode: 'code',
                               _value: false,
                             } as any,
