@@ -27,7 +27,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
 
   return isLoggedIn
     ? <Fragment>{props.children(router?.query)}</Fragment> 
-    : <SheshaLoader message={authState.hint || "Initializing..."} />;
+    : <SheshaLoader message={authState.hint || "Initializing"} />;
 };
 
 /**
