@@ -122,6 +122,12 @@ export const GlobalSheshaStyles = createGlobalStyle`
   
   body {
     margin: 0;
+    div {
+      .ant-tabs-dropdown {
+      --ant-tabs-z-index-popup: 2000 !important;
+      z-index: 2000 !important;
+      }
+    }
   }
 
   [hidden] {
@@ -139,4 +145,15 @@ export const GlobalSheshaStyles = createGlobalStyle`
     font-family: ${(p) => p.theme.fontFamily};
     line-height: 1;
   }
+    .sha-toolbar-btn-configurable {
+      display: flex;
+      align-items: center;
+      span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        }
+       
+    }
 `;

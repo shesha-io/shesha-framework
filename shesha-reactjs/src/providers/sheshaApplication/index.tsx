@@ -43,9 +43,8 @@ import SheshaLoader from '@/components/sheshaLoader';
 import { Result } from 'antd';
 import { EntityActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
-import { WebStorageContextProvider } from '../dataContextProvider/webStorageContext';
+import { WebStorageContextProvider } from '../dataContextProvider/contexts/webStorageContext';
 import { ProgressBar } from './progressBar';
-
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -130,7 +129,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                           id={SheshaCommonContexts.AppContext}
                                           name={SheshaCommonContexts.AppContext}
                                           description={'Application data store context'}
-                                          type={'root'}
+                                          type={'app'}
                                         >
                                           <FormDataLoadersProvider>
                                             <FormDataSubmittersProvider>

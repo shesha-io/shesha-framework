@@ -3,32 +3,25 @@ import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { IInputStyles } from '@/providers/form/models';
 import {
   executeExpression,
-  getStyle,
-  pickStyleFromModel,
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { IAutocompleteComponentProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
-import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
-import { toSizeCssProp } from '@/utils/form';
+import { getValueByPropertyName } from '@/utils/object';
 import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
-import { useAsyncMemo } from '@/hooks/useAsyncMemo';
-import { evaluateDynamicFilters } from '@/utils';
-import { useDeepCompareMemo, useNestedPropertyMetadatAccessor } from '@/index';
-import { useActualContextExecution } from '@/hooks/useActualContextExecution';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -40,94 +33,43 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
-      model.dataSourceType === 'entitiesList' ? model.entityType : null
-    );
 
-    const evaluatedFilters = useAsyncMemo(async () => {
-      if (model.dataSourceType !== 'entitiesList' || !model.filter)
-        return '';
-
-      const response = await evaluateDynamicFilters(
-        [{ expression: model.filter } as any],
-        [
-          { match: 'data', data: allData.data },
-          { match: 'globalState', data: allData.globalState },
-          { match: 'pageContext', data: { ...allData.pageContext }}
-        ],
-        propertyMetadataAccessor
-      );
-
-      if (response.find((f) => f?.unevaluatedExpressions?.length)) 
-        return undefined;
-
-      return response[0]?.expression ?? undefined;
-    }, [model.filter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
-
-    const memoizedFilter = useDeepCompareMemo(() => {
-      return evaluatedFilters;
-    }, [evaluatedFilters]);
-
-    const defaultValue = useActualContextExecution(model.defaultValue);
-    const formItemProps = defaultValue ? { model, initialValue: defaultValue } : { model };
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles: React.CSSProperties = removeUndefinedProps({
-      height: toSizeCssProp(model.height),
-      width: toSizeCssProp(model.width),
-      fontWeight: model.fontWeight,
-      borderWidth: model.borderSize,
-      borderRadius: model.borderRadius,
-      borderStyle: model.borderType,
-      borderColor: model.borderColor,
-      backgroundColor: model.backgroundColor,
-      fontSize: model.fontSize,
-      overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
-      ...stylingBoxAsCSS,
-    });
-    const jsStyle = getStyle(model.style, allData.data);
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
-
+    const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
+    const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+  
     const keyValueFunc: KayValueFunc = useCallback( (value: any, args: any) => {
-      if (model.valueFormat === 'entityReference') {
-        return Boolean(value) ? getValueByPropertyName(value, model.keyPropName || 'id') : null;
-      }
-      if (model.valueFormat === 'custom') {
+      if (model.valueFormat === 'custom' && model.keyValueFunc) 
         return executeExpression<string>(model.keyValueFunc, {...args, value}, null, null );
-      }
-      return value?.id ?? value?.value ?? value;
-    }, [model.valueFormat, model.keyValueFunc, model.keyPropName]);
+      if (model.valueFormat === 'entityReference') 
+        return value?.id;
+      return typeof(value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
+    }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
-    const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
-      if (model.valueFormat === 'entityReference') {
-        return Boolean(value)
-          ? {id: value.id, _displayName: value._displayName || getValueByPropertyName(value, model.displayPropName), _className: model.entityType}
+    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
+      if (model.valueFormat === 'entityReference')
+        return Boolean(item)
+          ? {id: item.id, _displayName: item._displayName || getValueByPropertyName(item, displayPropName), _className: model.entityType}
           : null;
-      }
-      if (model.valueFormat === 'custom') {
-        return executeExpression(model.outcomeValueFunc, {...args, item: value}, null, null );
-      }
-      return typeof(value) === 'object' 
-        ? getValueByPropertyName(value, model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value'))
-        : value;
-    }, [model.valueFormat, model.outcomeValueFunc, model.keyPropName, model.entityType]);
+      if (model.valueFormat === 'custom' && model.outcomeValueFunc)
+        return executeExpression(model.outcomeValueFunc, {...args, item: item}, null, null );
+      return typeof(item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
+    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, model.entityType]);
 
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
-      if (model.displayValueFunc) {
+      if (model.displayValueFunc)
         return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
-      }
-      return getValueByPropertyName(value, model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText'))
-        || (model.readOnly ? '' : 'unknown');
-    }, [model.valueFormat, model.displayValueFunc, model.displayPropName]);
+      return getValueByPropertyName(value, displayPropName) || 'unknown'; 
+    }, [model.displayValueFunc, displayPropName]);
 
-    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any[]) => {
-      return executeExpression(model.filterKeysFunc, {value}, null, null );
+    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
+      const localValue = value?.length === 1 ? value[0] : value;
+      return Array.isArray(localValue)
+        ? { or : localValue.map(x => executeExpression(model.filterKeysFunc, {value: x}, null, null )) }
+        : executeExpression(model.filterKeysFunc, {value: localValue}, null, null );
     }, [model.filterKeysFunc]);
 
     return (
-      <ConfigurableFormItem {...formItemProps}>
+      <ConfigurableFormItem {...{model}}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
@@ -135,26 +77,27 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function')
               onChange(...args);
           };
-
+          
           return <Autocomplete
             {...model}
-            filter={memoizedFilter}
             grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
             keyValueFunc={keyValueFunc}
             outcomeValueFunc={outcomeValueFunc}
             displayValueFunc={displayValueFunc}
             filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-            style={finalStyle}
+            style={model?.allStyles?.fullStyle}
+            size={model?.size ?? 'middle'}
             value={value}
             onChange={onChangeInternal} 
+            allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
           />;
         }}
       </ConfigurableFormItem>
     );
   }
   ,
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
@@ -187,7 +130,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         height: prev.height,
         hideBorder: prev.hideBorder,
         borderSize: prev.borderSize,
-        borderRadius: prev.borderRadius,
+        borderRadius: prev.borderRadius ?? 8,
         borderColor: prev.borderColor,
         fontSize: prev.fontSize,
         backgroundColor: prev.backgroundColor,
@@ -196,7 +139,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IAutocompleteComponentProps>(7, (prev) => {
+    .add<IAutocompleteComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    
+    .add<IAutocompleteComponentProps>(8, (prev) => {
       return { 
         ...prev,
         mode: prev.mode || 'single',

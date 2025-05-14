@@ -47,7 +47,7 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   filterKeysFunc?: string;
   sorting?: ISortingItem[];
   grouping?: GroupingItem[];
-
-  // ToDo: AS need to review
   allowFreeText?: boolean;
+  font?: any;
+  dimensions?: any;
 }

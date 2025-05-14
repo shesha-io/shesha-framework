@@ -17,6 +17,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Mvc;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -180,8 +181,8 @@ namespace Shesha.ConfigurationItems
             var validationResults = new List<ValidationResult>();
             if (string.IsNullOrWhiteSpace(input.Filter))
                 validationResults.Add(new ValidationResult("Filter is mandatory", new string[] { nameof(input.Filter) }));
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var items = await _itemsRepository.GetAllFiltered(input.Filter).ToListAsync();
 

@@ -1,7 +1,6 @@
 import { Modal, Skeleton } from 'antd';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import React, { FC } from 'react';
-import { useAppConfigurator } from '@/providers';
+import { useAppConfigurator, useDataContextManagerActions } from '@/providers';
 import { IFormMarkupResponse } from '@/providers/form/api';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import ValidationErrors from '@/components/validationErrors';
@@ -10,6 +9,7 @@ import { IChildEntitiesTagGroupProps } from './models';
 import FormInfo from '@/components/configurableForm/formInfo';
 
 interface IProps extends IChildEntitiesTagGroupProps {
+  contextId: string;
   formInfo?: IFormMarkupResponse['formConfiguration'];
   error: IFormMarkupResponse['error'] | any;
   readOnly?: boolean;
@@ -20,6 +20,7 @@ interface IProps extends IChildEntitiesTagGroupProps {
 }
 
 const ChildEntitiesTagGroupModal: FC<IProps> = ({
+  contextId,
   formInfo,
   error,
   readOnly,
@@ -31,7 +32,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   onChange
 }) => {
   const { formInfoBlockVisible } = useAppConfigurator();
-  const context = useDataContext();
+  const context = useDataContextManagerActions().getDataContext(contextId);
 
   const onOk = () => {
     onChange(context.getData());

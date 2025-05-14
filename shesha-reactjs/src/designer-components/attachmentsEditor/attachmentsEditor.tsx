@@ -5,7 +5,7 @@ import React from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
-import { useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { IStyleType, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
@@ -20,6 +20,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { containerDefaultStyles, defaultStyles } from './utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -37,12 +38,14 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   maxHeight?: string;
   onFileChanged?: string;
   downloadZip?: boolean;
-  layout: layoutType;
+  filesLayout?: layoutType;
   listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
+  container?: IStyleType;
+  primaryColor?: string;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -109,7 +112,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 isDragger={model?.isDragger}
                 onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
-                layout={model.layout}
+                filesLayout={model.filesLayout}
                 listType={model.listType}
                 {...model}
                 ownerId={ownerId}
@@ -120,7 +123,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
+  settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
@@ -137,6 +140,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         listType: 'text',
         layout: 'horizontal',
         hideFileName: true,
+        editMode: 'inherited'
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -147,7 +151,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType })),
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
+    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
 };
 
 export default AttachmentsEditor;

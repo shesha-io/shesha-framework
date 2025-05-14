@@ -8,6 +8,7 @@ import { Alert, Button, Divider } from 'antd';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
+import { initialValues } from './utils';
 
 export interface ButtonGroupSettingsEditorProps {
   readOnly: boolean;
@@ -79,7 +80,8 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       label: `Button ${itemNo}`,
       itemSubType: 'button',
       buttonType: 'link',
-      editMode: 'inherited'
+      editMode: 'inherited',
+      ...initialValues()
     };
 
     return newItem;
@@ -93,7 +95,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       readOnly={readOnly}
       header={<Alert message={readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'} />}
       itemProperties={(itemProps) => (<ButtonGroupProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
-      groupHeader={ButtonGroupEditorHeader}      
+      groupHeader={ButtonGroupEditorHeader}
     >
       {({ item, itemOnChange, index, nestedRenderer }) => (
         <ButtonGroupListItem

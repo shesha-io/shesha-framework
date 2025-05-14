@@ -7,8 +7,9 @@ import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { evaluateString } from '@/providers/form/utils';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
-import { useFormData } from '@/providers/index';
+import { MetadataProvider } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
     modelType: string;
@@ -24,17 +25,17 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
     isOutput: true,
     canBeJsSetting: true,
     icon: <GroupOutlined />,
-    Factory: ({ model }) => {
-        const { data: formData } = useFormData();
-        const { modelType: modelTypeExpression, maxItemsCount } = model;
-
-        const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
-        const readOnly = model.readOnly;
-        
+    calculateModel: (model, allData) => ({ modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null }),
+    Factory: ({ model, calculatedModel }) => {
         return (
-            <ConfigurableFormItem model={model}>
-                {(value, onChange) => <SortingEditor value={value} onChange={onChange} modelType={modelType} readOnly={readOnly} maxItemsCount={maxItemsCount}/>}
-            </ConfigurableFormItem>
+            <ConditionalWrap
+                condition={Boolean(calculatedModel.modelType)}
+                wrap={content => <MetadataProvider modelType={calculatedModel.modelType}>{content}</MetadataProvider>}
+            >
+                <ConfigurableFormItem model={model}>
+                    {(value, onChange) => <SortingEditor value={value} onChange={onChange} readOnly={model.readOnly} maxItemsCount={model.maxItemsCount} />}
+                </ConfigurableFormItem>
+            </ConditionalWrap>
         );
     },
     settingsFormMarkup: settingsForm,

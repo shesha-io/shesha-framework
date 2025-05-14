@@ -7,10 +7,14 @@ export interface ConfigurableItemFullName {
 export type ConfigurableItemUid = string;
 export type ConfigurableItemIdentifier = ConfigurableItemFullName | ConfigurableItemUid;
 
-export const isConfigurableItemRawId = (value: ConfigurableItemIdentifier): value is ConfigurableItemUid => {
-  return value && typeof value === 'string';
+export const isConfigurableItemRawId = (formId: ConfigurableItemIdentifier): formId is ConfigurableItemUid => {
+  return formId && typeof formId === 'string';
 };
 
 export const isConfigurableItemFullName = (value: ConfigurableItemIdentifier): value is ConfigurableItemFullName => {
   return value && Boolean((value as ConfigurableItemFullName)?.name);
+};
+
+export const ConfigurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
+  return isConfigurableItemFullName(value) ? `${value.module}:${value.name}` : value;
 };

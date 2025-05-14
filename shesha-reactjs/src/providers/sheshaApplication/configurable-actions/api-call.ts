@@ -19,51 +19,65 @@ export interface IApiCallArguments {
 }
 
 const HttpVerbs: Method[] = ['get',
-'delete',
-'head',
-'options',
-'post',
-'put',
-'patch',
-'purge',
-'link',
-'unlink'];
+  'delete',
+  'head',
+  'options',
+  'post',
+  'put',
+  'patch',
+  'purge',
+  'link',
+  'unlink'];
 
 export const apiCallArgumentsForm = new DesignerToolbarSettings()
-  .addDropdown({
-    id: nanoid(),
-    propertyName: 'verb',
-    label: 'Http Verb',
-    dataSourceType: 'values',
-    values: HttpVerbs.map(v => ({ id: v, label: v, value: v })),
-    defaultValue: 'post',
+  .addSettingsInputRow({
+    id: 'httpverb-url-row',
+    inputs: [
+      {
+        id: nanoid(),
+        type: 'dropdown',
+        propertyName: 'verb',
+        label: 'HTTP Verb',
+        dropdownOptions: HttpVerbs.map(v => ({ id: v, label: v.toUpperCase(), value: v })),
+        defaultValue: 'get',
+      },
+      {
+        id: nanoid(),
+        type: 'endpointsAutocomplete',
+        propertyName: 'url',
+        label: 'URL',
+        description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
+        httpVerb: "{data.verb}",
+      }
+    ]
   })
-  .addEndpointsAutocomplete({
-    id: nanoid(),
-    propertyName: 'url',
-    label: 'URL',
-    description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
-    httpVerb: "{data.verb}",    
+  .addSettingsInputRow({
+    id: "parameters-standard-header-row",
+    inputs: [
+      {
+        id: nanoid(),
+        type: 'labelValueEditor',
+        propertyName: 'parameters',
+        label: 'Parameters',
+        description: 'Request parameters. They will be included into the request as query string or body depending on the selected verb.',
+        labelName: 'key',
+        labelTitle: 'Key',
+        valueName: 'value',
+        valueTitle: 'Value',
+      },
+      {
+        id: nanoid(),
+        type: 'switch',
+        propertyName: 'sendStandardHeaders',
+        label: 'Send Standard Headers',
+        description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
+        defaultValue: true,
+      }
+    ]
   })
-  .addLabelValueEditor({
+  .addSettingsInput({
     id: nanoid(),
-    propertyName: 'parameters',
-    label: 'Parameters',
-    description: 'Request parameters. They will be included into the request as query string or body depending on the selected verb.',
-    labelName: 'key',
-    labelTitle: 'Key',
-    valueName: 'value',
-    valueTitle: 'Value',
-  })
-  .addCheckbox({
-    id: nanoid(),
-    propertyName: 'sendStandardHeaders',
-    label: 'Send standard headers',
-    description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
-    defaultValue: true,
-  })
-  .addLabelValueEditor({
-    id: nanoid(),
+    inputType: 'labelValueEditor',
     propertyName: 'headers',
     label: 'Headers',
     labelName: 'key',
@@ -93,15 +107,15 @@ export const useApiCallAction = () => {
         verb,
         sendStandardHeaders,
       } = actionArgs;
-      
+
       const headers = mapKeyValueToDictionary(actionArgs.headers) ?? {};
       const standardHeaders = sendStandardHeaders
-        ? httpHeaders 
+        ? httpHeaders
         : {};
       const allHeaders = { ...standardHeaders, ...headers };
 
       const parameters = mapKeyValueToDictionary(actionArgs.parameters);
-     
+
       // validate arguments
       if (!url)
         return Promise.reject('Expected expression to be defined but it was found to be empty.');
@@ -111,13 +125,13 @@ export const useApiCallAction = () => {
         : backendUrl;
 
       let preparedUrl = url;
-      let preparedData = {...parameters};
+      let preparedData = { ...parameters };
       const encodeAsQueryString = ['get', 'delete'].includes(verb?.toLowerCase());
-      if (encodeAsQueryString){
+      if (encodeAsQueryString) {
         const queryStringData = { ...getQueryParams(preparedUrl), ...preparedData };
         preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData)}`;
         preparedData = undefined;
-      }     
+      }
 
       return axios({
         url: preparedUrl,

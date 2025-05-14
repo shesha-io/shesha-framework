@@ -20,12 +20,12 @@ import { useFormDesignerState } from '@/providers/formDesigner';
 import { ButtonGroupConfigurator, IconPicker } from '@/components';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
+export const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
   const { readOnly } = props;
 
-  const { model, values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
+  const { values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
   const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -43,8 +43,10 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={model}
           onValuesChange={onValuesChange}
+          componentName={values.componentName}
+          propertyName={values.propertyName}
+          contextName={values.context}
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>

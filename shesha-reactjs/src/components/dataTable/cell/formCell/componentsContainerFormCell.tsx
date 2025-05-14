@@ -4,7 +4,7 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';
 import { useParent } from '@/providers/parentProvider/index';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
-import DynamicComponent from '@/designer-components/dynamicView/dynamicComponent';
+import FormComponent from '@/components/formDesigner/formComponent';
 
 interface IComponentsContainerFormCellProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 
@@ -21,8 +21,8 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
     <div style={removeUndefinedProperties(style)}>
       {components?.map((model) => {
           return (
-            <DynamicComponent
-              model={{
+            <FormComponent
+              componentModel={{
                 ...model,
                 context: model.context,
                 isDynamic: true,

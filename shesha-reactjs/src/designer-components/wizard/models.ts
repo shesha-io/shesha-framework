@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '@/interfaces';
+import { IConfigurableFormComponent, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormInstance, StepProps } from 'antd';
 
@@ -62,7 +62,7 @@ export interface IStepProps extends StepProps {
   content?: JSX.Element;
 }
 
-export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'> {
+export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'>, Omit<IStyleType, 'size'> {
   steps: IWizardStepProps[];
   wizardType?: 'default' | 'navigation';
   form?: FormInstance<any>;
@@ -72,8 +72,11 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   defaultActiveValue?: string;
   direction?: 'vertical' | 'horizontal';
   labelPlacement?: 'vertical' | 'horizontal';
-  size?: 'default' | 'small';
   buttonsLayout?: 'left' | 'right' | 'spaceBetween';
   showStepStatus?: boolean;
   sequence?: IWizardSequence;
+  primaryTextColor?: React.CSSProperties['color'];
+  primaryBgColor?: React.CSSProperties['color'];
+  secondaryBgColor?: React.CSSProperties['color'];
+  secondaryTextColor?: React.CSSProperties['color'];
 }

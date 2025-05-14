@@ -1,5 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { FC } from 'react';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
@@ -7,17 +6,17 @@ import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
   FormMarkup,
-  useDataContextManager,
+  useDataContextManagerActions,
   useFormData,
   useGlobalState,
   useNestedPropertyMetadatAccessor,
 } from '@/providers';
-import settingsJson from './entitySettings.json';
 import { useGet } from '@/hooks';
 import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
+import { getSettings } from './entitySettings';
 
-const settingsMarkup = settingsJson as FormMarkup;
+const settingsMarkup = getSettings() as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
   const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType } = settings ?? {};
@@ -26,7 +25,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
   const [data, setData] = useState(null);
-  const pageContext = useDataContextManager(false)?.getPageContext();
+  const pageContext = useDataContextManagerActions(false)?.getPageContext();
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
   const evaluatedFilters = useFormEvaluatedFilter({
     filter,
@@ -39,15 +38,15 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
     setData(result);
   };
 
-useEffect(() => {
-  const shouldFetch = 
-    filter === undefined || // No filter case
-    (filter !== undefined && evaluatedFilters !== undefined); // Has filter and filters are evaluated
+  useEffect(() => {
+    const shouldFetch =
+      filter === undefined || // No filter case
+      (filter !== undefined && evaluatedFilters !== undefined); // Has filter and filters are evaluated
 
-  if (shouldFetch) {
-    fetchTemplateData();
-  }
-}, [item, settings, evaluatedFilters, pageContext, FormData, globalState]);
+    if (shouldFetch) {
+      fetchTemplateData();
+    }
+  }, [item, settings, evaluatedFilters, pageContext, FormData, globalState]);
 
   const { configurationItemMode } = useAppConfigurator();
 

@@ -13,7 +13,7 @@ import {
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { getAccountMenuItems, getMenuItem } from './utils';
@@ -31,8 +31,12 @@ interface IProfileDropdown extends IConfigurableFormComponent {
   subText?: string;
   subTextColor?: string;
   subTextFontSize?: string;
+  subTextFontWeight?: string;
+  subTextFontFamily?: string;
+  subTextTextAlign?: CSSProperties['textAlign'];
   subTextStyle?: string;
   showUserInfo?: boolean;
+  popOverTitle?: string;
   popOverFormId?: FormIdentifier;
   popOverContentStyle?: string;
 }
@@ -50,8 +54,12 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       subText,
       subTextColor,
       subTextFontSize,
+      subTextFontWeight,
+      subTextFontFamily,
+      subTextTextAlign,
       subTextStyle,
       showUserInfo,
+      popOverTitle,
       popOverFormId,
       popOverContentStyle,
     } = model;
@@ -70,6 +78,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const subTextStyling = {
       color: subTextColor,
       fontSize: subTextFontSize,
+      fontWeight: subTextFontWeight,
+      fontFamily: subTextFontFamily,
+      textAlign: subTextTextAlign,
       ...getStyle(subTextStyle, formData, globalState),
     };
 
@@ -88,19 +99,12 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       return getItemsWithResolved(evaluation.items);
     }, [evaluation.items, numResolved]);
 
-    const [pop, setPop] = useState<boolean>(false);
-
     const menuItems = getMenuItem(finalItems, executeAction);
 
     const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
 
     const onDynamicItemEvaluated = () => {
       setNumResolved((prev) => prev + 1);
-    };
-
-    const onDropdownClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-      e.preventDefault();
-      setPop(false);
     };
 
     if (model.hidden) return null;
@@ -126,20 +130,14 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
             condition={showUserInfo}
             wrap={(children) => {
               return (
-                <Popover
-                  content={popoverContent}
-                  placement="bottomRight"
-                  trigger="hover"
-                  open={pop}
-                  onOpenChange={setPop}
-                >
+                <Popover title={popOverTitle} content={popoverContent} placement="bottomRight">
                   {children}
                 </Popover>
               );
             }}
           >
             <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
-              <a className="ant-dropdown-link" onClick={onDropdownClick}>
+              <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
                 {loginInfo?.fullName} <DownOutlined />
               </a>
             </Dropdown>
@@ -150,6 +148,16 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
+  migrator: (m) => m
+    .add<IProfileDropdown>(1, (prev) => (
+      {
+        ...prev, subTextFontWeight: 'normal',
+        subTextFontFamily: 'Arial',
+        subTextTextAlign: 'left',
+        subTextColor: '#000000',
+        subTextFontSize: '12px',
+      }
+    )),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 

@@ -11,6 +11,7 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { StateWithHistory } from '@/utils/undoable';
 import {
   DEFAULT_FORM_SETTINGS,
+  FormMode,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
   IFormSettings,
@@ -18,6 +19,7 @@ import {
 } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
 import { createNamedContext } from '@/utils/react';
+import { createContext } from 'use-context-selector';
 
 export interface IFormDesignerStateContext {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -28,9 +30,11 @@ export interface IFormDesignerStateContext {
   isDragging: boolean;
   hasDragged: boolean;
   dataSources: IDataSource[];
+
   isDebug: boolean;
   isPreview: boolean;
   readOnly: boolean;
+  formMode: FormMode;
 
   settingsPanelRef?: MutableRefObject<any>;
 
@@ -115,6 +119,7 @@ export interface IFormDesignerActionsContext {
   setActiveDataSource: (id: string) => void;
 
   setReadOnly: (value: boolean) => void;
+  setFormMode: (value: FormMode) => void;
 
   getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
 
@@ -136,6 +141,7 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   toolboxComponentGroups: [],
   dataSources: [],
   readOnly: true,
+  formMode: 'designer',
 };
 
 export const UndoableFormDesignerStateContext = createNamedContext<IUndoableFormDesignerStateContext>({
@@ -146,8 +152,7 @@ export const UndoableFormDesignerStateContext = createNamedContext<IUndoableForm
 
 export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext { }
 
-export const FormDesignerStateContext = createNamedContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE, "FormDesignerStateContext");
+//export const FormDesignerStateContext = createNamedContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE, "FormDesignerStateContext");
+export const FormDesignerStateContext = createContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE);
 
 export const FormDesignerActionsContext = createNamedContext<IFormDesignerActionsContext>(undefined, "FormDesignerActionsContext");
-
-export const FormDesignerStateConsumer = FormDesignerStateContext.Consumer;

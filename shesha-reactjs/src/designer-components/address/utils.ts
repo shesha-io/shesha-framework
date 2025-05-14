@@ -1,6 +1,7 @@
 import { PropTypes } from 'react-places-autocomplete';
 import { IEntityReferenceDto } from '@/interfaces';
 import { IAddressCompomentProps } from './models';
+import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
 
 export const EXPOSED_VARIABLES = [
   {
@@ -83,9 +84,13 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
     showPriorityBounds,
   } = model;
   let result = {} as PropTypes['searchOptions'];
-
+  
   if (country?.length) {
-    result = { componentRestrictions: { country } };
+      const countryCodes = country.map(countryLabel => {
+      const foundCountry = COUNTRY_CODES.find(item => item.value === countryLabel);
+      return foundCountry ? foundCountry.code : countryLabel;
+    });
+        result = { componentRestrictions: { country: countryCodes } };
   }
 
   try {

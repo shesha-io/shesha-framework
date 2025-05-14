@@ -1,6 +1,6 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
-import { progressSettingsForm } from './settings';
+import { getSettings } from './settings';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
@@ -8,7 +8,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { ProgressProps } from 'antd';
 import { ProgressType } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 interface IProgressProps
@@ -20,6 +20,7 @@ interface IProgressProps
   strokeColor?: string;
   lineStrokeColor?: string;
   circleStrokeColor?: string;
+  defaultValue?: number;
 }
 
 const ProgressComponent: IToolboxComponent<IProgressProps> = {
@@ -28,6 +29,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   icon: <LineOutlined />,
   isInput: true,
   isOutput: true,
+    initModel: (model) => {
+      return {
+        ...model,
+        hideLabel: true,
+      };
+    },
   Factory: ({ model }) => {
     const {
       progressType,
@@ -45,9 +52,16 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       gapPosition,
       strokeWidth,
       width,
+      defaultValue,
+      hidden,
+      gapDegree,
+      style
     } = model;
 
-    if (model.hidden) return null;
+    if (hidden) return null;
+
+      const styles = getStyle(style);
+    
 
     const getEvaluatedSuccessColor = () => {
       // tslint:disable-next-line:function-constructor
@@ -55,22 +69,23 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     };
 
     const getEvaluatedStrokeValue = () => {
-      let color = strokeColor;
+      let color: string = strokeColor;
       let isLineOrCircle = false;
 
       if (progressType === 'line') {
-        color = lineStrokeColor;
+        color = lineStrokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (progressType === 'circle') {
-        color = circleStrokeColor;
+        color = circleStrokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (isLineOrCircle) {
         // tslint:disable-next-line:function-constructor
-        return new Function(color)();
+        //console.log(color)
+        return color;
       } else {
         return color;
       }
@@ -84,15 +99,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
-
-          const perc = percent || value;
-
           return (
             <ProgressWrapper
               type={progressType}
               strokeColor={getEvaluatedStrokeValue()}
               format={getEvaluatedFormat}
-              percent={perc}
+              percent={percent || value}
               width={width}
               strokeWidth={strokeWidth}
               gapPosition={gapPosition}
@@ -102,13 +114,16 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               showInfo={showInfo}
               strokeLinecap={strokeLinecap}
               success={getEvaluatedSuccessColor()}
+              defaultValue={defaultValue}
+              gapDegree={gapDegree}
+              style={styles}
             />);
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: progressSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(progressSettingsForm, model),
+  settingsFormMarkup: data => getSettings(data),
+  validateSettings: model => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))

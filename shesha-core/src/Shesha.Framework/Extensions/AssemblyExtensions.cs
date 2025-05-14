@@ -1,4 +1,5 @@
-﻿using Abp.Reflection;
+﻿using Abp.Dependency;
+using Abp.Reflection;
 using Shesha.Modules;
 using Shesha.Services;
 using System;
@@ -13,52 +14,17 @@ namespace Shesha.Extensions
     /// </summary>
     public static class AssemblyExtensions
     {
-        private static List<ModuleCacheItem> _cacheItems;
-        static AssemblyExtensions ()
-        {
-            var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
-
-            var moduleTypes = typeFinder.Find(t => !t.IsAbstract && typeof(SheshaModule).IsAssignableFrom(t)).ToList();
-            var moduleItems = moduleTypes.Select(mt => {
-                    var instance = GetModuleInstance(mt);
-                    return instance != null
-                        ? new MainModuleCacheItem(instance)
-                        : null;
-                
-                })
-                .WhereNotNull()
-                .ToList();
-            
-            var subModuleTypes = typeFinder.Find(t => !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t)).ToList();
-            var subModuleItems = subModuleTypes.Select(sm => {
-                var subModuleInstance = StaticContext.IocManager.IsRegistered(sm)
-                    ? StaticContext.IocManager.Resolve(sm) as ISheshaSubmodule
-                    : null;
-                if (subModuleInstance != null)
-                {
-                    var mainModuleItem = moduleItems.FirstOrDefault(i => i.ModuleType == subModuleInstance.ModuleType);
-                    if (mainModuleItem != null)
-                        return new SubModuleCacheItem(subModuleInstance, mainModuleItem);
-                }
-                return null;
-            })
-                .WhereNotNull()
-                .ToList();
-
-            _cacheItems = moduleItems.Cast<ModuleCacheItem>().ToList();
-            _cacheItems.AddRange(subModuleItems);
-        }
-
-        private static SheshaModule? GetModuleInstance(Type moduleType)
-        {
-            return StaticContext.IocManager.IsRegistered(moduleType)
-                ? StaticContext.IocManager.Resolve(moduleType) as SheshaModule
-                : null;
-        }
-
         private static ModuleCacheItem? GetCacheItem(Assembly assembly)
         {
-            return _cacheItems.FirstOrDefault(i => i.Assembly == assembly);
+            try
+            {
+                var store = StaticContext.IocManager.Resolve<IModuleList>();
+                return store.Modules.FirstOrDefault(i => i.Assembly == assembly);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -87,33 +53,85 @@ namespace Shesha.Extensions
         {
             return GetCacheItem(assembly)?.ModuleInfo.Name;
         }
+    }
 
-        private class ModuleCacheItem 
+    public class ModuleCacheItem
+    {
+        public Assembly Assembly { get; protected set; }
+        public Type ModuleType { get; protected set; }
+        public SheshaModuleInfo ModuleInfo { get; protected set; }
+
+        protected ModuleCacheItem(Assembly assembly, Type moduleType, SheshaModuleInfo moduleInfo)
         {
-            public Assembly Assembly { get; protected set; }
-            public Type ModuleType { get; protected set; }
-            public SheshaModuleInfo ModuleInfo { get; protected set; }
-            
-            protected ModuleCacheItem(Assembly assembly, Type moduleType, SheshaModuleInfo moduleInfo)
-            {
-                Assembly = assembly;
-                ModuleType = moduleType;
-                ModuleInfo = moduleInfo;
-            }
+            Assembly = assembly;
+            ModuleType = moduleType;
+            ModuleInfo = moduleInfo;
+        }
+    }
+
+    public class MainModuleCacheItem : ModuleCacheItem
+    {
+        public MainModuleCacheItem(SheshaModule module) : base(module.GetType().Assembly, module.GetType(), module.ModuleInfo)
+        {
+        }
+    }
+
+    public class SubModuleCacheItem : ModuleCacheItem
+    {
+        public SubModuleCacheItem(ISheshaSubmodule submodule, MainModuleCacheItem mainModuleItem) : base(submodule.GetType().Assembly, mainModuleItem.ModuleType, mainModuleItem.ModuleInfo)
+        {
+        }
+    }
+
+    public interface IModuleList
+    {
+        public List<ModuleCacheItem> Modules { get; }
+    }
+    public class ModuleList : IModuleList, ISingletonDependency
+    {
+        public List<ModuleCacheItem> Modules { get; private set; }
+        private readonly IIocResolver _iocResolver;
+
+        public ModuleList(IIocResolver iocResolver, ITypeFinder typeFinder)
+        {
+            _iocResolver = iocResolver;
+
+            var moduleTypes = typeFinder.Find(t => !t.IsAbstract && typeof(SheshaModule).IsAssignableFrom(t)).ToList();
+            var moduleItems = moduleTypes.Select(mt => {
+                var instance = GetModuleInstance(mt);
+                return instance != null
+                    ? new MainModuleCacheItem(instance)
+                    : null;
+
+            })
+                .WhereNotNull()
+                .ToList();
+
+            var subModuleTypes = typeFinder.Find(t => !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t)).ToList();
+            var subModuleItems = subModuleTypes.Select(sm => {
+                var subModuleInstance = StaticContext.IocManager.IsRegistered(sm)
+                    ? StaticContext.IocManager.Resolve(sm) as ISheshaSubmodule
+                    : null;
+                if (subModuleInstance != null)
+                {
+                    var mainModuleItem = moduleItems.FirstOrDefault(i => i.ModuleType == subModuleInstance.ModuleType);
+                    if (mainModuleItem != null)
+                        return new SubModuleCacheItem(subModuleInstance, mainModuleItem);
+                }
+                return null;
+            })
+                .WhereNotNull()
+                .ToList();
+
+            Modules = moduleItems.Cast<ModuleCacheItem>().ToList();
+            Modules.AddRange(subModuleItems);
         }
 
-        private class MainModuleCacheItem: ModuleCacheItem
+        private SheshaModule? GetModuleInstance(Type moduleType)
         {
-            public MainModuleCacheItem(SheshaModule module): base(module.GetType().Assembly, module.GetType(), module.ModuleInfo)
-            {
-            }
-        }
-
-        private class SubModuleCacheItem : ModuleCacheItem
-        {
-            public SubModuleCacheItem(ISheshaSubmodule submodule, MainModuleCacheItem mainModuleItem): base(submodule.GetType().Assembly, mainModuleItem.ModuleType, mainModuleItem.ModuleInfo) 
-            {
-            }
+            return _iocResolver.IsRegistered(moduleType)
+                ? _iocResolver.Resolve(moduleType) as SheshaModule
+                : null;
         }
     }
 }

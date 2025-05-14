@@ -1,4 +1,4 @@
-﻿using Shesha.Domain.Attributes;
+using Shesha.Domain.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain

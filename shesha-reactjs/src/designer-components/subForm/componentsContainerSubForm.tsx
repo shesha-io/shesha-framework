@@ -1,4 +1,3 @@
-import DynamicComponent from '../dynamicView/dynamicComponent';
 import React, { FC, useCallback } from 'react';
 import { executeScriptSync } from '@/providers/form/utils';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
@@ -7,6 +6,7 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';
 import { useGlobalState, useSubForm } from '@/providers';
 import { useParent } from '@/providers/parentProvider/index';
+import FormComponent from '../../components/formDesigner/formComponent';
 
 interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 
@@ -40,12 +40,11 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
         })
         .map((model) => {
           return (
-            <DynamicComponent
-              model={{
+            <FormComponent 
+              componentModel={{
                 ...model,
                 context: model.context ?? context,
                 initialContext: model.context,
-                isDynamic: true,
                 readOnly: readOnly === true ? true : model?.readOnly,
                 customEnabled: '',
               }}

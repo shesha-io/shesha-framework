@@ -1,7 +1,7 @@
-import React, { FC, PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
-import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
+import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import { 
@@ -14,6 +14,7 @@ import {
   DataContextProviderActionsContext,
   DataContextProviderStateContext,
   DataContextType,
+  IDataContextFull,
   IDataContextProviderActionsContext,
   IDataContextProviderActionsContextOverride,
   IDataContextProviderStateContext,
@@ -21,6 +22,12 @@ import {
 } from "./contexts";
 import ConditionalWrap from "@/components/conditionalWrapper/index";
 import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
+import { isEmpty } from "lodash";
+
+export interface  IDataContextBinderRef {
+  fireListener: (propertyName: string) => void;
+  fireAllListeners: () => void;
+}
 
 export interface IDataContextBinderProps { 
   id: string;
@@ -37,7 +44,6 @@ export interface IDataContextBinderProps {
   setFieldValue?: ContextSetFieldValue;
   onChangeData?: ContextOnChangeData;
   actionsOverride?: IDataContextProviderActionsContextOverride;
-  includeSetFieldValue?: boolean;
 }
 
 const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props) => {
@@ -49,13 +55,17 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     type, 
     data,
     onChangeData,
-    includeSetFieldValue = true,
   } = props;
 
-  const { onChangeContext, onChangeContextData } = useDataContextManager();
+  const uid = useId();
+  const { onChangeContext, onChangeContextData } = useDataContextManagerActions();
   const metadataDispatcher = useMetadataDispatcher();
 
   const apiRef = useRef<any>(props.api);
+
+  // update api if presented in the props (another way - leave props.api empty and call updateApi method)
+  if (!isEmpty(props.api))
+    apiRef.current = props.api;
   
   // use ref to get actual data value inside methods
   const dataRef = useRef<any>();
@@ -64,6 +74,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const parentContext = useDataContext(false);
   const [state, setState] = useState<IDataContextProviderStateContext>({
     id,
+    uid: uid,
     name,
     description,
     type,
@@ -88,25 +99,24 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
       return props.getData();
 
     return dataRef.current ?? {};
-  }, [props.getFieldValue]);
+  }, [props.getData]);
 
   const setFieldValue = useDeepCompareCallback((name: string, value: any) => {
     if (props.setFieldValue)
-      return props.setFieldValue(name, value, onChangeContextData);
+      props.setFieldValue(name, value, onChangeContextData);
+    else {
+      const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
+      const changedData = setValueByPropertyName({}, name, value);
 
-    const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
-    const changedData = setValueByPropertyName({}, name, value);
-
-    if (onChangeData)
-      onChangeData(newData, changedData, onChangeContextData);
-
+      if (onChangeData)
+        onChangeData(newData, changedData, onChangeContextData);
+    }
   }, [props.setFieldValue, onChangeData]);
 
   const setData = useDeepCompareCallback((changedData: any) => {
-    if (props.setData)
-      return props.setData(changedData,  onChangeContextData);
-
-    if (onChangeData)
+    if (props.setData) 
+      props.setData(changedData,  onChangeContextData);
+    else if (onChangeData)
       onChangeData({...dataRef.current, ...changedData}, {...changedData}, onChangeContextData);
   }, [props.setData, onChangeData]);
 
@@ -119,12 +129,10 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   };
 
   const getFull: ContextGetFull = () => {
-    const data = getData();
+    const data: IDataContextFull = getData();
     const api = getApi();
-    if (!!api) 
+    if (api) 
       data.api = api;
-    if (includeSetFieldValue)
-      data.setFieldValue = setFieldValue;
     return data;
   };
 
@@ -141,10 +149,11 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
 
   useDataContextRegister({
     id,
+    uid,
     name,
     description,
     type,
-    parentId: parentContext?.id,
+    parentUid: parentContext?.uid,
     ...actionContext,
   }, []);
 
@@ -153,11 +162,12 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     metadata?.then(res => {
       onChangeContext({
         id,
+        uid,
         name,
         description,
         type,
         metadata: res,
-        parentId: parentContext?.id,
+        parentUid: parentContext?.uid,
         ...actionContext
       });
     });
@@ -167,10 +177,11 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   useEffect(() => {
     onChangeContext({
       id,
+      uid,
       name,
       description,
       type,
-      parentId: parentContext?.id,
+      parentUid: parentContext?.uid,
       ...actionContext,
     });
   }, [name, description]);

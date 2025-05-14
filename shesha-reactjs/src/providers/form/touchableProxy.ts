@@ -1,5 +1,6 @@
+import { unproxyValue } from "@/utils/object";
 import { ProxyPropertiesAccessors, ProxyWithRefresh, ValueAccessor } from "./observableProxy";
-import { IPropertyTouched, PropertyTouchAccessor } from "./propertyTouchAccessor";
+import { CreateTouchableProperty, IPropertyTouched } from "./touchableProperty";
 
 export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched {
     private _touchedProps: Map<string, any>;
@@ -8,6 +9,10 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
 
     touched (_propName: string, fullPropName: string, value: any) {
       this._touchedProps.set(fullPropName, value);
+    };
+
+    getData() {
+        return {};
     };
 
     getPropertyValue(propName: string): any {
@@ -26,7 +31,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
             return propValue.bind(this);
 
         if (typeof propValue === 'object')
-            return new PropertyTouchAccessor(propValue, this, propName);
+            return CreateTouchableProperty(propValue, this, propName);
 
         this._touchedProps.set(propName, propValue);
 
@@ -53,7 +58,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                 return;
             const props = key.split('.');
             let prop = props.shift();
-            let data = this.getPropertyValue(prop);
+            let data = unproxyValue(this.getPropertyValue(prop));
             if (data === null || data === undefined) {
                 changed = true;
                 return;
@@ -71,11 +76,8 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                 data = data[prop];
             }
 
-            if (typeof data === 'object') {
-                if (value === null || typeof value !== 'object')
-                    changed = true;
-                return;
-            }
+            if (typeof data === 'object' && (value === null || typeof value !== 'object'))
+                changed = true;
 
             if (data !== value)
                 changed = true;
@@ -139,7 +141,8 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                     : undefined;
             }
         });
-    };
+    }
+;
 }
 
 export const makeTouchableProxy = <T = object>(accessors: ProxyPropertiesAccessors<T>): TouchableProxy<T> => {

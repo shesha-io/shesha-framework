@@ -1,7 +1,6 @@
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Button, Space, Select, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import _ from 'lodash';
 import React, { useMemo, useRef, useState } from 'react';
 import { useEntitySelectionData } from '@/utils/entity';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
@@ -63,13 +62,14 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     title = 'Select Item',
     outcomeValueFunc,
     incomeValueFunc,
-    placeholder
+    placeholder,
+    dividerStyle
   } = props;
 
   if (!entityType)
     throw SheshaError.throwPropertyError('entityType');
 
-  const { styles } = useStyles();
+  const { styles } = useStyles({ style });
   const selectRef = useRef(undefined);
 
   const [showModal, setShowModal] = useState(false);
@@ -147,47 +147,82 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     if (onChange) onChange(null, null);
   };
 
+  const { borderBottomLeftRadius,
+    borderTopLeftRadius, borderTopRightRadius, borderBottomRightRadius, width, minWidth, maxWidth, boxShadow, background, backgroundImage, marginTop, marginRight, marginBottom, marginLeft, paddingTop, paddingRight, paddingBottom, paddingLeft, ...restStyle } = style;
+
+  const borderRadii = style?.borderRadius?.toString().split(' ');
+
   return (
     <div className={styles.entityPickerContainer}>
       <div>
         {useButtonPicker ? (
-          <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
+          <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})} style={style}>
             {title}
           </Button>
         ) : (
-              <Space.Compact style={{ width: '100%' }}>
-                <Select
-                  size={size}
-                  onDropdownVisibleChange={(_e) => {
-                    selectRef.current.blur();
-                    showPickerDialog();
-                  }}
-                  onClear={onClear}
-                  value={selection.loading ? undefined : valueId}
-                  placeholder={selection.loading ? 'Loading...' : placeholder}
-                  notFoundContent={''}
-                  defaultValue={defaultValue}
-                  disabled={disabled || selection.loading}
-                  ref={selectRef}
-                  allowClear
-                  mode={selectedMode}
-                  options={options}
-                  suffixIcon={null} // hide arrow              
-                  onChange={handleMultiChange}
-                  style={{ ...style, width: `calc(100% - ${size === 'large' ? '40px' : '32px'})` }}
-                  loading={selection.loading}
-                  dropdownStyle={{ display: "none" }}
-                >
-                </Select>
-                <Button
-                  onClick={showPickerDialog}
-                  className={styles.pickerInputGroupEllipsis}
-                  disabled={disabled}
-                  loading={loading ?? false}
-                  size={size}
-                  icon={<EllipsisOutlined />}
-                />
-              </Space.Compact>
+          <Space.Compact style={{
+            width, minWidth, maxWidth, boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius
+          }}>
+            <Select
+              size={size}
+              onDropdownVisibleChange={(_e) => {
+                selectRef.current.blur();
+                showPickerDialog();
+              }}
+              onClear={onClear}
+              value={selection.loading ? undefined : valueId}
+              placeholder={selection.loading ? 'Loading...' : placeholder}
+              notFoundContent={''}
+              defaultValue={defaultValue}
+              disabled={disabled || selection.loading}
+              ref={selectRef}
+              allowClear
+              mode={selectedMode}
+              options={options}
+              variant='borderless'
+              suffixIcon={null}
+              onChange={handleMultiChange}
+              className={styles.entitySelect}
+              style={{
+                ...restStyle,
+                borderRight: 'none',
+                marginTop: 0,
+                marginRight: 0, marginBottom: 0, marginLeft: 0, paddingTop, paddingRight, paddingBottom, paddingLeft,
+                borderTopRightRadius: 0, borderBottomRightRadius: 0,
+                borderTopLeftRadius,
+                borderBottomLeftRadius
+              }}
+              loading={selection.loading}
+            >
+              {''}
+            </Select>
+            <Button
+              onClick={showPickerDialog}
+              className={styles.pickerInputGroupEllipsis}
+              disabled={disabled}
+              loading={loading ?? false}
+              icon={<EllipsisOutlined />}
+              style={{
+                ...restStyle,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+                marginTop: 0,
+                marginRight: 0,
+                marginBottom: 0,
+                marginLeft: 0,
+                paddingTop,
+                paddingRight,
+                paddingBottom,
+                paddingLeft,
+                borderLeftStyle: dividerStyle?.style ?? 'solid',
+                borderLeftWidth: dividerStyle?.width ?? '1px',
+                borderLeftColor: dividerStyle?.color ?? '#d9d9d9',
+                borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
+                zIndex: 1,
+              }}
+              type='text'
+            />
+          </Space.Compact>
         )}
       </div>
 

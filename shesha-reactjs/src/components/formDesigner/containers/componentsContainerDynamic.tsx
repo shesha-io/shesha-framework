@@ -1,12 +1,10 @@
-import DynamicComponent from '@/designer-components/dynamicView/dynamicComponent';
-import React, {
-  FC,
-  useCallback,
-} from 'react';
-import { executeScriptSync } from '@/providers/form/utils';
+import React, { FC } from 'react';
 import { getAlignmentStyle } from './util';
 import { IComponentsContainerProps } from './componentsContainer';
-import { useFormData, useGlobalState } from '@/providers';
+import { ConfigurableFormComponent } from '../configurableFormComponent';
+import { useStyles } from '../styles/styles';
+import classNames from 'classnames';
+import { useDeepCompareMemo } from '@/hooks';
 
 export interface IComponentsContainerDynamicProps extends Omit<IComponentsContainerProps, 'dynamicComponents'>,
   Required<Pick<IComponentsContainerProps, 'dynamicComponents'>> {
@@ -14,30 +12,35 @@ export interface IComponentsContainerDynamicProps extends Omit<IComponentsContai
 }
 
 export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props) => {
-  const { data: formData } = useFormData();
-  const { globalState } = useGlobalState();
+  const { 
+    dynamicComponents,
+    direction = 'vertical',
+    className,
+    render,
+    wrapperStyle,
+    style: incomingStyle,
+    noDefaultStyling,
+  } = props;
 
-  const executeExpression = useCallback(
-    (expression: string) => {
-      if (!expression) return true;
-      const evaluated = executeScriptSync(expression, { data: formData, globalState });
-      return typeof evaluated === 'boolean' ? evaluated : true;
-    },
-    [formData, globalState]
-  );
+  const { styles } = useStyles();
+  
+  const renderComponents = useDeepCompareMemo(() => {
+    const renderedComponents = dynamicComponents.map((c) => (
+      <ConfigurableFormComponent id={c.id} model={c} key={c.id} />
+    ));
 
-  const style = getAlignmentStyle(props);
-  return (
-    <div style={style} className={props?.className}>
-      {props.dynamicComponents
-        ?.filter(({ customVisibility }) => {
-          return executeExpression(customVisibility);
-        })
-        ?.map(({ customEnabled, ...model }, idx) => {
-          const readOnly = !executeExpression(customEnabled) || model.readOnly;
+    return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
+  }, [dynamicComponents]);
 
-          return <DynamicComponent model={{ ...model, isDynamic: true, readOnly }} key={idx} />;
-        })}
+  const style = { ...getAlignmentStyle(props), ...incomingStyle };
+
+  return noDefaultStyling ? (
+    <div style={{ ...style, textJustify: 'auto' }}>{renderComponents}</div>
+  ) : (
+    <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
+      <div className={styles.shaComponentsContainerInner} style={style}>
+        {renderComponents}
+      </div>
     </div>
   );
 };

@@ -3,16 +3,17 @@ import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
 import React, { FC, MutableRefObject, useEffect } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
-import { Form, FormInstance, Spin } from 'antd';
+import { Form, FormInstance } from 'antd';
 import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
 import { FormWithFlatMarkup } from './formWithFlatMarkup';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import { MarkupLoadingError } from './markupLoadingError';
-import { LoadingOutlined } from '@ant-design/icons';
-import { ConfigurableFormInstance } from '@/interfaces';
+import { ConfigurableFormInstance, ConfigurableItemIdentifierToString } from '@/interfaces';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
+import ParentProvider from '@/providers/parentProvider';
+import { ShaSpin } from '..';
 
 export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
@@ -119,14 +120,13 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
   };
 
   const { markupLoadingState, dataLoadingState } = shaForm;
-
   const MarkupErrorRender = markupLoadingError ?? MarkupLoadingError;
 
   return (
-    <Spin
+    <ShaSpin
       spinning={showMarkupLoadingIndicator && markupLoadingState.status === 'loading' || showDataLoadingIndicator && dataLoadingState.status === 'loading'}
       tip={dataLoadingState.hint}
-      indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
+      spinIconSize={40}
     >
       <ConfigurableComponent canConfigure={canConfigure} onStartEdit={openInDesigner}>
         {(componentState, BlockOverlay) => (
@@ -135,32 +135,36 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
               <EditViewMsg persistedFormProps={showFormInfoOverlay ? shaForm.form : undefined} />
             </BlockOverlay>
             <ShaFormProvider shaForm={shaForm}>
-              {markupLoadingState.status === 'ready' && (
-                <FormWithFlatMarkup
-                  {...props}
-                  form={form}
-                  initialValues={shaForm.initialValues}
-                  formFlatMarkup={shaForm.flatStructure}
-                  formSettings={shaForm.settings}
-                  persistedFormProps={shaForm.form}
-                  onMarkupUpdated={() => {
-                    shaForm.reloadMarkup();
-                  }}
-                  shaForm={shaForm}
-                  actions={actions}
-                  sections={sections}
-                />
-              )}
-              {markupLoadingState.status === 'failed' && (
-                <MarkupErrorRender formId={formId} markupLoadingState={markupLoadingState} />
-              )}
-              {markupLoadingState.status === 'loading' && (
-                <></>
-              )}
+              <ParentProvider model={null} formMode={shaForm.formMode} formFlatMarkup={shaForm.flatStructure} formApi={shaForm.getPublicFormApi()} 
+                name={ConfigurableItemIdentifierToString(formId)} isScope
+              >
+                {markupLoadingState.status === 'ready' && (
+                  <FormWithFlatMarkup
+                    {...props}
+                    form={form}
+                    initialValues={shaForm.initialValues}
+                    formFlatMarkup={shaForm.flatStructure}
+                    formSettings={shaForm.settings}
+                    persistedFormProps={shaForm.form}
+                    onMarkupUpdated={() => {
+                      shaForm.reloadMarkup();
+                    }}
+                    shaForm={shaForm}
+                    actions={actions}
+                    sections={sections}
+                  />
+                )}
+                {markupLoadingState.status === 'failed' && (
+                  <MarkupErrorRender formId={formId} markupLoadingState={markupLoadingState} />
+                )}
+                {markupLoadingState.status === 'loading' && (
+                  <></>
+                )}
+              </ParentProvider>
             </ShaFormProvider>
           </div>
         )}
       </ConfigurableComponent>
-    </Spin>
+    </ShaSpin>
   );
 };

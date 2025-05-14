@@ -1,22 +1,26 @@
-import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect, useState } from 'react';
+import { DraggerStub } from '@/components/fileUpload/stubs';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getFileIcon, isImageType } from '@/icons/fileIcons';
+import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
+import { IFormComponentStyles } from '@/providers/form/models';
+import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { addPx } from '@/utils/style';
+import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
+  App,
   Button,
   ButtonProps,
-  App,
-  Upload,
   Image,
+  Upload,
   UploadFile,
 } from 'antd';
-import { DraggerStub } from '@/components/fileUpload/stubs';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
-import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
+import React, { FC, useEffect, useState } from 'react';
+import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
-import { getStyle, IInputStyles, pickStyleFromModel, useSheshaApplication } from '@/index';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { getFileIcon, isImageType } from '@/icons/fileIcons';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -56,6 +60,9 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   borderRadius?: number;
   hideFileName?: boolean;
   gap?: number;
+  container?: IStyleType;
+  primaryColor?: string;
+  allStyles?: IFormComponentStyles;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -76,40 +83,33 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   validFileTypes = [],
   maxFileLength = 0,
   isDragger = false,
+  primaryColor,
   disabled,
   isStub = false,
   allowedFileTypes = [],
-  maxHeight,
   downloadZip,
   allowDelete,
   layout,
   listType,
-  hideFileName,
-  stylingBox,
-  style,
   gap,
-  borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth
+  ...rest
 }) => {
-  const { httpHeaders } = useSheshaApplication();
-
-  const hasFiles = !!fileList.length;
-  const addPx = (value) => /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
-  const styling = JSON.parse(stylingBox || '{}');
-  const customStyle = getStyle(style || '{}');
-  const stylingBoxAndCSS = pickStyleFromModel(styling);
-
-  const jsSstyles = { ...customStyle, ...stylingBoxAndCSS };
-
-  const { styles } = useStyles({
-    borderSize: addPx(borderSize), borderColor, borderType, fontColor, fontSize: addPx(fontSize), width: layout === 'vertical' ? '' : addPx(width), height: layout === 'horizontal' ? '' : addPx(height), maxHeight: addPx(maxHeight),
-    thumbnailHeight: addPx(thumbnailHeight), borderRadius: addPx(borderRadius), thumbnailWidth: addPx(thumbnailWidth), layout: listType === 'thumbnail' && !isDragger ? layout : false,
-    hideFileName: hideFileName && listType === 'thumbnail', isDragger, gap: addPx(gap), styles: jsSstyles
-  });
-
   const { message, notification } = App.useApp();
+  const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
+
+  const model = rest;
+  const hasFiles = !!fileList.length;
+
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
+
+  const { styles } = useStyles({
+    containerStyles: { ...{ ...containerDimensionsStyles, width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
+    style: model?.allStyles?.fullStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    primaryColor
+  });
 
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
@@ -159,7 +159,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     setPreviewOpen(true);
   };
 
-
   const iconRender = (file) => {
     const { type, uid } = file;
 
@@ -171,6 +170,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     return getFileIcon(type);
   };
+
+
+  if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    return <ValidationErrors error="The provided StoredFileId is invalid" />;
+  }
 
   const props: DraggerProps = {
     name: '',
@@ -244,15 +248,24 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
       {isStub
         ? (isDragger
-          ? <Dragger disabled><DraggerStub /></Dragger>
-          : <div>{renderUploadContent()}</div>)
+          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
+          : <div
+            className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+          >
+            {renderUploadContent()}
+            {listType !== 'text' && !rest.hideFileName &&
+              <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
+                {'file name'}
+              </span>}
+          </div>)
         : (props.disabled
-          ? <Upload {...props} listType={listTypeAndLayout} />
-          : isDragger
-            ? <Dragger {...props}><DraggerStub /></Dragger>
+          ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+          : isDragger ?
+            <Dragger {...props}>
+              <DraggerStub styles={styles} />
+            </Dragger>
             : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
       }
-
       {previewImage && (
         <Image
           wrapperStyle={{ display: 'none' }}

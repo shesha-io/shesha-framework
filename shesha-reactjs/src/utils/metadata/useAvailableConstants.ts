@@ -4,7 +4,7 @@ import { useMetadata, useMetadataDispatcher } from "@/providers";
 import { IPropertyMetadata, isEntityMetadata, isPropertiesArray } from "@/interfaces/metadata";
 import { useFormPersister } from "@/providers/formPersisterProvider";
 import { SheshaCommonContexts } from "@/providers/dataContextManager/models";
-import { useDataContextManager } from "@/providers/dataContextManager";
+import { useDataContextManagerActions } from "@/providers/dataContextManager";
 import { useMetadataBuilderFactory } from "./hooks";
 import { SheshaConstants } from "@/utils/metadata/standardProperties";
 import { TypesImporter } from "./typesImporter";
@@ -18,7 +18,7 @@ export interface AvailableConstantsArgs {
 }
 
 export const useGlobalConstants = (): IPropertyMetadata[] => {
-    const { getDataContext } = useDataContextManager();
+    const { getDataContext } = useDataContextManagerActions();
 
     const [constants] = useState<IPropertyMetadata[]>(() => {
         const result: IPropertyMetadata[] = [];
@@ -80,7 +80,7 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
 };
 
 export const useContextsRegistration = (): MetadataBuilderAction => {
-  const { getDataContexts } = useDataContextManager();
+  const { getDataContexts } = useDataContextManagerActions();
 
   const action = useCallback((builder: IObjectMetadataBuilder) => {
       const contexts = getDataContexts();
@@ -99,9 +99,7 @@ export const useContextsRegistration = (): MetadataBuilderAction => {
                       });
                   } else {
                       builder.addObject(context.name, context.description, builder => {
-                          builder.addCustom('setFieldValue', 'Sets field value', () => Promise.resolve({ typeName: '(name: string, value: any) => void;', files: [] }))
-                              .addAny('[key: string]', 'fields');
-                              //.addaction('[key: string]', 'fields', () => Promise.resolve({ typeName: 'any', files: [] }));
+                          builder.addAny('[key: string]', 'fields');
                       });
                   }
               return builder;
@@ -113,7 +111,7 @@ export const useContextsRegistration = (): MetadataBuilderAction => {
 };
 
 export const useAppContextRegistration = (): MetadataBuilderAction => {
-    const { getDataContext } = useDataContextManager();
+    const { getDataContext } = useDataContextManagerActions();
 
     const action = useCallback((builder: IObjectMetadataBuilder) => {
         const appContext = getDataContext(SheshaCommonContexts.ApplicationContext);

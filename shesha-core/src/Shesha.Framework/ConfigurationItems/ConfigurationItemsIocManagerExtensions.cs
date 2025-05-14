@@ -62,7 +62,7 @@ namespace Shesha.ConfigurationItems
             where TImplementation : IConfigurableItemExport<TItem>
         {
             iocManager.IocContainer.Register(
-                Component.For<IConfigurableItemExport>().Forward<IConfigurableItemExport<TItem>>().Forward<TInterface>().ImplementedBy<TImplementation>().LifestyleTransient()
+                Component.For<IConfigurableItemExport>().Forward<IConfigurableItemExport<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
             return iocManager;
         }
@@ -93,7 +93,7 @@ namespace Shesha.ConfigurationItems
             where TImplementation : IConfigurableItemImport<TItem>
         {
             iocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IConfigurableItemImport<TItem>>().Forward<TInterface>().ImplementedBy<TImplementation>().LifestyleTransient()
+                Component.For<IConfigurableItemImport>().Forward<IConfigurableItemImport<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
             return iocManager;
         }

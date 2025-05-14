@@ -13,6 +13,7 @@ import { useDeepCompareMemoKeepReference } from '@/hooks';
 import { useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './formSettings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -63,7 +64,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
+  settingsFormMarkup: (data) => getSettings(data),
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   initModel: model => ({
     ...model,
@@ -87,7 +88,9 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     .add<IRichTextEditorProps>(3, (prev) => {
       const styles = {
         style: prev.style,
-        theme: prev.theme
+        theme: prev.theme,
+        autoHeight: prev.autoHeight || true,
+        autoWidth: prev.autoWidth || true,
       };
   
       return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };

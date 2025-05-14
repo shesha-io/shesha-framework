@@ -1,9 +1,9 @@
 import React, { CSSProperties, FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useStyles } from './styles/styles';
-import { addPx } from './utils';
 import Show from '../show';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { addPx } from '@/utils/style';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -11,30 +11,26 @@ export interface ISectionSeparatorProps {
   containerStyle?: CSSProperties;
   titleStyle?: CSSProperties;
   tooltip?: string;
-  fontSize?: number;
-  fontColor?: string;
   inline?: boolean;
-  dashed?: boolean;
   lineColor?: string;
   lineThickness?: number;
   lineWidth?: string;
   lineHeight?: string;
   titleMargin?: number;
+  marginBottom?: string | number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
-  fontWeight?: string;
+  fontSize?: string | number;
+  lineType?: string;
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   id,
   labelAlign = 'left',
-  fontSize = 14,
-  fontColor = '#000',
-  fontWeight = '500',
   inline,
-  dashed,
+  lineType = 'solid',
   lineColor,
-  lineThickness = 2,
+  lineThickness,
   lineWidth,
   lineHeight,
   orientation,
@@ -42,7 +38,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   titleStyle,
   tooltip,
   title,
-  titleMargin
+  titleMargin,
+  marginBottom,
 }) => {
   const { styles } = useStyles();
   const titleRef = useRef<HTMLDivElement>(null);
@@ -58,14 +55,14 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
 
   const borderStyle: CSSProperties = {
     '--border-thickness': `${lineThickness ?? 2}px`,
-    '--border-style': dashed ? 'dashed' : 'solid',
+    '--border-style': lineType,
     '--border-color': lineColor || styles.primaryColor,
     textAlign: labelAlign,
-    marginBottom: '8px',
+    marginBottom: marginBottom || '8px',
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {
-    borderBottom: inline ? `${lineThickness || 2}px ${dashed ? 'dashed' : 'solid'} ${lineColor || styles.primaryColor}` : 'none',
+    borderBottom: inline ? `${lineThickness || 2}px ${lineType} ${lineColor || styles.primaryColor}` : 'none',
   };
 
   const getLineStyles = (isLeft: boolean) => {
@@ -93,7 +90,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       <div className={styles.titleContainer} style={{ alignItems: 'center', display: 'flex', width: '100%' }
       }>
         <div style={{ ...getLineStyles(true), ...baseStyle }}></div>
-        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap', color: fontColor, fontSize, fontWeight }
+        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap' }
         }>
           {title}
           < Show when={Boolean(tooltip?.trim())}>
@@ -114,7 +111,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       <div style={{
         ...containerStyle,
         width: addPx(lineWidth),
-        margin: '8px 0',
       }} key={id} >
         <div className={!inline || !title ? styles.shaSectionSeparator : ''} style={borderStyle} >
           {renderTitle()}

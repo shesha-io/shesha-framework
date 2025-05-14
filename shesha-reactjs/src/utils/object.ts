@@ -2,6 +2,10 @@ import cleanDeep from "clean-deep";
 import { mergeWith } from "lodash";
 import moment from "moment";
 
+export const unproxyValue = (value: any) => {
+  return value && Boolean(value['getAccessorValue']) ? value.getAccessorValue() : value;
+};
+
 export const deepMergeValues = (target: any, source: any) => {
   return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
       // handle null
@@ -41,8 +45,10 @@ export const deepMergeValues = (target: any, source: any) => {
 };
 
 export const getValueByPropertyName = (data: any, propertyName: string): any => {
-    if (Boolean(data) && Boolean(propertyName)) {
-        const path = propertyName.split('.');
+    if (!propertyName)
+        return data;
+    if (Boolean(data)) {
+        const path = propertyName.split(/\.|\[|\]/g).filter(Boolean);
         if (Array.isArray(path) && path.length > 0) {
             let value = data[path[0]];
             path.forEach((item, index) => {
@@ -52,11 +58,11 @@ export const getValueByPropertyName = (data: any, propertyName: string): any => 
             return value;
         }
     }
-    return undefined;
+    return data;
 };
 
 export const setValueByPropertyName = (data: any, propertyName: string, value: any, makeCopy: boolean = false) => {
-    const propName = propertyName.split('.');
+    const propName = propertyName.split(/\.|\[|\]/g).filter(Boolean);
     const resultData = makeCopy ? { ...data } : data;
 
     if (Array.isArray(propName) && propName.length > 0) {
@@ -64,10 +70,10 @@ export const setValueByPropertyName = (data: any, propertyName: string, value: a
         propName.forEach((item, index) => {
             if (index < propName.length - 1 && item?.length > 0) {
                 if (typeof prop[item] !== 'object') {
-                    prop = prop[item] = {};
+                    prop = prop[item] = Number.isNaN(Number(propName[index + 1])) ? {} : [];
                 } else {
                     if (makeCopy)
-                        prop = prop[item] = { ...prop[item] };
+                        prop = prop[item] = Array.isArray(prop[item]) ? [...prop[item]] : { ...prop[item] };
                     else
                         prop = prop[item];
                 }

@@ -13,21 +13,7 @@ namespace Shesha.Tests.DependencyInjection
 
             IdentityRegistrar.Register(services);
 
-            //services.AddEntityFrameworkInMemoryDatabase();
-
-            var serviceProvider = WindsorRegistrationHelper.CreateServiceProvider(iocManager.IocContainer, services);
-
-            /*
-            var builder = new DbContextOptionsBuilder<SheshaDbContext>();
-            builder.UseInMemoryDatabase(Guid.NewGuid().ToString()).UseInternalServiceProvider(serviceProvider);
-
-            iocManager.IocContainer.Register(
-                Component
-                    .For<DbContextOptions<SheshaDbContext>>()
-                    .Instance(builder.Options)
-                    .LifestyleSingleton()
-            );
-            */
+            WindsorRegistrationHelper.CreateServiceProvider(iocManager.IocContainer, services);
         }
     }
 }

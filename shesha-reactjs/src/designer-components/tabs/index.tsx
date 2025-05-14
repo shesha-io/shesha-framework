@@ -2,19 +2,23 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import React, { Fragment } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getLayoutStyle, useAvailableConstantsData } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
 import { Tabs, TabsProps } from 'antd';
-import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
-import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
+import { getSettings } from './settingsForm';
+import { defaultCardStyles, defaultStyles } from './utils';
+import { useStyles } from './styles';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 type TabItem = TabsProps['items'][number];
 
@@ -26,12 +30,14 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   Factory: ({ model }) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
-    const { data } = useFormData();
-    const { globalState } = useGlobalState();
 
-    const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model;
+    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor, overflow, hideScrollBar } = model;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
+
+    const cardStyles = useFormComponentStyles({ ...model.card });
+
+    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles, } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: { type: overflow, hideScrollBar } });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -76,29 +82,48 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           destroyInactiveTabPane: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
           disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
-          style: getLayoutStyle(model, { data, globalState }),
           children: (
             <ParentProvider model={item}>
-              <ComponentsContainer containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
+              <ComponentsContainer style={{
+                ...model.allStyles.dimensionsStyles,
+                overflow: overflow,
+                scrollbarWidth: 'thin',
+                ...(model.hideScrollBar && {
+                  '::-webkit-scrollbar': { display: 'none' },
+                  msOverflowStyle: 'none',
+                })
+              }}
+                wrapperStyle={{
+                  ...model.allStyles.dimensionsStyles,
+                }}
+                containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
             </ParentProvider>
           ),
         };
         tabItems.push(tab);
       });
-
       return tabItems;
-    }, [tabs]);
+    }, [tabs, overflow, hideScrollBar]);
 
     return model.hidden ? null : (
-      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
+      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
     );
   },
   initModel: (model) => {
+    const id = nanoid();
     const tabsModel: ITabsComponentProps = {
       ...model,
       propertyName: 'custom Name',
-      stylingBox: "{\"marginBottom\":\"5\"}",
-      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [] }],
+      tabPosition: "top",
+      tabs: [{
+        id: id,
+        name: 'Tab 1',
+        key: id,
+        title: 'Tab 1',
+        editMode: 'inherited',
+        selectMode: 'editable',
+        components: []
+      }],
     };
     return tabsModel;
   },
@@ -115,8 +140,18 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
-  ,
-  settingsFormFactory: (props) => <TabSettingsForm {...props} />,
+    .add<ITabsComponentProps>(4, (prev) => {
+      const newModel = migratePrevStyles(prev, defaultStyles);
+      const initialCardStyle = { ...defaultCardStyles, font: { ...defaultCardStyles.font, color: '#000000' } };
+      return {
+        ...newModel,
+        card: { ...initialCardStyle },
+        desktop: { ...newModel.desktop, card: { ...initialCardStyle } },
+        tablet: { ...newModel.tablet, card: { ...initialCardStyle } },
+        mobile: { ...newModel.mobile, card: { ...initialCardStyle } }
+      };
+    }),
+  settingsFormMarkup: () => getSettings(),
   customContainerNames: ['tabs'],
   getContainers: (model) => {
     return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));
