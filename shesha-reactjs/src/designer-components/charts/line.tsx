@@ -1,7 +1,7 @@
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
-import { BarChartOutlined } from '@ant-design/icons';
+import { LineChartOutlined } from '@ant-design/icons';
 import React from 'react';
 import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
@@ -14,7 +14,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   name: 'Line Chart',
   isInput: false,
   isOutput: true,
-  icon: <BarChartOutlined />,
+  icon: <LineChartOutlined />,
   Factory: ({ model }) => {
     if (model.hidden) return null;
     
