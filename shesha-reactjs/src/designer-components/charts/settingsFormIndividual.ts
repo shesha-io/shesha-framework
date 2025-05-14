@@ -234,6 +234,7 @@ export const getSettings = (data: any) => {
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: true },
+                            width: '100%',
                           }
                         ]
                       })
