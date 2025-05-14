@@ -5,7 +5,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useEffect, useMemo } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
-import { DataTypes, IObjectMetadata, ValidationErrors, useDataContextManager, useShaFormInstance } from '@/index';
+import { DataTypes, IObjectMetadata, ValidationErrors, getStyle, useDataContextManager, useShaFormInstance } from '@/index';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
@@ -38,7 +38,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     } = model;
 
     const steps = useMemo(() => {
-        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
+        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style }, index) => {
             const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
             const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
@@ -50,6 +50,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                 disabled: isDisabledByCondition,
                 status: isDisabledByCondition ? 'wait' : status,
                 ...iconProps,
+                style: getStyle(style, visibleSteps[index]),
                 // render only current step
                 content: current === index
                     ? <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
@@ -62,7 +63,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
 
     const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
     const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
-    const { styles } = useStyles({ styles: model.allStyles.fullStyle, colors });
+    const { styles } = useStyles({ styles: { ...model.allStyles.fullStyle, ...steps[current]?.style }, colors });
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
@@ -80,7 +81,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
             type="control"
             metadata={contextMetadata}
             data={{ current, currentStep, visibleSteps }}
-            api={{ back, cancel, content, done, next, setStep }}     
+            api={{ back, cancel, content, done, next, setStep }}
         >
             <ParentProvider model={model}>
                 <div className={styles.shaWizard}>
@@ -88,7 +89,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         <Steps
                             type={wizardType}
                             current={current}
-                            items={steps}
+                            items={steps.map(step => ({ ...step, style: {} }))}
                             size={model['size']}
                             direction={direction}
                             labelPlacement={labelPlacement}

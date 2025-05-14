@@ -11,6 +11,7 @@ export interface IWizardStepProps {
   description: string;
   allowCancel?: boolean;
   status?: StepProps['status'];
+  style?: string;
 
   label?: string;
   name?: string;
