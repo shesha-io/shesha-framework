@@ -63,7 +63,9 @@ export const useProcessedChartData = (): IChartData => {
     simpleOrPivot,
   } = useChartDataStateContext();
   const memoData = useMemo(() => stringifyValues(data ?? []), [data]);
-  let labels = memoData.length ? [...new Set(memoData.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))] : [];
+  let labels = memoData.length
+    ? [...new Set(memoData.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))]
+    : [];
   let datasets;
 
   if (simpleOrPivot === 'simple' || !legendProperty) {
@@ -153,7 +155,7 @@ export const useChartURLData = () => {
     labels: urlTypeData?.labels,
     datasets: urlTypeData?.datasets?.map((dataset: any) => {
       dataset.borderColor = strokeColor || 'black';
-      dataset.borderWidth = typeof strokeWidth === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+      dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
       dataset.strokeColor = strokeColor || 'black';
       dataset.tension = typeof tension === 'number' ? tension : 0.0;
 
