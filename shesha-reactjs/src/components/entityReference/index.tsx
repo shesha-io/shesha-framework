@@ -214,7 +214,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
-        <Button type="link">
+        <Button type="link" style={props.style}>
           <span>
             <Spin size="small" /> Loading...
           </span>
@@ -266,14 +266,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (
-      <Button type="link" disabled>
+      <Button type="link" disabled style={props.style}>
         Form identifier is not configured
       </Button>
     );
 
   if (!props.value)
     return (
-      <Button type="link" disabled>
+      <Button type="link" disabled style={props.style}>
         {displayText}
       </Button>
     );

@@ -9,7 +9,7 @@ export const defaultStyles: IStyleType = {
         size: 14,
         weight: '500',
         type: 'Segoe UI',
-        color: 'var(--primary-color)'
+        color: ''
     },
     background: { type: 'color', color: '#FFFFFF' },
     dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },

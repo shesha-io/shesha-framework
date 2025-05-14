@@ -99,7 +99,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
-    --primary-color: ${token.colorPrimary}; 
+    --primary-color: ${token.colorPrimary};
+    --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
 
@@ -133,10 +134,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       padding-left: ${paddingLeft} !important;
       padding-right: ${paddingRight} !important;
       border-radius : 0px 0px ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
-      border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
-      border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
-      border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
-      border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
+      border-top: ${ghost ? 'none' : borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
+      border-right: ${ghost ? 'none' : borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
+      border-left: ${ghost ? 'none' : borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
+      border-bottom: ${ghost ? 'none' : borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
 
       > .ant-collapse-content-box {
         --ant-collapse-content-padding: 0px !important;
@@ -196,13 +197,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         > .ant-collapse-header {
           --ant-collapse-header-padding: 5px 0px !important;
           border-bottom-left-radius: unset;
-          border-bottom-right-radius: unset;
+          border-bottom-right-radius: unset; 
+          border: none;
           ${accentStyle && `border-bottom: 2px solid ${token.colorPrimary};`}
           ${accentStyle && (panelHeadType === 'default' || panelHeadType === 'parent') && `border-top: 3px solid var(--primary-color);`}
           ${accentStyle && panelHeadType === 'child' && `border-left: 3px solid  var(--primary-color);`}
           font-weight: ${fontWeight || '500'};
+        
         }
         > .ant-collapse-content {
+          border: none;
           > .ant-collapse-content-box {
             padding: 5px 0;
           }
