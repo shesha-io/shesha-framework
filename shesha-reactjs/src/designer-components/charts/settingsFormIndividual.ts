@@ -612,7 +612,7 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   inputType: 'numberField',
                   propertyName: 'tension',
-                  parentId: chartSettingsId,
+                  parentId: appearanceTabId,
                   label: 'Tension',
                   defaultValue: 0,
                   min: 0,
@@ -625,7 +625,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'strokeWidth',
-                  parentId: chartSettingsId,
+                  parentId: appearanceTabId,
                   inputType: 'numberField',
                   label: 'Stroke width',
                   defaultValue: 0.0,
@@ -636,7 +636,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'strokeColor',
-                  parentId: 'root',
+                  parentId: appearanceTabId,
                   label: 'Stroke Color',
                   allowClear: true,
                   inputType: 'colorPicker',
