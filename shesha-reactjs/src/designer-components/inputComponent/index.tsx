@@ -28,7 +28,7 @@ import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfi
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
-import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
+import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
 import { editModes, getEditor, iconElement } from './utils';
 
@@ -169,7 +169,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'button':
             return <Button style={{ maxWidth: "100%" }} disabled={readOnly} defaultValue={defaultValue}
                 type={value === true ? 'primary' : 'default'} size={size}
-                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt || icon, null, tooltipAlt, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
+                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt || icon, null, tooltipAlt || tooltip, {}, styles)} onClick={() => onChange(!value)} />;
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
@@ -198,8 +198,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
-            return <QueryBuilder {...{ ...props }} hideLabel={true}
-                defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>;
+            return <QueryBuilder {...props} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
@@ -321,7 +320,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 propertyMeta={propertyMeta}
             />;
         case 'RefListItemSelectorSettingsModal':
-            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList?._data} readOnly={false} />;
+            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList} readOnly={false} />;
 
         case 'Password':
             return <Password

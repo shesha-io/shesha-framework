@@ -30,10 +30,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
     `);
 
+    const shaQueryBuilderMarginTop8 = cx("sha-query-builder-margin-top", css`
+        margin-top: 8px;
+    `);
+
     return {
         shaQueryBuilderField,
         shaQueryBuilderPlainWrapper,
         shaQueryBuilder,
         shaQqueryBuilderPlainWrapperBtnWrapper,
+        shaQueryBuilderMarginTop8: shaQueryBuilderMarginTop8,
     };
 });

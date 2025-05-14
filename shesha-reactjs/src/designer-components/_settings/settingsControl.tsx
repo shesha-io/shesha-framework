@@ -2,7 +2,6 @@ import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { useStyles } from './styles/styles';
-import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
@@ -69,10 +68,8 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   const valueOnChange = (val: any) => {
-    if (!isEqual(setting?._value, val)) {
       const newValue = { ...setting, _value: val };
       onInternalChange(newValue);
-    }
   };
 
   const onSwitchMode = () => {

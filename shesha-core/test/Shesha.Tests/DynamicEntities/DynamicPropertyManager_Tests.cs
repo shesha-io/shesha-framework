@@ -9,6 +9,7 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
 using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,16 @@ using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
+    [Collection(SqlServerCollection.Name)]
     public class DynamicPropertyManager_Tests : SheshaNhTestBase
     {
-        public DynamicPropertyManager_Tests()
+        private readonly IRepository<EntityPropertyValue, Guid> _propertyValueRepo;
+        private readonly IRepository<EntityProperty, Guid> _propertyRepo;
+
+        public DynamicPropertyManager_Tests(SqlServerFixture fixture) : base(fixture)
         {
+            _propertyValueRepo = Resolve<IRepository<EntityPropertyValue, Guid>>();
+            _propertyRepo = Resolve<IRepository<EntityProperty, Guid>>();
         }
 
         [Fact]
@@ -79,9 +86,9 @@ namespace Shesha.Tests.DynamicEntities
                     return Task.FromResult<List<EntityPropertyDto>?>(result);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
-            var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
+            var entityConfigStore = Resolve<IEntityConfigurationStore>();
+            var fullProxyCacheHolder = Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = Resolve<IDynamicTypeCacheHolder>();
             var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
             var context = new DynamicDtoTypeBuildingContext() { ModelType = baseDtoType };
@@ -131,8 +138,8 @@ namespace Shesha.Tests.DynamicEntities
                         {
                             ParentProperty = propConf,
                             EntityConfig = config,
-                            Name = prop.Key.Name,
-                            DataType = prop.Key.DataType,
+                            Name = childProp.Name,
+                            DataType = childProp.DataType,
                             Source = MetadataSourceType.UserDefined
                         };
                         childProp.Id = (await entityPropRepo.InsertAsync(childPropConf)).Id;
@@ -202,21 +209,26 @@ namespace Shesha.Tests.DynamicEntities
                 }
                 finally
                 {
+                    var propertyRepo = Resolve<IRepository<EntityPropertyValue, Guid>>();
                     // delete temporary values and properties configs
                     foreach (var prop in props)
                     {
-                        session.CreateSQLQuery($"delete from Frwk_EntityPropertyValues where EntityPropertyId = '{prop.Key.Id}'").ExecuteUpdate();
-                        if (prop.Key.DataType == DataTypes.Object)
-                        {
-                            foreach (var childProp in prop.Key.Properties)
-                            {
-                                session.CreateSQLQuery($"delete from Frwk_EntityProperties where Id = '{childProp.Id}'").ExecuteUpdate();
-                            }
-                        }
-                        session.CreateSQLQuery($"delete from Frwk_EntityProperties where Id = '{prop.Key.Id}'").ExecuteUpdate();
+                        await DeletePropertyAsync(prop.Key);
                     }
                 }
             }
+        }
+
+        private async Task DeletePropertyAsync(EntityPropertyDto dto) 
+        {
+            await _propertyValueRepo.HardDeleteAsync(e => e.EntityProperty != null && e.EntityProperty.Id == dto.Id);
+            if (dto.DataType == DataTypes.Object)
+            {
+                foreach (var childProp in dto.Properties)
+                    await DeletePropertyAsync(childProp);
+            }
+
+            await _propertyRepo.HardDeleteAsync(e => e.Id == dto.Id);
         }
     }
 }

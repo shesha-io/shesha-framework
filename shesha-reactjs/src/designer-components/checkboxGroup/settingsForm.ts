@@ -12,6 +12,7 @@ export const getSettings = (data: any) => {
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
+  const stylePanelId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -69,6 +70,7 @@ export const getSettings = (data: any) => {
                   label: 'Mode',
                   size: 'small',
                   jsSetting: true,
+                  parentId: commonTabId,
                   dropdownOptions: [
                     {
                       label: 'Single',
@@ -119,6 +121,7 @@ export const getSettings = (data: any) => {
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
+                  parentId: dataTabId,
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -188,7 +191,7 @@ export const getSettings = (data: any) => {
                       type: 'codeEditor',
                       id: nanoid(),
                       propertyName: 'dataSourceUrl',
-                      label: 'Data Source Url',
+                      label: 'Data Source URL',
                       jsSetting: true,
                     },
                     {
@@ -286,6 +289,7 @@ export const getSettings = (data: any) => {
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        parentId: styleRouterId,
                         defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
@@ -316,6 +320,7 @@ export const getSettings = (data: any) => {
                                 propertyName: 'style',
                                 hideLabel: false,
                                 label: 'Style',
+                                parentId: stylePanelId,
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })

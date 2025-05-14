@@ -32,13 +32,13 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   calculateModel: (model, allData) => ({
-      eventHandlers: customDropDownEventHandler(model, allData),
-      //quick fix not to default to empty string or null while working with multi-mode
-      defaultValue: Array.isArray(model.defaultValue)
-        ? model.defaultValue
-        : model.defaultValue 
-          ? evaluateString(model.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) || undefined
-          : undefined,
+    eventHandlers: customDropDownEventHandler(model, allData),
+    //quick fix not to default to empty string or null while working with multi-mode
+    defaultValue: Array.isArray(model.defaultValue)
+      ? model.defaultValue
+      : model.defaultValue
+        ? evaluateString(model.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) || undefined
+        : undefined,
   }),
   Factory: ({ model, calculatedModel }) => {
 
@@ -56,7 +56,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={model.allStyles.fullStyle}
+            style={{ ...model.allStyles.fullStyle, overflow: 'auto' }}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
@@ -92,6 +92,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
         : prev['useRawValue'] === true
           ? 'simple'
           : 'listItem',
+      editMode: prev?.editMode ?? 'inherited'
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDropdownComponentProps>(7, (prev) => {

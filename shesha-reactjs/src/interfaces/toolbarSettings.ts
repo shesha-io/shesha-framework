@@ -137,7 +137,9 @@ export class DesignerToolbarSettings<T> {
   public addCollapsiblePanel(
     props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType)
   ) {
-    return this.addProperty(props, 'collapsiblePanel');
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    return this.addProperty(obj, 'collapsiblePanel');
   }
 
   public addSearchableTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)) {
@@ -221,7 +223,9 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addContainer(props: ContainerType | ((data: T) => ContainerType)) {
-    return this.addProperty(props, 'container');
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    return this.addProperty(obj, 'container');
   }
 
   public addNumberField(props: NumberFieldType | ((data: T) => NumberFieldType)) {
@@ -275,11 +279,15 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addSettingsInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
-    return this.addProperty(props, 'settingsInputRow');
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    return this.addProperty(obj, 'settingsInputRow');
   }
 
   public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {
-    return this.addProperty(props, 'propertyRouter');
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    return this.addProperty(obj, 'propertyRouter');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

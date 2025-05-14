@@ -11,6 +11,7 @@ using Shesha.Domain.Enums;
 using Shesha.QuickSearch;
 using Shesha.QuickSearch.Cache;
 using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,14 @@ namespace Shesha.Tests.QuickSearch
     /// <summary>
     /// Tests for <see cref="QuickSearcher"/>
     /// </summary>
+    [Collection(SqlServerCollection.Name)]
     public class QuickSearcher_Tests : SheshaNhTestBase
     {
+        public QuickSearcher_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+            
+        }
+
         [Fact]
         public void SearchPerson_TextFields_Convert_Test()
         {
@@ -133,7 +140,9 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestOrganisation.ContactMethods)
             });
 
-            Assert.Equal(@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entContactMethods => ((((entContactMethods.ReferenceList.Configuration.Module.Name == ""Shesha"") AndAlso (entContactMethods.ReferenceList.Configuration.Name == ""Shesha.Core.PreferredContactMethod"")) AndAlso ((Convert(ent.ContactMethods, Nullable`1) & Convert(entContactMethods.ItemValue, Nullable`1)) > Convert(0, Nullable`1))) AndAlso entContactMethods.Item.Contains(""email"")))", expression.ToString());
+            var refListId = GetReflistId(new ReferenceListIdentifier("Shesha", "Shesha.Core", "PreferredContactMethod"));
+
+            Assert.Equal($@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entContactMethods => (((entContactMethods.ReferenceList.Id == {refListId}) AndAlso ((Convert(ent.ContactMethods, Nullable`1) & Convert(entContactMethods.ItemValue, Nullable`1)) > Convert(0, Nullable`1))) AndAlso entContactMethods.Item.Contains(""email"")))", expression.ToString());
         }
 
         [Fact]

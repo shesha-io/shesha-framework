@@ -33,6 +33,21 @@ export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleType, 
   accentStyle?: boolean;
 }
 
+const defaultHeaderStyle: React.CSSProperties = {
+  backgroundColor: 'transparent',
+  paddingLeft: '16px',
+  paddingRight: '16px',
+  paddingBottom: '8px',
+  paddingTop: '8px'
+};
+
+const defaultBodyStyle: React.CSSProperties = {
+  paddingLeft: '16px',
+  paddingBottom: '16px',
+  paddingTop: '16px',
+  paddingRight: '16px',
+  marginBottom: '5px',
+};
 /**
  * There was an error 
  * TS4023: Exported variable 'xxx' has or is using name 'zzz' from external module "yyy" but cannot be named.
@@ -55,8 +70,8 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   showArrow,
   collapsible,
   ghost,
-  bodyStyle,
-  headerStyle,
+  bodyStyle = defaultBodyStyle,
+  headerStyle = defaultHeaderStyle,
   isSimpleDesign,
   panelHeadType,
   noContentPadding,

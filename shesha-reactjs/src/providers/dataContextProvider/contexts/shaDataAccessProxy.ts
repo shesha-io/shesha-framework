@@ -12,7 +12,7 @@ export interface IShaDataAccessor {
 export const CreateDataAccessor = (getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) => {
   const data = getValueByPropertyName(getData(), propertyName);
   const property = (Array.isArray(data))
-      ? new ShaArrayAccessProperty(getData, setData, setFieldValue, propertyName)
+      ? new ShaArrayAccessProxy(getData, setData, setFieldValue, propertyName)
       : new ShaObjectAccessProxy(getData, setData, setFieldValue, propertyName);
 
   return new Proxy(property, {
@@ -49,8 +49,8 @@ export const CreateDataAccessor = (getData: () => any, setData: (data: any) => v
       getOwnPropertyDescriptor(target, prop) {
         const propertyName = prop.toString();
         const data = target.getAccessorValue();
-        if (data && Object.keys(data).indexOf(propertyName) >= 0)
-            return { enumerable: Array.isArray(data[propertyName]), configurable: true, writable: true };
+        if (data && propertyName in data)
+            return { enumerable: true, configurable: true, writable: true };
         return undefined;
       }
   });
@@ -69,7 +69,7 @@ export class ShaObjectAccessProxy implements IShaDataAccessor {
   }
 }
 
-export class ShaArrayAccessProperty extends Array implements IShaDataAccessor {
+export class ShaArrayAccessProxy extends Array implements IShaDataAccessor {
   readonly accessor: ShaDataAccessor;
   setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
   getFieldValue = (name: string) => this.accessor.getFieldValue(name);
