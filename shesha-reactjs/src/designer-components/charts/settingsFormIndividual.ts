@@ -163,22 +163,30 @@ export const getSettings = (data: any) => {
                     _value: false,
                   } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
-                      .addSettingsInput({
+                    ...new DesignerToolbarSettings()                      
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        inputType: 'autocomplete',
-                        propertyName: 'entityType',
-                        label: 'Entity Type',
-                        description: 'The entity type you want to use for the chart.',
-                        labelAlign: 'right',
                         parentId: dataTabId,
-                        hidden: false,
-                        dataSourceType: 'url',
-                        validate: { required: true },
-                        dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                        settingsValidationErrors: [],
-                        useRawValues: true,
-                        width: '100%',
+                        inline: true,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'autocomplete',
+                            propertyName: 'entityType',
+                            label: 'Entity Type',
+                            description: 'The entity type you want to use.',
+                            labelAlign: 'right',
+                            parentId: dataTabId,
+                            hidden: false,
+                            dataSourceType: 'url',
+                            validate: {},
+                            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                            settingsValidationErrors: [],
+                            jsSetting: true,
+                            useRawValues: true,
+                            width: '100%',
+                          },
+                        ],
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -207,15 +215,27 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        inputType: 'switch',
-                        propertyName: 'isAxisTimeSeries',
-                        label: 'Is Axis Property Time Series?',
-                        description: 'If the x-axis is a time series, check this box.',
                         parentId: dataTabId,
-                        defaultValue: false,
-                        validate: { required: true },
+                        inline: true,
+                        hidden: {
+                          _code: 'return !getSettingValue(data?.axisProperty)',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'isAxisTimeSeries',
+                            label: 'Is Axis Property Time Series?',
+                            description: 'If the x-axis is a time series, check this box.',
+                            parentId: dataTabId,
+                            defaultValue: false,
+                            validate: { required: true },
+                          }
+                        ]
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -328,6 +348,7 @@ export const getSettings = (data: any) => {
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
@@ -409,7 +430,7 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         inline: true,
                         hidden: {
-                          _code: 'return getSettingValue(data?.dataMode) === `url` || !getSettingValue(data?.entityType)',
+                          _code: 'return getSettingValue(data?.dataMode) === `url`',
                           _mode: 'code',
                           _value: false,  
                         } as any,
@@ -520,18 +541,19 @@ export const getSettings = (data: any) => {
                   description: 'The title of the chart (if any)',
                   labelAlign: 'right',
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showTitle',
-                  label: 'Show Title',
-                  description: 'Show the title of the chart',
-                  parentId: appearanceTabId,
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: appearanceTabId,
                   inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'showTitle',
+                      label: 'Show Title',
+                      description: 'Show the title of the chart',
+                      parentId: appearanceTabId,
+                      defaultValue: true,
+                    },
                     {
                       id: nanoid(),
                       type: 'switch',
@@ -565,47 +587,59 @@ export const getSettings = (data: any) => {
                   validate: { required: true },
                   defaultValue: 'top',
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showXAxisScale',
-                  label: 'Show X Axis',
                   parentId: appearanceTabId,
-                  defaultValue: true,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'showXAxisScale',
+                      label: 'Show X Axis',
+                      parentId: appearanceTabId,
+                      defaultValue: true,
+                    },
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'showXAxisTitle',
+                      label: 'Show X Axis Title',
+                      parentId: appearanceTabId,
+                      defaultValue: true,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.showXAxisScale) !== true',
+                        _mode: 'code',
+                        _value: true,
+                      } as any,
+                    }
+                  ]
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showXAxisTitle',
-                  label: 'Show X Axis Title',
                   parentId: appearanceTabId,
-                  defaultValue: true,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showXAxisScale) !== true',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showYAxisScale',
-                  label: 'Show Y Axis',
-                  parentId: appearanceTabId,
-                  defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showYAxisTitle',
-                  label: 'Show Y Axis Title',
-                  parentId: appearanceTabId,
-                  defaultValue: true,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showYAxisScale) !== true',
-                    _mode: 'code',
-                    _value: true,
-                  },
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'showYAxisScale',
+                      label: 'Show Y Axis',
+                      parentId: appearanceTabId,
+                      defaultValue: true,
+                    },
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'showYAxisTitle',
+                      label: 'Show Y Axis Title',
+                      parentId: appearanceTabId,
+                      defaultValue: true,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.showYAxisScale) !== true',
+                        _mode: 'code',
+                        _value: true,
+                      } as any,
+                    }
+                  ]
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -620,25 +654,31 @@ export const getSettings = (data: any) => {
                     _mode: 'code',
                     _value: true,
                   },
-                })
-                .addSettingsInput({
+                })               
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'strokeWidth',
                   parentId: appearanceTabId,
-                  inputType: 'numberField',
-                  label: 'Stroke width',
-                  defaultValue: 0.0,
-                  description:
-                    'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
-                  step: 0.1,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'strokeColor',
-                  parentId: appearanceTabId,
-                  label: 'Stroke Color',
-                  allowClear: true,
-                  inputType: 'colorPicker',
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'strokeWidth',
+                      parentId: appearanceTabId,
+                      type: 'numberField',
+                      label: 'Stroke width',
+                      defaultValue: 0.0,
+                      description:
+                        'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
+                      step: 0.1,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'strokeColor',
+                      parentId: appearanceTabId,
+                      label: 'Stroke Color',
+                      allowClear: true,
+                      type: 'colorPicker',
+                    }
+                  ]
                 })
                 .toJson(),
             ],
