@@ -5,7 +5,7 @@ import { FormIdentifier } from "@/interfaces";
 
 interface IFormDesignerProps {
     formId: FormIdentifier;
-  }
+}
 
 const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
     return (
