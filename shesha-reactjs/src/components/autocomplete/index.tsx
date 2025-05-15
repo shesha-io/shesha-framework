@@ -238,7 +238,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       />
     );
   }
-  const {width, ...restofDropdownStyles} = props.style;
+  const {width, ...restofDropdownStyles} = props?.style ?? {};
 
   return (
     <>

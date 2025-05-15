@@ -307,12 +307,12 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 components: [...new DesignerToolbarSettings()
                                     .addSettingsInput(
                                         {
-                                            id: 'c1ffda30-8eea-4621-aae7-0af583143df6',
+                                            id: nanoid(),
                                             inputType: 'autocomplete',
                                             propertyName: 'entityType',
                                             label: 'Entity Type',
                                             labelAlign: 'right',
-                                            parentId: 'uEFBpy19tApJMiBuFyj9s',
+                                            parentId: dataTabId,
                                             hidden: false,
                                             dataSourceType: 'url',
                                             validate: {},
@@ -343,7 +343,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 modelType: "{{data.entityType}}",
                                                 fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                                             },
-
                                         ],
                                     })
                                     .addSettingsInputRow({
