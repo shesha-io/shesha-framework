@@ -45,7 +45,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-left: ${paddingLeft ?? '2px'};
     padding-right: ${paddingRight ?? '2px'};
     padding-bottom: ${paddingBottom ?? '2px'};
-    overflow: hidden;
     ${restContainerStyles}
     width: var(--container-width) !important;
     max-width: var(--container-max-width) !important;;
@@ -164,7 +163,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .${prefixCls}-upload-list {
       --ant-margin-xs: ${gap ?? '8px'} !important;
       overflow-y: auto;
-      height: var(--container-height) !important;
       width: var(--container-width) !important;
       max-height: var(--container-max-height) !important;
       max-width: var(--container-max-width) !important;
@@ -260,7 +258,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
-    width: max-content;
     max-width: var(--container-max-width) !important;
     width: max-content !important;
     height: var(--container-height) !important;
