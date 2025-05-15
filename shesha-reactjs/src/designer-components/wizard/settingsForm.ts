@@ -6,6 +6,7 @@ import { getItemSettings } from './itemSettings';
 import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = () => {
     // Generate unique IDs for major components
@@ -314,6 +315,24 @@ export const getSettings = () => {
                                                                 propertyName: "dimensions.maxHeight",
                                                                 icon: "maxHeightIcon",
                                                             }
+                                                        ]
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        inputs: [{
+                                                            id: nanoid(),
+                                                            type: 'dropdown',
+                                                            label: 'Overflow',
+                                                            defaultValue: 'auto',
+                                                            propertyName: 'overflow',
+                                                            dropdownOptions: overflowOptions
+                                                        },
+                                                        {
+                                                            id: nanoid(),
+                                                            type: 'switch',
+                                                            label: "Hide Scroll Bar",
+                                                            propertyName: 'hideScrollBar'
+                                                        }
                                                         ]
                                                     })
                                                     .toJson()

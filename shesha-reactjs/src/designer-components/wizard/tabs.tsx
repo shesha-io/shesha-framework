@@ -14,6 +14,7 @@ import { useStyles } from './styles';
 import { useWizard } from './hooks';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
 import { wizardApiCode } from '@/publicJsApis';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
@@ -38,11 +39,12 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     } = model;
 
     const steps = useMemo(() => {
-        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style }, index) => {
+        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style, ...rest }, index) => {
             const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
             const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
             return {
+                ...rest,
                 id,
                 title,
                 subTitle,
@@ -54,7 +56,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                 // render only current step
                 content: current === index
                     ? <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
-                        <ComponentsContainer containerId={id} dynamicComponents={isDynamic ? components : []} />
+                        <ComponentsContainer style={{ height: '100%' }} containerId={id} dynamicComponents={isDynamic ? components : []} />
                     </ParentProvider>
                     : undefined,
             };
@@ -63,7 +65,9 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
 
     const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
     const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
-    const { styles } = useStyles({ styles: { ...model.allStyles.fullStyle, ...steps[current]?.style }, colors });
+    const activeStepStyle = useFormComponentStyles(visibleSteps[current]);
+    const { fontSize, fontFamily, fontWeight, color, ...rest } = activeStepStyle.fullStyle;
+    const { styles } = useStyles({ styles: { ...model.allStyles.fullStyle, ...rest }, colors, activeStepStyle: activeStepStyle.fullStyle });
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
@@ -142,7 +146,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                                         {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
                                     </Button>
                                 )}
-
                                 {current === visibleSteps.length - 1 && (
                                     <Button
                                         type="primary"

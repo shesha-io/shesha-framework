@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle }) => {
   const shaWizardContainer = "sha-wizard-container";
   const shaStepsContent = "sha-steps-content";
   const shaStepsButtonsContainer = "sha-steps-buttons-container";
@@ -20,11 +20,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
       --ant-color-text-light-solid: ${primaryTextColor} !important;
 
-      * {
-          font-weight: ${styles.fontWeight || 400};
-          font-family: ${styles.fontFamily};
-      }
     }
+
+    .ant-steps-item-active {
+            --ant-color-text-description: ${activeStepStyle.color || color}75;
+            --ant-color-text: ${activeStepStyle.color || color};
+            --ant-font-size: calc(${activeStepStyle.fontSize || styles.fontSize}/1.3);
+            --ant-font-size-lg: ${activeStepStyle.fontSize || styles.fontSize || 16};
+      }
 
     .sha-steps-buttons-container {
       .ant-btn-default {
