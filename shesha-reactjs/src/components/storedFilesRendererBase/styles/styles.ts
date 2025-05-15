@@ -47,7 +47,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-bottom: ${paddingBottom ?? '2px'};
     overflow: hidden;
     ${restContainerStyles}
-    max-height: auto;
+    width: var(--container-width) !important;
+    max-width: var(--container-max-width) !important;;
+    min-width: var(--container-min-width) !important;
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
@@ -162,6 +164,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .${prefixCls}-upload-list {
       --ant-margin-xs: ${gap ?? '8px'} !important;
       overflow-y: auto;
+      height: var(--container-height) !important;
+      width: var(--container-width) !important;
+      max-height: var(--container-max-height) !important;
+      max-width: var(--container-max-width) !important;
+      min-height: var(--container-min-height) !important;
+      min-width: var(--container-min-width) !important;
     }
       
     .ant-upload-list-item-uploading {

@@ -3,7 +3,6 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { IButtonGroupComponentProps } from './models';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
-import { overflowOptions } from '@/designer-components/_settings/utils/dimensions/utils';
 import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: IButtonGroupComponentProps) => {
@@ -214,16 +213,6 @@ export const getSettings = (data: IButtonGroupComponentProps) => {
                                                                 icon: "maxHeightIcon",
                                                             }
                                                         ]
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        parentId: styleRouterId,
-                                                        inline: true,
-                                                        inputType: 'dropdown',
-                                                        label: 'Overflow',
-                                                        defaultValue: 'auto',
-                                                        propertyName: 'dimensions.overflow',
-                                                        dropdownOptions: overflowOptions
                                                     })
                                                     .toJson()
                                                 ]
