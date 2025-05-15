@@ -12,7 +12,7 @@ export const getOverflowStyle = (overflow: CSSProperties['overflow'], hideScroll
         ...(hideScrollBar && {
             '::-webkit-scrollbar': { display: 'none' },
             'msOverflowStyle': 'none',
-            'scrollbarWidth': 'none'
+            'scrollbarWidth': 'none',
         })
     };
 };
