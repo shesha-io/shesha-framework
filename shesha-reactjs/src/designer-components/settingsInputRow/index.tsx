@@ -4,7 +4,7 @@ import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
 import { SettingOutlined } from "@ant-design/icons";
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
-import { evaluateString, useFormData } from '@/index';
+import { evaluateString, useShaFormInstance } from '@/index';
 import { useStyles } from '../inputComponent/styles';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 
@@ -22,7 +22,7 @@ export interface IInputRowProps {
 
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
-    const { data: formData } = useFormData();
+    const { formData } = useShaFormInstance();
 
     const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
     return isHidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>

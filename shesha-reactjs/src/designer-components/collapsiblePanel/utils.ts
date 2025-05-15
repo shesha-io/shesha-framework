@@ -33,7 +33,13 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
 
     return {
         font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : '500', align: 'left', type: 'Segoe UI' },
-        background: { type: 'color', color: headerBgColor },
+        background: {
+            type: 'color',
+            color: headerBgColor,
+            repeat: 'no-repeat',
+            position: 'center',
+            size: 'cover',
+        },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0', maxHeight: 'auto', minWidth: '0', maxWidth: 'auto' },
         border: {
             radiusType: 'all',

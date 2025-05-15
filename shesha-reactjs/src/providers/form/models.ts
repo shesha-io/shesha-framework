@@ -73,8 +73,6 @@ export interface IStyleType {
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
-  overflow?: CSSProperties['overflow'];
-  hideScrollBar?: boolean;
   size?: SizeType;
   style?: string;
   stylingBox?: string;
@@ -82,6 +80,8 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
+  overflow?: CSSProperties['overflow'];
+  hideScrollBar?: boolean;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -109,7 +109,6 @@ export interface IInputStyles extends IStyleType {
   backgroundBase64?: string;
   backgroundStoredFileId?: string;
   style?: string;
-  overflow?: CSSProperties['overflow'];
 };
 
 export type ConfigurableFormComponentTypes =
@@ -194,6 +193,7 @@ export interface IFormComponentStyles {
   fontStyles: CSSProperties;
   backgroundStyles: CSSProperties;
   shadowStyles: CSSProperties;
+  overflowStyles: CSSProperties;
   /** Styles calculated from js style setting */
   jsStyle: CSSProperties;
   /** Styles assempled from stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles*/

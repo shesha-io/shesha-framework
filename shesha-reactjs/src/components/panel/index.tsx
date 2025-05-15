@@ -31,6 +31,7 @@ export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleType, 
   bodyStyle?: React.CSSProperties;
   headerStyle?: React.CSSProperties;
   accentStyle?: boolean;
+  overflowStyle?: React.CSSProperties;
 }
 
 const defaultHeaderStyle: React.CSSProperties = {
@@ -73,16 +74,16 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   bodyStyle = defaultBodyStyle,
   headerStyle = defaultHeaderStyle,
   isSimpleDesign,
-  panelHeadType,
   noContentPadding,
   hideWhenEmpty,
   hideCollapseContent,
-  accentStyle
+  accentStyle,
+  overflowStyle
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
 
-  const { styles } = useStyles({ bodyStyle, headerStyle, panelHeadType, ghost, isSimpleDesign, noContentPadding, hideWhenEmpty, hideCollapseContent, accentStyle });
+  const { styles } = useStyles({ bodyStyle, headerStyle, ghost, isSimpleDesign, noContentPadding, hideWhenEmpty, hideCollapseContent, accentStyle, overflow: overflowStyle });
   const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
 
   return (
