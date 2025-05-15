@@ -6,7 +6,7 @@ export const getSettings = (data: any) => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
     const validationTabId = nanoid();
-    const mainSettingsTabId = nanoid();
+    const dataTabId = nanoid();
     const appearanceTabId = nanoid();
     const eventsTabId = nanoid();
     const securityTabId = nanoid();
@@ -92,28 +92,13 @@ export const getSettings = (data: any) => {
                         ]
                     },
                     {
-                        key: 'security',
-                        title: 'Security',
-                        id: securityTabId,
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'permissions',
-                                propertyName: 'permissions',
-                                label: 'Permissions',
-                                parentId: securityTabId,
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: 'mainSettings',
-                        title: 'Main Settings',
-                        id: mainSettingsTabId,
+                        key: 'data',
+                        title: 'Data',
+                        id: dataTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         type: 'numberField',
@@ -142,7 +127,7 @@ export const getSettings = (data: any) => {
                                         type: 'numberField',
                                         propertyName: 'secondStep',
                                         label: 'Second Step',
-                                        parentId: mainSettingsTabId,
+                                        parentId: dataTabId,
                                         min: 1,
                                         jsSetting: true,
                                     },
@@ -158,7 +143,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         type: 'switch',
@@ -181,7 +166,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         type: 'switch',
@@ -201,7 +186,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         type: 'switch',
@@ -226,115 +211,9 @@ export const getSettings = (data: any) => {
                                 inputType: 'switch',
                                 propertyName: 'range',
                                 label: 'Range',
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 defaultValue: false,
                                 jsSetting: true,
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: 'appearance',
-                        title: 'Appearance',
-                        id: appearanceTabId,
-                        components: [...new DesignerToolbarSettings()
-                            .addPropertyRouter({
-                                id: styleRouterId,
-                                propertyName: 'propertyRouter1',
-                                componentName: 'propertyRouter',
-                                label: 'Property router1',
-                                labelAlign: 'right',
-                                parentId: appearanceTabId,
-                                hidden: false,
-                                propertyRouteName: {
-                                    _mode: "code",
-                                    _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                                    _value: ""
-                                },
-                                components: [
-                                    ...new DesignerToolbarSettings()
-                                        .addCollapsiblePanel({
-                                            id: nanoid(),
-                                            propertyName: 'pnlStyle',
-                                            label: 'Style',
-                                            labelAlign: 'right',
-                                            parentId: styleRouterId,
-                                            ghost: true,
-                                            collapsible: 'header',
-                                            content: {
-                                                id: nanoid(),
-                                                components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: nanoid(),
-                                                        parentId: nanoid(),
-                                                                inputs: [
-                                                            {
-                                                                type: 'switch',
-                                                                id: nanoid(),
-                                                                propertyName: 'hideBorder',
-                                                                label: 'Hide Border',
-                                                                jsSetting: true,
-                                                            },
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: nanoid(),
-                                                                propertyName: 'size',
-                                                                label: 'Size',
-                                                                allowClear: true,
-                                                                jsSetting: true,
-                                                                dropdownOptions: [
-                                                                    { label: 'Small', value: 'small' },
-                                                                    { label: 'Middle', value: 'middle' },
-                                                                    { label: 'Large', value: 'large' }
-                                                                ],
-                                                            }
-                                                        ]
-                                                    })
-                                                    .toJson()
-                                                ]
-                                            }
-                                        })
-                                        .addCollapsiblePanel({
-                                            id: nanoid(),
-                                            propertyName: 'pnlCustomStyle',
-                                            label: 'Custom Styles',
-                                            labelAlign: 'right',
-                                            parentId: styleRouterId,
-                                            ghost: true,
-                                            collapsible: 'header',
-                                            content: {
-                                                id: nanoid(),
-                                                components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInput({
-                                                                id: nanoid(),
-                                                        inputType: 'codeEditor',
-                                                        propertyName: 'style',
-                                                        label: 'Style',
-                                                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                                        exposedVariables: [
-                                                            {
-                                                                name: 'data',
-                                                                description: 'Form values',
-                                                                type: 'object'
-                                                            },
-                                                            {
-                                                                name: 'globalState',
-                                                                description: 'The global state',
-                                                                type: 'object'
-                                                            }
-                                                        ],
-                                                        wrapInTemplate: true,
-                                                        templateSettings: {
-                                                            functionName: 'getStyle'
-                                                        },
-                                                        availableConstantsExpression: "return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-                                                    })
-                                                    .toJson()
-                                                ]
-                                            }
-                                        })
-                                        .toJson()
-                                ]
                             })
                             .toJson()
                         ]
@@ -447,7 +326,127 @@ export const getSettings = (data: any) => {
                             .toJson()
                         ]
                     },
-
+                    {
+                        key: 'appearance',
+                        title: 'Appearance',
+                        id: appearanceTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addPropertyRouter({
+                                id: styleRouterId,
+                                propertyName: 'propertyRouter1',
+                                componentName: 'propertyRouter',
+                                label: 'Property router1',
+                                labelAlign: 'right',
+                                parentId: appearanceTabId,
+                                hidden: false,
+                                propertyRouteName: {
+                                    _mode: "code",
+                                    _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
+                                    _value: ""
+                                },
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addCollapsiblePanel({
+                                            id: nanoid(),
+                                            propertyName: 'pnlStyle',
+                                            label: 'Style',
+                                            labelAlign: 'right',
+                                            parentId: styleRouterId,
+                                            ghost: true,
+                                            collapsible: 'header',
+                                            content: {
+                                                id: nanoid(),
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: nanoid(),
+                                                                inputs: [
+                                                            {
+                                                                type: 'switch',
+                                                                id: nanoid(),
+                                                                propertyName: 'hideBorder',
+                                                                label: 'Hide Border',
+                                                                jsSetting: true,
+                                                            },
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: nanoid(),
+                                                                propertyName: 'size',
+                                                                label: 'Size',
+                                                                allowClear: true,
+                                                                jsSetting: true,
+                                                                dropdownOptions: [
+                                                                    { label: 'Small', value: 'small' },
+                                                                    { label: 'Middle', value: 'middle' },
+                                                                    { label: 'Large', value: 'large' }
+                                                                ],
+                                                            }
+                                                        ]
+                                                    })
+                                                    .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .addCollapsiblePanel({
+                                            id: nanoid(),
+                                            propertyName: 'pnlCustomStyle',
+                                            label: 'Custom Styles',
+                                            labelAlign: 'right',
+                                            parentId: styleRouterId,
+                                            ghost: true,
+                                            collapsible: 'header',
+                                            content: {
+                                                id: nanoid(),
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInput({
+                                                                id: nanoid(),
+                                                        inputType: 'codeEditor',
+                                                        propertyName: 'style',
+                                                        label: 'Style',
+                                                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                        exposedVariables: [
+                                                            {
+                                                                name: 'data',
+                                                                description: 'Form values',
+                                                                type: 'object'
+                                                            },
+                                                            {
+                                                                name: 'globalState',
+                                                                description: 'The global state',
+                                                                type: 'object'
+                                                            }
+                                                        ],
+                                                        wrapInTemplate: true,
+                                                        templateSettings: {
+                                                            functionName: 'getStyle'
+                                                        },
+                                                        availableConstantsExpression: "return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+                                                    })
+                                                    .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .toJson()
+                                ]
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: 'security',
+                        title: 'Security',
+                        id: securityTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'permissions',
+                                propertyName: 'permissions',
+                                label: 'Permissions',
+                                parentId: securityTabId,
+                            })
+                            .toJson()
+                        ]
+                    },
                 ]
             })
             .toJson(),

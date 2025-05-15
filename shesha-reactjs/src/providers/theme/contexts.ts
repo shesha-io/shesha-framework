@@ -27,7 +27,7 @@ export interface IThemeStateContext {
 
 export interface IThemeActionsContext {
   changeTheme: (theme: IConfigurableTheme, isApplication?: Boolean) => void;
-  resetToApplicationTheme:() => void;
+  resetToApplicationTheme: () => void;
   
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
