@@ -52,7 +52,7 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
       initialValues.current = form.formData;
       // when form is closing restore the latest form initial values
       return () => {
-        resetToApplicationTheme()
+        resetToApplicationTheme();
       };
     }, []);
   
