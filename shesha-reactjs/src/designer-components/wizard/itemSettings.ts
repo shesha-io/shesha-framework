@@ -6,6 +6,7 @@ export const getItemSettings = () => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const securityTabId = nanoid();
+  const customStylePnlId = nanoid();
 
   // Button content IDs
   const nextButtonContentId = nanoid();
@@ -484,6 +485,35 @@ export const getItemSettings = () => {
         },
         {
           key: '2',
+          id: customStylePnlId,
+          title: "Appearance",
+          components: [...new DesignerToolbarSettings()
+            .addSettingsInputRow({
+              id: nanoid(),
+              parentId: customStylePnlId,
+              inputs: [
+                {
+                  id: nanoid(),
+                  type: 'textField',
+                  propertyName: 'className',
+                  label: 'Class Name',
+                  labelAlign: 'right',
+                },
+                {
+                  id: nanoid(),
+                  type: 'codeEditor',
+                  propertyName: 'style',
+                  hideLabel: false,
+                  label: 'Style',
+                  description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                }
+              ]
+            })
+            .toJson()
+          ]
+        },
+        {
+          key: '3',
           title: 'Security',
           id: securityTabId,
           components: [...new DesignerToolbarSettings()
