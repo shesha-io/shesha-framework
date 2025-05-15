@@ -30,6 +30,7 @@ interface IShaDrawer {
   backgroundStyles?: CSSProperties;
   dimensions?: IDimensionsValue;
   stylingBoxAsCSS?: CSSProperties;
+  allStyles?: any;
 }
 
 interface IShaDrawerState {
@@ -40,7 +41,6 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
   const {
     id,
     placement,
-    dimensions,
     componentName: name,
     readOnly,
     label,
@@ -57,13 +57,26 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     headerStyle,
     footerStyle,
     showFooter,
-    backgroundStyles,
-    stylingBoxAsCSS,
   } = props;
   const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
   const { executeAction } = useConfigurableActionDispatcher();
-  const { paddingTop, paddingRight, paddingBottom, paddingLeft, ...rest } = stylingBoxAsCSS;
+  const {
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
+    marginRight,
+    marginLeft,
+    marginBottom,
+    marginTop,
+    backgroundImage,
+    backgroundSize,
+    backgroundPosition,
+    backgroundRepeat,
+    backgroundColor,
+    ...rest
+  } = style;
 
   const openDrawer = () => setState((prev) => ({ ...prev, open: true }));
 
@@ -149,30 +162,43 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     <Drawer
       open={state?.open}
       placement={placement}
-      width={dimensions?.width}
-      height={dimensions?.height}
+      width={rest?.width}
+      height={rest?.height}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
         footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
-        body: backgroundStyles as CSSProperties,
-        content: {
-          ...style,
-          height: undefined,
-          width: undefined,
+        body: {
+          backgroundImage,
+          backgroundSize,
+          backgroundPosition,
+          backgroundRepeat,
+          backgroundColor,
           paddingTop,
           paddingRight,
           paddingBottom,
           paddingLeft,
         },
-        wrapper: {
-          width: style?.width || props.dimensions?.width,
-          height: style?.height || props.dimensions?.height,
-          minWidth: props.dimensions?.minWidth,
-          maxWidth: props.dimensions?.maxWidth,
-          minHeight: props.dimensions?.minHeight,
-          maxHeight: props.dimensions?.maxHeight,
+        content: {
           ...rest,
+          height: undefined,
+          width: undefined,
+          minHeight: undefined,
+          minWidth: undefined,
+          maxHeight: undefined,
+          maxWidth: undefined,
+        },
+        wrapper: {
+          width: rest?.width,
+          height: rest?.height,
+          minWidth: rest?.minWidth,
+          maxWidth: rest?.maxWidth,
+          minHeight: rest?.minHeight,
+          maxHeight: rest?.maxHeight,
+          marginTop,
+          marginRight,
+          marginBottom,
+          marginLeft,
         },
       }}
       title={label}
