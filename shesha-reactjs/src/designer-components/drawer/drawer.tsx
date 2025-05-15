@@ -75,6 +75,12 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     backgroundPosition,
     backgroundRepeat,
     backgroundColor,
+    minHeight,
+    minWidth,
+    maxHeight,
+    maxWidth,
+    width,
+    height,
     ...rest
   } = style;
 
@@ -162,8 +168,8 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     <Drawer
       open={state?.open}
       placement={placement}
-      width={rest?.width}
-      height={rest?.height}
+      width={width}
+      height={height}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
@@ -181,20 +187,14 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
         },
         content: {
           ...rest,
-          height: undefined,
-          width: undefined,
-          minHeight: undefined,
-          minWidth: undefined,
-          maxHeight: undefined,
-          maxWidth: undefined,
         },
         wrapper: {
-          width: rest?.width,
-          height: rest?.height,
-          minWidth: rest?.minWidth,
-          maxWidth: rest?.maxWidth,
-          minHeight: rest?.minHeight,
-          maxHeight: rest?.maxHeight,
+          width: width,
+          height: height,
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+          minHeight:minHeight,
+          maxHeight: maxHeight,
           marginTop,
           marginRight,
           marginBottom,

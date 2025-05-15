@@ -32,18 +32,6 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       shadowStyles: footerShadowStyles,
       jsStyle: footerJsStyle,
     } = useFormComponentStyles(footerStyles);
-    // const jsStyle = allStyles?.jsStyle;
-    // const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
-
-    // const borderStyles = allStyles?.borderStyles;
-    // const shadowStyles = allStyles?.shadowStyles;
-
-    // const additionalStyles: CSSProperties = removeUndefinedProps({
-    //   ...shadowStyles,
-    //   ...borderStyles,
-    //   stylingBoxAsCSS,
-    //   ...jsStyle,
-    // });
 
     const additionalHeaderStyles: CSSProperties = removeUndefinedProps({
       ...headerShadowStyles,
