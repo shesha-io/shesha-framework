@@ -6,6 +6,7 @@ import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/u
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { IConfigurableFormComponent } from '@/providers';
+import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 interface IShaDrawer {
   id?: string;
   componentName?: string;
@@ -27,10 +28,7 @@ interface IShaDrawer {
   width?: string | number;
   readOnly?: boolean;
   backgroundStyles?: CSSProperties;
-  dimensions?: {
-    width?: string | number;
-    height?: string | number;
-  };
+  dimensions?: IDimensionsValue;
   stylingBoxAsCSS?: CSSProperties;
 }
 
@@ -170,6 +168,10 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
         wrapper: {
           width: style?.width || props.dimensions?.width,
           height: style?.height || props.dimensions?.height,
+          minWidth: props.dimensions?.minWidth,
+          maxWidth: props.dimensions?.maxWidth,
+          minHeight: props.dimensions?.minHeight,
+          maxHeight: props.dimensions?.maxHeight,
           ...rest,
         },
       }}
