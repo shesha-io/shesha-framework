@@ -198,6 +198,21 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: 'predefinedOrientation',
+                        propertyName: 'placement',
+                        label: 'Slide Direction',
+                        inputType: 'dropdown',
+                        hidden: false,
+                        defaultValue: 'right',
+                        dropdownOptions: [
+                          { label: 'Top', value: 'top' },
+                          { label: 'Right', value: 'right' },
+                          { label: 'Bottom', value: 'bottom' },
+                          { label: 'Left', value: 'left' },
+                        ],
+                        validate: { required: true },
+                      })
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
@@ -210,21 +225,6 @@ export const getSettings = (data: any) => {
                           id: 'dimensionsStylePnl',
                           components: [
                             ...new DesignerToolbarSettings()
-                              .addSettingsInput({
-                                id: 'predefinedOrientation',
-                                propertyName: 'placement',
-                                label: 'Slide Direction',
-                                inputType: 'dropdown',
-                                hidden: false,
-                                defaultValue: 'right',
-                                dropdownOptions: [
-                                  { label: 'Top', value: 'top' },
-                                  { label: 'Right', value: 'right' },
-                                  { label: 'Bottom', value: 'bottom' },
-                                  { label: 'Left', value: 'left' },
-                                ],
-                                validate: { required: true },
-                              })
                               .addSettingsInputRow({
                                 id: 'dimensionsStyleRowWidth',
                                 parentId: 'dimensionsStylePnl',
