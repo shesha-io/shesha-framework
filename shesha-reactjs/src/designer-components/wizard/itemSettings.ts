@@ -810,7 +810,6 @@ export const getItemSettings = () => {
                           propertyName: 'className',
                           label: 'Class Name',
                           labelAlign: 'right',
-                          parentId: 'root',
                         },
                         {
                           id: nanoid(),
