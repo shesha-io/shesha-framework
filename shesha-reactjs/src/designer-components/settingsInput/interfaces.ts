@@ -69,7 +69,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     valueTitle?: string;
     valueName?: string;
     value?: any;
-    placeholder?: any;
+    placeholder?: string;
     mode?: any;
     availableHttpVerbs?: IHttpVerb[];
     /** Can be any valid number e.g.: 1, 0.1, 3, 3.14 */

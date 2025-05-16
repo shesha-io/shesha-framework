@@ -14,7 +14,7 @@ interface CustomDropdownProps {
     customTooltip?: string;
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
-    placeholder?: any;
+    placeholder?: string;
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
