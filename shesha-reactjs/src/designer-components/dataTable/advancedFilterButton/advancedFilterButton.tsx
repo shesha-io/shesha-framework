@@ -16,7 +16,10 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
 
   const [icon, setIcon] = useState(null);
   const { data: formData } = useFormData();
-  const { styles } = useStyles();
+  const propsStyles = {
+    fontSize: props.styles?.fontSize,
+  };
+  const { styles } = useStyles(propsStyles);
 
   const localStyle = getStyle(props.style, formData);
 
@@ -26,8 +29,9 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
   const buttonStyle = {
     ...localStyle,
     ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
-    padding: "3px",
-    border: hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
+    padding: '3px',
+    border: props.buttonType === 'link' ? 'none' : hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
+    ...props.styles,
   };
 
   const startFilteringColumns = () => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
@@ -77,12 +81,15 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
           disabled={props.readOnly || isFiltering}
           icon={filterIcon}
           size={props.size}
-          style={isFiltering || props.readOnly ? {} : { ...buttonStyle }}
+          style={
+            isFiltering || props.readOnly
+              ? { ...buttonStyle, opacity: 0.5, border: props.buttonType === 'link' ? 'none' : buttonStyle.border }
+              : { ...buttonStyle }
+          }
         >
           {props.label}
         </Button>
       </Badge>
     </span>
-
   );
 };
