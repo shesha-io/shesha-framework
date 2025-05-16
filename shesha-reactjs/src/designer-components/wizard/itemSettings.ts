@@ -2,7 +2,6 @@ import { DesignerToolbarSettings } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { buttonTypes } from '../button/util';
 import { fontWeights, fontTypes } from '../_settings/utils/font/utils';
 export const getItemSettings = () => {
   // Generate unique IDs for major components
@@ -476,16 +475,6 @@ export const getItemSettings = () => {
           id: appearanceTabId,
           components: [
             ...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'buttonType',
-                label: 'Type',
-                validate: {
-                  required: true,
-                },
-                inputType: 'dropdown',
-                dropdownOptions: buttonTypes,
-              })
               .addCollapsiblePanel({
                 id: nanoid(),
                 propertyName: 'pnlFontStyle',
@@ -509,6 +498,7 @@ export const getItemSettings = () => {
                           label: 'Family',
                           propertyName: 'font.type',
                           hideLabel: true,
+                          placeholder: 'Select a font',
                           dropdownOptions: fontTypes,
                         },
                         {
@@ -517,6 +507,7 @@ export const getItemSettings = () => {
                           label: 'Size',
                           propertyName: 'font.size',
                           hideLabel: true,
+                          placeholder: '14',
                           width: 50,
                         },
                         {
@@ -525,6 +516,7 @@ export const getItemSettings = () => {
                           label: 'Weight',
                           propertyName: 'font.weight',
                           hideLabel: true,
+                          placeholder: '400',
                           tooltip: "Controls text thickness (light, normal, bold, etc.)",
                           dropdownOptions: fontWeights,
                           width: 100,
@@ -669,6 +661,7 @@ export const getItemSettings = () => {
                             label: "Size",
                             customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                             hideLabel: true,
+                            placeholder: 'Cover',
                             propertyName: "background.size",
                             dropdownOptions: sizeOptions,
                           },
@@ -677,6 +670,7 @@ export const getItemSettings = () => {
                             id: nanoid(),
                             label: "Position",
                             hideLabel: true,
+                            placeholder: 'Center',
                             customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                             propertyName: "background.position",
                             dropdownOptions: positionOptions,
@@ -724,6 +718,7 @@ export const getItemSettings = () => {
                           label: 'Offset X',
                           hideLabel: true,
                           width: 80,
+                          placeholder: '0',
                           inputType: 'numberField',
                           icon: "offsetHorizontalIcon",
                           propertyName: 'shadow.offsetX',
@@ -734,6 +729,7 @@ export const getItemSettings = () => {
                           label: 'Offset Y',
                           hideLabel: true,
                           width: 80,
+                          placeholder: 0,
                           inputType: 'numberField',
                           icon: 'offsetVerticalIcon',
                           propertyName: 'shadow.offsetY',
@@ -744,6 +740,7 @@ export const getItemSettings = () => {
                           label: 'Blur',
                           hideLabel: true,
                           width: 80,
+                          placeholder: 0,
                           inputType: 'numberField',
                           icon: 'blurIcon',
                           propertyName: 'shadow.blurRadius',
@@ -754,6 +751,7 @@ export const getItemSettings = () => {
                           label: 'Spread',
                           hideLabel: true,
                           width: 80,
+                          placeholder: 0,
                           inputType: 'numberField',
                           icon: 'spreadIcon',
                           propertyName: 'shadow.spreadRadius',

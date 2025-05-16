@@ -20,6 +20,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
       --ant-color-text-light-solid: ${primaryTextColor} !important;
 
+      * {
+        font-family: ${styles.fontFamily};
+      }
     }
 
     .ant-steps-item-active {
@@ -27,6 +30,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
             --ant-color-text: ${activeStepStyle.color || color};
             --ant-font-size: calc(${activeStepStyle.fontSize || styles.fontSize}/1.3);
             --ant-font-size-lg: ${activeStepStyle.fontSize || styles.fontSize || 16};
+
+            * {
+              font-family: ${activeStepStyle.fontFamily || styles.fontFamily};
+            }
       }
 
     .sha-steps-buttons-container {
