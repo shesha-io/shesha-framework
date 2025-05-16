@@ -294,7 +294,7 @@ export const getSettings = () => {
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
                                                                 icon: "heightIcon",
-                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                                tooltip: "This is the height of the body of the wizard. You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
                                                                 type: 'textField',

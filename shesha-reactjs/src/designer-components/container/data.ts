@@ -214,7 +214,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     justifySelf: prev?.justifySelf ?? "normal",
     noDefaultStyling: prev?.noDefaultStyling ?? false,
     gridColumnsCount: prev?.gridColumnsCount ?? null,
-    gap: prev?.gap ?? '8px',
-    overflow: prev?.overflow ?? 'auto'
+    gap: prev?.gap ?? '8px'
   };
 };

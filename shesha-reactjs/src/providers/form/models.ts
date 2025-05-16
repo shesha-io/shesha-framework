@@ -80,7 +80,7 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
-  overflow?: CSSProperties['overflow'];
+  overflow?: boolean;
   hideScrollBar?: boolean;
 }
 
@@ -274,6 +274,8 @@ export interface IConfigurableFormComponent
   mobile?: any;
 
   allStyles?: IFormComponentStyles;
+
+  overflow?: boolean;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

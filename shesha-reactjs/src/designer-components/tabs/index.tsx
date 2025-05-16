@@ -134,6 +134,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const initialCardStyle = { ...defaultCardStyles, font: { ...defaultCardStyles.font, color: '#000000' } };
       return {
         ...newModel,
+        overflow: true,
         card: { ...initialCardStyle },
         desktop: { ...newModel.desktop, card: { ...initialCardStyle } },
         tablet: { ...newModel.tablet, card: { ...initialCardStyle } },

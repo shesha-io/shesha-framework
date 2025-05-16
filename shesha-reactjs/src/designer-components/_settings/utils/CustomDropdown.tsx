@@ -14,7 +14,7 @@ interface CustomDropdownProps {
     customTooltip?: string;
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
-    variant?: 'borderless' | 'outlined' | 'filled';
+    placeholder?: string;
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
@@ -22,6 +22,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     options,
     readOnly,
     label,
+    placeholder,
     defaultValue,
     customTooltip,
     onChange,
@@ -83,6 +84,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             size={size}
             onChange={onChange}
             defaultValue={defaultValue}
+            placeholder={placeholder}
             dropdownRender={(menu) => (
                 <>
                     {menu}
