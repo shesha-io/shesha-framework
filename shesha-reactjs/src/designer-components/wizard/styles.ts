@@ -9,8 +9,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = colors;
   const { color, ...rest } = styles;
   const shaWizard = cx("sha-wizard", css`
-    
-    .ant-steps-item {
+
+    .ant-steps-item-container {
       --ant-color-primary: ${primaryBgColor};
       --ant-color-text-description: ${color}75;
       --ant-color-text: ${color};
@@ -24,7 +24,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
         font-family: ${styles.fontFamily};
       }
     }
-
+      
     .ant-steps-item-active {
             --ant-color-text-description: ${activeStepStyle.color || color}75;
             --ant-color-text: ${activeStepStyle.color || color};

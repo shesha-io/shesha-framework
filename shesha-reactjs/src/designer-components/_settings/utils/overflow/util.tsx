@@ -1,9 +1,7 @@
-import { CSSProperties } from "react";
-
-export const getOverflowStyle = (overflow: CSSProperties['overflow'], hideScrollBar: boolean): React.CSSProperties => {
+export const getOverflowStyle = (overflow, hideScrollBar: boolean): React.CSSProperties => {
     if (!overflow) return {};
     return {
-        overflow: overflow,
+        overflow: 'auto',
         scrollbarWidth: 'thin',
         '::-webkit-scrollbar': {
             width: '8px',
