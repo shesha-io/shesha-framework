@@ -23,7 +23,9 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
     modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null,
   }),
   Factory: ({ model, calculatedModel }) => {
-    return <QueryBuilder {...model} modelType={calculatedModel.modelType} readOnly={model.readOnly}></QueryBuilder>;
+    return model.hidden 
+      ? null 
+      : <QueryBuilder {...model} modelType={calculatedModel.modelType} readOnly={model.readOnly}></QueryBuilder>;
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
