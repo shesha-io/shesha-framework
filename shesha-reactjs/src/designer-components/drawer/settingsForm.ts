@@ -198,6 +198,21 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: 'predefinedOrientation',
+                        propertyName: 'placement',
+                        label: 'Slide Direction',
+                        inputType: 'dropdown',
+                        hidden: false,
+                        defaultValue: 'right',
+                        dropdownOptions: [
+                          { label: 'Top', value: 'top' },
+                          { label: 'Right', value: 'right' },
+                          { label: 'Bottom', value: 'bottom' },
+                          { label: 'Left', value: 'left' },
+                        ],
+                        validate: { required: true },
+                      })
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
@@ -210,21 +225,6 @@ export const getSettings = (data: any) => {
                           id: 'dimensionsStylePnl',
                           components: [
                             ...new DesignerToolbarSettings()
-                              .addSettingsInput({
-                                id: 'predefinedOrientation',
-                                propertyName: 'placement',
-                                label: 'Slide Direction',
-                                inputType: 'dropdown',
-                                hidden: false,
-                                defaultValue: 'right',
-                                dropdownOptions: [
-                                  { label: 'Top', value: 'top' },
-                                  { label: 'Right', value: 'right' },
-                                  { label: 'Bottom', value: 'bottom' },
-                                  { label: 'Left', value: 'left' },
-                                ],
-                                validate: { required: true },
-                              })
                               .addSettingsInputRow({
                                 id: 'dimensionsStyleRowWidth',
                                 parentId: 'dimensionsStylePnl',
@@ -235,10 +235,27 @@ export const getSettings = (data: any) => {
                                     id: 'width-dimensions-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
-                                    defaultValue: '50%',
                                     propertyName: 'dimensions.width',
                                     icon: 'widthIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Min Width',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.minWidth',
+                                    icon: 'minWidthIcon',
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Max Width',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.maxWidth',
+                                    icon: 'maxWidthIcon',
                                   },
                                 ],
                               })
@@ -252,10 +269,27 @@ export const getSettings = (data: any) => {
                                     id: 'height-dimensions-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Height',
                                     width: 85,
-                                    defaultValue: '100%',
                                     propertyName: 'dimensions.height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Min Height',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.minHeight',
+                                    icon: 'minHeightIcon',
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Max Height',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.maxHeight',
+                                    icon: 'maxHeightIcon',
                                   },
                                 ],
                               })
