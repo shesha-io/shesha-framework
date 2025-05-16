@@ -112,13 +112,13 @@ export const filterDynamicComponents = (components, query, data) => {
 
             return {
                 ...c,
-                collapsible: c.collapsible ?? 'header',
+                collapsible: 'header',
                 content: {
                     ...c.content,
                     components: contentComponents
                 },
                 ghost: false,
-                collapsedByDefault: true,
+                collapsedByDefault: false,
                 headerStyles: getHeaderStyles(),
                 allStyles: getBodyStyles(),
                 border: getBodyStyles().border,

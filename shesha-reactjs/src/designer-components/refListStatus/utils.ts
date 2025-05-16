@@ -21,7 +21,7 @@ export const defaultStyles = (): any => {
             selectedCorner: 'all'
         },
         dimensions: {
-            width: '100%',
+            width: 'auto',
             height: '24px',
             minHeight: '0px',
             maxHeight: 'auto',
