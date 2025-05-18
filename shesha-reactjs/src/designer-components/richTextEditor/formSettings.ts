@@ -10,7 +10,7 @@ export const getSettings = (data: any) => {
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
-  
+
   // Generate IDs for collapsible panels in main tab
   const stateCollapsiblePanelId = nanoid();
   const optionsCollapsiblePanelId = nanoid();
@@ -552,31 +552,12 @@ export const getSettings = (data: any) => {
                                     defaultValue: true,
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                      _code:
+                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
                                   },
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Width',
-                                    width: 85,
-                                    propertyName: 'width',
-                                    icon: 'widthIcon',
-                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                    hidden: {
-                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
-                                  },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: 'dimensionsStyleRowHeight',
-                                parentId: 'dimensionsStylePnl',
-                                inputs: [
                                   {
                                     type: 'switch',
                                     id: nanoid(),
@@ -585,7 +566,59 @@ export const getSettings = (data: any) => {
                                     defaultValue: true,
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                      _code:
+                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                  // {
+                                  //   type: 'textField',
+                                  //   id: nanoid(),
+                                  //   label: 'Width',
+                                  //   width: 85,
+                                  //   propertyName: 'width',
+                                  //   icon: 'widthIcon',
+                                  //   tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                  //   hidden: {
+                                  //     _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                  //     _mode: 'code',
+                                  //     _value: false,
+                                  //   } as any,
+                                  // },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inline: true,
+                                hidden: {
+                                  _code:
+                                    'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Width',
+                                    width: 85,
+                                    propertyName: 'dimensions.width',
+                                    icon: 'widthIcon',
+                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Min Width',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.minWidth',
+                                    icon: 'minWidthIcon',
+                                    hidden: {
+                                      _code:
+                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeX);',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
@@ -593,13 +626,66 @@ export const getSettings = (data: any) => {
                                   {
                                     type: 'textField',
                                     id: nanoid(),
+                                    label: 'Max Width',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.maxWidth',
+                                    icon: 'maxWidthIcon',
+                                    hidden: {
+                                      _code:
+                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeX);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inline: true,
+                                hidden: {
+                                  _code:
+                                    'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
                                     label: 'Height',
                                     width: 85,
-                                    propertyName: 'height',
+                                    propertyName: 'dimensions.height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Min Height',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.minHeight',
+                                    icon: 'minHeightIcon',
                                     hidden: {
-                                      _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
+                                      _code:
+                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeY);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    label: 'Max Height',
+                                    width: 85,
+                                    hideLabel: true,
+                                    propertyName: 'dimensions.maxHeight',
+                                    icon: 'maxHeightIcon',
+                                    hidden: {
+                                      _code:
+                                        'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeY);',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
