@@ -157,6 +157,7 @@ export const getSettings = (data: any) => {
                       valueTitle: 'Value',
                       valueName: 'value',
                       mode: 'dialog',
+                      jsSetting: true,
                     },
                   ],
                 })
