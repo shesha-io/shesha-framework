@@ -528,7 +528,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     },
     formSettings: parentFormApi.formSettings,
     formMode: parentFormApi.formMode,
-    data: parentFormApi.data[props.propertyName],
+    data: parentFormApi.data ? parentFormApi.data[props.propertyName] : undefined,
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
   };
 

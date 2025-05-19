@@ -103,7 +103,7 @@ export const getSettings = (data: any) => {
                       type: 'textField',
                       id: nanoid(),
                       propertyName: 'ownerId',
-                      label: 'Owner Id',
+                      label: 'Owner ID',
                       jsSetting: true
                     },
                     {
