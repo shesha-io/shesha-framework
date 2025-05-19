@@ -58,7 +58,7 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     };
 
 
-    if (!jsStyle.border) {
+    if (!jsStyle?.border) {
         if (input.borderType === 'all') {
             handleBorderPart(all, 'border', theme);
         } else {

@@ -18,6 +18,8 @@ import { useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -96,12 +98,17 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         const styles = {
           style: prev.style,
           theme: prev.theme,
-          autoHeight: prev.autoHeight || true,
-          autoWidth: prev.autoWidth || true,
+          autoHeight: prev.autoHeight ?? true,
+          autoWidth: prev.autoWidth ?? true,
         };
+        const resize = {
+          allowResizeX: true,
+          allowResizeY: true,
+        };
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles }, ...resize };
+      })
+      .add<IRichTextEditorProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 
-        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      }),
 };
 
 export default RichTextEditorComponent;
