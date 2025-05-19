@@ -795,7 +795,7 @@ export const getItemSettings = () => {
                 label: 'Custom Styles',
                 labelAlign: 'right',
                 ghost: true,
-                parentId: 'styleRouter',
+                parentId: appearanceTabId,
                 collapsible: 'header',
                 content: {
                   id: customStylePnlId,
@@ -836,7 +836,7 @@ export const getItemSettings = () => {
               id: nanoid(),
               propertyName: 'permissions',
               label: 'Permissions',
-              parentId: 'root',
+              parentId: securityTabId,
               inputType: 'permissions',
               tooltip: 'Enter a list of permissions that should be associated with this component',
               jsSetting: true

@@ -15,6 +15,7 @@ import { useWizard } from './hooks';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
 import { wizardApiCode } from '@/publicJsApis';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getOverflowStyle } from '../_settings/utils/overflow/util';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
@@ -68,7 +69,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                 // render only current step
                 content: current === index
                     ? <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
-                        <ComponentsContainer style={{ ...model.allStyles.overflowStyles, ...dimStyles }} containerId={id} dynamicComponents={isDynamic ? components : []} />
+                        <ComponentsContainer style={{ ...getOverflowStyle(true, model.hideScrollBar), ...dimStyles }} containerId={id} dynamicComponents={isDynamic ? components : []} />
                     </ParentProvider>
                     : undefined,
             };
