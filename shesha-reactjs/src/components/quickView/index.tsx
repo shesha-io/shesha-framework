@@ -176,7 +176,9 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
         ) : loadingState === 'success' ? (
           <span style={innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
         ) : (
-          'Quickview not configured properly'
+          <span style={innerEntityReferenceSpanBoxStyle}>
+            Quickview not configured properly
+          </span>
         )}
       </Button>
     );

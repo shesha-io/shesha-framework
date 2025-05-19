@@ -60,7 +60,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   return (
     <Button type="link" onClick={changeRoute} href={url} className={className} style={style}>
       {icon}
-      {childrenOrDisplayText && <span style={className?.includes("entity-reference-link") ? innerEntityReferenceSpanBoxStyle : {}}> {childrenOrDisplayText}</span>}
+      {childrenOrDisplayText && <span style={className?.includes("entity-reference-link") ? innerEntityReferenceSpanBoxStyle : {}}>{childrenOrDisplayText}</span>}
     </Button>
   );
 };
