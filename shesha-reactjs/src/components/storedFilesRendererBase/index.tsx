@@ -106,7 +106,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
 
   const { styles } = useStyles({
-    containerStyles: { ...{ ...containerDimensionsStyles, ...containerJsStyle, width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
+    containerStyles: {
+      ...containerDimensionsStyles,
+      ...containerJsStyle, width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
+      ...containerJsStyle, ...stylingBoxAsCSS,
+    },
     style: model?.allStyles?.fullStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
