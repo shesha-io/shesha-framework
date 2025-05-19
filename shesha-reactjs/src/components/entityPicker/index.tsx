@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Button, Space, Select, Skeleton } from 'antd';
+import { Button, Select, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import React, { useMemo, useRef, useState } from 'react';
 import { useEntitySelectionData } from '@/utils/entity';
@@ -10,7 +10,7 @@ import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
 import { getValueByPropertyName } from '@/utils/object';
 import { SheshaError } from '@/utils/errors';
-
+import { addPx } from '@/utils/style';
 const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
 
@@ -148,7 +148,13 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   };
 
   const { borderBottomLeftRadius,
-    borderTopLeftRadius, borderTopRightRadius, borderBottomRightRadius, width, minWidth, maxWidth, boxShadow, background, backgroundImage, marginTop, marginRight, marginBottom, marginLeft, paddingTop, paddingRight, paddingBottom, paddingLeft, ...restStyle } = style;
+    borderTopLeftRadius, borderTopRightRadius,
+    borderBottomRightRadius, width, minWidth,
+    maxWidth, boxShadow, background, backgroundImage,
+    marginTop, marginRight, marginBottom,
+    height, minHeight, maxHeight,
+    marginLeft, paddingTop, paddingRight, paddingBottom,
+    paddingLeft, ...restStyle } = style;
 
   const borderRadii = style?.borderRadius?.toString().split(' ');
 
@@ -160,8 +166,9 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
             {title}
           </Button>
         ) : (
-          <Space.Compact style={{
-            width, minWidth, maxWidth, boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius
+          <div style={{
+            display: 'flex', flexDirection: 'row', alignItems: 'stretch',
+            width, minWidth, maxWidth, boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius, height, minHeight, maxHeight
           }}>
             <Select
               size={size}
@@ -185,7 +192,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               className={styles.entitySelect}
               style={{
                 ...restStyle,
-                borderRight: 'none',
+                height: '100%',
+                borderRightStyle: 'none',
                 marginTop: 0,
                 marginRight: 0, marginBottom: 0, marginLeft: 0, paddingTop, paddingRight, paddingBottom, paddingLeft,
                 borderTopRightRadius: 0, borderBottomRightRadius: 0,
@@ -206,6 +214,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                 ...restStyle,
                 borderTopLeftRadius: 0,
                 borderBottomLeftRadius: 0,
+                borderTopRightRadius,
+                borderBottomRightRadius,
                 marginTop: 0,
                 marginRight: 0,
                 marginBottom: 0,
@@ -215,14 +225,16 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                 paddingBottom,
                 paddingLeft,
                 borderLeftStyle: dividerStyle?.style ?? 'solid',
-                borderLeftWidth: dividerStyle?.width ?? '1px',
+                borderLeftWidth: addPx(dividerStyle?.width) ?? '1px',
                 borderLeftColor: dividerStyle?.color ?? '#d9d9d9',
                 borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
-                zIndex: 1,
+                height: '100%',
+                minHeight: '100%',
+                maxHeight: '100%',
               }}
               type='text'
             />
-          </Space.Compact>
+          </div>
         )}
       </div>
 
