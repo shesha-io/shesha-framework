@@ -166,6 +166,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .${prefixCls}-upload-list {
       --ant-margin-xs: ${gap ?? '8px'} !important;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
       scrollbar-width: thin;
       ::-webkit-scrollbar {
         width: 8px;
