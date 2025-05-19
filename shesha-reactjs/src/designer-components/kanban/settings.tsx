@@ -1,5 +1,5 @@
 import { Autocomplete, CodeEditor, ColorPicker, FormAutocomplete, PropertyAutocomplete, Show } from '@/components';
-import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
+import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { Checkbox, Input } from 'antd';
 import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '../_settings/settingsForm';
@@ -10,7 +10,6 @@ import { MetadataProvider } from '@/providers';
 import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-import { nanoid } from '@/utils/uuid';
 
 interface IKanbanSettingsState extends IKanbanProps { }
 
@@ -36,7 +35,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
       <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
         <FormAutocomplete readOnly={readOnly} />
       </SettingsFormItem>
-      <MetadataProvider dataType="entity" modelType={values?.entityType?.id}>
+      <MetadataProvider dataType="entity" modelType={values?.entityType}>
         <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
           <PropertyAutocomplete readOnly={props.readOnly} autoFillProps={false} />
         </SettingsFormItem>
@@ -45,7 +44,12 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <Input type="number" disabled={readOnly} />
       </SettingsFormItem>
       <SettingsCollapsiblePanel header="Columns">
-        <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
+        <SettingsFormItem
+          name="referenceList"
+          label="Reference List"
+          style={{ width: '100%' }}
+          tooltip="Make sure to reselect the reference list if any changes are made to its items"
+        >
           <Autocomplete
             dataSourceType="entitiesList"
             entityType="Shesha.Framework.ReferenceList"
@@ -57,7 +61,6 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
           <RefListItemSelectorSettingsModal referenceList={values.referenceList} readOnly={values.readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-
       <SettingsFormItem name="kanbanReadonly" label="Readonly" valuePropName="checked" jsSetting>
         <Checkbox disabled={values.readOnly} />
       </SettingsFormItem>
@@ -69,24 +72,19 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <SettingsFormItem name="allowNewRecord" label="Allow New Record" valuePropName="checked" jsSetting>
           <Checkbox disabled={values.readOnly} />
         </SettingsFormItem>
-
         <Show when={values.allowNewRecord}>
-          <MetadataProvider modelType={values.entityType?.name} id={nanoid()}>
-            <SettingsFormItem name="createFormId" label="Create Form" jsSetting>
-              <FormAutocomplete readOnly={readOnly} />
-            </SettingsFormItem>
-          </MetadataProvider>
+          <SettingsFormItem name="createFormId" label="Create Form" jsSetting>
+            <FormAutocomplete readOnly={readOnly} />
+          </SettingsFormItem>
         </Show>
         <SettingsFormItem name="allowEdit" label="Allow Edit" valuePropName="checked" jsSetting>
           <Checkbox disabled={values.readOnly} />
         </SettingsFormItem>
 
         <Show when={values.allowEdit}>
-          <MetadataProvider modelType={values.entityType?.name} id={nanoid()}>
-            <SettingsFormItem name="editFormId" label="Edit Form" jsSetting>
-              <FormAutocomplete readOnly={readOnly} />
-            </SettingsFormItem>
-          </MetadataProvider>
+          <SettingsFormItem name="editFormId" label="Edit Form" jsSetting>
+            <FormAutocomplete readOnly={readOnly} />
+          </SettingsFormItem>
         </Show>
         <SettingsFormItem name="allowDelete" label="Allow Delete" valuePropName="checked" jsSetting>
           <Checkbox disabled={values.readOnly} />

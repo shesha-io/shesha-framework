@@ -9,29 +9,34 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ColorPicker } from '@/components';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 
-const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
+interface IColorPickerComopnentCalulatedValues {
+  eventHandlers: IEventHandlers;
+}
+
+const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps, IColorPickerComopnentCalulatedValues> = {
   type: 'colorPicker',
   name: 'Color Picker',
   canBeJsSetting: true,
   isInput: true,
   isOutput: true,
   icon: <FormatPainterOutlined />,
-  Factory: ({ model }) => {
+  calculateModel: (model, allData) => ({ 
+    eventHandlers: getAllEventHandlers(model, allData),
+  }),
+  Factory: ({ model, calculatedModel }) => {
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (
-          <ColorPicker
-            value={value}
-            onChange={onChange}
-            title={model.title}
-            allowClear={model.allowClear}
-            showText={model.showText}
-            disabledAlpha={model.disabledAlpha}
-            readOnly={model.readOnly}
-            size={model.size}
-          />
-        )}
+        {(value, onChange) => {
+          const customEvents = calculatedModel.eventHandlers;
+          const onChangeInternal = (colorValue) => {
+            customEvents.onChange({ value: colorValue }, null);
+            if (typeof onChange === 'function') onChange(colorValue);
+          };
+          
+          return <ColorPicker value={value} onChange={onChangeInternal} {...model} style={model.allStyles.fullStyle} />;
+        }}
       </ConfigurableFormItem>
     );
   },

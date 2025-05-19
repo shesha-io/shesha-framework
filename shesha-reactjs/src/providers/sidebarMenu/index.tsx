@@ -19,7 +19,7 @@ import {
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { useActualContextData } from '@/hooks/useActualContextData';
+import { useActualContextData } from '@/hooks';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];

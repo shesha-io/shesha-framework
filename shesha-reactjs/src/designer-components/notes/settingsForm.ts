@@ -9,7 +9,6 @@ export const getSettings = (data: any) => {
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
-  const styleRouterId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -31,7 +30,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'textField',
@@ -48,7 +46,7 @@ export const getSettings = (data: any) => {
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: commonTabId,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+  
                       inputs: [
                         {
                           type: 'switch',
@@ -68,8 +66,7 @@ export const getSettings = (data: any) => {
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
-                      parentId: commonTabId,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      parentId: commonTabId, 
                       inputs: [
                         {
                           id: nanoid(),
@@ -101,7 +98,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'textField',
@@ -136,7 +132,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: eventsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: nanoid(),
@@ -145,8 +140,7 @@ export const getSettings = (data: any) => {
                       label: 'On Created',
                       labelAlign: 'right',
                       parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',  
                       exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
                     }
                   ]
@@ -163,7 +157,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: appearanceTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
@@ -178,49 +171,6 @@ export const getSettings = (data: any) => {
                         { value: 'right', label: 'Right' }
                       ]
                     }
-                  ]
-                })
-                .addPropertyRouter({
-                  id: styleRouterId,
-                  propertyName: 'propertyRouter1',
-                  componentName: 'propertyRouter',
-                  label: 'Property router1',
-                  labelAlign: 'right',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  propertyRouteName: {
-                    _mode: "code",
-                    _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
-                  components: [
-                    ...new DesignerToolbarSettings()
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              hideLabel: false,
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                              jsSetting: true
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .toJson()
                   ]
                 })
                 .toJson()

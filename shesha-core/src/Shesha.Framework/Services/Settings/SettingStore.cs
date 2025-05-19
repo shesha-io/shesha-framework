@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
-using Abp.Runtime.Validation;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
@@ -35,6 +34,9 @@ namespace Shesha.Services.Settings
         private readonly ISettingCacheHolder _cacheHolder;
         
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public SettingStore(
             IRepository<SettingConfiguration, Guid> repository, 
             IRepository<ConfigurationItem, Guid> configurationItemRepository, 
@@ -49,11 +51,13 @@ namespace Shesha.Services.Settings
             _cacheHolder = cacheHolder;
         }
 
+        /// inheritedDoc
         public override Task<SettingConfiguration> CopyAsync(SettingConfiguration item, CopyItemInput input)
         {
             throw new System.NotImplementedException();
         }
 
+        /// inheritedDoc
         public async Task<SettingConfiguration> CreateSettingConfigurationAsync(CreateSettingDefinitionDto input)
         {
             var module = input.ModuleId.HasValue
@@ -101,6 +105,7 @@ namespace Shesha.Services.Settings
             return definition;
         }
 
+        /// inheritedDoc
         public override async Task<SettingConfiguration> CreateNewVersionAsync(SettingConfiguration item)
         {
             var newVersion = new SettingConfiguration();
@@ -132,23 +137,26 @@ namespace Shesha.Services.Settings
             return newVersion;
         }
 
-        public async Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
+        /// inheritedDoc
+        public Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
         {
-            return await Repository.GetAll()
+            return Repository.GetAll()
                 .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
                 .Where(s => s.IsLast && s.VersionStatus == ConfigurationItemVersionStatus.Live)
                 .FirstOrDefaultAsync();
         }
 
+        /// inheritedDoc
         public override Task<IConfigurationItemDto> MapToDtoAsync(SettingConfiguration item)
         {
             var dto = ObjectMapper.Map<SettingDefinitionDto>(item);
             return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
-        public async Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
+        /// inheritedDoc
+        public Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
-            return await WithUnitOfWorkAsync(async () => {
+            return WithUnitOfWorkAsync(async () => {
                 var settingConfiguration = await GetSettingConfigurationAsync(setting);
                 var query = _settingValueRepository.GetAll()
                     .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
@@ -168,9 +176,9 @@ namespace Shesha.Services.Settings
             });
         }
 
-        private async Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
+        private Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
         {
-            return await GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
+            return GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
         }
 
         private async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action)
@@ -190,7 +198,7 @@ namespace Shesha.Services.Settings
         private string GetCacheKey(CacheKeyArgs args)
         {
             var parts = new List<string?> {
-                !string.IsNullOrWhiteSpace(args.Module) ? $"{args.Module}.{args.Name}" : args.Name,
+                !string.IsNullOrWhiteSpace(args.Module) ? $"{args.Module}/{args.Name}" : args.Name,
                 args.IsClientSpecific ? args.AppKey ?? string.Empty : null,
                 args.IsUserSpecific ? args.UserId?.ToString() ?? string.Empty : null,
             }.WhereNotNull();
@@ -198,6 +206,7 @@ namespace Shesha.Services.Settings
             return parts.Delimited("|");
         }       
 
+        /// inheritedDoc
         public async Task<string?> GetValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             var cacheKey = GetCacheKey(new CacheKeyArgs(setting, context));
@@ -210,12 +219,18 @@ namespace Shesha.Services.Settings
             return result.Value;
         }
 
-        public async Task HandleEventAsync(EntityChangedEventData<SettingDefinition> eventData)
+        /// <summary>
+        /// SettingDefinition changing handler
+        /// </summary>
+        public Task HandleEventAsync(EntityChangedEventData<SettingDefinition> eventData)
         {
             // TODO: clear cache partially on configuration update (maybe using tags which are under development currently)
-            await _cacheHolder.Cache.ClearAsync();
+            return _cacheHolder.Cache.ClearAsync();
         }
 
+        /// <summary>
+        /// SettingValue changing handler
+        /// </summary>
         public async Task HandleEventAsync(EntityChangingEventData<SettingValue> eventData)
         {
             if (eventData.Entity == null)

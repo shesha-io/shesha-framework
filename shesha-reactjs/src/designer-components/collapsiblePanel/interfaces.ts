@@ -15,6 +15,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   content?: ICollapsiblePanelContent;
   collapsible?: CollapsibleType;
   ghost?: boolean;
+  accentStyle?: boolean;
   hideWhenEmpty?: boolean;
   className?: string;
   marginBottom?: string;
@@ -29,9 +30,9 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   customHeader?: ICollapsiblePanelContent;
   panelHeadType?: headerType;
   headerStyles?: IStyleType;
-  desktop?: IStyleType;
-  mobile?: IStyleType;
-  tablet?: IStyleType;
+  desktop?: any;
+  mobile?: any;
+  tablet?: any;
 };
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {

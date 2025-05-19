@@ -6,7 +6,7 @@ import {
   Result,
   Skeleton
 } from 'antd';
-import { FormDesignerProvider, useFormDesignerState } from '@/providers/formDesigner';
+import { FormDesignerProvider, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { FormIdentifier } from '@/providers/form/models';
 import { FormPersisterProvider } from '@/providers/formPersisterProvider';
 import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/contexts';
@@ -21,7 +21,9 @@ export interface IFormProviderWrapperProps extends PropsWithChildren {
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  const { formSettings, formFlatMarkup } = useFormDesignerState();
+  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
+  const formFlatMarkup = useFormDesignerStateSelector(x => x.formFlatMarkup);
+
   const [shaForm] = useShaForm({
     form: undefined,
     antdForm: form,

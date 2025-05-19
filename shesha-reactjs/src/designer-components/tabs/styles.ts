@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType }) => {
+export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor, overflow }) => {
     const {
         borderWidth,
         borderStyle,
@@ -15,12 +15,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         backgroundPosition,
         backgroundRepeat,
         boxShadow,
-        width,
-        height,
-        minWidth,
-        minHeight,
-        maxWidth,
-        maxHeight,
         marginTop = '0px',
         marginBottom = '0px',
         marginRight = '-1px',
@@ -33,12 +27,17 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         borderTopRightRadius,
         borderBottomRightRadius,
         borderBottomLeftRadius,
-        overflow,
         fontSize,
         fontWeight,
+        textAlign,
         color,
         fontFamily,
-        rest
+        width,
+        height,
+        minWidth,
+        minHeight,
+        maxWidth,
+        maxHeight
     } = styles;
 
     const {
@@ -79,20 +78,21 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
     const content = cx(
         'content',
         css`
+        
+            width: ${width} !important;
+            min-width: ${minWidth} !important;
+            max-width: ${maxWidth} !important;
+            height: calc(${height} - ${cardHeight}) !important;
+            min-height: calc(${minHeight} - ${cardHeight}) !important;
+            max-height: calc(${maxHeight} - ${cardHeight}) !important;
+
             .ant-tabs-content-holder {
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
                 border: ${borderMap.default};
-                ${rest};
                 box-shadow: ${boxShadow} !important;
-                width: ${width};
-                max-width: ${isLeft || isRight ? width : maxWidth};
-                min-width: ${minWidth};
-                height: ${height};
-                max-height: ${maxHeight};
-                min-height: ${minHeight};
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
                 border-right:${isRight ? '0px solid transparent' : borderMap.right} !important;
-                border-bottom: ${isBottom ? 'none' : borderMap.bottom} !important;
+                border-bottom      : ${isBottom ? 'none' : borderMap.bottom} !important;
                 border-top: ${isTop ? 'none' : borderMap.top} !important;
                 background: ${backgroundImage || backgroundColor} !important;
                 margin: ${isTop ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isBottom ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isLeft ? `${marginTop} ${marginRight} ${marginBottom} 0` : `${marginTop} 0 ${marginBottom} ${marginLeft}`};
@@ -104,11 +104,24 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${backgroundSize} !important;
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
-                overflow: ${overflow} !important;
+
+                .ant-tabs-content {
+                    width: 100%;
+                    height: 100%;
+                }
+                
+                .ant-tabs-content {
+                    height: ${height} !important;
+                    min-height: ${minHeight} !important;
+                    max-height: ${maxHeight} !important;
+                    ${overflow};
+                }
             }
 
             .ant-tabs-tab {
                 --ant-tabs-card-bg: ${cardBgImage || cardBgColor};
+                ${color && `--ant-tabs-item-hover-color: ${color} !important`};
+                ${color && `--ant-tabs-item-active-color: ${color} !important`};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
                 --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom ?
                 styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
@@ -116,15 +129,23 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
                 ${cardStyles};
+                background-repeat: ${cardStyles.backgroundRepeat} !important;
+                background-size: ${cardStyles.backgroundSize} !important;
+                background-position: ${cardStyles.backgroundPosition} !important;
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
                 ${isLeft && 'border-right-width: 0px !important' || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px` :
                 isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}` :
                     isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}` :
                         isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
+
+                .ant-tabs-tab-btn {
+                    width: 100%;
+                }
             }
 
             .ant-tabs-tab-active {
+                --primary-color: ${token.colorPrimary} !important;
                 --ant-tabs-card-bg: ${backgroundColor || backgroundImage};
                 --ant-color-bg-container: ${backgroundColor || backgroundImage};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
@@ -145,22 +166,19 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 max-height: ${cardMaxHeight};
                 z-index: 2;
 
-                * {
+                .ant-tabs-tab-btn {
                 color: ${color ?? token.colorPrimary} !important;
                 font-size: ${fontSize} !important;
                 font-weight: ${fontWeight} !important;
                 font-family: ${fontFamily} !important;
+                text-align: ${textAlign} !important;
+                width: 100%;
                 }
             }
 
             .ant-tabs-nav {
+                --ant-tabs-ink-bar-color: ${tabLineColor || token.colorPrimary} !important;
                 margin: 0;
-                width: ${isTop || isBottom ? width : 'auto'};
-                height: ${isTop || isBottom ? 'auto' : height};
-                max-width: ${isTop || isBottom ? maxWidth : 'auto'};
-                max-height: ${isTop || isBottom ? 'auto' : maxHeight};
-                min-width: ${isTop || isBottom ? minWidth : '0'};
-                min-height: ${isTop || isBottom ? '0' : minHeight};
                 margin: ${isTop ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isBottom ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isLeft ? `${marginTop} 0 ${marginBottom} ${marginLeft}` : `${marginTop} ${marginRight} ${marginBottom} 0`};
             }
 

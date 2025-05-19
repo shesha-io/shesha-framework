@@ -1,4 +1,3 @@
-import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = () => {
@@ -6,7 +5,6 @@ export const getSettings = () => {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
                 id: 'uEFBpy19tApJMiBuFyj9s',
-                readOnly: false,
                 inputs: [
                     {
                         id: 'c1ffda30-8eea-4621-aae7-0af583143df6',
@@ -51,7 +49,6 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: 'n4enebtmhFgvkP5ukQK1f-row',
-                readOnly: false,
                 hidden: {
                     _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
                     _mode: 'code',
@@ -92,22 +89,7 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: 'Vl0092ZM-SeCukk5VlgXm-row',
-                readOnly: false,
                 inputs: [
-                    {
-                        id: 'Vl0092ZM-SeCukk5VlgXm',
-                        type: 'dropdown',
-                        propertyName: 'buttonType',
-                        label: 'Button Type',
-                        labelAlign: 'right',
-                        parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
-                        hidden: false,
-                        validate: {
-                            required: true
-                        },
-                        dropdownOptions: buttonTypes,
-                        jsSetting: false
-                    },
                     {
                         id: 'F3B46A95-703F-4465-96CA-A58490A5F78C',
                         type: 'configurableActionConfigurator',

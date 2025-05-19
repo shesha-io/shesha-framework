@@ -32,8 +32,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   };
 
   const onChange = (result: JsonLogicResult) => {
-    if (result !== jsonLogicResult)
-      setJsonLogicResult(result);
+    if (result !== jsonLogicResult) setJsonLogicResult(result);
   };
 
   const onExpandClick = () => {
@@ -43,7 +42,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const hasValue = Boolean(props?.value);
 
   return (
-    <>
+    <div className={styles.shaQueryBuilderMarginTop8}>
       <Collapse
         className={styles.shaQueryBuilderField}
         activeKey={jsonExpanded ? '1' : null}
@@ -63,7 +62,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
         }
         items={[
           {
-            key: "1",
+            key: '1',
             label: (
               <Space>
                 <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
@@ -88,13 +87,13 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
               <CodeEditor
                 readOnly={true}
                 value={props.value ? JSON.stringify(props.value, null, 2) : null}
-                language='javascript'
+                language="javascript"
+                style={{ marginTop: 8 }}
               />
-            )
-          }
+            ),
+          },
         ]}
-      >
-      </Collapse>
+      ></Collapse>
       <Modal
         open={modalVisible}
         width={isSmall ? '90%' : '60%'}
@@ -107,13 +106,9 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       >
         <h4>Here you can create your own filter using the query builder below</h4>
 
-        <QueryBuilder
-          value={props.value}
-          onChange={onChange}
-          readOnly={readOnly}
-        />
+        <QueryBuilder value={props.value} onChange={onChange} readOnly={readOnly} />
       </Modal>
-    </>
+    </div>
   );
 };
 

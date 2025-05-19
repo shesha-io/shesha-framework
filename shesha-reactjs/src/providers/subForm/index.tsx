@@ -18,7 +18,7 @@ import {
 import { DEFAULT_FORM_SETTINGS, IFormDto } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
 import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
-import { GetDataError, useDeepCompareMemo, useMutate } from '@/hooks';
+import { GetDataError, useActualContextExecution, useDeepCompareMemo, useMutate } from '@/hooks';
 import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
@@ -45,9 +45,8 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import { IFormApi } from '../form/formApi';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ISetFormDataPayload } from '../form/contexts';
-import { deepMergeValues } from '@/utils/object';
-import { useActualContextExecution } from '@/hooks/useActualContextExecution';
-import { ConfigurableItemIdentifierToString, useDataContextManager } from '@/index';
+import { deepMergeValues, setValueByPropertyName } from '@/utils/object';
+import { ConfigurableItemIdentifierToString, useDataContextManagerActions } from '@/index';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -80,14 +79,14 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const parent = useParent(false);
 
-  const ctxManager = useDataContextManager();
+  const ctxManager = useDataContextManagerActions(false);
   const contextId = context ? (ctxManager?.getDataContext(context)?.uid ?? context) : undefined;
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { message, notification } = App.useApp();
 
   const form = useForm();
-  const { globalState, setState: setGlobalState } = useGlobalState();
+  const { globalState } = useGlobalState();
   const appContextData = useApplicationContextData();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
 
@@ -99,19 +98,26 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const actualPostUrl = useActualContextExecution(props.postUrl);
   const actualPutUrl = useActualContextExecution(props.putUrl);
 
+  var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
+
   const onChangeInternal = (newValue: any) => {
     if (onChange)
       onChange(newValue);
+    else
+      // onChange is empty only if propertyName is not set and need to set value directly to the form data
+      parentFormApi.setFieldsValue(newValue);
   };
 
   const onClearInternal = () => {
     if (onChange)
       onChange({});
+    else
+      parentFormApi.clearFieldsValue();
   };
 
   // ToDO: Alexs - review and remove
   // update global state on value change
-  useDeepCompareEffect(() => {
+  /*useDeepCompareEffect(() => {
     if (propertyName) {
       // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
       const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(propertyName);
@@ -125,7 +131,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         data: value,
       });
     }
-  }, [value, propertyName]);
+  }, [value, propertyName]);*/
 
   const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
   const prevRenderedEntityTypeForm = useRef<string>(null);
@@ -307,8 +313,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           dataRequestAbortController.current = null;
 
           if (dataResponse.success) {
-            onChangeInternal(dataResponse?.result);
-            dispatch(fetchDataSuccessAction({ entityId: dataResponse?.result?.id }));
+            const newValue = value?.['_className'] !== undefined && dataResponse.result['_className'] === undefined
+              ? {...dataResponse.result, _className: value?.['_className']}
+              : dataResponse.result;
+            onChangeInternal(newValue);
+            dispatch(fetchDataSuccessAction({ entityId: newValue?.id }));
           } else {
             onClearInternal();
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
@@ -486,17 +495,20 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     return typeof span === 'number' ? { span } : span;
   };
 
-  var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
+  const getSubFormData: any = () => {
+    const data = parentFormApi.getFormData();
+    return props.propertyName && data ? data[props.propertyName] : data;
+  };
 
   const subFormApi: IFormApi<any> = {
     addDelayedUpdateData: function (data: any): IDelayedUpdateGroup[] {
       return parentFormApi.addDelayedUpdateData(data);
     },
     setFieldValue: function (name: string, value: any): void {
-      onChangeInternal(deepMergeValues(value, { [name]: value }));
+      onChangeInternal(deepMergeValues(getSubFormData(), setValueByPropertyName({}, name, value)));
     },
     setFieldsValue: function (values: any): void {
-      onChangeInternal(deepMergeValues(value, values));
+      onChangeInternal(deepMergeValues(getSubFormData(), values));
     },
     clearFieldsValue: function (): void {
       onChangeInternal({});
@@ -511,9 +523,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         onChangeInternal(payload.values);
       }
     },
+    getFormData: function (): any {
+      return getSubFormData();
+    },
     formSettings: parentFormApi.formSettings,
     formMode: parentFormApi.formMode,
-    data: value,
+    data: parentFormApi.data[props.propertyName],
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
   };
 

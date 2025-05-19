@@ -1,9 +1,9 @@
 import React, { CSSProperties, FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useStyles } from './styles/styles';
-import { addPx } from './utils';
 import Show from '../show';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { addPx } from '@/utils/style';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -20,7 +20,7 @@ export interface ISectionSeparatorProps {
   marginBottom?: string | number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
-  fontSize?: string;
+  fontSize?: string | number;
   lineType?: string;
 }
 
@@ -111,7 +111,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       <div style={{
         ...containerStyle,
         width: addPx(lineWidth),
-        margin: '8px 0',
       }} key={id} >
         <div className={!inline || !title ? styles.shaSectionSeparator : ''} style={borderStyle} >
           {renderTitle()}

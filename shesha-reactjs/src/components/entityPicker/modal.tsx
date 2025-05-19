@@ -1,4 +1,4 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManager, useDataTable, useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
+import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManagerActions, useDataTable, useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
@@ -35,7 +35,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     onCloseModal,
   } = props;
 
-  const { styles } = useStyles();
+  const { styles } = useStyles({});
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
   const hidePickerDialog = () => {
@@ -54,8 +54,8 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
 
   const { globalState } = useGlobalState();
   const { formData } = useForm();
-  const pageContext = useDataContextManager(false)?.getPageContext();
-  
+  const pageContext = useDataContextManagerActions(false)?.getPageContext();
+
   useEffect(() => {
     registerConfigurableColumns(modalId, configurableColumns);
   }, [configurableColumns]);
@@ -72,13 +72,13 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
       onSelect(row);
     } else {
       if (isMultiple) {
-        const values = !!valueId ? (Array.isArray(valueId) ? valueId : [valueId]): [];
+        const values = !!valueId ? (Array.isArray(valueId) ? valueId : [valueId]) : [];
         if (!values.includes(row.id)) {
-          const vs = !!value ? (Array.isArray(value) ? value : [value]): [];
+          const vs = !!value ? (Array.isArray(value) ? value : [value]) : [];
           onChange([...vs, outcomeValueFunc(row, {})], null);
         }
       } else {
-        onChange(outcomeValueFunc(row, {}),null);
+        onChange(outcomeValueFunc(row, {}), null);
       }
     }
 
@@ -117,7 +117,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
       [
         { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
-        { match: 'pageContext', data: {...pageContext?.getFull()} },
+        { match: 'pageContext', data: { ...pageContext?.getFull() } },
       ],
       propertyMetadataAccessor
     ).then(evaluatedFilters => {
@@ -233,7 +233,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
 };
 
 export const EntityPickerModal = (props: IEntityPickerModalProps) => {
-  
+
   return (
     <DataTableProvider
       userConfigId={'table_' + props.name}

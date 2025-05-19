@@ -155,7 +155,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
   return mode === 'endpoint'
     ? (
       <Space.Compact style={{ width: "100%" }}>
-        <VerbSelector verbs={props.availableHttpVerbs} onChange={onVerbChange} value={isApiEndpoint(props.value) ? props.value.httpVerb : null} />
+        <VerbSelector verbs={props.availableHttpVerbs} onChange={onVerbChange} value={isApiEndpoint(props.value) ? props.value.httpVerb : null} size={props.size} />
         {autocomplete}
       </Space.Compact>
     )

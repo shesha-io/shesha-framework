@@ -23,8 +23,8 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   contentType,
   dataType,
   dateFormat,
-  fontSize,
   level,
+  size,
   numberFormat,
   textType,
   style,
@@ -48,7 +48,6 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     model.strong,
   ]);
 
-
   const baseProps: ITypographyProps = {
     code: model?.code,
     copyable: model?.copyable,
@@ -59,14 +58,18 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     keyboard: model?.keyboard,
     italic: model?.italic,
     type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
-    style: {...style, color: contentType === 'custom' ? style.color : undefined, textAlign: 'right'},
+    style: {
+      ...style,
+      color: contentType === 'custom' ? style.color : undefined,
+      fontSize: textType === 'title' ? undefined : style?.fontSize,
+      justifyContent: style?.textAlign,
+    },
   };
 
   const textProps: TextProps = {
     ...baseProps,
     strong: model?.strong,
   };
-
   const paragraphProps: ParagraphProps = {
     ...baseProps,
     strong: model?.strong,
@@ -84,7 +87,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Text key={`text-${updateKey}`} style={{ display: 'block' }} {...textProps} className={className}>
+      <Text key={`text-${updateKey}`} {...textProps} className={className}>
         {children}
       </Text>
     );

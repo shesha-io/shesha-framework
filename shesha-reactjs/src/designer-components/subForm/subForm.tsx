@@ -12,6 +12,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { Button, Result } from 'antd';
 import Link from 'antd/es/typography/Link';
 import { useValidator } from '@/providers/validateProvider';
+import AttributeDecorator from '@/components/attributeDecorator';
 
 interface ISubFormProps {
   style?: CSSProperties;
@@ -34,7 +35,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     hasFetchedConfig,
     versionNo,
     description,
-    allComponents
+    allComponents,
   } = useSubForm();
 
   const form = useForm();
@@ -50,16 +51,14 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
             if (Object.hasOwn(allComponents, comp)) {
               const component = allComponents[comp];
               if (component.propertyName && !component.context)
-                properties.push([...propertyName.split("."), ...component.propertyName.split(".")]);
+                properties.push([...propertyName.split('.'), ...component.propertyName.split('.')]);
             }
 
           if (properties.length > 0)
-            return form.form.validateFields(properties, { recursive: false })
-              .catch(e => {
-                if (e.errorFields?.length > 0)
-                  throw e;
-                return null;
-              });
+            return form.form.validateFields(properties, { recursive: false }).catch((e) => {
+              if (e.errorFields?.length > 0) throw e;
+              return null;
+            });
         }
         return Promise.resolve();
       },
@@ -70,7 +69,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
 
   const isLoading = useMemo(() => {
-    return Object.values(loading).find(l => Boolean(l));
+    return Object.values(loading).find((l) => Boolean(l));
   }, [loading]);
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
@@ -84,9 +83,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
         subTitle="Sorry, you are not authorized to access this page."
         extra={
           <Button type="primary">
-            <Link href={'/'}>
-              Back Home
-            </Link>
+            <Link href={'/'}>Back Home</Link>
           </Button>
         }
       />
@@ -94,25 +91,32 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   }
 
   return (
-
     <ShaSpin spinning={isLoading}>
-      <FormInfo visible={showFormInfo} formProps={persistedFormProps}>
-        <div style={{ flex: 1 }} data-name={propertyName}>
-          {Object.keys(errors).map((error, index) => (
-            <ValidationErrors key={index} error={errors[error]} />
-          ))}
-          <div>
-            <ComponentsContainerProvider
-              ContainerComponent={ComponentsContainerSubForm}>
-              <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-                <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
-              </FormItemProvider>
-            </ComponentsContainerProvider>
+      <AttributeDecorator
+        attributes={{
+          'data-sha-c-form-name': `${module}/${name}`,
+        }}
+      >
+        <FormInfo visible={showFormInfo} formProps={persistedFormProps}>
+          <div style={{ flex: 1 }} data-name={propertyName}>
+            {Object.keys(errors).map((error, index) => (
+              <ValidationErrors key={index} error={errors[error]} />
+            ))}
+            <div>
+              <ComponentsContainerProvider ContainerComponent={ComponentsContainerSubForm}>
+                <FormItemProvider
+                  namePrefix={propertyName}
+                  labelCol={formSettings?.labelCol}
+                  wrapperCol={formSettings?.wrapperCol}
+                >
+                  <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
+                </FormItemProvider>
+              </ComponentsContainerProvider>
+            </div>
           </div>
-        </div>
-      </FormInfo>
+        </FormInfo>
+      </AttributeDecorator>
     </ShaSpin>
-
   );
 };
 

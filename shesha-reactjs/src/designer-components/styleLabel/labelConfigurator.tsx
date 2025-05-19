@@ -1,10 +1,8 @@
 import React, { FC } from 'react';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
-import { Tooltip } from 'antd';
 import { IRadioOption } from '../settingsInput/interfaces';
 
 export interface ILabelProps {
@@ -15,13 +13,13 @@ export interface ILabelProps {
   labelAlignOptions?: IRadioOption[];
 }
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions:labelAlign }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions: labelAlign }) => {
   const { styles } = useStyles();
   return (
     <>
       <div className={!value ? styles.flexWrapper : ''}>
         <SettingInput
-          label={`${label} Align`}
+          label={`Label Align`}
           hideLabel
           propertyName="labelAlign"
           readOnly={readOnly}
@@ -33,22 +31,27 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
         />
         <SettingInput
           id={nanoid()}
-          label={`Hide ${label}`}
+          label={`Show Label`}
+          tooltip={`Show Label`}
           hideLabel={!value}
+          hidden={!value}
           propertyName="hideLabel"
           readOnly={readOnly}
           jsSetting={false}
           type="button"
-          icon={
-            <Tooltip title="Hide label">
-              <EyeOutlined />
-            </Tooltip>
-          }
-          iconAlt={
-            <Tooltip title="Show Label">
-              <EyeInvisibleOutlined />
-            </Tooltip>
-          }
+          icon='EyeOutlined'
+        />
+        <SettingInput
+          id={nanoid()}
+          label={`Hide Label`}
+          tooltip={`Hide Label`}
+          hideLabel={!value}
+          propertyName="hideLabel"
+          readOnly={readOnly}
+          jsSetting={false}
+          hidden={value}
+          type="button"
+          icon='EyeInvisibleOutlined'
         />
       </div>
       <SettingInput

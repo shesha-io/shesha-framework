@@ -1,8 +1,8 @@
-import React, { CSSProperties, ReactNode, useMemo } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { LinkOutlined } from '@ant-design/icons';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, IConfigurableFormComponent, useForm, useFormData } from '@/providers';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IInputStyles, IConfigurableFormComponent } from '@/providers';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '@/designer-components/container/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -12,9 +12,7 @@ import { ContainerDirection } from '@/components/formDesigner/common/interfaces'
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { getFontStyle } from '../_settings/utils/font/utils';
 import { IFontValue } from '../_settings/utils/font/interfaces';
-import { removeUndefinedProps } from '@/utils/object';
 import { defaultStyles } from './utils';
 
 export interface IAlertProps extends IConfigurableFormComponent {
@@ -45,15 +43,13 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
   isInput: false,
   name: 'link',
   icon: <LinkOutlined />,
-  Factory: ({ model }) => {
-    const { formMode } = useForm();
-
-    const { data } = useFormData();
-
+  calculateModel: (model, allData) => ({
+    isDesignerMode: allData.form.formMode === 'designer',
+    href: evaluateString(model.href, allData.data),
+  }),
+  Factory: ({ model, calculatedModel }) => {
     const {
-      href: initialHref = '',
       content = 'Link',
-      style,
       target,
       direction,
       justifyContent,
@@ -61,12 +57,8 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       alignItems,
       justifyItems,
       hasChildren,
-      font,
     } = model;
-
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const finalStyle = removeUndefinedProps({ ...fontStyles, ...getStyle(style, data) });
-
+    // Create link container style with textAlign from fontStyles
     const linkStyle: CSSProperties = {};
 
     if (direction === 'horizontal' && justifyContent) {
@@ -76,29 +68,25 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       linkStyle['justifyItems'] = justifyItems;
     }
 
-    const isDesignerMode = formMode === 'designer';
-
     if (model.hidden) return null;
 
     return (
       <ConfigurableFormItem model={model}>
         {() => {
-          const href = evaluateString(initialHref || model?.href, data);
-
           if (!hasChildren) {
             return (
-              <div style={{ ...linkStyle, ...finalStyle, width: '100%' }}>
-                <a href={href} target={target} className="sha-link">
+              <div style={{ ...linkStyle }}>
+                <a href={calculatedModel.href} target={target} className="sha-link" style={model.allStyles.fullStyle}>
                   {content}
                 </a>
               </div>
-
             );
           }
 
           const containerHolder = () => (
             <ParentProvider model={model}>
               <ComponentsContainer
+                style={{ ...linkStyle, ...model.allStyles.fullStyle }}
                 containerId={id}
                 direction={direction}
                 justifyContent={model.direction === 'horizontal' ? model?.justifyContent : null}
@@ -110,11 +98,11 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
               />
             </ParentProvider>
           );
-          if (isDesignerMode) {
+          if (calculatedModel.isDesignerMode) {
             return containerHolder();
           }
           return (
-            <a href={href} target={target} className="sha-link" style={getStyle(style, data)}>
+            <a href={calculatedModel.href} target={target} className="sha-link">
               {containerHolder()}
             </a>
           );
@@ -135,26 +123,27 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
     return customProps;
   },
-  migrator: (m) => m
-    .add<ILinkProps>(0, (prev) => ({ ...prev } as ILinkProps))
-    .add<ILinkProps>(1, (prev) => {
-      return {
-        ...prev,
-        label: prev.label ?? prev['name'],
-        href: prev.content,
-        content: prev['name'],
-      };
-    })
-    .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-    .add<ILinkProps>(4, (prev) => {
-      const styles: IInputStyles = {
-        style: prev.style
-      };
+  migrator: (m) =>
+    m
+      .add<ILinkProps>(0, (prev) => ({ ...prev }) as ILinkProps)
+      .add<ILinkProps>(1, (prev) => {
+        return {
+          ...prev,
+          label: prev.label ?? prev['name'],
+          href: prev.content,
+          content: prev['name'],
+        };
+      })
+      .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ILinkProps>(4, (prev) => {
+        const styles: IInputStyles = {
+          style: prev.style,
+        };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-    .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      })
+      .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default LinkComponent;

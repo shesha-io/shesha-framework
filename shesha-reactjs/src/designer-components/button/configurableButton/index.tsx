@@ -1,13 +1,13 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, CSSProperties } from 'react';
 import { Button, FormInstance } from 'antd';
 import { ShaIcon, IconType } from '@/components';
 import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
-import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { useStyles } from './style';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
@@ -22,6 +22,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const dynamicContext = useActionDynamicContext(actionConfiguration);
 
   const { theme } = useTheme();
+  const { styles } = useStyles();
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
@@ -73,7 +74,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       iconPosition={props.iconPosition}
-      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
+      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
       size={props?.size}
       disabled={buttonDisabled}
       style={{ ...props?.style, ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }) }}

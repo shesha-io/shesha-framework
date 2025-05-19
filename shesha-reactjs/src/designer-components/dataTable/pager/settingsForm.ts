@@ -24,7 +24,7 @@ export const getSettings = (data: any) => {
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputs: [
                     {
-                      id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                      id: 'component-name-s4gmBg31azZC0UjZjpfTm',
                       type: 'textField',
                       propertyName: 'componentName',
                       label: 'Component Name',
@@ -32,12 +32,10 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
@@ -59,16 +57,15 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       defaultValue: true,
                     },
-                    {
-                      id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                      type: 'switch',
-                      inputType: 'switch',
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
                   ],
+                })
+                .addSettingsInput({
+                  id: 'hide-css-412c-8461-4c8d55e5c073',
+                  inputType: 'switch',
+                  propertyName: 'hidden',
+                  hideLabel: false,
+                  label: 'Hide',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],
@@ -111,11 +108,6 @@ export const getSettings = (data: any) => {
                                 parentId: 'fontStylePnl',
                                 inline: true,
                                 propertyName: 'font',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 inputs: [
                                   {
                                     type: 'dropdown',
@@ -199,11 +191,6 @@ export const getSettings = (data: any) => {
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
@@ -229,7 +216,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',
                   propertyName: 'permissions',

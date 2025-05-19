@@ -162,7 +162,33 @@ export const customIcons = {
             <line x1="5.35355" y1="4.64645" x2="19.3536" y2="18.6464" stroke="currentColor" />
         </g>
     </svg>,
-    flex: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M68-302.23v-355.54h215.38v355.54H68Zm304.31 0v-355.54h215.38v355.54H372.31Zm304.31
-     0v-355.54H892v355.54H676.62Zm-556.62-52h111.39v-251.54H120v251.54Zm612.46 0H840v-251.54H732.46v251.54Z" /></svg>
-
+    flex: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor"><path d="M68-302.23v-355.54h215.38v355.54H68Zm304.31 0v-355.54h215.38v355.54H372.31Zm304.31
+     0v-355.54H892v355.54H676.62Zm-556.62-52h111.39v-251.54H120v251.54Zm612.46 0H840v-251.54H732.46v251.54Z" /></svg>,
+    row: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M600-144q-29.7 0-50.85-21.15Q528-186.3 528-216v-528q0-29 21.15-50.5T600-816h144q29 0 50.5 21.5T816-744v528q0 29.7-21.5 50.85Q773-144 744-144H600Zm0-600v528h144v-528H600ZM216-144q-29.7 0-50.85-21.15Q144-186.3
+         144-216v-528q0-29 21.15-50.5T216-816h144q29 0 50.5 21.5T432-744v528q0 29.7-21.5 50.85Q389-144 360-144H216Zm0-600v528h144v-528H216Zm528 0H600h144Zm-384 0H216h144Z" /></svg>,
+    column: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M216-528q-33 0-52.5-19.5T144-600v-144q0-33 19.5-52.5T216-816h528q33 0 52.5 19.5T816-744v144q0 33-19.5 52.5T744-528H216Zm0-72h528v-144H216v144Zm0 456q-33 0-52.5-19.5T144-216v-144q0-33 19.5-52.5T216-432h528q33
+         0 52.5 19.5T816-360v144q0 33-19.5 52.5T744-144H216Zm0-72h528v-144H216v144Zm0-384v-144 144Zm0 384v-144 144Z" /></svg>,
+    alignHorizontalLeft: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M96-96v-768h72v768H96Zm144-192v-96h384v96H240Zm0-288v-96h624v96H240Z" />
+    </svg>,
+    alignHorizontalRight: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M792-96v-768h72v768h-72ZM336-288v-96h384v96H336ZM96-576v-96h624v96H96Z" />
+    </svg>,
+    alignHorizontalCenter: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M444-96v-216H252v-96h192v-168H144v-96h300v-192h72v192h300v96H516v168h192v96H516v216h-72Z" />
+    </svg>,
+    alignVerticalTop: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M288-96v-624h96v624h-96Zm288-240v-384h96v384h-96ZM96-792v-72h768v72H96Z" />
+    </svg>,
+    alignVerticalBottom: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M96-96v-72h768v72H96Zm192-144v-624h96v624h-96Zm288 0v-384h96v384h-96Z" />
+    </svg>,
+    alignVerticalCenter: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+        <path d="M288-144v-300H96v-72h192v-300h96v300h168v-192h96v192h216v72H648v192h-96v-192H384v300h-96Z" />
+    </svg>,
+    tuneIcon: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor">
+        <path d="M456-144v-240h72v84h288v72H528v84h-72Zm-312-84v-72h240v72H144Zm144-132v-84H144v-72h144v-84h72v240h-72Zm144-84v-72h384v72H432Zm144-132v-240h72v84h168v72H648v84h-72Zm-432-84v-72h384v72H144Z" />
+    </svg>
 };

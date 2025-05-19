@@ -1,7 +1,7 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import React, { ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -12,6 +12,7 @@ import { IBackgroundValue } from '@/designer-components/_settings/utils/backgrou
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -66,18 +67,21 @@ export interface IComponentValidationRules {
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 export type PositionType = 'relative' | 'fixed';
-export type OverflowType = 'hidden' | 'visible' | 'scroll' | 'auto';
 export interface IStyleType {
   border?: IBorderValue;
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
-  overflow?: OverflowType;
-  position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   size?: SizeType;
   style?: string;
   stylingBox?: string;
+  primaryTextColor?: ColorValueType;
+  primaryBgColor?: ColorValueType;
+  secondaryBgColor?: ColorValueType;
+  secondaryTextColor?: ColorValueType;
+  overflow?: CSSProperties['overflow'];
+  hideScrollBar?: boolean;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -146,6 +150,9 @@ export interface IComponentRuntimeProps {
   /** Custom onChange handler */
   onChangeCustom?: string;
 
+  /** Custom onClick handler */
+  onClickCustom?: string;
+
   /** Custom onFocus handler */
   onFocusCustom?: string;
 }
@@ -179,6 +186,22 @@ export interface IComponentMetadata {
   injectedDefaultValue?: any;
 }
 
+export interface IFormComponentStyles {
+  stylingBoxAsCSS: CSSProperties;
+  dimensionsStyles: CSSProperties;
+  borderStyles: CSSProperties;
+  fontStyles: CSSProperties;
+  backgroundStyles: CSSProperties;
+  shadowStyles: CSSProperties;
+  overflowStyles: CSSProperties;
+  /** Styles calculated from js style setting */
+  jsStyle: CSSProperties;
+  /** Styles assempled from stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles*/
+  appearanceStyle: CSSProperties;
+  /** Styles assempled from {...appearanceStyle, ...jsStyle} */
+  fullStyle: CSSProperties;
+}
+
 /**
  * Base model of the configurable component
  */
@@ -192,6 +215,9 @@ export interface IConfigurableFormComponent
   IComponentMetadata {
   /** Type of the component */
   type: string;
+
+  /** Options added using the dialog*/
+  queryParams?: any;
 
   /** Description of the field, is used for tooltips */
   description?: string;
@@ -246,6 +272,8 @@ export interface IConfigurableFormComponent
   tablet?: any;
 
   mobile?: any;
+
+  allStyles?: IFormComponentStyles;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
@@ -460,6 +488,7 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
 
 export interface IFormValidationRulesOptions {
   formData?: any;
+  getFormData?: () => any;
 }
 
 /** Default form settings */

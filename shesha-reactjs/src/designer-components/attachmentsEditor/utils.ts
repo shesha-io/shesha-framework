@@ -17,7 +17,6 @@ export const defaultStyles = (): IStyleType => {
             uploadFile: null,
         },
         font: {
-            color: '#000',
             type: 'Segoe UI',
             align: 'left',
             size: 14,

@@ -1,9 +1,10 @@
-import React, { FC, useState } from 'react';
+import React, { CSSProperties, FC, useState } from 'react';
 import { ColorPicker as AntdColorPicker } from 'antd';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 import { Color } from 'antd/es/color-picker/color';
 import type { ColorPickerProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { useTheme, IConfigurableTheme } from '@/index';
 
 type Preset = Required<ColorPickerProps>['presets'][number];
 type ColorFormat = ColorPickerProps['format'];
@@ -18,6 +19,8 @@ export interface IColorPickerProps {
   disabledAlpha?: boolean;
   readOnly?: boolean;
   size?: SizeType;
+  style?: CSSProperties;
+  defaultValue?: ColorValueType;
 }
 
 const formatColor = (color: Color, format: ColorFormat) => {
@@ -31,8 +34,25 @@ const formatColor = (color: Color, format: ColorFormat) => {
   }
 };
 
-export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly, size }) => {
+/**
+ * 
+ * @param theme 
+ * @returns a (object) map of theme colors with keys as `primary`, `success`, `warning`, `error`, `info`, `processing`
+ */
+export const readThemeColor = (theme: IConfigurableTheme) => ({
+  'primary': theme.application?.primaryColor,
+  'success': theme.application?.successColor,
+  'warning': theme.application?.warningColor,
+  'error': theme.application?.errorColor,
+  'info': theme.application?.infoColor,
+  'processing': theme.application?.processingColor,
+  'primaryTextColor': theme?.text?.default,
+  'secondaryTextColor': theme?.text?.secondary
+});
+
+export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly, size, style, defaultValue }) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
+  const { theme } = useTheme();
 
   const handleChange = (value: Color) => {
     const formattedValue = formatColor(value, format);
@@ -49,6 +69,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
 
   return (
     <AntdColorPicker
+      trigger='click'
       format={format}
       onFormatChange={setFormat}
       disabledAlpha={disabledAlpha}
@@ -57,7 +78,9 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
       disabled={readOnly}
       onClear={handleClear}
       size={size}
-      value={value ?? ""}
+      style={style}
+      value={(readThemeColor(theme)[value as string] ?? value) ?? ""}
+      defaultValue={readThemeColor(theme)?.[defaultValue as string] ?? defaultValue}
       onChange={handleChange}
       presets={presets}
       panelRender={(panel) => (

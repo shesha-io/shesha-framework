@@ -5,7 +5,7 @@ import { isStyledColumn } from '../dataTable/interfaces';
 import classNames from 'classnames';
 import { getColumnAnchored } from '@/utils';
 import { getAnchoredCellStyleAccessor } from '../dataTable/utils';
-import { useActualContextExecutionExecutor } from '@/hooks/useActualContextExecution';
+import { useActualContextExecutionExecutor } from '@/hooks';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,

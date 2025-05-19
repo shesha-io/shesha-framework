@@ -11,6 +11,7 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
@@ -18,15 +19,17 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
   name: 'Section Separator',
   icon: <LineOutlined />,
   Factory: ({ model }) => {
+    const { lineWidth, lineHeight } = model;
     const { data: formData } = useFormData();
     const { lineFont, font } = model;
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
 
-    const styling = JSON.parse(model.titleStylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const extractedDimensions = {
+      width: lineWidth,
+      height: lineHeight,
+    };
 
     const titleAdditionalStyles = {
-      ...stylingBoxAsCSS,
       ...fontStyles,
       ...getStyle(model?.titleStyle, formData),
     };
@@ -39,6 +42,8 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       ...getStyle(model?.containerStyle, formData),
     };
 
+    const dimensions = getDimensionsStyle(extractedDimensions, containerAdditionalStyles);
+
     const inputProps = {
       ...model,
       lineThickness: lineFont?.size,
@@ -49,7 +54,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       <SectionSeparator
         {...inputProps}
         title={!model.hideLabel && model.label}
-        containerStyle={containerAdditionalStyles}
+        containerStyle={{ ...dimensions, ...containerAdditionalStyles }}
         titleStyle={titleAdditionalStyles}
         tooltip={model?.description}
       />
@@ -71,13 +76,26 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ISectionSeparatorComponentProps>(2, (prev) => ({ ...prev, labelAlign: 'left' }))
-      .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: prev['noMargin'] ? 0 : null}))
-      .add<ISectionSeparatorComponentProps>(5, (prev) => ({ ...prev, lineType: prev.dashed ? 'dashed' : 'solid' }))      
-      .add<ISectionSeparatorComponentProps>(6, (prev) => ({
-        ...prev,
-        desktop: { ...prev.desktop, lineFont: { size: 2 }, lineWidth: '100%' },
-      }))
-      .add<ISectionSeparatorComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: prev['noMargin'] ? 0 : null }))
+      .add<ISectionSeparatorComponentProps>(4, (prev) => {
+        const prevStyles = {
+          containerStyle: prev.containerStyle,
+          titleStyle: prev.titleStyle,
+          lineFont: prev.lineFont,
+          font: prev.font,
+          titleStylingBox: prev.titleStylingBox,
+          containerStylingBox: prev.containerStylingBox,
+          lineType: prev.dashed ? 'dashed' : 'solid',
+        };
+
+        return {
+          ...prev,
+          desktop: { ...prev.desktop, ...prevStyles },
+          tablet: { ...prev.tablet, ...prevStyles },
+          mobile: { ...prev.mobile, ...prevStyles },
+        };
+      })
+      .add<ISectionSeparatorComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default SectionSeparatorComponent;

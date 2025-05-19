@@ -1,23 +1,20 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React, { useEffect, useMemo, useState } from 'react';
-import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
-import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, pickStyleFromModel } from '@/providers/form/utils';
+import React from 'react';
+import { IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { ComponentsContainer, ValidationErrors } from '@/components';
+import { useFormData, useGlobalState } from '@/providers';
+import { ComponentsContainer } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
-import { getPositionStyle } from '../_settings/utils/position/utils';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { addPx } from '@/utils/style';
+import classNames from 'classnames';
+import { useStyles } from './styles';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -27,65 +24,27 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const { styles } = useStyles();
+    const {
+      dimensionsStyles,
+      borderStyles,
+      backgroundStyles,
+      shadowStyles,
+      stylingBoxAsCSS,
+      overflowStyles
+    } = model.allStyles;
 
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const shadow = model?.shadow;
-    const background = model?.background;
-    const position = model?.position;
-    const jsStyle = getStyle(model.style, model);
-
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-    const positionstyle = useMemo(() => getPositionStyle(position), [position]);
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const bgStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
-
-        setBackgroundStyles((prevStyles) => {
-          if (JSON.stringify(prevStyles) !== JSON.stringify(bgStyle)) {
-            return bgStyle;
-          }
-          return prevStyles;
-        });
-      };
-
-      fetchStyles();
-    }, [background, backendUrl, httpHeaders, jsStyle]);
-
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles = removeUndefinedProps({
+    const wrapperStyles = removeUndefinedProps({
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
+      ...stylingBoxAsCSS
     });
-
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     if (model.hidden) return null;
 
-    const flexAndGridStyles: ICommonContainerProps = {
+    const flexAndGridStyles = {
       display: model.display,
       flexDirection: model.flexDirection,
       direction: model.direction,
@@ -98,24 +57,28 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       noDefaultStyling: model.noDefaultStyling,
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
-      gap: model.gap,
+      gap: addPx(model.gap),
+      width: '100%',
+      height: '100%',
     };
+
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
           containerId={model.id}
           wrapperStyle={{
-            ...positionstyle,
-            ...stylingBoxAsCSS,
-            ...finalStyle,
+            ...wrapperStyles,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
           }}
           style={{
             ...getStyle(model?.style, formData),
+            overflow: model.overflow,
+            ...overflowStyles,
+            ...flexAndGridStyles as any
           }}
-          className={model.className}
+          noDefaultStyling={model.noDefaultStyling}
+          className={classNames(model.className, styles.container)}
           dynamicComponents={model?.isDynamic ? model?.components : []}
-          {...flexAndGridStyles}
         />
       </ParentProvider>
     );
@@ -156,7 +119,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           maxHeight: prev.maxHeight,
           maxWidth: prev.maxWidth
         };
-        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+        const showAdvanced = prev.showAdvanced ?? false;
+        return { ...prev, showAdvanced: showAdvanced, desktop: { ...styles, showAdvanced }, tablet: { ...styles, showAdvanced }, mobile: { ...styles, showAdvanced } };
       })
       .add<IContainerComponentProps>(6, (prev) => {
         const flexAndGridStyles = {
@@ -172,12 +136,11 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap || 8,
-          position: defaultStyles().position,
+          gap: prev?.gap || 8
         };
 
         return {
-          ...prev, position: defaultStyles().position, desktop: { ...prev.desktop, ...flexAndGridStyles },
+          ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
           tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
         };
       })

@@ -65,7 +65,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string = 
   const datePattern =
     /\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}|\d{4}\d{2}\d{2}T\d{6}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/g;
 
-  return content.replace(datePattern, (match) => {
+  return content?.replace(datePattern, (match) => {
     if (isValidDate(match)) {
       return formatDate(match, dateFormat);
     }
@@ -86,13 +86,14 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
   }
 };
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (textType: string): IStyleType => {
   return {
     font: {
       color: '#000',
       type: 'Segoe UI',
+      size:  textType === 'title' ? undefined : 14
     },
-    background: { type: 'color', color: 'transparent' },
+    background: { type: 'color', color: '' },
     border: {
       border: {
         all: {
@@ -107,7 +108,7 @@ export const defaultStyles = (): IStyleType => {
     },
     dimensions: {
       width: '100%',
-      height: '32px',
+      height: '100%',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',

@@ -3,10 +3,15 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: any) => {
+  const searchableTabsId = nanoid();
+  const commonTabId = nanoid();
+  const appearanceTabId = nanoid();
+  const styleRouterId = nanoid();
+
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
-        id: nanoid(),
+        id: searchableTabsId,
         propertyName: 'settingsTabs',
         parentId: 'root',
         label: 'Settings',
@@ -17,36 +22,35 @@ export const getSettings = (data: any) => {
           {
             key: 'common',
             title: 'Common',
-            id: nanoid(),
+            id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
-              .addContextPropertyAutocomplete({
-                id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                propertyName: 'propertyName',
-                label: 'Property Name',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                styledLabel: true,
-                size: 'small',
-                validate: {
+                .addContextPropertyAutocomplete({
+                  id: nanoid(),
+                  propertyName: 'propertyName',
+                  label: 'Property Name',
+                  parentId: commonTabId,
+                  styledLabel: true,
+                  size: 'small',
+                  validate: {
                     required: true,
-                },
-                jsSetting: true,
-            })
+                  },
+                  jsSetting: true,
+                })
                 .addLabelConfigurator({
                   id: nanoid(),
                   propertyName: 'hideLabel',
                   label: 'Label',
-                  parentId: 'root',
+                  parentId: commonTabId,
                   hideLabel: true,
                   defaultValue: false,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: commonTabId,
                   inputs: [
                     {
-                      id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
+                      id: nanoid(),
                       propertyName: 'description',
                       label: 'Tooltip',
                       type: 'textArea',
@@ -66,8 +70,7 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: commonTabId,
                   inputs: [
                     {
                       type: 'dropdown',
@@ -101,8 +104,7 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: commonTabId,
                   inputs: [
                     {
                       type: 'switch',
@@ -128,16 +130,16 @@ export const getSettings = (data: any) => {
           {
             key: 'appearance',
             title: 'Appearance',
-            id: nanoid(),
+            id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addPropertyRouter({
-                  id: nanoid(),
+                  id: styleRouterId,
                   propertyName: 'propertyRouter1',
                   componentName: 'propertyRouter',
                   label: 'Property router',
                   labelAlign: 'right',
-                  parentId: 'root',
+                  parentId: appearanceTabId,
                   hidden: false,
                   propertyRouteName: {
                     _mode: "code",
@@ -152,6 +154,7 @@ export const getSettings = (data: any) => {
                         label: 'Progress Style',
                         labelAlign: 'right',
                         ghost: true,
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
@@ -159,8 +162,7 @@ export const getSettings = (data: any) => {
                             ...new DesignerToolbarSettings()
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                parentId: styleRouterId,
                                 inputs: [
                                   {
                                     type: 'colorPicker',
@@ -182,8 +184,7 @@ export const getSettings = (data: any) => {
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                parentId: styleRouterId,
                                 inputs: [
                                   {
                                     type: 'dropdown',
@@ -214,11 +215,11 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'width',
                                 label: 'Width',
-                                inputType:'numberField',
+                                inputType: 'numberField',
                                 tooltip: 'The canvas width of the circular progress, unit: px',
                                 hidden: { _code: 'return !["circle", "dashboard"].includes(getSettingValue(data?.progressType));', _mode: 'code', _value: false },
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                parentId: styleRouterId,
                               })
                               .toJson()
                           ]
@@ -230,6 +231,7 @@ export const getSettings = (data: any) => {
                         label: 'Type Specific Settings',
                         labelAlign: 'right',
                         ghost: true,
+                        parentId: styleRouterId,
                         hideWhenEmpty: true,
                         collapsible: 'header',
                         content: {
@@ -240,48 +242,30 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'steps',
                                 label: 'Steps',
-                                inputType:'numberField',
+                                inputType: 'numberField',
                                 tooltip: 'The total step count',
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
                                 jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                parentId: styleRouterId,
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                parentId: styleRouterId,
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
                                     type: 'colorPicker',
                                     id: nanoid(),
                                     propertyName: 'lineStrokeColor',
-                                    label: 'Line Stroke Color',
-                                    tooltip: 'The color of line progress bar',
+                                    label: 'Stroke Color',
+                                    tooltip: "The color of progress bar",
                                     jsSetting: true,
                                   }
                                 ]
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                hidden: { _code: 'return getSettingValue(data?.progressType) !== "circle";', _mode: 'code', _value: false },
-                                inputs: [
-                                  {
-                                    type: 'colorPicker',
-                                    id: nanoid(),
-                                    propertyName: 'circleStrokeColor',
-                                    label: 'Circle Stroke Color',
-                                    tooltip: 'The color of circular progress',
-                                    jsSetting: true,
-                                  }
-                                ]
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                parentId: styleRouterId,
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "dashboard";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
@@ -289,9 +273,7 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     propertyName: 'gapDegree',
                                     label: 'Gap Degree',
-                                    tooltip: 'The gap degree of half circle, 0 ~ 295',
-                                    min: 0,
-                                    max: 295,
+                                    tooltip: "The gap degree of half circle, 0 ~ 295",
                                     jsSetting: true,
                                   },
                                   {
@@ -299,7 +281,7 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     propertyName: 'gapPosition',
                                     label: 'Gap Position',
-                                    tooltip: 'The gap position of dashboard progress',
+                                    tooltip: "The gap position",
                                     dropdownOptions: [
                                       { label: 'Top', value: 'top' },
                                       { label: 'Bottom', value: 'bottom' },
@@ -316,107 +298,54 @@ export const getSettings = (data: any) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'formatPanel',
-                        label: 'Format & Success',
+                        propertyName: 'stylingBox',
+                        label: 'Margin & Padding',
                         labelAlign: 'right',
                         ghost: true,
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: 'root',
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [
-                                  {
-                                    id: nanoid(),
-                                    propertyName: 'success',
-                                    label: 'Success',
-                                    type:'codeEditor',
-                                    tooltip: 'Configs of successfully progress bar. Returns an object: { percent: number, strokeColor: string }',
-                                    description: 'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
-                                    mode: 'dialog',
-                                    jsSetting: true,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  },
-                                  {
-                                    id: nanoid(),
-                                    propertyName: 'format',
-                                    label: 'Format',
-                                    type:'codeEditor',
-                                    tooltip: 'The template function of the content. This function should return string or number',
-                                    description: 'The template function of the content. This function should return string or number',
-                                    mode: 'dialog',
-                                    exposedVariables: [
-                                      `{ name: 'percent', description: 'Progress percentage', type: 'number' }`,
-                                      `{ name: 'successPercent', description: 'Success percentage', type: 'number' }`
-                                    ],
-                                    jsSetting: true,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  }
-                                ]
-                              })
-                              .toJson()
+                          components: [...new DesignerToolbarSettings()
+                            .addStyleBox({
+                              id: nanoid(),
+                              label: 'Margin Padding',
+                              hideLabel: true,
+                              propertyName: 'stylingBox',
+                            })
+                            .toJson()
                           ]
                         }
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'stylePanel',
+                        propertyName: 'customStyle',
                         label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'style',
-                                label: 'Style',
-                                inputType:'codeEditor',
-                                tooltip: 'Custom CSS style object for the progress component',
-                                description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                mode: 'dialog',
-                                exposedVariables: [
-                                  `{ name: 'data', description: 'Form values', type: 'object' }`
-                                ],
-                                jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              })
-                              .toJson()
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              label: 'Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
                           ]
                         }
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: nanoid(),
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  inputType:'permissions',
-                  tooltip: 'Enter a list of permissions that should be associated with this component',
-                  labelAlign: 'right',
-                  validate: {},
-                  jsSetting: true,
-                })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           }
-        ]
+        ],
       })
       .toJson(),
     formSettings: {

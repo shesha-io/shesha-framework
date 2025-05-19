@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import classNames from 'classnames';
 import React from 'react';
-import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { getSettings } from './settingsForm';
-import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';
 import { LikeOutlined, StarFilled } from '@ant-design/icons';
@@ -35,23 +35,21 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   icon: <LikeOutlined />,
   isInput: true,
   isOutput: true,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-
-    const { allowClear, icon, count, tooltips, className, style, readOnly } = model;
-
-    if (model.hidden) return null;
-
+  calculateModel: (model, allData) => ({
+    eventHandlers: getAllEventHandlers(model, allData),
+  }),
+  Factory: ({ model, calculatedModel }) => {
+    const { allowClear, icon, count, tooltips, className, readOnly } = model;
     const localCount = !_.isNaN(count) ? count : 5;
 
-    return (
-      <ConfigurableFormItem model={model}>
+    return model.hidden
+      ? null
+      : <ConfigurableFormItem model={model}>
         {(value,  onChange) => {
-          const customEvent =  customOnChangeValueEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
-            if (typeof onChange === 'function') 
-              onChange(args);
+          const customEvent = calculatedModel.eventHandlers;
+          const onChangeInternal = (value: number) => {
+            customEvent.onChange({value});
+            if (typeof onChange === 'function') onChange(value);
           };
           
           return <Rate
@@ -62,14 +60,14 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             count={localCount ?? 5}
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
-            style={getStyle(style, allData.data)} // Temporary. Make it configurable
+            style={model.allStyles.fullStyle}
             {...customEvent}
             value={value}
             onChange={onChangeInternal}
           />;
         }}
       </ConfigurableFormItem>
-    );
+    ;
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

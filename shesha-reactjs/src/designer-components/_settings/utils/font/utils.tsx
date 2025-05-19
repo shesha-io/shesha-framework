@@ -18,7 +18,7 @@ export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
     }
 
     if (input?.weight) {
-        style.fontWeight = input?.weight.split(' - ')[0];
+        style.fontWeight = input?.weight.split(' - ')[0] || 400;
     }
 
     if (input?.color) {
@@ -43,12 +43,12 @@ export const fontTypes = [
     { value: 'Courier New', label: 'Courier new' },
     { value: 'Verdana', label: 'Verdana' },
     { value: 'Georgia', label: 'Georgia' },
-    { value: 'Segoe UI', label: 'Segoe ui' },
+    { value: 'Segoe UI', label: 'Segoe UI' },
     { value: 'Palatino', label: 'Palatino' },
     { value: 'monospace', label: 'Monospace' },
     { value: 'Garamond', label: 'Garamond' },
-    { value: 'Comic Sans MS', label: 'Comic sans ms' },
-    { value: 'Trebuchet MS', label: 'Trebuchet ms' },
+    { value: 'Comic Sans MS', label: 'Comic sans MS' },
+    { value: 'Trebuchet MS', label: 'Trebuchet MS' },
     { value: 'Arial Black', label: 'Arial black' },
     { value: 'Impact', label: 'Impact' },
     { value: '-apple-system', label: 'San francisco' },
@@ -59,14 +59,14 @@ export const fontTypes = [
     { value: 'Lato', label: 'Lato' },
     { value: 'Ubuntu', label: 'Ubuntu' },
     { value: 'Merriweather', label: 'Merriweather' },
-    { value: 'PT Sans', label: 'Pt sans' },
+    { value: 'Pt Sans', label: 'PT sans' },
     { value: 'Source Sans Pro', label: 'Source sans pro' },
     { value: 'Fira Sans', label: 'Fira sans' },
     { value: 'Playfair Display', label: 'Playfair display' },
     { value: 'Noto Sans', label: 'Noto sans' },
     { value: 'Droid Sans', label: 'Droid sans' },
     { value: 'Crimson Text', label: 'Crimson text' },
-    { value: 'PT Serif', label: 'Pt serif' }
+    { value: 'PT Serif', label: 'PT serif' }
 ];
 
 

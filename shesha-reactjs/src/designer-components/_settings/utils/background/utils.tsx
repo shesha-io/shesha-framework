@@ -61,14 +61,14 @@ export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSPr
 };
 
 export const gradientDirectionOptions: IDropdownOption[] = [
-    { value: 'to right', label: 'To Right' },
-    { value: 'to left', label: 'To Left' },
-    { value: 'to top', label: 'To Top' },
-    { value: 'to bottom', label: 'To Bottom' },
-    { value: 'to top right', label: 'To Top Right' },
-    { value: 'to top left', label: 'To Top Left' },
-    { value: 'to bottom right', label: 'To Bottom Right' },
-    { value: 'to bottom left', label: 'To Bottom Left' },
+    { value: 'to right', label: 'To right' },
+    { value: 'to left', label: 'To left' },
+    { value: 'to top', label: 'To top' },
+    { value: 'to bottom', label: 'To bottom' },
+    { value: 'to top right', label: 'To top right' },
+    { value: 'to top left', label: 'To top left' },
+    { value: 'to bottom right', label: 'To bottom right' },
+    { value: 'to bottom left', label: 'To bottom left' },
 ];
 
 export const backgroundTypeOptions: IRadioOption[] = [
@@ -114,8 +114,8 @@ export const positionOptions: IDropdownOption[] = [
     { value: 'left', label: 'Left' },
     { value: 'right', label: 'Right' },
     { value: 'bottom', label: 'Bottom' },
-    { value: 'top left', label: 'Top Left' },
-    { value: 'top right', label: 'Top Right' },
-    { value: 'bottom left', label: 'Bottom Left' },
-    { value: 'bottom right', label: 'Bottom Right' }];
+    { value: 'top left', label: 'Top left' },
+    { value: 'top right', label: 'Top right' },
+    { value: 'bottom left', label: 'Bottom left' },
+    { value: 'bottom right', label: 'Bottom right' }];
 

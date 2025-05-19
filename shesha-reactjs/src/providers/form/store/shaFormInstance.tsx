@@ -1,5 +1,20 @@
 import React from "react";
-import { AfterSubmitHandler, FormEvents, IDataSubmitContext, InitByFormIdPayload, InitByMarkupPayload, InitByRawMarkupPayload, IShaFormInstance, LoadFormByIdPayload, OnMarkupLoadedHandler, OnValuesChangeHandler, ProcessingState, SubmitDataPayload, SubmitHandler } from "./interfaces";
+import { 
+  AfterSubmitHandler,
+  ForceUpdateTrigger,
+  FormEvents,
+  IDataSubmitContext,
+  InitByFormIdPayload,
+  InitByMarkupPayload,
+  InitByRawMarkupPayload,
+  IShaFormInstance,
+  LoadFormByIdPayload,
+  OnMarkupLoadedHandler,
+  OnValuesChangeHandler,
+  ProcessingState,
+  SubmitDataPayload,
+  SubmitHandler
+} from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
 import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
 import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
@@ -17,13 +32,13 @@ import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { useMetadataDispatcher } from "@/providers";
+import { isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
+import { isPropertySettings } from "@/designer-components/_settings/utils";
 
-type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
     forceRootUpdate: ForceUpdateTrigger;
     formManager: IFormManagerActionsContext;
@@ -33,11 +48,65 @@ interface ShaFormInstanceArguments {
     antdForm: FormInstance;
 }
 
+interface IPropertiesWithScripts {
+  [index: string]: string;
+}
+
+interface IComponentsWithScripts {
+  [index: string]: IPropertiesWithScripts;
+}
+
+// ToDo: AS - add other events
+const scriptProps = ['onChangeCustom', 'onFocusCustom', 'onBlurCustom', 'onClickCustom'];
+
 class PublicFormApi<Values = any> implements IFormApi<Values> {
     #form: IShaFormInstance;
     constructor(form: IShaFormInstance) {
         this.#form = form;
     }
+
+    getPropertiesWithScript = (keyword: string): IComponentsWithScripts => {
+        const proceed = (addComponent: IPropertiesWithScripts, obj: any, propertyName: string) => {
+            for(const propName in obj) {
+                if (Object.hasOwn(obj, propName)) {
+                    const fullPropName = propertyName ? `${propertyName}.${propName}` : propName;
+                    const propValue = obj[propName];
+                    if (!propValue) continue;
+                    if (scriptProps.includes(propName) && (!keyword || propValue.includes(keyword))) {
+                        addComponent[fullPropName] = propValue;
+                        continue;
+                    }
+                    if (propValue && typeof propValue === 'object') {
+                        if (isPropertySettings(propValue)) {
+                            if (propValue._mode === 'code' && (!keyword || propValue._code?.includes(keyword))) {
+                                addComponent[fullPropName] = propValue._code;
+                            }
+                            continue;
+                        }
+                        if (isScriptActionConfiguration(propValue) && (!keyword || propValue.actionArguments.expression?.includes(keyword))) {
+                            addComponent[fullPropName] = propValue.actionArguments.expression || '';
+                            continue;
+                        }
+                        proceed(addComponent, propValue, fullPropName);
+                    }
+                }
+            }
+        };
+      
+        const components: IComponentsWithScripts = {};
+        for(const componentId in this.#form.flatStructure.allComponents) {
+            if (Object.hasOwn(this.#form.flatStructure.allComponents, componentId)) {
+                const component = this.#form.flatStructure.allComponents[componentId];
+                const addComponent: IPropertiesWithScripts = {};
+                proceed(addComponent, component, '');
+                if (!isEmpty(addComponent)) {
+                    components[component.componentName] = addComponent;
+                }
+            }
+        };
+        return components;
+    };
+
     addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
         const delayedUpdateData = this.#form?.getDelayedUpdates();
         if (delayedUpdateData?.length > 0)
@@ -58,6 +127,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     };
     setFormData = (payload: ISetFormDataPayload) => {
         this.#form.setFormData(payload);
+    };
+    getFormData = () => {
+        return this.#form.formData;
     };
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
@@ -96,6 +168,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     private expressionExecuter: ExpressionExecuter;
     private events: FormEvents<Values>;
     private dataSubmitContext: IDataSubmitContext;
+
+    updateData: () => void;
 
     modelMetadata?: IModelMetadata;
     antdForm: FormInstance;
@@ -203,7 +277,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         this.#setInternalFormData(newData);
 
-        this.forceRootUpdate();
+        this.updateData?.();
     };
 
     setParentFormValues = (values: any) => {
@@ -227,12 +301,13 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
     setFieldsValue = (values: Partial<Values>) => {
         this.antdForm.setFieldsValue(values);
-        this.forceRootUpdate();
+        this.updateData?.();
     };
     resetFields = () => {
         this.antdForm.resetFields();
         const values = this.antdForm.getFieldsValue();
         this.#setInternalFormData(values);
+        this.updateData?.();
     };
     getFieldsValue = (): Values => {
         return this.antdForm.getFieldsValue();
@@ -424,10 +499,11 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formArguments = formArguments;
         this.isSettingsForm = isSettingsForm;
 
-        await this.loadFormByRawMarkupAsync();
-
+        // ToDo: AS - recheck if data initialization is ok before markup initialization
         this.initialValues = initialValues;
         this.formData = initialValues;
+
+        await this.loadFormByRawMarkupAsync();
 
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
@@ -500,7 +576,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.log('LOG: loadData', this.useDataLoader);
             this.dataLoadingState = { status: 'ready', hint: null, error: null };
             this.forceRootUpdate();
-
+  
             return this.initialValues;
         }
 

@@ -6,7 +6,7 @@ import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IConfigurableItemAutocompleteComponentProps } from './interfaces';
-import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from '@/utils';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { ConfigItemAutocomplete } from '@/components/configurableItemAutocomplete';
@@ -26,7 +26,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
     const allData = useAvailableConstantsData();
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.entityType);
-    const evaluatedFilter = useAsyncMemo<object>(async () => {
+    const evaluatedFilter = useAsyncDeepCompareMemo<object>(async () => {
       if (!filter)
         return undefined;
 
@@ -61,7 +61,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
       return typeof (expression) === 'string'
         ? JSON.parse(expression)
         : expression;
-    }, [filter, allData.data, allData.globalState]);
+    }, [filter, allData.data, allData.globalState, allData.pageContext]);
 
     return (
       <ConfigurableFormItem model={model}>
