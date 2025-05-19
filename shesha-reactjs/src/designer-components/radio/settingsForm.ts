@@ -146,6 +146,7 @@ export const getSettings = (data: any) => {
                       labelName: 'label',
                       valueTitle: 'Value',
                       valueName: 'value',
+                      jsSetting: true,
                       mode: 'dialog',
                     },
                   ],
