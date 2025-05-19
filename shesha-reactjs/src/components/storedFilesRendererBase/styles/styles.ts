@@ -258,8 +258,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
-    max-width: var(--container-max-width) !important;
+    --container-width: max-content !important;
+    max-width: max-content !important;
     width: max-content !important;
+    min-width: max-content !important;
     height: var(--container-height) !important;
     max-height: var(--container-max-height) !important;
     min-height: var(--container-min-height) !important;
