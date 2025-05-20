@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -28,6 +28,7 @@ import {
   setDebugModeAction,
   setFlatComponentsAction,
   setFormModeAction,
+  setPreviousSelectedComponentAction,
   setReadOnlyAction,
   setSelectedComponentAction,
   setValidationErrorsAction,
@@ -53,7 +54,6 @@ import {
   UndoableFormDesignerStateContext,
 } from './contexts';
 import formReducer from './reducer';
-import { useCallback } from 'react';
 import { useContextSelector } from 'use-context-selector';
 
 export interface IFormDesignerProviderProps {
@@ -71,7 +71,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const toolboxComponents = useFormDesignerComponents();
   const settingsPanelRef = useRef();
-  const componentInitialization = useRef<Boolean>(false);
+  const componentInitialization = useRef<boolean>(false);
 
   const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
   const componentEditors = useRef<IComponentSettingsEditorsCache>({});
@@ -226,6 +226,20 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       dispatch(setSelectedComponentAction({ id: componentId, componentRef }));
       componentInitialization.current = true;
   }, [dispatch]);
+
+  const setPreviousSelectedComponent = useCallback((componentId: string, componentRef?: MutableRefObject<any>) => {
+    dispatch(setPreviousSelectedComponentAction({ id: componentId, componentRef }));
+  }, [dispatch]);
+
+  useEffect(() => {
+      if (state.present.formMode === 'edit' && state.present.selectedComponentId) {
+        setPreviousSelectedComponent(state.present.selectedComponentId, state.present.selectedComponentRef);
+        setSelectedComponent(null);
+      } else if (state.present.formMode === 'designer' && state.present.previousSelectedComponentId) {
+        setSelectedComponent(state.present.previousSelectedComponentId, state.present.previousSelectedComponentRef);
+        setPreviousSelectedComponent(null);
+      }
+  }, [state.present.formMode]);
 
   const updateFormSettings = useCallback((settings: IFormSettings) => {
     dispatch(updateFormSettingsAction(settings));
