@@ -19,7 +19,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
 
-  const borderRadius = `${borderTopRightRadius ?? allRadius} ${borderBottomRightRadius ?? allRadius} ${borderBottomLeftRadius ?? allRadius} ${borderTopLeftRadius ?? allRadius}`;
+  const borderRadius = [
+    borderTopRightRadius ?? allRadius ?? '8px',
+    borderBottomRightRadius ?? allRadius ?? '8px',
+    borderBottomLeftRadius ?? allRadius ?? '8px',
+    borderTopLeftRadius ?? allRadius ?? '8px',
+  ].join(' ');
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
