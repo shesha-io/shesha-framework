@@ -16,10 +16,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
 
   const [icon, setIcon] = useState(null);
   const { data: formData } = useFormData();
-  const propsStyles = {
-    fontSize: props.styles?.fontSize,
-  };
-  const { styles } = useStyles(propsStyles);
+  const { styles } = useStyles(props.styles?.fontSize);
 
   const localStyle = getStyle(props.style, formData);
 
