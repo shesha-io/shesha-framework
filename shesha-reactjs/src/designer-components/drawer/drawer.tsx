@@ -6,6 +6,7 @@ import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/u
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { IConfigurableFormComponent } from '@/providers';
+import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 interface IShaDrawer {
   id?: string;
   componentName?: string;
@@ -27,11 +28,9 @@ interface IShaDrawer {
   width?: string | number;
   readOnly?: boolean;
   backgroundStyles?: CSSProperties;
-  dimensions?: {
-    width?: string | number;
-    height?: string | number;
-  };
+  dimensions?: IDimensionsValue;
   stylingBoxAsCSS?: CSSProperties;
+  allStyles?: any;
 }
 
 interface IShaDrawerState {
@@ -42,7 +41,6 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
   const {
     id,
     placement,
-    dimensions,
     componentName: name,
     readOnly,
     label,
@@ -59,13 +57,32 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     headerStyle,
     footerStyle,
     showFooter,
-    backgroundStyles,
-    stylingBoxAsCSS,
   } = props;
   const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
   const { executeAction } = useConfigurableActionDispatcher();
-  const { paddingTop, paddingRight, paddingBottom, paddingLeft, ...rest } = stylingBoxAsCSS;
+  const {
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
+    marginRight,
+    marginLeft,
+    marginBottom,
+    marginTop,
+    backgroundImage,
+    backgroundSize,
+    backgroundPosition,
+    backgroundRepeat,
+    backgroundColor,
+    minHeight,
+    minWidth,
+    maxHeight,
+    maxWidth,
+    width,
+    height,
+    ...rest
+  } = style;
 
   const openDrawer = () => setState((prev) => ({ ...prev, open: true }));
 
@@ -151,26 +168,37 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     <Drawer
       open={state?.open}
       placement={placement}
-      width={dimensions?.width}
-      height={dimensions?.height}
+      width={width}
+      height={height}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
         footer: { display: showFooter ? 'block' : 'none', ...footerStyle },
-        body: backgroundStyles as CSSProperties,
-        content: {
-          ...style,
-          height: undefined,
-          width: undefined,
+        body: {
+          backgroundImage,
+          backgroundSize,
+          backgroundPosition,
+          backgroundRepeat,
+          backgroundColor,
           paddingTop,
           paddingRight,
           paddingBottom,
           paddingLeft,
         },
-        wrapper: {
-          width: style?.width || props.dimensions?.width,
-          height: style?.height || props.dimensions?.height,
+        content: {
           ...rest,
+        },
+        wrapper: {
+          width,
+          height,
+          minWidth,
+          maxWidth,
+          minHeight,
+          maxHeight,
+          marginTop,
+          marginRight,
+          marginBottom,
+          marginLeft,
         },
       }}
       title={label}

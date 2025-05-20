@@ -1,4 +1,4 @@
-import { IFilter, TAggregationMethod, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import { TAggregationMethod, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
 
 /**
  * Function to stringify values in an array of objects
@@ -313,28 +313,6 @@ export function filterData(preFilteredData: object[], property: string, operator
     }
   });
 };
-
-/**
- * Apply filters to the data
- * @param data raw data
- * @param filters filters to apply
- * @returns filtered data
- */
-export function applyFilters(
-  data: Array<object>,
-  filters: Array<IFilter>
-): Array<object> {
-  // Start with the unfiltered data
-  let filteredData = data ? [...data] : [];
-
-  // Apply each filter one by one
-  filters?.forEach((filter) => {
-    const { property, operator, value } = filter;
-    filteredData = filterData(filteredData, property, operator, value);
-  });
-
-  return filteredData;
-}
 
 /**
  * from that array we need make a list of all the properties of the objects

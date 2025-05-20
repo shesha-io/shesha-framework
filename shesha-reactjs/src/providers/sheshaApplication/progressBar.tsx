@@ -6,7 +6,7 @@ export const ProgressBar: FC<PropsWithChildren> = ({ children }) => {
     const theme = useTheme();
     return (
         <AppProgressProvider
-            key={theme.colorPrimary}
+            key={'AppProgressProvider'}
             height="4px"
             color={theme.colorPrimary}
             shallowRouting

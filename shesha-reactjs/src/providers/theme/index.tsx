@@ -1,5 +1,5 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useMemo, useReducer, useRef } from 'react';
 import { setThemeAction } from './actions';
 import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { uiReducer } from './reducer';
@@ -23,18 +23,29 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     iconPrefixCls: iconPrefixCls,
   });
 
+  const applicationTheme = useRef<IConfigurableTheme>();
+
   const settings = useSettings();
   const application = useSheshaApplication();
   application.registerInitialization('theme', async () => {
     // load theme settings
     const theme = await settings.getSetting({ module: 'Shesha', name: 'Shesha.ThemeSettings' }) as IConfigurableTheme;
     dispatch(setThemeAction(theme));
+    applicationTheme.current = theme;
   });
 
-  const changeTheme = (theme: IConfigurableTheme) => {
+  const changeTheme = (theme: IConfigurableTheme, isApplication: Boolean = false) => {
     // save theme to the state
     dispatch(setThemeAction(theme));
+    if (isApplication)
+      applicationTheme.current = theme;
   };
+
+  const resetToApplicationTheme = () => {
+    // save theme to the state
+    dispatch(setThemeAction(applicationTheme.current));
+  };
+
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
@@ -68,6 +79,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       <UiActionsContext.Provider
         value={{
           changeTheme,
+          resetToApplicationTheme,
         }}
       >
         <ConfigProvider
