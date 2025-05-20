@@ -2,6 +2,7 @@
 
 namespace Shesha.Settings
 {
+#nullable enable
     /// <summary>
     /// Setting accessor. Is used to read/write setting value
     /// </summary>
@@ -11,7 +12,7 @@ namespace Shesha.Settings
         /// Get default value
         /// </summary>
         /// <returns></returns>
-        object GetDefaultValue();
+        object? GetDefaultValue();
     }
 
     /// <summary>
@@ -22,17 +23,27 @@ namespace Shesha.Settings
         /// <summary>
         /// Get setting value
         /// </summary>
-        Task<TValue> GetValueAsync();
+        Task<TValue?> GetValueOrNullAsync(SettingManagementContext? context = null);
 
         /// <summary>
         /// Get setting value
         /// </summary>
-        TValue GetValue();
+        Task<TValue> GetValueAsync(SettingManagementContext? context = null);
+
+        /// <summary>
+        /// Get setting value
+        /// </summary>
+        TValue? GetValueOrNull(SettingManagementContext? context = null);
+
+        /// <summary>
+        /// Get setting value
+        /// </summary>
+        TValue GetValue(SettingManagementContext? context = null);
 
         /// <summary>
         /// Set setting value
         /// </summary>
-        Task SetValueAsync(TValue value);
+        Task SetValueAsync(TValue? value);
 
         /// <summary>
         /// Sets default value of the setting
@@ -40,4 +51,5 @@ namespace Shesha.Settings
         /// <param name="value"></param>
         void WithDefaultValue(TValue value);
     }
+#nullable restore
 }

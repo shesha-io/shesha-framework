@@ -1,4 +1,5 @@
 ﻿using Shesha.AutoMapper;
+using Shesha.Domain;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
 

@@ -4,6 +4,8 @@ using Abp.Reflection;
 using Shesha.Attributes;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.EntityReferences;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Modules;
 using Shesha.Services;
@@ -13,6 +15,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -20,7 +23,7 @@ using System.Runtime.CompilerServices;
 
 namespace Shesha.Reflection
 {
-    public static class ReflectionHelper
+    public static partial class ReflectionHelper
     {
         /// <summary>
         /// Returns true if the <paramref name="instanceType"/> is a closed generic of the <paramref name="genericType"/> type
@@ -786,5 +789,124 @@ namespace Shesha.Reflection
             var methods = GetExtensionMethods(assembly, extendedType);
             return methods.Select(method => method.DeclaringType).Distinct().OfType<Type>().ToList();
         }
+
+        #nullable enable
+        public static T NotNull<T>([NotNull] this T? value, string message = "Value must not be null")
+        {
+            return value ?? throw new Exception(message);
+        }
+
+        /// <summary>
+        /// Cast <paramref name="source"/> to type <typeparamref name="TDestination"/>. An exception will be throws on unsuccessfull casting
+        /// </summary>
+        /// <typeparam name="TDestination"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidCastException"></exception>
+        public static TDestination ForceCastAs<TDestination>(this object? source) where TDestination : class
+        {
+            if (source is TDestination dest)
+                return dest;
+
+            if (source is GenericEntityReference genericEntity && typeof(Entity<Guid>).IsAssignableFrom(typeof(TDestination)))
+            {
+                var entity = (Entity<Guid>)genericEntity.NotNull();
+                return entity.ForceCastAs<TDestination>();
+            }
+
+            throw new InvalidCastException(source != null
+                ? $"Failed to cast value of type '{source.GetType().FullName}' to type '{typeof(TDestination).FullName}'"
+                : "Failed to cast null to type '{typeof(TDestination).FullName}'"
+            );
+        }
+
+        /// <summary>
+        /// Get property by name. Throws <see cref="MethodNotFoundException"/> if property not found
+        /// </summary>
+        /// <param name="type">Type to search property in</param>
+        /// <param name="propertyName">Property name</param>
+        /// <returns></returns>
+        /// <exception cref="PropertyNotFoundException"></exception>
+        public static PropertyInfo GetRequiredProperty(this Type type, string propertyName)
+        {
+            return type.GetProperty(propertyName) ?? throw new PropertyNotFoundException(type, propertyName);
+        }
+
+        public static T? GetAttributeOrNull<T>(this Type type, bool inherit = false) where T : Attribute
+        {
+            return type.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns extended info about specified property.
+        /// </summary>
+        /// <param name="obj">Object whose property value is to be retreived.</param>
+        /// <param name="propertyName">Name of the property or property hierarchy </param>
+        public static PropertyValueAccessor GetPropertyValueAccessor(object obj, string propertyName)
+        {
+            var propInfo = GetPropertyOrNull(obj, propertyName, out var parent);
+            return new PropertyValueAccessor(propInfo, parent);
+        }
+
+        /// <summary>
+        /// Returns the PropertyInfo for the specified property on the specified Entity.
+        /// </summary>
+        /// <param name="entity">The entity whose property info is to be returned.</param>
+        /// <param name="propertyName">The name of the property to return. This could also be
+        /// a property hiererchy where want to reach the property of a child object e.g. 'Parent.ReferencedChildEntity.ChildEntityPropertyName'. </param>
+        /// <param name="propertyEntity">The entity which the specified property belongs to.
+        /// Where <paramref name="propertyName"/> refers to a property on <paramref name="entity"/> this will be the same
+        /// as <paramref name="entity"/>, but where <paramref name="propertyName"/> refers to a property on a referenced
+        /// child object e.g. 'Parent.ReferencedChildEntity.ChildEntityPropertyName', then will return the
+        /// child entity the property belongs to i.e. 'ReferencedChildEntity' from the example.</param>
+        /// <returns>Return the requested PropertyInfo.</returns>
+        public static PropertyInfo? GetPropertyOrNull(object entity, string propertyName, out object? propertyEntity)
+        {
+            var propTokens = propertyName.Split('.');
+            var currentEntity = entity;
+            Type currentType = entity.GetType();
+
+            for (int i = 0; i < propTokens.Length; i++)
+            {
+                PropertyInfo? propInfo;
+                var entityType = StripCastleProxyType(currentType);
+                var properties = entityType.GetProperties();
+                try
+                {
+                    propInfo = properties.FirstOrDefault(x => x.Name.ToCamelCase() == propTokens[i].ToCamelCase());
+                }
+                catch (AmbiguousMatchException)
+                {
+                    // Property may have been overriden using the 'new' keyword hence there are multiple properties with the same name.
+                    // Will look for the one declared at the highest level.
+                    propInfo = FindHighestLevelProperty(propTokens[i], entityType);
+                }
+
+                if (propInfo == null)
+                {
+                    propertyEntity = null;
+                    return null;
+                    //throw new ConfigurationException(string.Format("Property '{0}' does not exist on entity type '{1}'", propertyName, type.FullName));
+                }
+
+                if (i == propTokens.Length - 1)
+                {
+                    propertyEntity = currentEntity;
+                    return propInfo;
+                }
+                else
+                {
+                    if (currentEntity != null)
+                        currentEntity = propInfo.GetValue(currentEntity, null);
+
+                    currentType = currentEntity == null
+                        ? propInfo.PropertyType
+                        : currentEntity.GetType();
+                }
+            }
+
+            throw new Exception($"Property '{propertyName}' does not exist on entity type '{currentType.FullName}'");
+        }
+#nullable restore
     }
 }

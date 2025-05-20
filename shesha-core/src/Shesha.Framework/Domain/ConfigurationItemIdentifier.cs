@@ -1,23 +1,24 @@
-﻿using Abp.ObjectComparators.StringComparators;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
+using Shesha.ConfigurationItems;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
+#nullable enable
     /// <summary>
     /// Identifier oif the configuration item
     /// </summary>
-    public abstract class ConfigurationItemIdentifier: IEquatable<ConfigurationItemIdentifier>
+    public abstract class ConfigurationItemIdentifier : IEquatable<ConfigurationItemIdentifier>
     {
         [BindNever]
         [JsonIgnore]
-        public abstract string ItemType { get; }
+        public abstract string ItemTypeName { get; }
+
+        [BindNever]
+        [JsonIgnore]
+        public abstract Type ItemType { get; }
 
         /// <summary>
         /// Item name
@@ -27,23 +28,23 @@ namespace Shesha.Domain
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; private set; }
+        public string? Module { get; private set; }
 
-        public ConfigurationItemIdentifier(string module, string name)
+        public ConfigurationItemIdentifier(string? module, string name)
         {
             Module = module;
             Name = name;
         }
 
-        public bool Equals(ConfigurationItemIdentifier other)
+        public bool Equals(ConfigurationItemIdentifier? other)
         {
-            return other != null && 
-                ItemType == other.ItemType && Module == other.Module && Name == other.Name;
+            return other != null &&
+                ItemTypeName == other.ItemTypeName && Module == other.Module && Name == other.Name;
         }
 
-        public override bool Equals(object obj) => this.Equals(obj as ConfigurationItemIdentifier);
+        public override bool Equals(object? obj) => this.Equals(obj as ConfigurationItemIdentifier);
 
-        public static bool operator ==(ConfigurationItemIdentifier l, ConfigurationItemIdentifier r)
+        public static bool operator ==(ConfigurationItemIdentifier? l, ConfigurationItemIdentifier? r)
         {
             if (l is null)
             {
@@ -56,16 +57,41 @@ namespace Shesha.Domain
             return l.Equals(r);
         }
 
-        public static bool operator !=(ConfigurationItemIdentifier l, ConfigurationItemIdentifier r) => !(l == r);
+        public static bool operator !=(ConfigurationItemIdentifier? l, ConfigurationItemIdentifier? r) => !(l == r);
 
         [BindNever]
         [Bindable(false)]
         [JsonIgnore]
-        public string NormalizedFullName => $"{ItemType}:{Module}/{Name}".ToLower();
+        public string NormalizedFullName => $"{ItemTypeName}:{Module}/{Name}".ToLower();
 
         public override int GetHashCode()
         {
             return NormalizedFullName.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return NormalizedFullName;
+        }
     }
+
+    public abstract class ConfigurationItemIdentifier<TItem> : ConfigurationItemIdentifier where TItem : IConfigurationItem
+    {
+        protected ConfigurationItemIdentifier(string? module, string name) : base(module, name)
+        {
+        }
+
+        public override Type ItemType => typeof(TItem);
+        public override string ItemTypeName => ItemType.Name;
+    }
+
+    public interface IIdentifierFactory
+    {
+    }
+
+    public interface IIdentifierFactory<TSelf> : IIdentifierFactory where TSelf : IIdentifierFactory<TSelf>
+    {
+        static abstract TSelf New(string? module, string name);
+    }
+#nullable restore
 }

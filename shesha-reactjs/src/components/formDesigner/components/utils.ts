@@ -24,6 +24,20 @@ export interface ICustomEventHandler {
   setGlobalState: (payload: ISetStatePayload) => void;
 };
 
+export const addContextData = (context: any, additionalContext: any) => {
+  // if context is an ObservableProxy
+  if (context instanceof ObservableProxy /*|| context instanceof TouchableProxy*/) {
+    for(const propName in additionalContext) {
+      if (additionalContext.hasOwnProperty(propName)) {
+        context.addAccessor(propName, () => additionalContext[propName]);
+      }
+    }
+    return context;
+  }
+  // if context is a simple object
+  return {...context, ...additionalContext};
+};
+
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
   onChange: Function;
   onSelect: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>;

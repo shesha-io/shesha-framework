@@ -1,5 +1,4 @@
-﻿using Abp.Extensions;
-using Abp.UI;
+﻿using Abp.UI;
 using Castle.Core.Logging;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
@@ -16,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
+#nullable enable
     public class EmailChannelSender : INotificationChannelSender
     {
         private readonly IEmailSettings _emailSettings;
@@ -26,7 +26,7 @@ namespace Shesha.Notifications
             _emailSettings = emailSettings;
         }
 
-        public string GetRecipientId(Person person)
+        public string? GetRecipientId(Person person)
         {
             return person?.EmailAddress1;
         }
@@ -36,28 +36,26 @@ namespace Shesha.Notifications
             return await _emailSettings.EmailSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(IMessageSender fromPerson, IMessageReceiver toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender? sender, IMessageReceiver receiver, NotificationMessage message, List<EmailAttachment>? attachments = null)
         {
             var settings = await GetSettingsAsync();
 
             if (settings == null)
-                return new SendStatus()
-                {
-                    IsSuccess = false,
-                    Message = "Email settings are not configured"
-                };
+                return SendStatus.Failed("Email settings are not configured");
 
             if (!settings.EmailsEnabled)
             {
                 Logger.Warn("Emails are disabled");
-                return new SendStatus()
-                {
-                    IsSuccess = false,
-                    Message = "Emails are disabled."
-                };
+                return SendStatus.Failed("Emails are disabled");
             }
 
-            using (var mail = BuildMessageWith(fromPerson.GetAddress(this), !settings.RedirectAllMessagesTo.IsNullOrWhiteSpace() ? settings.RedirectAllMessagesTo : toPerson.GetAddress(this), message.Subject, message.Message, cc))
+            var toAddress = !string.IsNullOrWhiteSpace(settings.RedirectAllMessagesTo)
+                ? settings.RedirectAllMessagesTo
+                : receiver.GetAddress(this);
+            if (string.IsNullOrWhiteSpace(toAddress))
+                return SendStatus.Failed("Recipient address is empty");
+
+            using (var mail = BuildMessageWith(sender?.GetAddress(this), toAddress, message.Subject, message.Message, message.Cc))
             {
                 if (attachments != null)
                 {
@@ -69,22 +67,15 @@ namespace Shesha.Notifications
                 try
                 {
                     await SendEmailAsync(mail);
-                    return new SendStatus()
-                    {
-                        IsSuccess = true,
-                        Message = "Successfully Sent!"
-                    };
+                    return SendStatus.Success();
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Failed to send email", e);
-                    return new SendStatus()
-                    {
-                        IsSuccess = false,
-                        Message = e.Message
-                    };
+                    return SendStatus.Failed(e.Message);
                 }
-            };
+            }
+            ;
         }
 
         #region private methods
@@ -109,7 +100,7 @@ namespace Shesha.Notifications
             }
         }
 
-        private async Task<SmtpClient> GetSmtpClientAsync() 
+        private async Task<SmtpClient> GetSmtpClientAsync()
         {
             var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
             return GetSmtpClient(smtpSettings);
@@ -140,7 +131,7 @@ namespace Shesha.Notifications
         /// <param name="body"></param>
         /// <param name="cc"></param>
         /// <returns></returns>
-        private MailMessage BuildMessageWith(string fromAddress, string toAddress, string subject, string body, string cc = "")
+        private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string? cc = null)
         {
             var smtpSettings = _emailSettings.SmtpSettings.GetValue();
             var message = new MailMessage
@@ -204,4 +195,5 @@ namespace Shesha.Notifications
 
         #endregion
     }
+#nullable restore
 }
