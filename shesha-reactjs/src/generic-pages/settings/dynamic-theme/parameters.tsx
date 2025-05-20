@@ -93,13 +93,13 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
     <div style={{ marginTop: '10px' }}>
       <SectionSeparator title="Theme" />
 
-      <Space direction="vertical" align="start">
-        {colorConfigs.map((config, index) =>
-          renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex))
-        )}
-
-        <br />
-
+      <Space direction="vertical" align="start" size={24}>
+        <Space direction="vertical" align="start">
+          {colorConfigs.map((config, index) =>
+            renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex))
+          )}
+        </Space>
+        
         {/* Layout background Color */}
         {renderColor(
           'layoutBackground',
