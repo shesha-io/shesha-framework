@@ -84,17 +84,9 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       layout: 'horizontal',
                     },
-
                   ],
                 })
-                .addSettingsInput({
-                  inputType: 'textField',
-                  id: nanoid(),
-                  propertyName: 'defaultValue',
-                  label: 'Default Value',
-                  jsSetting: true,
-                  parentId: commonTabId,
-                })
+
                 .toJson(),
             ],
           },
@@ -105,13 +97,21 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
+                  inputType: 'textField',
+                  id: nanoid(),
+                  propertyName: 'defaultValue',
+                  label: 'Default Value',
+                  jsSetting: true,
+                  parentId: dataTabId,
+                })
+                .addSettingsInput({
                   id: nanoid(),
                   inputType: 'dropdown',
                   propertyName: 'dataSourceType',
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
-                  parentId: commonTabId,
+                  parentId: dataTabId,
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -146,6 +146,7 @@ export const getSettings = (data: any) => {
                       labelName: 'label',
                       valueTitle: 'Value',
                       valueName: 'value',
+                      jsSetting: true,
                       mode: 'dialog',
                     },
                   ],

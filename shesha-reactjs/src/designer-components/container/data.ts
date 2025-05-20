@@ -165,7 +165,8 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     borderRadius = '8',
     borderStyle = 'none',
     borderWidth = '1px',
-    shadowStyle
+    shadowStyle,
+    display = 'flex'
   } = prev || {};
 
 
@@ -173,6 +174,11 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
   const isAbove = shadowStyle === 'above';
 
   return {
+    background: {
+      type: 'color',
+      color: 'transparent',
+
+    },
     dimensions: {
       width,
       height,
@@ -196,7 +202,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0
     },
-    display: prev?.display,
+    display: display,
     direction: prev?.direction ?? "horizontal",
     flexWrap: prev?.flexWrap ?? "wrap",
     flexDirection: prev?.flexDirection ?? "row",

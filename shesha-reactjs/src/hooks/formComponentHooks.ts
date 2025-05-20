@@ -24,6 +24,7 @@ import { useDeepCompareEffect } from "./useDeepCompareEffect";
 import { getBackgroundStyle } from "@/designer-components/_settings/utils/background/utils";
 import { removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
+import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
 
 export function useActualContextData<T = any>(
   model: T,
@@ -177,7 +178,7 @@ export const useFormComponentStyles = <TModel,>(
   const app = useSheshaApplication();
   const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
 
-  const { dimensions, border, font, shadow, background, stylingBox } = model;
+  const { dimensions, border, font, shadow, background, stylingBox, overflow, hideScrollBar } = model;
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
@@ -192,6 +193,7 @@ export const useFormComponentStyles = <TModel,>(
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
+  const overflowStyles = useMemo(() => getOverflowStyle(overflow, hideScrollBar), [overflow, hideScrollBar]);
 
   useDeepCompareEffect(() => {
     if (background?.storedFile?.id && background?.type === 'storedFile') {
@@ -218,8 +220,9 @@ export const useFormComponentStyles = <TModel,>(
       ...fontStyles,
       ...backgroundStyles,
       ...shadowStyles,
+      ...overflowStyles,
       fontWeight: fontStyles.fontWeight || 400,
-    }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles]);
+    }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles]);
 
   const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, ...jsStyle }), [appearanceStyle, jsStyle]);
 
@@ -230,10 +233,11 @@ export const useFormComponentStyles = <TModel,>(
     fontStyles,
     backgroundStyles,
     shadowStyles,
+    overflowStyles,
     jsStyle,
     appearanceStyle,
     fullStyle
-  }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, jsStyle, appearanceStyle, fullStyle]);
+  }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles, jsStyle, appearanceStyle, fullStyle]);
 
   return allStyles;
 };

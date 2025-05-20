@@ -308,80 +308,75 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 justifyContent: 'left',
                                 settingsValidationErrors: [],
                                 components: [...new DesignerToolbarSettings()
-                                    .addSettingsInput({
-                                        id: nanoid(),
-                                        inputType: 'autocomplete',
-                                        allowClear: true,
-                                        propertyName: 'entityType',
-                                        label: 'Entity Type',
-                                        labelAlign: 'right',
-                                        parentId: dataTabId,
-                                        hidden: false,
-                                        dataSourceType: 'url',
-                                        validate: { required: true },
-                                        dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                                        settingsValidationErrors: [],
-                                        useRawValues: true,
-                                        width: '100%',
-                                        jsSetting: true,
-                                    })
-                                    .addPropertyAutocomplete({
-                                        id: nanoid(),
-                                        propertyName: 'entityDisplayProperty',
-                                        label: 'Display Property',
-                                        parentId: dataTabId,
-                                        modelType: {
-                                            _code: 'return getSettingValue(data?.entityType);',
-                                            _mode: 'code',
-                                            _value: false
-                                        } as any,
-                                        isDynamic: false,
-                                        autoFillProps: false,
-                                        settingsValidationErrors: [],
-                                        hidden: {
-                                            _code: 'return !getSettingValue(data?.entityType);',
-                                            _mode: 'code',
-                                            _value: false
-                                        },
-                                        size: 'small',
-                                        validate: {
-                                            required: true,
+                                    .addSettingsInput(
+                                        {
+                                            id: nanoid(),
+                                            inputType: 'autocomplete',
+                                            propertyName: 'entityType',
+                                            label: 'Entity Type',
+                                            labelAlign: 'right',
+                                            parentId: dataTabId,
+                                            hidden: false,
+                                            dataSourceType: 'url',
+                                            validate: {},
+                                            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                                            useRawValues: true
                                         }
-                                    })
-                                    .addSettingsInput({
+                                    )
+                                    .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        propertyName: 'filter',
-                                        label: 'Entity Filter',
-                                        isDynamic: true,
-                                        jsSetting: true,
-                                        validate: {},
                                         hidden: {
-                                            _code: 'return !getSettingValue(data?.entityType);',
+                                            _code: 'return !getSettingValue(data.entityType);',
                                             _mode: 'code',
                                             _value: false
                                         },
-                                        settingsValidationErrors: [],
-                                        modelType: {
-                                            _code: 'return getSettingValue(data?.entityType);',
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'queryBuilder',
+                                                parentId: dataTabId,
+                                                propertyName: 'filter',
+                                                label: 'Entity Filter',
+                                                isDynamic: true,
+                                                jsSetting: true,
+                                                validate: {},
+                                                hidden: false,
+                                                settingsValidationErrors: [],
+                                                modelType: "{{data.entityType}}",
+                                                fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
+                                            },
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: {
+                                            _code: 'return !getSettingValue(data.entityType);',
                                             _mode: 'code',
                                             _value: false
-                                        } as any,
-                                        fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
+                                        },
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                propertyName: 'entityDisplayProperty',
+                                                label: 'Display Property',
+                                                parentId: dataTabId,
+                                                modelType: "{{data.entityType}}",
+                                                isDynamic: false,
+                                                hidden: false,
+                                                autoFillProps: false,
+                                                settingsValidationErrors: [],
+                                                type: 'propertyAutocomplete',
+                                                size: 'small',
+                                                validate: {
+                                                    required: true,
+                                                }
+                                            }
+                                        ],
                                     })
                                     .toJson()
                                 ]
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: nanoid(),
-                                inputType: 'switch',
-                                propertyName: 'useRawValues',
-                                label: 'Use raw values',
-                                size: 'small',
-                                layout: 'horizontal',
-                                jsSetting: true,
-                                parentId: dataTabId
                             })
                             .toJson()
                         ]
