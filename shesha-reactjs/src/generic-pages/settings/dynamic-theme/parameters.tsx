@@ -1,5 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
+import { Form, Radio, Space, Tooltip, InputNumber } from 'antd';
 import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
