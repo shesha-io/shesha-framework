@@ -400,7 +400,11 @@ export const settingsForm = new DesignerToolbarSettings()
             isDynamic: false,
             description: 'The property to be used on the x-axis.',
             validate: { required: true },
-            modelType: '{{data.entityType}}',
+            modelType: {
+              _code: 'return getSettingValue(data?.entityType);',
+              _mode: 'code',
+              _value: false
+            } as any,
             autoFillProps: false,
             settingsValidationErrors: [],
             hidden: {
@@ -449,7 +453,11 @@ export const settingsForm = new DesignerToolbarSettings()
             isDynamic: false,
             description: 'This is the property that will be used to calculate the data and hence show on the depenedent y-axis.',
             validate: { required: true },
-            modelType: '{{data.entityType}}',
+            modelType: {
+              _code: 'return getSettingValue(data?.entityType);',
+              _mode: 'code',
+              _value: false
+            } as any,
             autoFillProps: false,
             settingsValidationErrors: [],
             hidden: {
@@ -472,7 +480,11 @@ export const settingsForm = new DesignerToolbarSettings()
             isDynamic: false,
             description: 'The properties you want to use on the Legend. This is the property that will be used to group the data for Pivot Charts.',
             validate: { required: true },
-            modelType: '{{data.entityType}}',
+            modelType: {
+              _code: 'return getSettingValue(data?.entityType);',
+              _mode: 'code',
+              _value: false
+            } as any,
             autoFillProps: false,
             settingsValidationErrors: [],
           })
@@ -485,7 +497,11 @@ export const settingsForm = new DesignerToolbarSettings()
             hidden: false,
             isDynamic: false,
             description: 'The properties you want to order the data by. Use the propeties that you have selected for axis, value (and legend).',
-            modelType: '{{data.entityType}}',
+            modelType: {
+              _code: 'return getSettingValue(data?.entityType);',
+              _mode: 'code',
+              _value: false
+            } as any,
             autoFillProps: false,
             settingsValidationErrors: [],
           })
@@ -524,7 +540,11 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             isDynamic: true,
             description: 'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
-            modelType: '{{data.entityType}}',
+            modelType: {
+              _code: 'return getSettingValue(data?.entityType);',
+              _mode: 'code',
+              _value: false
+            } as any,
             autoFillProps: false,
             settingsValidationErrors: [],
             hidden: {
@@ -559,7 +579,11 @@ export const settingsForm = new DesignerToolbarSettings()
             isDynamic: false,
             validate: {},
             settingsValidationErrors: [],
-            modelType: '{{data.entityType}}',
+            modelType: {
+              _code: 'return getSettingValue(data?.entityType);',
+              _mode: 'code',
+              _value: false
+            } as any,
             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
           })
           .toJson()

@@ -40,6 +40,7 @@ export enum FormActionEnums {
   UpdateChildComponents = 'UPDATE_CHILD_COMPONENTS',
   SetValidationErrors = 'SET_VALIDATION_ERRORS',
   SetSelectedComponent = 'SET_SELECTED_COMPONENT',
+  SetPreviousSelectedComponent = 'SET_PREVIOUS_SELECTED_COMPONENT',
   UpdateFormSettings = 'UPDATE_FORM_SETTINGS',
 
   AddDataSource = 'ADD_DATA_SOURCE',
@@ -119,6 +120,11 @@ export const updateChildComponentsAction = createAction<IUpdateChildComponentsPa
 
 export const setSelectedComponentAction = createAction<ISetSelectedComponentPayload, ISetSelectedComponentPayload>(
   FormActionEnums.SetSelectedComponent,
+  (p) => p
+);
+
+export const setPreviousSelectedComponentAction = createAction<ISetSelectedComponentPayload, ISetSelectedComponentPayload>(
+  FormActionEnums.SetPreviousSelectedComponent,
   (p) => p
 );
 

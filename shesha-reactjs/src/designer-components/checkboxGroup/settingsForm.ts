@@ -63,25 +63,6 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'dropdown',
-                  propertyName: 'mode',
-                  label: 'Mode',
-                  size: 'small',
-                  jsSetting: true,
-                  parentId: commonTabId,
-                  dropdownOptions: [
-                    {
-                      label: 'Single',
-                      value: 'single',
-                    },
-                    {
-                      label: 'Multiple',
-                      value: 'multiple',
-                    },
-                  ],
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
@@ -117,6 +98,25 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'dropdown',
+                  propertyName: 'mode',
+                  label: 'Mode',
+                  size: 'small',
+                  jsSetting: true,
+                  parentId: dataTabId,
+                  dropdownOptions: [
+                    {
+                      label: 'Single',
+                      value: 'single',
+                    },
+                    {
+                      label: 'Multiple',
+                      value: 'multiple',
+                    },
+                  ],
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'dropdown',
                   propertyName: 'dataSourceType',
                   label: 'Data Source Type',
                   size: 'small',
@@ -132,7 +132,7 @@ export const getSettings = (data: any) => {
                       value: 'referenceList',
                     },
                     {
-                      label: 'Api URL',
+                      label: 'API URL',
                       value: 'url',
                     },
                   ],
@@ -157,6 +157,7 @@ export const getSettings = (data: any) => {
                       valueTitle: 'Value',
                       valueName: 'value',
                       mode: 'dialog',
+                      jsSetting: true,
                     },
                   ],
                 })

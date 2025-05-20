@@ -1,11 +1,11 @@
-import { Checkbox, Col, Row } from 'antd';
-import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
-import { useReferenceList } from '@/providers/referenceListDispatcher';
-import { getDataSourceList } from '../radio/utils';
-import { getSpan, ICheckboxGroupProps } from './utils';
-import { nanoid } from '@/utils/uuid';
 import { executeScriptSync } from '@/index';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { nanoid } from '@/utils/uuid';
+import { Checkbox } from 'antd';
+import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
+import { getDataSourceList } from '../radio/utils';
+import { ICheckboxGroupProps } from './utils';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items, referenceListId, direction, value, onChange } = model;
@@ -34,23 +34,26 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     return list.map((item) => (item.id ? item : { ...item, id: nanoid() }));
   }, [model.dataSourceType, items, refList?.items, reducedData]);
 
+  const checkboxGroupStyle: CSSProperties = {
+    ...model.style,
+    display: 'flex',
+    flexDirection: direction === 'vertical' ? 'column' : 'row',
+    flexWrap: direction === 'vertical' ? 'nowrap' : 'wrap',
+    gap: '8px',
+  };
   return (
     <div
       tabIndex={0}
       onFocus={(e) => model.onFocus?.({ ...e, target: { value: value, ...e.target } })}
       onBlur={(e) => model.onBlur?.({ ...e, target: { value: value, ...e.target } })}
     >
-      <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model.style}>
-        <Row>
-          {options.map(({ id, label, value: v }) => (
-            <Col id={id} span={getSpan(direction, options.length)} key={id}>
-              <Checkbox id={id} value={v} disabled={model.readOnly}>
-                {label}
-              </Checkbox>
-            </Col>
-          ))}
-        </Row>
-      </Checkbox.Group>
+      <Checkbox.Group
+        className="sha-multi-checkbox"
+        value={value}
+        onChange={onChange}
+        style={checkboxGroupStyle}
+        options={options}
+      />
     </div>
   );
 };

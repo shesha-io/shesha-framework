@@ -1,7 +1,7 @@
 import { settingsGetValue, settingsUpdateValue } from '@/apis/settings';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import { useSheshaApplication } from '@/providers';
+import { useSheshaApplication, useTheme } from '@/providers';
 import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
 import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import * as RestfulShesha from '@/utils/fetchers';
@@ -71,8 +71,12 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     ...SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
   };
   const { backendUrl, httpHeaders } = useSheshaApplication();
-
   const [state, dispatch] = useThunkReducer(settingsEditorReducer, initial);
+
+  const { resetToApplicationTheme } = useTheme();
+  useEffect(() => {
+    resetToApplicationTheme();
+  }, [state.applications, state.settingSelection]);
 
   const fetchConfigurations = () => {
     dispatch(fetchConfigurationsAction());

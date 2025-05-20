@@ -6,18 +6,17 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Button, Flex, Result, Spin } from 'antd';
+import { Alert, Flex, Result, Spin } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import BarChart from './components/bar';
-import FilterComponent from './components/filterComponent';
 import LineChart from './components/line';
 import PieChart from './components/pie';
 import PolarAreaChart from './components/polarArea';
-import { useBarChartData, useLineChartData, usePieOrPolarAreaChartData, usePivotChartData } from "./hooks";
+import { useProcessedChartData } from "./hooks";
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams } from './utils';
+import { formatDate, getChartDataRefetchParams } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty,
@@ -28,7 +27,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const state = useChartDataStateContext();
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
-  const { setData, setIsFilterVisible, setIsLoaded, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
+  const { setData, setIsLoaded, setFilterdData, setControlProps } = useChartDataActionsContext();
   const { data: formData } = useFormData();
 
   const { styles, cx } = useStyles();
@@ -103,10 +102,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     }
   }, [state.data]);
 
-  const lineChartData = useLineChartData();
-  const barChartData = useBarChartData();
-  const pieOrPolarAreaChartData = usePieOrPolarAreaChartData();
-  const pivotChartData = usePivotChartData();
+  const lineChartData = useProcessedChartData();
+  const barChartData = useProcessedChartData();
+  const pieOrPolarAreaChartData = useProcessedChartData();
+  const pivotChartData = useProcessedChartData();
 
   if (!entityType || !chartType || !valueProperty || !axisProperty) {
     // Collect the missing properties in an array
@@ -129,20 +128,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  const toggleFilterVisibility = () => {
-    setIsFilterVisible(!state.isFilterVisible);
-  };
-
-  const resetFilter = () => {
-    setChartFilters([]);
-    setFilterdData(state.data);
-  };
-
-  const onFilter = () => {
-    const afterFilterData = applyFilters(state.data, state.chartFilters);
-    setFilterdData(afterFilterData);
-  };
-
   let data: IChartData;
 
   if (!state.isLoaded) {
@@ -159,25 +144,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       width: props?.width > 300 ? props.width : 'auto',
       border: props?.showBorder ? '1px solid #ddd' : 'none'
     }}>
-      <div className={cx(styles['margin-bottom-10'])}>
-        <Flex justify='start' align='center' className={cx(styles.chartControlButtonContainer)}>
-          <Button size='small' onClick={toggleFilterVisibility}>
-            {state.isFilterVisible ? 'Hide Filter' : 'Show Filter'}
-          </Button>
-          <Button size='small' onClick={resetFilter}>
-            Reset Filter
-          </Button>
-        </Flex>
-        <FilterComponent
-          filters={state.chartFilters}
-          setFilters={setChartFilters}
-          properties={filterProperties?.length > 0 ? filterProperties : getAllProperties(state.filteredData)}
-          isVisible={state.isFilterVisible}
-          onClose={toggleFilterVisibility}
-          onFilter={onFilter}
-          resetFilter={resetFilter}
-        />
-      </div>
       {children}
     </div>
   );
