@@ -138,7 +138,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerType: '',
         ownerName: '',
         listType: 'text',
-        layout: 'horizontal',
+        filesLayout: 'horizontal',
         hideFileName: true,
         editMode: 'inherited'
       };
@@ -151,7 +151,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
 };
 

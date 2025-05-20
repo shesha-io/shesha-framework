@@ -106,7 +106,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
 
   const { styles } = useStyles({
-    containerStyles: { ...{ ...containerDimensionsStyles, width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
+    containerStyles: {
+      ...containerDimensionsStyles,
+      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
+      ...containerJsStyle, ...stylingBoxAsCSS,
+    },
     style: model?.allStyles?.fullStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
@@ -245,7 +249,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   return (
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
-      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
+      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical :
+        layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
       {isStub
         ? (isDragger
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
