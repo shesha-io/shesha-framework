@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Shesha.Tests.Otp
 {
+#nullable enable
     public class PasswordGenerator_Tests
     {
         [Theory]
@@ -16,15 +17,16 @@ namespace Shesha.Tests.Otp
         {
             var settings = new Mock<IOtpSettings>();
 
-            var passwordLengthAccessor = new Mock<ISettingAccessor<int>>();
-            passwordLengthAccessor.Setup(s => s.GetValue()).Returns(length);
+            var otpSettings = new OtpSettings
+            {
+                Alphabet = alphabet,
+                PasswordLength = length,
+            };
+            var otpSettingsMock = new Mock<ISettingAccessor<OtpSettings>>();
+            otpSettingsMock.Setup(s => s.GetValueOrNull(null)).Returns(otpSettings);
+            otpSettingsMock.Setup(s => s.GetValue(null)).Returns(otpSettings);
 
-            settings.SetupGet(s => s.OneTimePins.GetValue().PasswordLength).Returns(passwordLengthAccessor.Object.GetValue());
-
-            var alphabetAccessor = new Mock<ISettingAccessor<string>>();
-            alphabetAccessor.Setup(s => s.GetValue()).Returns(alphabet);
-            settings.SetupGet(s => s.OneTimePins.GetValue().Alphabet).Returns(alphabetAccessor.Object.GetValue());
-
+            settings.SetupGet(s => s.OneTimePins).Returns(otpSettingsMock.Object);
 
             var generator = new Shesha.Otp.OtpGenerator(settings.Object);
 
@@ -34,4 +36,5 @@ namespace Shesha.Tests.Otp
             pass.All(c => alphabet.Contains(c)).ShouldBe(true);
         }
     }
+#nullable restore
 }

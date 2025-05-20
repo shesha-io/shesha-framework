@@ -119,3 +119,4 @@ export { ButtonGroupConfigurator } from './buttonGroupConfigurator';
 export { ConfigurableComponentRenderer } from "./configurableComponentRenderer";
 export { PermissionAutocomplete, type IPermissionAutocompleteProps } from './permissionAutocomplete';
 export { ConfigItemAutocomplete } from './configurableItemAutocomplete';
+export { RefListSimpleDropdown as RefListDropdown } from './queryBuilder/widgets/refListDropDown/simpleDropdown';

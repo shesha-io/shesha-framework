@@ -4,6 +4,7 @@ using Abp.AutoMapper;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Shesha.ConfigurationItems;
+using Shesha.Domain;
 using Shesha.Modules;
 using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Services;
