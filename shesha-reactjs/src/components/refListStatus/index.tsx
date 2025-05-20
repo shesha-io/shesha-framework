@@ -33,7 +33,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
   const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
-  const { fontSize, fontWeight, textAlign } = style;
+  const { fontSize, fontWeight, textAlign, color, backgroundColor, backgroundImage, ...rest } = style;
   const fontStyles = { fontSize, fontWeight, textAlign };
   const { styles } = useStyles({ dimensionsStyles, fontStyles });
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
@@ -64,7 +64,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
         <RefTag
           color={solidBackground && itemData?.color}
           icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
-          style={!solidBackground || !itemData?.color ? style : undefined}
+          style={!solidBackground || !itemData?.color ? style : { ...rest }}
           styles={styles}
         >
           {showReflistName && itemData?.item}
