@@ -69,6 +69,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
       margin: unset;
           
       .${shaStepsContent} {
+        flex: 1 1 auto;
+        white-space: nowrap;
         margin: 20px 0;
       }
   
