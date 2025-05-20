@@ -1,13 +1,13 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, useCallback, useMemo } from 'react';
 import { EntityPicker, ValidationErrors } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, IStyleType, useSheshaApplication } from '@/providers';
+import { ButtonGroupItemProps, IStyleType } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
-import { executeExpression, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeExpression, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
@@ -18,14 +18,8 @@ import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/mod
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { customOnChangeValueEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
+import { getValueByPropertyName } from '@/utils/object';
 import { getSettings } from './settingsForm';
-import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { CSSProperties } from 'styled-components';
 import { defaultStyles } from './utils';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
@@ -63,8 +57,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const { filters, modalWidth, customWidth, widthUnits, style } = model;
+    const { filters, modalWidth, customWidth, widthUnits } = model;
 
     const displayEntityKey = model.displayEntityKey || '_displayName';
 
@@ -103,62 +96,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, model.entityType]);
 
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-    const jsStyle = getStyle(model.style, model);
-
-    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-
-      const fetchStyles = async () => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
-
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const computedStyle = getStyle(style, allData.data) ?? {};
-
-    const additionalStyles = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...(border?.hideBorder ? {} : {
-        ...borderStyles
-      }),
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
-    }) as CSSProperties;
-
-
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400, ...computedStyle });
-
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
+
+    const finalStyle = model.allStyles.fullStyle;
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
@@ -175,7 +119,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               incomeValueFunc={incomeValueFunc}
               outcomeValueFunc={outcomeValueFunc}
               placeholder={model.placeholder}
-              style={finalStyle}
+              style={{ ...finalStyle }}
               formId={model.id}
               readOnly={model.readOnly}
               displayEntityKey={displayEntityKey}
@@ -201,7 +145,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               value={value}
               onChange={onChangeInternal}
               size={model.size}
-              dividerStyle={border?.border?.middle}
+              dividerStyle={model.border?.border?.middle}
             />
           );
         }}
