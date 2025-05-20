@@ -16,7 +16,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
     width: ${style?.width || '100%'};
     .${pickerInputGroup} {
       .${pickerInputGroupInput} {
-        width: calc(100% - ${pickerEllipsisBtnWidth});
+        width: calc(100% + ${pickerEllipsisBtnWidth});
       }
         
       .${pickerInputGroupEllipsis} {

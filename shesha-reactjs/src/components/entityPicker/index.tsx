@@ -154,12 +154,13 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     marginTop, marginRight, marginBottom,
     height, minHeight, maxHeight,
     marginLeft, paddingTop, paddingRight, paddingBottom,
+    backgroundSize, backgroundPosition, backgroundRepeat,
     paddingLeft, ...restStyle } = style;
 
   const borderRadii = style?.borderRadius?.toString().split(' ');
 
   return (
-    <div className={styles.entityPickerContainer}>
+    <div className={styles.entityPickerContainer} style={{ width, minWidth, maxWidth, }}>
       <div>
         {useButtonPicker ? (
           <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})} style={style}>
@@ -167,8 +168,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           </Button>
         ) : (
           <div style={{
-            display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-            width, minWidth, maxWidth, boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius, height, minHeight, maxHeight
+            display: 'flex', flexDirection: 'row', alignItems: 'stretch', position: 'relative', backgroundSize, backgroundPosition, backgroundRepeat,
+            boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius, height, minHeight, maxHeight
           }}>
             <Select
               size={size}
@@ -231,6 +232,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                 height: '100%',
                 minHeight: '100%',
                 maxHeight: '100%',
+                position: 'absolute',
+                left: 'calc(100% - 32px)',
               }}
               type='text'
             />

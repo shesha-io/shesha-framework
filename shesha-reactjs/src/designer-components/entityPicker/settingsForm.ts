@@ -177,7 +177,6 @@ export const getSettings = (data) => {
                         id: nanoid(),
                         propertyName: 'filters',
                         label: 'Entity Filter',
-                        jsSetting: true,
                         modelType: '{{data.entityType}}',
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                         hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
