@@ -168,7 +168,7 @@
                 ]
             },
             "collapsible": "header",
-            "ghost": false,
+            "ghost": true,
             "isSimpleDesign": false
         }
     ],
