@@ -185,7 +185,11 @@ export const getSettings = (data: any) => {
                             isDynamic: false,
                             description: 'The property to be used on the x-axis.',
                             validate: { required: true },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -253,7 +257,11 @@ export const getSettings = (data: any) => {
                             isDynamic: false,
                             description: 'The property to be used on the x-axis.',
                             validate: { required: true },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -281,7 +289,11 @@ export const getSettings = (data: any) => {
                             description:
                               'The properties you want to use on the Legend. This is the property that will be used to group the data for Pivot Charts.',
                             validate: { required: true },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -309,7 +321,11 @@ export const getSettings = (data: any) => {
                             description:
                               'The properties you want to order the data by. Use the propeties that you have selected for axis, value (and legend).',
                             validate: { required: false },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -359,11 +375,15 @@ export const getSettings = (data: any) => {
                         labelAlign: 'right',
                         parentId: dataTabId,
                         inputType: 'queryBuilder',
-                        hidden: false,
                         isDynamic: false,
                         validate: {},
                         settingsValidationErrors: [],
-                        modelType: '{{data.entityType}}',
+                        modelType: {
+                          _code: 'return getSettingValue(data?.entityType);',
+                          _mode: 'code',
+                          _value: false
+                        } as any,
+                        hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                       })
                       .toJson(),

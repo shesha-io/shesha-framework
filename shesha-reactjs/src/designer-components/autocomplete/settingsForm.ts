@@ -1,8 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -267,7 +266,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 type: 'propertyAutocomplete',
                                                 propertyName: 'quickviewDisplayPropertyName',
                                                 parentId: dataTabId,
-                                                modelType: '{{data.entityType}}',
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
                                                 label: 'Display Property Name',
                                                 version: 5
                                             }

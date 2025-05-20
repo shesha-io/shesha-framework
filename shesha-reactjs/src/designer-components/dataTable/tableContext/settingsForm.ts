@@ -280,7 +280,11 @@ export const getSettings = (data: any) => {
                             isDynamic: false,
                             validate: {},
                             settingsValidationErrors: [],
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             width: '100%',
                             jsSetting: false,
@@ -352,7 +356,11 @@ export const getSettings = (data: any) => {
                             description:
                               'The properties you want to order the data by. Use the propeties that you have selected for axis, value (and legend).',
                             validate: { required: false },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -428,7 +436,11 @@ export const getSettings = (data: any) => {
                             customVisibility: null,
                             isDynamic: false,
                             version: 0,
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                             validate: {},
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -464,7 +476,11 @@ export const getSettings = (data: any) => {
                             validate: {},
                             settingsValidationErrors: [],
                             jsSetting: true,
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false
+                            } as any,
                           },
                         ],
                       })

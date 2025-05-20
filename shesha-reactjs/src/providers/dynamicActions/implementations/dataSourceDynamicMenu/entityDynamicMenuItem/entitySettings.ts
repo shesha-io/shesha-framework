@@ -1,18 +1,20 @@
+import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
+    const parentId = nanoid();
     return {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
-                id: 'uEFBpy19tApJMiBuFyj9s',
+                id: parentId,
                 inputs: [
                     {
-                        id: 'c1ffda30-8eea-4621-aae7-0af583143df6',
+                        id: nanoid(),
                         type: 'autocomplete',
                         propertyName: 'entityTypeShortAlias',
                         label: 'Entity Type',
                         labelAlign: 'right',
-                        parentId: 'uEFBpy19tApJMiBuFyj9s',
                         hidden: false,
                         dataSourceType: 'url',
                         validate: {},
@@ -20,78 +22,117 @@ export const getSettings = () => {
                         useRawValues: true
                     },
                     {
-                        id: 'Oc8E6PaJFth8z9iCGVsty',
+                        id: nanoid(),
                         type: 'numberField',
                         propertyName: 'maxResultCount',
                         label: 'Max Result Count',
                         labelAlign: 'right',
-                        parentId: 'rqEyWa_qG99Qo53kIjCKb',
                         hidden: false,
                         validate: {},
                         settingsValidationErrors: []
                     }
                 ]
             })
-            .addSettingsInput({
-                id: 'n4enebtmhFgvkP5ukQK1f',
-                inputType: 'queryBuilder',
-                propertyName: 'filter',
-                label: 'Entity Filter',
-                labelAlign: 'right',
-                parentId: 'uEFBpy19tApJMiBuFyj9s',
-                hidden: false,
-                isDynamic: false,
-                validate: {},
-                settingsValidationErrors: [],
-                modelType: '{{data.entityTypeShortAlias}}',
-                fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                version: 2
-            })
-            .addSettingsInputRow({
-                id: 'n4enebtmhFgvkP5ukQK1f-row',
+            .addContainer({
+                id: nanoid(),
+                parentId: parentId,
                 hidden: {
                     _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
                     _mode: 'code',
                     _value: false
                 },
+                components: [...new DesignerToolbarSettings()
+                    .addSettingsInputRow({
+                        id: nanoid(),
+                        inputs: [{
+                            id: nanoid(),
+                            type: 'queryBuilder',
+                            propertyName: 'filter',
+                            label: 'Entity Filter',
+                            labelAlign: 'right',
+                            parentId: parentId,
+                            isDynamic: false,
+                            validate: {},
+                            settingsValidationErrors: [],
+                            modelType: {
+                                _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+                                _mode: 'code',
+                                _value: false
+                            } as any,
+                            hidden: {
+                                _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
+                                _mode: 'code',
+                                _value: false
+                            } as any,
+                            fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                        }]
+                    })
+
+                    .addSettingsInputRow({
+                        id: nanoid(),
+                        inputs: [
+                            {
+                                id: nanoid(),
+                                type: 'propertyAutocomplete',
+                                propertyName: 'labelProperty',
+                                label: 'Label Property',
+                                labelAlign: 'right',
+                                parentId: parentId,
+
+                                isDynamic: false,
+                                placeholder: '',
+                                description: 'Name of the property that should be used for the label of the button.',
+                                validate: {
+                                    required: true
+                                },
+                                modelType: {
+                                    _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+                                    _mode: 'code',
+                                    _value: false
+                                } as any,
+                                autoFillProps: false,
+                            },
+                            {
+                                id: nanoid(),
+                                type: 'propertyAutocomplete',
+                                propertyName: 'tooltipProperty',
+                                label: 'Tooltip Property',
+                                labelAlign: 'right',
+                                parentId: parentId,
+                                isDynamic: false,
+                                placeholder: '',
+                                description: 'Name of the property that should be used for the tooltip of the button.',
+                                validate: {},
+                                modelType: {
+                                    _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+                                    _mode: 'code',
+                                    _value: false
+                                } as any,
+                                autoFillProps: false
+                            }]
+                    })
+                    .toJson()
+                ]
+            })
+            .addSettingsInputRow({
+                id: nanoid(),
+                parentId: parentId,
                 inputs: [
                     {
-                        id: 'hpm6rN_aj-L_KaG5MLIZt',
-                        type: 'propertyAutocomplete',
-                        propertyName: 'labelProperty',
-                        label: 'Label Property',
+                        id: nanoid(),
+                        type: 'dropdown',
+                        propertyName: 'buttonType',
+                        label: 'Button Type',
                         labelAlign: 'right',
-                        parentId: 'n4enebtmhFgvkP5ukQK1f-row',
-
-                        isDynamic: false,
-                        placeholder: '',
-                        description: 'Name of the property that should be used for the label of the button.',
+                        hidden: false,
                         validate: {
                             required: true
                         },
-                        modelType: '{{data.entityTypeShortAlias}}',
-                        autoFillProps: false,
+                        dropdownOptions: buttonTypes,
+                        jsSetting: false
                     },
                     {
-                        id: 'hpm6oN_aj-L_KaG5MLIZt',
-                        type: 'propertyAutocomplete',
-                        propertyName: 'tooltipProperty',
-                        label: 'Tooltip Property',
-                        labelAlign: 'right',
-                        parentId: 'n4enebtmhFgvkP5ukQK1f-row',
-                        isDynamic: false,
-                        placeholder: '',
-                        description: 'Name of the property that should be used for the tooltip of the button.',
-                        validate: {},
-                        modelType: '{{data.entityTypeShortAlias}}',
-                        autoFillProps: false
-                    }]
-            })
-            .addSettingsInputRow({
-                id: 'Vl0092ZM-SeCukk5VlgXm-row',
-                inputs: [
-                    {
-                        id: 'F3B46A95-703F-4465-96CA-A58490A5F78C',
+                        id: nanoid(),
                         type: 'configurableActionConfigurator',
                         propertyName: 'actionConfiguration',
                         label: 'Action Configuration',
@@ -100,7 +141,6 @@ export const getSettings = () => {
                         validate: {},
                         jsSetting: false,
                         settingsValidationErrors: [],
-                        parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
                     }
                 ]
             })
