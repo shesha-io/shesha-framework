@@ -498,7 +498,7 @@ export const getItemSettings = () => {
                           label: 'Family',
                           propertyName: 'font.type',
                           hideLabel: true,
-                          placeholder: 'Select a font',
+                          placeholder: 'Segoe UI',
                           dropdownOptions: fontTypes,
                         },
                         {
