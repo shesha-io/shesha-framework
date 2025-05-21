@@ -274,8 +274,6 @@ export interface IConfigurableFormComponent
   mobile?: any;
 
   allStyles?: IFormComponentStyles;
-
-  overflow?: boolean;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

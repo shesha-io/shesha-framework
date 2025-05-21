@@ -1,4 +1,4 @@
-export const getOverflowStyle = (overflow, hideScrollBar: boolean): React.CSSProperties => {
+export const getOverflowStyle = (overflow: boolean, hideScrollBar: boolean): React.CSSProperties => {
     if (!overflow) return {};
     return {
         overflow: 'auto',
