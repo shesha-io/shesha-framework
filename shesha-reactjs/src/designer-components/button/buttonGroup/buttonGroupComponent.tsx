@@ -21,7 +21,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
-    return model.hidden ? null : <ButtonGroup {...model} readOnly={model.readOnly} form={form} />;
+    return model.hidden ? null : <ButtonGroup {...model} style={model.allStyles.fullStyle} readOnly={model.readOnly} form={form} />;
   },
   actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m

@@ -1,4 +1,3 @@
-import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
@@ -118,19 +117,6 @@ export const getSettings = () => {
                 id: nanoid(),
                 parentId: parentId,
                 inputs: [
-                    {
-                        id: nanoid(),
-                        type: 'dropdown',
-                        propertyName: 'buttonType',
-                        label: 'Button Type',
-                        labelAlign: 'right',
-                        hidden: false,
-                        validate: {
-                            required: true
-                        },
-                        dropdownOptions: buttonTypes,
-                        jsSetting: false
-                    },
                     {
                         id: nanoid(),
                         type: 'configurableActionConfigurator',

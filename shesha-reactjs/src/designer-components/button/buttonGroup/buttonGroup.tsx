@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useState } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -200,52 +200,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
 
-    const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form, dimensions, shadow, border, background, style, stylingBox } = props;
-    const jsStyle = getStyle(style, props);
-
-    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-        const fetchStyles = async () => {
-            const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-                ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-                    { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-                    .then((response) => {
-                        return response.blob();
-                    })
-                    .then((blob) => {
-                        return URL.createObjectURL(blob);
-                    }) : '';
-
-            const bgStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
-
-            setBackgroundStyles((prevStyles) => {
-                if (JSON.stringify(prevStyles) !== JSON.stringify(bgStyle)) {
-                    return bgStyle;
-                }
-                return prevStyles;
-            });
-        };
-
-        fetchStyles();
-    }, [background, backendUrl, httpHeaders, jsStyle]);
-
-    const styling = JSON.parse(stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles = removeUndefinedProps({
-        ...dimensionsStyles,
-        ...borderStyles,
-        ...backgroundStyles,
-        ...shadowStyles,
-        ...stylingBoxAsCSS,
-        ...jsStyle
-    });
-
-    const finalStyle = removeUndefinedProps({ ...additionalStyles });
+    const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form, background } = props;
 
 
     const isDesignMode = allData.form?.formMode === 'designer';
@@ -346,7 +301,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     if (isInline) {
         return (
-            <Button.Group size={size} style={finalStyle}>
+            <Button.Group size={size} style={props.style}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
                         (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
@@ -358,7 +313,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
 
         return (
-            <div className={styles.shaResponsiveButtonGroupContainer} style={finalStyle}>
+            <div className={styles.shaResponsiveButtonGroupContainer} style={props.style}>
                 <Menu
                     mode="horizontal"
                     items={menuItems}
