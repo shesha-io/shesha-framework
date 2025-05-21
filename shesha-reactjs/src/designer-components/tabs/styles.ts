@@ -17,8 +17,8 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         boxShadow,
         marginTop = '0px',
         marginBottom = '0px',
-        marginRight = '-1px',
-        marginLeft = '-1px',
+        marginRight = '0px',
+        marginLeft = '0px',
         paddingTop = '0px',
         paddingRight = '0px',
         paddingLeft = '0px',
@@ -32,7 +32,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         textAlign,
         color,
         fontFamily,
-        rest
+        ...rest
     } = styles;
 
     const {
@@ -73,17 +73,26 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
     const content = cx(
         'content',
         css`
+            --ant-tabs-horizontal-margin: 0 !important;
+            height: max-content;
+            margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important;
+
+            &.ant-tabs-left , &.ant-tabs-right {
+                height: ${styles.height || 'auto'} !important;
+                min-height: ${styles.minHeight || 'auto'} !important;
+                max-height: ${styles.maxHeight || 'auto'} !important;
+            }
+
             .ant-tabs-content-holder {
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
-                border: ${borderMap.default};
                 ${rest};
+                border: ${borderMap.default};
                 box-shadow: ${boxShadow} !important;
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
                 border-right:${isRight ? '0px solid transparent' : borderMap.right} !important;
                 border-bottom      : ${isBottom ? 'none' : borderMap.bottom} !important;
                 border-top: ${isTop ? 'none' : borderMap.top} !important;
                 background: ${backgroundImage || backgroundColor} !important;
-                margin: ${isTop ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isBottom ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isLeft ? `${marginTop} ${marginRight} ${marginBottom} 0` : `${marginTop} 0 ${marginBottom} ${marginLeft}`};
                 ${isTop || isLeft ? 'border-top-left-radius: 0px;' : `border-top-left-radius: ${borderTopLeftRadius};`}
                 ${isTop || isRight ? 'border-top-right-radius: 0px;' : `border-top-right-radius: ${borderTopRightRadius};`}
                 ${isBottom || isLeft ? 'border-bottom-left-radius: 0px;' : `border-bottom-left-radius: ${borderBottomLeftRadius};`}
@@ -92,6 +101,17 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${backgroundSize} !important;
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
+
+                .ant-tabs-content {
+                overflow: auto;
+                scrollbar-width: thin;
+                ::-webkit-scrollbar { 
+                    width: 8px;
+                    background-color: transparent;
+                }
+                    
+                height: 100%;
+                width: 100%;
             }
 
             .ant-tabs-tab {
@@ -169,6 +189,12 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
 
            .ant-tabs-nav-list {
                 ${isLeft && `border-right: ${borderMap.left}` || isRight && `border-left: ${borderMap.right}`};
+                ${isLeft || isRight && `
+                    height: ${styles.height} !important
+                    min-height: ${styles.minHeight} !important
+                    max-height: ${styles.maxHeight} !important
+                    `};
+
            }
         `
     );

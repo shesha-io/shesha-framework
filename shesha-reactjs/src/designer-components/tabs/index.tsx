@@ -84,18 +84,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
           children: (
             <ParentProvider model={item}>
-              <ComponentsContainer style={{
-                ...model.allStyles.dimensionsStyles,
-                overflow: overflow,
-                scrollbarWidth: 'thin',
-                ...(model.hideScrollBar && {
-                  '::-webkit-scrollbar': { display: 'none' },
-                  msOverflowStyle: 'none',
-                })
-              }}
-                wrapperStyle={{
-                  ...model.allStyles.dimensionsStyles,
-                }}
+              <ComponentsContainer
                 containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
             </ParentProvider>
           ),
