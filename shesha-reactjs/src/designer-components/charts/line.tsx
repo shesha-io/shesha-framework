@@ -35,8 +35,8 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ 
       chartType: 'line',
-      showTitle: true,
-      showLegend: false,
+      showTitle: false,
+      showLegend: true,
       legendPosition: 'top',
       hidden: false,
       ...prev,
@@ -44,6 +44,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(1, prev => ({ ...prev, hideLabel: true }))
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
+    .add<IChartProps>(4, prev => ({ ...prev, showTitle: true, showLegend: false }))
 };
 
 export default LineChartComponent;
