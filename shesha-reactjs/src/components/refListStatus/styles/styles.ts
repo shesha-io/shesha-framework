@@ -1,6 +1,7 @@
-import { createStyles } from 'antd-style';
+import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyles }) => {
+
   const shaStatusTag = 'sha-status-tag';
   const shaStatusTagContainer = cx(
     'sha-status-tag-container',
@@ -8,15 +9,22 @@ export const useStyles = createStyles(({ css, cx }) => {
       display: flex;
       align-items: center;
       width: fit-content;
+      ${dimensionsStyles};
+
+      > span {
+        ${dimensionsStyles};
+      }
 
       .${shaStatusTag} {
         text-transform: uppercase;
         display: flex;
         width: 100%;
-        justify-content: flex-start;
+        justify-content: ${fontStyles.textAlign === 'center' ? 'center' : fontStyles.textAlign === 'right' ? 'flex-end' : 'flex-start'};
         align-items: center;
         text-align: center;
         align-self: center;
+        ${fontStyles}
+
 
         .sha-help-icon {
           cursor: help;
