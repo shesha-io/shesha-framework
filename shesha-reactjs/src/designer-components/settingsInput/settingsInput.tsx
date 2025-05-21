@@ -8,10 +8,9 @@ import { evaluateString, useShaFormInstance } from '@/index';
 
 export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, hideLabel, propertyName: property, type,
     buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden, width,
-    size, inline, validate, modelType: modelTypeExpression, ...rest }) => {
+    size, inline, validate, modelType, ...rest }) => {
     const { formData } = useShaFormInstance();
 
-    const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
     const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
     return isHidden ? null :
