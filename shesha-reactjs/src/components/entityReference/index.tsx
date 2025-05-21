@@ -154,6 +154,12 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     if (props?.value?._displayName) setDisplayText(props?.value?._displayName);
   }, [entityId, entityType]);
 
+  useEffect(() => {
+    if (props.formIdentifier) {
+      setFormIdentifier(props.formIdentifier);
+    }
+  }, [props.formIdentifier]);
+
   /* Dialog */
 
   const dialogExecute = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
