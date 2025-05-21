@@ -35,8 +35,8 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ 
       chartType: 'line',
-      showTitle: false,
-      showLegend: true,
+      showTitle: true,
+      showLegend: false,
       legendPosition: 'top',
       hidden: false,
       ...prev,

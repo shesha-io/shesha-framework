@@ -35,7 +35,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ 
       chartType: 'pie',
-      showTitle: false,
+      showTitle: true,
       showLegend: true,
       legendPosition: 'top',
       hidden: false,

@@ -35,7 +35,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ 
       chartType: 'polarArea',
-      showTitle: false,
+      showTitle: true,
       showLegend: true,
       legendPosition: 'top',
       hidden: false,

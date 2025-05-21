@@ -35,8 +35,8 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ 
       chartType: 'bar',
-      showTitle: false,
-      showLegend: true,
+      showTitle: true,
+      showLegend: false,
       legendPosition: 'top',
       hidden: false,
       ...prev,

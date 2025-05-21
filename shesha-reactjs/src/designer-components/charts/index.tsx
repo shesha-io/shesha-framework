@@ -36,7 +36,7 @@ const ChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(0, prev => ({ 
       chartType: 'line',
       showTitle: false,
-      showLegend: true,
+      showLegend: false,
       legendPosition: 'top',
       hidden: false,
       ...prev,
