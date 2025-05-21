@@ -8,6 +8,7 @@ import React, {
 import { Button } from 'antd';
 import { FormIdentifier } from '@/interfaces';
 import { useShaRouting } from '@/providers/shaRouting';
+import { innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
 
 export interface IShaLinkProps {
   linkTo?: string;
@@ -59,7 +60,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   return (
     <Button type="link" onClick={changeRoute} href={url} className={className} style={style}>
       {icon}
-      {childrenOrDisplayText && <span> {childrenOrDisplayText}</span>}
+      {childrenOrDisplayText && <span style={className?.includes("entity-reference-link") ? innerEntityReferenceSpanBoxStyle : {}}>{childrenOrDisplayText}</span>}
     </Button>
   );
 };

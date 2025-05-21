@@ -10,7 +10,7 @@ import { get } from '@/utils/fetchers';
 import { App, Button, Popover, PopoverProps, Spin } from 'antd';
 import React, { CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import { getQuickViewInitialValues } from './utils';
+import { getQuickViewInitialValues, innerEntityReferenceSpanBoxStyle } from './utils';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -156,8 +156,10 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     if (displayType === 'textTitle') {
       return (
         <Button style={style} type="link">
-          {textTitle ?? (
-            <span>
+          {textTitle ? (
+            <span style={innerEntityReferenceSpanBoxStyle}>{textTitle}</span>
+          ) : (
+            <span style={innerEntityReferenceSpanBoxStyle}>
               <Spin size="small" /> Loading...
             </span>
           )}
@@ -168,13 +170,15 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     return (
       <Button style={formTitle ? style : null} type="link">
         {loadingState === 'loading' ? (
-          <span>
+          <span style={innerEntityReferenceSpanBoxStyle}>
             <Spin size="small" /> Loading...
           </span>
         ) : loadingState === 'success' ? (
-          formTitle || emptyText
+          <span style={innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
         ) : (
-          'Quickview not configured properly'
+          <span style={innerEntityReferenceSpanBoxStyle}>
+            Quickview not configured properly
+          </span>
         )}
       </Button>
     );
@@ -183,7 +187,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   if (disabled)
     return (
       <Button disabled type="link">
-        {formTitle ?? emptyText}
+        <span style={innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
       </Button>
     );
 
@@ -213,8 +217,8 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   return formConfig ? (
     <QuickView {...props} formIdentifier={formConfig} />
   ) : formConfig === undefined ? (
-    <Button type="link">
-      <span>
+    <Button type="link" style={{ width: '100%' }}>
+      <span style={innerEntityReferenceSpanBoxStyle}>
         <Spin size="small" /> Loading...
       </span>
     </Button>

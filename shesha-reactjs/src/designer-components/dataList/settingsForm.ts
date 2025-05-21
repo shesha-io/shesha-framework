@@ -127,7 +127,7 @@ export const getSettings = (data: any) => {
                   {
                     id: nanoid(),
                     propertyName: 'formId',
-                    label: 'Modal Form',
+                    label: 'Create Form',
                     type: 'formAutocomplete',
                     labelAlign: 'right',
                     parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
@@ -135,7 +135,7 @@ export const getSettings = (data: any) => {
                     validate: {
                       required: true,
                     },
-                  }
+                  },
                 ],
               })
               .addSettingsInputRow({
@@ -244,6 +244,27 @@ export const getSettings = (data: any) => {
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
+                      parentId: '',
+                      hidden: {
+                        _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          propertyName: 'createFormType',
+                          label: 'Create Form Type',
+                          parentId: '',
+                          type: 'formTypeAutocomplete',
+                          jsSetting: true,
+                          width: '100%',
+                          allowClear: true,
+                        }
+                      ],
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
                       hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
                       inputs: [{
                         id: nanoid(),
@@ -251,7 +272,30 @@ export const getSettings = (data: any) => {
                         propertyName: 'onNewListItemInitialize',
                         label: 'New List Item Init',
                         jsSetting: false,
-                      }
+                      },
+                      ],
+                      hideLabel: true,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
+                      inputs: [
+                      {
+                        id: nanoid(),
+                        propertyName: 'modalWidth',
+                        label: 'Dialog Width (%)',
+                        parentId: 'root',
+                        type: 'dropdown',
+                        allowClear: true,
+                        jsSetting: true,
+                        dropdownOptions: [
+                          { value: '40%', label: 'Small' },
+                          { value: '60%', label: 'Medium' },
+                          { value: '80%', label: 'Large' },
+                          { value: 'custom', label: 'Custom' },
+                        ],
+                        width: '100%',
+                      },
                       ],
                       hideLabel: true,
                     })
@@ -431,15 +475,6 @@ export const getSettings = (data: any) => {
                 description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                 exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
               })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onListItemSaveSuccessAction',
-                label: 'On List Item Save Success',
-                parentId: 'events',
-                description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                hideLabel: true,
-                jsSetting: true,
-              })
               .toJson()
             ]
           },
@@ -507,6 +542,19 @@ export const getSettings = (data: any) => {
                     parentId: 'root',
                     label: "Card Spacing",
                     tooltip: "You can use any unit (%, px, em, etc)",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'showBorder',
+                    label: "Show Border",
                     hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                     jsSetting: false,
                   }

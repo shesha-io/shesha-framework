@@ -94,8 +94,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         }}
       </ConfigurableFormItem>
     );
-  }
-  ,
+  },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
@@ -139,9 +138,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IAutocompleteComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-    
-    .add<IAutocompleteComponentProps>(8, (prev) => {
+    .add<IAutocompleteComponentProps>(7, (prev) => {
       return { 
         ...prev,
         mode: prev.mode || 'single',
@@ -157,6 +154,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? prev.keyPropName || 'value' : prev.keyPropName,
       };
     })
+    .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
@@ -174,6 +172,11 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     };
   },
   actualModelPropertyFilter: (propName) => propName !== 'queryParams',
+  getFieldsToFetch(propertyName, rawModel) {
+    return rawModel.valueFormat === 'entityReference'
+      ? [`${propertyName}.id`, `${propertyName}._className`, `${propertyName}._displayName`]
+      : [propertyName];
+  },
 };
 
 export default AutocompleteComponent;
