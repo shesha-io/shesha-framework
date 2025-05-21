@@ -52,9 +52,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     paddingTop,
     paddingBottom,
     paddingLeft,
-    paddingRight,
-    border,
-    ...rest
+    paddingRight
   } = bodyStyle;
 
   const {
@@ -115,7 +113,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     }
    
     > .ant-collapse-item > .ant-collapse-content {
-      ${rest}
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};

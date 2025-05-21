@@ -56,7 +56,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={{ ...model.allStyles.fullStyle, overflow: 'auto' }}
+            style={{ ...model.allStyles.fullStyle }}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
