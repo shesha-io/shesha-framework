@@ -1,10 +1,11 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, primaryColor }) => {
-  const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
+  const { background, backgroundImage, borderRadius: allRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
     borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
     borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
     backgroundRepeat, backgroundSize, borderStyle, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
+    borderTopRightRadius, borderBottomRightRadius, borderBottomLeftRadius, borderTopLeftRadius,
     ...rest
   } = style;
 
@@ -17,6 +18,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
+
+  const borderRadius = [
+    borderTopRightRadius ?? allRadius ?? '8px',
+    borderBottomRightRadius ?? allRadius ?? '8px',
+    borderBottomLeftRadius ?? allRadius ?? '8px',
+    borderTopLeftRadius ?? allRadius ?? '8px',
+  ].join(' ');
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
@@ -45,9 +53,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-left: ${paddingLeft ?? '2px'};
     padding-right: ${paddingRight ?? '2px'};
     padding-bottom: ${paddingBottom ?? '2px'};
-    overflow: hidden;
     ${restContainerStyles}
-    max-height: auto;
+    width: var(--container-width) !important;
+    max-width: var(--container-max-width) !important;;
+    min-width: var(--container-min-width) !important;
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
@@ -162,6 +171,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .${prefixCls}-upload-list {
       --ant-margin-xs: ${gap ?? '8px'} !important;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      &::-webkit-scrollbar {
+        width: 8px;
+        background-color: transparent;
+      }
     }
       
     .ant-upload-list-item-uploading {
@@ -170,8 +186,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      width: var(--thumbnail-width) !important;
-      height: var(--thumbnail-height) !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
       &.ant-upload-animate-inline {
@@ -252,9 +266,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
-    width: max-content;
-    max-width: var(--container-max-width) !important;
+    --container-width: max-content !important;
+    max-width: max-content !important;
     width: max-content !important;
+    min-width: max-content !important;
     height: var(--container-height) !important;
     max-height: var(--container-max-height) !important;
     min-height: var(--container-min-height) !important;

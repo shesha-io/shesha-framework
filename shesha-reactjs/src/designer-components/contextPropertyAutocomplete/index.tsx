@@ -132,7 +132,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           />;
         }}
       </ConfigurableFormItem>
-      <MetadataProvider modelType={modelType ?? 'empty'} dataType={dataType}>
+      <MetadataProvider modelType={modelType} dataType={dataType}>
         <ConfigurableFormItem model={{...model as any, label: propertylabel, componentName: 'propertyName', propertyName: 'propertyName'}} >
           {(value, onChange) => {
             return <SettingsControl

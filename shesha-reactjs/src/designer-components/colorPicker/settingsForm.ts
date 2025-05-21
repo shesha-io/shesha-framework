@@ -5,7 +5,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 export const getSettings = (data: any) => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
-    const mainSettingsTabId = nanoid();
+    const dataTabId = nanoid();
     const eventsTabId = nanoid();
     const appearanceTabId = nanoid();
     const securityTabId = nanoid();
@@ -22,6 +22,7 @@ export const getSettings = (data: any) => {
                 labelAlign: 'right',
                 size: 'small',
                 tabs: [
+                    //common
                     {
                         key: 'common',
                         title: 'Common',
@@ -85,41 +86,25 @@ export const getSettings = (data: any) => {
                             .toJson()
                         ]
                     },
+                    //data
                     {
-                        key: 'security',
-                        title: 'Security',
-                        id: securityTabId,
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'permissions',
-                                propertyName: 'permissions',
-                                label: 'Permissions',
-                                size: 'small',
-                                parentId: securityTabId,
-                                tooltip: 'Enter a list of permissions that should be associated with this component'
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: 'mainSettings',
-                        title: 'Main Settings',
-                        id: mainSettingsTabId,
+                        key: 'data',
+                        title: 'Data',
+                        id: dataTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'textField',
                                 propertyName: 'title',
                                 label: 'Title',
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 jsSetting: true,
                                 description: 'Title shown at the top of the color picker',
                                 placeholder: 'Select color',
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         type: 'switch',
@@ -140,7 +125,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: mainSettingsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -155,6 +140,25 @@ export const getSettings = (data: any) => {
                             .toJson()
                         ]
                     },
+                    //events
+                    {
+                        key: 'events',
+                        title: 'Events',
+                        id: eventsTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'codeEditor',
+                                propertyName: 'onChangeCustom',
+                                label: 'On Change',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on changing of event.',
+                                parentId: eventsTabId
+                            })
+                            .toJson()
+                        ]
+                    },
+                    //appearance
                     {
                         key: 'appearance',
                         title: 'Appearance',
@@ -237,7 +241,7 @@ export const getSettings = (data: any) => {
                                                 id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInput({
-                                                                id: nanoid(),
+                                                        id: nanoid(),
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         label: 'Style',
@@ -254,24 +258,24 @@ export const getSettings = (data: any) => {
                             .toJson()
                         ]
                     },
+                    //security
                     {
-                        key: 'events',
-                        title: 'Events',
-                        id: eventsTabId,
+                        key: 'security',
+                        title: 'Security',
+                        id: securityTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'onChangeCustom',
-                                label: 'On Change',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on changing of event.',
-                                parentId: eventsTabId
+                                inputType: 'permissions',
+                                propertyName: 'permissions',
+                                label: 'Permissions',
+                                size: 'small',
+                                parentId: securityTabId,
+                                tooltip: 'Enter a list of permissions that should be associated with this component'
                             })
                             .toJson()
                         ]
                     },
-
                 ]
             })
             .toJson(),

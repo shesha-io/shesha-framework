@@ -1,24 +1,17 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
-import { IInputStyles, useForm, useSheshaApplication } from '@/providers';
+import { IInputStyles, useForm } from '@/providers';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { IRefListStatusProps } from './models';
-import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 
@@ -29,60 +22,8 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
   Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
     const { formMode } = useForm();
     const { solidBackground = true, referenceListId, showReflistName = true } = model;
-
-
-    const localStyle = getStyle(model.style, allData.data);
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, localStyle), [border, localStyle]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = getBackgroundStyle(background, localStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders, localStyle]);
-
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
-      ...localStyle
-    });
-
-    const style = removeUndefinedProps({ ...additionalStyles, justifyContent: model?.font?.align, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     if (model?.hidden && formMode !== 'designer') return null;
 
@@ -107,7 +48,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               showIcon={model.showIcon}
               showReflistName={showReflistName}
               solidBackground={solidBackground}
-              style={style} />
+              style={model.allStyles?.fullStyle ?? {}} />
           );
         }}
       </ConfigurableFormItem>

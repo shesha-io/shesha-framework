@@ -19,8 +19,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 
-interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent {
-}
+interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent {}
 
 interface IRadioComopnentCalulatedValues {
   eventHandlers: IEventHandlers;
@@ -36,7 +35,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
   isOutput: true,
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
-  calculateModel: (model, allData) => ({ 
+  calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
     dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
     defaultValue: evaluateValue(model.defaultValue, allData.data),
@@ -54,13 +53,14 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
           };
 
           return (
-            <RadioGroup 
+            <RadioGroup
               {...restProps}
               style={model.allStyles.fullStyle}
               value={value}
               defaultValue={model.defaultValue}
+              dataSourceUrl={calculatedModel.dataSourceUrl}
               {...customEvents}
-              onChange={onChangeInternal} 
+              onChange={onChangeInternal}
             />
           );
         }}
@@ -102,9 +102,9 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
       dataSourceType: isRefList ? 'referenceList' : 'values',
       referenceListId: isRefList
         ? {
-          module: metadata.referenceListModule,
-          name: metadata.referenceListName,
-        }
+            module: metadata.referenceListModule,
+            name: metadata.referenceListName,
+          }
         : null,
     };
   },

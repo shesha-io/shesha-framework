@@ -238,6 +238,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       />
     );
   }
+  const {width, ...restofDropdownStyles} = props?.style ?? {};
 
   return (
     <>
@@ -246,7 +247,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         onDropdownVisibleChange={onDropdownVisibleChange}
         value={keys}
         className="sha-dropdown"
-        dropdownStyle={{ ...props.style, height: 'auto' }}
+        dropdownStyle={{ ...restofDropdownStyles, height: 'auto' }}
         showSearch={!props.disableSearch}
         notFoundContent={props.notFoundContent}
         defaultActiveFirstOption={false}
@@ -258,7 +259,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         loading={source?.isInProgress?.fetchTableData}
         placeholder={props.placeholder}
         disabled={props.readOnly}
-        variant={props.hideBorder ? 'borderless' : undefined}
         onSelect={handleSelect}
         style={props.style}
         size={props.size}

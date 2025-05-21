@@ -491,6 +491,19 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       };
     },
 
+    [FormActionEnums.SetPreviousSelectedComponent]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<ISetSelectedComponentPayload>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        previousSelectedComponentId: payload.id,
+        previousSelectedComponentRef: payload.componentRef,
+      };
+    },
+    
     [FormActionEnums.ChangeMarkup]: (
       state: IFormDesignerStateContext,
       action: ReduxActions.Action<IFlatComponentsStructure>

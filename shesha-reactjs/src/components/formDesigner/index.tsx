@@ -1,12 +1,11 @@
 import { FormProviderWrapper } from "./formDesignerWrapper";
 import { FormDesignerRenderer } from "./formDesignerRenderer";
-import { FC } from "react";
+import React, { FC } from "react";
 import { FormIdentifier } from "@/interfaces";
-import React from "react";
 
 interface IFormDesignerProps {
     formId: FormIdentifier;
-  }
+}
 
 const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
     return (
