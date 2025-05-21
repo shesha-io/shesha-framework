@@ -189,11 +189,11 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
 
            .ant-tabs-nav-list {
                 ${isLeft && `border-right: ${borderMap.left}` || isRight && `border-left: ${borderMap.right}`};
-                ${isLeft || isRight && `
-                    height: ${styles.height} !important
-                    min-height: ${styles.minHeight} !important
-                    max-height: ${styles.maxHeight} !important
-                    `};
+                ${(isLeft || isRight) && `
+                    height: ${styles.height} !important;
+                    min-height: ${styles.minHeight} !important;
+                    max-height: ${styles.maxHeight} !important;
+                `};
 
            }
         `
