@@ -4,7 +4,7 @@ import Show from '../show';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { addPx } from '@/utils/style';
-import { defaultStyles } from './utils';
+import { titleDefaultStyles } from './utils';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -36,7 +36,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   lineHeight,
   orientation,
   containerStyle,
-  titleStyle = defaultStyles(),
+  titleStyle = titleDefaultStyles(),
   tooltip,
   title,
   titleMargin,
