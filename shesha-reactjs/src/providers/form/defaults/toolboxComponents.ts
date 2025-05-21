@@ -153,7 +153,6 @@ export const getToolboxComponents = (
       components: [
         Address,
         Autocomplete,
-        AutocompleteTagGroup,
         ColorPickerComponent,
         IconPicker,
         HtmlRender,
@@ -234,6 +233,7 @@ export const getToolboxComponents = (
         TableTemplate,
         DividerComponent,
         DynamicView,
+        AutocompleteTagGroup,
       ],
     },
     {
