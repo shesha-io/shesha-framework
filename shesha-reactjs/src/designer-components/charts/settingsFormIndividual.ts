@@ -374,43 +374,6 @@ export const getSettings = (data: any) => {
                       })
                       .addSettingsInput({
                         id: nanoid(),
-                        inputType: 'switch',
-                        propertyName: 'allowFilter',
-                        label: 'Allow Chart Filter',
-                        parentId: dataTabId,
-                        description: 'Allow users to filter the chart data directly from the chart.',
-                        defaultValue: false,
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inline: true,
-                        hidden: {
-                          _code: 'return !getSettingValue(data?.allowFilter)',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'filterProperties',
-                            label: 'Filter Property list',
-                            type: 'propertyAutocomplete',
-                            labelAlign: 'right',
-                            mode: 'multiple',
-                            parentId: dataTabId,
-                            isDynamic: true,
-                            description:
-                              'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
-                            modelType: '{{data.entityType}}',
-                            autoFillProps: false,
-                            settingsValidationErrors: [],
-                            width: '100%',
-                          },
-                        ],
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
                         propertyName: 'aggregationMethod',
                         parentId: dataTabId,
                         label: 'Aggregation Method',
