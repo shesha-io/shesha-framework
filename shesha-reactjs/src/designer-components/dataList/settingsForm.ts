@@ -475,15 +475,6 @@ export const getSettings = (data: any) => {
                 description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                 exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
               })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onListItemSaveSuccessAction',
-                label: 'On List Item Save Success',
-                parentId: 'events',
-                description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                hideLabel: true,
-                jsSetting: true,
-              })
               .toJson()
             ]
           },
