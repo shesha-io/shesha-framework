@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor, overflow }) => {
+export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
     const {
         borderWidth,
         borderStyle,
