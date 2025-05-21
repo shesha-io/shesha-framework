@@ -80,7 +80,7 @@ export const getSettings = (data: any) => {
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'dataMode',
-                          parentId: 'root',
+                          parentId: commonTabId,
                           label: 'Data Source Type',
                           description:
                             'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
@@ -96,7 +96,7 @@ export const getSettings = (data: any) => {
                         .addContainer({
                           id: dataSettingsForUrlId,
                           propertyName: 'dataSettingsForUrl',
-                          parentId: dataTabId,
+                          parentId: commonTabId,
                           label: 'Data Settings (URL)',
                           labelAlign: 'left',
                           hidden: {
@@ -113,7 +113,7 @@ export const getSettings = (data: any) => {
                                 label: 'URL',
                                 description: 'The URL you want to use for the chart',
                                 labelAlign: 'right',
-                                parentId: dataTabId,
+                                parentId: dataSettingsForUrlId,
                                 hidden: false,
                                 validate: { required: true },
                               })
@@ -123,7 +123,7 @@ export const getSettings = (data: any) => {
                                 label: 'Axis label',
                                 inputType: 'textField',
                                 labelAlign: 'right',
-                                parentId: dataTabId,
+                                parentId: dataSettingsForUrlId,
                                 isDynamic: false,
                                 description: 'Label for the axis property',
                                 validate: { required: false },
@@ -140,7 +140,7 @@ export const getSettings = (data: any) => {
                                 label: 'Value axis label',
                                 inputType: 'textField',
                                 labelAlign: 'right',
-                                parentId: dataTabId,
+                                parentId: dataSettingsForUrlId,
                                 isDynamic: false,
                                 description: 'Label for the value property',
                                 validate: { required: false },
@@ -169,7 +169,7 @@ export const getSettings = (data: any) => {
                             ...new DesignerToolbarSettings()                      
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: dataTabId,
+                                parentId: dataSettingsId,
                                 inline: true,
                                 inputs: [
                                   {
@@ -179,7 +179,7 @@ export const getSettings = (data: any) => {
                                     label: 'Entity Type',
                                     description: 'The entity type you want to use.',
                                     labelAlign: 'right',
-                                    parentId: dataTabId,
+                                    parentId: dataSettingsId,
                                     hidden: false,
                                     dataSourceType: 'url',
                                     validate: {},
@@ -193,7 +193,7 @@ export const getSettings = (data: any) => {
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: dataTabId,
+                                parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
@@ -206,7 +206,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'axisProperty',
                                     label: 'Axis Property',
                                     labelAlign: 'right',
-                                    parentId: dataTabId,
+                                    parentId: dataSettingsId,
                                     type: 'propertyAutocomplete',
                                     isDynamic: false,
                                     description: 'The property to be used on the x-axis.',
@@ -224,7 +224,7 @@ export const getSettings = (data: any) => {
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: dataTabId,
+                                parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
                                   _code: 'return !getSettingValue(data?.axisProperty)',
@@ -238,7 +238,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'isAxisTimeSeries',
                                     label: 'Is Axis Property Time Series?',
                                     description: 'If the x-axis is a time series, check this box.',
-                                    parentId: dataTabId,
+                                    parentId: dataSettingsId,
                                     defaultValue: false,
                                     validate: { required: true },
                                     width: '100%',
@@ -247,7 +247,7 @@ export const getSettings = (data: any) => {
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: dataTabId,
+                                parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
@@ -258,7 +258,7 @@ export const getSettings = (data: any) => {
                                   {
                                     id: nanoid(),
                                     propertyName: 'timeSeriesFormat',
-                                    parentId: dataTabId,
+                                    parentId: dataSettingsId,
                                     label: 'Time Series Format',
                                     type: 'dropdown',
                                     allowClear: true,
@@ -278,7 +278,7 @@ export const getSettings = (data: any) => {
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: dataTabId,
+                                parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
@@ -291,7 +291,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'valueProperty',
                                     label: 'Value Property',
                                     labelAlign: 'right',
-                                    parentId: dataTabId,
+                                    parentId: dataSettingsId,
                                     type: 'propertyAutocomplete',
                                     isDynamic: false,
                                     description: 'The property to be used on the x-axis.',
@@ -309,7 +309,7 @@ export const getSettings = (data: any) => {
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: dataTabId,
+                                parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
@@ -322,7 +322,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'legendProperty',
                                     label: 'Legend Property',
                                     labelAlign: 'right',
-                                    parentId: dataTabId,
+                                    parentId: dataSettingsId,
                                     type: 'propertyAutocomplete',
                                     isDynamic: false,
                                     description:
@@ -342,7 +342,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'aggregationMethod',
-                                parentId: dataTabId,
+                                parentId: dataSettingsId,
                                 label: 'Aggregation Method',
                                 inputType: 'dropdown',
                                 allowClear: true,
