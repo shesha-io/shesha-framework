@@ -411,7 +411,7 @@ export const getSettings = (data: any) => {
                             description:
                               'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
                             parentId: commonTabId,
-                            defaultValue: true,
+                            defaultValue: false,
                           },
                         ],
                       })
