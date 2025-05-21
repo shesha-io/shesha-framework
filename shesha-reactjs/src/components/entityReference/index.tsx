@@ -24,6 +24,7 @@ import { App, Button, Spin } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
+import { innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -205,17 +206,17 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     return props.displayType === 'icon' ? (
       <ShaIcon iconName={props.iconName} />
     ) : props.displayType === 'textTitle' ? (
-      props.textTitle
+      <span style={innerEntityReferenceSpanBoxStyle}>{props.textTitle}</span>
     ) : (
-      displayText
+      <span style={innerEntityReferenceSpanBoxStyle}>{displayText}</span>
     );
   }, [props.displayType, props.iconName, props.textTitle, displayText]);
 
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
-        <Button type="link" style={props.style}>
-          <span>
+        <Button type="link" style={{ width: '100%', ...props.style }}>
+          <span style={innerEntityReferenceSpanBoxStyle}>
             <Spin size="small" /> Loading...
           </span>
         </Button>
@@ -223,7 +224,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
-        <Button disabled style={props.style} type="link">
+        <Button disabled style={{ width: '100%', ...props.style }} type="link">
           <ShaLink linkToForm={formIdentifier} params={{ id: entityId }}>
             {displayTextByType}
           </ShaLink>
@@ -232,7 +233,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props?.style}>
+        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props?.style} className={"entity-reference-link"}>
           {displayTextByType}
         </ShaLink>
       );
@@ -258,7 +259,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     return (
-      <Button style={props.style} type="link" onClick={dialogExecute}>
+      <Button style={{ width: '100%', ...props.style }} type="link" onClick={dialogExecute}>
         {displayTextByType}
       </Button>
     );
@@ -266,14 +267,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (
-      <Button type="link" disabled style={props.style}>
+      <Button type="link" disabled style={{ width: '100%', ...props.style }}>
         Form identifier is not configured
       </Button>
     );
 
   if (!props.value)
     return (
-      <Button type="link" disabled style={props.style}>
+      <Button type="link" disabled style={{ width: '100%', ...props.style }}>
         {displayText}
       </Button>
     );

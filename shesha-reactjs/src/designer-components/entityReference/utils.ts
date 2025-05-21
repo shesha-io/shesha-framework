@@ -2,7 +2,7 @@ import { IStyleType } from "@/index";
 
 export const defaultStyles = (): IStyleType => {
     return {
-        background: { type: 'color', color: '#fff' },
+        background: { type: 'color', color: 'transparent' },
         font: { weight: '400', size: 14, type: 'Segoe UI' },
         border: {
             border: {
