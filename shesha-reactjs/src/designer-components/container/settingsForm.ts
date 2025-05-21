@@ -16,7 +16,6 @@ import {
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = (data) => {
   // Generate unique IDs for major components
@@ -541,27 +540,6 @@ export const getSettings = (data) => {
                               dropdownOptions: TEXT_JUSTIFY
                             }
                           )
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: displayCollapsiblePanelId,
-                            inline: false,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                label: 'Overflow',
-                                propertyName: 'overflow',
-                                dropdownOptions: overflowOptions
-                              },
-                              {
-                                id: nanoid(),
-                                type: 'switch',
-                                label: "Hide Scroll Bar",
-                                propertyName: 'hideScrollBar'
-                              }
-                            ],
-                          })
                           .toJson()
                         ]
                       }
