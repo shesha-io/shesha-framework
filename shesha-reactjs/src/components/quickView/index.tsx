@@ -219,8 +219,8 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   return formConfig ? (
     <QuickView {...props} formIdentifier={formConfig} />
   ) : formConfig === undefined ? (
-    <Button type="link" style={{ width: '100%', backgroundColor: 'transparent' }}>
-      <span style={{ ...props.style }}>
+    <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
+      <span style={innerEntityReferenceSpanBoxStyle}>
         <Spin size="small" /> Loading...
       </span>
     </Button>
