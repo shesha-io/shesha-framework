@@ -287,7 +287,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 };
 
 const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
-  const { formData } = useShaFormInstance();
+  const { formData } = useShaFormInstance(false) ?? {};
   const disableRefresh = useRef<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();

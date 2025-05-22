@@ -5,7 +5,6 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
-import { overflowOptions } from '../_settings/utils/dimensions/utils';
 import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
@@ -298,24 +297,6 @@ export const getSettings = () => {
                                                                 propertyName: "dimensions.maxHeight",
                                                                 icon: "maxHeightIcon",
                                                             }
-                                                        ]
-                                                    })
-                                                    .addSettingsInputRow({
-                                                        id: nanoid(),
-                                                        inputs: [{
-                                                            id: nanoid(),
-                                                            type: 'dropdown',
-                                                            label: 'Overflow',
-                                                            defaultValue: 'auto',
-                                                            propertyName: 'overflow',
-                                                            dropdownOptions: overflowOptions
-                                                        },
-                                                        {
-                                                            id: nanoid(),
-                                                            type: 'switch',
-                                                            label: "Hide Scroll Bar",
-                                                            propertyName: 'hideScrollBar'
-                                                        }
                                                         ]
                                                     })
                                                     .toJson()
