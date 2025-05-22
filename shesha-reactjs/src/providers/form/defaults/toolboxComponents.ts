@@ -109,7 +109,6 @@ import ChevronComponent from '@/designer-components/chevron/chevron';
 import SettingsInput from '@/designer-components/settingsInput';
 import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
-import ChartComponent from '@/designer-components/charts';
 import BarChartComponent from '@/designer-components/charts/bar';
 import LineChartComponent from '@/designer-components/charts/line';
 import PieChartComponent from '@/designer-components/charts/pie';
@@ -145,7 +144,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
     },
     {
       name: 'Advanced',
@@ -153,7 +152,6 @@ export const getToolboxComponents = (
       components: [
         Address,
         Autocomplete,
-        AutocompleteTagGroup,
         ColorPickerComponent,
         IconPicker,
         HtmlRender,
@@ -234,6 +232,7 @@ export const getToolboxComponents = (
         TableTemplate,
         DividerComponent,
         DynamicView,
+        AutocompleteTagGroup,
       ],
     },
     {
