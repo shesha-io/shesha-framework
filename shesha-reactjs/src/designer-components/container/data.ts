@@ -197,7 +197,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     },
     shadow: {
       blurRadius: isBelow || isAbove ? 4 : 0,
-      color: 'rgba(0, 0, 0, 0.15)',
+      color: '#000000',
       offsetX: 0,
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0
@@ -214,7 +214,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     justifySelf: prev?.justifySelf ?? "normal",
     noDefaultStyling: prev?.noDefaultStyling ?? false,
     gridColumnsCount: prev?.gridColumnsCount ?? null,
-    gap: prev?.gap ?? '8px',
-    overflow: prev?.overflow ?? 'auto'
+    gap: prev?.gap ?? '8px'
   };
 };

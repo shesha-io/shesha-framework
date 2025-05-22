@@ -31,7 +31,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
-      overflowStyles
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -72,8 +71,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           }}
           style={{
             ...getStyle(model?.style, formData),
-            overflow: model.overflow,
-            ...overflowStyles,
             ...flexAndGridStyles as any
           }}
           noDefaultStyling={model.noDefaultStyling}
