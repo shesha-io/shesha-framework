@@ -69,29 +69,29 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
   console.log('style', style);
 
-  const getIconStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: color,
-    border: `${fullStyles?.borderWidth} solid ${fullStyles?.borderColor}`,
-    width: '30px',
-    height: '24px',
-    borderRadius: `${fullStyles?.borderRadius}`,
-    backgroundColor: fullStyles?.backgroundColor,
-    ...pickStyleFromModel(stylingBoxJSON),
-    ...dimensionsStyles,
-    ...getStyle(props.style),
-    ...(executeFunction('{}', { data, globalState }) || {}),
-  };
+  //   const getIconStyle = {
+  //     display: 'flex',
+  //     flexDirection: 'row',
+  //     justifyContent: 'center',
+  //     alignItems: 'center',
+  //     color: color,
+  //     border: `${fullStyles?.borderWidth} solid ${fullStyles?.borderColor}`,
+  //     width: '30px',
+  //     height: '24px',
+  //     borderRadius: `${fullStyles?.borderRadius}`,
+  //     backgroundColor: fullStyles?.backgroundColor,
+  //     ...pickStyleFromModel(stylingBoxJSON),
+  //     ...dimensionsStyles,
+  //     ...getStyle(props.style),
+  //     ...(executeFunction('{}', { data, globalState }) || {}),
+  //   };
 
   return (
     <div style={defaultValue ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
       <Tooltip title={props?.description}>
         <div
           style={{
-            ...getIconStyle,
+            ...fullStyles,
             marginLeft: props.value === undefined && props.defaultValue === undefined ? '38px' : '',
           }}
         >
@@ -103,8 +103,8 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
             iconSize={typeof fullStyles?.fontSize === 'number' ? fullStyles.fontSize : 24}
             readOnly={readOnly}
             style={style}
-            color={'green'}
-            twoToneColor={color}
+            color={fullStyles?.color}
+            twoToneColor={fullStyles?.color}
           />
         </div>
       </Tooltip>
