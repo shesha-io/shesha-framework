@@ -10,7 +10,11 @@ import { get } from '@/utils/fetchers';
 import { App, Button, Popover, PopoverProps, Spin } from 'antd';
 import React, { CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import { getQuickViewInitialValues, innerEntityReferenceSpanBoxStyle } from './utils';
+import {
+  getQuickViewInitialValues,
+  innerEntityReferenceButtonBoxStyle,
+  innerEntityReferenceSpanBoxStyle,
+} from './utils';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -84,8 +88,6 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { notification } = App.useApp();
 
-  //const cssStyle = getStyle(style, formData);
-
   useEffect(() => {
     if (formIdentifier) {
       fetchForm()
@@ -142,12 +144,12 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   const render = () => {
     if (children) {
-      return <div style={style}>{children}</div>;
+      return <div style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>{children}</div>;
     }
 
     if (displayType === 'icon') {
       return (
-        <Button style={style} type="link">
+        <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
           <ShaIcon iconName={iconName} />
         </Button>
       );
@@ -155,30 +157,30 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
     if (displayType === 'textTitle') {
       return (
-        <Button style={style} type="link">
+        <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
           {textTitle ? (
             <span style={innerEntityReferenceSpanBoxStyle}>{textTitle}</span>
           ) : (
-            <span style={innerEntityReferenceSpanBoxStyle}>
-              <Spin size="small" /> Loading...
-            </span>
+            <>
+              <Spin size="small" />
+              <span style={innerEntityReferenceSpanBoxStyle}>Loading...</span>
+            </>
           )}
         </Button>
       );
     }
 
     return (
-      <Button style={formTitle ? style : null} type="link">
+      <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
         {loadingState === 'loading' ? (
-          <span style={innerEntityReferenceSpanBoxStyle}>
-            <Spin size="small" /> Loading...
-          </span>
+          <>
+            <Spin size="small" />
+            <span style={innerEntityReferenceSpanBoxStyle}>Loading...</span>
+          </>
         ) : loadingState === 'success' ? (
           <span style={innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
         ) : (
-          <span style={innerEntityReferenceSpanBoxStyle}>
-            Quickview not configured properly
-          </span>
+          <span style={innerEntityReferenceSpanBoxStyle}>Quickview not configured properly</span>
         )}
       </Button>
     );
@@ -186,7 +188,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   if (disabled)
     return (
-      <Button disabled type="link">
+      <Button disabled type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
         <span style={innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
       </Button>
     );
@@ -217,8 +219,8 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   return formConfig ? (
     <QuickView {...props} formIdentifier={formConfig} />
   ) : formConfig === undefined ? (
-    <Button type="link" style={{ width: '100%' }}>
-      <span style={innerEntityReferenceSpanBoxStyle}>
+    <Button type="link" style={{ width: '100%', backgroundColor: 'transparent' }}>
+      <span style={{ ...props.style }}>
         <Spin size="small" /> Loading...
       </span>
     </Button>
