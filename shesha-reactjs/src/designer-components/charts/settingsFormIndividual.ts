@@ -49,21 +49,450 @@ export const getSettings = (data: any) => {
                   label: 'Hide',
                   inputType: 'switch',
                 })
-                
-                .addSettingsInput({
+                .addCollapsiblePanel({
                   id: nanoid(),
-                  propertyName: 'simpleOrPivot',
+                  label: 'Quick Settings',
+                  labelAlign: 'right',
+                  description: 'Quick settings to get started with the chart',
                   parentId: commonTabId,
-                  hidden: false,
-                  label: 'Simple / Pivot',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Simple', value: 'simple' },
-                    { label: 'Pivot', value: 'pivot' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'simple',
+                  ghost: true,
+                  collapsible: 'header',
+                  collapsedByDefault: false,
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInput({
+                          id: nanoid(),
+                          propertyName: 'simpleOrPivot',
+                          parentId: commonTabId,
+                          hidden: false,
+                          label: 'Simple / Pivot',
+                          inputType: 'dropdown',
+                          allowClear: true,
+                          dropdownOptions: [
+                            { label: 'Simple', value: 'simple' },
+                            { label: 'Pivot', value: 'pivot' },
+                          ],
+                          validate: { required: true },
+                          defaultValue: 'simple',
+                        })
+                        .addSettingsInput({
+                          id: nanoid(),
+                          propertyName: 'dataMode',
+                          parentId: commonTabId,
+                          label: 'Data Source Type',
+                          description:
+                            'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                          inputType: 'dropdown',
+                          allowClear: true,
+                          dropdownOptions: [
+                            { label: 'URL', value: 'url' },
+                            { label: 'Entity Type', value: 'entityType' },
+                          ],
+                          validate: { required: true },
+                          defaultValue: 'entityType',
+                        })
+                        .addContainer({
+                          id: dataSettingsForUrlId,
+                          propertyName: 'dataSettingsForUrl',
+                          parentId: commonTabId,
+                          label: 'Data Settings (URL)',
+                          labelAlign: 'left',
+                          hidden: {
+                            _code: 'return getSettingValue(data?.dataMode) !== `url`',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'url',
+                                inputType: 'textField',
+                                label: 'URL',
+                                description: 'The URL you want to use for the chart',
+                                labelAlign: 'right',
+                                parentId: dataSettingsForUrlId,
+                                hidden: false,
+                                validate: { required: true },
+                              })
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'axisProperty',
+                                label: 'Axis label',
+                                inputType: 'textField',
+                                labelAlign: 'right',
+                                parentId: dataSettingsForUrlId,
+                                isDynamic: false,
+                                description: 'Label for the axis property',
+                                validate: { required: false },
+                                hidden: {
+                                  _code:
+                                    'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                              })
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'valueProperty',
+                                label: 'Value axis label',
+                                inputType: 'textField',
+                                labelAlign: 'right',
+                                parentId: dataSettingsForUrlId,
+                                isDynamic: false,
+                                description: 'Label for the value property',
+                                validate: { required: false },
+                                hidden: {
+                                  _code:
+                                    'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                              })
+                              .toJson(),
+                          ],
+                        })
+                        .addContainer({
+                          id: dataSettingsId,
+                          propertyName: 'dataSettings',
+                          parentId: dataTabId,
+                          label: 'Data Settings',
+                          labelAlign: 'left',
+                          hidden: {
+                            _code: 'return getSettingValue(data?.dataMode) === `url`',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          components: [
+                            ...new DesignerToolbarSettings()                      
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    type: 'autocomplete',
+                                    propertyName: 'entityType',
+                                    label: 'Entity Type',
+                                    description: 'The entity type you want to use.',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsId,
+                                    hidden: false,
+                                    dataSourceType: 'url',
+                                    validate: {},
+                                    dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                                    settingsValidationErrors: [],
+                                    jsSetting: true,
+                                    useRawValues: true,
+                                    width: '100%',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.dataMode) === `url`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'axisProperty',
+                                    label: 'Axis Property',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsId,
+                                    type: 'propertyAutocomplete',
+                                    isDynamic: false,
+                                    description: 'The property to be used on the x-axis.',
+                                    validate: { required: true },
+                                    modelType: {
+                                      _code: 'return getSettingValue(data?.entityType);',
+                                      _mode: 'code',
+                                      _value: false
+                                    } as any,
+                                    autoFillProps: false,
+                                    settingsValidationErrors: [],
+                                    width: '100%',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                hidden: {
+                                  _code: 'return !getSettingValue(data?.axisProperty)',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    type: 'switch',
+                                    propertyName: 'isAxisTimeSeries',
+                                    label: 'Is Axis Property Time Series?',
+                                    description: 'If the x-axis is a time series, check this box.',
+                                    parentId: dataSettingsId,
+                                    defaultValue: false,
+                                    validate: { required: true },
+                                    width: '100%',
+                                  }
+                                ]
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'timeSeriesFormat',
+                                    parentId: dataSettingsId,
+                                    label: 'Time Series Format',
+                                    type: 'dropdown',
+                                    allowClear: true,
+                                    dropdownOptions: [
+                                      { label: 'Day', value: 'day' },
+                                      { label: 'Month', value: 'month' },
+                                      { label: 'Year', value: 'year' },
+                                      { label: 'Day-Month', value: 'day-month' },
+                                      { label: 'Day-Month-Year', value: 'day-month-year' },
+                                      { label: 'Month-Year', value: 'month-year' },
+                                    ],
+                                    validate: { required: true },
+                                    defaultValue: 'day-month-year',
+                                    width: '100%',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.dataMode) === `url`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'valueProperty',
+                                    label: 'Value Property',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsId,
+                                    type: 'propertyAutocomplete',
+                                    isDynamic: false,
+                                    description: 'The property to be used on the x-axis.',
+                                    validate: { required: true },
+                                    modelType: {
+                                      _code: 'return getSettingValue(data?.entityType);',
+                                      _mode: 'code',
+                                      _value: false
+                                    } as any,
+                                    autoFillProps: false,
+                                    settingsValidationErrors: [],
+                                    width: '100%',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'legendProperty',
+                                    label: 'Legend Property',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsId,
+                                    type: 'propertyAutocomplete',
+                                    isDynamic: false,
+                                    description:
+                                      'The properties you want to use on the Legend. This is the property that will be used to group the data for Pivot Charts.',
+                                    validate: { required: true },
+                                    modelType: {
+                                      _code: 'return getSettingValue(data?.entityType);',
+                                      _mode: 'code',
+                                      _value: false
+                                    } as any,
+                                    autoFillProps: false,
+                                    settingsValidationErrors: [],
+                                    width: '100%',
+                                  },
+                                ],
+                              })
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'aggregationMethod',
+                                parentId: dataSettingsId,
+                                label: 'Aggregation Method',
+                                inputType: 'dropdown',
+                                allowClear: true,
+                                dropdownOptions: [
+                                  { label: 'Sum', value: 'sum' },
+                                  { label: 'Count', value: 'count' },
+                                  { label: 'Average', value: 'average' },
+                                  { label: 'Min', value: 'min' },
+                                  { label: 'Max', value: 'max' },
+                                ],
+                                validate: { required: true },
+                                defaultValue: 'count',
+                              })
+                              .toJson(),
+                          ],
+                        })
+                        .toJson(),
+                    ],
+                  },
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  label: 'Labels',
+                  labelAlign: 'right',
+                  description: 'Labels for the chart',
+                  parentId: commonTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  collapsedByDefault: false,
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        inputType: 'textField',
+                        propertyName: 'title',
+                        parentId: commonTabId,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.showTitle) !== true',
+                          _mode: 'code',
+                          _value: false,
+                        },
+                        label: 'Title',
+                        description: 'The title of the chart (if any)',
+                        labelAlign: 'right',
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: commonTabId,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'showTitle',
+                            label: 'Show Title',
+                            description: 'Show the title of the chart',
+                            parentId: commonTabId,
+                            defaultValue: true,
+                          },
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'showLegend',
+                            label: 'Show Legend',
+                            description:
+                              'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
+                            parentId: commonTabId,
+                            defaultValue: false,
+                          },
+                        ],
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
+                        propertyName: 'legendPosition',
+                        parentId: commonTabId,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.showLegend) !== true',
+                          _mode: 'code',
+                          _value: true,
+                        },
+                        label: 'Legend Position',
+                        inputType: 'dropdown',
+                        allowClear: true,
+                        dropdownOptions: [
+                          { label: 'Top', value: 'top' },
+                          { label: 'Bottom', value: 'bottom' },
+                          { label: 'Left', value: 'left' },
+                          { label: 'Right', value: 'right' },
+                        ],
+                        validate: { required: true },
+                        defaultValue: 'top',
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: commonTabId,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'showXAxisScale',
+                            label: 'Show X Axis',
+                            parentId: commonTabId,
+                            defaultValue: true,
+                          },
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'showXAxisTitle',
+                            label: 'Show X Axis Title',
+                            parentId: commonTabId,
+                            defaultValue: true,
+                            hidden: {
+                              _code: 'return getSettingValue(data?.showXAxisScale) !== true',
+                              _mode: 'code',
+                              _value: true,
+                            } as any,
+                          },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: commonTabId,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'showYAxisScale',
+                            label: 'Show Y Axis',
+                            parentId: commonTabId,
+                            defaultValue: true,
+                          },
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'showYAxisTitle',
+                            label: 'Show Y Axis Title',
+                            parentId: commonTabId,
+                            defaultValue: true,
+                            hidden: {
+                              _code: 'return getSettingValue(data?.showYAxisScale) !== true',
+                              _mode: 'code',
+                              _value: true,
+                            } as any,
+                          },
+                        ],
+                      })
+                      .toJson(),
+                    ]
+                  }
                 })
                 .toJson(),
             ],
@@ -163,7 +592,7 @@ export const getSettings = (data: any) => {
                     _value: false,
                   } as any,
                   components: [
-                    ...new DesignerToolbarSettings()                      
+                    ...new DesignerToolbarSettings()
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -208,7 +637,11 @@ export const getSettings = (data: any) => {
                             isDynamic: false,
                             description: 'The property to be used on the x-axis.',
                             validate: { required: true },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -235,8 +668,8 @@ export const getSettings = (data: any) => {
                             defaultValue: false,
                             validate: { required: true },
                             width: '100%',
-                          }
-                        ]
+                          },
+                        ],
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -289,7 +722,11 @@ export const getSettings = (data: any) => {
                             isDynamic: false,
                             description: 'The property to be used on the x-axis.',
                             validate: { required: true },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -317,7 +754,11 @@ export const getSettings = (data: any) => {
                             description:
                               'The properties you want to use on the Legend. This is the property that will be used to group the data for Pivot Charts.',
                             validate: { required: true },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -345,7 +786,11 @@ export const getSettings = (data: any) => {
                             description:
                               'The properties you want to order the data by. Use the propeties that you have selected for axis, value (and legend).',
                             validate: { required: false },
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
@@ -396,7 +841,7 @@ export const getSettings = (data: any) => {
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
                           _mode: 'code',
-                          _value: false,  
+                          _value: false,
                         } as any,
                         inputs: [
                           {
@@ -410,11 +855,15 @@ export const getSettings = (data: any) => {
                             isDynamic: false,
                             validate: {},
                             settingsValidationErrors: [],
-                            modelType: '{{data.entityType}}',
+                            modelType: {
+                              _code: 'return getSettingValue(data?.entityType);',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             width: '100%',
-                          }
-                        ]
+                          },
+                        ],
                       })
                       .toJson(),
                   ],
@@ -490,135 +939,7 @@ export const getSettings = (data: any) => {
                     _value: true,
                   },
                   defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'textField',
-                  propertyName: 'title',
-                  parentId: appearanceTabId,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showTitle) !== true',
-                    _mode: 'code',
-                    _value: false,
-                  },
-                  label: 'Title',
-                  description: 'The title of the chart (if any)',
-                  labelAlign: 'right',
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'showTitle',
-                      label: 'Show Title',
-                      description: 'Show the title of the chart',
-                      parentId: appearanceTabId,
-                      defaultValue: true,
-                    },
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'showLegend',
-                      label: 'Show Legend',
-                      description:
-                        'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
-                      parentId: appearanceTabId,
-                      defaultValue: true,
-                    }
-                  ]
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'legendPosition',
-                  parentId: appearanceTabId,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.showLegend) !== true',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                  label: 'Legend Position',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Top', value: 'top' },
-                    { label: 'Bottom', value: 'bottom' },
-                    { label: 'Left', value: 'left' },
-                    { label: 'Right', value: 'right' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'top',
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'showXAxisScale',
-                      label: 'Show X Axis',
-                      parentId: appearanceTabId,
-                      defaultValue: true,
-                    },
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'showXAxisTitle',
-                      label: 'Show X Axis Title',
-                      parentId: appearanceTabId,
-                      defaultValue: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.showXAxisScale) !== true',
-                        _mode: 'code',
-                        _value: true,
-                      } as any,
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'showYAxisScale',
-                      label: 'Show Y Axis',
-                      parentId: appearanceTabId,
-                      defaultValue: true,
-                    },
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'showYAxisTitle',
-                      label: 'Show Y Axis Title',
-                      parentId: appearanceTabId,
-                      defaultValue: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.showYAxisScale) !== true',
-                        _mode: 'code',
-                        _value: true,
-                      } as any,
-                    }
-                  ]
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'numberField',
-                  propertyName: 'tension',
-                  parentId: appearanceTabId,
-                  label: 'Tension',
-                  defaultValue: 0,
-                  min: 0,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.chartType) !== `line`',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                })               
+                })                
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: appearanceTabId,
@@ -641,8 +962,22 @@ export const getSettings = (data: any) => {
                       label: 'Stroke Color',
                       allowClear: true,
                       type: 'colorPicker',
-                    }
-                  ]
+                    },
+                  ],
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'numberField',
+                  propertyName: 'tension',
+                  parentId: appearanceTabId,
+                  label: 'Tension',
+                  defaultValue: 0,
+                  min: 0,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.chartType) !== `line`',
+                    _mode: 'code',
+                    _value: true,
+                  },
                 })
                 .toJson(),
             ],
@@ -664,7 +999,7 @@ export const getSettings = (data: any) => {
                 })
                 .toJson(),
             ],
-          }
+          },
         ],
       })
       .toJson(),
