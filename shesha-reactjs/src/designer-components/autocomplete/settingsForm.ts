@@ -561,7 +561,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                             type: 'endpointsAutocomplete',
                                                             propertyName: 'quickviewGetEntityUrl',
                                                             parentId: dataTabId,
-                                                            label: 'Get Entity URL',
+                                                            label: (data?.dataSourceType) === 'entitiesList' ? 'Get Entity URL' : 'Custom Source URL',
                                                             size: 'small',
                                                             version: 5
                                                         },

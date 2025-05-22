@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import {
   executeExpression,
   useAvailableConstantsData,
@@ -22,6 +22,7 @@ import { Autocomplete } from '@/components/autocomplete';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import settingsForm from "./settingsForm.json";
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -96,6 +97,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
+  //settingsFormMarkup: settingsForm as FormMarkup,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({
