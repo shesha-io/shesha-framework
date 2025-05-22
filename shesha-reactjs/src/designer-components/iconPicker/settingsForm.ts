@@ -2,8 +2,13 @@ import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import {fontWeights, textAlign } from '../_settings/utils/font/utils';
+import {
+  backgroundTypeOptions,
+  positionOptions,
+  repeatOptions,
+  sizeOptions,
+} from '../_settings/utils/background/utils';
+import { textAlign } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -467,76 +472,76 @@ export const getSettings = (data: any) => {
                           ],
                         },
                       })
-                        .addCollapsiblePanel({
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlShadowStyle',
+                        label: 'Shadow',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
                           id: nanoid(),
-                          propertyName: 'pnlShadowStyle',
-                          label: 'Shadow',
-                          labelAlign: 'right',
-                          ghost: true,
-                          parentId: styleRouterId,
-                          collapsible: 'header',
-                          content: {
-                            id: nanoid(),
-                            components: [
-                              ...new DesignerToolbarSettings()
-                                .addSettingsInputRow({
-                                  id: nanoid(),
-                                  parentId: nanoid(),
-                                  inline: true,
-                                  inputs: [
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Offset X',
-                                      hideLabel: true,
-                                      tooltip: 'Offset X',
-                                      width: 80,
-                                      icon: 'offsetHorizontalIcon',
-                                      propertyName: 'shadow.offsetX',
-                                    },
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Offset Y',
-                                      hideLabel: true,
-                                      tooltip: 'Offset Y',
-                                      width: 80,
-                                      icon: 'offsetVerticalIcon',
-                                      propertyName: 'shadow.offsetY',
-                                    },
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Blur',
-                                      hideLabel: true,
-                                      tooltip: 'Blur Radius',
-                                      width: 80,
-                                      icon: 'blurIcon',
-                                      propertyName: 'shadow.blurRadius',
-                                    },
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Spread',
-                                      hideLabel: true,
-                                      tooltip: 'Spread Radius',
-                                      width: 80,
-                                      icon: 'spreadIcon',
-                                      propertyName: 'shadow.spreadRadius',
-                                    },
-                                    {
-                                      type: 'colorPicker',
-                                      id: nanoid(),
-                                      label: 'Color',
-                                      hideLabel: true,
-                                      propertyName: 'shadow.color',
-                                    },
-                                  ],
-                                })
-                                .toJson(),
-                            ],
-                          },
-                        })
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: nanoid(),
+                                inline: true,
+                                inputs: [
+                                  {
+                                    type: 'numberField',
+                                    id: nanoid(),
+                                    label: 'Offset X',
+                                    hideLabel: true,
+                                    tooltip: 'Offset X',
+                                    width: 80,
+                                    icon: 'offsetHorizontalIcon',
+                                    propertyName: 'shadow.offsetX',
+                                  },
+                                  {
+                                    type: 'numberField',
+                                    id: nanoid(),
+                                    label: 'Offset Y',
+                                    hideLabel: true,
+                                    tooltip: 'Offset Y',
+                                    width: 80,
+                                    icon: 'offsetVerticalIcon',
+                                    propertyName: 'shadow.offsetY',
+                                  },
+                                  {
+                                    type: 'numberField',
+                                    id: nanoid(),
+                                    label: 'Blur',
+                                    hideLabel: true,
+                                    tooltip: 'Blur Radius',
+                                    width: 80,
+                                    icon: 'blurIcon',
+                                    propertyName: 'shadow.blurRadius',
+                                  },
+                                  {
+                                    type: 'numberField',
+                                    id: nanoid(),
+                                    label: 'Spread',
+                                    hideLabel: true,
+                                    tooltip: 'Spread Radius',
+                                    width: 80,
+                                    icon: 'spreadIcon',
+                                    propertyName: 'shadow.spreadRadius',
+                                  },
+                                  {
+                                    type: 'colorPicker',
+                                    id: nanoid(),
+                                    label: 'Color',
+                                    hideLabel: true,
+                                    propertyName: 'shadow.color',
+                                  },
+                                ],
+                              })
+                              .toJson(),
+                          ],
+                        },
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'stylingBox',
