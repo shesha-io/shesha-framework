@@ -174,7 +174,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             style={props.headerStyles || {}}
           >
             {props.showIcons && column.icon && <ShaIcon iconName={column.icon} readOnly style={iconStyles} />}
-            <h3
+            <span
               style={{
                 textWrap: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -182,7 +182,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               }}
             >
               {column.item} ({columnTasks.length})
-            </h3>
+            </span>
 
             {props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
