@@ -18,7 +18,7 @@ import { defaultStyles } from './utils';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
 
 interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: {onChange: (value: CustomLabeledValue<any>, option: any) => any};
+  eventHandlers?: { onChange: (value: CustomLabeledValue<any>, option: any) => any };
   defaultValue?: any;
 }
 
@@ -56,7 +56,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={{ ...model.allStyles.fullStyle, overflow: 'auto' }}
+            style={{ ...model.allStyles.fullStyle }}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
