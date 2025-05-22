@@ -159,16 +159,6 @@ export const getSettings = (data: any) => {
                                     width: 50,
                                   },
                                   {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    label: 'Weight',
-                                    propertyName: 'font.weight',
-                                    hideLabel: true,
-                                    tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
-                                    width: 100,
-                                  },
-                                  {
                                     type: 'colorPicker',
                                     id: nanoid(),
                                     label: 'Color',

@@ -64,7 +64,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const style: CSSProperties = {
     fontSize: fullStyles?.fontSize || 24,
     color: fullStyles?.color,
-    marginLeft: defaultValue ? '12px' : 'none', //this allows us to correct the icon layout when an icon is selected
+    marginLeft: defaultValue ? '12px' : 'none',
   };
 
   console.log('style', style);
@@ -100,11 +100,16 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
             defaultValue={defaultValue as ShaIconTypes}
             onIconChange={onIconChange}
             selectBtnSize={selectBtnSize}
-            iconSize={typeof fullStyles?.fontSize === 'number' ? fullStyles.fontSize : 24}
+            iconSize={
+              //icon size expects a number and not a string, we need to remove the px
+              typeof fullStyles?.fontSize === 'string'
+                ? parseFloat(fullStyles.fontSize.replace('px', ''))
+                : fullStyles?.fontSize || 24
+            }
             readOnly={readOnly}
             style={style}
-            color={fullStyles?.color}
-            twoToneColor={fullStyles?.color}
+            color={props.color}
+            twoToneColor={color}
           />
         </div>
       </Tooltip>
