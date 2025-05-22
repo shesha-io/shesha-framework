@@ -404,7 +404,9 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 label: 'Value format',
                                                 hidden: false,
                                                 dropdownOptions: {
-                                                    _code: "return getSettingValue(data?.dataSourceType) === 'entitiesList' ? [{\"label\": \"Simple Id\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Entity reference\",\"value\": \"entityReference\",\"id\": \"2\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}] : [{\"label\": \"Simple Id\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}];",
+                                                    _code: `return getSettingValue(data?.dataSourceType) === 'entitiesList' ? [{\"label\": \"Simple Id\",\"value\":\"simple\",\"id\": \"1\"},
+                                                    {\"label\": \"Entity reference\",\"value\": \"entityReference\",\"id\": \"2\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}]
+                                                    : [{\"label\": \"Simple Id\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}];`,
                                                     _mode: "code",
                                                     _value: false
                                                 } as any,

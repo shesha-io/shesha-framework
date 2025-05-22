@@ -84,8 +84,8 @@ export const filterDynamicComponents = (components, query, data) => {
     // matches query
 
     const matchesQuery = (text) => {
-        console.log("TEXT",text);
-        return text?.toLowerCase().includes(lowerCaseQuery)};
+        return text?.toLowerCase().includes(lowerCaseQuery);
+};
 
     const filterResult = components.map(component => {
         // Deep clone the component to avoid mutations

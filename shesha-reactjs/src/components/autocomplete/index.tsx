@@ -248,10 +248,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   const {width, ...restOfDropdownStyles} = style ?? {};
 
-  console.log("AUTOCOMPLETE STYLES::", style);
-
-  console.log("HEIGHT O METER AUS PROPS::", props?.style?.height, Number(parseInt(style?.height as string, 10)) ? style?.height : style?.fontSize);
-
   return (
     <>
       <Select
