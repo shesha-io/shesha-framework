@@ -6,7 +6,7 @@ shesha-core
 
 ## License
 
-Shesha and the various shesha community components and services are available under the [GPL-3.0 license](https://opensource.org/licenses/GPL-3.0). Shesha also includes external libraries that are available under a variety of licenses. See [LICENSE](https://github.com/shesha-io/shesha-framework/blob/main/shesha-reactjs/LICENCE.md) for the full license text
+Shesha and the various shesha community components and services are available under the [Apache License 2.0](../LICENSE.md). Shesha also includes external libraries that are available under a variety of licenses. See [LICENSE.md](../LICENSE.md) for the full license text.
 
 ## Running locally from CLI:
 
