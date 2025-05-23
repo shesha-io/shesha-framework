@@ -1,7 +1,6 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { HeartOutlined } from '@ant-design/icons';
-import { iconPickerFormSettings } from './settings';
 import { IconPickerWrapper } from './iconPickerWrapper';
 import { IIconPickerComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
@@ -23,28 +22,35 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-
     const allData = useAvailableConstantsData();
-    
+
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<IconPickerWrapper {...model} applicationContext={allData} value={value} onChange={onChange} />)}
+        {(value, onChange) => (
+          <IconPickerWrapper
+            fullStyles={model.allStyles.fullStyle}
+            {...model}
+            applicationContext={allData}
+            value={value}
+            onChange={onChange}
+          />
+        )}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(iconPickerFormSettings, model),
-  migrator: (m) => m
-    .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IIconPickerComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<IIconPickerComponentProps>(2, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color)}))
-    .add<IIconPickerComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-    .add<IIconPickerComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-        .add<IIconPickerComponentProps>(5, (prev) => {
-          prev.hideLabel = true;
-          return prev;
-        })
-  ,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: (m) =>
+    m
+      .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IIconPickerComponentProps>(1, (prev) => migrateVisibility(prev))
+      .add<IIconPickerComponentProps>(2, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color) }))
+      .add<IIconPickerComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+      .add<IIconPickerComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<IIconPickerComponentProps>(5, (prev) => {
+        prev.hideLabel = true;
+        return prev;
+      }),
 };
 
 export default IconPickerComponent;
