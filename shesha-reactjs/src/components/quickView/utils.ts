@@ -1,12 +1,27 @@
 import { getDataProperty, getFormatContent } from '@/utils/metadata';
 
-export const innerEntityReferenceSpanBoxStyle = {
+export const innerEntityReferenceButtonBoxStyle = {
+  backgroundColor: 'transparent',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   width: '100%',
+  height: '100%',
   margin: '0',
   padding: '0',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+};
+
+export const innerEntityReferenceSpanBoxStyle = {
+  width: '100%',
+  margin: '0',
+  padding: '0',
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  display: 'inline-block',
 };
 
 export const compareValueToProperty = (key: string, value: string, properties: Array<{ [key in string]: any }>) => {
