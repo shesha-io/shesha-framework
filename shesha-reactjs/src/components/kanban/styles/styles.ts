@@ -32,7 +32,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       font-size: ${fontStyles?.fontSize || '15px'};
       font-weight: ${fontStyles?.fontWeight || '400'};
       font-family: ${fontStyles?.fontFamily || 'Arial'};
-      padding: 10px 10px;
+      padding: 15px 15px;
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
 
