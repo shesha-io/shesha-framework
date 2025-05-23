@@ -75,7 +75,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
                 : fullStyles?.fontSize || 24
             }
             readOnly={readOnly}
-            style={{ ...style, border: '10px solid red' }}
+            style={style}
             color={props.color}
             twoToneColor={color}
           />
