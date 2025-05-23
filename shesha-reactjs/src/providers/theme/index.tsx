@@ -88,6 +88,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
           theme={{
             ...themeConfig,
             token: {
+              ...themeConfig.token,
               colorText: state.theme?.text?.default,
               colorTextDescription: state.theme?.text?.secondary
             },
