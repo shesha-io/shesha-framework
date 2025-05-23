@@ -1,11 +1,10 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
-import { overflowOptions } from '../_settings/utils/dimensions/utils';
 import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
@@ -63,7 +62,7 @@ export const getSettings = () => {
                                             label: 'Default Active Tab',
                                             labelAlign: 'right',
                                             parentId: 'root',
-                                            dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?._data?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
+                                            dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
                                         },
                                         {
                                             id: nanoid(),
@@ -205,7 +204,16 @@ export const getSettings = () => {
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
-                                                            }
+                                                            },
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: nanoid(),
+                                                                label: 'Align',
+                                                                propertyName: 'font.align',
+                                                                hideLabel: true,
+                                                                width: 60,
+                                                                dropdownOptions: textAlign,
+                                                            },
                                                         ],
                                                     })
                                                     .toJson()
@@ -291,16 +299,6 @@ export const getSettings = () => {
                                                             }
                                                         ]
                                                     })
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        parentId: 'displayCollapsiblePanel',
-                                                        inline: true,
-                                                        inputType: 'dropdown',
-                                                        label: 'Overflow',
-                                                        defaultValue: 'auto',
-                                                        propertyName: 'dimensions.overflow',
-                                                        dropdownOptions: overflowOptions
-                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -363,7 +361,6 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
-                                            hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: nanoid(),
                                                 components: [
@@ -663,7 +660,16 @@ export const getSettings = () => {
                                                                             label: 'Color',
                                                                             hideLabel: true,
                                                                             propertyName: 'card.font.color',
-                                                                        }
+                                                                        },
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: nanoid(),
+                                                                            label: 'Align',
+                                                                            propertyName: 'card.font.align',
+                                                                            hideLabel: true,
+                                                                            width: 60,
+                                                                            dropdownOptions: textAlign,
+                                                                        },
                                                                     ],
                                                                 })
                                                                 .toJson()
@@ -756,6 +762,7 @@ export const getSettings = () => {
                                                         labelAlign: 'right',
                                                         ghost: true,
                                                         parentId: nanoid(),
+                                                        hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                                         collapsible: 'header',
                                                         content: {
                                                             id: nanoid(),

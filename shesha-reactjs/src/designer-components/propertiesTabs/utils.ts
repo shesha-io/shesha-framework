@@ -12,41 +12,41 @@ const evaluateString = (expression: string, data: any): any => {
 
 const getHeaderStyles = () => (
     {
-        "font": {
-            "color": "#000",
-            "size": 14,
-            "weight": "500",
-            "align": "left",
-            "type": "Segoe UI"
+        font: {
+            color: "darkslategray",
+            size: 14,
+            weight: "500",
+            align: "left",
+            type: "Segoe UI"
         },
-        "background": {
-            "type": "color",
-            "color": "#fff"
+        background: {
+            type: "color",
+            color: "#fff"
         },
-        "dimensions": {
-            "width": "auto",
-            "height": "auto",
-            "minHeight": "0",
-            "maxHeight": "auto",
-            "minWidth": "0",
-            "maxWidth": "auto"
+        dimensions: {
+            width: "auto",
+            height: "auto",
+            minHeight: "0",
+            maxHeight: "auto",
+            minWidth: "0",
+            maxWidth: "auto"
         },
-        "border": {
-            "radiusType": "all",
-            "borderType": "custom",
-            "border": {
-                "all": {},
-                "top": {},
-                "right": {},
-                "bottom": {
-                    "width": "2px",
-                    "style": "solid",
-                    "color": "var(--primary-color)"
+        border: {
+            radiusType: "all",
+            borderType: "custom",
+            border: {
+                all: {},
+                top: {},
+                right: {},
+                bottom: {
+                    width: "2px",
+                    style: "solid",
+                    color: "var(--primary-color)"
                 },
-                "left": {}
+                left: {}
             },
-            "radius": {
-                "all": '0'
+            radius: {
+                all: '0'
             }
         },
         stylingBox: "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"0\"}"
@@ -112,13 +112,13 @@ export const filterDynamicComponents = (components, query, data) => {
 
             return {
                 ...c,
-                collapsible: c.collapsible ?? 'header',
+                collapsible: 'header',
                 content: {
                     ...c.content,
                     components: contentComponents
                 },
                 ghost: false,
-                collapsedByDefault: true,
+                collapsedByDefault: false,
                 headerStyles: getHeaderStyles(),
                 allStyles: getBodyStyles(),
                 border: getBodyStyles().border,

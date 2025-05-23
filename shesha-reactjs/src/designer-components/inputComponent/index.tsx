@@ -28,7 +28,7 @@ import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfi
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
-import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
+import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
 import { editModes, getEditor, iconElement } from './utils';
 
@@ -116,6 +116,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 style={{ width: "100%" }}
                 defaultValue={defaultValue}
                 onChange={onChange}
+                placeholder={placeholder}
                 options={[...(options || [])].map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))}
             />;
         }
@@ -145,8 +146,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'customDropdown': {
             const options = dropdownOptions as IDropdownOption[];
 
-            return <CustomDropdown
-                variant={variant} value={value || defaultValue}
+            return <CustomDropdown value={value || defaultValue} placeholder={placeholder}
                 defaultValue={defaultValue} options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
         }
         case 'textArea':
@@ -198,7 +198,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
-            return <QueryBuilder {...{ ...props }} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
+            return <QueryBuilder {...props} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
@@ -320,7 +320,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 propertyMeta={propertyMeta}
             />;
         case 'RefListItemSelectorSettingsModal':
-            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList?._data} readOnly={false} />;
+            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList} readOnly={false} />;
 
         case 'Password':
             return <Password

@@ -48,4 +48,6 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   sorting?: ISortingItem[];
   grouping?: GroupingItem[];
   allowFreeText?: boolean;
+  font?: any;
+  dimensions?: any;
 }

@@ -77,218 +77,6 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: nanoid(),
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                parentId: 'root',
-                label: "Permissions",
-                tooltip: "Enter a list of permissions that should be associated with this component",
-                jsSetting: true,
-              })
-              .toJson()
-            ]
-          },
-          {
-            key: 'appearance',
-            title: 'Appearance',
-            id: nanoid(),
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'dropdown',
-                propertyName: "orientation",
-                parentId: 'root',
-                label: "Orientation",
-                jsSetting: true,
-                defaultValue: 'vertical',
-                dropdownOptions: [
-                  { label: 'Vertical', value: 'vertical' },
-                  { label: 'Horizontal', value: 'horizontal' },
-                  { label: 'Wrap', value: 'wrap' },
-                ],
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                inputs: [
-                  {
-                    id: nanoid(),
-                    type: 'textField',
-                    propertyName: "cardMinWidth",
-                    parentId: 'root',
-                    label: "Card Minimum Width",
-                    tooltip: "You can use any unit (%, px, em, etc)",
-                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
-                    jsSetting: false,
-                  },
-                  {
-                    id: nanoid(),
-                    type: 'textField',
-                    propertyName: "cardMaxWidth",
-                    parentId: 'root',
-                    label: "Card Maximum Width",
-                    tooltip: "You can use any unit (%, px, em, etc)",
-                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
-                    jsSetting: false,
-                  }
-                ]
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                inputs: [
-                  {
-                    id: nanoid(),
-                    type: 'textField',
-                    propertyName: "cardHeight",
-                    parentId: 'root',
-                    label: "Card Height",
-                    tooltip: "You can use any unit (%, px, em, etc)",
-                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
-                    jsSetting: false,
-                  },
-                  {
-                    id: nanoid(),
-                    type: 'textField',
-                    propertyName: "cardSpacing",
-                    parentId: 'root',
-                    label: "Card Spacing",
-                    tooltip: "You can use any unit (%, px, em, etc)",
-                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
-                    jsSetting: false,
-                  }
-                ]
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                inputs: [{
-                  id: nanoid(),
-                  type: 'dropdown',
-                  propertyName: "listItemWidth",
-                  parentId: 'root',
-                  label: "List Item Width",
-                  hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
-                  jsSetting: false,
-                  dropdownOptions: [
-                    { label: '100%', value: '1' },
-                    { label: '50%', value: '0.5' },
-                    { label: '33%', value: '0.33' },
-                    { label: '25%', value: '0.25' },
-                    { label: '(Custom)', value: 'custom' },
-                  ],
-                }]
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                inputs: [
-                  {
-                    id: nanoid(),
-                    type: 'numberField',
-                    propertyName: "customListItemWidth",
-                    parentId: 'root',
-                    label: "Custom List Item Width (px)",
-                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal" || getSettingValue(data?.listItemWidth) !== "custom";', _mode: 'code', _value: false } as any,
-                    jsSetting: false,
-                  }
-                ]
-              })
-              .addCollapsiblePanel({
-                id: 'groupCollapsiblePanel',
-                propertyName: 'pnlGroup',
-                label: 'Group Styles',
-                parentId: 'root',
-                labelAlign: 'right',
-                ghost: true,
-                collapsible: 'header',
-                content: {
-                  id: 'groupPnl',
-                  components: [...new DesignerToolbarSettings()
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      parentId: "groupPnl",
-                      inputs: [{
-                        id: nanoid(),
-                        type: "switch",
-                        propertyName: "collapsible",
-                        label: "Collapsible",
-                        labelAlign: "right",
-                        parentId: "root",
-                        hidden: false,
-                      },
-                      {
-                        id: nanoid(),
-                        type: "switch",
-                        propertyName: "collapseByDefault",
-                        label: "Collapsible By Default",
-                        labelAlign: "right",
-                        parentId: "root",
-                        hidden: false,
-                      }],
-                      hideLabel: true,
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      inputs: [{
-                        id: nanoid(),
-                        type: 'codeEditor',
-                        propertyName: "groupStyle",
-                        parentId: 'root',
-                        label: "Style",
-                        jsSetting: false,
-                        exposedVariables: [
-                          { name: "data", description: "Selected form values", type: "object" },
-                        ],
-                      }
-                      ],
-                      hideLabel: true,
-                    })
-                    .toJson()
-                  ]
-                }
-              })
-              .addCollapsiblePanel({
-                id: 'datalistEmptyState',
-                propertyName: 'datalistEmptyState',
-                label: 'Empty State',
-                labelAlign: 'right',
-                ghost: true,
-                collapsible: 'header',
-                content: {
-                  id: 'datatableEmptyState',
-                  components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: 'noDataIcon',
-                      label: 'Icon',
-                      inputType: 'iconPicker',
-                      jsSetting: true,
-                    })
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: 'noDataText',
-                      label: 'Primary Text',
-                      inputType: 'textField',
-                      jsSetting: true,
-                      defaultValue: 'No Data',
-                    })
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: 'noDataSecondaryText',
-                      label: 'Secondary Text',
-                      inputType: 'textField',
-                      jsSetting: true,
-                      defaultValue: 'No data is available for this table',
-                    }).toJson()
-                  ]
-                }
-              })
-              .toJson()
-            ]
-          },
-          {
             key: 'data',
             title: 'Data',
             id: nanoid(),
@@ -339,7 +127,7 @@ export const getSettings = (data: any) => {
                   {
                     id: nanoid(),
                     propertyName: 'formId',
-                    label: 'Modal Form',
+                    label: 'Create Form',
                     type: 'formAutocomplete',
                     labelAlign: 'right',
                     parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
@@ -347,7 +135,7 @@ export const getSettings = (data: any) => {
                     validate: {
                       required: true,
                     },
-                  }
+                  },
                 ],
               })
               .addSettingsInputRow({
@@ -456,6 +244,27 @@ export const getSettings = (data: any) => {
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
+                      parentId: '',
+                      hidden: {
+                        _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          propertyName: 'createFormType',
+                          label: 'Create Form Type',
+                          parentId: '',
+                          type: 'formTypeAutocomplete',
+                          jsSetting: true,
+                          width: '100%',
+                          allowClear: true,
+                        }
+                      ],
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
                       hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
                       inputs: [{
                         id: nanoid(),
@@ -463,7 +272,30 @@ export const getSettings = (data: any) => {
                         propertyName: 'onNewListItemInitialize',
                         label: 'New List Item Init',
                         jsSetting: false,
-                      }
+                      },
+                      ],
+                      hideLabel: true,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
+                      inputs: [
+                      {
+                        id: nanoid(),
+                        propertyName: 'modalWidth',
+                        label: 'Dialog Width (%)',
+                        parentId: 'root',
+                        type: 'dropdown',
+                        allowClear: true,
+                        jsSetting: true,
+                        dropdownOptions: [
+                          { value: '40%', label: 'Small' },
+                          { value: '60%', label: 'Medium' },
+                          { value: '80%', label: 'Large' },
+                          { value: 'custom', label: 'Custom' },
+                        ],
+                        width: '100%',
+                      },
                       ],
                       hideLabel: true,
                     })
@@ -643,13 +475,229 @@ export const getSettings = (data: any) => {
                 description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                 exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
               })
-              .addConfigurableActionConfigurator({
+              .toJson()
+            ]
+          },
+          {
+            key: 'appearance',
+            title: 'Appearance',
+            id: nanoid(),
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
                 id: nanoid(),
-                propertyName: 'onListItemSaveSuccessAction',
-                label: 'On List Item Save Success',
-                parentId: 'events',
-                description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                hideLabel: true,
+                inputType: 'dropdown',
+                propertyName: "orientation",
+                parentId: 'root',
+                label: "Orientation",
+                jsSetting: true,
+                defaultValue: 'vertical',
+                dropdownOptions: [
+                  { label: 'Vertical', value: 'vertical' },
+                  { label: 'Horizontal', value: 'horizontal' },
+                  { label: 'Wrap', value: 'wrap' },
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'textField',
+                    propertyName: "cardMinWidth",
+                    parentId: 'root',
+                    label: "Card Minimum Width",
+                    tooltip: "You can use any unit (%, px, em, etc)",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'textField',
+                    propertyName: "cardMaxWidth",
+                    parentId: 'root',
+                    label: "Card Maximum Width",
+                    tooltip: "You can use any unit (%, px, em, etc)",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'textField',
+                    propertyName: "cardHeight",
+                    parentId: 'root',
+                    label: "Card Height",
+                    tooltip: "You can use any unit (%, px, em, etc)",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'textField',
+                    propertyName: "cardSpacing",
+                    parentId: 'root',
+                    label: "Card Spacing",
+                    tooltip: "You can use any unit (%, px, em, etc)",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'showBorder',
+                    label: "Show Border",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [{
+                  id: nanoid(),
+                  type: 'dropdown',
+                  propertyName: "listItemWidth",
+                  parentId: 'root',
+                  label: "List Item Width",
+                  hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
+                  jsSetting: false,
+                  dropdownOptions: [
+                    { label: '100%', value: '1' },
+                    { label: '50%', value: '0.5' },
+                    { label: '33%', value: '0.33' },
+                    { label: '25%', value: '0.25' },
+                    { label: '(Custom)', value: 'custom' },
+                  ],
+                }]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'numberField',
+                    propertyName: "customListItemWidth",
+                    parentId: 'root',
+                    label: "Custom List Item Width (px)",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal" || getSettingValue(data?.listItemWidth) !== "custom";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  }
+                ]
+              })
+              .addCollapsiblePanel({
+                id: 'groupCollapsiblePanel',
+                propertyName: 'pnlGroup',
+                label: 'Group Styles',
+                parentId: 'root',
+                labelAlign: 'right',
+                ghost: true,
+                collapsible: 'header',
+                content: {
+                  id: 'groupPnl',
+                  components: [...new DesignerToolbarSettings()
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: "groupPnl",
+                      inputs: [{
+                        id: nanoid(),
+                        type: "switch",
+                        propertyName: "collapsible",
+                        label: "Collapsible",
+                        labelAlign: "right",
+                        parentId: "root",
+                        hidden: false,
+                      },
+                      {
+                        id: nanoid(),
+                        type: "switch",
+                        propertyName: "collapseByDefault",
+                        label: "Collapsible By Default",
+                        labelAlign: "right",
+                        parentId: "root",
+                        hidden: false,
+                      }],
+                      hideLabel: true,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      inputs: [{
+                        id: nanoid(),
+                        type: 'codeEditor',
+                        propertyName: "groupStyle",
+                        parentId: 'root',
+                        label: "Style",
+                        jsSetting: false,
+                        exposedVariables: [
+                          { name: "data", description: "Selected form values", type: "object" },
+                        ],
+                      }
+                      ],
+                      hideLabel: true,
+                    })
+                    .toJson()
+                  ]
+                }
+              })
+              .addCollapsiblePanel({
+                id: 'datalistEmptyState',
+                propertyName: 'datalistEmptyState',
+                label: 'Empty State',
+                labelAlign: 'right',
+                ghost: true,
+                collapsible: 'header',
+                content: {
+                  id: 'datatableEmptyState',
+                  components: [...new DesignerToolbarSettings()
+                    .addSettingsInput({
+                      id: nanoid(),
+                      propertyName: 'noDataIcon',
+                      label: 'Icon',
+                      inputType: 'iconPicker',
+                      jsSetting: true,
+                    })
+                    .addSettingsInput({
+                      id: nanoid(),
+                      propertyName: 'noDataText',
+                      label: 'Primary Text',
+                      inputType: 'textField',
+                      jsSetting: true,
+                      defaultValue: 'No Data',
+                    })
+                    .addSettingsInput({
+                      id: nanoid(),
+                      propertyName: 'noDataSecondaryText',
+                      label: 'Secondary Text',
+                      inputType: 'textField',
+                      jsSetting: true,
+                      defaultValue: 'No data is available for this table',
+                    }).toJson()
+                  ]
+                }
+              })
+              .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: nanoid(),
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                parentId: 'root',
+                label: "Permissions",
+                tooltip: "Enter a list of permissions that should be associated with this component",
                 jsSetting: true,
               })
               .toJson()

@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent, OverflowType } from "@/providers";
+import { IConfigurableFormComponent } from "@/providers";
 
 export interface IDimensionsProps extends IConfigurableFormComponent {
     value?: IDimensionsValue;
@@ -12,11 +12,9 @@ export interface IDimensionsValue {
     minHeight?: string | number;
     maxWidth?: string | number;
     maxHeight?: string | number;
-    overflow?: OverflowType;
 }
 
 export interface IDimensionsType {
     readOnly?: boolean;
     value?: IDimensionsValue;
-    noOverflow?: boolean;
 }

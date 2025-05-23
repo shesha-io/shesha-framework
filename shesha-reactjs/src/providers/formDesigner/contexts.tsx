@@ -27,6 +27,8 @@ export interface IFormDesignerStateContext {
 
   selectedComponentId?: string;
   selectedComponentRef?: MutableRefObject<any>;
+  previousSelectedComponentId?: string;
+  previousSelectedComponentRef?: MutableRefObject<any>;
   isDragging: boolean;
   hasDragged: boolean;
   dataSources: IDataSource[];

@@ -4,6 +4,7 @@ import Show from '../show';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { addPx } from '@/utils/style';
+import { titleDefaultStyles } from './utils';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -35,7 +36,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   lineHeight,
   orientation,
   containerStyle,
-  titleStyle,
+  titleStyle = titleDefaultStyles(),
   tooltip,
   title,
   titleMargin,
@@ -66,7 +67,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   };
 
   const getLineStyles = (isLeft: boolean) => {
-
     if ((isLeft && labelAlign === 'left') || (!isLeft && labelAlign === 'right')) {
       return { width: `calc(${titleMargin || 0}% - ${titleWidth / 2}px)` };
     }
@@ -87,35 +87,38 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     }
 
     return (
-      <div className={styles.titleContainer} style={{ alignItems: 'center', display: 'flex', width: '100%' }
-      }>
+      <div className={styles.titleContainer} style={{ alignItems: 'center', display: 'flex', width: '100%' }}>
         <div style={{ ...getLineStyles(true), ...baseStyle }}></div>
-        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap' }
-        }>
+        <div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap' }}>
           {title}
-          < Show when={Boolean(tooltip?.trim())}>
+          <Show when={Boolean(tooltip?.trim())}>
             <Tooltip title={tooltip}>
-              <QuestionCircleOutlined
-                className={styles.helpIcon}
-              />
+              <QuestionCircleOutlined className={styles.helpIcon} />
             </Tooltip>
           </Show>
         </div>
-        < div style={{ ...getLineStyles(false), ...baseStyle }}> </div>
+        <div style={{ ...getLineStyles(false), ...baseStyle }}> </div>
       </div>
     );
   };
 
-  return (
-    vertical ? (<div className={styles.vertical} style={{ ...borderStyle, ...containerStyle, height: addPx(lineHeight || '0.9em') }}></div>) :
-      <div style={{
+  return vertical ? (
+    <div
+      className={styles.vertical}
+      style={{ ...borderStyle, ...containerStyle, height: addPx(lineHeight || '0.9em') }}
+    ></div>
+  ) : (
+    <div
+      style={{
         ...containerStyle,
         width: addPx(lineWidth),
-      }} key={id} >
-        <div className={!inline || !title ? styles.shaSectionSeparator : ''} style={borderStyle} >
-          {renderTitle()}
-        </div>
+      }}
+      key={id}
+    >
+      <div className={!inline || !title ? styles.shaSectionSeparator : ''} style={borderStyle}>
+        {renderTitle()}
       </div>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { CSSProperties, FC } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes } from '../iconPicker/iconNamesFilled';
 import { OutlinedIconTypes } from '../iconPicker/iconNamesOutlined';
@@ -10,6 +10,7 @@ export type IconType = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 export interface IShaIconProps extends IconBaseProps {
   iconName: IconType;
   twoToneColor?: string;
+  style?: CSSProperties;
 }
 
 const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...props }) => {

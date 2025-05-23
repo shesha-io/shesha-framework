@@ -1,7 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { borderStyles, getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
@@ -22,7 +22,6 @@ export const getSettings = (data) => {
   const backgroundStyleRowId = nanoid();
   const shadowStylePnlId = nanoid();
   const modalSettingsPnlId = nanoid();
-  const entityPickerDividerPnlId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -59,26 +58,21 @@ export const getSettings = (data) => {
                 parentId: commonTabId,
                 hideLabel: true,
               })
-              .addSettingsInputRow({
+              .addSettingsInput({
                 id: nanoid(),
                 parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'textField',
-                    id: nanoid(),
-                    propertyName: 'placeholder',
-                    label: 'Placeholder',
-                    size: 'small',
-                    jsSetting: true,
-                  },
-                  {
-                    type: 'textArea',
-                    id: nanoid(),
-                    propertyName: 'description',
-                    label: 'Tooltip',
-                    jsSetting: true,
-                  },
-                ],
+                inputType: 'textField',
+                propertyName: 'placeholder',
+                label: 'Placeholder',
+                size: 'small',
+                jsSetting: true,
+              })
+              .addSettingsInput({
+                inputType: 'textArea',
+                id: nanoid(),
+                propertyName: 'description',
+                label: 'Tooltip',
+                jsSetting: true,
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -133,7 +127,11 @@ export const getSettings = (data) => {
                     isDynamic: false,
                     description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
                     validate: {},
-                    modelType: '{{data.entityType}}',
+                    modelType: {
+                      _code: 'return getSettingValue(data?.entityType);',
+                      _mode: 'code',
+                      _value: false
+                    } as any,
                     autoFillProps: false,
                     settingsValidationErrors: [],
                   },
@@ -183,7 +181,6 @@ export const getSettings = (data) => {
                         id: nanoid(),
                         propertyName: 'filters',
                         label: 'Entity Filter',
-                        jsSetting: true,
                         modelType: '{{data.entityType}}',
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                         hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
@@ -196,6 +193,7 @@ export const getSettings = (data) => {
                     propertyName: 'valueFormat',
                     parentId: dataPanelId,
                     label: 'Value Format',
+                    jsSetting: true,
                     dropdownOptions: [
                       {
                         label: 'Simple ID',
@@ -221,7 +219,7 @@ export const getSettings = (data) => {
                         type: 'codeEditor',
                         id: nanoid(),
                         propertyName: 'incomeCustomJs',
-                        label: 'Id Value',
+                        label: 'ID Value',
                         parentId: dataPanelId,
                         validate: {},
                         settingsValidationErrors: [],
@@ -246,8 +244,13 @@ export const getSettings = (data) => {
                     parentId: dataPanelId,
                     label: 'Columns',
                     items: [],
-                    modelType: '{{data.entityType}}',
+                    modelType: {
+                      _code: 'return getSettingValue(data?.entityType);',
+                      _mode: 'code',
+                      _value: false
+                    } as any,
                     parentComponentType: 'entityPicker',
+                    jsSetting: true,
                   }).toJson()]
               })
               .addSettingsInput({
@@ -281,6 +284,7 @@ export const getSettings = (data) => {
                           labelAlign: 'right',
                           parentId: modalSettingsPnlId,
                           hidden: false,
+                          jsSetting: true,
                           validate: {
                             required: true,
                           }
@@ -294,6 +298,7 @@ export const getSettings = (data) => {
                           parentId: modalSettingsPnlId,
                           hidden: false,
                           size: 'small',
+                          jsSetting: true,
                           validate: {
                             required: true,
                           }
@@ -308,6 +313,7 @@ export const getSettings = (data) => {
                         label: 'Buttons Type',
                         type: 'dropdown',
                         width: 120,
+                        jsSetting: true,
                         dropdownOptions: [
                           { label: 'Default', value: 'default' },
                           { label: 'Custom', value: 'custom' },
@@ -321,6 +327,7 @@ export const getSettings = (data) => {
                         hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false } as any,
                         propertyName: 'submitHttpVerb',
                         label: 'Submit HTTP Verb',
+                        jsSetting: true,
                         dropdownOptions: [
                           { label: 'POST', value: 'POST' },
                           { label: 'PUT', value: 'PUT' },
@@ -333,6 +340,7 @@ export const getSettings = (data) => {
                         hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false } as any,
                         label: 'Configure Modal Buttons',
                         type: 'buttonGroupConfigurator',
+                        jsSetting: true,
                       }
                       ]
                     })
@@ -342,6 +350,7 @@ export const getSettings = (data) => {
                       inputType: 'customDropdown',
                       label: 'Dialog Width',
                       allowClear: true,
+                      jsSetting: true,
                       customDropdownMode: 'single',
                       dropdownOptions: [
                         {
@@ -830,52 +839,6 @@ export const getSettings = (data) => {
                             propertyName: 'style',
                             label: 'Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                          })
-                          .toJson()
-                        ]
-                      }
-                    })
-                    .addCollapsiblePanel({
-                      id: nanoid(),
-                      propertyName: 'entityPickerDivider',
-                      label: 'Entity Picker Divider',
-                      labelAlign: 'right',
-                      ghost: true,
-                      content: {
-                        id: entityPickerDividerPnlId,
-                        components: [...new DesignerToolbarSettings()
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: entityPickerDividerPnlId,
-                            inline: true,
-                            readOnly: false,
-                            inputs: [
-                              {
-                                id: nanoid(),
-                                type: 'textField',
-                                label: "Width",
-                                hideLabel: true,
-                                propertyName: 'dividerWidth',
-                              },
-                              {
-                                id: nanoid(),
-                                label: "Style",
-                                propertyName: 'dividerStyle',
-                                type: "dropdown",
-                                hideLabel: true,
-                                width: 60,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                dropdownOptions: borderStyles,
-                              },
-                              {
-                                id: nanoid(),
-                                label: `Color`,
-                                propertyName: 'dividerColor',
-                                type: "colorPicker",
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                hideLabel: true,
-                              }
-                            ]
                           })
                           .toJson()
                         ]

@@ -12,6 +12,7 @@ export const getSettings = (data: any) => {
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
+  const stylePanelId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -62,24 +63,6 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'dropdown',
-                  propertyName: 'mode',
-                  label: 'Mode',
-                  size: 'small',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    {
-                      label: 'Single',
-                      value: 'single',
-                    },
-                    {
-                      label: 'Multiple',
-                      value: 'multiple',
-                    },
-                  ],
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
@@ -115,10 +98,30 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'dropdown',
+                  propertyName: 'mode',
+                  label: 'Mode',
+                  size: 'small',
+                  jsSetting: true,
+                  parentId: dataTabId,
+                  dropdownOptions: [
+                    {
+                      label: 'Single',
+                      value: 'single',
+                    },
+                    {
+                      label: 'Multiple',
+                      value: 'multiple',
+                    },
+                  ],
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'dropdown',
                   propertyName: 'dataSourceType',
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
+                  parentId: dataTabId,
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -129,7 +132,7 @@ export const getSettings = (data: any) => {
                       value: 'referenceList',
                     },
                     {
-                      label: 'Api URL',
+                      label: 'API URL',
                       value: 'url',
                     },
                   ],
@@ -154,6 +157,7 @@ export const getSettings = (data: any) => {
                       valueTitle: 'Value',
                       valueName: 'value',
                       mode: 'dialog',
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -188,7 +192,7 @@ export const getSettings = (data: any) => {
                       type: 'codeEditor',
                       id: nanoid(),
                       propertyName: 'dataSourceUrl',
-                      label: 'Data Source Url',
+                      label: 'Data Source URL',
                       jsSetting: true,
                     },
                     {
@@ -286,6 +290,7 @@ export const getSettings = (data: any) => {
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        parentId: styleRouterId,
                         defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
@@ -316,6 +321,7 @@ export const getSettings = (data: any) => {
                                 propertyName: 'style',
                                 hideLabel: false,
                                 label: 'Style',
+                                parentId: stylePanelId,
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })

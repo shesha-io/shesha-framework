@@ -3,28 +3,25 @@ import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { IInputStyles } from '@/providers/form/models';
 import {
   executeExpression,
-  getStyle,
-  pickStyleFromModel,
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { IAutocompleteComponentProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
-import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
-import { toSizeCssProp } from '@/utils/form';
+import { getValueByPropertyName } from '@/utils/object';
 import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -36,25 +33,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles: React.CSSProperties = removeUndefinedProps({
-      height: toSizeCssProp(model.height),
-      width: toSizeCssProp(model.width),
-      fontWeight: model.fontWeight,
-      borderWidth: model.borderSize,
-      borderRadius: model.borderRadius,
-      borderStyle: model.borderType,
-      borderColor: model.borderColor,
-      backgroundColor: model.backgroundColor,
-      fontSize: model.fontSize,
-      overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
-      ...stylingBoxAsCSS,
-    });
-    const jsStyle = getStyle(model.style, allData.data);
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
@@ -99,7 +77,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function')
               onChange(...args);
           };
-
+          
           return <Autocomplete
             {...model}
             grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
@@ -107,7 +85,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             outcomeValueFunc={outcomeValueFunc}
             displayValueFunc={displayValueFunc}
             filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-            style={finalStyle}
+            style={model?.allStyles?.fullStyle}
+            size={model?.size ?? 'middle'}
             value={value}
             onChange={onChangeInternal} 
             allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
@@ -115,10 +94,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         }}
       </ConfigurableFormItem>
     );
-  }
-  ,
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  },
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
@@ -176,6 +154,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? prev.keyPropName || 'value' : prev.keyPropName,
       };
     })
+    .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
@@ -193,6 +172,11 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     };
   },
   actualModelPropertyFilter: (propName) => propName !== 'queryParams',
+  getFieldsToFetch(propertyName, rawModel) {
+    return rawModel.valueFormat === 'entityReference'
+      ? [`${propertyName}.id`, `${propertyName}._className`, `${propertyName}._displayName`]
+      : [propertyName];
+  },
 };
 
 export default AutocompleteComponent;

@@ -68,7 +68,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     ) {
       // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
       if (keys.length) {
-        const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
+        const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
+        const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
         if (props.dataSourceType === 'entitiesList' && !props.displayValueFunc && !props.displayPropName && hasDisplayName) {
           setLoadingValues(false);
           const values = Array.isArray(props.value) ? props.value : [props.value];
@@ -239,6 +240,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
+  //specifying a width for dropdownStyles causes its width to go out of sync with the rest of the component
+  const {width, ...restOfDropdownStyles} = props.style ?? {};
+
   return (
     <>
       <Select
@@ -246,7 +250,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         onDropdownVisibleChange={onDropdownVisibleChange}
         value={keys}
         className="sha-dropdown"
-        dropdownStyle={{ ...props.style, height: 'auto' }}
+        dropdownStyle={{ ...restOfDropdownStyles, height: 'auto' }}
         showSearch={!props.disableSearch}
         notFoundContent={props.notFoundContent}
         defaultActiveFirstOption={false}
@@ -258,7 +262,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         loading={source?.isInProgress?.fetchTableData}
         placeholder={props.placeholder}
         disabled={props.readOnly}
-        variant={props.hideBorder ? 'borderless' : undefined}
         onSelect={handleSelect}
         style={props.style}
         size={props.size}
@@ -274,7 +277,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 };
 
 const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
-  const { formData } = useShaFormInstance();
+  const { formData } = useShaFormInstance(false) ?? {};
   const disableRefresh = useRef<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();

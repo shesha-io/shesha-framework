@@ -526,50 +526,20 @@ export const getSettings = (data) => {
                                 .toJson()
                             ]
                           })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: displayCollapsiblePanelId,
-                            inline: false,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                label: 'Text Justify',
-                                propertyName: 'textJustify',
-                                hidden: {
-                                  _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "block";',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                dropdownOptions: TEXT_JUSTIFY
-                              },
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                label: 'Overflow',
-                                propertyName: 'overflow',
-                                dropdownOptions: [
-                                  {
-                                    label: "Auto",
-                                    value: "auto",
-                                  },
-                                  {
-                                    label: "Hidden",
-                                    value: "hidden",
-                                  },
-                                  {
-                                    label: "Scroll",
-                                    value: "scroll",
-                                  },
-                                  {
-                                    label: "Visible",
-                                    value: "visible",
-                                  },
-                                ]
-                              }
-                            ],
-                          })
+                          .addSettingsInput(
+                            {
+                              inputType: 'dropdown',
+                              id: nanoid(),
+                              label: 'Text Justify',
+                              propertyName: 'textJustify',
+                              hidden: {
+                                _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "block";',
+                                _mode: 'code',
+                                _value: false,
+                              } as any,
+                              dropdownOptions: TEXT_JUSTIFY
+                            }
+                          )
                           .toJson()
                         ]
                       }

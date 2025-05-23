@@ -5,7 +5,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useEffect, useMemo } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
-import { DataTypes, IObjectMetadata, ValidationErrors, useDataContextManager, useShaFormInstance } from '@/index';
+import { DataTypes, IObjectMetadata, ValidationErrors, getStyle, useDataContextManager, useShaFormInstance } from '@/index';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
@@ -14,6 +14,8 @@ import { useStyles } from './styles';
 import { useWizard } from './hooks';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
 import { wizardApiCode } from '@/publicJsApis';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getOverflowStyle } from '../_settings/utils/overflow/util';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
@@ -37,12 +39,25 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         wizardType = 'default',
     } = model;
 
+    const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
+    const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
+    const activeStepStyle = useFormComponentStyles(visibleSteps[current]);
+    const { fontSize, fontFamily, fontWeight, color, height, minHeight, maxHeight, ...rest } = activeStepStyle.fullStyle;
+    const { styles } = useStyles({ styles: { ...model.allStyles.fullStyle, height: null, minHeight: null, maxHeight: null, width: null, minWidth: null, maxWidth: null, overflow: '', ...rest }, colors, activeStepStyle: activeStepStyle.fullStyle });
+
     const steps = useMemo(() => {
-        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
+        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style, ...rest }, index) => {
             const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
             const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
+            const styles = { ...model.allStyles.fullStyle };
+
+            const { height, minHeight, maxHeight, width, minWidth, maxWidth, ...stepStyle } = getStyle(style, visibleSteps[index]);
+
+            const dimStyles = { height: height ?? styles.height, minHeight: minHeight ?? styles.minHeight, maxHeight: maxHeight ?? styles.maxHeight, width: width ?? styles.width, minWidth: minWidth ?? styles.minWidth, maxWidth: maxWidth ?? styles.maxWidth };
+
             return {
+                ...rest,
                 id,
                 title,
                 subTitle,
@@ -50,19 +65,16 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                 disabled: isDisabledByCondition,
                 status: isDisabledByCondition ? 'wait' : status,
                 ...iconProps,
+                style: stepStyle,
                 // render only current step
                 content: current === index
                     ? <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
-                        <ComponentsContainer containerId={id} dynamicComponents={isDynamic ? components : []} />
+                        <ComponentsContainer style={{ ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false), ...dimStyles }} containerId={id} dynamicComponents={isDynamic ? components : []} />
                     </ParentProvider>
                     : undefined,
             };
         });
     }, [visibleSteps, current]);
-
-    const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
-    const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
-    const { styles } = useStyles({ styles: model.allStyles.fullStyle, colors });
 
     const splitButtons = buttonsLayout === 'spaceBetween';
 
@@ -80,7 +92,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
             type="control"
             metadata={contextMetadata}
             data={{ current, currentStep, visibleSteps }}
-            api={{ back, cancel, content, done, next, setStep }}     
+            api={{ back, cancel, content, done, next, setStep }}
         >
             <ParentProvider model={model}>
                 <div className={styles.shaWizard}>
@@ -88,7 +100,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         <Steps
                             type={wizardType}
                             current={current}
-                            items={steps}
+                            items={steps.map(step => ({ ...step, style: {} }))}
                             size={model['size']}
                             direction={direction}
                             labelPlacement={labelPlacement}
@@ -141,7 +153,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                                         {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
                                     </Button>
                                 )}
-
                                 {current === visibleSteps.length - 1 && (
                                     <Button
                                         type="primary"

@@ -1,7 +1,8 @@
 export const defaultStyles = (): any => {
     return {
-        background: { type: 'color', color: '#fff' },
+        background: { type: 'color', color: '#fff', position: 'center', size: 'cover', repeat: 'no-repeat' },
         font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+        dimensions: { width: '50%', height: '100%', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
         border: {
             border: {
                 all: { width: '1px', style: 'solid', color: '#d9d9d9' },

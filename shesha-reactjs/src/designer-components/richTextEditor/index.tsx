@@ -8,12 +8,18 @@ import { getStyle } from '@/providers/form/utils';
 import { IJoditEditorProps } from '@/components/richTextEditor/joditEditor';
 import { IRichTextEditorProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migrateCustomFunctions,
+  migratePropertyName,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { useDeepCompareMemoKeepReference } from '@/hooks';
 import { useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -27,6 +33,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   isOutput: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
+    const { allStyles } = model;
+    const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
 
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {
@@ -38,8 +46,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         iframe: model?.iframe,
         direction: model?.direction,
         disablePlugins: model?.disablePlugins?.join(',') || '',
-        ...!model.autoHeight && {height: model?.height},
-        ...!model.autoWidth && {width: model?.width},
+        ...(!model.autoHeight && { height, minHeight, maxHeight }),
+        ...(!model.autoWidth && { width, minWidth, maxWidth }),
         placeholder: model?.placeholder ?? '',
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
@@ -48,8 +56,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         editHTMLDocumentMode: false,
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
-        allowResizeX:model?.allowResizeX && !model?.autoWidth,
-        allowResizeY:model?.allowResizeY && !model?.autoHeight,
+        allowResizeX: model?.allowResizeX && !model?.autoWidth,
+        allowResizeY: model?.allowResizeY && !model?.autoHeight,
         askBeforePasteHTML: model?.askBeforePasteHTML,
         askBeforePasteFromWord: model?.askBeforePasteFromWord,
         autofocus: model?.autofocus,
@@ -60,13 +68,13 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     }, [model, model.readOnly]);
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange}/>}
+        {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => ({
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  initModel: (model) => ({
     ...model,
     showCharsCounter: true,
     showWordsCounter: true,
@@ -81,21 +89,26 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     askBeforePasteFromWord: true,
     disablePlugins: null,
   }),
-  migrator: (m) => m
-    .add<IRichTextEditorProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IRichTextEditorProps>(1, (prev) => migrateReadOnly(prev))
-    .add<IRichTextEditorProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-    .add<IRichTextEditorProps>(3, (prev) => {
-      const styles = {
-        style: prev.style,
-        theme: prev.theme,
-        autoHeight: prev.autoHeight || true,
-        autoWidth: prev.autoWidth || true,
-      };
-  
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
-    })
-  ,
+  migrator: (m) =>
+    m
+      .add<IRichTextEditorProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IRichTextEditorProps>(1, (prev) => migrateReadOnly(prev))
+      .add<IRichTextEditorProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+      .add<IRichTextEditorProps>(3, (prev) => {
+        const styles = {
+          style: prev.style,
+          theme: prev.theme,
+          autoHeight: prev.autoHeight ?? true,
+          autoWidth: prev.autoWidth ?? true,
+        };
+        const resize = {
+          allowResizeX: true,
+          allowResizeY: true,
+        };
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles }, ...resize };
+      })
+      .add<IRichTextEditorProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+
 };
 
 export default RichTextEditorComponent;

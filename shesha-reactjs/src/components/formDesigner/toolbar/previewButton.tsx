@@ -10,7 +10,7 @@ export interface IPreviewButtonProps {
 
 export const PreviewButton: FC<IPreviewButtonProps> = () => {
     const { setFormMode } = useFormActions();
-    const { setFormMode: setFormDesignerMode, setSelectedComponent } = useFormDesignerActions();
+    const { setFormMode: setFormDesignerMode } = useFormDesignerActions();
     const formMode = useFormDesignerStateSelector(x => x.formMode);
     
     return (
@@ -18,8 +18,6 @@ export const PreviewButton: FC<IPreviewButtonProps> = () => {
             onClick={() => {
                 setFormMode(formMode === 'designer' ? 'edit' : 'designer');
                 setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');
-                if (formMode === 'designer')
-                  setSelectedComponent(null);
             }}
             type={formMode === 'designer' ? 'default' : 'primary'}
             shape="circle"

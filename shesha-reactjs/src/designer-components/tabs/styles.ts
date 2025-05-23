@@ -15,16 +15,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         backgroundPosition,
         backgroundRepeat,
         boxShadow,
-        width,
-        height,
-        minWidth,
-        minHeight,
-        maxWidth,
-        maxHeight,
         marginTop = '0px',
         marginBottom = '0px',
-        marginRight = '-1px',
-        marginLeft = '-1px',
+        marginRight = '0px',
+        marginLeft = '0px',
         paddingTop = '0px',
         paddingRight = '0px',
         paddingLeft = '0px',
@@ -33,12 +27,12 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         borderTopRightRadius,
         borderBottomRightRadius,
         borderBottomLeftRadius,
-        overflow,
         fontSize,
         fontWeight,
+        textAlign,
         color,
         fontFamily,
-        rest
+        ...rest
     } = styles;
 
     const {
@@ -79,23 +73,26 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
     const content = cx(
         'content',
         css`
+            --ant-tabs-horizontal-margin: 0 !important;
+            height: max-content;
+            margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important;
+
+            &.ant-tabs-left , &.ant-tabs-right {
+                height: ${styles.height || 'auto'} !important;
+                min-height: ${styles.minHeight || 'auto'} !important;
+                max-height: ${styles.maxHeight || 'auto'} !important;
+            }
+
             .ant-tabs-content-holder {
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
-                border: ${borderMap.default};
                 ${rest};
+                border: ${borderMap.default};
                 box-shadow: ${boxShadow} !important;
-                width: ${width};
-                max-width: ${isLeft || isRight ? width : maxWidth};
-                min-width: ${minWidth};
-                height: ${height};
-                max-height: ${maxHeight};
-                min-height: ${minHeight};
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
                 border-right:${isRight ? '0px solid transparent' : borderMap.right} !important;
-                border-bottom: ${isBottom ? 'none' : borderMap.bottom} !important;
+                border-bottom      : ${isBottom ? 'none' : borderMap.bottom} !important;
                 border-top: ${isTop ? 'none' : borderMap.top} !important;
                 background: ${backgroundImage || backgroundColor} !important;
-                margin: ${isTop ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isBottom ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isLeft ? `${marginTop} ${marginRight} ${marginBottom} 0` : `${marginTop} 0 ${marginBottom} ${marginLeft}`};
                 ${isTop || isLeft ? 'border-top-left-radius: 0px;' : `border-top-left-radius: ${borderTopLeftRadius};`}
                 ${isTop || isRight ? 'border-top-right-radius: 0px;' : `border-top-right-radius: ${borderTopRightRadius};`}
                 ${isBottom || isLeft ? 'border-bottom-left-radius: 0px;' : `border-bottom-left-radius: ${borderBottomLeftRadius};`}
@@ -104,7 +101,17 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${backgroundSize} !important;
                 background-position: ${backgroundPosition} !important;
                 background-repeat: ${backgroundRepeat} !important;
-                overflow: ${overflow} !important;
+
+                .ant-tabs-content {
+                overflow: auto;
+                scrollbar-width: thin;
+                ::-webkit-scrollbar { 
+                    width: 8px;
+                    background-color: transparent;
+                }
+                    
+                height: 100%;
+                width: 100%;
             }
 
             .ant-tabs-tab {
@@ -127,6 +134,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}` :
                     isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}` :
                         isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
+
+                .ant-tabs-tab-btn {
+                    width: 100%;
+                }
             }
 
             .ant-tabs-tab-active {
@@ -151,23 +162,19 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 max-height: ${cardMaxHeight};
                 z-index: 2;
 
-                * {
+                .ant-tabs-tab-btn {
                 color: ${color ?? token.colorPrimary} !important;
                 font-size: ${fontSize} !important;
                 font-weight: ${fontWeight} !important;
                 font-family: ${fontFamily} !important;
+                text-align: ${textAlign} !important;
+                width: 100%;
                 }
             }
 
             .ant-tabs-nav {
                 --ant-tabs-ink-bar-color: ${tabLineColor || token.colorPrimary} !important;
                 margin: 0;
-                width: ${isTop || isBottom ? width : 'auto'};
-                height: ${isTop || isBottom ? 'auto' : height};
-                max-width: ${isTop || isBottom ? maxWidth : 'auto'};
-                max-height: ${isTop || isBottom ? 'auto' : maxHeight};
-                min-width: ${isTop || isBottom ? minWidth : '0'};
-                min-height: ${isTop || isBottom ? '0' : minHeight};
                 margin: ${isTop ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isBottom ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isLeft ? `${marginTop} 0 ${marginBottom} ${marginLeft}` : `${marginTop} ${marginRight} ${marginBottom} 0`};
             }
 
@@ -182,6 +189,12 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
 
            .ant-tabs-nav-list {
                 ${isLeft && `border-right: ${borderMap.left}` || isRight && `border-left: ${borderMap.right}`};
+                ${(isLeft || isRight) && `
+                    height: ${styles.height} !important;
+                    min-height: ${styles.minHeight} !important;
+                    max-height: ${styles.maxHeight} !important;
+                `};
+
            }
         `
     );
