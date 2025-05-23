@@ -37,14 +37,6 @@ export const getSettings = (data: any) => {
                   styledLabel: true,
                   jsSetting: true,
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'textArea',
-                  propertyName: 'description',
-                  parentId: commonTabId,
-                  label: 'Tooltip',
-                  jsSetting: true,
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
