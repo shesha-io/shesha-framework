@@ -7,20 +7,19 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 
 export const getItemSettings = (data) => {
-    // Generate unique IDs for major components
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
     const appearanceTabId = nanoid();
     const securityTabId = nanoid();
     const commonButtonSettingsContainerId = nanoid();
+    const styleRouterId = nanoid();
     const fontStylePnlId = nanoid();
     const dimensionsStylePnlId = nanoid();
     const borderStylePnlId = nanoid();
     const backgroundStylePnlId = nanoid();
     const shadowStylePnlId = nanoid();
     const stylePnlId = nanoid();
-    const styleBoxPnlId = nanoid();
-    const stylePnlCustomId = nanoid();
+    const customStylePnlId = nanoid();
 
     return {
         components: new DesignerToolbarSettings(data)
@@ -98,7 +97,7 @@ export const getItemSettings = (data) => {
                                                     id: nanoid(),
                                                     type: "textField",
                                                     propertyName: "label",
-                                                    parentId: "root",
+                                                    parentId: commonButtonSettingsContainerId,
                                                     label: "Caption",
                                                     jsSetting: true
                                                 },
@@ -108,7 +107,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: "tooltip",
                                                     label: "Tooltip",
                                                     labelAlign: "right",
-                                                    parentId: "root",
+                                                    parentId: commonButtonSettingsContainerId,
                                                     hidden: false,
                                                     allowClear: false,
                                                     jsSetting: true
@@ -125,7 +124,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'icon',
                                                     label: 'Icon',
                                                     size: 'small',
-                                                    parentId: nanoid(),
+                                                    parentId: commonButtonSettingsContainerId,
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -135,7 +134,7 @@ export const getItemSettings = (data) => {
                                                     size: 'small',
                                                     jsSetting: true,
                                                     type: 'radio',
-                                                    parentId: nanoid(),
+                                                    parentId: commonButtonSettingsContainerId,
                                                     buttonGroupOptions: [
                                                         { title: 'Start', value: 'start', icon: 'LeftOutlined' },
                                                         { title: 'End', value: 'end', icon: 'RightOutlined' },
@@ -158,7 +157,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'editMode',
                                                     label: 'Edit Mode',
                                                     size: 'small',
-                                                    parentId: nanoid(),
+                                                    parentId: commonButtonSettingsContainerId,
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -197,7 +196,7 @@ export const getItemSettings = (data) => {
                                     label: "",
                                     hideLabel: true,
                                     labelAlign: "right",
-                                    parentId: nanoid(),
+                                    parentId: commonTabId,
                                     hidden: false,
                                     isDynamic: false,
                                     settingsValidationErrors: [],
@@ -217,450 +216,449 @@ export const getItemSettings = (data) => {
                         id: appearanceTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addContainer({
+                                .addSettingsInput({
                                     id: nanoid(),
-                                    parentId: commonTabId,
+                                    propertyName: 'buttonType',
+                                    label: 'Type',
+                                    validate: {
+                                        required: true,
+                                    },
+                                    inputType: 'dropdown',
+                                    dropdownOptions: buttonTypes,
+                                })
+                                .addCollapsiblePanel({
+                                    id: nanoid(),
+                                    propertyName: 'pnlFontStyle',
+                                    label: 'Font',
+                                    labelAlign: 'right',
+                                    parentId: styleRouterId,
+                                    ghost: true,
                                     hidden: {
-                                        _code: 'console.log("Type",getSettingValue(data?.itemSubType));',
+                                        _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
                                         _mode: 'code',
                                         _value: false
-                                    },
-                                    components: [
-                                        ...new DesignerToolbarSettings()
+                                    } as any,
+                                    collapsible: 'header',
+                                    content: {
+                                        id: fontStylePnlId,
+                                        components: [...new DesignerToolbarSettings()
+                                            .addSettingsInputRow({
+                                                id: nanoid(),
+                                                parentId: fontStylePnlId,
+                                                inline: true,
+                                                propertyName: 'font',
+                                                inputs: [
+                                                    {
+                                                        type: 'dropdown',
+                                                        id: nanoid(),
+                                                        label: 'Family',
+                                                        propertyName: 'font.type',
+                                                        hideLabel: true,
+                                                        dropdownOptions: fontTypes,
+                                                    },
+                                                    {
+                                                        type: 'numberField',
+                                                        id: nanoid(),
+                                                        label: 'Size',
+                                                        propertyName: 'font.size',
+                                                        hideLabel: true,
+                                                        width: 50,
+                                                    },
+                                                    {
+                                                        type: 'dropdown',
+                                                        id: nanoid(),
+                                                        label: 'Weight',
+                                                        propertyName: 'font.weight',
+                                                        hideLabel: true,
+                                                        tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                                        dropdownOptions: fontWeights,
+                                                        width: 100,
+                                                    },
+                                                    {
+                                                        type: 'colorPicker',
+                                                        id: nanoid(),
+                                                        label: 'Color',
+                                                        propertyName: 'font.color',
+                                                        hideLabel: true,
+                                                    },
+                                                    {
+                                                        type: 'dropdown',
+                                                        id: nanoid(),
+                                                        label: 'Align',
+                                                        propertyName: 'font.align',
+                                                        hideLabel: true,
+                                                        width: 60,
+                                                        dropdownOptions: textAlign,
+                                                    },
+                                                ],
+                                            })
+                                            .toJson()
+                                        ]
+                                    }
+                                })
+                                .addCollapsiblePanel({
+                                    id: nanoid(),
+                                    propertyName: 'pnlDimensions',
+                                    label: 'Dimensions',
+                                    parentId: styleRouterId,
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    hidden: {
+                                        _code: 'return  getSettingValue(data?.itemSubType) == "separator";',
+                                        _mode: 'code',
+                                        _value: false
+                                    } as any,
+                                    collapsible: 'header',
+                                    content: {
+                                        id: dimensionsStylePnlId,
+                                        components: [...new DesignerToolbarSettings()
+                                            .addSettingsInputRow({
+                                                id: nanoid(),
+                                                parentId: dimensionsStylePnlId,
+                                                inline: true,
+                                                inputs: [
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Width",
+                                                        width: 85,
+                                                        propertyName: "dimensions.width",
+                                                        icon: "widthIcon",
+                                                        tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Min Width",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.minWidth",
+                                                        icon: "minWidthIcon",
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Max Width",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.maxWidth",
+                                                        icon: "maxWidthIcon",
+                                                    }
+                                                ]
+                                            })
+                                            .addSettingsInputRow({
+                                                id: nanoid(),
+                                                parentId: dimensionsStylePnlId,
+                                                inline: true,
+                                                inputs: [
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Height",
+                                                        width: 85,
+                                                        propertyName: "dimensions.height",
+                                                        icon: "heightIcon",
+                                                        tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Min Height",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.minHeight",
+                                                        icon: "minHeightIcon",
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Max Height",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.maxHeight",
+                                                        icon: "maxHeightIcon",
+                                                    }
+                                                ]
+                                            })
+                                            .toJson()
+                                        ]
+                                    }
+                                })
+                                .addCollapsiblePanel({
+                                    id: nanoid(),
+                                    propertyName: 'pnlBorderStyle',
+                                    label: 'Border',
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    parentId: styleRouterId,
+                                    collapsible: 'header',
+                                    content: {
+                                        id: borderStylePnlId,
+                                        components: [...new DesignerToolbarSettings()
+                                            .addContainer({
+                                                id: nanoid(),
+                                                parentId: borderStylePnlId,
+                                                components: getBorderInputs("", false) as any
+                                            })
+                                            .addContainer({
+                                                id: nanoid(),
+                                                parentId: borderStylePnlId,
+                                                components: getCornerInputs("", false) as any
+                                            })
+                                            .toJson()
+                                        ]
+                                    }
+                                })
+                                .addCollapsiblePanel({
+                                    id: nanoid(),
+                                    propertyName: 'pnlBackgroundStyle',
+                                    label: 'Background',
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    parentId: styleRouterId,
+                                    collapsible: 'header',
+                                    hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    content: {
+                                        id: backgroundStylePnlId,
+                                        components: [
+                                            ...new DesignerToolbarSettings()
+                                                .addSettingsInput({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    label: "Type",
+                                                    jsSetting: false,
+                                                    propertyName: "background.type",
+                                                    inputType: "radio",
+                                                    defaultValue: "color",
+                                                    tooltip: "Select a type of background",
+                                                    buttonGroupOptions: backgroundTypeOptions,
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    inputs: [{
+                                                        type: 'colorPicker',
+                                                        id: nanoid(),
+                                                        label: "Color",
+                                                        propertyName: "background.color",
+                                                        hideLabel: true,
+                                                        jsSetting: false,
+                                                    }],
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    inputs: [{
+                                                        type: 'multiColorPicker',
+                                                        id: nanoid(),
+                                                        propertyName: "background.gradient.colors",
+                                                        label: "Colors",
+                                                        jsSetting: false,
+                                                    }
+                                                    ],
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                    hideLabel: true,
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    inputs: [{
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        propertyName: "background.url",
+                                                        jsSetting: false,
+                                                        label: "URL",
+                                                    }],
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    inputs: [{
+                                                        type: 'imageUploader',
+                                                        id: nanoid(),
+                                                        propertyName: 'background.uploadFile',
+                                                        label: "Image",
+                                                        jsSetting: false,
+                                                    }],
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                    inputs: [
+                                                        {
+                                                            type: 'textField',
+                                                            id: nanoid(),
+                                                            jsSetting: false,
+                                                            propertyName: "background.storedFile.id",
+                                                            label: "File ID"
+                                                        }
+                                                    ]
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    inline: true,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                    inputs: [
+                                                        {
+                                                            type: 'customDropdown',
+                                                            id: nanoid(),
+                                                            label: "Size",
+                                                            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                                            hideLabel: true,
+                                                            propertyName: "background.size",
+                                                            dropdownOptions: sizeOptions,
+                                                        },
+                                                        {
+                                                            type: 'customDropdown',
+                                                            id: nanoid(),
+                                                            label: "Position",
+                                                            hideLabel: true,
+                                                            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
+                                                            propertyName: "background.position",
+                                                            dropdownOptions: positionOptions,
+                                                        },
+                                                    ]
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: backgroundStylePnlId,
+                                                    inputs: [{
+                                                        type: 'radio',
+                                                        id: nanoid(),
+                                                        label: 'Repeat',
+                                                        hideLabel: true,
+                                                        propertyName: 'background.repeat',
+                                                        inputType: 'radio',
+                                                        buttonGroupOptions: repeatOptions,
+                                                    }],
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                })
+                                                .toJson()
+                                        ],
+                                    }
+                                })
+                                .addCollapsiblePanel({
+                                    id: nanoid(),
+                                    propertyName: 'pnlShadowStyle',
+                                    label: 'Shadow',
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    parentId: styleRouterId,
+                                    collapsible: 'header',
+                                    content: {
+                                        id: shadowStylePnlId,
+                                        components: [...new DesignerToolbarSettings()
+                                            .addSettingsInputRow({
+                                                id: nanoid(),
+                                                parentId: shadowStylePnlId,
+                                                inline: true,
+                                                inputs: [
+                                                    {
+                                                        type: 'numberField',
+                                                        id: nanoid(),
+                                                        label: 'Offset X',
+                                                        hideLabel: true,
+                                                        width: 80,
+                                                        inputType: 'numberField',
+                                                        icon: "offsetHorizontalIcon",
+                                                        propertyName: 'shadow.offsetX',
+                                                    },
+                                                    {
+                                                        type: 'numberField',
+                                                        id: nanoid(),
+                                                        label: 'Offset Y',
+                                                        hideLabel: true,
+                                                        width: 80,
+                                                        inputType: 'numberField',
+                                                        icon: 'offsetVerticalIcon',
+                                                        propertyName: 'shadow.offsetY',
+                                                    },
+                                                    {
+                                                        type: 'numberField',
+                                                        id: nanoid(),
+                                                        label: 'Blur',
+                                                        hideLabel: true,
+                                                        width: 80,
+                                                        inputType: 'numberField',
+                                                        icon: 'blurIcon',
+                                                        propertyName: 'shadow.blurRadius',
+                                                    },
+                                                    {
+                                                        type: 'numberField',
+                                                        id: nanoid(),
+                                                        label: 'Spread',
+                                                        hideLabel: true,
+                                                        width: 80,
+                                                        inputType: 'numberField',
+                                                        icon: 'spreadIcon',
+                                                        propertyName: 'shadow.spreadRadius',
+                                                    },
+                                                    {
+                                                        type: 'colorPicker',
+                                                        id: nanoid(),
+                                                        label: 'Color',
+                                                        hideLabel: true,
+                                                        propertyName: 'shadow.color',
+                                                    },
+                                                ],
+                                            })
+                                            .toJson()
+                                        ]
+                                    }
+                                })
+                                .addCollapsiblePanel({
+                                    id: nanoid(),
+                                    propertyName: 'stylingBox',
+                                    label: 'Margin & Padding',
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    parentId: styleRouterId,
+                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    collapsible: 'header',
+                                    content: {
+                                        id: stylePnlId,
+                                        components: [...new DesignerToolbarSettings()
+                                            .addStyleBox({
+                                                id: nanoid(),
+                                                label: 'Margin Padding',
+                                                hideLabel: true,
+                                                propertyName: 'stylingBox',
+                                            })
+                                            .toJson()
+                                        ]
+                                    }
+                                })
+                                .addCollapsiblePanel({
+                                    id: nanoid(),
+                                    propertyName: 'customStyle',
+                                    label: 'Custom Styles',
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    parentId: styleRouterId, collapsible: 'header',
+                                    content: {
+                                        id: customStylePnlId,
+                                        components: [...new DesignerToolbarSettings()
                                             .addSettingsInput({
                                                 id: nanoid(),
-                                                propertyName: 'buttonType',
-                                                label: 'Type',
-                                                validate: {
-                                                    required: true,
-                                                },
-                                                inputType: 'dropdown',
-                                                dropdownOptions: buttonTypes,
+                                                inputType: 'codeEditor',
+                                                propertyName: 'style',
+                                                hideLabel: false,
+                                                label: 'Style',
+                                                description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                             })
-                                            .addCollapsiblePanel({
-                                                id: nanoid(),
-                                                propertyName: 'pnlFontStyle',
-                                                label: 'Font',
-                                                labelAlign: 'right',
-                                                parentId: 'styleRouter',
-                                                ghost: true,
-                                                collapsible: 'header',
-                                                content: {
-                                                    id: fontStylePnlId,
-                                                    components: [...new DesignerToolbarSettings()
-                                                        .addSettingsInputRow({
-                                                            id: nanoid(),
-                                                            parentId: fontStylePnlId,
-                                                            inline: true,
-                                                            propertyName: 'font',
-                                                            inputs: [
-                                                                {
-                                                                    type: 'dropdown',
-                                                                    id: nanoid(),
-                                                                    label: 'Family',
-                                                                    propertyName: 'font.type',
-                                                                    hideLabel: true,
-                                                                    dropdownOptions: fontTypes,
-                                                                },
-                                                                {
-                                                                    type: 'numberField',
-                                                                    id: nanoid(),
-                                                                    label: 'Size',
-                                                                    propertyName: 'font.size',
-                                                                    hideLabel: true,
-                                                                    width: 50,
-                                                                },
-                                                                {
-                                                                    type: 'dropdown',
-                                                                    id: nanoid(),
-                                                                    label: 'Weight',
-                                                                    propertyName: 'font.weight',
-                                                                    hideLabel: true,
-                                                                    tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                    dropdownOptions: fontWeights,
-                                                                    width: 100,
-                                                                },
-                                                                {
-                                                                    type: 'colorPicker',
-                                                                    id: nanoid(),
-                                                                    label: 'Color',
-                                                                    propertyName: 'font.color',
-                                                                    hideLabel: true,
-                                                                },
-                                                                {
-                                                                    type: 'dropdown',
-                                                                    id: nanoid(),
-                                                                    label: 'Align',
-                                                                    propertyName: 'font.align',
-                                                                    hideLabel: true,
-                                                                    width: 60,
-                                                                    dropdownOptions: textAlign,
-                                                                },
-                                                            ],
-                                                        })
-                                                        .toJson()
-                                                    ]
-                                                }
-                                            })
-                                            .addCollapsiblePanel({
-                                                id: nanoid(),
-                                                propertyName: 'pnlDimensions',
-                                                label: 'Dimensions',
-                                                parentId: 'styleRouter',
-                                                labelAlign: 'right',
-                                                ghost: true,
-                                                collapsible: 'header',
-                                                content: {
-                                                    id: dimensionsStylePnlId,
-                                                    components: [...new DesignerToolbarSettings()
-                                                        .addSettingsInputRow({
-                                                            id: nanoid(),
-                                                            parentId: dimensionsStylePnlId,
-                                                            inline: true,
-                                                            inputs: [
-                                                                {
-                                                                    type: 'textField',
-                                                                    id: nanoid(),
-                                                                    label: "Width",
-                                                                    width: 85,
-                                                                    propertyName: "dimensions.width",
-                                                                    icon: "widthIcon",
-                                                                    tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                                                },
-                                                                {
-                                                                    type: 'textField',
-                                                                    id: nanoid(),
-                                                                    label: "Min Width",
-                                                                    width: 85,
-                                                                    hideLabel: true,
-                                                                    propertyName: "dimensions.minWidth",
-                                                                    icon: "minWidthIcon",
-                                                                },
-                                                                {
-                                                                    type: 'textField',
-                                                                    id: nanoid(),
-                                                                    label: "Max Width",
-                                                                    width: 85,
-                                                                    hideLabel: true,
-                                                                    propertyName: "dimensions.maxWidth",
-                                                                    icon: "maxWidthIcon",
-                                                                }
-                                                            ]
-                                                        })
-                                                        .addSettingsInputRow({
-                                                            id: nanoid(),
-                                                            parentId: dimensionsStylePnlId,
-                                                            inline: true,
-                                                            inputs: [
-                                                                {
-                                                                    type: 'textField',
-                                                                    id: nanoid(),
-                                                                    label: "Height",
-                                                                    width: 85,
-                                                                    propertyName: "dimensions.height",
-                                                                    icon: "heightIcon",
-                                                                    tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                                                },
-                                                                {
-                                                                    type: 'textField',
-                                                                    id: nanoid(),
-                                                                    label: "Min Height",
-                                                                    width: 85,
-                                                                    hideLabel: true,
-                                                                    propertyName: "dimensions.minHeight",
-                                                                    icon: "minHeightIcon",
-                                                                },
-                                                                {
-                                                                    type: 'textField',
-                                                                    id: nanoid(),
-                                                                    label: "Max Height",
-                                                                    width: 85,
-                                                                    hideLabel: true,
-                                                                    propertyName: "dimensions.maxHeight",
-                                                                    icon: "maxHeightIcon",
-                                                                }
-                                                            ]
-                                                        })
-                                                        .toJson()
-                                                    ]
-                                                }
-                                            })
-                                            .addCollapsiblePanel({
-                                                id: nanoid(),
-                                                propertyName: 'pnlBorderStyle',
-                                                label: 'Border',
-                                                labelAlign: 'right',
-                                                ghost: true,
-                                                hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
-                                                parentId: 'styleRouter',
-                                                collapsible: 'header',
-                                                content: {
-                                                    id: borderStylePnlId,
-                                                    components: [...new DesignerToolbarSettings()
-                                                        .addContainer({
-                                                            id: nanoid(),
-                                                            parentId: borderStylePnlId,
-                                                            components: getBorderInputs("", false) as any
-                                                        })
-                                                        .addContainer({
-                                                            id: nanoid(),
-                                                            parentId: borderStylePnlId,
-                                                            components: getCornerInputs("", false) as any
-                                                        })
-                                                        .toJson()
-                                                    ]
-                                                }
-                                            })
-                                            .addCollapsiblePanel({
-                                                id: nanoid(),
-                                                propertyName: 'pnlBackgroundStyle',
-                                                label: 'Background',
-                                                labelAlign: 'right',
-                                                ghost: true,
-                                                parentId: 'styleRouter',
-                                                collapsible: 'header',
-                                                hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
-                                                content: {
-                                                    id: backgroundStylePnlId,
-                                                    components: [
-                                                        ...new DesignerToolbarSettings()
-                                                            .addSettingsInput({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                label: "Type",
-                                                                jsSetting: false,
-                                                                propertyName: "background.type",
-                                                                inputType: "radio",
-                                                                defaultValue: "color",
-                                                                tooltip: "Select a type of background",
-                                                                buttonGroupOptions: backgroundTypeOptions,
-                                                            })
-                                                            .addSettingsInputRow({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                inputs: [{
-                                                                    type: 'colorPicker',
-                                                                    id: nanoid(),
-                                                                    label: "Color",
-                                                                    propertyName: "background.color",
-                                                                    hideLabel: true,
-                                                                    jsSetting: false,
-                                                                }],
-                                                                hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                                            })
-                                                            .addSettingsInputRow({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                inputs: [{
-                                                                    type: 'multiColorPicker',
-                                                                    id: nanoid(),
-                                                                    propertyName: "background.gradient.colors",
-                                                                    label: "Colors",
-                                                                    jsSetting: false,
-                                                                }
-                                                                ],
-                                                                hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
-                                                                hideLabel: true,
-                                                            })
-                                                            .addSettingsInputRow({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                inputs: [{
-                                                                    type: 'textField',
-                                                                    id: nanoid(),
-                                                                    propertyName: "background.url",
-                                                                    jsSetting: false,
-                                                                    label: "URL",
-                                                                }],
-                                                                hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                                            })
-                                                            .addSettingsInputRow({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                inputs: [{
-                                                                    type: 'imageUploader',
-                                                                    id: nanoid(),
-                                                                    propertyName: 'background.uploadFile',
-                                                                    label: "Image",
-                                                                    jsSetting: false,
-                                                                }],
-                                                                hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                                            })
-                                                            .addSettingsInputRow({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                                                inputs: [
-                                                                    {
-                                                                        type: 'textField',
-                                                                        id: nanoid(),
-                                                                        jsSetting: false,
-                                                                        propertyName: "background.storedFile.id",
-                                                                        label: "File ID"
-                                                                    }
-                                                                ]
-                                                            })
-                                                            .addSettingsInputRow({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                inline: true,
-                                                                hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                                                inputs: [
-                                                                    {
-                                                                        type: 'customDropdown',
-                                                                        id: nanoid(),
-                                                                        label: "Size",
-                                                                        customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
-                                                                        hideLabel: true,
-                                                                        propertyName: "background.size",
-                                                                        dropdownOptions: sizeOptions,
-                                                                    },
-                                                                    {
-                                                                        type: 'customDropdown',
-                                                                        id: nanoid(),
-                                                                        label: "Position",
-                                                                        hideLabel: true,
-                                                                        customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
-                                                                        propertyName: "background.position",
-                                                                        dropdownOptions: positionOptions,
-                                                                    },
-                                                                ]
-                                                            })
-                                                            .addSettingsInputRow({
-                                                                id: nanoid(),
-                                                                parentId: backgroundStylePnlId,
-                                                                inputs: [{
-                                                                    type: 'radio',
-                                                                    id: nanoid(),
-                                                                    label: 'Repeat',
-                                                                    hideLabel: true,
-                                                                    propertyName: 'background.repeat',
-                                                                    inputType: 'radio',
-                                                                    buttonGroupOptions: repeatOptions,
-                                                                }],
-                                                                hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                                            })
-                                                            .toJson()
-                                                    ],
-                                                }
-                                            })
-                                            .addCollapsiblePanel({
-                                                id: nanoid(),
-                                                propertyName: 'pnlShadowStyle',
-                                                label: 'Shadow',
-                                                labelAlign: 'right',
-                                                ghost: true,
-                                                hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
-                                                parentId: 'styleRouter',
-                                                collapsible: 'header',
-                                                content: {
-                                                    id: shadowStylePnlId,
-                                                    components: [...new DesignerToolbarSettings()
-                                                        .addSettingsInputRow({
-                                                            id: nanoid(),
-                                                            parentId: shadowStylePnlId,
-                                                            inline: true,
-                                                            inputs: [
-                                                                {
-                                                                    type: 'numberField',
-                                                                    id: nanoid(),
-                                                                    label: 'Offset X',
-                                                                    hideLabel: true,
-                                                                    width: 80,
-                                                                    inputType: 'numberField',
-                                                                    icon: "offsetHorizontalIcon",
-                                                                    propertyName: 'shadow.offsetX',
-                                                                },
-                                                                {
-                                                                    type: 'numberField',
-                                                                    id: nanoid(),
-                                                                    label: 'Offset Y',
-                                                                    hideLabel: true,
-                                                                    width: 80,
-                                                                    inputType: 'numberField',
-                                                                    icon: 'offsetVerticalIcon',
-                                                                    propertyName: 'shadow.offsetY',
-                                                                },
-                                                                {
-                                                                    type: 'numberField',
-                                                                    id: nanoid(),
-                                                                    label: 'Blur',
-                                                                    hideLabel: true,
-                                                                    width: 80,
-                                                                    inputType: 'numberField',
-                                                                    icon: 'blurIcon',
-                                                                    propertyName: 'shadow.blurRadius',
-                                                                },
-                                                                {
-                                                                    type: 'numberField',
-                                                                    id: nanoid(),
-                                                                    label: 'Spread',
-                                                                    hideLabel: true,
-                                                                    width: 80,
-                                                                    inputType: 'numberField',
-                                                                    icon: 'spreadIcon',
-                                                                    propertyName: 'shadow.spreadRadius',
-                                                                },
-                                                                {
-                                                                    type: 'colorPicker',
-                                                                    id: nanoid(),
-                                                                    label: 'Color',
-                                                                    hideLabel: true,
-                                                                    propertyName: 'shadow.color',
-                                                                },
-                                                            ],
-                                                        })
-                                                        .toJson()
-                                                    ]
-                                                }
-                                            })
-                                            .addCollapsiblePanel({
-                                                id: nanoid(),
-                                                propertyName: 'stylingBox',
-                                                label: 'Margin & Padding',
-                                                labelAlign: 'right',
-                                                ghost: true,
-                                                collapsible: 'header',
-                                                content: {
-                                                    id: stylePnlId,
-                                                    components: [...new DesignerToolbarSettings()
-                                                        .addStyleBox({
-                                                            id: styleBoxPnlId,
-                                                            label: 'Margin Padding',
-                                                            hideLabel: true,
-                                                            propertyName: 'stylingBox',
-                                                        })
-                                                        .toJson()
-                                                    ]
-                                                }
-                                            })
-                                            .addCollapsiblePanel({
-                                                id: nanoid(),
-                                                propertyName: 'customStyle',
-                                                label: 'Custom Styles',
-                                                labelAlign: 'right',
-                                                ghost: true,
-                                                parentId: 'styleRouter',
-                                                collapsible: 'header',
-                                                content: {
-                                                    id: stylePnlCustomId,
-                                                    components: [...new DesignerToolbarSettings()
-                                                        .addSettingsInput({
-                                                            id: nanoid(),
-                                                            inputType: 'codeEditor',
-                                                            propertyName: 'style',
-                                                            hideLabel: false,
-                                                            label: 'Style',
-                                                            description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                                        })
-                                                        .toJson()
-                                                    ]
-                                                }
-                                            })
-                                            .toJson()]
+                                            .toJson()
+                                        ]
+                                    }
                                 })
                                 .toJson()]
-
                     },
                     {
                         key: '3',
