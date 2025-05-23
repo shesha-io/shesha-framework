@@ -100,12 +100,14 @@ export const getSettings = () => {
                       label: 'Edit Mode',
                       type: 'editModeSelector',
                       defaultValue: 'inherited',
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
                       propertyName: 'hideFileName',
                       label: 'Hide File Name',
                       type: 'switch',
+                      jsSetting: true,
                       hidden: {
                         _code: 'return getSettingValue(data?.listType) !== "thumbnail";',
                         _mode: 'code',
@@ -173,6 +175,7 @@ export const getSettings = () => {
                       propertyName: 'ownerId',
                       label: 'Owner ID',
                       type: 'textField',
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -182,6 +185,7 @@ export const getSettings = () => {
                       dataSourceType: 'url',
                       dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                       useRawValues: true,
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -194,6 +198,7 @@ export const getSettings = () => {
                       propertyName: 'useSync',
                       label: 'Synchronous Upload',
                       type: 'switch',
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -201,6 +206,7 @@ export const getSettings = () => {
                       label: 'Allowed File Types',
                       type: 'editableTagGroupProps',
                       description: 'File types that can be accepted.',
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -218,6 +224,7 @@ export const getSettings = () => {
                   propertyName: 'validate.required',
                   label: 'Required',
                   inputType: 'switch',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],
