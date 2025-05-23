@@ -61,6 +61,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
+            readOnlyDisplayStyle={model?.readOnlyDisplayStyle}
             onChange={onChangeInternal}
           />;
         }}

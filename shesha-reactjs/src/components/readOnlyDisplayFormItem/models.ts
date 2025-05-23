@@ -5,15 +5,16 @@ export interface IReadOnlyDisplayFormItemProps {
   value?: any;
   render?: () => ReactNode | ReactNode;
   type?:
-    | 'string'
-    | 'number'
-    | 'dropdown'
-    | 'dropdownMultiple'
-    | 'time'
-    | 'datetime'
-    | 'checkbox'
-    | 'switch'
-    | 'radiogroup';
+  | 'string'
+  | 'number'
+  | 'dropdown'
+  | 'dropdownMultiple'
+  | 'time'
+  | 'datetime'
+  | 'checkbox'
+  | 'switch'
+  | 'radiogroup'
+  | 'tags';
   dropdownDisplayMode?: 'raw' | 'tags';
   dateFormat?: string;
   timeFormat?: string;

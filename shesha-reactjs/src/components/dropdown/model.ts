@@ -7,6 +7,8 @@ export interface ILabelValue<TValue = any> {
   id: string;
   label: string;
   value: TValue;
+  color?: string;
+  icon?: string;
 }
 
 export interface IDropdownProps {
@@ -39,4 +41,5 @@ export interface IDropdownProps {
   size?: SizeType;
   style?: React.CSSProperties;
   readOnly?: boolean;
+  readOnlyDisplayStyle?: 'default' | 'tags';
 }

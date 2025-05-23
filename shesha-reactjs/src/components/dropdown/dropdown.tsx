@@ -29,10 +29,11 @@ export const Dropdown: FC<IDropdownProps> = ({
     style,
     size,
     allowClear = true,
+    readOnlyDisplayStyle = 'default',
 }) => {
 
     const { styles } = useStyles({ style });
-  
+
     const selectedMode = mode === 'single' ? undefined : mode;
 
     const getOptions = (): ILabelValue[] => {
@@ -129,11 +130,11 @@ export const Dropdown: FC<IDropdownProps> = ({
 
     const getSelectValue = () => {
         const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
-        return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(x => x.label)?.join(', ');
+        return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(x => ({ label: x.label, value: x.value, color: x.color, icon: x.icon }));
     };
 
     if (readOnly) {
-        return <ReadOnlyDisplayFormItem type="string" value={getSelectValue()} />;
+        return <ReadOnlyDisplayFormItem type={readOnlyDisplayStyle === 'tags' ? 'tags' : 'string'} value={getSelectValue()} />;
     }
 
     return (

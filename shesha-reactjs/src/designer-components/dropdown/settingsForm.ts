@@ -73,6 +73,23 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     },
                                 ],
                             })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                parentId: commonTabId,
+                                propertyName: 'readOnlyDisplayStyle',
+                                label: 'Read Only Display Style',
+                                inputType: 'dropdown',
+                                dropdownOptions: [
+                                    {
+                                        value: 'default',
+                                        label: 'Default'
+                                    },
+                                    {
+                                        value: 'tags',
+                                        label: 'Tags'
+                                    }
+                                ]
+                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
@@ -144,8 +161,8 @@ export const getSettings = (data: IDropdownComponentProps) => {
                             .addSettingsInput({
                                 id: nanoid(),
                                 parentId: dataTabId,
-                                label: "DataSource Type",
-                                propertyName: "data SourceType",
+                                label: "Data Source Type",
+                                propertyName: "dataSourceType",
                                 inputType: "dropdown",
                                 size: "small",
                                 jsSetting: true,
@@ -321,12 +338,16 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 inputs: [
                                     {
                                         id: nanoid(),
-                                        type: 'labelValueEditor',
+                                        type: 'customLabelValueEditor',
                                         propertyName: 'values',
                                         label: 'Values',
                                         labelName: 'label',
                                         labelTitle: 'Label',
-                                        mode: 'dialog',
+                                        colorName: 'color',
+                                        colorTitle: 'Color',
+                                        iconName: 'icon',
+                                        iconTitle: 'Icon',
+                                        mode: 'inline',
                                         valueName: 'value',
                                         valueTitle: 'Value',
                                     }

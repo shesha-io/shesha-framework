@@ -9,4 +9,8 @@ export interface ILabelValueEditorPropsBase {
     labelName?: string;
     valueTitle?: string;
     valueName?: string;
+    colorName?: string;
+    iconName?: string;
+    colorTitle?: string;
+    iconTitle?: string;
 }

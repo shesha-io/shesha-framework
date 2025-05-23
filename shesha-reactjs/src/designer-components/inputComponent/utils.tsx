@@ -1,9 +1,11 @@
 import React from 'react';
-import { Tooltip, Space } from 'antd';
-import { ShaIcon, IconType, SectionSeparator, CodeEditor } from '@/components';
+import { Tooltip, Space, Row, Col } from 'antd';
+import { ShaIcon, IconType, SectionSeparator, CodeEditor, ListEditor } from '@/components';
 import { customIcons } from './icons';
 import { startCase } from 'lodash';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
+import { ILabelValueEditorProps, ILabelValueItem } from '@/components/labelValueEditor/labelValueEditor';
+import { InputComponent } from '.';
 
 export const iconElement = (
     icon: string | React.ReactNode,
@@ -74,4 +76,56 @@ export const getEditor = (availableConstantsExpression: string, codeEditorProps:
     return availableConstantsExpression?.trim()
         ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
         : <CodeEditorWithStandardConstants {...codeEditorProps} />;
+};
+
+const InputPropertyEditor = (props) => {
+    const { item, propertyName, itemOnChange, placeholder, type } = props;
+    return (
+        <InputComponent
+            type={type}
+            placeholder={placeholder}
+            title={placeholder}
+            size='small'
+            label=''
+            id={propertyName}
+            propertyName={propertyName}
+            value={item[propertyName]}
+            onChange={(e) => {
+                itemOnChange({ ...item, [propertyName]: e?.target?.value ?? e }, undefined);
+            }}
+        />
+    );
+};
+export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps) => {
+    const { value, onChange, labelName, valueName, readOnly, labelTitle, valueTitle, colorName, iconName, colorTitle, iconTitle } = props;
+
+    return <ListEditor<ILabelValueItem>
+        value={value}
+        onChange={onChange}
+        initNewItem={(_items) => ({
+            [labelName]: '',
+            [valueName]: '',
+            [colorName]: '',
+            [iconName]: '',
+        })
+        }
+        readOnly={readOnly}
+    >
+        {({ item, itemOnChange, readOnly }) => (
+            <Row gutter={4}>
+                <Col span={8}>
+                    <InputPropertyEditor type='textField' item={item} itemOnChange={itemOnChange} propertyName={labelName} readOnly={readOnly} placeholder={labelTitle} />
+                </Col>
+                <Col span={8}>
+                    <InputPropertyEditor type='textField' item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />
+                </Col>
+                <Col span={4}>
+                    <InputPropertyEditor type='colorPicker' item={item} itemOnChange={itemOnChange} propertyName={colorName} readOnly={readOnly} placeholder={colorTitle} />
+                </Col>
+                <Col span={4}>
+                    <InputPropertyEditor type='iconPicker' item={item} itemOnChange={itemOnChange} propertyName={iconName} readOnly={readOnly} placeholder={iconTitle} />
+                </Col>
+            </Row>)
+        }
+    </ListEditor>;
 };

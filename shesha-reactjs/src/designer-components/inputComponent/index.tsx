@@ -30,7 +30,7 @@ import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
-import { editModes, getEditor, iconElement } from './utils';
+import { CustomLabelValueEditorInputs, editModes, getEditor, iconElement } from './utils';
 
 const { Password } = Input;
 
@@ -148,6 +148,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <CustomDropdown
                 variant={variant} value={value || defaultValue}
                 defaultValue={defaultValue} options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
+        }
+        case 'customLabelValueEditor': {
+            return <CustomLabelValueEditorInputs {...props} exposedVariables={null} />;
         }
         case 'textArea':
             return <Input.TextArea

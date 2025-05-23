@@ -12,7 +12,7 @@ type AutocompleteType = ISelectOption;
 
 export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
   const {
-    value,
+    value: valueProp,
     type = 'string',
     dateFormat = 'DD-MM-YYYY',
     timeFormat = 'hh:mm',
@@ -28,6 +28,9 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
   } = props;
 
   const { styles } = useStyles();
+
+  const value = type === 'tags' ? valueProp?.map((item) => item.label).join(', ') : valueProp;
+
   const renderValue = useMemo(() => {
     if (render) {
       return typeof render === 'function' ? render() : render;
@@ -87,7 +90,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }}/>;
+        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />;
       }
       case 'datetime': {
         return getMoment(value, dateFormat)?.format(dateFormat) || '';
@@ -97,6 +100,10 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       }
       case 'switch': {
         return <Switch checked={checked} defaultChecked={defaultChecked} disabled />;
+      }
+      case 'tags': {
+        console.log('value', value);
+        return value.map((item) => <Tag key={item.label} color={item.color} icon={item.icon}>{item.label}</Tag>);
       }
 
       default:
