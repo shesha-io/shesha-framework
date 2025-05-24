@@ -27,5 +27,5 @@ shesha-core
 > dotnet run --project src/Shesha.Web.Host --urls "http://localhost:21021;https://localhost:44362"
 
 > [!NOTE]
-> If you have do not have local certificate for SSL you will need to install the default development certificate and trust via:
+> If you do not have a local certificate for SSL, you will need to install the default development certificate and trust via:
 >> dotnet dev-certs https --trust
