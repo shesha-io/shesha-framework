@@ -138,7 +138,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 variant={variant} readOnly={readOnly}
                 size={size}
-                value={value || defaultValue}
+                value={value}
                 style={{ width: "100%" }}
                 onChange={onChange}
                 addonAfter={iconElement(icon, null, tooltip || label, {}, styles)}

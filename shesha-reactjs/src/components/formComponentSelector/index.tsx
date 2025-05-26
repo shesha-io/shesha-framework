@@ -52,7 +52,10 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   }, [allComponents, componentType]);
 
   const options = useMemo<DefaultOptionType[]>(() => {
-    const result = editors.map<DefaultOptionType>((editor) => ({ label: editor.name, value: editor.type }));
+    const result = editors.map<DefaultOptionType>((editor) => ({
+      //capitalise the first letter of each word
+      label: editor?.name?.replace(/\b\w/g, (char) => char.toUpperCase()), 
+      value: editor.type }));
     if (noSelectionItem) result.splice(0, 0, noSelectionItem);
 
     return result;
@@ -65,7 +68,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   }, [value?.type]);
 
   const canConfigure = Boolean(formComponent);
-  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%' };
+  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%'};
 
   const getComponentModel = (toolboxComponent: IToolboxComponent) => {
     if (!toolboxComponent) return null;

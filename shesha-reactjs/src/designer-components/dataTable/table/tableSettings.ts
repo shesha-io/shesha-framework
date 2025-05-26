@@ -117,7 +117,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     validate: { required: true },
                                     jsSetting: false,
                                 })
-                                .toJson()
+                            .toJson()
                         ]
                     },
                     {
@@ -148,7 +148,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'useMultiselect',
-                                            label: 'Use Multi-select',
+                                            label: 'Use Multi-Select',
                                             type: 'switch',
                                             jsSetting: true,
                                             parentId: commonTabId,
