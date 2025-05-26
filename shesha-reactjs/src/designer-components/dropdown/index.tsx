@@ -127,7 +127,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDropdownComponentProps>(10, (prev) => {
       const newModel = migratePrevStyles(prev, defaultStyles());
-      const initTagStyle = { ...migratePrevStyles(prev, defaultTagStyles()) };
+      const initTagStyle = { ...defaultTagStyles() };
 
       return {
         ...newModel,

@@ -157,7 +157,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 style={{ width: 'max-content' }}
                 placeholder={placeholder}
                 labelRender={(props) => {
-                    const { backgroundColor, backgroundImage, ...rest } = tagStyle;
+                    const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = tagStyle;
 
                     return <Tag
                         key={props.value}

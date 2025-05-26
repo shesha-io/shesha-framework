@@ -74,13 +74,12 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               />
             );
           } else {
-
-            const { backgroundColor, backgroundImage, ...rest } = style;
+            const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = style;
 
             return dropdownDisplayMode === 'tags' ? <Tag
               color={value?.color}
               icon={value?.icon && <Icon type={value?.icon} />}
-              style={{ ...value.color ? { ...rest, border: 'none', margin: 0 } : style }}
+              style={{ ...value.color ? { ...rest, margin: 0 } : style }}
             >
               {displayName}
             </Tag> : displayName;
@@ -97,7 +96,8 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
             ? values?.join(', ')
             : <Space size={8}>
               {value?.map(({ label, color, icon, value }) => {
-                const { backgroundColor, backgroundImage, ...rest } = style;
+                const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = style;
+
                 return <Tag
                   key={value}
                   color={color}
