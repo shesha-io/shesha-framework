@@ -136,7 +136,6 @@ export const getSettings = (data: any) => {
                     label: 'Create Form',
                     type: 'formAutocomplete',
                     labelAlign: 'right',
-                    parentId: nanoid(),
                     hidden: false,
                     validate: {
                       required: true,
@@ -225,7 +224,6 @@ export const getSettings = (data: any) => {
                           label: 'Modal Form',
                           type: 'formAutocomplete',
                           labelAlign: 'right',
-                          parentId: nanoid(),
                           hidden: false,
                           validate: {
                             required: true,
@@ -648,7 +646,7 @@ export const getSettings = (data: any) => {
               })
               .addCollapsiblePanel({
                 id: nanoid(),
-                parentId: dataTabId,
+                parentId: appearanceTabId,
                 propertyName: 'datalistEmptyState',
                 label: 'Empty State',
                 labelAlign: 'right',
