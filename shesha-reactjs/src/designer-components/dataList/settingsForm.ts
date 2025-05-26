@@ -136,7 +136,7 @@ export const getSettings = (data: any) => {
                     label: 'Create Form',
                     type: 'formAutocomplete',
                     labelAlign: 'right',
-                    parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+                    parentId: nanoid(),
                     hidden: false,
                     validate: {
                       required: true,
@@ -225,7 +225,7 @@ export const getSettings = (data: any) => {
                           label: 'Modal Form',
                           type: 'formAutocomplete',
                           labelAlign: 'right',
-                          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+                          parentId: nanoid(),
                           hidden: false,
                           validate: {
                             required: true,
