@@ -24,7 +24,7 @@ import { App, Button, Spin } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import { innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
+import { innerEntityReferenceButtonBoxStyle, innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -129,10 +129,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   useEffect(() => {
     // fetch data only for NavigateLink and Dialog mode. Quickview will fetch data later
     if (!fetched && props.entityReferenceType !== 'Quickview' && entityId) {
-      //
       const queryParams = {
         id: entityId,
-        properties: `id ${Boolean(props.displayProperty) ? props.displayProperty : ''}`,
+        properties: `id ${props.displayProperty ? props.displayProperty : ''}`,
       };
       const fetcher = props.getEntityUrl
         ? get(props.getEntityUrl, queryParams, { base: backendUrl, headers: httpHeaders })
@@ -140,7 +139,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
       fetcher
         .then((resp) => {
-          setDisplayText(resp.result[props.displayProperty] || displayText || 'No Display Name');
+          setDisplayText(resp.result[props.displayProperty] ?? displayText ?? 'No Display Name');
           setFetched(true);
         })
         .catch((reason) => {
@@ -154,8 +153,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     if (props?.value?._displayName) setDisplayText(props?.value?._displayName);
   }, [entityId, entityType]);
 
-  /* Dialog */
+  useEffect(() => {
+    if (props.formIdentifier) {
+      setFormIdentifier(props.formIdentifier);
+    }
+  }, [props.formIdentifier]);
 
+  /* Dialog */
   const dialogExecute = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
 
@@ -204,36 +208,33 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   const displayTextByType = useMemo(() => {
     return props.displayType === 'icon' ? (
-      <ShaIcon iconName={props.iconName} />
+      <ShaIcon iconName={props.iconName} style={props.style} />
     ) : props.displayType === 'textTitle' ? (
-      <span style={innerEntityReferenceSpanBoxStyle}>{props.textTitle}</span>
+      props.textTitle
     ) : (
-      <span style={innerEntityReferenceSpanBoxStyle}>{displayText}</span>
+      displayText
     );
   }, [props.displayType, props.iconName, props.textTitle, displayText]);
 
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
-        <Button type="link" style={{ width: '100%', ...props.style }}>
-          <span style={innerEntityReferenceSpanBoxStyle}>
-            <Spin size="small" /> Loading...
-          </span>
+        <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
+          <Spin size="small" />
+          <span style={innerEntityReferenceSpanBoxStyle}> Loading...</span>
         </Button>
       );
 
     if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
-        <Button disabled style={{ width: '100%', ...props.style }} type="link">
-          <ShaLink linkToForm={formIdentifier} params={{ id: entityId }}>
-            {displayTextByType}
-          </ShaLink>
-        </Button>
+        <ShaLink disabled={true} linkToForm={formIdentifier} params={{ id: entityId }}>
+          {displayTextByType}
+        </ShaLink>
       );
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props?.style} className={"entity-reference-link"}>
+        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props?.style}>
           {displayTextByType}
         </ShaLink>
       );
@@ -259,23 +260,23 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     return (
-      <Button style={{ width: '100%', ...props.style }} type="link" onClick={dialogExecute}>
-        {displayTextByType}
+      <Button type="link" onClick={dialogExecute} style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
+        <span style={innerEntityReferenceSpanBoxStyle}>{displayTextByType}</span>
       </Button>
     );
-  }, [formIdentifier, displayText, entityId, props.disabled, properties.length, displayTextByType, fetched]);
+  }, [props.formIdentifier, displayText, entityId, props.disabled, properties.length, displayTextByType, fetched]);
 
-  if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
+  if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled style={{ width: '100%', ...props.style }}>
-        Form identifier is not configured
+      <Button type="link" disabled style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
+        <span style={innerEntityReferenceSpanBoxStyle}>Form identifier is not configured</span>
       </Button>
     );
 
   if (!props.value)
     return (
-      <Button type="link" disabled style={{ width: '100%', ...props.style }}>
-        {displayText}
+      <Button type="link" disabled style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
+        <span style={innerEntityReferenceSpanBoxStyle}>{displayText}</span>
       </Button>
     );
 

@@ -125,7 +125,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           header,
           content,
           collapsible: 'icon',
-          overflow: 'auto',
+          overflow: true,
         };
       })
       .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

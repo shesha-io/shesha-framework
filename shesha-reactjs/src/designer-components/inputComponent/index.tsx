@@ -116,6 +116,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 style={{ width: "100%" }}
                 defaultValue={defaultValue}
                 onChange={onChange}
+                placeholder={placeholder}
                 options={[...(options || [])].map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))}
             />;
         }
@@ -137,16 +138,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 variant={variant} readOnly={readOnly}
                 size={size}
-                value={value || defaultValue}
+                value={value}
                 style={{ width: "100%" }}
+                min={props.min}
                 onChange={onChange}
                 addonAfter={iconElement(icon, null, tooltip || label, {}, styles)}
             />;
         case 'customDropdown': {
             const options = dropdownOptions as IDropdownOption[];
 
-            return <CustomDropdown
-                variant={variant} value={value || defaultValue}
+            return <CustomDropdown value={value || defaultValue} placeholder={placeholder}
                 defaultValue={defaultValue} options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
         }
         case 'customLabelValueEditor': {

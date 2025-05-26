@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle }) => {
   const shaWizardContainer = "sha-wizard-container";
   const shaStepsContent = "sha-steps-content";
   const shaStepsButtonsContainer = "sha-steps-buttons-container";
@@ -9,8 +9,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = colors;
   const { color, ...rest } = styles;
   const shaWizard = cx("sha-wizard", css`
-    
-    .ant-steps-item {
+
+    .ant-steps-item-container {
       --ant-color-primary: ${primaryBgColor};
       --ant-color-text-description: ${color}75;
       --ant-color-text: ${color};
@@ -21,10 +21,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       --ant-color-text-light-solid: ${primaryTextColor} !important;
 
       * {
-          font-weight: ${styles.fontWeight || 400};
-          font-family: ${styles.fontFamily};
+        font-family: ${styles.fontFamily};
       }
     }
+      
+    .ant-steps-item-active {
+            --ant-color-text-description: ${activeStepStyle.color || color}75;
+            --ant-color-text: ${activeStepStyle.color || color};
+            --ant-font-size: calc(${activeStepStyle.fontSize || styles.fontSize}/1.3);
+            --ant-font-size-lg: ${activeStepStyle.fontSize || styles.fontSize || 16};
+
+            * {
+              font-family: ${activeStepStyle.fontFamily || styles.fontFamily};
+            }
+      }
 
     .sha-steps-buttons-container {
       .ant-btn-default {
@@ -59,6 +69,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       margin: unset;
           
       .${shaStepsContent} {
+        flex: 1 1 auto;
+        white-space: nowrap;
         margin: 20px 0;
       }
   

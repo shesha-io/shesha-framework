@@ -4,7 +4,6 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
-import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = () => {
   // Generate unique IDs for main sections
@@ -313,16 +312,6 @@ export const getSettings = () => {
                                 icon: "maxHeightIcon",
                               }
                             ]
-                          })
-                          .addSettingsInput({
-                            id: nanoid(),
-                            parentId: styleRouterId,
-                            inline: true,
-                            inputType: 'dropdown',
-                            label: 'Overflow',
-                            defaultValue: 'auto',
-                            propertyName: 'overflow',
-                            dropdownOptions: overflowOptions
                           })
                           .toJson()
                         ]

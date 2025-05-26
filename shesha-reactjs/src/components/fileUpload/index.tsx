@@ -37,9 +37,11 @@ export interface IFileUploadProps {
   hideFileName?: boolean;
   styles?: any;
   primaryColor?: string;
+  type?: string;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
+  type,
   allowUpload = true,
   allowReplace = true,
   allowDelete = true,
@@ -242,7 +244,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     if (isDragger) {
       return (
         <Dragger disabled>
-          <DraggerStub styles={styles} />
+          <DraggerStub styles={styles} type={type} />
         </Dragger>
       );
     }
@@ -268,7 +270,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       return (
         <Dragger {...fileProps}>
           <span ref={uploadDraggerSpanRef} />
-          <DraggerStub styles={styles} />
+          <DraggerStub styles={styles} type={type} />
         </Dragger>
       );
     }
