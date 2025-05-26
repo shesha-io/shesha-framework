@@ -74,7 +74,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     ) {
       // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
       if (keys.length) {
-        const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
+        const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
+        const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
+
         if (props.dataSourceType === 'entitiesList' && !props.displayValueFunc && !props.displayPropName && hasDisplayName) {
           setLoadingValues(false);
           const values = Array.isArray(props.value) ? props.value : [props.value];
