@@ -40,6 +40,7 @@ namespace Shesha
         public SheshaAppServiceBase()
         {
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
+            LocalizationSourceName = SheshaConsts.LocalizationSourceName;
         }
 
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
