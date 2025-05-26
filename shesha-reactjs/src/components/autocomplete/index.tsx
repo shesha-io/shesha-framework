@@ -16,7 +16,7 @@ import { useStyles } from './style';
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const {allowClear = true } = props;
-  const { style } = props;
+  const { style = {} } = props;
 
   const { styles } = useStyles({ style });
 
@@ -321,7 +321,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
         } else
           Object.assign(queryParamObj, queryParams);
       }
-      // add autocomplete standart query params if not exists
+      // add autocomplete standard query params if not exists
       if (queryParamObj['term'] === undefined)
         queryParamObj['term'] = searchText;
       if (queryParamObj['selectedValue'] === undefined)
