@@ -1,3 +1,3 @@
 # Release Notes
 ## Enhancements
-- Notification framework fixes
+- exported formDesigner utils
