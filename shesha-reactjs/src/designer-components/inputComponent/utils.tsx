@@ -113,16 +113,16 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps) => {
     >
         {({ item, itemOnChange, readOnly }) => (
             <Row gutter={4}>
-                <Col span={8}>
+                <Col span={7}>
                     <InputPropertyEditor type='textField' item={item} itemOnChange={itemOnChange} propertyName={labelName} readOnly={readOnly} placeholder={labelTitle} />
                 </Col>
-                <Col span={8}>
+                <Col span={7}>
                     <InputPropertyEditor type='textField' item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />
                 </Col>
-                <Col span={4}>
+                <Col span={7}>
                     <InputPropertyEditor type='colorPicker' item={item} itemOnChange={itemOnChange} propertyName={colorName} readOnly={readOnly} placeholder={colorTitle} />
                 </Col>
-                <Col span={4}>
+                <Col span={3}>
                     <InputPropertyEditor type='iconPicker' item={item} itemOnChange={itemOnChange} propertyName={iconName} readOnly={readOnly} placeholder={iconTitle} />
                 </Col>
             </Row>)

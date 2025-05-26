@@ -1,9 +1,9 @@
-import { Empty, Select, Spin } from 'antd';
+import { Empty, Select, Spin, Tag } from 'antd';
 import { ValidationErrors } from '@/components';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import React, { useMemo } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import ReadOnlyDisplayFormItem, { Icon } from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 
 // tslint:disable-next-line:whitespace
@@ -26,10 +26,11 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     getOptionFromFetchedItem,
     incomeValueFunc,
     outcomeValueFunc,
+    readOnlyDisplayStyle,
+    tagStyle,
     ...rest
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
-
   const filter = ({ itemValue }: ReferenceListItemDto) => {
     if (!filters?.length) {
       return true;
@@ -44,8 +45,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     localValue: TValue | TValue[],
     allOptions: ISelectOption<TValue>[]
   ): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
-    if (localValue === undefined) return mode === 'multiple' || mode === 'tags' ? [] : undefined;
-    if (mode === 'multiple' || mode === 'tags') {
+    if (localValue === undefined) return mode === 'multiple' ? [] : undefined;
+    if (mode === 'multiple') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
           return getLabeledValue(o, allOptions);
@@ -106,7 +107,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
           : (option as ISelectOption<TValue>).data
         : undefined;
 
-    if (mode === 'multiple' || mode === 'tags') {
+    if (mode === 'multiple') {
       onChange(Array.isArray(selectedValue) ? selectedValue : [selectedValue]);
     } else onChange(selectedValue);
   };
@@ -116,52 +117,103 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       <ReadOnlyDisplayFormItem
         value={wrapValue(value, options)}
         disabled={disabled}
-        type={mode === 'multiple' || mode === 'tags' ? 'dropdownMultiple' : 'dropdown'}
+        style={readOnlyDisplayStyle === 'tags' ? tagStyle : style}
+        dropdownDisplayMode={readOnlyDisplayStyle === 'tags' ? 'tags' : 'raw'}
+        type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
       />
     );
   }
 
-  return (
-    <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-      className="sha-dropdown"
-      showSearch
-      labelInValue={true}
-      defaultActiveFirstOption={false}
-      suffixIcon={showArrow ? undefined : null}
-      notFoundContent={
-        refListLoading ? (
-          <Spin />
-        ) : (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={refListError ? <ValidationErrors renderMode="raw" error={refListError} /> : 'No matches'}
-          />
-        )
-      }
-      allowClear={allowClear}
-      loading={refListLoading}
-      disabled={disabled}
-      filterOption={(input, option) => {
-        if (typeof option?.children === 'string' && typeof input === 'string') {
-          // @ts-ignore
-          return option?.children?.toLowerCase().indexOf(input?.toLowerCase()) >= 0;
+  return (mode !== 'multiple' && readOnlyDisplayStyle === 'tags') ?
+    (
+      <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+        labelInValue={true}
+        defaultActiveFirstOption={false}
+        suffixIcon={showArrow ? undefined : null}
+        notFoundContent={
+          refListLoading ? (
+            <Spin />
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={refListError ? <ValidationErrors renderMode="raw" error={refListError} /> : 'No matches'}
+            />
+          )
         }
+        allowClear={allowClear}
+        loading={refListLoading}
+        disabled={disabled}
+        popupMatchSelectWidth={false}
+        style={{ width: 'max-content' }}
+        filterOption={(input, option) => {
+          if (typeof option?.children === 'string' && typeof input === 'string') {
+            // @ts-ignore
+            return option?.children?.toLowerCase().indexOf(input?.toLowerCase()) >= 0;
+          }
 
-        return false;
-      }}
-      {...rest}
-      onChange={handleChange}
-      value={wrapValue(value, options)}
-      style={{ ...style }}
-      mode={mode}
-    >
-      {options?.map(({ value: localValue, label, data, disabled }, index) => (
-        <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
-          {label}
-        </Select.Option>
-      ))}
-    </Select>
-  );
+          return false;
+        }}
+        {...rest}
+        onChange={handleChange}
+        value={wrapValue(value, options)}
+        labelRender={(props) => {
+          const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = tagStyle;
+
+          return <Tag
+            key={props.value}
+            color={options.find((o) => o.value === props.value)?.color}
+            icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
+            style={options.find((o) => o.value === props.value)?.color ? { ...rest } : tagStyle}
+          >{options.find((o) => o.value === props.value)?.label}</Tag>;
+        }}
+      >
+        {options?.map(({ value: localValue, label, data, disabled }, index) => (
+          <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
+            {label}
+          </Select.Option>
+        ))}
+      </Select>
+    ) : (
+      <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+        className="sha-dropdown"
+        showSearch
+        labelInValue={true}
+        defaultActiveFirstOption={false}
+        suffixIcon={showArrow ? undefined : null}
+        notFoundContent={
+          refListLoading ? (
+            <Spin />
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={refListError ? <ValidationErrors renderMode="raw" error={refListError} /> : 'No matches'}
+            />
+          )
+        }
+        allowClear={allowClear}
+        loading={refListLoading}
+        disabled={disabled}
+        filterOption={(input, option) => {
+          if (typeof option?.children === 'string' && typeof input === 'string') {
+            // @ts-ignore
+            return option?.children?.toLowerCase().indexOf(input?.toLowerCase()) >= 0;
+          }
+
+          return false;
+        }}
+        {...rest}
+        onChange={handleChange}
+        value={wrapValue(value, options)}
+        style={{ ...style }}
+        mode={mode === 'multiple' ? 'multiple' : null}
+      >
+        {options?.map(({ value: localValue, label, data, disabled }, index) => (
+          <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
+            {label}
+          </Select.Option>
+        ))}
+      </Select>
+    );
 };
 
 export default GenericRefListDropDown;

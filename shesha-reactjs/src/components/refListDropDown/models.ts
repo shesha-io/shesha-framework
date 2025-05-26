@@ -36,11 +36,13 @@ export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<an
   filters?: number[];
   width?: number;
   style?: CSSProperties;
+  tagStyle?: CSSProperties;
   base?: string;
   value?: TValue | TValue[];
   ignoredValues?: number[];
   disabledValues?: number[];
   size?: SizeType;
+  readOnlyDisplayStyle?: 'tags' | 'string';
   onChange?: (value: TValue | TValue[]) => void;
 }
 
@@ -56,6 +58,8 @@ export interface ISelectOption<TValue = any> {
   label: string | React.ReactNode;
   data: TValue;
   disabled?: boolean;
+  color?: string;
+  icon?: string;
 }
 
 export type CustomLabeledValue<TValue = any> = LabeledValue & { data: TValue };

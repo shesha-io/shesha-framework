@@ -113,6 +113,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
     autoFillProps?: boolean;
+    presets?: string[];
     propertyAccessor?: string;
     noSelectionItemText?: string;
     noSelectionItemValue?: string;

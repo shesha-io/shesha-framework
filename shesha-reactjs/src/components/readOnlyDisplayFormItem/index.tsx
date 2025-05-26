@@ -1,4 +1,4 @@
-import { Switch, Tag } from 'antd';
+import { Space, Switch, Tag } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import React, { FC, useMemo } from 'react';
@@ -10,9 +10,15 @@ import { useStyles } from './styles/styles';
 
 type AutocompleteType = ISelectOption;
 
+export const Icon = ({ type, ...rest }) => {
+  const icons = require(`@ant-design/icons`);
+  const Component = icons[type];
+  return <Component {...rest} />;
+};
+
 export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
   const {
-    value: valueProp,
+    value,
     type = 'string',
     dateFormat = 'DD-MM-YYYY',
     timeFormat = 'hh:mm',
@@ -25,12 +31,10 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
     quickviewWidth,
+    style
   } = props;
 
   const { styles } = useStyles();
-
-  const value = type === 'tags' ? valueProp?.map((item) => item.label).join(', ') : valueProp;
-
   const renderValue = useMemo(() => {
     if (render) {
       return typeof render === 'function' ? render() : render;
@@ -70,7 +74,16 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               />
             );
           } else {
-            return displayName;
+
+            const { backgroundColor, backgroundImage, ...rest } = style;
+
+            return dropdownDisplayMode === 'tags' ? <Tag
+              color={value?.color}
+              icon={value?.icon && <Icon type={value?.icon} />}
+              style={{ ...value.color ? { ...rest, border: 'none', margin: 0 } : style }}
+            >
+              {displayName}
+            </Tag> : displayName;
           }
         }
 
@@ -82,7 +95,19 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
 
           return dropdownDisplayMode === 'raw'
             ? values?.join(', ')
-            : values?.map((itemValue, index) => <Tag key={index}>{itemValue}</Tag>);
+            : <Space size={8}>
+              {value?.map(({ label, color, icon, value }) => {
+                const { backgroundColor, backgroundImage, ...rest } = style;
+                return <Tag
+                  key={value}
+                  color={color}
+                  icon={icon && <Icon type={icon} />}
+                  style={{ ...color ? { ...rest, margin: 0 } : style }}
+                >
+                  {label}
+                </Tag>;
+              })}
+            </Space>;
         }
 
         throw new Error(
@@ -100,10 +125,6 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       }
       case 'switch': {
         return <Switch checked={checked} defaultChecked={defaultChecked} disabled />;
-      }
-      case 'tags': {
-        console.log('value', value);
-        return value.map((item) => <Tag key={item.label} color={item.color} icon={item.icon}>{item.label}</Tag>);
       }
 
       default:

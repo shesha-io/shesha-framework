@@ -13,8 +13,7 @@ export interface IReadOnlyDisplayFormItemProps {
   | 'datetime'
   | 'checkbox'
   | 'switch'
-  | 'radiogroup'
-  | 'tags';
+  | 'radiogroup';
   dropdownDisplayMode?: 'raw' | 'tags';
   dateFormat?: string;
   timeFormat?: string;
@@ -26,4 +25,5 @@ export interface IReadOnlyDisplayFormItemProps {
   quickviewDisplayPropertyName?: string;
   quickviewGetEntityUrl?: string;
   quickviewWidth?: number;
+  style?: React.CSSProperties;
 }
