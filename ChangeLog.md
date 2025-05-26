@@ -1,3 +1,4 @@
 # Release Notes
-## Enhancements
-- exported formDesigner utils
+🐞 Bug Fixes
+- fixed mapping of ConfigurationItemIdentifier
+- fixed Permissions
