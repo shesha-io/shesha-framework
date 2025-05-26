@@ -1,6 +1,6 @@
 {
   "name": "@shesha-io/reactjs",
-  "version": "0.34.1-local",
+  "version": "0.43.2-local",
   "description": "The reactjs frontend application and ui for the shesha framework",
   "license": "GPL-3.0",
   "homepage": "https://www.shesha.io/",
@@ -120,7 +120,6 @@
     "lodash": "^4.17.20",
     "moment": "^2.25.3",
     "nanoid": "^3.3.7",
-    "next-nprogress-bar": "^2.3.12",
     "nprogress": "^0.2.0",
     "prettier": "^3.0.3",
     "qs": "^6.10.1",
@@ -177,6 +176,7 @@
     "mustache": "^4.2.0",
     "nested-property": "^4.0.0",
     "next": "^14.2.4",
+    "next-nprogress-bar": "^2.4.7",
     "number-to-words": "^1.2.4",
     "object-hash": "^3.0.0",
     "point-in-polygon": "^1.1.0",
