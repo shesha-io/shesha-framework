@@ -34,6 +34,10 @@ export interface NoteDto {
    */
   noteText: string;
   author?: GuidEntityReferenceDto;
+  /**
+   * Name of the component that created the note
+   */
+  uniqueIdentifier?: string;
 }
 
 export interface CreateNoteDto {
@@ -62,6 +66,10 @@ export interface CreateNoteDto {
    * Text
    */
   noteText: string;
+  /**
+   * Name of the component that created the note
+   */
+  uniqueIdentifier?: string;
 }
 
 export interface NoteGetListQueryParams {
@@ -85,6 +93,10 @@ export interface NoteGetListQueryParams {
    * The requested API version
    */
   'api-version'?: string;
+  /**
+   * Name of the component that created the note
+   */
+  uniqueIdentifier?: string;
 }
 export type NoteDtoListAjaxResponse = IAjaxResponse<NoteDto[] | null>;
 

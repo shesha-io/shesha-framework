@@ -37,7 +37,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     if (model.hidden) return null;
 
     return (
-      <NotesProvider ownerId={ownerId} ownerType={model.ownerType}>
+      <NotesProvider ownerId={ownerId} ownerType={model.ownerType} uniqueIdentifier={model.componentName}>
         <NotesRenderer
           showCommentBox={!model.readOnly}
           buttonPostion={model?.savePlacement}
