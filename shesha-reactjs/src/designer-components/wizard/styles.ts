@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle, stepWidth }) => {
   const shaWizardContainer = "sha-wizard-container";
   const shaStepsContent = "sha-steps-content";
   const shaStepsButtonsContainer = "sha-steps-buttons-container";
@@ -12,13 +12,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
 
     .ant-steps-item-container {
       --ant-color-primary: ${primaryBgColor};
-      --ant-color-text-description: ${color}75;
-      --ant-color-text: ${color};
-      --ant-font-size: calc(${styles.fontSize}/1.3);
-      --ant-font-size-lg: ${styles.fontSize || 16};
+      --ant-color-text-description: ${activeStepStyle.color ?? color}75;
+      --ant-color-text: ${activeStepStyle.color ?? color};
+      --ant-font-size: calc(${activeStepStyle.fontSize ?? styles.fontSize}/1.3);
+      --ant-font-size-lg: ${activeStepStyle.fontSize ?? styles.fontSize ?? 16};
       --ant-steps-nav-arrow-color: ${color}45;
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
       --ant-color-text-light-solid: ${primaryTextColor} !important;
+
+      padding: 0 8px 0 0;
 
       * {
         font-family: ${styles.fontFamily};
@@ -67,26 +69,49 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
       
     .${shaWizardContainer} {
       margin: unset;
-          
+          height: 100%;
       .${shaStepsContent} {
         flex: 1 1 auto;
         white-space: nowrap;
         margin: 20px 0;
+        width: calc(100% - ${stepWidth ?? '150px'});
+        min-height: 100%;
       }
   
       &.vertical {
         display: flex;
         flex-direction: row;
         margin-bottom: 20px;
-  
+
+
+        > .${prefixCls}-steps-content {
+          overflow: auto;
+
+          > .${prefixCls}-components-container {
+            overflow: auto;
+            min-height: 100% !important;
+
+            > .${prefixCls}-components-container {
+              overflow: auto;
+              min-height: 100% !important;
+            }
+          }
+        }
         .${prefixCls}-steps-vertical {
-          width: 150px;
+          width: ${stepWidth ?? '150px'};
+          padding: 8px;
+
+          >.ant-steps-item::after {
+            top: -24px;
+          }
         }
   
         .${shaStepsContent} {
           flex: 1;
           margin: unset;
         }
+
+
       }
     }
       

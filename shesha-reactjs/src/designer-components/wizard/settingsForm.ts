@@ -598,6 +598,21 @@ export const getSettings = () => {
                                             content: {
                                                 id: additionalStylesContentId,
                                                 components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: additionalStylesContentId,
+                                                        inputs: [
+                                                            {
+                                                                type: 'textField',
+                                                                id: nanoid(),
+                                                                label: "StepWidth",
+                                                                width: 85,
+                                                                propertyName: "stepWidth",
+                                                                icon: "widthIcon",
+                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                            }
+                                                        ]
+                                                    })
                                                     .addSettingsInput({
                                                         id: nanoid(),
                                                         propertyName: 'buttonsLayout',
