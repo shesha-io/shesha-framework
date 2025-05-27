@@ -11,8 +11,7 @@ namespace Shesha.Domain
     [Entity(TypeShortAlias = "Shesha.Framework.Note")]
     public class Note : FullPowerChildEntity
     {
-        [ReferenceList("Shesha", "NoteType")]
-        public virtual int? Category { get; set; }
+        public virtual string? Category { get; set; }
 
         public virtual Note Parent { get; set; }
 
@@ -23,6 +22,5 @@ namespace Shesha.Domain
         public virtual bool HasAttachment { get; set; }
 
         public virtual RefListVisibilityType VisibilityType { get; set; }
-        public virtual string UniqueIdentifier { get; set; }
     }
 }
