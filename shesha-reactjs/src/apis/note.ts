@@ -93,10 +93,6 @@ export interface NoteGetListQueryParams {
    * The requested API version
    */
   'api-version'?: string;
-  /**
-   * Name of the component that created the note
-   */
-  uniqueIdentifier?: string;
 }
 export type NoteDtoListAjaxResponse = IAjaxResponse<NoteDto[] | null>;
 
