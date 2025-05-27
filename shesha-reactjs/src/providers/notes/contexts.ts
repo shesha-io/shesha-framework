@@ -10,9 +10,8 @@ export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */
 export interface INoteSettings {
   ownerId: string;
   ownerType: string;
-  category?: number;
+  category?: string;
   allCategories?: boolean;
-  uniqueIdentifier?: string;
 }
 
 export interface INote extends NoteDto {}
@@ -20,7 +19,7 @@ export interface INote extends NoteDto {}
 export interface ICreateNotePayload {
   ownerId?: string;
   ownerType?: string;
-  category?: number;
+  category?: string;
   priority?: number;
   parentId?: string;
   noteText: string;
