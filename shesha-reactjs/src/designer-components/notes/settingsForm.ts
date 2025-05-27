@@ -40,6 +40,14 @@ export const getSettings = (data: any) => {
                       validate: {
                         required: true
                       }
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'category',
+                      label: 'Notes Category',
+                      type: 'textField',
+                      tooltip: 'This is used to group notes into categories',
+                      jsSetting: true,
                     }
                   ]
                 })

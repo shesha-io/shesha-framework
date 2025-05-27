@@ -32,9 +32,8 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
   ownerId,
   ownerType,
-  category,
-  allCategories = true,
-  uniqueIdentifier
+  allCategories = false,
+  category
 }) => {
   const [state, dispatch] = useReducer(notesReducer, COMMENTS_CONTEXT_INITIAL_STATE);
 
@@ -57,8 +56,8 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   //#endregion
 
   useEffect(() => {
-    dispatch(setSettingsAction({ ownerId, ownerType, category, allCategories, uniqueIdentifier }));
-  }, [ownerId, ownerType, category, allCategories, uniqueIdentifier]);
+    dispatch(setSettingsAction({ ownerId, ownerType, category, allCategories }));
+  }, [ownerId, ownerType, category, allCategories]);
 
   //#region Fetch notes
   const {
@@ -67,7 +66,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     data,
     error: fetchNotesResError,
   } = useNoteGetList({
-    queryParams: { ownerId, ownerType, category, allCategories, uniqueIdentifier },
+    queryParams: { ownerId, ownerType, category, allCategories },
     lazy: true,
   });
 
@@ -133,8 +132,8 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
         payload.ownerType = ownerType;
       }
 
-      if (!newNotes.uniqueIdentifier) {
-        payload.uniqueIdentifier = uniqueIdentifier;
+      if (!newNotes.category) {
+        payload.category = category;
       }
 
       saveNotesHttp(payload as CreateNoteDto)
