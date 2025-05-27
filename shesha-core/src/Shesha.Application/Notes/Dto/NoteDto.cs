@@ -27,7 +27,7 @@ namespace Shesha.Notes.Dto
         /// <summary>
         /// Category of the note. Is used to split notes into groups
         /// </summary>
-        public int? Category { get; set; }
+        public string? Category { get; set; }
 
         /// <summary>
         /// Note importance (priority)
@@ -46,9 +46,5 @@ namespace Shesha.Notes.Dto
         public string NoteText { get; set; }
 
         public EntityReferenceDto<Guid> Author { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string UniqueIdentifier { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace Shesha.Notes
         public async Task<List<NoteDto>> GetListAsync(GetListInput input)
         {
             var notes = await Repository.GetAll()
-                .Where(c => c.OwnerId == input.OwnerId && c.OwnerType == input.OwnerType && (input.AllCategories || c.Category == input.Category) && (c.UniqueIdentifier == input.UniqueIdentifier))
+                .Where(c => c.OwnerId == input.OwnerId && c.OwnerType == input.OwnerType && (input.AllCategories || c.Category == input.Category))
                 .OrderBy(c => c.CreationTime)
                 .ToListAsync();
             return notes.Select(c => ObjectMapper.Map<NoteDto>(c)).ToList();
