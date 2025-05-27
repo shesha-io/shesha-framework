@@ -12,6 +12,7 @@ export interface INoteSettings {
   ownerType: string;
   category?: number;
   allCategories?: boolean;
+  uniqueIdentifier?: string;
 }
 
 export interface INote extends NoteDto {}
@@ -24,6 +25,7 @@ export interface ICreateNotePayload {
   parentId?: string;
   noteText: string;
   id?: string;
+  uniqueIdentifier?: string;
 }
 
 export interface INotesStateContext
