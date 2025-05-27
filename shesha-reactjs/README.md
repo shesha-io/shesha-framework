@@ -20,7 +20,7 @@ Visit [https://docs.shesha.io/docs/get-started/Introduction](https://docs.shesha
 
 ## Getting Started
 
-Visist [https://docs.shesha.io/docs/category/front-end-basics](https://docs.shesha.io/docs/category/front-end-basics) to get started with @shesha-io/reactjs
+Visit [https://docs.shesha.io/docs/category/front-end-basics](https://docs.shesha.io/docs/category/front-end-basics) to get started with @shesha-io/reactjs
 
 <p align="center">
   <a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">

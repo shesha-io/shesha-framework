@@ -80,8 +80,12 @@ export const filterDynamicComponents = (components, query, data) => {
         return hidden || (!directMatch && !hasVisibleChildren);
     };
 
-    // Helper function to check if text matches query
-    const matchesQuery = (text) => text?.toLowerCase().includes(lowerCaseQuery);
+    // Helper function to check if text 
+    // matches query
+
+    const matchesQuery = (text) => {
+        return text?.toLowerCase().includes(lowerCaseQuery);
+};
 
     const filterResult = components.map(component => {
         // Deep clone the component to avoid mutations

@@ -11,9 +11,15 @@ import { isDataColumn } from '@/providers/dataTable/interfaces';
 import { ValueRenderer } from '../valueRenderer';
 import { isEqual, uniqWith } from 'lodash';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useStyles } from './style';
+
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const {allowClear = true } = props;
+  const { style = {} } = props;
+
+  const { styles } = useStyles({ style });
+
 
   // sources
   const source = useDataTableStore(false);
@@ -70,6 +76,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       if (keys.length) {
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
+
         if (props.dataSourceType === 'entitiesList' && !props.displayValueFunc && !props.displayPropName && hasDisplayName) {
           setLoadingValues(false);
           const values = Array.isArray(props.value) ? props.value : [props.value];
@@ -240,8 +247,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
-  //specifying a width for dropdownStyles causes its width to go out of sync with the rest of the component
-  const {width, ...restOfDropdownStyles} = props.style ?? {};
+
+  const {width, ...restOfDropdownStyles} = style ?? {};
 
   return (
     <>
@@ -249,8 +256,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         title={title}
         onDropdownVisibleChange={onDropdownVisibleChange}
         value={keys}
-        className="sha-dropdown"
-        dropdownStyle={{ ...restOfDropdownStyles, height: 'auto' }}
+        className={styles.autocomplete}
+        dropdownStyle={restOfDropdownStyles}
         showSearch={!props.disableSearch}
         notFoundContent={props.notFoundContent}
         defaultActiveFirstOption={false}
@@ -263,9 +270,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         placeholder={props.placeholder}
         disabled={props.readOnly}
         onSelect={handleSelect}
-        style={props.style}
+        style={style}
         size={props.size}
         ref={selectRef}
+        variant={Object.keys(style).length === 0 ? 'outlined' :'borderless'}
         mode={props.value && props.mode === 'multiple' ? props.mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
       >
         {freeTextValuesList /* this is need for showing free text value */}
@@ -315,7 +323,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
         } else
           Object.assign(queryParamObj, queryParams);
       }
-      // add autocomplete standart query params if not exists
+      // add autocomplete standard query params if not exists
       if (queryParamObj['term'] === undefined)
         queryParamObj['term'] = searchText;
       if (queryParamObj['selectedValue'] === undefined)

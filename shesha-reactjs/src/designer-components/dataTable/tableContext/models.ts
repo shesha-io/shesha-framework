@@ -9,7 +9,7 @@ import {
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { YesNoInherit } from '@/interfaces';
 
-export interface ITableContextComponentProps extends IConfigurableFormComponent {
+export interface ITableContextComponentProps extends Omit<IConfigurableFormComponent, 'description'> {
     sourceType?: 'Form' | 'Entity' | 'Url';
     entityType?: string;
     endpoint?: string;
