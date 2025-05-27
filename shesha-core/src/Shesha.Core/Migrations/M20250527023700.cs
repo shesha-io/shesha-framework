@@ -1,4 +1,5 @@
 ﻿using FluentMigrator;
+using Shesha.FluentMigrator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace Shesha.Migrations
 {
     [Migration(20250527023700)]
-    public class M20250527023700 : Migration
+    public class M20250527023700 : OneWayMigration
     {
         public override void Up()
         {
@@ -18,9 +19,6 @@ namespace Shesha.Migrations
               .Nullable();
 
             Rename.Column("CategoryLkp").OnTable("Core_Notes").To("Category");
-        }
-        public override void Down()
-        {
         }
     }
 }
