@@ -16,12 +16,21 @@ export interface IAppProviderProps {
 export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
   const nextRouter = useNextRouter();
 
+  const buildHttpRequestConfig = () => {
+    return {
+      headers: {
+        'Sha-Organization-Id': 'boxy21',
+      },
+    };
+  };
+
   return (
     <GlobalStateProvider>
       <ShaApplicationProvider
         backendUrl={backendUrl}
         router={nextRouter}
         noAuth={nextRouter.path?.includes('/no-auth')}
+        buildHttpRequestConfig={buildHttpRequestConfig}
       >
         <ProgressBar />
         <EntityCrudActions>

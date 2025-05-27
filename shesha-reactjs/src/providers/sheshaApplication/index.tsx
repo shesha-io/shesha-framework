@@ -65,7 +65,7 @@ export interface IShaApplicationProviderProps {
 
   noAuth?: boolean;
   unauthorizedRedirectUrl?: string;
-  transformHttpRequestConfig?: () => AxiosRequestConfig;
+  buildHttpRequestConfig?: () => AxiosRequestConfig;
 }
 
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {

@@ -25,7 +25,7 @@ export interface IShaApplicationArgs {
   routes?: ISheshaRoutes;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
   authorizer: MutableRefObject<IAuthProviderRefProps>;
-  transformHttpRequestConfig?: () => AxiosRequestConfig;
+  buildHttpRequestConfig?: () => AxiosRequestConfig;
 }
 
 export type InitializationAction = (application: ISheshaApplicationInstance) => Promise<void>;
@@ -52,7 +52,7 @@ export interface ISheshaApplicationInstance {
   init: () => Promise<void>;
   initializationState: ApplicationInitializationState;
   registerInitialization: (uid: string, action: InitializationAction) => void;
-  transformHttpRequestConfig?: () => AxiosRequestConfig;
+  buildHttpRequestConfig?: () => AxiosRequestConfig;
 }
 
 type RerenderTrigger = () => void;
@@ -72,7 +72,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
   #applicationName?: string;
   #routes?: ISheshaRoutes;
   #getFormUrlFunc?: (formId: FormIdentifier) => string;
-  #transformHttpRequestConfig?: () => AxiosRequestConfig;
+  #buildHttpRequestConfig?: () => AxiosRequestConfig;
   #authorizer: MutableRefObject<IAuthProviderRefProps>;
   #formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
   #formDesignerComponentGroups?: IToolboxComponentGroup[];
@@ -107,8 +107,8 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     return this.#httpHeaders;
   }
 
-  get transformHttpRequestConfig() {
-    return this.#transformHttpRequestConfig;
+  get buildHttpRequestConfig() {
+    return this.#buildHttpRequestConfig;
   }
 
   constructor(args: IShaApplicationArgs, forceRootUpdate: RerenderTrigger) {
@@ -120,7 +120,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     this.#applicationName = args.applicationName;
     this.#routes = args.routes ?? DEFAULT_SHESHA_ROUTES;
     this.#getFormUrlFunc = args.getFormUrlFunc;
-    this.#transformHttpRequestConfig = args.transformHttpRequestConfig;
+    this.#buildHttpRequestConfig = args.buildHttpRequestConfig;
     this.#formDesignerComponentRegistrations = {};
     this.#formDesignerComponentGroups = [];
 
@@ -179,9 +179,8 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 
   setRequestHeaders = (headers: IRequestHeaders) => {
     const transformedHeaders = {};
-    if (this.#transformHttpRequestConfig) {
-      const transformedConfig = this.#transformHttpRequestConfig();
-      this.#backendUrl = transformedConfig?.baseURL || this.#backendUrl;
+    if (this.#buildHttpRequestConfig) {
+      const transformedConfig = this.#buildHttpRequestConfig();
       if (transformedConfig?.headers) {
         for (const key in transformedConfig.headers) {
           if (transformedConfig.headers.hasOwnProperty(key)) {
