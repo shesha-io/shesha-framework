@@ -122,7 +122,7 @@ export const filterDynamicComponents = (components, query, data) => {
                 headerStyles: getHeaderStyles(),
                 allStyles: getBodyStyles(),
                 border: getBodyStyles().border,
-                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
+                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"0\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }
