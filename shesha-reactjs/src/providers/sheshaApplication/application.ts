@@ -181,7 +181,6 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     const transformedHeaders = {};
     if (this.#transformHttpRequestConfig) {
       const transformedConfig = this.#transformHttpRequestConfig();
-      console.log('LOG::SheshaApplicationInstance::setRequestHeaders::transformedConfig: ', transformedConfig);
       this.#backendUrl = transformedConfig?.baseURL || this.#backendUrl;
       if (transformedConfig?.headers) {
         for (const key in transformedConfig.headers) {
