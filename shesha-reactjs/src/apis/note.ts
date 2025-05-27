@@ -66,10 +66,6 @@ export interface CreateNoteDto {
    * Text
    */
   noteText: string;
-  /**
-   * Name of the component that created the note
-   */
-  uniqueIdentifier?: string;
 }
 
 export interface NoteGetListQueryParams {
