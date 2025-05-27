@@ -25,5 +25,9 @@ namespace Shesha.Notes.Dto
         /// Set to true to get notes of all categories
         /// </summary>
         public bool AllCategories { get; set; }
+        /// <summary>
+        /// Name of the component that created the note
+        /// </summary>
+        public string UniqueIdentifier { get; set; }
     }
 }
