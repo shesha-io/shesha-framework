@@ -1,7 +1,7 @@
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
 import { FormIdFullNameDto } from './entityConfig';
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
 import qs from 'qs';
 
@@ -188,7 +188,6 @@ export const formConfigurationUpdateMarkup = (data: FormUpdateMarkupInput, props
     props
   );
 
-
 export interface FormPermissionsDto {
   name?: string | null;
   module?: string | null;
@@ -204,16 +203,26 @@ export interface FormConfigurationCheckPermissionsQueryParams {
   'api-version'?: string;
 }
 export type formConfigurationCheckPermissionsProps = Omit<
-  RestfulShesha.MutateProps<FormPermissionsDtoAjaxResponse, unknown, FormConfigurationCheckPermissionsQueryParams, FormIdFullNameDto[], void>,
+  RestfulShesha.MutateProps<
+    FormPermissionsDtoAjaxResponse,
+    unknown,
+    FormConfigurationCheckPermissionsQueryParams,
+    FormIdFullNameDto[],
+    void
+  >,
   'data'
 >;
 /**
  * Check forms permissions
  */
-export const formConfigurationCheckPermissions = (data: FormIdFullNameDto[], props: formConfigurationCheckPermissionsProps) =>
-  RestfulShesha.mutate<FormPermissionsDtoAjaxResponse, unknown, FormConfigurationCheckPermissionsQueryParams, FormIdFullNameDto[], void>(
-    'POST',
-    `/api/services/Shesha/FormConfiguration/CheckPermissions`,
-    data,
-    props
-  );
+export const formConfigurationCheckPermissions = (
+  data: FormIdFullNameDto[],
+  props: formConfigurationCheckPermissionsProps
+) =>
+  RestfulShesha.mutate<
+    FormPermissionsDtoAjaxResponse,
+    unknown,
+    FormConfigurationCheckPermissionsQueryParams,
+    FormIdFullNameDto[],
+    void
+  >('POST', `/api/services/Shesha/FormConfiguration/CheckPermissions`, data, props);
