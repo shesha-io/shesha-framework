@@ -46,5 +46,9 @@ namespace Shesha.Notes.Dto
         public string NoteText { get; set; }
 
         public EntityReferenceDto<Guid> Author { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string UniqueIdentifier { get; set; }
     }
 }

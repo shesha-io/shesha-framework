@@ -38,5 +38,9 @@ namespace Shesha.Notes.Dto
         /// </summary>
         [Required]
         public string NoteText { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string UniqueIdentifier { get; set; }
     }
 }

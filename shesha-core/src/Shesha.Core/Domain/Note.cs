@@ -20,5 +20,6 @@ namespace Shesha.Domain
         public virtual bool HasAttachment { get; set; }
 
         public virtual RefListVisibilityType VisibilityType { get; set; }
+        public virtual string UniqueIdentifier { get; set; }
     }
 }
