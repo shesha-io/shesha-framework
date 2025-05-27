@@ -22,7 +22,7 @@ import {
   DynamicModalProvider,
   CanvasProvider,
 } from '@/providers';
-import { DEFAULT_ACCESS_TOKEN_NAME, ISheshaRoutes } from './contexts';
+import { DEFAULT_ACCESS_TOKEN_NAME, IHttpHeadersDictionary, ISheshaRoutes } from './contexts';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
@@ -45,7 +45,6 @@ import { Result } from 'antd';
 import { EntityActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 import { WebStorageContextProvider } from '../dataContextProvider/webStorageContext';
-import { AxiosRequestConfig } from 'axios';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -65,7 +64,7 @@ export interface IShaApplicationProviderProps {
 
   noAuth?: boolean;
   unauthorizedRedirectUrl?: string;
-  buildHttpRequestConfig?: () => AxiosRequestConfig;
+  buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
 }
 
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {

@@ -8,7 +8,6 @@ import { createNamedContext } from '@/utils/react';
 import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 import { IAuthProviderRefProps } from '../auth';
 import { FRONT_END_APP_HEADER_NAME } from './models';
-import { AxiosRequestConfig } from 'axios';
 
 export interface IShaApplicationArgs {
   backendUrl: string;
@@ -25,7 +24,7 @@ export interface IShaApplicationArgs {
   routes?: ISheshaRoutes;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
   authorizer: MutableRefObject<IAuthProviderRefProps>;
-  buildHttpRequestConfig?: () => AxiosRequestConfig;
+  buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
 }
 
 export type InitializationAction = (application: ISheshaApplicationInstance) => Promise<void>;
@@ -52,7 +51,7 @@ export interface ISheshaApplicationInstance {
   init: () => Promise<void>;
   initializationState: ApplicationInitializationState;
   registerInitialization: (uid: string, action: InitializationAction) => void;
-  buildHttpRequestConfig?: () => AxiosRequestConfig;
+  buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
 }
 
 type RerenderTrigger = () => void;
@@ -72,7 +71,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
   #applicationName?: string;
   #routes?: ISheshaRoutes;
   #getFormUrlFunc?: (formId: FormIdentifier) => string;
-  #buildHttpRequestConfig?: () => AxiosRequestConfig;
+  #buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
   #authorizer: MutableRefObject<IAuthProviderRefProps>;
   #formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
   #formDesignerComponentGroups?: IToolboxComponentGroup[];
@@ -107,8 +106,8 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     return this.#httpHeaders;
   }
 
-  get buildHttpRequestConfig() {
-    return this.#buildHttpRequestConfig;
+  get buildHttpRequestHeaders() {
+    return this.#buildHttpRequestHeaders;
   }
 
   constructor(args: IShaApplicationArgs, forceRootUpdate: RerenderTrigger) {
@@ -120,7 +119,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     this.#applicationName = args.applicationName;
     this.#routes = args.routes ?? DEFAULT_SHESHA_ROUTES;
     this.#getFormUrlFunc = args.getFormUrlFunc;
-    this.#buildHttpRequestConfig = args.buildHttpRequestConfig;
+    this.#buildHttpRequestHeaders = args.buildHttpRequestHeaders;
     this.#formDesignerComponentRegistrations = {};
     this.#formDesignerComponentGroups = [];
 
@@ -178,20 +177,9 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
   };
 
   setRequestHeaders = (headers: IRequestHeaders) => {
-    const transformedHeaders = {};
-    if (this.#buildHttpRequestConfig) {
-      const transformedConfig = this.#buildHttpRequestConfig();
-      if (transformedConfig?.headers) {
-        for (const key in transformedConfig.headers) {
-          if (transformedConfig.headers.hasOwnProperty(key)) {
-            transformedHeaders[key] = transformedConfig.headers[key];
-          }
-        }
-      }
-    }
     this.#httpHeaders = {
       ...this.#httpHeaders,
-      ...transformedHeaders,
+      ...this.#buildHttpRequestHeaders?.(),
       ...headers,
       [FRONT_END_APP_HEADER_NAME]: this.#applicationKey,
     };

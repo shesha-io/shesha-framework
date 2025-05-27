@@ -8,28 +8,15 @@ import { useMemo } from 'react';
  * @return {AxiosRequestConfig} The Axios request configuration object with baseURL and headers
  */
 export const useAxiosRequestConfig = (): AxiosRequestConfig => {
-  const { backendUrl, httpHeaders, buildHttpRequestConfig } = useSheshaApplication();
-
-  let defaultConfig: AxiosRequestConfig = {
-    headers: httpHeaders,
-    baseURL: backendUrl,
-  };
-
-  // If a custom request transformation function is provided, use it to get the config
-  if (buildHttpRequestConfig) {
-    const generatedConfig = buildHttpRequestConfig();
-    defaultConfig = {
-      ...defaultConfig,
-      ...generatedConfig,
-    };
-  }
+  const { backendUrl, httpHeaders, buildHttpRequestHeaders } = useSheshaApplication();
 
   return useMemo<AxiosRequestConfig>(() => {
     return {
-      ...defaultConfig,
+      baseURL: backendUrl,
       headers: {
-        ...defaultConfig.headers,
+        ...httpHeaders,
+        ...buildHttpRequestHeaders?.(),
       },
     };
-  }, [backendUrl, defaultConfig]);
+  }, [backendUrl, httpHeaders, buildHttpRequestHeaders]);
 };
