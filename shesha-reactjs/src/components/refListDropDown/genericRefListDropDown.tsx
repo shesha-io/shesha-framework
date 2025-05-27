@@ -152,41 +152,42 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     value: wrapValue(value, options),
   };
 
-  return (mode !== 'multiple' && mode !== 'tags' && readOnlyDisplayStyle === 'tags') ?
-    (
-      <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-        {...commonSelectProps}
-        popupMatchSelectWidth={false}
-        style={{ width: 'max-content' }}
-        labelRender={(props) => {
-          return <Tag
-            key={props.value}
-            color={options.find((o) => o.value === props.value)?.color}
-            icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
-            style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
-          >{options.find((o) => o.value === props.value)?.label}</Tag>;
-        }}
-      >
-        {options?.map(({ value: localValue, label, data, disabled }, index) => (
-          <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
-            {label}
-          </Select.Option>
-        ))}
-      </Select>
-    ) : (
-      <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-        {...commonSelectProps}
-        style={{ ...style }}
-        showSearch
-        mode={mode}
-      >
-        {options?.map(({ value: localValue, label, data, disabled }, index) => (
-          <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
-            {label}
-          </Select.Option>
-        ))}
-      </Select>
-    );
+  if (mode !== 'multiple' && mode !== 'tags' && readOnlyDisplayStyle === 'tags') {
+    return <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+      {...commonSelectProps}
+      popupMatchSelectWidth={false}
+      style={{ width: 'max-content' }}
+      labelRender={(props) => {
+        return <Tag
+          key={props.value}
+          color={options.find((o) => o.value === props.value)?.color}
+          icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
+          style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
+        >{options.find((o) => o.value === props.value)?.label}</Tag>;
+      }}
+    >
+      {options?.map(({ value: localValue, label, data, disabled }, index) => (
+        <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
+          {label}
+        </Select.Option>
+      ))}
+    </Select>;
+  }
+
+  return (
+    <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+      {...commonSelectProps}
+      style={{ ...style }}
+      showSearch
+      mode={mode}
+    >
+      {options?.map(({ value: localValue, label, data, disabled }, index) => (
+        <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
+          {label}
+        </Select.Option>
+      ))}
+    </Select>
+  );
 };
 
 export default GenericRefListDropDown;

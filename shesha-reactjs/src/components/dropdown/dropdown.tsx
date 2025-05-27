@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import ReadOnlyDisplayFormItem, { Icon } from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
-import { Select, Skeleton, Tag } from 'antd';
+import { Select, Tag } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
@@ -157,30 +157,30 @@ export const Dropdown: FC<IDropdownProps> = ({
     };
 
     if (readOnlyDisplayStyle === 'tags' && mode !== 'multiple') {
-        return options.length === 0 ? <Skeleton.Input active />
-            : <Select
-                {...commonSelectProps}
-                popupMatchSelectWidth={false}
-                style={{ width: 'max-content' }}
-                labelRender={(props) => {
-                    return <Tag
-                        key={props.value}
-                        color={options.find((o) => o.value === props.value)?.color}
-                        icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
-                        style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
-                    >
-                        {options.find((o) => o.value === props.value)?.label}
-                    </Tag>;
-                }}
-            >
-                {
-                    options.map((option) => (
-                        <Select.Option key={option.value} value={option.value}>
-                            {option?.label}
-                        </Select.Option>
-                    ))
-                }
-            </Select >;
+        return <Select
+            {...commonSelectProps}
+            popupMatchSelectWidth={false}
+            style={{ width: 'max-content' }}
+            placeholder={'placeholder'}
+            labelRender={(props) => {
+                return <Tag
+                    key={props.value}
+                    color={options.find((o) => o.value === props.value)?.color}
+                    icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
+                    style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
+                >
+                    {options.find((o) => o.value === props.value)?.label}
+                </Tag>;
+            }}
+        >
+            {
+                options.map((option) => (
+                    <Select.Option key={option.value} value={option.value}>
+                        {option?.label}
+                    </Select.Option>
+                ))
+            }
+        </Select >;
     };
 
     return (
