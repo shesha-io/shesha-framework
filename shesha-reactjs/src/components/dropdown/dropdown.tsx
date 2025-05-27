@@ -7,6 +7,7 @@ import GenericRefListDropDown from '@/components/refListDropDown/genericRefListD
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { useStyles } from './style';
+import { getTagStyle } from '@/utils/style';
 
 
 export const Dropdown: FC<IDropdownProps> = ({
@@ -157,13 +158,11 @@ export const Dropdown: FC<IDropdownProps> = ({
                 style={{ width: 'max-content' }}
                 placeholder={placeholder}
                 labelRender={(props) => {
-                    const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = tagStyle;
-
                     return <Tag
                         key={props.value}
                         color={options.find((o) => o.value === props.value)?.color}
                         icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
-                        style={options.find((o) => o.value === props.value)?.color ? { ...rest, border: 'none' } : tagStyle}
+                        style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
                     >
                         {options.find((o) => o.value === props.value)?.label}
                     </Tag>;

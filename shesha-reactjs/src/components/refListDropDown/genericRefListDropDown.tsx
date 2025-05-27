@@ -5,6 +5,7 @@ import React, { useMemo } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import ReadOnlyDisplayFormItem, { Icon } from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
+import { getTagStyle } from '@/utils/style';
 
 // tslint:disable-next-line:whitespace
 export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownProps<TValue>) => {
@@ -157,13 +158,11 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         onChange={handleChange}
         value={wrapValue(value, options)}
         labelRender={(props) => {
-          const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = tagStyle;
-
           return <Tag
             key={props.value}
             color={options.find((o) => o.value === props.value)?.color}
             icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
-            style={options.find((o) => o.value === props.value)?.color ? { ...rest } : tagStyle}
+            style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
           >{options.find((o) => o.value === props.value)?.label}</Tag>;
         }}
       >

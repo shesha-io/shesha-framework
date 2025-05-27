@@ -7,6 +7,7 @@ import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
+import { getTagStyle } from '@/utils/style';
 
 type AutocompleteType = ISelectOption;
 
@@ -74,12 +75,11 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               />
             );
           } else {
-            const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = style;
 
             return dropdownDisplayMode === 'tags' ? <Tag
               color={value?.color}
               icon={value?.icon && <Icon type={value?.icon} />}
-              style={{ ...value.color ? { ...rest, margin: 0 } : style }}
+              style={getTagStyle(style, !!value?.color)}
             >
               {displayName}
             </Tag> : displayName;
@@ -96,13 +96,12 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
             ? values?.join(', ')
             : <Space size={8}>
               {value?.map(({ label, color, icon, value }) => {
-                const { backgroundColor, backgroundImage, borderColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor, ...rest } = style;
 
                 return <Tag
                   key={value}
                   color={color}
                   icon={icon && <Icon type={icon} />}
-                  style={{ ...color ? { ...rest, margin: 0 } : style }}
+                  style={getTagStyle(style, !!color)}
                 >
                   {label}
                 </Tag>;
