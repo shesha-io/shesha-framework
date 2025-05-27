@@ -36,7 +36,7 @@ export const Dropdown: FC<IDropdownProps> = ({
 
     const { styles } = useStyles({ style });
 
-    const selectedMode = mode === 'multiple' ? 'multiple' : undefined;
+    const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
 
     const getOptions = (): ILabelValue[] => {
         return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
@@ -133,7 +133,7 @@ export const Dropdown: FC<IDropdownProps> = ({
 
     const options = getOptions() || [];
 
-    const selectedValue = options.length > 0 ? value || defaultValue : null;
+    const selectedValue = options.length > 0 ? value ?? defaultValue : null;
 
     const getSelectValue = () => {
         const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
@@ -144,19 +144,24 @@ export const Dropdown: FC<IDropdownProps> = ({
         return <ReadOnlyDisplayFormItem dropdownDisplayMode={readOnlyDisplayStyle === 'tags' ? 'tags' : 'raw'} type='dropdown' value={getSelectValue()} />;
     }
 
+    const commonSelectProps = {
+        allowClear,
+        onChange,
+        value: selectedValue,
+        defaultValue,
+        variant: 'borderless' as 'borderless' | 'filled' | 'outlined',
+        disabled: readOnly,
+        mode: selectedMode,
+        placeholder,
+        size
+    };
+
     if (readOnlyDisplayStyle === 'tags' && mode !== 'multiple') {
-        return options.length < 0 ? <Skeleton.Input active />
+        return options.length === 0 ? <Skeleton.Input active />
             : <Select
-                onChange={onChange}
-                allowClear={allowClear}
-                value={options.length > 0 ? value || defaultValue : undefined}
-                defaultValue={defaultValue}
-                variant={'borderless'}
-                disabled={readOnly}
-                mode={selectedMode}
+                {...commonSelectProps}
                 popupMatchSelectWidth={false}
                 style={{ width: 'max-content' }}
-                placeholder={placeholder}
                 labelRender={(props) => {
                     return <Tag
                         key={props.value}
@@ -167,11 +172,10 @@ export const Dropdown: FC<IDropdownProps> = ({
                         {options.find((o) => o.value === props.value)?.label}
                     </Tag>;
                 }}
-                size={size}
             >
                 {
-                    options.map((option, index) => (
-                        <Select.Option key={index} value={option.value}>
+                    options.map((option) => (
+                        <Select.Option key={option.value} value={option.value}>
                             {option?.label}
                         </Select.Option>
                     ))
@@ -181,21 +185,13 @@ export const Dropdown: FC<IDropdownProps> = ({
 
     return (
         <Select
-            allowClear={allowClear}
-            onChange={onChange}
-            value={options.length > 0 ? value || defaultValue : undefined}
-            defaultValue={defaultValue}
-            variant={'borderless'}
+            {...commonSelectProps}
             className={styles.dropdown}
-            disabled={readOnly}
-            mode={selectedMode}
-            placeholder={placeholder}
             showSearch
             style={{ ...style }}
-            size={size}
         >
-            {options.map((option, index) => (
-                <Select.Option key={index} value={option.value}>
+            {options.map((option) => (
+                <Select.Option key={option.value} value={option.value}>
                     {option.label}
                 </Select.Option>
             ))}
