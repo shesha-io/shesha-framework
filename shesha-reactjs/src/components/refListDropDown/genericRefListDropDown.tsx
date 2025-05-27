@@ -158,16 +158,17 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       popupMatchSelectWidth={false}
       style={{ width: 'max-content' }}
       labelRender={(props) => {
+        const option = options.find((o) => o.value === props.value);
         return <Tag
           key={props.value}
-          color={options.find((o) => o.value === props.value)?.color}
-          icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
-          style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
-        >{options.find((o) => o.value === props.value)?.label}</Tag>;
+          color={option?.color}
+          icon={option?.icon && <Icon type={option?.icon} />}
+          style={getTagStyle(tagStyle, !!option?.color)}
+        >{option?.label}</Tag>;
       }}
     >
-      {options?.map(({ value: localValue, label, data, disabled }, index) => (
-        <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
+      {options?.map(({ value: localValue, label, data, disabled }) => (
+        <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
           {label}
         </Select.Option>
       ))}
@@ -181,8 +182,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       showSearch
       mode={mode}
     >
-      {options?.map(({ value: localValue, label, data, disabled }, index) => (
-        <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
+      {options?.map(({ value: localValue, label, data, disabled }) => (
+        <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
           {label}
         </Select.Option>
       ))}

@@ -163,13 +163,14 @@ export const Dropdown: FC<IDropdownProps> = ({
             style={{ width: 'max-content' }}
             placeholder={'placeholder'}
             labelRender={(props) => {
+                const option = options.find((o) => o.value === props.value);
                 return <Tag
                     key={props.value}
-                    color={options.find((o) => o.value === props.value)?.color}
-                    icon={options.find((o) => o.value === props.value)?.icon && <Icon type={options.find((o) => o.value === props.value)?.icon} />}
-                    style={getTagStyle(tagStyle, !!options.find((o) => o.value === props.value)?.color)}
+                    color={option?.color}
+                    icon={option?.icon && <Icon type={option?.icon} />}
+                    style={getTagStyle(tagStyle, !!option?.color)}
                 >
-                    {options.find((o) => o.value === props.value)?.label}
+                    {option?.label}
                 </Tag>;
             }}
         >
