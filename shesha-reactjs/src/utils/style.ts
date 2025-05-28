@@ -6,6 +6,6 @@ export const hasNumber = (str: string | number) => typeof str === 'number' ? tru
 
 export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean = false) => {
   const { backgroundColor, backgroundImage, borderColor, borderTopColor,
-    borderLeftColor, borderRightColor, borderBottomColor, ...rest } = style;
+    borderLeftColor, borderRightColor, borderBottomColor, color, ...rest } = style;
   return hasColor ? { ...rest, margin: 0 } : style;
 };

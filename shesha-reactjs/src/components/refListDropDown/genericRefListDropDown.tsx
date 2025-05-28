@@ -27,7 +27,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     getOptionFromFetchedItem,
     incomeValueFunc,
     outcomeValueFunc,
-    readOnlyDisplayStyle,
+    displayStyle,
     tagStyle,
     ...rest
   } = props;
@@ -118,15 +118,15 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       <ReadOnlyDisplayFormItem
         value={wrapValue(value, options)}
         disabled={disabled}
-        style={readOnlyDisplayStyle === 'tags' ? tagStyle : style}
-        dropdownDisplayMode={readOnlyDisplayStyle === 'tags' ? 'tags' : 'raw'}
+        style={displayStyle === 'tags' ? tagStyle : style}
+        dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
       />
     );
   }
 
   const commonSelectProps = {
-    className: mode !== 'multiple' && readOnlyDisplayStyle === 'tags' ? undefined : "sha-dropdown",
+    className: mode !== 'multiple' && displayStyle === 'tags' ? undefined : "sha-dropdown",
     labelInValue: true,
     defaultActiveFirstOption: false,
     suffixIcon: showArrow ? undefined : null,
@@ -152,7 +152,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     value: wrapValue(value, options),
   };
 
-  if (mode !== 'multiple' && mode !== 'tags' && readOnlyDisplayStyle === 'tags') {
+  if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
     return <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       {...commonSelectProps}
       popupMatchSelectWidth={false}
@@ -181,6 +181,17 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       style={{ ...style }}
       showSearch
       mode={mode}
+      {...(displayStyle === 'tags' ? {
+        labelRender: (props) => {
+          const option = options.find((o) => o.value === props.value);
+          return <Tag
+            key={props.value}
+            color={option?.color}
+            icon={option?.icon && <Icon type={option?.icon} />}
+            style={getTagStyle(tagStyle, !!option?.color)}
+          >{option?.label}</Tag>;
+        }
+      } : {})}
     >
       {options?.map(({ value: localValue, label, data, disabled }) => (
         <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>

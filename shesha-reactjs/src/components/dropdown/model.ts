@@ -45,5 +45,5 @@ export interface IDropdownProps {
   style?: React.CSSProperties;
   tagStyle?: CSSProperties;
   readOnly?: boolean;
-  readOnlyDisplayStyle?: 'string' | 'tags';
+  displayStyle?: 'text' | 'tags';
 }

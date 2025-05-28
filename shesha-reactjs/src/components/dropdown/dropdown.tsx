@@ -30,11 +30,11 @@ export const Dropdown: FC<IDropdownProps> = ({
     style,
     size,
     allowClear = true,
-    readOnlyDisplayStyle,
+    displayStyle,
     tagStyle
 }) => {
 
-    const { styles } = useStyles({ style });
+    const { styles } = useStyles({ style, tagStyle });
 
     const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
 
@@ -124,7 +124,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 allowClear={allowClear}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
-                readOnlyDisplayStyle={readOnlyDisplayStyle}
+                displayStyle={displayStyle}
                 incomeValueFunc={incomeValueFunc}
                 outcomeValueFunc={outcomeValueFunc}
             />
@@ -141,7 +141,13 @@ export const Dropdown: FC<IDropdownProps> = ({
     };
 
     if (readOnly) {
-        return <ReadOnlyDisplayFormItem dropdownDisplayMode={readOnlyDisplayStyle === 'tags' ? 'tags' : 'raw'} type='dropdown' value={getSelectValue()} />;
+        return <ReadOnlyDisplayFormItem
+            style={displayStyle === 'tags' ? tagStyle : style}
+            dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
+            type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'} value={displayStyle === 'tags' && mode === 'multiple' ?
+                selectedValue?.map(x => options.find((o) => o.value === x)) :
+                displayStyle === 'tags' ?
+                    options.find((o) => o.value === selectedValue) : getSelectValue()} />;
     }
 
     const commonSelectProps = {
@@ -156,12 +162,16 @@ export const Dropdown: FC<IDropdownProps> = ({
         size
     };
 
-    if (readOnlyDisplayStyle === 'tags' && mode !== 'multiple') {
+    if (displayStyle === 'tags' && mode !== 'multiple') {
         return <Select
             {...commonSelectProps}
             popupMatchSelectWidth={false}
             style={{ width: 'max-content' }}
-            placeholder={'placeholder'}
+            placeholder={<Tag
+                style={{ ...getTagStyle(tagStyle, true), background: '#d9d9d9' }}
+            >
+                {placeholder ?? <span style={{ whiteSpace: 'pre' }}>{'      '}</span>}
+            </Tag>}
             labelRender={(props) => {
                 const option = options.find((o) => o.value === props.value);
                 return <Tag
@@ -190,6 +200,17 @@ export const Dropdown: FC<IDropdownProps> = ({
             className={styles.dropdown}
             showSearch
             style={{ ...style }}
+            {...(displayStyle === 'tags' ? {
+                labelRender: (props) => {
+                    const option = options.find((o) => o.value === props.value);
+                    return <Tag
+                        key={props.value}
+                        color={option?.color}
+                        icon={option?.icon && <Icon type={option?.icon} />}
+                        style={getTagStyle(tagStyle, !!option?.color)}
+                    >{option?.label}</Tag>;
+                }
+            } : {})}
         >
             {options.map((option) => (
                 <Select.Option key={option.value} value={option.value}>

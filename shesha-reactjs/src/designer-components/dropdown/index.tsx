@@ -44,7 +44,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   Factory: ({ model, calculatedModel }) => {
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
-    const tagStyle = useFormComponentStyles(model.tag).fullStyle;
+    const tagStyle = useFormComponentStyles({ ...model.tag, font: model.font }).fullStyle;
 
 
     return (
@@ -64,7 +64,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
-            tagStyle={{ ...tagStyle, margin: 0 }}
+            tagStyle={{ ...tagStyle, margin: 0, alignContent: 'center' }}
             onChange={onChangeInternal}
           />;
         }}
@@ -132,6 +132,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
       return {
         ...newModel,
         tag: { ...initTagStyle },
+        displayStyle: prev.displayStyle ?? 'text',
         desktop: { ...newModel.desktop, tag: { ...initTagStyle } },
         tablet: { ...newModel.tablet, tag: { ...initTagStyle } },
         mobile: { ...newModel.mobile, tag: { ...initTagStyle } }

@@ -86,7 +86,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           }
         }
 
-        throw new Error(`Invalid data type passed. Expected IGuidNullableEntityReferenceDto but found ${typeof value}`);
+        return 'unknown';
 
       case 'dropdownMultiple': {
         if (Array.isArray(value)) {

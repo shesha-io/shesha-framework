@@ -45,7 +45,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt,
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
 
@@ -100,7 +100,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'dataSortingEditor':
             return <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
         case 'colorPicker':
-            return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
+            return <ColorPicker size={size} style={{ width: props.width ?? "100%" }} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
         case 'dropdown': {
             const options = dropdownOptions as IDropdownOption[];
 
@@ -113,7 +113,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 className={className}
                 showSearch={showSearch}
                 value={value || defaultValue}
-                style={{ width: "100%" }}
+                style={{ width: props.width ?? "100%" }}
                 defaultValue={defaultValue}
                 onChange={onChange}
                 placeholder={placeholder}
@@ -163,7 +163,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'codeEditor':
             return getEditor(availableConstantsExpression, codeEditorProps, constantsAccessor);
         case 'iconPicker':
-            return <IconPickerWrapper iconSize={20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+            return <IconPickerWrapper iconSize={iconSize ?? 20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImagePicker
                 value={value || defaultValue}
@@ -342,6 +342,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 variant={variant}
                 placeholder={placeholder}
+                style={{ width: props.width ?? "100%" }}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip, {}, styles)}</span>}
                 value={value}
                 type={textType}

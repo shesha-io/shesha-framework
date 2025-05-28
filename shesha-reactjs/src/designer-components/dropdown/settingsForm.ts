@@ -5,6 +5,7 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { IDropdownComponentProps } from './model';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { presetColors } from './utils';
 
 export const getSettings = (data: IDropdownComponentProps) => {
     const searchableTabsId = nanoid();
@@ -82,13 +83,13 @@ export const getSettings = (data: IDropdownComponentProps) => {
                             .addSettingsInput({
                                 id: nanoid(),
                                 parentId: commonTabId,
-                                propertyName: 'readOnlyDisplayStyle',
-                                label: 'Read Only Display Style',
+                                propertyName: 'displayStyle',
+                                label: 'Display Style',
                                 inputType: 'dropdown',
                                 dropdownOptions: [
                                     {
-                                        value: 'default',
-                                        label: 'Default'
+                                        value: 'text',
+                                        label: 'Plain text'
                                     },
                                     {
                                         value: 'tags',
@@ -352,6 +353,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         mode: 'inline',
                                         valueName: 'value',
                                         valueTitle: 'Value',
+                                        dropdownOptions: presetColors
                                     }
                                 ],
                                 hidden: {
@@ -864,8 +866,8 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                     ...new DesignerToolbarSettings()
                                                         .addCollapsiblePanel({
                                                             id: nanoid(),
-                                                            propertyName: 'tagFontStyle',
-                                                            label: 'Font Style',
+                                                            propertyName: 'tagDimensionStyle',
+                                                            label: 'Dimension',
                                                             labelAlign: 'right',
                                                             ghost: true,
                                                             collapsible: 'header',
@@ -877,51 +879,70 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                         id: nanoid(),
                                                                         parentId: nanoid(),
                                                                         inline: true,
-                                                                        propertyName: 'font',
                                                                         inputs: [
                                                                             {
-                                                                                type: 'dropdown',
+                                                                                type: 'textField',
                                                                                 id: nanoid(),
-                                                                                label: 'Family',
-                                                                                propertyName: 'tag.font.type',
-                                                                                hideLabel: true,
-                                                                                dropdownOptions: fontTypes,
+                                                                                label: "Width",
+                                                                                width: 85,
+                                                                                propertyName: "tag.dimensions.width",
+                                                                                icon: "widthIcon",
+                                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+
                                                                             },
                                                                             {
-                                                                                type: 'numberField',
+                                                                                type: 'textField',
                                                                                 id: nanoid(),
-                                                                                label: 'Size',
-                                                                                propertyName: 'tag.font.size',
+                                                                                label: "Min Width",
+                                                                                width: 85,
                                                                                 hideLabel: true,
-                                                                                width: 50,
+                                                                                propertyName: "tag.dimensions.minWidth",
+                                                                                icon: "minWidthIcon",
                                                                             },
                                                                             {
-                                                                                type: 'dropdown',
+                                                                                type: 'textField',
                                                                                 id: nanoid(),
-                                                                                label: 'Weight',
-                                                                                propertyName: 'tag.font.weight',
+                                                                                label: "Max Width",
+                                                                                width: 85,
                                                                                 hideLabel: true,
-                                                                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                                dropdownOptions: fontWeights,
-                                                                                width: 100,
+                                                                                propertyName: "tag.dimensions.maxWidth",
+                                                                                icon: "maxWidthIcon",
+                                                                            }
+                                                                        ]
+                                                                    })
+                                                                    .addSettingsInputRow({
+                                                                        id: nanoid(),
+                                                                        parentId: nanoid(),
+                                                                        inline: true,
+                                                                        inputs: [
+                                                                            {
+                                                                                type: 'textField',
+                                                                                id: nanoid(),
+                                                                                label: "Height",
+                                                                                width: 85,
+                                                                                propertyName: "tag.dimensions.height",
+                                                                                icon: "heightIcon",
+                                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                                             },
                                                                             {
-                                                                                type: 'colorPicker',
+                                                                                type: 'textField',
                                                                                 id: nanoid(),
-                                                                                label: 'Color',
+                                                                                label: "Min Height",
+                                                                                width: 85,
                                                                                 hideLabel: true,
-                                                                                propertyName: 'tag.font.color',
+                                                                                propertyName: "tag.dimensions.minHeight",
+                                                                                icon: "minHeightIcon",
                                                                             },
                                                                             {
-                                                                                type: 'dropdown',
+                                                                                type: 'textField',
                                                                                 id: nanoid(),
-                                                                                label: 'Align',
-                                                                                propertyName: 'tag.font.align',
+                                                                                label: "Max Height",
+                                                                                width: 85,
                                                                                 hideLabel: true,
-                                                                                width: 60,
-                                                                                dropdownOptions: textAlign,
-                                                                            },
-                                                                        ],
+                                                                                propertyName: "tag.dimensions.maxHeight",
+                                                                                icon: "maxHeightIcon",
+                                                                            }
+                                                                        ]
                                                                     })
                                                                     .toJson()
                                                                 ]

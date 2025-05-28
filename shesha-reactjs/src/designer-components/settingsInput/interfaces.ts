@@ -50,6 +50,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    iconSize?: number;
     tooltipAlt?: string;
     customTooltip?: string;
     prefix?: string;
