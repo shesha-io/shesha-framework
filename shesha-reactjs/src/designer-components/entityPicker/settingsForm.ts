@@ -170,6 +170,19 @@ export const getSettings = (data) => {
                       },
                     ],
                   })
+                  .addQueryBuilder({
+                    id: 'n4enebtmhFgvkP5ukQK1f',
+                    propertyName: 'filters',
+                    label: 'Entity Filter',
+                    labelAlign: 'right',
+                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
+                    hidden: false,
+                    isDynamic: false,
+                    validate: {},
+                    settingsValidationErrors: [],
+                    modelType: '{{data.entityType}}',
+                    fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                  })
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataPanelId,
