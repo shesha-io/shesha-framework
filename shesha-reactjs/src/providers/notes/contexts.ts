@@ -24,7 +24,6 @@ export interface ICreateNotePayload {
   parentId?: string;
   noteText: string;
   id?: string;
-  uniqueIdentifier?: string;
 }
 
 export interface INotesStateContext

@@ -20,7 +20,7 @@ export interface NoteDto {
   /**
    * Category of the note. Is used to split notes into groups
    */
-  category?: number | null;
+  category?: string;
   /**
    * Note importance (priority)
    */
@@ -34,10 +34,6 @@ export interface NoteDto {
    */
   noteText: string;
   author?: GuidEntityReferenceDto;
-  /**
-   * Name of the component that created the note
-   */
-  uniqueIdentifier?: string;
 }
 
 export interface CreateNoteDto {
