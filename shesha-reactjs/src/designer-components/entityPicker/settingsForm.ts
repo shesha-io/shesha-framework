@@ -79,69 +79,6 @@ export const getSettings = (data) => {
                 parentId: commonTabId,
                 inputs: [
                   {
-                    type: 'dropdown',
-                    id: nanoid(),
-                    propertyName: 'mode',
-                    label: 'Selection Type',
-                    size: 'small',
-                    jsSetting: true,
-                    dropdownOptions: [
-                      {
-                        label: 'Single',
-                        value: 'single',
-                      },
-                      {
-                        label: 'Multiple',
-                        value: 'multiple',
-                      },
-                    ],
-                  },
-                  {
-                    type: 'autocomplete',
-                    id: nanoid(),
-                    propertyName: 'entityType',
-                    label: 'Entity Type',
-                    jsSetting: true,
-                    dataSourceType: 'url',
-                    validate: {},
-                    dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                    settingsValidationErrors: [],
-                  },
-                ],
-              })
-
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                readOnly: false,
-                hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    type: 'propertyAutocomplete',
-                    id: nanoid(),
-                    propertyName: 'displayEntityKey',
-                    label: 'Display Property',
-                    labelAlign: 'right',
-                    parentId: dataPanelId,
-                    hidden: false,
-                    isDynamic: false,
-                    description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
-                    validate: {},
-                    modelType: {
-                      _code: 'return getSettingValue(data?.entityType);',
-                      _mode: 'code',
-                      _value: false
-                    } as any,
-                    autoFillProps: false,
-                    settingsValidationErrors: [],
-                  },
-                ],
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
                     type: 'editModeSelector',
                     id: nanoid(),
                     propertyName: 'editMode',
@@ -169,9 +106,70 @@ export const getSettings = (data) => {
             id: dataTabId,
             components: [...new DesignerToolbarSettings()
               .addContainer({
-                id: dataPanelId,
+                id: nanoid(),
                 parentId: dataTabId,
                 components: [...new DesignerToolbarSettings()
+                  .addSettingsInputRow({
+                    id: nanoid(),
+                    parentId: dataTabId,
+                    inputs: [
+                      {
+                        type: 'dropdown',
+                        id: nanoid(),
+                        propertyName: 'mode',
+                        label: 'Selection Type',
+                        size: 'small',
+                        jsSetting: true,
+                        dropdownOptions: [
+                          {
+                            label: 'Single',
+                            value: 'single',
+                          },
+                          {
+                            label: 'Multiple',
+                            value: 'multiple',
+                          },
+                        ],
+                      },
+                      {
+                        type: 'autocomplete',
+                        id: nanoid(),
+                        propertyName: 'entityType',
+                        label: 'Entity Type',
+                        jsSetting: true,
+                        dataSourceType: 'url',
+                        validate: {},
+                        dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                        settingsValidationErrors: [],
+                      },
+                    ],
+                  })
+                  .addSettingsInputRow({
+                    id: nanoid(),
+                    parentId: dataPanelId,
+                    readOnly: false,
+                    hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                    inputs: [
+                      {
+                        type: 'propertyAutocomplete',
+                        id: nanoid(),
+                        propertyName: 'displayEntityKey',
+                        label: 'Display Property',
+                        labelAlign: 'right',
+                        hidden: false,
+                        isDynamic: false,
+                        description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
+                        validate: {},
+                        modelType: {
+                          _code: 'return getSettingValue(data?.entityType);',
+                          _mode: 'code',
+                          _value: false
+                        } as any,
+                        autoFillProps: false,
+                        settingsValidationErrors: [],
+                      },
+                    ],
+                  })
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataPanelId,
@@ -351,6 +349,7 @@ export const getSettings = (data) => {
                       label: 'Dialog Width',
                       allowClear: true,
                       jsSetting: true,
+                      tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                       customDropdownMode: 'single',
                       dropdownOptions: [
                         {
