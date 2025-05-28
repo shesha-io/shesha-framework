@@ -32,8 +32,8 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
   ownerId,
   ownerType,
-  category,
-  allCategories = true,
+  allCategories = false,
+  category
 }) => {
   const [state, dispatch] = useReducer(notesReducer, COMMENTS_CONTEXT_INITIAL_STATE);
 
@@ -130,6 +130,10 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
 
       if (!newNotes.ownerType) {
         payload.ownerType = ownerType;
+      }
+
+      if (!newNotes.category) {
+        payload.category = category;
       }
 
       saveNotesHttp(payload as CreateNoteDto)
