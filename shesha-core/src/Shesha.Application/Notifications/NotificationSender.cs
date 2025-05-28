@@ -215,6 +215,7 @@ namespace Shesha.Notifications
                         FileName = attachmentDto.FileName
                     });
                 }
+                await _unitOfWorkManager.Current.SaveChangesAsync();
             }
 
             if (type.IsTimeSensitive)
