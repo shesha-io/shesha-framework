@@ -38,8 +38,12 @@ export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ va
     const onItemUpdate = (newValues: TItem) => {
         if (!selectedItem || selectedItem.id !== newValues.id) return;
 
-        Object.assign(selectedItem, newValues);
-        onChange([...value]);
+        const index = value.findIndex(item => item.id === newValues.id);
+        if (index === -1) return;
+
+        const newValue = [...value];
+        newValue[index] = { ...newValue[index], ...newValues };
+        onChange(newValue);
     };
 
     return (
