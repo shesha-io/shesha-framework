@@ -151,7 +151,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   useEffect(() => {
     setFetched(false);
     if (props?.value?._displayName) setDisplayText(props?.value?._displayName);
-  }, [entityId, entityType]);
+    else setDisplayText(!props?.value ? props?.placeholder : '');
+  }, [entityId, entityType, props?.placeholder]);
 
   useEffect(() => {
     if (props.formIdentifier) {
