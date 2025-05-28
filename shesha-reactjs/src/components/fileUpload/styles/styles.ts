@@ -215,6 +215,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         border-radius: ${borderRadius} !important;
+        border: ${borderWidth} ${listType === 'thumbnail' ? borderStyle : 'none'} ${borderColor} !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,
         &.ant-upload-animate-inline {
