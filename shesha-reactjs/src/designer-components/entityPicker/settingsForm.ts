@@ -22,6 +22,7 @@ export const getSettings = (data) => {
   const backgroundStyleRowId = nanoid();
   const shadowStylePnlId = nanoid();
   const modalSettingsPnlId = nanoid();
+  const dataPanelContainerId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -106,12 +107,12 @@ export const getSettings = (data) => {
             id: dataTabId,
             components: [...new DesignerToolbarSettings()
               .addContainer({
-                id: nanoid(),
+                id: dataPanelContainerId,
                 parentId: dataTabId,
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInputRow({
                     id: nanoid(),
-                    parentId: dataTabId,
+                    parentId: dataPanelContainerId,
                     inputs: [
                       {
                         type: 'dropdown',
@@ -146,7 +147,7 @@ export const getSettings = (data) => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                    parentId: dataPanelId,
+                    parentId: dataPanelContainerId,
                     readOnly: false,
                     hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
                     inputs: [
@@ -170,28 +171,19 @@ export const getSettings = (data) => {
                       },
                     ],
                   })
-                  .addQueryBuilder({
-                    id: 'n4enebtmhFgvkP5ukQK1f',
-                    propertyName: 'filters',
-                    label: 'Entity Filter',
-                    labelAlign: 'right',
-                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
-                    hidden: false,
-                    isDynamic: false,
-                    validate: {},
-                    settingsValidationErrors: [],
-                    modelType: '{{data.entityType}}',
-                    fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                  })
                   .addSettingsInputRow({
                     id: nanoid(),
-                    parentId: dataPanelId,
+                    parentId: dataPanelContainerId,
                     inputs: [
                       {
-                        type: 'queryBuilder',
                         id: nanoid(),
+                        type: 'queryBuilder',
                         propertyName: 'filters',
                         label: 'Entity Filter',
+                        labelAlign: 'right',
+                        isDynamic: false,
+                        validate: {},
+                        settingsValidationErrors: [],
                         modelType: '{{data.entityType}}',
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                         hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
@@ -202,7 +194,7 @@ export const getSettings = (data) => {
                     inputType: 'dropdown',
                     id: nanoid(),
                     propertyName: 'valueFormat',
-                    parentId: dataPanelId,
+                    parentId: dataPanelContainerId,
                     label: 'Value Format',
                     jsSetting: true,
                     dropdownOptions: [
@@ -223,7 +215,7 @@ export const getSettings = (data) => {
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
-                    parentId: dataPanelId,
+                    parentId: dataPanelContainerId,
                     hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
                     inputs: [
                       {
@@ -252,7 +244,7 @@ export const getSettings = (data) => {
                     id: nanoid(),
                     inputType: 'columnsConfig',
                     propertyName: 'items',
-                    parentId: dataPanelId,
+                    parentId: dataPanelContainerId,
                     label: 'Columns',
                     items: [],
                     modelType: {
@@ -268,7 +260,7 @@ export const getSettings = (data) => {
                 inputType: 'switch',
                 id: nanoid(),
                 propertyName: 'allowNewRecord',
-                parentId: 'root',
+                parentId: dataTabId,
                 label: 'Allow New Record',
               })
               .addCollapsiblePanel({
