@@ -58,8 +58,8 @@ namespace Shesha.Sms.Clickatell
             {
                 query["concat"] = messagePartsCount.ToString();
             }
-
-            var url = $"https://api.clickatell.com/http/sendmsg?{query}";
+            var decodedQuery = HttpUtility.UrlDecode(query.ToString());
+            var url = $"https://api.clickatell.com/http/sendmsg?{decodedQuery}";
             try
             {
                 // Send the GET request
