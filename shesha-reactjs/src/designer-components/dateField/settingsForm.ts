@@ -11,7 +11,6 @@ export const getSettings = (data: IDateFieldProps) => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
     const formatsTabId = nanoid();
-    const controlVisibilityTabId = nanoid();
     const eventsTabId = nanoid();
     const validationTabId = nanoid();
     const appearanceTabId = nanoid();
@@ -159,7 +158,7 @@ export const getSettings = (data: IDateFieldProps) => {
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: controlVisibilityTabId,
+                                parentId: formatsTabId,
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -189,14 +188,14 @@ export const getSettings = (data: IDateFieldProps) => {
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
-                                parentId: controlVisibilityTabId
+                                parentId: formatsTabId
                             })
                             .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'dropdown',
                                 propertyName: 'disabledDateMode',
                                 label: 'Disabled Date Mode',
-                                parentId: controlVisibilityTabId,
+                                parentId: formatsTabId,
                                 defaultValue: 'none',
                                 dropdownOptions: [
                                     { value: 'none', label: 'None' },
@@ -207,14 +206,14 @@ export const getSettings = (data: IDateFieldProps) => {
 
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: controlVisibilityTabId,
+                                parentId: formatsTabId,
                                 inputs: [
                                     {
                                         id: nanoid(),
                                         type: 'dropdown',
                                         propertyName: 'disabledDateTemplate',
                                         label: 'Disabled Date Templates',
-                                        parentId: controlVisibilityTabId,
+                                        parentId: formatsTabId,
                                         hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'functionTemplate'", _mode: 'code', _value: false } as any,
                                         dropdownOptions: [
                                             { value: "return current && current < moment().startOf('day');", label: 'Disable past dates' },
@@ -233,7 +232,7 @@ export const getSettings = (data: IDateFieldProps) => {
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: controlVisibilityTabId,
+                                parentId: formatsTabId,
                                 inputs: [
                                     {
                                         id: nanoid(),
