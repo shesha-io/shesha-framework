@@ -607,6 +607,7 @@ export const getSettings = () => {
                                                                 id: nanoid(),
                                                                 label: "Step Width",
                                                                 width: 85,
+                                                                defaultValue: '200px',
                                                                 propertyName: "stepWidth",
                                                                 icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
