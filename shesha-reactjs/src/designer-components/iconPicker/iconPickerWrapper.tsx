@@ -50,7 +50,6 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const style: CSSProperties = {
     fontSize: fullStyles?.fontSize || 24,
     color: fullStyles?.color,
-    marginLeft: defaultValue ? '12px' : 'none',
   };
 
 
@@ -59,8 +58,8 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
       <Tooltip title={props?.description}>
         <div
           style={{
-            marginLeft: props.value === undefined && props.defaultValue === undefined ? '38px' : '',
             ...fullStyles,
+            fontSize: 24
           }}
         >
           <IconPicker
