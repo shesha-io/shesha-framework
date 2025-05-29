@@ -16,6 +16,7 @@ import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder
 import { wizardApiCode } from '@/publicJsApis';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
+import { addPx } from '@/utils/style';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
@@ -44,7 +45,12 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
     const activeStepStyle = useFormComponentStyles(visibleSteps[current]);
     const { fontSize, fontFamily, fontWeight, color, height, minHeight, maxHeight, ...rest } = activeStepStyle.fullStyle;
-    const { styles } = useStyles({ styles: { ...model.allStyles.fullStyle, overflow: '', ...rest }, colors, activeStepStyle: activeStepStyle.fullStyle, stepWidth });
+    const overflow = getOverflowStyle(true, false);
+    const { styles } = useStyles({
+        styles: { ...model.allStyles.fullStyle, overflow: '', ...rest },
+        colors, activeStepStyle: activeStepStyle.fullStyle, stepWidth: addPx(stepWidth),
+        vertical: direction === 'vertical', overflow
+    });
 
     const steps = useMemo(() => {
         return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style, ...rest }, index) => {

@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle, stepWidth }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle, stepWidth, overflow }) => {
   const shaWizardContainer = "sha-wizard-container";
   const shaStepsContent = "sha-steps-content";
   const shaStepsButtonsContainer = "sha-steps-buttons-container";
@@ -10,6 +10,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
   const { color, ...rest } = styles;
   const shaWizard = cx("sha-wizard", css`
 
+    ${rest}
     .ant-steps-item-container {
       --ant-color-primary: ${primaryBgColor};
       --ant-color-text-description: ${activeStepStyle.color ?? color}75;
@@ -64,26 +65,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
         font-family: ${styles.fontFamily};
       }
   }
-    
-    ${rest}
+
       
     .${shaWizardContainer} {
       margin: unset;
-          height: 100%;
+      height: calc(100% - 52px);
+      display: flex;
+      flex-direction: column;
       .${shaStepsContent} {
         flex: 1 1 auto;
         white-space: nowrap;
         margin: 20px 0;
-        width: calc(100% - ${stepWidth ?? '150px'});
-        min-height: 100%;
+        ${overflow}
       }
   
       &.vertical {
-        display: flex;
         flex-direction: row;
         margin-bottom: 20px;
-
-
         > .${prefixCls}-steps-content {
           overflow: auto;
 
@@ -98,7 +96,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
           }
         }
         .${prefixCls}-steps-vertical {
-          width: ${stepWidth ?? '150px'};
+          width: ${stepWidth ?? '200px'};
           padding: 8px;
 
           >.ant-steps-item::after {
@@ -109,6 +107,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
         .${shaStepsContent} {
           flex: 1;
           margin: unset;
+          width: calc(100% - ${stepWidth ?? '200px'});
         }
 
 

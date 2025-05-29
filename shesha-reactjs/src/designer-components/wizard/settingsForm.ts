@@ -605,7 +605,7 @@ export const getSettings = () => {
                                                             {
                                                                 type: 'textField',
                                                                 id: nanoid(),
-                                                                label: "StepWidth",
+                                                                label: "Step Width",
                                                                 width: 85,
                                                                 propertyName: "stepWidth",
                                                                 icon: "widthIcon",
