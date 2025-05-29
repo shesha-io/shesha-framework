@@ -198,11 +198,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={onChange} />;
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
-        case 'queryBuilder': {
-            const modelType = props.modelType ? evaluateString(props.modelType, { data: formData }) : undefined;
-
-            return <QueryBuilder {...props} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} modelType={modelType} />;
-        }
+        case 'queryBuilder':
+            return <QueryBuilder {...props} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
