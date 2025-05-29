@@ -6,7 +6,7 @@
 		<PackageLicenseExpression>APACHE-2.0</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/shesha-io/shesha-framework</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageProjectUrl>https://github.com/shesha-io/shesha-framework</PackageProjectUrl>
+		<PackageProjectUrl>https://www.shesha.io/</PackageProjectUrl>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release' ">
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
