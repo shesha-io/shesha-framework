@@ -182,7 +182,12 @@ export const useFormComponentStyles = <TModel,>(
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
-      ? {}
+      ? {
+        backgroundImage: `url(${app.backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id})`,
+        backgroundSize: background?.size,
+        backgroundPosition: background?.position,
+        backgroundRepeat: background?.repeat,
+      }
       : getBackgroundStyle(background, jsStyle)
   );
 
