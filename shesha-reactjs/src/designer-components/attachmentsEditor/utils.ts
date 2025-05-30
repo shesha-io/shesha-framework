@@ -40,7 +40,7 @@ export const containerDefaultStyles = (): IStyleType => {
             minHeight: '0px',
             maxHeight: '140px',
             minWidth: '0px',
-            maxWidth: '100%',
+            maxWidth: 'auto',
         }
     };
 };

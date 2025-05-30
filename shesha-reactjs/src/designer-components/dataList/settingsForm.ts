@@ -4,6 +4,12 @@ import { FormLayout } from "antd/es/form/Form";
 
 export const getSettings = (data: any) => {
 
+  const commonTabId = nanoid();
+  const dataTabId = nanoid();
+  const appearanceTabId = nanoid();
+  const eventsTabId = nanoid();
+  const securityTabId = nanoid();
+
   const ROW_SAVE_EXPOSED_VARIABLES = [
     {
       id: nanoid(),
@@ -51,13 +57,13 @@ export const getSettings = (data: any) => {
           {
             key: 'common',
             title: 'Common',
-            id: nanoid(),
+            id: commonTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'textField',
                 propertyName: "componentName",
-                parentId: 'root',
+                parentId: commonTabId,
                 label: "Component Name",
                 validate: {
                   required: true
@@ -68,7 +74,7 @@ export const getSettings = (data: any) => {
                 id: nanoid(),
                 inputType: 'switch',
                 propertyName: "hidden",
-                parentId: 'root',
+                parentId: commonTabId,
                 label: "Hide",
                 jsSetting: true,
                 value: 'checked',
@@ -79,13 +85,13 @@ export const getSettings = (data: any) => {
           {
             key: 'data',
             title: 'Data',
-            id: nanoid(),
+            id: dataTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',
                 propertyName: "formSelectionMode",
-                parentId: 'root',
+                parentId: dataTabId,
                 label: "Form Selection Mode",
                 jsSetting: false,
                 dropdownOptions: [
@@ -96,7 +102,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: '',
+                parentId: dataTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
                   _mode: 'code',
@@ -107,7 +113,7 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     propertyName: 'formType',
                     label: 'Form Type',
-                    parentId: '',
+                    parentId: dataTabId,
                     type: 'formTypeAutocomplete',
                     jsSetting: true,
                     width: '100%',
@@ -117,7 +123,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: '',
+                parentId: dataTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
                   _mode: 'code',
@@ -127,20 +133,19 @@ export const getSettings = (data: any) => {
                   {
                     id: nanoid(),
                     propertyName: 'formId',
-                    label: 'Modal Form',
+                    label: 'Create Form',
                     type: 'formAutocomplete',
                     labelAlign: 'right',
-                    parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
                     hidden: false,
                     validate: {
                       required: true,
                     },
-                  }
+                  },
                 ],
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: '',
+                parentId: dataTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";',
                   _mode: 'code',
@@ -151,7 +156,6 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     type: 'codeEditor',
                     propertyName: "formIdExpression",
-                    parentId: 'root',
                     label: "Form Identifier Expression",
                     hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";', _mode: 'code', _value: false } as any,
                     jsSetting: false,
@@ -176,7 +180,7 @@ export const getSettings = (data: any) => {
                 id: nanoid(),
                 inputType: 'dropdown',
                 propertyName: "selectionMode",
-                parentId: 'root',
+                parentId: dataTabId,
                 label: "Selection Mode",
                 jsSetting: true,
                 defaultValue: 'none',
@@ -187,7 +191,7 @@ export const getSettings = (data: any) => {
                 ],
               })
               .addCollapsiblePanel({
-                id: 'addInlineData',
+                id: nanoid(),
                 propertyName: 'addInlineData',
                 label: 'Can Add Inline',
                 labelAlign: 'right',
@@ -202,7 +206,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'canAddInline',
                       label: 'Can Add Inline',
                       inputType: 'dropdown',
-                      parentId: 'events',
+                      parentId: dataTabId,
                       dropdownOptions: [
                         { value: 'yes', label: 'Yes' },
                         { value: 'no', label: 'No' },
@@ -211,7 +215,7 @@ export const getSettings = (data: any) => {
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
-                      parentId: '',
+                      parentId: dataTabId,
                       hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
                       inputs: [
                         {
@@ -220,7 +224,6 @@ export const getSettings = (data: any) => {
                           label: 'Modal Form',
                           type: 'formAutocomplete',
                           labelAlign: 'right',
-                          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
                           hidden: false,
                           validate: {
                             required: true,
@@ -237,10 +240,29 @@ export const getSettings = (data: any) => {
                           propertyName: 'customCreateUrl',
                           label: 'Custom Create URL',
                           type: 'textField',
-                          parentId: 'events',
                           jsSetting: true,
                         }
                       ]
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: dataTabId,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          propertyName: 'createFormType',
+                          label: 'Create Form Type',
+                          type: 'formTypeAutocomplete',
+                          jsSetting: true,
+                          width: '100%',
+                          allowClear: true,
+                        }
+                      ],
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
@@ -251,7 +273,30 @@ export const getSettings = (data: any) => {
                         propertyName: 'onNewListItemInitialize',
                         label: 'New List Item Init',
                         jsSetting: false,
-                      }
+                      },
+                      ],
+                      hideLabel: true,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          propertyName: 'modalWidth',
+                          label: 'Dialog Width (%)',
+                          parentId: dataTabId,
+                          type: 'dropdown',
+                          allowClear: true,
+                          jsSetting: true,
+                          dropdownOptions: [
+                            { value: '40%', label: 'Small' },
+                            { value: '60%', label: 'Medium' },
+                            { value: '80%', label: 'Large' },
+                            { value: 'custom', label: 'Custom' },
+                          ],
+                          width: '100%',
+                        },
                       ],
                       hideLabel: true,
                     })
@@ -260,7 +305,7 @@ export const getSettings = (data: any) => {
                 }
               })
               .addCollapsiblePanel({
-                id: 'editnlineData',
+                id: nanoid(),
                 propertyName: 'editInlineData',
                 label: 'Can Edit Inline',
                 labelAlign: 'right',
@@ -275,7 +320,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'canEditInline',
                       label: 'Can Edit Inline',
                       inputType: 'dropdown',
-                      parentId: 'events',
+                      parentId: dataTabId,
                       dropdownOptions: [
                         { value: 'yes', label: 'Yes' },
                         { value: 'no', label: 'No' },
@@ -283,6 +328,7 @@ export const getSettings = (data: any) => {
                       ],
                     })
                     .addSettingsInputRow({
+                      parentId: dataTabId,
                       id: nanoid(),
                       hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
                       inputs: [
@@ -309,6 +355,7 @@ export const getSettings = (data: any) => {
                       ]
                     })
                     .addSettingsInputRow({
+                      parentId: dataTabId,
                       id: nanoid(),
                       hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
                       inputs: [
@@ -317,7 +364,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'customUpdateUrl',
                           label: 'Custom Update URL',
                           type: 'textField',
-                          parentId: 'events',
+                          parentId: dataTabId,
                           jsSetting: true,
                         }
                       ]
@@ -327,7 +374,8 @@ export const getSettings = (data: any) => {
                 }
               })
               .addCollapsiblePanel({
-                id: 'deleteInlineData',
+                id: nanoid(),
+                parentId: dataTabId,
                 propertyName: 'deleteInlineData',
                 label: 'Can Delete Inline',
                 labelAlign: 'right',
@@ -335,14 +383,14 @@ export const getSettings = (data: any) => {
                 collapsible: 'header',
                 collapsedByDefault: true,
                 content: {
-                  id: 'deleteInlineDataContent',
+                  id: nanoid(),
                   components: [...new DesignerToolbarSettings()
                     .addSettingsInput({
                       id: nanoid(),
                       propertyName: 'canDeleteInline',
                       label: 'Can Delete Inline',
                       inputType: 'dropdown',
-                      parentId: 'events',
+                      parentId: dataTabId,
                       dropdownOptions: [
                         { value: 'yes', label: 'Yes' },
                         { value: 'no', label: 'No' },
@@ -358,7 +406,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'customDeleteUrl',
                           label: 'Custom Delete URL',
                           type: 'textField',
-                          parentId: 'events',
+                          parentId: dataTabId,
                         }
                       ]
                     }).toJson()
@@ -366,7 +414,8 @@ export const getSettings = (data: any) => {
                 }
               })
               .addCollapsiblePanel({
-                id: 'createEditPanel',
+                id: nanoid(),
+                parentId: dataTabId,
                 propertyName: 'createEditContent',
                 label: 'Create & Edit Methods',
                 labelAlign: 'right',
@@ -411,12 +460,12 @@ export const getSettings = (data: any) => {
           {
             key: 'events',
             title: 'Events',
-            id: nanoid(),
+            id: eventsTabId,
             components: [...new DesignerToolbarSettings()
               .addConfigurableActionConfigurator({
                 id: nanoid(),
                 propertyName: "dblClickActionConfiguration",
-                parentId: 'root',
+                parentId: eventsTabId,
                 label: "On Double Click",
                 jsSetting: false,
               })
@@ -425,20 +474,11 @@ export const getSettings = (data: any) => {
                 propertyName: 'onRowSave',
                 label: 'On Row Save',
                 inputType: 'codeEditor',
-                parentId: 'events',
+                parentId: eventsTabId,
                 tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
                 hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
                 description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                 exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
-              })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onListItemSaveSuccessAction',
-                label: 'On List Item Save Success',
-                parentId: 'events',
-                description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                hideLabel: true,
-                jsSetting: true,
               })
               .toJson()
             ]
@@ -446,13 +486,13 @@ export const getSettings = (data: any) => {
           {
             key: 'appearance',
             title: 'Appearance',
-            id: nanoid(),
+            id: appearanceTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',
                 propertyName: "orientation",
-                parentId: 'root',
+                parentId: appearanceTabId,
                 label: "Orientation",
                 jsSetting: true,
                 defaultValue: 'vertical',
@@ -469,7 +509,6 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     type: 'textField',
                     propertyName: "cardMinWidth",
-                    parentId: 'root',
                     label: "Card Minimum Width",
                     tooltip: "You can use any unit (%, px, em, etc)",
                     hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
@@ -479,7 +518,6 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     type: 'textField',
                     propertyName: "cardMaxWidth",
-                    parentId: 'root',
                     label: "Card Maximum Width",
                     tooltip: "You can use any unit (%, px, em, etc)",
                     hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
@@ -494,7 +532,6 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     type: 'textField',
                     propertyName: "cardHeight",
-                    parentId: 'root',
                     label: "Card Height",
                     tooltip: "You can use any unit (%, px, em, etc)",
                     hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
@@ -504,9 +541,21 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     type: 'textField',
                     propertyName: "cardSpacing",
-                    parentId: 'root',
                     label: "Card Spacing",
                     tooltip: "You can use any unit (%, px, em, etc)",
+                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'showBorder',
+                    label: "Show Border",
                     hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                     jsSetting: false,
                   }
@@ -518,7 +567,7 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   type: 'dropdown',
                   propertyName: "listItemWidth",
-                  parentId: 'root',
+                  parentId: appearanceTabId,
                   label: "List Item Width",
                   hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
                   jsSetting: false,
@@ -538,7 +587,6 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     type: 'numberField',
                     propertyName: "customListItemWidth",
-                    parentId: 'root',
                     label: "Custom List Item Width (px)",
                     hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal" || getSettingValue(data?.listItemWidth) !== "custom";', _mode: 'code', _value: false } as any,
                     jsSetting: false,
@@ -546,26 +594,24 @@ export const getSettings = (data: any) => {
                 ]
               })
               .addCollapsiblePanel({
-                id: 'groupCollapsiblePanel',
+                id: nanoid(),
                 propertyName: 'pnlGroup',
                 label: 'Group Styles',
-                parentId: 'root',
+                parentId: appearanceTabId,
                 labelAlign: 'right',
                 ghost: true,
                 collapsible: 'header',
                 content: {
-                  id: 'groupPnl',
+                  id: nanoid(),
                   components: [...new DesignerToolbarSettings()
                     .addSettingsInputRow({
                       id: nanoid(),
-                      parentId: "groupPnl",
                       inputs: [{
                         id: nanoid(),
                         type: "switch",
                         propertyName: "collapsible",
                         label: "Collapsible",
                         labelAlign: "right",
-                        parentId: "root",
                         hidden: false,
                       },
                       {
@@ -574,7 +620,6 @@ export const getSettings = (data: any) => {
                         propertyName: "collapseByDefault",
                         label: "Collapsible By Default",
                         labelAlign: "right",
-                        parentId: "root",
                         hidden: false,
                       }],
                       hideLabel: true,
@@ -585,7 +630,7 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         type: 'codeEditor',
                         propertyName: "groupStyle",
-                        parentId: 'root',
+                        parentId: appearanceTabId,
                         label: "Style",
                         jsSetting: false,
                         exposedVariables: [
@@ -600,14 +645,15 @@ export const getSettings = (data: any) => {
                 }
               })
               .addCollapsiblePanel({
-                id: 'datalistEmptyState',
+                id: nanoid(),
+                parentId: appearanceTabId,
                 propertyName: 'datalistEmptyState',
                 label: 'Empty State',
                 labelAlign: 'right',
                 ghost: true,
                 collapsible: 'header',
                 content: {
-                  id: 'datatableEmptyState',
+                  id: nanoid(),
                   components: [...new DesignerToolbarSettings()
                     .addSettingsInput({
                       id: nanoid(),
@@ -641,13 +687,12 @@ export const getSettings = (data: any) => {
           {
             key: 'security',
             title: 'Security',
-            id: nanoid(),
+            id: securityTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',
-                parentId: 'root',
                 label: "Permissions",
                 tooltip: "Enter a list of permissions that should be associated with this component",
                 jsSetting: true,

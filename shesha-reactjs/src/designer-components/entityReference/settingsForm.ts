@@ -91,9 +91,9 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       size: 'small',
                       jsSetting: true,
                       dropdownOptions: [
-                        { value: 'displayProperty', label: 'Display Property' },
+                        { value: 'displayProperty', label: 'Display property' },
                         { value: 'icon', label: 'Icon' },
-                        { value: 'textTitle', label: 'Text Title' },
+                        { value: 'textTitle', label: 'Text title' },
                       ],
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
@@ -212,7 +212,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       allowClear: true,
                       jsSetting: true,
                       width: '100%',
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return getSettingValue(data?.entityType);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                       autoFillProps: false,
                     },
                   ],
@@ -227,7 +231,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   jsSetting: true,
                   dropdownOptions: [
                     { value: 'Quickview', label: 'Quickview' },
-                    { value: 'NavigateLink', label: 'Navigate Link' },
+                    { value: 'NavigateLink', label: 'Navigate link' },
                     { value: 'Dialog', label: 'Dialog' },
                   ],
                   defaultValue: 'Quickview',
@@ -599,7 +603,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         inputType: 'numberField',
                         jsSetting: true,
                         defaultValue: 600,
-                        min: 0,
+                        min: 201,
                       })
                       .toJson(),
                   ],

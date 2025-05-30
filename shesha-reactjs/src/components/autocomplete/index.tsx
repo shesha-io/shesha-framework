@@ -11,9 +11,15 @@ import { isDataColumn } from '@/providers/dataTable/interfaces';
 import { ValueRenderer } from '../valueRenderer';
 import { isEqual, uniqWith } from 'lodash';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useStyles } from './style';
+
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const {allowClear = true } = props;
+  const { style = {} } = props;
+
+  const { styles } = useStyles({ style });
+
 
   // sources
   const source = useDataTableStore(false);
@@ -68,7 +74,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     ) {
       // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
       if (keys.length) {
-        const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
+        const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
+        const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
+
         if (props.dataSourceType === 'entitiesList' && !props.displayValueFunc && !props.displayPropName && hasDisplayName) {
           setLoadingValues(false);
           const values = Array.isArray(props.value) ? props.value : [props.value];
@@ -238,7 +246,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       />
     );
   }
-  const {width, ...restofDropdownStyles} = props?.style ?? {};
+
+
+  const {width, ...restOfDropdownStyles} = style ?? {};
 
   return (
     <>
@@ -246,8 +256,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         title={title}
         onDropdownVisibleChange={onDropdownVisibleChange}
         value={keys}
-        className="sha-dropdown"
-        dropdownStyle={{ ...restofDropdownStyles, height: 'auto' }}
+        className={styles.autocomplete}
+        dropdownStyle={restOfDropdownStyles}
         showSearch={!props.disableSearch}
         notFoundContent={props.notFoundContent}
         defaultActiveFirstOption={false}
@@ -260,9 +270,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         placeholder={props.placeholder}
         disabled={props.readOnly}
         onSelect={handleSelect}
-        style={props.style}
+        style={style}
         size={props.size}
         ref={selectRef}
+        variant={Object.keys(style).length === 0 ? 'outlined' :'borderless'}
         mode={props.value && props.mode === 'multiple' ? props.mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
       >
         {freeTextValuesList /* this is need for showing free text value */}
@@ -274,7 +285,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 };
 
 const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
-  const { formData } = useShaFormInstance();
+  const { formData } = useShaFormInstance(false) ?? {};
   const disableRefresh = useRef<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();
@@ -312,7 +323,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
         } else
           Object.assign(queryParamObj, queryParams);
       }
-      // add autocomplete standart query params if not exists
+      // add autocomplete standard query params if not exists
       if (queryParamObj['term'] === undefined)
         queryParamObj['term'] = searchText;
       if (queryParamObj['selectedValue'] === undefined)

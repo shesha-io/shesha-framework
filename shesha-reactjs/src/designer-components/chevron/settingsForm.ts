@@ -223,7 +223,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'width',
                                     icon: 'widthIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                    defaultValue: 'auto',
+                                    defaultValue: '150px',
                                   },
                                   {
                                     type: 'textField',
@@ -233,7 +233,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                    defaultValue: 'auto',
+                                    defaultValue: '35px',
                                   },
                                 ],
                               })

@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyles }) => {
-  
+
   const shaStatusTag = 'sha-status-tag';
   const shaStatusTagContainer = cx(
     'sha-status-tag-container',
@@ -10,6 +10,10 @@ export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyl
       align-items: center;
       width: fit-content;
       ${dimensionsStyles};
+
+      > span {
+        ${dimensionsStyles};
+      }
 
       .${shaStatusTag} {
         text-transform: uppercase;

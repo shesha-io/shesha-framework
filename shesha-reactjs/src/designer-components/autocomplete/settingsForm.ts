@@ -162,7 +162,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 id: nanoid(),
                                 parentId: dataTabId,
                                 propertyName: 'container1',
-                                label: 'Container1',
+                                label: 'Container',
                                 labelAlign: 'right',
                                 hidden: {
                                     _code: `return  getSettingValue(data.dataSourceType) !== 'url';`,
@@ -176,30 +176,13 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInput({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        label: "Data Source URL",
-                                        propertyName: "dataSourceUrl",
-                                        inputType: "textField",
-                                        size: "small",
-                                        jsSetting: true,
-                                    })
-                                    .addSettingsInput({
-                                        id: nanoid(),
-                                        parentId: dataTabId,
                                         label: "Key Prop Name",
                                         propertyName: "keyPropName",
                                         inputType: "textField",
                                         size: "small",
                                         jsSetting: true,
                                     })
-                                    .addSettingsInput({
-                                        id: nanoid(),
-                                        parentId: dataTabId,
-                                        label: "Value Prop Name",
-                                        propertyName: "valuePropName",
-                                        inputType: "textField",
-                                        size: "small",
-                                        jsSetting: true,
-                                    })
+
                                     .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'labelValueEditor',
@@ -213,80 +196,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         mode: 'dialog',
                                         version: 2
                                     })
-                                    .addSettingsInput({
-                                        id: nanoid(),
-                                        inputType: 'switch',
-                                        propertyName: 'quickviewEnabled',
-                                        label: 'Use Quickview',
-                                        parentId: dataTabId,
-                                        size: 'small',
-                                        defaultValue: false,
-                                    })
-                                    .addFormAutocomplete({
-                                        id: nanoid(),
-                                        propertyName: 'quickviewFormPath',
-                                        label: 'Form Path',
-                                        parentId: dataTabId,
-                                        size: 'small',
-                                        validate: {
-                                            required: false,
-                                        },
-                                        hidden: {
-                                            _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                            _mode: 'code',
-                                            _value: false
-                                        },
-                                        //convertToFullId: true,
-
-                                    })
-                                    .addSettingsInput({
-                                        id: nanoid(),
-                                        inputType: 'textField',
-                                        propertyName: 'quickviewGetEntityUrl',
-                                        parentId: dataTabId,
-                                        label: 'Get Entity URL',
-                                        size: 'small',
-                                        hidden: {
-                                            _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                            _mode: 'code',
-                                            _value: false
-                                        },
-                                        version: 5
-                                    })
-                                    .addSettingsInputRow({
-                                        id: nanoid(),
-                                        parentId: dataTabId,
-                                        hidden: {
-                                            _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                            _mode: 'code',
-                                            _value: false
-                                        },
-                                        inputs: [
-                                            {
-                                                id: nanoid(),
-                                                type: 'propertyAutocomplete',
-                                                propertyName: 'quickviewDisplayPropertyName',
-                                                parentId: dataTabId,
-                                                modelType: '{{data.entityType}}',
-                                                label: 'Display Property Name',
-                                                version: 5
-                                            }
-                                        ],
-                                    })
-                                    .addSettingsInput({
-                                        id: nanoid(),
-                                        inputType: 'textField',
-                                        propertyName: 'quickviewWidth',
-                                        parentId: dataTabId,
-                                        label: 'Width',
-                                        size: 'small',
-                                        hidden: {
-                                            _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                            _mode: 'code',
-                                            _value: false
-                                        },
-                                        version: 5
-                                    })
                                     .toJson()
                                 ]
                             })
@@ -296,11 +205,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 propertyName: 'container2',
                                 label: 'Container2',
                                 labelAlign: 'right',
-                                hidden: {
-                                    _code: `return  getSettingValue(data.dataSourceType) !== 'entitiesList';`,
-                                    _mode: 'code',
-                                    _value: false
-                                },
                                 direction: 'vertical',
                                 justifyContent: 'left',
                                 settingsValidationErrors: [],
@@ -340,9 +244,281 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 validate: {},
                                                 hidden: false,
                                                 settingsValidationErrors: [],
-                                                modelType: "{{data.entityType}}",
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
                                                 fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                                             },
+                                        ],
+                                    })
+
+
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: {
+                                            _code: "return getSettingValue(data?.dataSourceType) !== 'entitiesList';",
+                                            _mode: 'code',
+                                            _value: false
+                                        },
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                parentId: dataTabId,
+                                                label: 'Data Source URL',
+                                                propertyName: "dataSourceUrl",
+                                                type: "endpointsAutocomplete",
+                                                size: "small",
+                                                jsSetting: true,
+                                                mode: "url",
+                                                httpVerb: "get",
+                                                isDynamic: false,
+                                            }
+
+                                        ],
+                                    })
+
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: {
+                                            _code: "return getSettingValue(data?.dataSourceType) !== 'url';",
+                                            _mode: 'code',
+                                            _value: false
+                                        },
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                parentId: dataTabId,
+                                                label: 'Custom Source URL',
+                                                propertyName: "dataSourceUrl",
+                                                type: "endpointsAutocomplete",
+                                                size: "small",
+                                                jsSetting: true,
+                                                mode: "url",
+                                                httpVerb: "get",
+                                                isDynamic: false,
+                                            }
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: {
+                                            _code: "return getSettingValue(data?.dataSourceType) !== 'entitiesList';",
+                                            _mode: 'code',
+                                            _value: false
+                                        },
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'propertyAutocomplete',
+                                                parentId: dataTabId,
+                                                propertyName: 'fields',
+                                                label: 'Fields to Fetch',
+                                                isDynamic: true,
+                                                jsSetting: true,
+                                                validate: {},
+                                                hidden: false,
+                                                mode: 'multiple',
+                                                settingsValidationErrors: [],
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
+                                                fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
+                                            },
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: {
+                                            _code: "return getSettingValue(data?.dataSourceType) !== 'entitiesList';",
+                                            _mode: 'code',
+                                            _value: false
+                                        },
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'dataSortingEditor',
+                                                parentId: dataTabId,
+                                                propertyName: 'sorting',
+                                                label: 'Sort By',
+                                                isDynamic: true,
+                                                jsSetting: true,
+                                                validate: {},
+                                                hidden: false,
+                                                settingsValidationErrors: [],
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
+                                            },
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: {
+                                            _code: "return getSettingValue(data?.dataSourceType) !== 'entitiesList';",
+                                            _mode: 'code',
+                                            _value: false
+                                        },
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'dataSortingEditor',
+                                                parentId: dataTabId,
+                                                propertyName: 'grouping',
+                                                label: 'Grouping',
+                                                isDynamic: true,
+                                                jsSetting: true,
+                                                validate: {},
+                                                hidden: false,
+                                                settingsValidationErrors: [],
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
+                                            },
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'dropdown',
+                                                propertyName: 'valueFormat',
+                                                label: 'Value format',
+                                                hidden: false,
+                                                dropdownOptions: {
+                                                    _code: `return getSettingValue(data?.dataSourceType) === 'entitiesList' ? [{\"label\": \"Simple Id\",\"value\":\"simple\",\"id\": \"1\"},
+                                                    {\"label\": \"Entity reference\",\"value\": \"entityReference\",\"id\": \"2\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}]
+                                                    : [{\"label\": \"Simple Id\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}];`,
+                                                    _mode: "code",
+                                                    _value: false
+                                                } as any,
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            },
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false } as any,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'codeEditor',
+                                                propertyName: 'outcomeValueFunc',
+                                                label: 'Value Function',
+                                                labelAlign: 'right',
+                                                description: 'Return value for item object',
+                                                mode: 'dialog',
+                                                exposedVariables: [{ name: 'item', description: 'Item of list', type: 'object' }],
+                                                wrapInTemplate: true,
+                                                templateSettings: { functionName: 'outcomeValueFunc' },
+                                                availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("item", "Item of list").build();',
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            },
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false } as any,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'codeEditor',
+                                                propertyName: 'keyValueFunc',
+                                                label: 'Key Value Function',
+                                                labelAlign: 'right',
+                                                description: 'Return key from selected value',
+                                                mode: 'dialog',
+                                                exposedVariables: [{ name: 'value', description: 'Value of item', type: 'object' }],
+                                                wrapInTemplate: true,
+                                                templateSettings: { functionName: 'keyValueFunc' },
+                                                availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("value", "Value of item").build();',
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            }
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false } as any,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'codeEditor',
+                                                propertyName: 'displayValueFunc',
+                                                label: 'Display Value Function',
+                                                labelAlign: 'right',
+                                                hidden: false,
+                                                description: "Return display value for item's object",
+                                                mode: 'dialog',
+                                                exposedVariables: [{ name: 'item', description: 'Item of list', type: 'object' }],
+                                                wrapInTemplate: true,
+                                                templateSettings: { functionName: 'displayValueFunc' },
+                                                availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("item", "Item of list").build();',
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            }
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false } as any,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'codeEditor',
+                                                propertyName: 'filterKeysFunc',
+                                                label: 'Filter Selected Function',
+                                                labelAlign: 'right',
+                                                description: 'Return filter object (JsonLogic) for selected value(s). Use this settings to configure non-standard values format',
+                                                mode: 'dialog',
+                                                exposedVariables: [{ name: 'item', description: 'Item of list', type: 'object' }],
+                                                wrapInTemplate: true,
+                                                templateSettings: { functionName: 'filterSelectedFunc' },
+                                                availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("value", "Value of autocomplete").build();',
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            }
+
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'simple';", _mode: 'code', _value: false } as any,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'switch',
+                                                propertyName: 'allowFreeText',
+                                                label: 'Allow Free Text',
+                                                labelAlign: 'right',
+                                                description: 'Allow to use free text that is missing on the source',
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            }
+
                                         ],
                                     })
                                     .addSettingsInputRow({
@@ -356,12 +532,15 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         inputs: [
                                             {
                                                 id: nanoid(),
-                                                propertyName: 'entityDisplayProperty',
+                                                propertyName: 'displayPropName',
                                                 label: 'Display Property',
                                                 parentId: dataTabId,
-                                                modelType: "{{data.entityType}}",
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
                                                 isDynamic: false,
-                                                hidden: false,
                                                 autoFillProps: false,
                                                 settingsValidationErrors: [],
                                                 type: 'propertyAutocomplete',
@@ -371,6 +550,112 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 }
                                             }
                                         ],
+                                    })
+                                    .addSettingsInput({
+                                        id: nanoid(),
+                                        inputType: 'switch',
+                                        propertyName: 'quickviewEnabled',
+                                        label: 'Use Quickview',
+                                        parentId: dataTabId,
+                                        size: 'small',
+                                        defaultValue: false,
+                                    })
+                                    .addCollapsiblePanel({
+                                        id: nanoid(),
+                                        propertyName: 'pnlQuickView',
+                                        label: 'Quickview',
+                                        labelAlign: 'right',
+                                        parentId: dataTabId,
+                                        ghost: true,
+                                        collapsible: 'header',
+                                        hidden: {
+                                            _code: 'return !getSettingValue(data?.quickviewEnabled);',
+                                            _mode: 'code',
+                                            _value: false
+                                        },
+                                        content: {
+                                            id: nanoid(),
+                                            components: [...new DesignerToolbarSettings()
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: dataTabId,
+                                                    inline: false,
+                                                    inputs: [
+                                                        {
+                                                            id: nanoid(),
+                                                            type: 'formAutocomplete',
+                                                            propertyName: 'quickviewFormPath',
+                                                            label: 'Form Path',
+                                                            parentId: dataTabId,
+                                                            size: 'small',
+                                                            validate: {
+                                                                required: false,
+                                                            }
+                                                        },
+                                                    ],
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: dataTabId,
+                                                    inline: false,
+                                                    inputs: [
+                                                        
+                                                        {
+                                                            id: nanoid(),
+                                                            type: 'endpointsAutocomplete',
+                                                            propertyName: 'quickviewGetEntityUrl',
+                                                            parentId: dataTabId,
+                                                            label: 'Get Entity URL',
+                                                            size: 'small',
+                                                            version: 5
+                                                        },
+                                                    ],
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: dataTabId,
+                                                    inline: false,
+                                                    inputs: [
+                                                        {
+                                                            id: nanoid(),
+                                                            propertyName: 'quickviewDisplayPropertyName',
+                                                            label: 'Display Property',
+                                                            parentId: dataTabId,
+                                                            modelType: {
+                                                                _code: 'return getSettingValue(data?.entityType);',
+                                                                _mode: 'code',
+                                                                _value: false
+                                                            } as any,
+                                                            isDynamic: false,
+                                                            autoFillProps: false,
+                                                            settingsValidationErrors: [],
+                                                            type: 'propertyAutocomplete',
+                                                            size: 'small',
+                                                            validate: {
+                                                                required: true,
+                                                            }
+                                                        },
+                                                    ],
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: dataTabId,
+                                                    inline: false,
+                                                    inputs: [
+                                                        {
+                                                            id: nanoid(),
+                                                            type: 'textField',
+                                                            propertyName: 'quickviewWidth',
+                                                            parentId: dataTabId,
+                                                            label: 'Width',
+                                                            size: 'small',
+                                                            version: 5
+                                                        }
+                                                    ],
+                                                })
+                                                .toJson()
+                                            ]
+                                        }
                                     })
                                     .toJson()
                                 ]

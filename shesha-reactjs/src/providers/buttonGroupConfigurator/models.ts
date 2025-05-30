@@ -25,15 +25,15 @@ export type ButtonActionType =
 
 export interface IButtonGroupItemBase extends IStyleType {
   id: string;
-  name: string;
+  name?: string;
   block?: boolean;
   label?: string | React.ReactNode;
   tooltip?: string;
-  sortOrder: number;
+  sortOrder?: number;
   danger?: boolean;
   hidden?: boolean;
   isDynamic?: boolean;
-  itemType: ButtonGroupItemType;
+  itemType?: ButtonGroupItemType;
   icon?: string | React.ReactNode;
   iconPosition?: 'start' | 'end';
   downIcon?: string;
@@ -57,7 +57,7 @@ export interface IButtonGroupItemBase extends IStyleType {
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {
-  itemSubType: ToolbarItemSubType;
+  itemSubType?: ToolbarItemSubType;
   styles?: React.CSSProperties;
 }
 
