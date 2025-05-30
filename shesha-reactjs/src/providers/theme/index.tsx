@@ -85,7 +85,14 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
         <ConfigProvider
           prefixCls={prefixCls}
           iconPrefixCls={iconPrefixCls}
-          theme={themeConfig}
+          theme={{
+            ...themeConfig,
+            token: {
+              ...themeConfig.token,
+              colorText: state.theme?.text?.default,
+              colorTextDescription: state.theme?.text?.secondary
+            },
+          }}
           form={{
             // override required mark position
             requiredMark: defaultRequiredMark,
