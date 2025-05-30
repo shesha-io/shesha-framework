@@ -10,7 +10,7 @@ import { nanoid } from '@/utils/uuid';
 export const getSettings = (data: IDateFieldProps) => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
-    const formatsTabId = nanoid();
+    const dataTabId = nanoid();
     const eventsTabId = nanoid();
     const validationTabId = nanoid();
     const appearanceTabId = nanoid();
@@ -154,11 +154,11 @@ export const getSettings = (data: IDateFieldProps) => {
                     {
                         key: '2',
                         title: 'Data',
-                        id: formatsTabId,
+                        id: dataTabId,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: formatsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -188,14 +188,14 @@ export const getSettings = (data: IDateFieldProps) => {
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
-                                parentId: formatsTabId
+                                parentId: dataTabId
                             })
                             .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'dropdown',
                                 propertyName: 'disabledDateMode',
                                 label: 'Disabled Date Mode',
-                                parentId: formatsTabId,
+                                parentId: dataTabId,
                                 defaultValue: 'none',
                                 dropdownOptions: [
                                     { value: 'none', label: 'None' },
@@ -206,14 +206,14 @@ export const getSettings = (data: IDateFieldProps) => {
 
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: formatsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         id: nanoid(),
                                         type: 'dropdown',
                                         propertyName: 'disabledDateTemplate',
                                         label: 'Disabled Date Templates',
-                                        parentId: formatsTabId,
+                                        parentId: dataTabId,
                                         hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'functionTemplate'", _mode: 'code', _value: false } as any,
                                         dropdownOptions: [
                                             { value: "return current && current < moment().startOf('day');", label: 'Disable past dates' },
@@ -232,7 +232,7 @@ export const getSettings = (data: IDateFieldProps) => {
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: formatsTabId,
+                                parentId: dataTabId,
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -276,7 +276,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "DD/MM/YYYY",
-                                parentId: formatsTabId
+                                parentId: dataTabId
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -286,7 +286,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "HH:mm:ss",
-                                parentId: formatsTabId
+                                parentId: dataTabId
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -296,7 +296,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY",
-                                parentId: formatsTabId
+                                parentId: dataTabId
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -306,7 +306,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY-\\QQ",
-                                parentId: formatsTabId
+                                parentId: dataTabId
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -316,7 +316,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY-MM",
-                                parentId: formatsTabId
+                                parentId: dataTabId
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -326,7 +326,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                                 inputType: "textField",
                                 defaultValue: "YYYY-wo",
-                                parentId: formatsTabId
+                                parentId: dataTabId
                             })
                             .toJson()
                         ]
