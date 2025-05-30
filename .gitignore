@@ -69,6 +69,8 @@ artifacts/
 *.svclog
 *.scc
 
+*.Kudzai.json
+
 # Chutzpah Test files
 _Chutzpah*
 
