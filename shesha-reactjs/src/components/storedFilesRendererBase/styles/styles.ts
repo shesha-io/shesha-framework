@@ -57,6 +57,16 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     width: var(--container-width) !important;
     max-width: var(--container-max-width) !important;;
     min-width: var(--container-min-width) !important;
+    height: var(--container-height) !important;
+    max-height: var(--container-max-height) !important;
+    min-height: var(--container-min-height) !important;
+    overflow: auto;
+    scrollbar-width: thin;
+      &::-webkit-scrollbar {
+        width: 8px;
+        background-color: transparent;
+      }
+
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
@@ -70,8 +80,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --font-size: ${fontSize ?? '14px'} !important;
       --ant-font-size: ${fontSize ?? '14px'} !important;
       display: flex;
-      width: ${layout ? (width ?? '54px') : ''};
-      height: ${layout ? (height ?? '54px') : ''};
+      width: ${layout ? (width ?? '54px') + ' !important' : ''};
+      height: ${layout ? (height ?? '54px') + ' !important' : ''};
 
       :before {
         top: 0;
@@ -170,6 +180,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   
     .${prefixCls}-upload-list {
       --ant-margin-xs: ${gap ?? '8px'} !important;
+      padding: 2px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -193,6 +204,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         animation: none !important;
         transition: none !important;
       }
+      width: ${layout ? (width ?? '54px') + ' !important' : ''};
+      height: ${layout ? (height ?? '54px') + ' !important' : ''};
     }
 
     .ant-upload-list-item-action {
