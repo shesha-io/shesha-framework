@@ -1,12 +1,13 @@
 import React, { FC, useCallback } from 'react';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import ReadOnlyDisplayFormItem, { Icon } from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
-import { Select } from 'antd';
+import { Select, Tag } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { useStyles } from './style';
+import { getTagStyle } from '@/utils/style';
 
 
 export const Dropdown: FC<IDropdownProps> = ({
@@ -29,11 +30,13 @@ export const Dropdown: FC<IDropdownProps> = ({
     style,
     size,
     allowClear = true,
+    displayStyle,
+    tagStyle
 }) => {
 
-    const { styles } = useStyles({ style });
-  
-    const selectedMode = mode === 'single' ? undefined : mode;
+    const { styles } = useStyles({ style, tagStyle });
+
+    const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
 
     const getOptions = (): ILabelValue[] => {
         return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
@@ -70,6 +73,8 @@ export const Dropdown: FC<IDropdownProps> = ({
             // fix for designer when switch mode
             value: typeof itemValue === 'object' ? null : itemValue,
             label: item?.label ?? 'unknown',
+            color: item?.color,
+            icon: item?.icon,
             data: item?.data,
         };
     }, [incomeValueFunc]);
@@ -94,6 +99,8 @@ export const Dropdown: FC<IDropdownProps> = ({
             value: typeof value === 'object' ? null : value,
             label,
             data: outcomeValueFunc(fetchedItem, args),
+            color: fetchedItem?.color,
+            icon: fetchedItem?.icon,
         };
     }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
 
@@ -113,10 +120,11 @@ export const Dropdown: FC<IDropdownProps> = ({
                 size={size}
                 className={styles.dropdown}
                 style={{ ...style }}
+                tagStyle={tagStyle}
                 allowClear={allowClear}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
-
+                displayStyle={displayStyle}
                 incomeValueFunc={incomeValueFunc}
                 outcomeValueFunc={outcomeValueFunc}
             />
@@ -125,7 +133,7 @@ export const Dropdown: FC<IDropdownProps> = ({
 
     const options = getOptions() || [];
 
-    const selectedValue = options.length > 0 ? value || defaultValue : null;
+    const selectedValue = options.length > 0 ? value ?? defaultValue : null;
 
     const getSelectValue = () => {
         const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
@@ -133,26 +141,79 @@ export const Dropdown: FC<IDropdownProps> = ({
     };
 
     if (readOnly) {
-        return <ReadOnlyDisplayFormItem type="string" value={getSelectValue()} />;
+        return <ReadOnlyDisplayFormItem
+            style={displayStyle === 'tags' ? tagStyle : style}
+            dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
+            type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'} value={displayStyle === 'tags' && mode === 'multiple' ?
+                selectedValue?.map(x => options.find((o) => o.value === x)) :
+                displayStyle === 'tags' ?
+                    options.find((o) => o.value === selectedValue) : getSelectValue()} />;
     }
+
+    const commonSelectProps = {
+        allowClear,
+        onChange,
+        value: selectedValue,
+        defaultValue,
+        variant: 'borderless' as 'borderless' | 'filled' | 'outlined',
+        disabled: readOnly,
+        mode: selectedMode,
+        placeholder,
+        size
+    };
+
+    if (displayStyle === 'tags' && mode !== 'multiple') {
+        return <Select
+            {...commonSelectProps}
+            popupMatchSelectWidth={false}
+            style={{ width: 'max-content' }}
+            placeholder={<Tag
+                style={{ ...getTagStyle(tagStyle, true), background: '#d9d9d9' }}
+            >
+                {placeholder ?? <span style={{ whiteSpace: 'pre' }}>{'      '}</span>}
+            </Tag>}
+            labelRender={(props) => {
+                const option = options.find((o) => o.value === props.value);
+                return <Tag
+                    key={props.value}
+                    color={option?.color}
+                    icon={option?.icon && <Icon type={option?.icon} />}
+                    style={getTagStyle(tagStyle, !!option?.color)}
+                >
+                    {option?.label}
+                </Tag>;
+            }}
+        >
+            {
+                options.map((option) => (
+                    <Select.Option key={option.value} value={option.value}>
+                        {option?.label}
+                    </Select.Option>
+                ))
+            }
+        </Select >;
+    };
 
     return (
         <Select
-            allowClear={allowClear}
-            onChange={onChange}
-            value={options.length > 0 ? value || defaultValue : undefined}
-            defaultValue={defaultValue}
-            variant={'borderless'}
+            {...commonSelectProps}
             className={styles.dropdown}
-            disabled={readOnly}
-            mode={selectedMode}
-            placeholder={placeholder}
             showSearch
             style={{ ...style }}
-            size={size}
+            {...(displayStyle === 'tags' ? {
+                labelRender: (props) => {
+                    const option = options.find((o) => o.value === props.value);
+                    return <Tag
+                        key={props.value}
+                        color={option?.color}
+                        icon={option?.icon && <Icon type={option?.icon} />}
+                        style={getTagStyle(tagStyle, !!option?.color)}
+                    >{option?.label}</Tag>;
+                }
+            } : {})}
         >
-            {options.map((option, index) => (
-                <Select.Option key={index} value={option.value}>
+            {options.map((option) => (
+                <Select.Option key={option.value} value={option.value}>
                     {option.label}
                 </Select.Option>
             ))}

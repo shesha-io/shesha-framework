@@ -95,7 +95,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     }, [tabs]);
 
     return model.hidden ? null : (
-      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
+      <Tabs animated={false} defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
     );
   },
   initModel: (model) => {
