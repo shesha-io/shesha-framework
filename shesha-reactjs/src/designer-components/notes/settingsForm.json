@@ -35,6 +35,14 @@
             }
           },
           {
+            "id": "46d07439-4c18-468c-89e1-60c002ce9623",
+            "type": "textField",
+            "propertyName": "category",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Notes Category",
+            "description": "This is used to group notes into categories"
+          },
+          {
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
             "type": "textField",
             "propertyName": "label",
@@ -148,14 +156,20 @@
             "type": "textField",
             "propertyName": "ownerId",
             "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Owner Id"
+            "label": "Owner Id",
+            "validate": {
+              "required": true
+            }
           },
           {
             "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
             "type": "textField",
             "propertyName": "ownerType",
             "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Owner Type"
+            "label": "Owner Type",
+            "validate": {
+              "required": true
+            }
           }
         ]
       }
