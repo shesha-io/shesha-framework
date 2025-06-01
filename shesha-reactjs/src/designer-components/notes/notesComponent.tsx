@@ -19,7 +19,6 @@ export interface INotesProps extends IConfigurableFormComponent {
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
-  onCreated?: string; 
   category?: string;
 }
 
