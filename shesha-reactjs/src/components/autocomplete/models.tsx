@@ -37,6 +37,8 @@ export interface ISelectOption<TValue = any> {
   value: string | number;
   label: string | React.ReactNode;
   data: TValue;
+  color?: string;
+  icon?: string;
 }
 
 interface IQueryParamProp {
@@ -110,7 +112,7 @@ export interface IAutocompleteBaseProps {
   grouping?: GroupingItem;
   /** Size */
   size?: SizeType;
-  
+
   allowFreeText?: boolean;
   allowClear?: boolean;
 
@@ -126,6 +128,6 @@ export interface IAutocompleteBaseProps {
   typeShortAlias?: string;
 }
 
-export interface IAutocompleteProps extends Omit<IAutocompleteBaseProps, 'uid'>{
-  
+export interface IAutocompleteProps extends Omit<IAutocompleteBaseProps, 'uid'> {
+
 }

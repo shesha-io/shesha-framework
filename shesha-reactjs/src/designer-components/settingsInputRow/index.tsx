@@ -13,7 +13,7 @@ export interface ISettingsInputRowProps extends Omit<IConfigurableFormComponent,
 }
 
 export interface IInputRowProps {
-    inputs: Array<ISettingsInputProps>;
+    inputs?: Array<ISettingsInputProps>;
     readOnly?: boolean;
     inline?: boolean;
     children?: React.ReactNode;
@@ -25,8 +25,8 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
     const { formData } = useShaFormInstance();
 
     const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
-    return isHidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
-        {inputs.map((props, i) => {
+    return isHidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
+        {inputs?.map((props, i) => {
             const { type } = props;
             const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
 
