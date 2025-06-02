@@ -16,6 +16,7 @@ import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder
 import { wizardApiCode } from '@/publicJsApis';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
+import { addPx } from '@/utils/style';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
@@ -37,24 +38,26 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         isDynamic,
         labelPlacement,
         wizardType = 'default',
+        stepWidth
     } = model;
 
     const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
     const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
     const activeStepStyle = useFormComponentStyles(visibleSteps[current]);
     const { fontSize, fontFamily, fontWeight, color, height, minHeight, maxHeight, ...rest } = activeStepStyle.fullStyle;
-    const { styles } = useStyles({ styles: { ...model.allStyles.fullStyle, height: null, minHeight: null, maxHeight: null, width: null, minWidth: null, maxWidth: null, overflow: '', ...rest }, colors, activeStepStyle: activeStepStyle.fullStyle });
+    const overflow = getOverflowStyle(true, false);
+    const { styles } = useStyles({
+        styles: { ...model.allStyles.fullStyle, overflow: '', ...rest },
+        colors, activeStepStyle: activeStepStyle.fullStyle, stepWidth: addPx(stepWidth),
+        vertical: direction === 'vertical', overflow
+    });
 
     const steps = useMemo(() => {
         return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style, ...rest }, index) => {
             const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
             const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
-            const styles = { ...model.allStyles.fullStyle };
-
-            const { height, minHeight, maxHeight, width, minWidth, maxWidth, ...stepStyle } = getStyle(style, visibleSteps[index]);
-
-            const dimStyles = { height: height ?? styles.height, minHeight: minHeight ?? styles.minHeight, maxHeight: maxHeight ?? styles.maxHeight, width: width ?? styles.width, minWidth: minWidth ?? styles.minWidth, maxWidth: maxWidth ?? styles.maxWidth };
+            const stepStyle = getStyle(style, visibleSteps[index]);
 
             return {
                 ...rest,
@@ -69,7 +72,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                 // render only current step
                 content: current === index
                     ? <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
-                        <ComponentsContainer style={{ ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false), ...dimStyles }} containerId={id} dynamicComponents={isDynamic ? components : []} />
+                        <ComponentsContainer wrapperStyle={{ height: '100%', display: 'grid', ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false) }} containerId={id} dynamicComponents={isDynamic ? components : []} />
                     </ParentProvider>
                     : undefined,
             };

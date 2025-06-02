@@ -40,6 +40,14 @@ export const getSettings = (data: any) => {
                       validate: {
                         required: true
                       }
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'category',
+                      label: 'Notes Category',
+                      type: 'textField',
+                      tooltip: 'This is used to group notes into categories',
+                      jsSetting: true,
                     }
                   ]
                 })
@@ -104,7 +112,10 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       propertyName: 'ownerId',
                       label: 'Owner ID',
-                      jsSetting: true
+                      jsSetting: true,
+                      validate: {
+                        required: true
+                      }
                     },
                     {
                       id: nanoid(),
@@ -116,7 +127,10 @@ export const getSettings = (data: any) => {
                       dataSourceType: 'url',
                       dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                       mode: 'single',
-                      jsSetting: true
+                      jsSetting: true,
+                      validate: {
+                        required: true
+                      }
                     } 
                   ]
                 })
