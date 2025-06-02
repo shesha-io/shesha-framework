@@ -78,6 +78,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       sortOrder: itemsCount,
       name: `button${itemNo}`,
       label: `Button ${itemNo}`,
+      title: `Button ${itemNo}`,
       itemSubType: 'button',
       buttonType: 'link',
       editMode: 'inherited',
