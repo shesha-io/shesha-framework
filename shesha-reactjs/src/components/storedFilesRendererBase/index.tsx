@@ -185,7 +185,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
-      onFileListChanged(info.fileList);
+      if (onFileListChanged) {
+        onFileListChanged(info.fileList);
+      }
     },
     onRemove(file) {
       deleteFile(file.uid);
