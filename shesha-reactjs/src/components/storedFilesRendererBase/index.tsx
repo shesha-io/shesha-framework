@@ -39,7 +39,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
-  onFileListChanged?: (list: IStoredFile[]) => void;
+  onFileListChanged: (list: IStoredFile[]) => void;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
   isDragger?: boolean;
@@ -185,7 +185,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
-      onFileListChanged(info.fileList);
+      if (onFileListChanged) {
+        onFileListChanged(info.fileList);
+      }
     },
     onRemove(file) {
       deleteFile(file.uid);
