@@ -47,6 +47,7 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
       deleteFile={deleteFile}
       downloadZipFile={downloadZipFile}
       downloadFile={downloadFile}
+      onFileListChanged={onFileListChanged}
       isDownloadingFileListZip={isInProgress && isInProgress.dowloadZip}
       isDownloadZipSucceeded={succeeded && succeeded.dowloadZip}
       isDragger={isDragger}
@@ -55,7 +56,6 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
       allowedFileTypes={accept}
       layout={layout}
       listType={listType}
-      onFileListChanged={onFileListChanged}
     // noFilesCaption={noFilesCaption}
     />
   );
