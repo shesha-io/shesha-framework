@@ -44,7 +44,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     );
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
-    const { data: formData } = useFormData();
+    const { formData } = useShaFormInstance();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
 
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
