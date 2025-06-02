@@ -15,6 +15,9 @@ export interface IReadOnlyDisplayFormItemProps {
   | 'switch'
   | 'radiogroup';
   dropdownDisplayMode?: 'raw' | 'tags';
+  showIcon?: boolean;
+  solidColor?: boolean;
+  showItemName?: boolean;
   dateFormat?: string;
   timeFormat?: string;
   disabled?: boolean;

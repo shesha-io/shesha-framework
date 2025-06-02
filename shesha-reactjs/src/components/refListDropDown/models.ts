@@ -37,6 +37,9 @@ export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<an
   width?: number;
   style?: CSSProperties;
   tagStyle?: CSSProperties;
+  showIcon?: boolean;
+  solidColor?: boolean;
+  showItemName?: boolean;
   base?: string;
   value?: TValue | TValue[];
   ignoredValues?: number[];

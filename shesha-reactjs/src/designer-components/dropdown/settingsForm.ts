@@ -97,6 +97,38 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     }
                                 ]
                             })
+
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: commonTabId,
+                                hidden: {
+                                    _code: 'return  getSettingValue(data.displayStyle) !== "tags";',
+                                    _mode: 'code',
+                                    _value: false
+                                } as any,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'showItemName',
+                                        label: 'Show Item Name',
+                                        jsSetting: true,
+                                        tooltip: 'When checked the DisplayName/RefList Name will be shown.',
+                                        layout: 'horizontal',
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'showIcon',
+                                        label: 'Show Icon',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        defaultValue: true,
+                                        tooltip: 'When checked the icon will display on the left side of the DisplayName',
+                                    }
+
+                                ],
+                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
@@ -623,6 +655,22 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                 id: nanoid(),
                                                 components: [
                                                     ...new DesignerToolbarSettings()
+                                                        .addContainer({
+                                                            id: nanoid(),
+                                                            parentId: nanoid(),
+                                                            components: [
+                                                                ...new DesignerToolbarSettings()
+                                                                    .addSettingsInput({
+                                                                        id: nanoid(),
+                                                                        inputType: 'switch',
+                                                                        propertyName: 'solidColor',
+                                                                        label: 'Show Solid Color',
+                                                                        size: 'small',
+                                                                        tooltip: 'When checked the background will be solid color',
+                                                                    })
+                                                                    .toJson()
+                                                            ]
+                                                        })
                                                         .addSettingsInput({
                                                             id: nanoid(),
                                                             parentId: nanoid(),

@@ -29,6 +29,9 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     outcomeValueFunc,
     displayStyle,
     tagStyle,
+    showIcon,
+    solidColor,
+    showItemName,
     ...rest
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
@@ -118,6 +121,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       <ReadOnlyDisplayFormItem
         value={wrapValue(value, options)}
         disabled={disabled}
+        showIcon={showIcon}
+        solidColor={solidColor}
         style={displayStyle === 'tags' ? tagStyle : style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
@@ -162,9 +167,9 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return <Tag
           key={props.value}
           color={option?.color}
-          icon={option?.icon && <Icon type={option?.icon} />}
-          style={getTagStyle(tagStyle, !!option?.color)}
-        >{option?.label}</Tag>;
+          icon={option?.icon && showIcon && <Icon type={option?.icon} />}
+          style={getTagStyle(tagStyle, !!option?.color && solidColor)}
+        >{showItemName && option?.label}</Tag>;
       }}
     >
       {options?.map(({ value: localValue, label, data, disabled }) => (
@@ -187,9 +192,9 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
           return <Tag
             key={props.value}
             color={option?.color}
-            icon={option?.icon && <Icon type={option?.icon} />}
-            style={getTagStyle(tagStyle, !!option?.color)}
-          >{option?.label}</Tag>;
+            icon={(option?.icon && showIcon) && <Icon type={option?.icon} />}
+            style={getTagStyle(tagStyle, !!option?.color && solidColor)}
+          >{showItemName && option?.label}</Tag>;
         }
       } : {})}
     >

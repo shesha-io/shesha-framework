@@ -46,7 +46,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag, font: model.font }).fullStyle;
 
-
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
@@ -132,6 +131,9 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
       return {
         ...newModel,
         tag: { ...initTagStyle },
+        showItemName: prev.showItemName ?? true,
+        showIcon: prev.showIcon ?? true,
+        solidColor: prev.solidColor ?? true,
         displayStyle: prev.displayStyle ?? 'text',
         desktop: { ...newModel.desktop, tag: { ...initTagStyle } },
         tablet: { ...newModel.tablet, tag: { ...initTagStyle } },

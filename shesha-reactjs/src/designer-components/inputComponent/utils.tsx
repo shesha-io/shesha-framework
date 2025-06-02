@@ -8,6 +8,7 @@ import { ILabelValueEditorProps, ILabelValueItem } from '@/components/labelValue
 import { InputComponent } from '.';
 import { useStyles } from './styles';
 import { getWidth } from '../settingsInput/utils';
+import { IDropdownOption, InputType } from '../settingsInput/interfaces';
 export const iconElement = (
     icon: string | React.ReactNode,
     size?: any,
@@ -79,8 +80,17 @@ export const getEditor = (availableConstantsExpression: string, codeEditorProps:
         : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 };
 
-const InputPropertyEditor = (props) => {
-    const { item, propertyName, itemOnChange, placeholder, type, dropdownOptions = [] } = props;
+interface InputPropertyEditorProps {
+    item: Record<string, any>;
+    propertyName: string;
+    itemOnChange: (item: any, index: any) => void;
+    placeholder?: string;
+    type: InputType['type'];
+    dropdownOptions?: IDropdownOption[] | string;
+    readOnly?: boolean;
+}
+const InputPropertyEditor = (props: InputPropertyEditorProps) => {
+    const { item, propertyName, itemOnChange, placeholder, type, dropdownOptions = [], readOnly } = props;
     return (
         type === 'dropdown' ?
             <Select
@@ -88,20 +98,21 @@ const InputPropertyEditor = (props) => {
                 variant='borderless'
                 showSearch
                 value={item[propertyName]}
-                onChange={(e) => {
-                    itemOnChange({ ...item, [propertyName]: e?.target?.value ?? e }, undefined);
+                onChange={(value) => {
+                    itemOnChange({ ...item, [propertyName]: value }, undefined);
                 }}
                 popupMatchSelectWidth={false}
                 style={{ width: 'max-content' }}
                 labelRender={() => {
                     return '';
                 }}
+                disabled={readOnly}
             >
-                {dropdownOptions.map((option) => (
+                {Array.isArray(dropdownOptions) ? dropdownOptions.map((option) => (
                     <Select.Option key={option.value} value={option.value}>
                         {option.label}
                     </Select.Option>
-                ))}
+                )) : dropdownOptions}
             </Select> :
             <InputComponent
                 type={type}
@@ -114,8 +125,8 @@ const InputPropertyEditor = (props) => {
                 value={item[propertyName]}
                 iconSize={16}
                 width={getWidth(type, type === 'iconPicker' || type === 'colorPicker' ? 24 : 100)}
-                onChange={(e) => {
-                    itemOnChange({ ...item, [propertyName]: e?.target?.value ?? e }, undefined);
+                onChange={(value) => {
+                    itemOnChange({ ...item, [propertyName]: value }, undefined);
                 }}
                 dropdownOptions={dropdownOptions}
             />

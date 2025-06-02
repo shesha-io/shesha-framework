@@ -46,4 +46,7 @@ export interface IDropdownProps {
   tagStyle?: CSSProperties;
   readOnly?: boolean;
   displayStyle?: 'text' | 'tags';
+  showItemName?: boolean;
+  showIcon?: boolean;
+  solidColor?: boolean;
 }

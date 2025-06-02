@@ -29,6 +29,9 @@ export const Dropdown: FC<IDropdownProps> = ({
     readOnly,
     style,
     size,
+    showIcon,
+    solidColor = true,
+    showItemName,
     allowClear = true,
     displayStyle,
     tagStyle
@@ -118,6 +121,9 @@ export const Dropdown: FC<IDropdownProps> = ({
                 placeholder={placeholder}
                 readOnly={readOnly}
                 size={size}
+                showIcon={showIcon}
+                solidColor={solidColor}
+                showItemName={showItemName}
                 className={styles.dropdown}
                 style={{ ...style }}
                 tagStyle={tagStyle}
@@ -137,17 +143,22 @@ export const Dropdown: FC<IDropdownProps> = ({
 
     const getSelectValue = () => {
         const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
-        return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(x => x.label)?.join(', ');
+        return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(({ label }) => ({ label }));
     };
 
     if (readOnly) {
         return <ReadOnlyDisplayFormItem
+            showIcon={showIcon}
+            solidColor={solidColor}
+            showItemName={showItemName}
             style={displayStyle === 'tags' ? tagStyle : style}
             dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
-            type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'} value={displayStyle === 'tags' && mode === 'multiple' ?
-                selectedValue?.map(x => options.find((o) => o.value === x)) :
+            type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
+            value={mode === 'multiple' ?
                 displayStyle === 'tags' ?
-                    options.find((o) => o.value === selectedValue) : getSelectValue()} />;
+                    selectedValue?.map(x => options.find((o) => o.value === x)) :
+                    getSelectValue() :
+                options.find((o) => o.value === selectedValue)} />;
     }
 
     const commonSelectProps = {
@@ -177,10 +188,10 @@ export const Dropdown: FC<IDropdownProps> = ({
                 return <Tag
                     key={props.value}
                     color={option?.color}
-                    icon={option?.icon && <Icon type={option?.icon} />}
-                    style={getTagStyle(tagStyle, !!option?.color)}
+                    icon={((option?.icon && showIcon)) && <Icon type={option?.icon} />}
+                    style={getTagStyle(tagStyle, !!option?.color && solidColor)}
                 >
-                    {option?.label}
+                    {showItemName && option?.label}
                 </Tag>;
             }}
         >
@@ -206,9 +217,9 @@ export const Dropdown: FC<IDropdownProps> = ({
                     return <Tag
                         key={props.value}
                         color={option?.color}
-                        icon={option?.icon && <Icon type={option?.icon} />}
-                        style={getTagStyle(tagStyle, !!option?.color)}
-                    >{option?.label}</Tag>;
+                        icon={option?.icon && showIcon && <Icon type={option?.icon} />}
+                        style={getTagStyle(tagStyle, !!option?.color && solidColor)}
+                    >{showItemName && option?.label}</Tag>;
                 }
             } : {})}
         >

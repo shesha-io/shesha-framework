@@ -32,7 +32,10 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
     quickviewWidth,
-    style
+    style,
+    showIcon,
+    solidColor,
+    showItemName
   } = props;
 
   const { styles } = useStyles();
@@ -75,18 +78,17 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               />
             );
           } else {
-
             return dropdownDisplayMode === 'tags' ? <Tag
               color={value?.color}
-              icon={value?.icon && <Icon type={value?.icon} />}
-              style={getTagStyle(style, !!value?.color)}
+              icon={((value?.icon && showIcon)) && <Icon type={value?.icon} />}
+              style={getTagStyle(style, !!value?.color && solidColor)}
             >
-              {displayName}
-            </Tag> : displayName;
+              {showItemName && displayName}
+            </Tag> : displayName || value;
           }
         }
 
-        return 'unknown';
+        return null;
 
       case 'dropdownMultiple': {
         if (Array.isArray(value)) {
@@ -100,10 +102,10 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                 return <Tag
                   key={value}
                   color={color}
-                  icon={icon && <Icon type={icon} />}
-                  style={getTagStyle(style, !!color)}
+                  icon={((icon && showIcon)) && <Icon type={icon} />}
+                  style={getTagStyle(style, !!color && solidColor)}
                 >
-                  {label}
+                  {showItemName && label}
                 </Tag>;
               })}
             </Space>;
