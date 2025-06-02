@@ -34,6 +34,10 @@ export interface NoteDto {
    */
   noteText: string;
   author?: GuidEntityReferenceDto;
+  /**
+   * Name of the component that created the note
+   */
+  uniqueIdentifier?: string;
 }
 
 export interface CreateNoteDto {
@@ -49,7 +53,7 @@ export interface CreateNoteDto {
   /**
    * Category of the note. Is used to split notes into groups
    */
-  category?: number | null;
+  category?: string;
   /**
    * Note importance (priority)
    */
@@ -62,6 +66,10 @@ export interface CreateNoteDto {
    * Text
    */
   noteText: string;
+  /**
+   * Name of the component that created the note
+   */
+  uniqueIdentifier?: string;
 }
 
 export interface NoteGetListQueryParams {
@@ -76,7 +84,7 @@ export interface NoteGetListQueryParams {
   /**
    * Category of the note. Is used to split notes into groups
    */
-  category?: number;
+  category?: string;
   /**
    * Set to true to get notes of all categories
    */
@@ -85,6 +93,10 @@ export interface NoteGetListQueryParams {
    * The requested API version
    */
   'api-version'?: string;
+  /**
+   * Name of the component that created the note
+   */
+  uniqueIdentifier?: string;
 }
 export type NoteDtoListAjaxResponse = IAjaxResponse<NoteDto[] | null>;
 
