@@ -112,7 +112,10 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       propertyName: 'ownerId',
                       label: 'Owner ID',
-                      jsSetting: true
+                      jsSetting: true,
+                      validate: {
+                        required: true
+                      }
                     },
                     {
                       id: nanoid(),
@@ -124,7 +127,10 @@ export const getSettings = (data: any) => {
                       dataSourceType: 'url',
                       dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                       mode: 'single',
-                      jsSetting: true
+                      jsSetting: true,
+                      validate: {
+                        required: true
+                      }
                     } 
                   ]
                 })
