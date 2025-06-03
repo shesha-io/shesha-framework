@@ -41,8 +41,11 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     iconSize
   } = props;
 
-
+  // Define effectiveDefaultValue at the component level
+  let effectiveDefaultValue = defaultValue;
   const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
+    effectiveDefaultValue = effectiveDefaultValue ?? iconName; // Set effectiveDefaultValue if it is not already set
+
     if (onChange) onChange(iconName);
   };
 
@@ -57,7 +60,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
 
   return (
-    <div style={defaultValue ? { display: 'grid', placeItems: textAlign } : {}}>
+    <div style={effectiveDefaultValue ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
       <Tooltip title={props?.description}>
         <div
           style={{
@@ -66,8 +69,8 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
           }}
         >
           <IconPicker
-            value={defaultValue as ShaIconTypes}
-            defaultValue={defaultValue as ShaIconTypes}
+            value={effectiveDefaultValue as ShaIconTypes}
+            defaultValue={effectiveDefaultValue as ShaIconTypes}
             onIconChange={onIconChange}
             selectBtnSize={selectBtnSize}
             iconSize={
