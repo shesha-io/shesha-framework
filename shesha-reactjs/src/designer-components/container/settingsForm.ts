@@ -371,7 +371,7 @@ export const getSettings = (data) => {
                                       .toJson()
                                   ]
                                 })
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: displayCollapsiblePanelId,
                                   hidden: {
@@ -379,10 +379,14 @@ export const getSettings = (data) => {
                                     _mode: 'code',
                                     _value: false,
                                   } as any,
-                                  inputType: 'textField',
-                                  label: 'Gap',
-                                  propertyName: 'gap',
-                                  description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
+                                  inputs: [{
+                                    id: nanoid(),
+                                    type: 'textField',
+                                    label: 'Gap',
+                                    propertyName: 'gap',
+                                    description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
+                                  }]
+
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
@@ -430,6 +434,11 @@ export const getSettings = (data) => {
                                   id: nanoid(),
                                   parentId: displayCollapsiblePanelId,
                                   inline: false,
+                                  hidden: {
+                                    _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
+                                    _mode: 'code',
+                                    _value: false,
+                                  } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
