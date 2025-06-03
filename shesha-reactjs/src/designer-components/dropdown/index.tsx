@@ -14,11 +14,12 @@ import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
+import { defaultStyles, defaultTagStyles } from './utils';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: {onChange: (value: CustomLabeledValue<any>, option: any) => any};
+  eventHandlers?: { onChange: (value: CustomLabeledValue<any>, option: any) => any };
   defaultValue?: any;
 }
 
@@ -43,6 +44,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   Factory: ({ model, calculatedModel }) => {
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
+    const tagStyle = useFormComponentStyles({ ...model.tag, font: model.font }).fullStyle;
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -56,11 +58,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={{ ...model.allStyles.fullStyle, overflow: 'auto' }}
+            style={{ ...model.allStyles.fullStyle }}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
+            tagStyle={{ ...tagStyle, margin: 0, alignContent: 'center' }}
             onChange={onChangeInternal}
           />;
         }}
@@ -121,6 +124,22 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    .add<IDropdownComponentProps>(10, (prev) => {
+      const newModel = migratePrevStyles(prev, defaultStyles());
+      const initTagStyle = { ...defaultTagStyles() };
+
+      return {
+        ...newModel,
+        tag: { ...initTagStyle },
+        showItemName: prev.showItemName ?? true,
+        showIcon: prev.showIcon ?? true,
+        solidColor: prev.solidColor ?? true,
+        displayStyle: prev.displayStyle ?? 'text',
+        desktop: { ...newModel.desktop, tag: { ...initTagStyle } },
+        tablet: { ...newModel.tablet, tag: { ...initTagStyle } },
+        mobile: { ...newModel.mobile, tag: { ...initTagStyle } }
+      };
+    })
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

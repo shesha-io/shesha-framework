@@ -31,3 +31,66 @@ export const defaultStyles = (): IStyleType => {
         }
     };
 };
+
+export const presetColors = [
+    {
+        value: 'success',
+        label: 'Success'
+    },
+    {
+        value: 'processing',
+        label: 'Processing'
+    },
+    {
+        value: 'warning',
+        label: 'Warning'
+    },
+    {
+        value: 'error',
+        label: 'Error'
+    },
+    {
+        value: 'magenta',
+        label: 'Magenta'
+    },
+    {
+        value: 'red',
+        label: 'Red'
+    },
+    {
+        value: 'volcano',
+        label: 'Volcano'
+    },
+    {
+        value: 'orange',
+        label: 'Orange'
+    },
+    {
+        value: 'gold',
+        label: 'Gold'
+    },
+    {
+        value: 'lime',
+        label: 'Lime'
+    },
+    {
+        value: 'green',
+        label: 'Green'
+    },
+    {
+        value: 'cyan',
+        label: 'Cyan'
+    },
+    {
+        value: 'blue',
+        label: 'Blue'
+    },
+    {
+        value: 'geekblue',
+        label: 'Geekblue'
+    },
+    {
+        value: 'purple',
+        label: 'Purple'
+    }
+];

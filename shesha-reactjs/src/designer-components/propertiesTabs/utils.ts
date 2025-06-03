@@ -80,8 +80,12 @@ export const filterDynamicComponents = (components, query, data) => {
         return hidden || (!directMatch && !hasVisibleChildren);
     };
 
-    // Helper function to check if text matches query
-    const matchesQuery = (text) => text?.toLowerCase().includes(lowerCaseQuery);
+    // Helper function to check if text 
+    // matches query
+
+    const matchesQuery = (text) => {
+        return text?.toLowerCase().includes(lowerCaseQuery);
+};
 
     const filterResult = components.map(component => {
         // Deep clone the component to avoid mutations
@@ -122,7 +126,7 @@ export const filterDynamicComponents = (components, query, data) => {
                 headerStyles: getHeaderStyles(),
                 allStyles: getBodyStyles(),
                 border: getBodyStyles().border,
-                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
+                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"0\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }

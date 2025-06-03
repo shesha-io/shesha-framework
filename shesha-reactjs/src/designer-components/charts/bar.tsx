@@ -44,6 +44,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(1, prev => ({ ...prev, hideLabel: true }))
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
+    .add<IChartProps>(4, prev => ({ ...prev, showLegend: false, showTitle: true }))
 };
 
 export default BarChartComponent;

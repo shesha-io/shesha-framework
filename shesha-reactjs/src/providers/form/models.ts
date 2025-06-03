@@ -80,7 +80,7 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
-  overflow?: CSSProperties['overflow'];
+  overflow?: boolean;
   hideScrollBar?: boolean;
 }
 
