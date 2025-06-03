@@ -6,7 +6,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         .sha-components-container-inner {
          ${sheshaStyles.thinScrollbars}
          overflow: auto;
-        }   
+        }
     `);
 
     return {
