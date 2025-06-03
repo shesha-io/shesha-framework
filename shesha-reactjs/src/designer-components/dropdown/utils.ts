@@ -32,6 +32,38 @@ export const defaultStyles = (): IStyleType => {
     };
 };
 
+export const defaultTagStyles = (): IStyleType => {
+    return {
+        background: { type: 'color', color: '#fff' },
+        font: {
+            weight: '400',
+            size: 14,
+            color: '#000',
+            type: 'Segoe UI'
+        },
+        border: {
+            border: {
+                all: {
+                    width: '1px',
+                    style: 'solid',
+                    color: '#d9d9d9'
+                }
+            },
+            radius: { all: 4 },
+            borderType: 'all',
+            radiusType: 'all'
+        },
+        dimensions: {
+            width: 'auto',
+            height: '22px',
+            minHeight: '0px',
+            maxHeight: 'auto',
+            minWidth: '0px',
+            maxWidth: 'auto'
+        }
+    };
+};
+
 export const presetColors = [
     {
         value: 'success',
