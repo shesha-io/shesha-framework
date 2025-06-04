@@ -5,6 +5,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration } from '@/providers/index';
 import Link from 'next/link';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -18,9 +19,10 @@ interface IGetItemArgs {
   url?: string;
   navigationType?: string;
   onClick?: () => void;
+  tooltip?: string | ReactNode;
 }
 
-function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url }: IGetItemArgs): MenuItem {
+function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url, tooltip }: IGetItemArgs): MenuItem {
   const clickHandler = (event) => {
     event.preventDefault();
     onClick();
@@ -32,10 +34,16 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     key,
     icon,
     children,
-    label: Boolean(onClick)
-      ? navigationType === 'url' || navigationType === 'form' ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link> : <Link href={''} className={className} onClick={clickHandler}>{label}</Link>
-      : <span className={className}>{label}</span>,
+    label: onClick
+      ? (<div title={tooltip && tooltip as string}>
+          {(navigationType === 'url' || navigationType === 'form' 
+            ? <Link className={className} href={url} title={tooltip && tooltip as string} onClick={clickHandler}>{label}</Link> 
+            : <Link href={''} className={className} title={tooltip && tooltip as string} onClick={clickHandler}>{label}</Link>)}
+          {tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 4 }} />}
+        </div>)
+      : <div title={tooltip && tooltip as string}>{<span className={className}>{label}</span>}{tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 4 }} />}</div>,
     type: itemType === 'divider' ? 'divider' : undefined,
+
   } as MenuItem;
 }
 
@@ -86,6 +94,7 @@ export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluatio
     url,
     navigationType,
     onClick: actionConfiguration ? () => onButtonClick(id, actionConfiguration) : undefined,
+    tooltip: item.tooltip,
   };
   if (onItemEvaluation)
     onItemEvaluation(item);
