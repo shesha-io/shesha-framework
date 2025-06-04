@@ -15,6 +15,8 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Email;
+using Shesha.FormTemplates.DetailsView;
+using Shesha.FormTemplates;
 using Shesha.GraphQL;
 using Shesha.Modules;
 using Shesha.Notifications;
@@ -155,6 +157,8 @@ namespace Shesha
 
                 .RegisterConfigurableItemExport<NotificationChannelConfig, INotificationChannelExport, NotificationChannelExport>()
                 .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>();
+
+            IocManager.Register<IGenerationLogic, DetailsViewGenerationLogic>(DependencyLifeStyle.Transient);
 
 
             IocManager.RegisterIfNot<INotificationChannelSender, EmailChannelSender>(DependencyLifeStyle.Transient);
