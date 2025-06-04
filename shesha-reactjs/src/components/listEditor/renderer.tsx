@@ -130,7 +130,6 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
             </div>
             {sortableItems && (
                 <div className={styles.listContainer}>
-
                     <ReactSortable<SortableItem<TItem>>
                         list={sortableItems}
                         setList={onSetList}
@@ -171,7 +170,7 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                                     }}
                                     readOnly={readOnly}
                                     isLast={index === value.length - 1}
-                                    className={selectedItem && item === selectedItem ? styles.listItemSelected : undefined}
+                                    className={(selectedItem?.id && item?.id === selectedItem?.id) || (selectedItem && item === selectedItem) ? styles.listItemSelected : undefined}
                                 >
                                     {children({
                                         item,
