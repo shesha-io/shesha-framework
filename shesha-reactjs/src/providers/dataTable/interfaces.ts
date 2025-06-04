@@ -271,6 +271,7 @@ export interface IActionColumnProps {
 }
 
 export interface ISortingItem {
+  id?: string;
   propertyName: string;
   sorting: ColumnSorting;
 }

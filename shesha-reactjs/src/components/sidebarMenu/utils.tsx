@@ -1,4 +1,4 @@
-import { MenuProps } from 'antd';
+import { MenuProps, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon';
@@ -34,16 +34,31 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     key,
     icon,
     children,
-    label: onClick
-      ? (<div title={tooltip && tooltip as string}>
-          {(navigationType === 'url' || navigationType === 'form' 
-            ? <Link className={className} href={url} title={tooltip && tooltip as string} onClick={clickHandler}>{label}</Link> 
-            : <Link href={''} className={className} title={tooltip && tooltip as string} onClick={clickHandler}>{label}</Link>)}
-          {tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 8 }} />}
-        </div>)
-      : <div title={tooltip && tooltip as string}>{<span className={className}>{label}</span>}{tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 8 }} />}</div>,
+    label: (() => {
+      const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
+      const tooltipIcon = tooltip ? <QuestionCircleOutlined title={tooltipText} style={{ marginLeft: 8 }} /> : null;
+      
+      if (onClick) {
+        const linkComponent = (navigationType === 'url' || navigationType === 'form')
+          ? <Link className={className} href={url} title={tooltipText} onClick={clickHandler}>{label}</Link>
+          : <Link href={''} className={className} title={tooltipText} onClick={clickHandler}>{label}</Link>;
+        
+        return (
+          <Tooltip title={tooltipText} placement="right">
+            {linkComponent}
+            {tooltipIcon}
+          </Tooltip>
+        );
+      }
+      
+      return (
+        <Tooltip title={tooltipText} placement="right">
+          <span className={className}>{label}</span>
+          {tooltipIcon}
+        </Tooltip>
+      );
+    })(),
     type: itemType === 'divider' ? 'divider' : undefined,
-
   } as MenuItem;
 }
 
