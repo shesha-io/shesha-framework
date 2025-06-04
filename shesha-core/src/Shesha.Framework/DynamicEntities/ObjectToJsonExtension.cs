@@ -60,25 +60,29 @@ namespace Shesha.DynamicEntities
 
                     var val = prop.GetValue(obj);
 
-                    if (val is IJsonEntityProxy proxy)
-                        jprop.Value = JsonEntityProxy.GetJson(proxy, jprop.Value as JObject);
-                    else {
-                        if (prop.IsMultiValueReferenceListProperty())
-                        {
-                            var arrayValue = val != null
-                                ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(val, typeof(Int64)))
-                                : new Int64[0];
+                    if (prop.IsMultiValueReferenceListProperty())
+                    {
+                        var arrayValue = val != null
+                            ? EntityExtensions.DecomposeIntoBitFlagComponents((Int64)System.Convert.ChangeType(val, typeof(Int64)))
+                            : new Int64[0];
                             
-                            jprop.Value = ValueToJson(arrayValue.GetType(), arrayValue, jprop.Value, addMissedProperties);
-                        } else
-                            jprop.Value = ValueToJson(prop.PropertyType, val, jprop.Value, addMissedProperties);
-                    }
+                        jprop.Value = ValueToJson(arrayValue.GetType(), arrayValue, jprop.Value, addMissedProperties);
+                    } else
+                        jprop.Value = ValueToJson(prop.PropertyType, val, jprop.Value, addMissedProperties);
                 }
                 catch (Exception e)
                 {
                     throw
                         new Exception($"GetJObjectFromObject. ObjectType: {obj?.GetType().FullName}, jObj: {jobj.ToJsonString()}, prop: {prop?.Name}, propValue: {prop?.GetValue(obj)}", e);
                 }
+            }
+
+            if (obj != null && obj.IsEntity())
+            {
+                if (!jobj.Properties().Any(x => x.Name == nameof(IHasClassNameField._className)))
+                    jobj.Add(nameof(IHasClassNameField._className), obj?.GetType().FullName);
+                if (!jobj.Properties().Any(x => x.Name == nameof(IHasDisplayNameField._displayName)))
+                    jobj.Add(nameof(IHasDisplayNameField._displayName), obj?.GetEntityDisplayName());
             }
 
             return jobj;
@@ -111,6 +115,9 @@ namespace Shesha.DynamicEntities
 
             if (propType.IsClass && !propType.IsSystemType() && !propType.IsEntityType())
             {
+                if (val is JObject newjval)
+                    return newjval;
+
                 if (val is IJsonEntityProxy proxy)
                     return JsonEntityProxy.GetJson(proxy, jval as JObject);
 
@@ -118,23 +125,25 @@ namespace Shesha.DynamicEntities
                     return ConvertGeometry(geometry);
 
                 jval = jval.IsNullOrEmpty() ? new JObject() : jval;
-                var newjval = GetJObjectFromObject(val, jval as JObject);
+                newjval = GetJObjectFromObject(val, jval as JObject);
                 if (jval.IsNullOrEmpty())
                     jval = newjval;
                 return jval;
             }
 
-            if (propType.IsEntityType())
+            if (propType.IsEntityType() && val != null)
             {
-                var jref = new JObject();
-                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName() ?? string.Empty));
-                jref.Add(nameof(EntityReferenceDto<int>._className).ToCamelCase(), JProperty.FromObject(propType.GetRequiredFullName()));
-                jref.Add(nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JProperty.FromObject(val.GetId().NotNull()));
+                var jref = new JObject
+                {
+                    { nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JToken.FromObject(val.GetEntityDisplayName() ?? string.Empty) },
+                    { nameof(EntityReferenceDto<int>._className).ToCamelCase(), JToken.FromObject((val.GetType() ?? propType).GetRequiredFullName()) },
+                    { nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JToken.FromObject(val.GetId().NotNull()) }
+                };
                 return jref;
             }
 
-            if (jval.IsNullOrEmpty() || !val.Equals(jval.ToObject(propType)))
-                return JProperty.FromObject(val);
+            if (jval.IsNullOrEmpty() || !val.NotNull().Equals(jval.ToObject(propType)))
+                return JProperty.FromObject(val.NotNull());
 
             return jval ?? JValue.CreateNull();
         }

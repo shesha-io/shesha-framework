@@ -2,6 +2,7 @@
 using FluentMigrator.Builders;
 using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create.Table;
+using FluentMigrator.Builders.Insert;
 using FluentMigrator.Infrastructure;
 using FluentMigrator.Runner.Extensions;
 using System.Reflection;
@@ -15,6 +16,22 @@ namespace Shesha.FluentMigrator
     public static class SheshaFluentMigratorExtensions
     {
         private const int MsSqlVarcharMax = 1073741823;
+
+        /// <summary>
+        /// Insert bootstrapper force record to the bootstrapping info table
+        /// </summary>
+        public static void ForceBootstrapper(this IInsertExpressionRoot insert, string bootstrapperName)
+        {
+            insert.IntoTable("frwk_bootstrapper_startups")
+                .Row(new Dictionary<string, object>
+                {
+                    { "id", Guid.NewGuid() },
+                    { "creation_time", DateTime.Now },
+                    { "force", true },
+                    { "bootstrapper_name", bootstrapperName },
+                    { "status", 0 }
+                });
+        }
 
         /// <summary>
         /// Adds foreign key column (int/int64/Guid acording to columnType) to the table

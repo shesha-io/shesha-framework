@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.Configuration.Runtime;
+using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
@@ -15,6 +16,10 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class EntityConfigDto: EntityDto<Guid>, IConfigurationItemDto
     {
+        public virtual bool CreatedInDb { get; set; }
+
+        public string? IdColumn { get; set; }
+
         [StringLength(255)]
         public string? FriendlyName { get; set; }
         [StringLength(100)]
@@ -28,14 +33,17 @@ namespace Shesha.DynamicEntities.Dtos
         [StringLength(255)]
         public string? DiscriminatorValue { get; set; }
 
+        public string? InheritedFromId { get; set; }
+        public string? InheritedFrom { get; set; }
+
         /// <summary>
         /// Source of the entity (code/user)
         /// </summary>
         public MetadataSourceType? Source { get; set; }
 
-        public virtual EntityConfigTypes? EntityConfigType { get; set; }
+        public EntityConfigTypes? EntityConfigType { get; set; }
 
-        public virtual bool GenerateAppService { get; set; }
+        public bool GenerateAppService { get; set; }
 
         // From ConfigurationItem
         public bool Suppress { get; set; }

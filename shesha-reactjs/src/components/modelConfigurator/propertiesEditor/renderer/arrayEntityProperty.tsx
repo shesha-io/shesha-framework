@@ -4,7 +4,7 @@ import { QuestionCircleOutlined, EyeInvisibleOutlined } from '@ant-design/icons'
 import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { getIconByDataType } from '@/utils/metadata';
+import { getIconTypeByDataType } from '@/utils/metadata';
 import ShaIcon from '@/components/shaIcon';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import classNames from 'classnames';
@@ -17,7 +17,7 @@ export const ArrayEntityProperty: FC<IProps> = props => {
   const { selectedItemId, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const icon = getIconByDataType(props.dataType);
+  const icon = getIconTypeByDataType(props.dataType);
 
   const listType = props.properties?.length > 0
     ? props.properties[0].entityType

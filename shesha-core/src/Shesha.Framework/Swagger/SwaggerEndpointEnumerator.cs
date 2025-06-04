@@ -39,7 +39,7 @@ namespace Shesha.Swagger
                         // entity service
                         var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
                         var entityType = genericInterface.GenericTypeArguments.First();
-                        var model = AsyncHelper.RunSync(() => entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
+                        var model = AsyncHelper.RunSync(() => entityConfigs.GetCachedModelConfigurationOrNullAsync(entityType.Namespace.NotNull(), entityType.Name));
                         model.NotNull();
                         var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
                         var crudAttribute = entityType.GetAttributeOrNull<CrudAccessAttribute>();

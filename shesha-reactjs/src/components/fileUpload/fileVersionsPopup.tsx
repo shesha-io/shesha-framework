@@ -24,8 +24,8 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
 
   if (fileId == null) return null;
 
-  const handleVisibleChange = () => {
-    if (!serverData) fetchHistory();
+  const handleVisibleChange = (open: boolean) => {
+    if (open && !serverData) fetchHistory();
   };
 
   const uploads = serverData?.result;
@@ -53,7 +53,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
   );
 
   return (
-    <Popover content={content} title="History" onVisibleChange={handleVisibleChange}>
+    <Popover content={content} title="History" onOpenChange={handleVisibleChange}>
       <HistoryOutlined />
     </Popover>
   );

@@ -54,11 +54,16 @@ namespace Shesha.Metadata
                 {
                     var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
 
-                    if (t.Source == Domain.Enums.MetadataSourceType.ApplicationCode
-                        && (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/))
+                    if (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/)
                         return null;
 
-                    var metadata = await _metadataProvider.GetAsync(config?.EntityType, t.FullClassName);
+                    var metadata = await _metadataProvider.GetAsync(config.EntityType);
+                    // update module for dynamic entities
+                    if (metadata.Module == null)
+                    {
+                        metadata.Module = t.Module?.Name;
+                        metadata.ModuleAccessor = t.Module?.Accessor;
+                    }
                     return new EntityModelDto
                     {
                         Suppress = t.Suppress,

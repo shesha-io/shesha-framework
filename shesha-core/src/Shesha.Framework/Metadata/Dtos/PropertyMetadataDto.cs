@@ -139,5 +139,10 @@ namespace Shesha.Metadata.Dtos
             }
             return sb.ToString().ToMd5Fingerprint();
         }
+
+        public override string ToString()
+        {
+            return $"{Path} {DataType} ({DataFormat} {EntityType})";
+        }
     }
 }

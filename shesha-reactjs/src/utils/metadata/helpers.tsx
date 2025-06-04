@@ -8,10 +8,10 @@ import { camelcaseDotNotation, getNumberFormat } from '@/utils/string';
 import { toCamelCase } from '../string';
 import React from 'react';
 
-export const getIconByDataType = (dataType: string): IconType => {
+export const getIconTypeByDataType = (dataType: string): IconType => {
   switch (dataType) {
     case DataTypes.array:
-      return 'OrderedListOutlined';
+      return 'DatabaseOutlined';
     case DataTypes.object:
       return 'PartitionOutlined';
     case DataTypes.string:
@@ -31,13 +31,23 @@ export const getIconByDataType = (dataType: string): IconType => {
     case DataTypes.boolean:
       return 'CheckSquareOutlined';
     case DataTypes.referenceListItem:
-      return 'BookOutlined';
+      return 'OrderedListOutlined';
     case DataTypes.specification:
       return 'BulbOutlined';
-
+    case DataTypes.file:
+      return 'FileOutlined';
+  
     default:
       return null;
   }
+};
+
+export const getIconByDataType = (dataType: string, dataFormat: string): React.ReactNode => {
+  if (dataType === DataTypes.objectReference) return <JsonOutlined />;
+  if (dataType === DataTypes.entityReference && !dataFormat) return <GenericOutlined />;
+  var iconType = getIconTypeByDataType(dataType);
+  if (iconType) return <ShaIcon iconName={iconType} />;
+  return null;
 };
 
 export const getIconByPropertyMetadata = (metadata: IPropertyMetadata) => {
@@ -45,7 +55,7 @@ export const getIconByPropertyMetadata = (metadata: IPropertyMetadata) => {
 
   if (metadata.dataType === DataTypes.objectReference) return JsonOutlined(null);
 
-  var iconType = getIconByDataType(metadata.dataType);
+  var iconType = getIconTypeByDataType(metadata.dataType);
   if (iconType) return <ShaIcon iconName={iconType} />;
   return null;
 };

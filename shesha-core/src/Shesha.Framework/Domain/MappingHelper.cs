@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Newtonsoft.Json.Linq;
 using PluralizeService.Core;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain.Attributes;
@@ -7,6 +8,7 @@ using Shesha.Domain.Interfaces;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
+using Shesha.Metadata;
 using Shesha.Reflection;
 using System;
 using System.Collections;
@@ -175,13 +177,28 @@ namespace Shesha.Domain
             var columnPrefix = GetColumnPrefix(memberInfo.DeclaringType);
             var propertyType = memberInfo.GetPropertyOrFieldType().GetUnderlyingTypeIfNullable();
 
-            var suffix = memberInfo.IsReferenceListProperty()
-                ? "Lkp"
-                : propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?)
-                    ? "Ticks"
-                    : null;
+            var suffix = propertyType.IsEntityType()
+                ? "Id"
+                :memberInfo.IsReferenceListProperty()
+                    ? "Lkp"
+                    : propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?)
+                        ? "Ticks"
+                        : null;
 
             return GetNameForMember(memberInfo, columnPrefix, memberInfo.Name, suffix);
+        }
+
+        public static string GetColumnName(EntityProperty propertyConfig, IModuleList moduleList)
+        {
+            // ToDo: AS - use correct nameConventions
+
+            var suffix = propertyConfig.DataType == DataTypes.EntityReference || propertyConfig.DataType == DataTypes.File
+                ? "Id"
+                : propertyConfig.DataType == DataTypes.ReferenceListItem
+                    ? "Lkp"
+                    : null;
+            return $"{GetColumnPrefix(propertyConfig.EntityConfig, moduleList)}{propertyConfig.Name}{suffix}";
+
         }
 
         /// <summary>
@@ -281,6 +298,34 @@ namespace Shesha.Domain
         }
 
         /// <summary>
+        /// Returns prefix for the table columns of the specified type of entity
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="moduleList"></param>
+        /// <returns></returns>
+        public static string GetColumnPrefix(EntityConfig config, IModuleList moduleList)
+        {
+            if (config.InheritedFrom != null)
+            {
+                var rootConfig = config.InheritedFrom;
+                // ToDo: AS - infinity loop should not be there but need to think how to be shure
+                while (rootConfig.InheritedFrom != null)
+                    rootConfig = rootConfig.InheritedFrom;
+                
+                var configAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == config.Module.NotNull().Name)?.Assembly.FullName;
+                var rootConfigAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == rootConfig.Module.NotNull().Name)?.Assembly.FullName;
+                if (rootConfigAssemblyName != configAssemblyName)
+                {
+                    // This column extends a table created in another module - we should add a prefix
+                    if (!Prefixes.ContainsKey(rootConfigAssemblyName.NotNull())
+                        || Prefixes[rootConfigAssemblyName] != Prefixes[configAssemblyName.NotNull()])
+                        return Prefixes[configAssemblyName.NotNull()];
+                }
+            }
+            return "";
+        }
+
+        /// <summary>
         /// Returns prefix for the table of the specified type of entity
         /// </summary>
         /// <param name="type"></param>
@@ -288,6 +333,13 @@ namespace Shesha.Domain
         public static string GetTablePrefix(Type type)
         {
             return Prefixes.TryGetValue(type.GetAssemblyFullName(), out var prefix)
+                ? prefix ?? string.Empty
+                : string.Empty;
+        }
+
+        public static string GetTablePrefix(Assembly assembly)
+        {
+            return Prefixes.TryGetValue(assembly.FullName.NotNull(), out var prefix)
                 ? prefix ?? string.Empty
                 : string.Empty;
         }
@@ -319,6 +371,15 @@ namespace Shesha.Domain
                     && !type.HasAttribute<NotMappedAttribute>()
                     && typeof(Entity) != type
                     && GetRootEntity(type) == null);
+        }
+
+        /// <summary>
+        /// Returns true if the specified type is a Proxy
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsProxy([NotNullWhen(true)] Type? type)
+        {
+            return type != null && type != type.StripCastleProxyType();
         }
 
         /// <summary>
@@ -381,9 +442,16 @@ namespace Shesha.Domain
         public static bool IsListType(Type type)
         {
             return type.IsGenericType
+                && type != typeof(JObject)
                 && (
                     type.GetGenericTypeDefinition().IsAssignableTo(typeof(IList<>))
                     || type.GetGenericTypeDefinition().IsAssignableTo(typeof(List<>))
+                    || type.ImplementsGenericInterface(typeof(IList<>)) 
+                    || type.ImplementsGenericInterface(typeof(ICollection<>)) 
+                    || type.ImplementsGenericInterface(typeof(IEnumerable<>)) 
+                    || type.GetInterface(nameof(IEnumerable)) != null
+                    || type.GetInterface(nameof(ICollection)) != null
+                    || type.GetInterface(nameof(IList)) != null
                 );
         }
 

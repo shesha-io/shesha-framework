@@ -12,5 +12,7 @@ namespace Shesha.Configuration.MappingMetadata
         PropertyMappingMetadata? GetPropertyMappingMetadata(Type entityType, string propertyName);
 
         Task UpdateClassNamesAsync(Type entityType, List<PropertyInfo> properties, string oldValue, string newValue, bool replace);
+
+        void ResetMapping();
     }
 }

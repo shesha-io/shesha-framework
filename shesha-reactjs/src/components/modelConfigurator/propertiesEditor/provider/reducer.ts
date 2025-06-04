@@ -3,7 +3,6 @@ import { handleActions } from 'redux-actions';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { ModelActionEnums } from './actions';
-import { nanoid } from '@/utils/uuid';
 import {
   IAddItemPayload,
   IPropertiesEditorStateContext,
@@ -11,6 +10,7 @@ import {
   IUpdateItemSettingsPayload,
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
 } from './contexts';
+import { DataTypes } from '@/index';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {
   for (const item of items) {
@@ -44,7 +44,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
       const itemProps: IModelItem = {
         name: `New property`,
-        id: nanoid(),
+        id: payload.item?.id ?? '00000000-0000-0000-0000-000000000000', // Guid.Empty
         source: MetadataSourceType.UserDefined
       };
 
@@ -138,10 +138,23 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
       const lastIndex = blockIndex.pop();
 
       // search for a parent item
-      const lastArr = blockIndex.reduce((arr, i) => arr[i]['properties'], newItems);
+      const lastArr = blockIndex.reduce((arr, i) => (
+        arr[i].dataType === DataTypes.array && arr[i].dataFormat === DataTypes.object && arr[i].properties[0]
+          // for objects array we need to set a list of properties for the internal itemsType
+          ? arr[i].properties[0].properties
+          : arr[i]['properties']
+      ), newItems);
+
+      // get changed Item
+      const item = lastArr[lastIndex];
 
       // and set a list of childs
-      lastArr[lastIndex]['properties'] = childIds;
+      if (item.dataType === DataTypes.array && item.dataFormat === DataTypes.object) {
+        // for objects array we need to set a list of properties for the internal itemsType
+        item.properties[0].properties = childIds;
+      } else {
+        lastArr[lastIndex]['properties'] = childIds;
+      }
 
       return {
         ...state,

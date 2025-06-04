@@ -13,8 +13,20 @@ namespace Shesha.Domain
     /// Configuration of the entity property
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.EntityProperty", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    public class EntityProperty: FullAuditedEntity<Guid>
+    public class EntityProperty : FullAuditedEntity<Guid>
     {
+        public virtual bool CreatedInDb { get; set; }
+
+        /// <summary>
+        /// Name of column in the DB
+        /// </summary>
+        public virtual string? ColumnName { get; set; }
+
+        /// <summary>
+        /// If Inherited from other property
+        /// </summary>
+        public virtual EntityProperty? InheritedFrom { get; set; }
+
         /// <summary>
         /// Owner entity config
         /// </summary>
@@ -66,7 +78,7 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(300)]
         public virtual string? ReferenceListModule { get; set; }
-        
+
         /// <summary>
         /// Source of the property (code/user)
         /// </summary>
@@ -169,5 +181,40 @@ namespace Shesha.Domain
         /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
         /// </summary>
         public virtual bool CascadeDeleteUnreferenced { get; set; }
+
+        /// <summary>
+        /// List configuration and DB mapping
+        /// </summary>
+        [SaveAsJson]
+        public virtual EntityPropertyListConfiguration ListConfiguration { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {DataType} ({DataFormat} {EntityType})";
+        }
     }
+
+    public class EntityPropertyListConfiguration
+    {
+        public static readonly string ManyToMany = "many-to-many";
+        public static readonly string ManyToOne = "many-to-one";
+
+        public string MappingType { get; set; }
+
+        public string ForeignProperty { get; set; }
+
+        public EntityPropertyListDbMapping DbMapping { get; set; }
+    }
+
+    public class EntityPropertyListDbMapping
+    {
+        public string ManyToManyTableName { get; set; }
+
+        public string ManyToManyKeyColumnName { get; set; }
+
+        public string ManyToManyChildColumnName { get; set; }
+
+        public string ManyToManyInversePropertyName { get; set; }
+    }
+
 }

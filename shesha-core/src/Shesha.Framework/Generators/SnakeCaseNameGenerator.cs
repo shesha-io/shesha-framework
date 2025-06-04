@@ -10,7 +10,7 @@ namespace Shesha.Generators
 {
     public class SnakeCaseNameGenerator : INameGenerator, ISingletonDependency
     {
-        public string AutoGeneratorDbSchema { get; set; } = "auto_gen";
+        public string AutoGeneratorDbSchema { get; set; } = MappingHelper.AutoGeneratorSchema;
         public int MaxLenght { get; set; } = 63;
         public GeneratorMaxLengthActionEnum MaxLengthAction { get; set; } = GeneratorMaxLengthActionEnum.ThrowError;
 

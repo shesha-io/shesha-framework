@@ -7,6 +7,8 @@ export type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
  * Indicate the source of the entity/property metadata
  */
 export type MetadataSourceType = 1 | 2;
+export const MetadataSourceTypeApplication = 1 as MetadataSourceType;
+export const MetadataSourceTypeUseDefined = 2 as MetadataSourceType;
 
 export interface PermissionedObjectDto {
   id?: string;

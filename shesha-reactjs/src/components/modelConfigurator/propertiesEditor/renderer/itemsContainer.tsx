@@ -8,6 +8,7 @@ import { Item } from './item';
 export interface IItemsContainerProps {
   index?: number[];
   items: IModelItem[];
+  disableDrag?: boolean;
 }
 
 export const ItemsContainer: FC<IItemsContainerProps> = props => {
@@ -27,6 +28,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
   return (
     <ReactSortable
       list={props.items}
+      disabled={props.disableDrag}
       setList={onSetList}
       fallbackOnBody={true}
       swapThreshold={0.5}
@@ -46,7 +48,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
         <Item
           itemProps={item}
           index={[...props.index, index]}
-          key={item?.id}
+          key={index.toString()}
           containerRendering={(args) => (<ItemsContainer {...args} />)}
         />
       )

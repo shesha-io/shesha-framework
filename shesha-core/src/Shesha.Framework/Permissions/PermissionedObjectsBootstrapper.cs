@@ -1,21 +1,25 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.ObjectMapping;
+using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions;
+using Shesha.Services;
 using Shesha.Services.VersionedFields;
+using Shesha.Startup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Permission
 {
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
-    public class PermissionedObjectsBootstrapper : IBootstrapper, ITransientDependency
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
+    public class PermissionedObjectsBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IObjectMapper _objectMapper;
@@ -28,8 +32,11 @@ namespace Shesha.Permission
             IObjectMapper objectMapper,
             IVersionedFieldManager versionedFieldManager,
             IRepository<Module, Guid> moduleReporsitory,
-            IIocResolver iocResolver
-        )
+            IIocResolver iocResolver,
+            IUnitOfWorkManager unitOfWorkManager,
+            IApplicationStartupSession startupSession,
+            IBootstrapperStartupService bootstrapperStartupService
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
         {
             _permissionedObjectRepository = permissionedObjectRepository;
             _objectMapper = objectMapper;
@@ -38,7 +45,7 @@ namespace Shesha.Permission
             _iocResolver = iocResolver;
         }
 
-        public async Task ProcessAsync()
+        protected override async Task ProcessInternalAsync()
         {
             var providers = _iocResolver.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)
@@ -48,7 +55,7 @@ namespace Shesha.Permission
                 foreach (var objectType in objectTypes)
                 {
 
-                    var items = await permissionedObjectProvider.GetAllAsync(objectType, true);
+                    var items = await permissionedObjectProvider.GetAllAsync(objectType, !ForceUpdate);
 
                     var dbItems = await _permissionedObjectRepository.GetAll()
                         .Where(x => x.Type != null && (x.Type == objectType || x.Type.Contains($"{objectType}."))).ToListAsync();

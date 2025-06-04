@@ -89,6 +89,14 @@ namespace Shesha.Extensions
                 : query;
         }
 
+        public static List<Dt> Map<Dt, St>(this IEnumerable<St> source, Func<St, Dt> func)
+        {
+            var destination = new List<Dt>();
+            foreach (var item in source)
+                destination.Add(func(item));
+            return destination;
+        }
+
         #region IAsyncQueryableExecuter extensions
 
         /// <summary>
