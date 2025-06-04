@@ -39,9 +39,9 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
           {(navigationType === 'url' || navigationType === 'form' 
             ? <Link className={className} href={url} title={tooltip && tooltip as string} onClick={clickHandler}>{label}</Link> 
             : <Link href={''} className={className} title={tooltip && tooltip as string} onClick={clickHandler}>{label}</Link>)}
-          {tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 4 }} />}
+          {tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 8 }} />}
         </div>)
-      : <div title={tooltip && tooltip as string}>{<span className={className}>{label}</span>}{tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 4 }} />}</div>,
+      : <div title={tooltip && tooltip as string}>{<span className={className}>{label}</span>}{tooltip && <QuestionCircleOutlined size={4} title={tooltip && tooltip as string} style={{ marginLeft: 8 }} />}</div>,
     type: itemType === 'divider' ? 'divider' : undefined,
 
   } as MenuItem;
