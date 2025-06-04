@@ -1,0 +1,216 @@
+name: Deploy Branch to GitHub Pages
+
+on:
+  pull_request:
+    branches: [ main ]  # Change 'main' to your target branch B
+    types: [opened, synchronize, reopened]
+  pull_request:
+    branches: [ main ]
+    types: [closed]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+      pull-requests: write
+    
+    steps:
+    - name: Checkout PR branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+        fetch-depth: 0
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'shera-reactjs/package-lock.json'
+    
+    - name: Install dependencies
+      run: |
+        cd shera-reactjs
+        npm ci
+    
+    - name: Build project
+      run: |
+        cd shera-reactjs
+        npm run build
+    
+    - name: Checkout gh-pages branch
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+        # Create or checkout gh-pages branch
+        if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
+          git checkout gh-pages
+          git pull origin gh-pages
+        else
+          git checkout --orphan gh-pages
+          git rm -rf .
+          echo "# GitHub Pages" > README.md
+          git add README.md
+          git commit -m "Initial gh-pages commit"
+          git push origin gh-pages
+        fi
+    
+    - name: Create branch directory and deploy
+      run: |
+        BRANCH_NAME="${{ github.head_ref }}"
+        SAFE_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+        
+        # Create directory for this branch
+        mkdir -p "branches/$SAFE_BRANCH_NAME"
+        
+        # Copy built files to branch directory
+        cp -r ./shera-reactjs/dist/* "branches/$SAFE_BRANCH_NAME/" || cp -r ./shera-reactjs/build/* "branches/$SAFE_BRANCH_NAME/" || echo "Adjust source directory"
+        
+        # Create or update index.html with branch links
+        cat > index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Branch Deployments</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+                .branch { margin: 10px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+                .branch h3 { margin: 0 0 10px 0; color: #333; }
+                .branch a { color: #0066cc; text-decoration: none; }
+                .branch a:hover { text-decoration: underline; }
+                .meta { color: #666; font-size: 0.9em; }
+            </style>
+        </head>
+        <body>
+            <h1>🚀 Branch Deployments</h1>
+            <p>Available branch previews:</p>
+        EOF
+        
+        # Add current branch to index
+        echo "    <div class='branch'>" >> index.html
+        echo "        <h3>📁 $BRANCH_NAME</h3>" >> index.html
+        echo "        <a href='./branches/$SAFE_BRANCH_NAME/'>View Deployment →</a>" >> index.html
+        echo "        <div class='meta'>Updated: $(date)</div>" >> index.html
+        echo "    </div>" >> index.html
+        
+        # Add existing branches
+        for dir in branches/*/; do
+          if [ -d "$dir" ] && [ "$(basename "$dir")" != "$SAFE_BRANCH_NAME" ]; then
+            BRANCH_DISPLAY=$(basename "$dir" | sed 's/-/ /g')
+            echo "    <div class='branch'>" >> index.html
+            echo "        <h3>📁 $BRANCH_DISPLAY</h3>" >> index.html
+            echo "        <a href='./$dir'>View Deployment →</a>" >> index.html
+            echo "    </div>" >> index.html
+          fi
+        done
+        
+        echo "</body></html>" >> index.html
+        
+        # Commit and push
+        git add .
+        git commit -m "Deploy branch: $BRANCH_NAME ($(date))" || echo "No changes to commit"
+        git push origin gh-pages
+    
+    - name: Comment on PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const branchName = context.payload.pull_request.head.ref;
+          const safeBranchName = branchName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+          const deployUrl = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/branches/${safeBranchName}/`;
+          const indexUrl = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 **Branch Preview Deployed!**\n\n**Your branch:** [${branchName}](${deployUrl})\n**All branches:** [View Index](${indexUrl})\n\nThis preview updates automatically with new commits.`
+          });
+
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Clean up branch deployment
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+        BRANCH_NAME="${{ github.head_ref }}"
+        SAFE_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+        
+        # Checkout gh-pages branch
+        if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
+          git checkout gh-pages
+          git pull origin gh-pages
+          
+          # Remove branch directory
+          if [ -d "branches/$SAFE_BRANCH_NAME" ]; then
+            rm -rf "branches/$SAFE_BRANCH_NAME"
+            
+            # Recreate index without this branch
+            cat > index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Branch Deployments</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+                .branch { margin: 10px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+                .branch h3 { margin: 0 0 10px 0; color: #333; }
+                .branch a { color: #0066cc; text-decoration: none; }
+                .branch a:hover { text-decoration: underline; }
+                .meta { color: #666; font-size: 0.9em; }
+            </style>
+        </head>
+        <body>
+            <h1>🚀 Branch Deployments</h1>
+            <p>Available branch previews:</p>
+        EOF
+            
+            # Add remaining branches
+            for dir in branches/*/; do
+              if [ -d "$dir" ]; then
+                BRANCH_DISPLAY=$(basename "$dir" | sed 's/-/ /g')
+                echo "    <div class='branch'>" >> index.html
+                echo "        <h3>📁 $BRANCH_DISPLAY</h3>" >> index.html
+                echo "        <a href='./$dir'>View Deployment →</a>" >> index.html
+                echo "    </div>" >> index.html
+              fi
+            done
+            
+            echo "</body></html>" >> index.html
+            
+            git add .
+            git commit -m "Remove deployment for closed branch: $BRANCH_NAME" || echo "No changes to commit"
+            git push origin gh-pages
+          fi
+        fi
+    
+    - name: Comment cleanup
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const branchName = context.payload.pull_request.head.ref;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🧹 **Branch deployment cleaned up**\n\nThe preview for branch \`${branchName}\` has been removed since the PR was closed.`
+          });
