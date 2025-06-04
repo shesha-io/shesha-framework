@@ -186,6 +186,10 @@ z
         width: ${shaSiderCollapsedWidth} !important;
       }
     }
+
+    .ant-layout-sider-trigger {
+      height: 51.5px;
+    }
   `;
 
   const shaLayoutHeading = cx(
