@@ -187,7 +187,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
 
     .ant-layout-sider-trigger {
-      height: 51.5px;
+      height: ${layoutTriggerHeight};
     }
   `;
 
