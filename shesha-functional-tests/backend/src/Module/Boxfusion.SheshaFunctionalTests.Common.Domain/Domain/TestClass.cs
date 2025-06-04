@@ -21,7 +21,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// 
         /// </summary>
-        public virtual TestJsonEntity JsonProp { get; set; }
+        public virtual JsonEntity JsonProp { get; set; }
         /// <summary>
         /// 
         /// </summary>

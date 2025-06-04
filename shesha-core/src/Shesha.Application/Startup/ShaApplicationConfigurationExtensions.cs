@@ -1,9 +1,7 @@
 ﻿using Abp.Configuration.Startup;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Shesha.DynamicEntities;
 
 namespace Shesha.Startup
 {
@@ -19,5 +17,16 @@ namespace Shesha.Startup
         {
             return configurations.AbpConfiguration.Get<IShaApplicationModuleConfiguration>();
         }
+
+        /// <summary>
+        /// Allows to dynamically update the Web Api when changing dynamic Entity configurations. 
+        /// !!! Should be before AddMvcCore !!!
+        /// </summary>
+        public static void UseDynamicWebApi(this IServiceCollection services)
+        {
+            services.AddSingleton<IActionDescriptorChangeProvider>(SheshaActionDescriptorChangeProvider.Instance);
+            services.AddSingleton(SheshaActionDescriptorChangeProvider.Instance);
+        }
+
     }
 }

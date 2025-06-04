@@ -116,6 +116,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                         }
                     });
                 });
+                //promises.push(metadataCache.removeItem('functionalTests/null'));
                 //console.groupEnd();
                 return Promise.all(promises).then();
             } else {

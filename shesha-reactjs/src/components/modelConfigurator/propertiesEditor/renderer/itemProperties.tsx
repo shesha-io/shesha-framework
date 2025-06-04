@@ -12,6 +12,7 @@ import { nanoid } from '@/utils/uuid';
 import { useDebouncedCallback } from 'use-debounce';
 import { usePropertiesEditor } from '../provider';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
+import { getSettings } from './propertySettings/propertySettings';
 
 export interface IProps { }
 
@@ -40,7 +41,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
 
     const componentModel = getItem(selectedItemId);
 
-    const markup = propertySettingsJson as FormMarkup;
+    const markup = getSettings(componentModel);// propertySettingsJson as FormMarkup;
 
     return (
       <div>

@@ -25,7 +25,7 @@ namespace Shesha.JsonEntities.Converters
                 : null;
             
             var classNameObjectType = _className != null 
-                ? StaticContext.IocManager.Resolve<TypeFinder>().Find(t => t.FullName == _className).FirstOrDefault()
+                ? StaticContext.IocManager.Resolve<ITypeFinder>().Find(t => t.FullName == _className).FirstOrDefault()
                 : objectType;
 
             if (classNameObjectType == typeof(JsonEntity) && _className == null)

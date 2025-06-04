@@ -17,6 +17,12 @@ namespace Shesha.Domain
     {
         public const string ItemTypeName = "entity";
 
+        public virtual bool CreatedInDb { get; set; }
+
+        public virtual string? IdColumn { get; set; }
+
+        public virtual EntityConfig? InheritedFrom { get; set; }
+
         [EntityDisplayName]
         [StringLength(255)]
         public virtual string? FriendlyName { get; set; }
@@ -30,8 +36,6 @@ namespace Shesha.Domain
         public virtual string? Namespace { get; set; }
         [StringLength(255)]
         public virtual string? DiscriminatorValue { get; set; }
-
-        public virtual EntityConfig? Parent { get; set; }
 
         public virtual bool GenerateAppService { get; set; }
 
@@ -70,5 +74,10 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(200)]
         public virtual string? Accessor { get; set; }
+
+        public override string ToString()
+        {
+            return FullClassName;
+        }
     }
 }

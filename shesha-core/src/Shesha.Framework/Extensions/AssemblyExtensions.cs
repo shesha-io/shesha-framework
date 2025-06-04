@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Reflection;
+using Shesha.Attributes;
 using Shesha.Modules;
 using Shesha.Services;
 using System;
@@ -42,7 +43,9 @@ namespace Shesha.Extensions
         /// <returns></returns>
         public static SheshaModuleInfo? GetConfigurableModuleInfo(this Assembly assembly)
         {
-            return GetCacheItem(assembly)?.ModuleInfo;
+            return assembly.IsDynamic
+                ? assembly.GetCustomAttribute<DynamicAssemblyModuleAttribute>()?.ModuleInfo
+                : GetCacheItem(assembly)?.ModuleInfo;
         }
 
         /// <summary>
@@ -51,7 +54,7 @@ namespace Shesha.Extensions
         /// <returns></returns>
         public static string? GetConfigurableModuleName(this Assembly assembly) 
         {
-            return GetCacheItem(assembly)?.ModuleInfo.Name;
+            return GetConfigurableModuleInfo(assembly)?.Name;
         }
     }
 
@@ -126,6 +129,8 @@ namespace Shesha.Extensions
             Modules = moduleItems.Cast<ModuleCacheItem>().ToList();
             Modules.AddRange(subModuleItems);
         }
+
+
 
         private SheshaModule? GetModuleInstance(Type moduleType)
         {

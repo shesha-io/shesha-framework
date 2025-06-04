@@ -88,7 +88,9 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   };
 
   const prepareValues = (values: ModelConfigurationDto): ModelConfigurationDto => {
-    return { ...values, id: state.id };
+    return state.id
+      ? { ...values, id: state.id }
+      : { ...values, className: values.name, namespace: values.module };
   };
 
   const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> =>

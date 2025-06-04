@@ -1,0 +1,131 @@
+﻿using Abp.Collections.Extensions;
+using Abp.Dependency;
+using Abp.Domain.Uow;
+using NHibernate;
+using Shesha.Domain.ConfigurationItems;
+using Shesha.DynamicEntities.DbGenerator;
+using Shesha.DynamicEntities.Dtos;
+using Shesha.NHibernate.UoW;
+using Shesha.Reflection;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Shesha.DbActions
+{
+    public class DbMsSqlGenerateActions : BaseDbMetadataActions
+    {
+        public override string SchemaName => CurrentSchema.IsNullOrEmpty() ? "dbo" : CurrentSchema.NotNull();
+
+        public DbMsSqlGenerateActions(
+            IUnitOfWorkManager unitOfWorkManager
+        ): base(unitOfWorkManager)
+        {
+        }
+
+        public override async Task<bool> IsSchemaExistsAsync(string schemaName)
+        {
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+            var result = await session
+                .CreateSQLQuery($"SELECT 1 FROM sys.schemas WHERE name = '{schemaName}'")
+                .ListAsync<int>();
+            return result.Count > 0;
+        }
+
+        public override async Task<bool> IsTableExistsAsync(string tableName)
+        {
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+            var result = await session
+                .CreateSQLQuery($"SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '{SchemaName}' AND  TABLE_NAME = '{tableName}'")
+                .ListAsync<int>();
+            return result.Count > 0;
+        }
+
+        public override async Task<bool> IsColumnExistsAsync(string columnName)
+        {
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+            var result = await session
+                .CreateSQLQuery($"SELECT 1 FROM sys.columns WHERE Name = N'{columnName}' AND Object_ID = Object_ID(N'{TableName}')")
+                .ListAsync<int>();
+            return result.Count > 0;
+        }
+
+        public override async Task CreateCurrentSchemaAsync()
+        {
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+            await session
+                .CreateSQLQuery($"EXEC('CREATE SCHEMA {CurrentSchema}')")
+                .ExecuteUpdateAsync();
+        }
+
+        public override async Task CreateCurrentTableAsync()
+        {
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+            await session
+                .CreateSQLQuery(@$"
+CREATE TABLE {TableName} (
+[Id] [uniqueidentifier] NOT NULL,
+[CreationTime] [datetime] NOT NULL,
+[CreatorUserId] [bigint] NULL,
+[LastModificationTime] [datetime] NULL,
+[LastModifierUserId] [bigint] NULL,
+[IsDeleted] [bit] NOT NULL,
+[DeletionTime] [datetime] NULL,
+[DeleterUserId] [bigint] NULL,
+[Frwk_Discriminator] [nvarchar](100) NOT NULL,
+[TenantId] [int] NULL,
+CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED (Id ASC))")
+                .ExecuteUpdateAsync();
+
+            await session
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [DF_{CurrentTable}_CreationTime] DEFAULT (getdate()) FOR [CreationTime]")
+                .ExecuteUpdateAsync();
+
+            await session
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [DF_{CurrentTable}_IsDeleted] DEFAULT ((0)) FOR [IsDeleted]")
+                .ExecuteUpdateAsync();
+        }
+
+        public override async Task CreateCurrentColumnAsync(DbColumnTypeEnum type, bool indexed = false)
+        {
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+            await session
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD {CurrentColumn} {GetDBType(type)} Null")
+                .ExecuteUpdateAsync();
+        }
+
+        public override async Task CreateCurrentEntityReferenceColumnAsync(string primaryTableName, string primaryColumnName)
+        {
+            var primaryTable = primaryTableName.Split('.').Last();
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+            await session
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD {CurrentColumn} {GetDBType(DbColumnTypeEnum.Guid)} Null")
+                .ExecuteUpdateAsync();
+            await session
+                .CreateSQLQuery($"ALTER TABLE {TableName}  WITH CHECK ADD CONSTRAINT [FK_{CurrentColumn}_{primaryTable}] FOREIGN KEY([{CurrentColumn}]) REFERENCES {primaryTableName} ({primaryColumnName})")
+                .ExecuteUpdateAsync();
+        }
+
+        private string GetDBType(DbColumnTypeEnum type)
+        {
+            // ToDo: AS - add geometry type
+            switch (type)
+            {
+                case DbColumnTypeEnum.Guid: return "uniqueidentifier";
+                case DbColumnTypeEnum.String: return "nvarchar(max)";
+                // ToDo: AS - what is the double in the DB?
+                case DbColumnTypeEnum.Double: return "float";
+                case DbColumnTypeEnum.Float: return "float";
+                case DbColumnTypeEnum.Int32: return "int";
+                case DbColumnTypeEnum.Int64: return "bigint";
+                case DbColumnTypeEnum.Boolean: return "bit";
+                // ToDo: AS - what is the date and time in the DB?
+                case DbColumnTypeEnum.Date: return "datetime";
+                case DbColumnTypeEnum.Time: return "datetime";
+                case DbColumnTypeEnum.DateTime: return "datetime";
+                case DbColumnTypeEnum.ReferenceListItem: return "int";
+                case DbColumnTypeEnum.Json: return "nvarchar(max)";
+            }
+            throw new TypeMismatchException($"There is no type matching for {type}");
+        }
+    }
+}

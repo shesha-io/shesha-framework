@@ -41,6 +41,10 @@ export interface IModelItem {
 
   properties?: IModelItem[];
 
+  itemsType?: IModelItem;
+
+  isItemsType?: boolean;
+
   /**
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
    */

@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Abp.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.Hosting.Internal;
 using Shesha.Api.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Permissions;
@@ -21,13 +24,17 @@ namespace Shesha.Api
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
+        private readonly IApplicationLifetime _applicationLifetime;
+
         public ApiAppService(
             IApiDescriptionGroupCollectionProvider apiDescriptionsProvider,
-            IPermissionedObjectManager permissionedObjectManager
+            IPermissionedObjectManager permissionedObjectManager,
+            IApplicationLifetime applicationLifetime
         )
         {
             _apiDescriptionsProvider = apiDescriptionsProvider;
             _permissionedObjectManager = permissionedObjectManager;
+            _applicationLifetime = applicationLifetime;
         }
 
         [HttpGet]
@@ -67,6 +74,14 @@ namespace Shesha.Api
                 .ToList();
 
             return endpoints;
+        }
+
+        [HttpGet]
+        [AbpAuthorize("System Administrator")]
+        public async Task<string> ShutdownAsync()
+        {
+            _applicationLifetime. StopApplication();
+            return await Task.FromResult("Done");
         }
     }
 }

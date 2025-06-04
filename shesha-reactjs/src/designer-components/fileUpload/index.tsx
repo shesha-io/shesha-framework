@@ -2,7 +2,7 @@ import { FileAddOutlined } from '@ant-design/icons';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { FileUpload } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IFormItem, IToolboxComponent } from '@/interfaces';
+import { DataTypes, IFormItem, IToolboxComponent } from '@/interfaces';
 import { IStyleType, StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
 import { IConfigurableFormComponent } from '@/providers/form/models';
@@ -51,6 +51,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   icon: <FileAddOutlined />,
   isInput: true,
   isOutput: true,
+  dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
     const { backendUrl, httpHeaders } = useSheshaApplication();
 

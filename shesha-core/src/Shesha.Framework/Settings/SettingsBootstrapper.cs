@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Specifications;
@@ -8,9 +9,11 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Services.Settings;
 using Shesha.Services.Settings.Dto;
 using Shesha.Settings.Exceptions;
+using Shesha.Startup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,32 +23,30 @@ namespace Shesha.Settings
     /// <summary>
     /// Settings bootstrapper. Updates settings definiion in the DB
     /// </summary>
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
-    public class SettingsBootstrapper : IBootstrapper, ITransientDependency
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
+    public class SettingsBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ISettingDefinitionManager _settingDefinitionManager;
         private readonly ISettingStore _settingStore;
-        private readonly IModuleManager _moduleManager;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public SettingsBootstrapper(ISettingDefinitionManager settingDefinitionManager, ISettingStore settingStore, IRepository<SettingConfiguration, Guid> settingConfigurationRepository, 
-            IModuleManager moduleManager,
             IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager)
+            IUnitOfWorkManager unitOfWorkManager,
+            IApplicationStartupSession startupSession,
+            IBootstrapperStartupService bootstrapperStartupService
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
         {
             _settingDefinitionManager = settingDefinitionManager;
             _settingStore = settingStore;
             _settingConfigurationRepository = settingConfigurationRepository;
-            _moduleManager = moduleManager;
             _moduleRepository = moduleRepository;
-            _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public async Task ProcessAsync()
+        protected override async Task ProcessInternalAsync()
         {
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 var definitionsInCode = _settingDefinitionManager.GetAll();
 

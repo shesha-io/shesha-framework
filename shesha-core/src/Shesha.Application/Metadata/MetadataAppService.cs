@@ -134,7 +134,7 @@ namespace Shesha.Metadata
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");
             
             var containerType = await GetContainerTypeAsync(container);
-            var properties = await _metadataProvider.GetPropertiesAsync(containerType, container);
+            var properties = await _metadataProvider.GetPropertiesAsync(containerType);
             return properties;
         }
 
@@ -147,7 +147,7 @@ namespace Shesha.Metadata
 
             var containerType = await GetContainerTypeAsync(container);
 
-            return await _metadataProvider.GetAsync(containerType, container);
+            return await _metadataProvider.GetAsync(containerType);
         }
 
         /// <summary>

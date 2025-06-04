@@ -7,6 +7,7 @@ using Abp.Runtime.Caching;
 using GraphQL.Types;
 using Shesha.Cache;
 using Shesha.Domain;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.GraphQL.Provider.Schemas;
 using Shesha.Utilities;
@@ -20,7 +21,7 @@ namespace Shesha.GraphQL.Provider
     public class SchemaContainer : CacheHolder<string, ISchema>, ISchemaContainer, ISingletonDependency, IEventHandler<EntityChangedEventData<EntityProperty>>
     {
         private readonly ICacheManager _cacheManager;
-        private readonly ITypeFinder _typeFinder;
+        private readonly IShaTypeFinder _shaTypeFinder;
         private readonly IServiceProvider _serviceProvider;
         private readonly Schema _defaultSchema;
 
@@ -33,11 +34,12 @@ namespace Shesha.GraphQL.Provider
             IServiceProvider serviceProvider,
             IEnumerable<ISchema> customSchemas,
             ITypeFinder typeFinder,
+            IShaTypeFinder shaTypeFinder,
             ICacheManager cacheManager): base($"{nameof(SchemaContainer)}Cache", cacheManager)
         {
             _defaultSchema = new Schema();
             _defaultSchema.Query = new EmptyQuery();
-            _typeFinder = typeFinder;
+            _shaTypeFinder = shaTypeFinder;
             _cacheManager = cacheManager;
             _serviceProvider = serviceProvider;
 
@@ -48,9 +50,9 @@ namespace Shesha.GraphQL.Provider
 
         private ISchema GetEntitySchema(string schemaName)
         {
-            var entityType = _typeFinder.Find(t => GetEntitySchemaName(t) == schemaName && t.IsEntityType()).FirstOrDefault();
+            var entityType = _shaTypeFinder.Find(t => GetEntitySchemaName(t) == schemaName && t.IsEntityType()).FirstOrDefault();
             if (entityType == null)
-                return null;
+                    return null;
 
             return Cache.Get(schemaName, sn => GetEntitySchema(entityType, _serviceProvider));
         }

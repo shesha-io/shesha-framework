@@ -36,7 +36,7 @@ export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, nam
         },
         ownKeys(target) {
           const data = target.accessor._data;
-          return data ? Object.keys(data) : [];
+          return data ? Reflect.ownKeys(data) : [];
         },
         getOwnPropertyDescriptor(target, prop) {
           const propertyName = prop.toString();

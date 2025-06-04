@@ -107,7 +107,7 @@ namespace Shesha.NHibernate.EntityHistory
                 return null;
             }
 
-            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(typeOfEntity.Namespace.NotNull(), typeOfEntity.Name));
 
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
@@ -406,9 +406,9 @@ namespace Shesha.NHibernate.EntityHistory
                 ? propInfo.PropertyType.GetGenericArguments()[0] 
                 : propInfo.PropertyType;
 
-            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name));
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(entityType.Namespace.NotNull(), entityType.Name));
 
-            var configuredAudit = (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
+            var configuredAudit = (entityConfig?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
             var audited = propInfo.GetCustomAttribute<AuditedAttribute>();
             var auditedAsMany = propInfo.GetCustomAttribute<AuditedAsManyToManyAttribute>();
             var auditedAsP = propInfo.GetCustomAttributes().FirstOrDefault(x => x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,>)) != null)?.GetType();

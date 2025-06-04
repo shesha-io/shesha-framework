@@ -8,6 +8,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Modules;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -21,7 +22,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Configurable modules bootstrapper
     /// </summary>
-    public class ConfigurableModuleBootstrapper : IBootstrapper, ITransientDependency
+    public class ConfigurableModuleBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -35,8 +36,9 @@ namespace Shesha.ConfigurationItems
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Module, Guid> moduleRepo,
             IIocManager iocManager,
-            IApplicationStartupSession startupSession
-        )
+            IApplicationStartupSession startupSession,
+            IBootstrapperStartupService bootstrapperStartupService
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
         {
             _typeFinder = typeFinder;
             _unitOfWorkManager = unitOfWorkManager;
@@ -46,7 +48,7 @@ namespace Shesha.ConfigurationItems
         }
 
         [UnitOfWork(IsDisabled = true)]
-        public async Task ProcessAsync()
+        protected override async Task ProcessInternalAsync()
         {
             await DoProcessAsync();
         }
@@ -115,7 +117,7 @@ namespace Shesha.ConfigurationItems
             var codeModules = await GetCodeModulesAsync();
             var allSubModules = _typeFinder
                 .Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
-                .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
+                .Where(x => ForceUpdate || !_startupSession.AssemblyStaysUnchanged(x.Assembly))
                 .Select(t => {
                     return _iocManager.Resolve(t).ForceCastAs<ISheshaSubmodule>();
                 })

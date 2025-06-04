@@ -24,24 +24,24 @@ namespace Shesha.DynamicEntities
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto> GetModelConfigurationAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto> GetModelConfigurationAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Create model configuration
         /// </summary>
         /// <param name="input">Model configuration Dto</param>
         /// <returns></returns>
-        Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input);
+        Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input);
 
         /// <summary>
         /// Update model configuration

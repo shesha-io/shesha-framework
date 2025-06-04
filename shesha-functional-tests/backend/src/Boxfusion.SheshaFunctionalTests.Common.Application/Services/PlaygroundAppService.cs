@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Shesha;
 using Shesha.Domain;
+using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Services;
@@ -16,11 +17,27 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
     {
 
         private readonly IRepository<TestClass, Guid> _testClassRepo;
+        private readonly DynamicEntityTypeBuilder _dynamicEntityTypeBuilder;
+
         public PlaygroundAppService(
-            IRepository<TestClass, Guid> testClassRepo
+            IRepository<TestClass, Guid> testClassRepo,
+            DynamicEntityTypeBuilder dynamicEntityTypeBuilder
             )
         {
             _testClassRepo = testClassRepo;
+            _dynamicEntityTypeBuilder = dynamicEntityTypeBuilder;
+        }
+
+        public string CreateType()
+        {
+            return "Ok";
+            /*var type = _dynamicEntityTypeBuilder.CreateType(new EntityConfig
+            {
+                Namespace = "TestNamespace",
+                ClassName = "TestClassName"
+            }, null);
+
+            return type.Name;*/
         }
 
         public class TestDto

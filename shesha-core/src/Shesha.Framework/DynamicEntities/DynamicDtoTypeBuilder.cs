@@ -149,7 +149,9 @@ namespace Shesha.DynamicEntities
                         return typeof(GenericEntityReference);
                     else
                         return GetEntityReferenceType(propertyDto, context);
-
+                
+                case DataTypes.File:
+                    return typeof(StoredFile);
 
                 case DataTypes.Array:
                     if (propertyDto.ItemsType != null)
@@ -411,7 +413,12 @@ namespace Shesha.DynamicEntities
             if (entityType == null)
                 throw new NotSupportedException($"Type '{type.FullName}' is not a dynamic DTO");
 
-            return $"{entityType.FullName}|formFields:{context.AddFormFieldsProperty.ToString().ToLower()}|useEntityDtos:{context.UseDtoForEntityReferences.ToString().ToLower()}";
+            return GetTypeCacheKey(entityType.FullName.NotNull(), context.AddFormFieldsProperty, context.UseDtoForEntityReferences);
+        }
+
+        private string GetTypeCacheKey(string typeName, bool formFields, bool useEntityDtos)
+        {
+            return $"{typeName}|formFields:{formFields.ToString().ToLower()}|useEntityDtos:{useEntityDtos.ToString().ToLower()}";
         }
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
@@ -422,8 +429,14 @@ namespace Shesha.DynamicEntities
             var entityConfig = eventData.Entity?.EntityConfig;
             if (entityConfig != null)
             {
-                var cacheKey = $"{entityConfig.Namespace}.{entityConfig.ClassName}";
-
+                // remove all variation of Entity cache items
+                var cacheKey = GetTypeCacheKey(entityConfig.FullClassName, false, false);
+                _fullProxyCache.Remove(cacheKey);
+                cacheKey = GetTypeCacheKey(entityConfig.FullClassName, false, true);
+                _fullProxyCache.Remove(cacheKey);
+                cacheKey = GetTypeCacheKey(entityConfig.FullClassName, true, false);
+                _fullProxyCache.Remove(cacheKey);
+                cacheKey = GetTypeCacheKey(entityConfig.FullClassName, true, true);
                 _fullProxyCache.Remove(cacheKey);
             }
 

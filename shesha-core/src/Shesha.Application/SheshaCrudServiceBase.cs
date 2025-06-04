@@ -331,7 +331,8 @@ namespace Shesha
                         if (brace > 0) innerProps.Add(propList[i]);
                         i++;
                     }
-                    if (propConfig?.EntityType.IsNullOrWhiteSpace() ?? true)
+                    if (propConfig == null 
+                        || propConfig.DataType == DataTypes.EntityReference && propConfig.EntityType.IsNullOrWhiteSpace())
                         sb.Append(prop + " { " + string.Join(" ", innerProps) + " } ");
                     else
                     {
@@ -381,6 +382,7 @@ namespace Shesha
                     }
                     break;
                 case DataTypes.EntityReference:
+                case DataTypes.File:
                     if (fullReference || property.EntityType.IsNullOrWhiteSpace())
                     {
                         // GenericEntityReference
@@ -392,8 +394,8 @@ namespace Shesha
                         // EntityReference
                         sb.AppendLine($"{propertyName}: {propertyName}{nameof(IEntity.Id)}");
                     break;
-
-                case DataTypes.Object:
+                // ToDo: AS - remove after implementation
+                /*case DataTypes.Object:
                     {
                         sb.Append(propertyName);
                         sb.AppendLine("{");
@@ -403,7 +405,7 @@ namespace Shesha
                         }
                         sb.AppendLine("}");
                         break;
-                    }
+                    }*/
                 default:
                     sb.AppendLine(propertyName);
                     break;

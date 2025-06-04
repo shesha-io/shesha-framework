@@ -9,6 +9,7 @@ using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Reflection;
@@ -40,7 +41,7 @@ namespace Shesha.StoredFiles
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
-        private readonly TypeFinder _typeFinder;
+        private readonly IShaTypeFinder _typeFinder;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -52,7 +53,7 @@ namespace Shesha.StoredFiles
             IDynamicRepository dynamicRepository,
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Person, Guid> personRepository,
-            TypeFinder typeFinder
+            IShaTypeFinder typeFinder
             )
         {
             _fileService = fileService;
