@@ -1,4 +1,4 @@
-import { Switch, Tag } from 'antd';
+import { Space, Switch, Tag } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import React, { FC, useMemo } from 'react';
@@ -7,8 +7,15 @@ import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
+import { getTagStyle } from '@/utils/style';
 
 type AutocompleteType = ISelectOption;
+
+export const Icon = ({ type, ...rest }) => {
+  const icons = require(`@ant-design/icons`);
+  const Component = icons[type];
+  return <Component {...rest} />;
+};
 
 export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
   const {
@@ -25,6 +32,10 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
     quickviewWidth,
+    style,
+    showIcon,
+    solidColor,
+    showItemName
   } = props;
 
   const { styles } = useStyles();
@@ -67,11 +78,17 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               />
             );
           } else {
-            return displayName;
+            return dropdownDisplayMode === 'tags' ? <Tag
+              color={value?.color}
+              icon={((value?.icon && showIcon)) && <Icon type={value?.icon} />}
+              style={getTagStyle(style, !!value?.color && solidColor)}
+            >
+              {showItemName && displayName}
+            </Tag> : displayName || value;
           }
         }
 
-        throw new Error(`Invalid data type passed. Expected IGuidNullableEntityReferenceDto but found ${typeof value}`);
+        return null;
 
       case 'dropdownMultiple': {
         if (Array.isArray(value)) {
@@ -79,7 +96,19 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
 
           return dropdownDisplayMode === 'raw'
             ? values?.join(', ')
-            : values?.map((itemValue, index) => <Tag key={index}>{itemValue}</Tag>);
+            : <Space size={8}>
+              {value?.map(({ label, color, icon, value }) => {
+
+                return <Tag
+                  key={value}
+                  color={color}
+                  icon={((icon && showIcon)) && <Icon type={icon} />}
+                  style={getTagStyle(style, !!color && solidColor)}
+                >
+                  {showItemName && label}
+                </Tag>;
+              })}
+            </Space>;
         }
 
         throw new Error(
@@ -87,7 +116,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }}/>;
+        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />;
       }
       case 'datetime': {
         return getMoment(value, dateFormat)?.format(dateFormat) || '';

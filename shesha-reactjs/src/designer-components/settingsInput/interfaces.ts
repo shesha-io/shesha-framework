@@ -9,6 +9,7 @@ import { IConfigurableActionConfiguratorComponentProps } from '../configurableAc
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
+import { ILabelValueEditorProps } from '@/components/labelValueEditor/labelValueEditor';
 
 export interface IRadioOption {
     value: string | number;
@@ -28,12 +29,12 @@ export interface InputType {
     type: 'colorPicker' | 'dropdown' | 'radio' | 'switch' | 'numberField' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'endpointsAutocomplete'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'textField' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
-    | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip'
+    | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip' | 'customLabelValueEditor'
     | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal'
     | 'keyInformationBarColumnsList' | 'Password';
 }
 
-export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
+export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelValueEditorProps, 'exposedVariables'>, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
     label: string;
     propertyName: string;
@@ -49,6 +50,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    iconSize?: number;
     tooltipAlt?: string;
     customTooltip?: string;
     prefix?: string;
@@ -112,12 +114,14 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
     autoFillProps?: boolean;
+    presets?: string[];
     propertyAccessor?: string;
     noSelectionItemText?: string;
     noSelectionItemValue?: string;
     componentType?: ComponentType;
     parentComponentType?: string;
     textType?: string;
+    title?: string;
     showSearch?: boolean;
     defaultChecked?: boolean;
 };
