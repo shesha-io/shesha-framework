@@ -15,6 +15,18 @@ namespace Shesha.Domain
     [Entity(TypeShortAlias = "Shesha.Framework.EntityProperty", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class EntityProperty: FullAuditedEntity<Guid>
     {
+        public virtual bool CreatedInDb { get; set; }
+
+        /// <summary>
+        /// Name of column in the DB
+        /// </summary>
+        public virtual string? ColumnName { get;set; }
+
+        /// <summary>
+        /// If Inherited from other property
+        /// </summary>
+        public virtual EntityProperty? InheritedFrom { get; set; }
+
         /// <summary>
         /// Owner entity config
         /// </summary>

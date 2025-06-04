@@ -15,6 +15,15 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class ModelConfigurationDto : EntityDto<Guid?>, IConfigurationItemDto
     {
+        public string? FriendlyName { get; set; }
+        public string? DiscriminatorValue { get; set; }
+        public string? TableName { get; set; }
+
+        // ToDo: AS - review if InheritedFrom can be nullable
+        public Guid? InheritedFromId { get; set; }
+        public string? InheritedFromClassName { get; set; }
+        public string? InheritedFromNamespace { get; set; }
+
         public string ClassName { get; set; }
         public string Namespace { get; set; }
 

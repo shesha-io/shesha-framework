@@ -3,7 +3,7 @@ import IndexToolbar from '@/components/indexToolbar';
 import React, { useMemo, useRef, useState } from 'react';
 import { Alert, Checkbox, Col, Form, App, Modal, Row } from 'antd';
 import { Autocomplete, ModelConfigurator, Page } from '@/components';
-import { DeleteOutlined, MergeCellsOutlined, SaveOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { EntityConfigDto } from '@/apis/entityConfig';
 import { IModelConfiguratorInstance } from '@/providers/modelConfigurator/interfaces';
 import { IToolbarItem, PageWithLayout } from '@/interfaces';
@@ -75,19 +75,19 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const allowDelete = useMemo(() => {
     return entityConfig && (entityConfig.source === MetadataSourceType.UserDefined || entityConfig.notImplemented);
   }, [entityConfig]);
-  const allowMerge = useMemo(() => {
+  /*const allowMerge = useMemo(() => {
     return entityConfig && entityConfig.source === MetadataSourceType.ApplicationCode && entityConfig.notImplemented;
-  }, [entityConfig]);
+  }, [entityConfig]);*/
 
   const toolbarItems: IToolbarItem[] = [
-    /*{
-            title: 'Create new entity',
-            icon: <PlusOutlined />,
-            onClick: () => {
-                setEntityConfigId('');
-                configuratorRef.current.createNew({source: MetadataSourceType.UserDefined});
-            },
-        },*/
+    {
+      title: 'Create new entity',
+      icon: <PlusOutlined />,
+      onClick: () => {
+        setEntityConfigId('');
+        configuratorRef.current.createNew({source: MetadataSourceType.UserDefined});
+      },
+    },
     {
       title: 'Save',
       icon: <SaveOutlined />,
@@ -115,7 +115,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
         }
       },
     },
-    {
+    /*{
       title: 'Merge entity to...',
       icon: <MergeCellsOutlined />,
       disabled: entityConfigId === null || !allowMerge,
@@ -127,7 +127,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
         setMergeError(null);
         setIsModalOpen(true);
       },
-    },
+    },*/
     {
       title: 'Delete',
       icon: <DeleteOutlined />,

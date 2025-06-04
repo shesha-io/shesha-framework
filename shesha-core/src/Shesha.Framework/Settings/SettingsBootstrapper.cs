@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Specifications;
@@ -20,7 +21,7 @@ namespace Shesha.Settings
     /// <summary>
     /// Settings bootstrapper. Updates settings definiion in the DB
     /// </summary>
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
     public class SettingsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;

@@ -18,6 +18,7 @@ namespace Shesha.DynamicEntities.Cache
         Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(Type entityType);
         Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(string entityType, bool raiseException = false);
 
+        Task<EntityConfigDto?> GetDynamicSafeEntityConfigAsync(string entityType);
         Task<EntityConfigDto?> GetEntityConfigAsync(Type entityType);
         Task<EntityConfigDto?> GetEntityConfigAsync(string entityType, bool raiseException = false);
     }

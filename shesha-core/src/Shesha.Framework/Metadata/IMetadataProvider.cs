@@ -10,7 +10,7 @@ namespace Shesha.Metadata
     /// </summary>
     public interface IMetadataProvider
     {
-        Task<MetadataDto> GetAsync(Type? containerType, string containerName);
+        Task<MetadataDto> GetAsync(Type containerType);
 
         Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType);
 
@@ -20,6 +20,6 @@ namespace Shesha.Metadata
         /// <returns></returns>
         Task<List<SpecificationDto>> GetSpecificationsAsync(Type entityType);
 
-        Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType, string containerName);
+        Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType);
     }
 }

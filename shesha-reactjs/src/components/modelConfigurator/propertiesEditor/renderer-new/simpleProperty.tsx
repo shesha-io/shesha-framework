@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Tooltip, Tag } from 'antd';
 import { EyeInvisibleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { getIconByDataType } from '@/utils/metadata';
+import { getIconTypeByDataType } from '@/utils/metadata';
 import { ShaIcon } from '../../..';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
@@ -14,7 +14,7 @@ export interface IProps extends IModelItem {
 export const SimpleProperty: FC<IProps> = props => {
   const { styles } = useStyles();
 
-  const icon = getIconByDataType(props.dataType);
+  const icon = getIconTypeByDataType(props.dataType);
 
   return (
     <div>

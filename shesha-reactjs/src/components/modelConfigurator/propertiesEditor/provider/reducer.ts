@@ -3,7 +3,6 @@ import { handleActions } from 'redux-actions';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { ModelActionEnums } from './actions';
-import { nanoid } from '@/utils/uuid';
 import {
   IAddItemPayload,
   IPropertiesEditorStateContext,
@@ -44,7 +43,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
       const itemProps: IModelItem = {
         name: `New property`,
-        id: nanoid(),
+        id: payload.item?.id ?? '00000000-0000-0000-0000-000000000000', // Guid.Empty
         source: MetadataSourceType.UserDefined
       };
 

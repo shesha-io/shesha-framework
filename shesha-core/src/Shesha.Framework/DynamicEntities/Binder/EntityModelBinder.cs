@@ -12,6 +12,7 @@ using Shesha.DelayedUpdate;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
@@ -41,7 +42,7 @@ namespace Shesha.DynamicEntities.Binder
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
-        private readonly ITypeFinder _typeFinder;
+        private readonly IShaTypeFinder _typeFinder;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
         private readonly IModelConfigurationManager _modelConfigurationManager;
@@ -51,7 +52,7 @@ namespace Shesha.DynamicEntities.Binder
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
-            ITypeFinder typeFinder,
+            IShaTypeFinder typeFinder,
             IEntityConfigurationStore entityConfigurationStore,
             IObjectValidatorManager propertyValidatorManager,
             ModelConfigurationManager modelConfigurationManager
@@ -111,7 +112,7 @@ namespace Shesha.DynamicEntities.Binder
             if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
-            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace.NotNull(), entityType.Name);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
@@ -402,6 +403,7 @@ namespace Shesha.DynamicEntities.Binder
                                     }
                                     break;
                                 case DataTypes.EntityReference:
+                                case DataTypes.File:
                                     await PerformEntityReferenceAsync(entity, property, propConfig, jproperty.Value, jproperty.Path, dbValue, childFormFields, context, value => property.SetValue(entity, value));
                                     break;
                                 default:
@@ -655,7 +657,7 @@ namespace Shesha.DynamicEntities.Binder
             var props = entityType.GetProperties();
             var result = false;
 
-            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace.NotNull(), entityType.Name);
             foreach (var prop in props)
             {
                 var propConfig = config.Properties.FirstOrDefault(x => x.Name == prop.Name);

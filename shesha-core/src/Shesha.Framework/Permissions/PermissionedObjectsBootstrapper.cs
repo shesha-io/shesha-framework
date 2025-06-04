@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.ObjectMapping;
+using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permission
 {
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
     public class PermissionedObjectsBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;

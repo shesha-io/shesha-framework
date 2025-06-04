@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
 using Castle.Core.Logging;
+using Shesha.Attributes;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -21,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Bootstrappers
 {
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
     public class ReferenceListBootstrapper : IBootstrapper, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;

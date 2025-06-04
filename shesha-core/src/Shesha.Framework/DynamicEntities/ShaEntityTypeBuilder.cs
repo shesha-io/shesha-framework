@@ -31,7 +31,7 @@ namespace Shesha.DynamicEntities
             return objectType;
         }
 
-        private static TypeBuilder GetTypeBuilder(string moduleName, string typeName)
+        public static TypeBuilder GetTypeBuilder(string moduleName, string typeName)
         {
             var an = new AssemblyName(moduleName);
             
@@ -49,7 +49,7 @@ namespace Shesha.DynamicEntities
             return tb;
         }
 
-        private static void CreateProperty(TypeBuilder tb, string propertyName, Type propertyType)
+        public static void CreateProperty(TypeBuilder tb, string propertyName, Type propertyType)
         {
             var fieldBuilder = tb.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 

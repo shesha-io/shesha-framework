@@ -46,7 +46,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
         <Item
           itemProps={item}
           index={[...props.index, index]}
-          key={item?.id}
+          key={index.toString()}
           containerRendering={(args) => (<ItemsContainer {...args} />)}
         />
       )

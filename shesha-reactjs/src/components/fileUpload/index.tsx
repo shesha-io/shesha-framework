@@ -185,7 +185,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <a title={file.name}>
+        <span title={file.name}>
           <Space>
             {isUploading ? (
               <SyncOutlined spin />
@@ -205,7 +205,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               </div>
             )}
           </Space>
-        </a>
+        </span>
       </div>
     );
   };

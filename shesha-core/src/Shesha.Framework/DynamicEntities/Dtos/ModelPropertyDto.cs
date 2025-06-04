@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace Shesha.DynamicEntities.Dtos
@@ -11,6 +13,10 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class ModelPropertyDto : EntityDto<string>
     {
+        public string? ColumnName {  get; set; }
+        public bool CreatedInDb { get; set; }
+        public Guid? InheritedFromId { get; set; }
+
         /// <summary>
         /// Property Name
         /// </summary>

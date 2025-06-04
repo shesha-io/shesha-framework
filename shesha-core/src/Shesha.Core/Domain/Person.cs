@@ -1,4 +1,5 @@
 ﻿using Abp.Auditing;
+using Abp.Domain.Entities;
 using Abp.Localization;
 using Abp.Timing;
 using JetBrains.Annotations;

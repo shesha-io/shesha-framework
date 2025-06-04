@@ -8,6 +8,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Elmah;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Swagger;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
@@ -24,30 +25,26 @@ namespace Shesha.DynamicEntities
     public class ModelConfigurationsAppService : SheshaAppServiceBase, IApplicationService
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModelConfigurationManager _modelConfigurationManager;
-        private readonly ISwaggerProvider _swaggerProvider;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
-
+        private readonly ISwaggerProvider _swaggerProvider;
 
         public ModelConfigurationsAppService(
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IRepository<EntityProperty, Guid> entityPropertyRepository,
             IModelConfigurationManager modelConfigurationProvider,
             ISwaggerProvider swaggerProvider,
             IEntityConfigurationStore entityConfigurationStore)
         {
             _entityConfigRepository = entityConfigRepository;
-            _entityPropertyRepository = entityPropertyRepository;
             _modelConfigurationManager = modelConfigurationProvider;
-            _swaggerProvider = swaggerProvider;
             _entityConfigurationStore = entityConfigurationStore;
+            _swaggerProvider = swaggerProvider;
         }
 
         [HttpGet, Route("")]
-        public async Task<ModelConfigurationDto> GetByNameAsync(string name, string @namespace)
+        public async Task<ModelConfigurationDto> GetByNameAsync(string className, string @namespace)
         {
-            var dto = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(@namespace, name);
+            var dto = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(@namespace, className);
             if (dto == null)
             {
                 var exception = new EntityNotFoundException("Model configuration not found");
@@ -59,7 +56,7 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpGet, Route("{id}")]
-        public async Task<ModelConfigurationDto> GetByIdAsync(Guid id)
+        public async Task<ModelConfigurationDto?> GetByIdAsync(Guid id)
         {
             var modelConfig = await _entityConfigRepository.FirstOrDefaultAsync(m => m.Id == id);
             if (modelConfig == null)
@@ -69,23 +66,27 @@ namespace Shesha.DynamicEntities
                 throw exception;
             }
 
-            return await _modelConfigurationManager.GetModelConfigurationAsync(modelConfig);
+            return await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(modelConfig.Namespace.NotNull(), modelConfig.ClassName);
         }
 
         [HttpPost, Route("")]
-        public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input)
+        public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input)
         {
-            return await _modelConfigurationManager.CreateAsync(input);
+            var res = await _modelConfigurationManager.CreateAsync(input);
+            await RefreshControllersAsync();
+            return res;
         }
 
         [HttpPut, Route("")]
         public async Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input)
         {
-            return await _modelConfigurationManager.UpdateAsync(input);
+            var res = await _modelConfigurationManager.UpdateAsync(input);
+            await RefreshControllersAsync();
+            return res;
         }
 
         [HttpPost, Route("merge")]
-        public async Task<ModelConfigurationDto> MergeAsync(MergeConfigurationDto input)
+        public async Task<ModelConfigurationDto?> MergeAsync(MergeConfigurationDto input)
         {
             var source = await AsyncQueryableExecuter.FirstOrDefaultAsync(_entityConfigRepository.GetAll().Where(x => x.Id == input.SourceId.ToGuid()));
             if (source == null)
@@ -106,6 +107,16 @@ namespace Shesha.DynamicEntities
                 await uow.CompleteAsync();
             }
 
+            await RefreshControllersAsync();
+
+            return await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(destination.Namespace.NotNull(), destination.ClassName);
+        }
+
+        private async Task RefreshControllersAsync()
+        {
+            // ToDo: AS - decide if we will generate entities on fly
+            //_entityConfigurationStore.ReInitialize();
+
             // Notify change
             // ASP.Net Core register Controller at runtime
             // https://stackoverflow.com/questions/46156649/asp-net-core-register-controller-at-runtime
@@ -116,11 +127,9 @@ namespace Shesha.DynamicEntities
                 if (tokenSource != null)
                     await tokenSource.CancelAsync();
 
-                if (_swaggerProvider is CachingSwaggerProvider cachedProvider)
+                if (_swaggerProvider != null && _swaggerProvider is CachingSwaggerProvider cachedProvider)
                     await cachedProvider.ClearCacheAsync();
             }
-
-            return await _modelConfigurationManager.GetModelConfigurationAsync(destination);
         }
     }
 }

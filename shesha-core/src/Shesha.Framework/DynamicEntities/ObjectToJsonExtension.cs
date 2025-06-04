@@ -81,6 +81,14 @@ namespace Shesha.DynamicEntities
                 }
             }
 
+            if (obj != null && obj.IsEntity())
+            {
+                if (!jobj.Properties().Any(x => x.Name == nameof(IHasClassNameField._className)))
+                    jobj.Add(nameof(IHasClassNameField._className), obj?.GetType().FullName);
+                if (!jobj.Properties().Any(x => x.Name == nameof(IHasDisplayNameField._displayName)))
+                    jobj.Add(nameof(IHasDisplayNameField._displayName), obj?.GetEntityDisplayName());
+            }
+
             return jobj;
         }
 
@@ -124,17 +132,19 @@ namespace Shesha.DynamicEntities
                 return jval;
             }
 
-            if (propType.IsEntityType())
+            if (propType.IsEntityType() && val != null)
             {
-                var jref = new JObject();
-                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName() ?? string.Empty));
-                jref.Add(nameof(EntityReferenceDto<int>._className).ToCamelCase(), JProperty.FromObject(propType.GetRequiredFullName()));
-                jref.Add(nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JProperty.FromObject(val.GetId().NotNull()));
+                var jref = new JObject
+                {
+                    { nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JToken.FromObject(val.GetEntityDisplayName() ?? string.Empty) },
+                    { nameof(EntityReferenceDto<int>._className).ToCamelCase(), JToken.FromObject((val.GetType() ?? propType).GetRequiredFullName()) },
+                    { nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JToken.FromObject(val.GetId().NotNull()) }
+                };
                 return jref;
             }
 
-            if (jval.IsNullOrEmpty() || !val.Equals(jval.ToObject(propType)))
-                return JProperty.FromObject(val);
+            if (jval.IsNullOrEmpty() || !val.NotNull().Equals(jval.ToObject(propType)))
+                return JProperty.FromObject(val.NotNull());
 
             return jval ?? JValue.CreateNull();
         }

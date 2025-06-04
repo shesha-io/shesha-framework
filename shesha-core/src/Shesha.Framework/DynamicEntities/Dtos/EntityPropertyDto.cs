@@ -11,10 +11,17 @@ namespace Shesha.DynamicEntities.Dtos
     public class EntityPropertyDto : EntityDto<Guid>
     {
 
+        public virtual bool CreatedInDb { get; set; }
+
+        public string? ColumnName { get; set; }
+        public string? InheritedFromId { get; set; }
+        public string? InheritedFrom { get; set; }
+
         /// <summary>
         /// Entity Config Name
         /// </summary>
         public string EntityConfigName { get; set; }
+        public string EntityConfigId { get; set; }
 
         /// <summary>
         /// Property Name

@@ -349,6 +349,9 @@ namespace Shesha.Metadata
             if (propInfo != null && propInfo.IsReferenceListProperty())
                 return new DataTypeInfo(DataTypes.ReferenceListItem);
 
+            if (propType == typeof(StoredFile))
+                return new DataTypeInfo(DataTypes.File);
+
             if (propType.IsEntityType() || propType.IsEntityReferenceType())
                 return new DataTypeInfo(DataTypes.EntityReference);
 

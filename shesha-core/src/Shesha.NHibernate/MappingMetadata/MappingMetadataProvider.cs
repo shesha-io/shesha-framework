@@ -16,18 +16,25 @@ namespace Shesha.MappingMetadata
 {
     public class MappingMetadataProvider: IMappingMetadataProvider, ITransientDependency
     {
-        private readonly ISessionFactory _sessionFactory;
         private readonly INhCurrentSessionContext _currentSessionContext;
+        private readonly ISessionFactoryFactory _sessionFactoryFactory;
 
-        public MappingMetadataProvider(ISessionFactory sessionFactory, INhCurrentSessionContext currentSessionContext)
+        public MappingMetadataProvider(
+            INhCurrentSessionContext currentSessionContext, 
+            ISessionFactoryFactory sessionFactoryFactory)
         {
-            _sessionFactory = sessionFactory;
             _currentSessionContext = currentSessionContext;
+            _sessionFactoryFactory = sessionFactoryFactory;
+        }
+
+        public void ResetMapping()
+        {
+            _sessionFactoryFactory.ResetConfiguration();
         }
 
         public EntityMappingMetadata GetEntityMappingMetadata(Type entityType)
         {
-            var persister = _sessionFactory.GetClassMetadata(entityType) as SingleTableEntityPersister;
+            var persister = _sessionFactoryFactory.GetSessionFactory().GetClassMetadata(entityType) as SingleTableEntityPersister;
 
             var mappingMetadata = new EntityMappingMetadata()
             {
@@ -44,7 +51,7 @@ namespace Shesha.MappingMetadata
 
         public PropertyMappingMetadata? GetPropertyMappingMetadata(Type entityType, string propertyName)
         {
-            if (_sessionFactory.GetClassMetadata(entityType) is SingleTableEntityPersister persister)
+            if (_sessionFactoryFactory.GetSessionFactory().GetClassMetadata(entityType) is SingleTableEntityPersister persister)
             {
                 var propertyMetadata = new PropertyMappingMetadata
                 {

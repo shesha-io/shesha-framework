@@ -42,6 +42,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Shesha.Specifications;
+using Shesha.Startup;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -58,7 +59,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
-			services.Configure<IISServerOptions>(options =>
+			services.UseDynamicWebApi();
+
+            services.Configure<IISServerOptions>(options =>
 			{
 				options.AllowSynchronousIO = true;
 			});
