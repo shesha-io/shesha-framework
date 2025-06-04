@@ -35,27 +35,22 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     icon,
     children,
     label: (() => {
-      const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
-      const tooltipIcon = tooltip ? <QuestionCircleOutlined style={{ marginLeft: 8 }} /> : null;
-      
-      if (onClick) {
-        const linkComponent = (navigationType === 'url' || navigationType === 'form')
+      const baseContent = onClick
+        ? ((navigationType === 'url' || navigationType === 'form')
           ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link>
-          : <Link href={''} className={className} onClick={clickHandler}>{label}</Link>;
-        
-        return (
-          <Tooltip title={tooltipText} placement="right">
-            {linkComponent}
-            {tooltipIcon}
-          </Tooltip>
-        );
-      }
+          : <Link href={''} className={className} onClick={clickHandler}>{label}</Link>)
+        : <span className={className}>{label}</span>;
       
+      if (!tooltip) return baseContent;
+      
+      const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
       return (
-        <Tooltip title={tooltipText} placement="right">
-          <span className={className}>{label}</span>
-          {tooltipIcon}
-        </Tooltip>
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            {baseContent}
+            <Tooltip title={tooltipText} placement="right">
+                <QuestionCircleOutlined style={{ marginLeft: 8, fontSize: '12px', opacity: 0.6, zIndex: 1000 }} />
+              </Tooltip>
+          </span>
       );
     })(),
     type: itemType === 'divider' ? 'divider' : undefined,
