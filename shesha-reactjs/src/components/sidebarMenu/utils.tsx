@@ -48,8 +48,8 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
           <span style={{ display: 'flex', alignItems: 'center' }}>
             {baseContent}
             <Tooltip title={tooltipText} placement="right">
-                <QuestionCircleOutlined style={{ marginLeft: 8, fontSize: '12px', opacity: 0.6, zIndex: 1000 }} />
-              </Tooltip>
+              <QuestionCircleOutlined style={{ marginLeft: 8, fontSize: '12px', opacity: 0.6, zIndex: 1000 }} />
+            </Tooltip>
           </span>
       );
     })(),
