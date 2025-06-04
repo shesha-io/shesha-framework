@@ -41,7 +41,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
     const initialObjString = JSON.stringify(initialData, null, 4)
         .replaceAll("\"'' + ", "").replaceAll(" + ''\"", "")
         .replaceAll("\"'", "'").replaceAll("'\"", "'")
-        .replace("\"__shaFormData\": 0", "...data"); // add loaded form data
+        .replace("\"__shaFormData\": 0", "...form.data"); // add loaded form data
 
     let result = '\r\n// Migrated from Initial Values and components defaults\r\n';
     result += `const initialData = ${initialObjString};\r\n`;
