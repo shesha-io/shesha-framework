@@ -168,6 +168,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
       ...headers,
       [FRONT_END_APP_HEADER_NAME]: this.#applicationKey,
     };
+    this.#rerender();
   };
 
   get globalVariables() {
