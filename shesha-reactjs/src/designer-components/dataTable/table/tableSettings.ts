@@ -400,7 +400,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     id: nanoid(),
                                     propertyName: "dblClickActionConfiguration",
                                     parentId: 'root',
-                                    label: "On Double Click",
+                                    label: "On Double-Click",
                                     jsSetting: false,
                                 })
                                 .addConfigurableActionConfigurator({

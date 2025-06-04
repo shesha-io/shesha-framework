@@ -130,7 +130,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   };
 
   return (
-    <Space.Compact style={{ width: "100%" }}>
+    <Space.Compact style={{ width: "100%", borderRadius: '5px' }}>
       <Select<string>
         disabled={readOnly}
         options={options}
@@ -142,7 +142,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         allowClear
       />
       {canConfigure && (
-        <Button style={{ width: '100px' }} size={props.size} onClick={onConfigureClick}>
+        <Button style={{ width: '100px', borderBottomRightRadius: '5px', borderTopRightRadius: '5px' }} size={props.size} onClick={onConfigureClick}>
           Configure
         </Button>
       )}

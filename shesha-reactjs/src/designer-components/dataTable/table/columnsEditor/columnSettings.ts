@@ -186,7 +186,7 @@ export const getColumnSettings = (data?: any) => ({
                             "propertyName": "displayContainer",
                             "label": "Display Settings",
                             "hidden": {
-                                "_code": "console.log(getSettingValue(data)); return getSettingValue(data?.columnType) !== 'data';",
+                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
                                 "_mode": "code",
                                 "_value": false
                             },
@@ -209,7 +209,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "propertyName": "editComponent",
                                     "label": "Edit Component",
                                     "componentType": "input",
-                                    "noSelectionItemText": "Not editable",
+                                    "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
                                     "hidden": data?.type === 'entityPicker'
                                 },
@@ -220,7 +220,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "propertyName": "createComponent",
                                     "label": "Create Component",
                                     "componentType": "input",
-                                    "noSelectionItemText": "Not editable",
+                                    "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
                                     "hidden": data?.type === 'entityPicker'
                                 }
@@ -261,17 +261,24 @@ export const getColumnSettings = (data?: any) => ({
                             ]
                         },
                         {
-                            "id": "allowSorting1",
-                            "type": "settingsInput",
-                            "inputType": "switch",
-                            "propertyName": "allowSorting",
-                            "label": "Allow sorting",
+                            "id": "allowSortingContainer1",
+                            "type": "container",
+                            "propertyName": "allowSortingContainer",
                             "hidden": {
                                 "_code": "return getSettingValue(data?.columnType) !== 'data';",
                                 "_mode": "code",
                                 "_value": false
-                            }
-                        },
+                            },
+                            "components": [
+                        {
+                            "id": "allowSorting1",
+                            "type": "settingsInput",
+                            "inputType": "switch",
+                            "propertyName": "allowSorting",
+                            "label": "Allow Sorting",
+
+                        },]
+                    }
                     ]
                 },
                 {
@@ -402,7 +409,8 @@ export const getColumnSettings = (data?: any) => ({
                                                             "propertyName": "backgroundColor",
                                                             "label": "Background Color",
                                                             "allowClear": true,
-                                                            "showText": true
+                                                            "showText": true,
+                                                            "jsSetting": true,
                                                         })
                                                     .toJson()
                                             ],
