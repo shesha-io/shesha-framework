@@ -7,7 +7,7 @@ import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/c
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITextFieldComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -20,7 +20,6 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
 interface ITextFieldComponentCalulatedValues {
-  defaultValue?: string;
   eventHandlers?: IEventHandlers;
 }
 
@@ -37,14 +36,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  calculateModel: (model, allData) => {
-    return {
-      defaultValue: model.initialValue 
-        ? evaluateString(model.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) 
-        : undefined,
-      eventHandlers: getAllEventHandlers(model, allData)
-    };
-  },
+  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
@@ -62,14 +54,13 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
       style: model.allStyles.fullStyle,
-      defaultValue: calculatedModel.defaultValue,
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,
     };
 
     return (
-      <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue} >
+      <ConfigurableFormItem model={model} >
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]) => {
