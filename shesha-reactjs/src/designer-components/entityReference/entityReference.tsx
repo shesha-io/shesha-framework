@@ -21,9 +21,7 @@ import { defaultStyles } from './utils';
 
 export type IActionParameters = [{ key: string; value: string }];
 
-export interface IEntityReferenceControlProps
-  extends Omit<IEntityReferenceProps, 'style'>,
-    Omit<IConfigurableFormComponent, 'style'> {
+export interface IEntityReferenceControlProps extends Omit<IEntityReferenceProps, 'style'>, IConfigurableFormComponent {
   /** @deprecated Use iconName instead */
   icon?: string;
 }
@@ -81,6 +79,22 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       .add<IEntityReferenceControlProps>(8, (prev) => ({
         ...prev,
         iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes),
+      }))
+      .add<IEntityReferenceControlProps>(9, (prev) => ({
+        ...prev,
+        style: prev.style,
+        mobile: {
+          ...prev.mobile,
+          style: prev.style,
+        },
+        tablet: {
+          ...prev.tablet,
+          style: prev.style,
+        },
+        desktop: {
+          ...prev.desktop,
+          style: prev.style,
+        },
       })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

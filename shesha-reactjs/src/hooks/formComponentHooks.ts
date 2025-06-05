@@ -178,11 +178,16 @@ export const useFormComponentStyles = <TModel,>(
   const app = useSheshaApplication();
   const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
 
-  const { dimensions, border, font, shadow, background, stylingBox, overflow, hideScrollBar } = model;
+  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
-      ? {}
+      ? {
+        backgroundImage: `url(${app.backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id})`,
+        backgroundSize: background?.size,
+        backgroundPosition: background?.position,
+        backgroundRepeat: background?.repeat,
+      }
       : getBackgroundStyle(background, jsStyle)
   );
 
@@ -193,7 +198,7 @@ export const useFormComponentStyles = <TModel,>(
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
-  const overflowStyles = useMemo(() => getOverflowStyle(overflow, hideScrollBar), [overflow, hideScrollBar]);
+  const overflowStyles = useMemo(() => getOverflowStyle(overflow, false), [overflow]);
 
   useDeepCompareEffect(() => {
     if (background?.storedFile?.id && background?.type === 'storedFile') {

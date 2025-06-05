@@ -32,12 +32,13 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
   ownerId,
   ownerType,
-  category,
-  allCategories = true,
+  allCategories = false,
+  category
 }) => {
   const [state, dispatch] = useReducer(notesReducer, COMMENTS_CONTEXT_INITIAL_STATE);
 
   const { connection } = useSignalR(false) ?? {};
+  const shouldShowAllCategories = !category || allCategories;
 
   //#region Register signal r events
   useEffect(() => {
@@ -56,7 +57,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   //#endregion
 
   useEffect(() => {
-    dispatch(setSettingsAction({ ownerId, ownerType, category, allCategories }));
+    dispatch(setSettingsAction({ ownerId, ownerType, category, allCategories: shouldShowAllCategories }));
   }, [ownerId, ownerType, category, allCategories]);
 
   //#region Fetch notes
@@ -66,7 +67,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     data,
     error: fetchNotesResError,
   } = useNoteGetList({
-    queryParams: { ownerId, ownerType, category, allCategories },
+    queryParams: { ownerId, ownerType, category, allCategories: shouldShowAllCategories },
     lazy: true,
   });
 
@@ -130,6 +131,10 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
 
       if (!newNotes.ownerType) {
         payload.ownerType = ownerType;
+      }
+
+      if (!newNotes.category) {
+        payload.category = category;
       }
 
       saveNotesHttp(payload as CreateNoteDto)
