@@ -165,8 +165,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     borderRadius = '8',
     borderStyle = 'none',
     borderWidth = '1px',
-    shadowStyle,
-    display = 'flex'
+    shadowStyle
   } = prev || {};
 
 
@@ -176,7 +175,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
   return {
     background: {
       type: 'color',
-      color: 'transparent',
+      color: '',
 
     },
     dimensions: {
@@ -197,12 +196,12 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     },
     shadow: {
       blurRadius: isBelow || isAbove ? 4 : 0,
-      color: 'rgba(0, 0, 0, 0.15)',
+      color: '#000000',
       offsetX: 0,
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0
     },
-    display: display,
+    display: prev?.display ?? "block",
     direction: prev?.direction ?? "horizontal",
     flexWrap: prev?.flexWrap ?? "wrap",
     flexDirection: prev?.flexDirection ?? "row",

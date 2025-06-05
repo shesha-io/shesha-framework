@@ -1,3 +1,5 @@
+import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
+
 export interface IItemProps {
     id: string;
     key: string;
@@ -9,4 +11,9 @@ export interface ILabelValueEditorPropsBase {
     labelName?: string;
     valueTitle?: string;
     valueName?: string;
+    colorName?: string;
+    iconName?: string;
+    colorTitle?: string;
+    iconTitle?: string;
+    dropdownOptions?: IDropdownOption[] | string;
 }
