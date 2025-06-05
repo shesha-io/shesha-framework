@@ -43,9 +43,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Scheduler\Shesha.Scheduler.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-  </ItemGroup>
-
 </Project>
