@@ -88,7 +88,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         label: 'Edit Mode',
                                         size: 'small',
                                         jsSetting: true,
-                                        defaultValue: 'inherited'
                                     },
                                     {
                                         id: nanoid(),
@@ -128,18 +127,23 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     { value: 'multiple', label: 'Multiple' },
                                 ],
                             })
-                            //check defaultValue
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'defaultValue',
-                                label: 'Default Value',
-                                size: 'small',
-                                jsSetting: true,
-                                parentId: dataTabId,
-                                availableConstantsExpression: "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard(\"shesha:selectedRow\").build();"
-
-                            })
+                            // //check defaultValue
+                            // .addSettingsInput({
+                            //     id: nanoid(),
+                            //     inputType: 'codeEditor',
+                            //     propertyName: 'defaultValue',
+                            //     label: 'Default Value',
+                            //     size: 'small',
+                            //     jsSetting: true,
+                            //     parentId: dataTabId,
+                            //     wrapInTemplate: true,
+                            //     validate: {},
+                            //     settingsValidationErrors: [],
+                            //     templateSettings: {
+                            //         "functionName": "getDefaultValue"
+                            //       },
+                            //     availableConstantsExpression: "    return metadataBuilder\n       .object(\"constants\")\n        .addAllStandard(\"shesha:selectedRow\").build();"
+                            // })
                             .addSettingsInput({
                                 id: nanoid(),
                                 parentId: dataTabId,
@@ -520,37 +524,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("value", "Value of autocomplete").build();',
                                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             }
-
-                                        ],
-                                    })
-                                    .addSettingsInputRow({
-                                        id: nanoid(),
-                                        parentId: dataTabId,
-                                        inputs: [
-                                            {
-                                                id: nanoid(),
-                                                type: 'switch',
-                                                propertyName: 'useRawValues',
-                                                label: 'Use Raw Values',
-                                                labelAlign: 'right',
-                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            }
-                                        ],
-                                    })
-                                    .addSettingsInputRow({
-                                        id: nanoid(),
-                                        parentId: dataTabId,
-                                        inputs: [
-                                            {
-                                                id: nanoid(),
-                                                hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'simple';", _mode: 'code', _value: false } as any,
-                                                type: 'switch',
-                                                propertyName: 'allowFreeText',
-                                                label: 'Allow Free Text',
-                                                labelAlign: 'right',
-                                                description: 'Allow to use free text that is missing on the source',
-                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            }
                                         ],
                                     })
                                     .addSettingsInputRow({
@@ -583,6 +556,38 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                             }
                                         ],
                                     })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                type: 'switch',
+                                                propertyName: 'useRawValues',
+                                                label: 'Use Raw Values',
+                                                labelAlign: 'right',
+                                                jsSetting: true,
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            }
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'simple';", _mode: 'code', _value: false } as any,
+                                                type: 'switch',
+                                                propertyName: 'allowFreeText',
+                                                label: 'Allow Free Text',
+                                                labelAlign: 'right',
+                                                jsSetting: true,
+                                                description: 'Allow to use free text that is missing on the source',
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            }
+                                        ],
+                                    })
                                     .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'switch',
@@ -590,7 +595,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         label: 'Use Quickview',
                                         parentId: dataTabId,
                                         size: 'small',
-                                        defaultValue: false,
                                     })
                                     .addCollapsiblePanel({
                                         id: nanoid(),
@@ -631,7 +635,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                     parentId: dataTabId,
                                                     inline: false,
                                                     inputs: [
-                                                        
+
                                                         {
                                                             id: nanoid(),
                                                             type: 'endpointsAutocomplete',
