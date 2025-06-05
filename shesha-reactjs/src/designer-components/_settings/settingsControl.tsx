@@ -49,7 +49,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
 
-  const { styles } = useStyles(setting._code);
+  const { styles } = useStyles();
 
   const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
     const newSetting = { ...value, _mode: (m ?? mode) };
@@ -68,8 +68,8 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   const valueOnChange = (val: any) => {
-      const newValue = { ...setting, _value: val };
-      onInternalChange(newValue);
+    const newValue = { ...setting, _value: val };
+    onInternalChange(newValue);
   };
 
   const onSwitchMode = () => {

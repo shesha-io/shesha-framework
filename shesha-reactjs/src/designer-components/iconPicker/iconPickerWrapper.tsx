@@ -38,14 +38,16 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     textAlign,
     selectBtnSize,
     fullStyles,
+    iconSize
   } = props;
- 
+
 
   const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
     if (onChange) onChange(iconName);
   };
 
 
+  const fontSize = parseFloat(String(fullStyles?.fontSize).replace('px', ''));
 
   const style: CSSProperties = {
     fontSize: fullStyles?.fontSize || 24,
@@ -54,7 +56,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
 
   return (
-    <div style={defaultValue ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
+    <div style={defaultValue ? { display: 'grid', placeItems: textAlign } : {}}>
       <Tooltip title={props?.description}>
         <div
           style={{
@@ -68,10 +70,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
             onIconChange={onIconChange}
             selectBtnSize={selectBtnSize}
             iconSize={
-              //icon size expects a number and not a string, we need to remove the px
-              typeof fullStyles?.fontSize === 'string'
-                ? parseFloat(fullStyles.fontSize.replace('px', ''))
-                : fullStyles?.fontSize || 24
+              iconSize ?? fontSize
             }
             readOnly={readOnly}
             style={style}
