@@ -1,5 +1,5 @@
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, ReactNode, } from 'react';
+import React, { CSSProperties, FC, ReactNode, useState , useRef, useEffect} from 'react';
 import { IApplicationContext} from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
@@ -38,14 +38,20 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     textAlign,
     selectBtnSize,
     fullStyles,
-    iconSize
+    iconSize,
+    value
   } = props;
+
+    const [finalValue, setFinalValue] = useState(null);
+  const hasSaved = useRef(false);
 
 
   const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
     if (onChange) onChange(iconName);
   };
 
+
+  console.log('IconPickerWrapper props',value);
 
   const fontSize = parseFloat(String(fullStyles?.fontSize).replace('px', ''));
 
@@ -55,8 +61,18 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   };
 
 
+  useEffect(() => {
+    if (value && !hasSaved.current) {
+      setFinalValue(value);
+      hasSaved.current = true;
+    }
+  }, [value]);
+
+  const iconValue = finalValue ?? defaultValue;
+
+
   return (
-    <div style={defaultValue ? { display: 'grid', placeItems: textAlign } : {}}>
+    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
       <Tooltip title={props?.description}>
         <div
           style={{
@@ -65,7 +81,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
           }}
         >
           <IconPicker
-            value={defaultValue as ShaIconTypes}
+            value={iconValue as ShaIconTypes}
             defaultValue={defaultValue as ShaIconTypes}
             onIconChange={onIconChange}
             selectBtnSize={selectBtnSize}
