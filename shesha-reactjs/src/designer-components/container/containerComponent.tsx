@@ -13,7 +13,6 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
 import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
-import classNames from 'classnames';
 import { useStyles } from './styles';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
@@ -24,14 +23,13 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const { styles } = useStyles();
+    const { styles, cx } = useStyles();
     const {
       dimensionsStyles,
       borderStyles,
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
-      overflowStyles
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -58,8 +56,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       gridColumnsCount: model.gridColumnsCount,
       flexWrap: model.flexWrap,
       gap: addPx(model.gap),
-      width: '100%',
-      height: '100%',
     };
 
     return (
@@ -68,17 +64,18 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           containerId={model.id}
           wrapperStyle={{
             ...wrapperStyles,
+            alignSelf: model.alignSelf,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
           }}
           style={{
             ...getStyle(model?.style, formData),
-            overflow: model.overflow,
-            ...overflowStyles,
-            ...flexAndGridStyles as any
+            width: '100%',
+            height: '100%',
           }}
           noDefaultStyling={model.noDefaultStyling}
-          className={classNames(model.className, styles.container)}
+          className={cx(model.className, styles.container)}
           dynamicComponents={model?.isDynamic ? model?.components : []}
+          {...flexAndGridStyles}
         />
       </ParentProvider>
     );
@@ -91,7 +88,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         ...prev,
         direction: prev['direction'] ?? 'vertical',
         justifyContent: prev['justifyContent'] ?? 'left',
-        display: prev['display'] /* ?? 'block'*/,
+        display: prev['display'],
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
         editMode: 'inherited',

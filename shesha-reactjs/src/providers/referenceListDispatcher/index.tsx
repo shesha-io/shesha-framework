@@ -16,7 +16,7 @@ import { ILoadingState } from './models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import metadataReducer from './reducer';
 
-export interface IReferenceListDispatcherProviderProps {}
+export interface IReferenceListDispatcherProviderProps { }
 
 const ReferenceListDispatcherProvider: FC<PropsWithChildren<IReferenceListDispatcherProviderProps>> = ({
   children,
