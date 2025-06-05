@@ -190,24 +190,25 @@ export const getSettings = (data: IDateFieldProps) => {
                                 jsSetting: true,
                                 parentId: dataTabId
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'dropdown',
-                                propertyName: 'disabledDateMode',
-                                label: 'Disabled Date Mode',
-                                parentId: dataTabId,
-                                defaultValue: 'none',
-                                dropdownOptions: [
-                                    { value: 'none', label: 'None' },
-                                    { value: 'functionTemplate', label: 'Function template' },
-                                    { value: 'customFunction', label: 'Custom function' },
-                                ]
-                            })
+
 
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,
                                 inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'dropdown',
+                                        propertyName: 'disabledDateMode',
+                                        label: 'Disabled Date Mode',
+                                        parentId: dataTabId,
+                                        defaultValue: 'none',
+                                        dropdownOptions: [
+                                            { value: 'none', label: 'None' },
+                                            { value: 'functionTemplate', label: 'Function template' },
+                                            { value: 'customFunction', label: 'Custom function' },
+                                        ]
+                                    },
                                     {
                                         id: nanoid(),
                                         type: 'dropdown',
@@ -255,7 +256,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                         id: nanoid(),
                                         type: 'dropdown',
                                         propertyName: 'disabledTimeTemplate',
-                                        label: 'Disabled time templates',
+                                        label: 'Disabled Time Templates',
                                         hidden: {
                                             _code: "return  getSettingValue(data.disabledTimeMode) !== 'timeFunctionTemplate';",
                                             _mode: 'code',
@@ -266,6 +267,13 @@ export const getSettings = (data: IDateFieldProps) => {
                                             { value: "disabledFutureTime", label: 'Disable future times' }
                                         ]
                                     },
+                                    {
+                                        id: nanoid(),
+                                        type: 'codeEditor',
+                                        propertyName: 'isTimeDisabled',
+                                        label: 'Disabled Time Func',
+                                        hidden: { _code: "return  getSettingValue(data.disabledTimeMode) !== 'customTimeFunction';", _mode: 'code', _value: false } as any,
+                                    }
                                 ]
                             })
                             .addSettingsInput({
