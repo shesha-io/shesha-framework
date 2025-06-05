@@ -11,7 +11,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
     size, inline, validate, modelType, ...rest }) => {
     const { formData } = useShaFormInstance();
 
-    const evaluatedModelType = modelType ? evaluateString(modelType, { data: formData }) : undefined;
+    const evaluatedModelType = typeof modelType === 'string' ? evaluateString(modelType, { data: formData }) : modelType;
     const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
     return isHidden ? null :
@@ -37,7 +37,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                         hasUnits={hasUnits} propertyName={property}
                         tooltip={tooltip}
                         readOnly={readOnly}
-                        modelType={modelType}
+                        modelType={evaluatedModelType}
                         {...rest} />
                     }
                 </FormItem>
