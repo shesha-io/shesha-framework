@@ -28,7 +28,7 @@
 
   .group {
     background: rgba(250, 240, 210, 0.5);
-    border: 1px solid #DCC896;
+    border: 1px solid #dcc896;
   }
 
   .rule {
@@ -43,14 +43,17 @@
 
   .rule--body {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     text-align: center;
+    gap: 8px;
+    width: 100%;
   }
 
   .rule--body--wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
+    width: calc(100% - 38px);
   }
 
   .rule--error {
@@ -111,7 +114,7 @@
 
   .group--header:not(.no--children):not(.hide--conjs)::before {
     z-index: 0;
-    content: "";
+    content: '';
     position: absolute;
     border-width: 0 0 0 2px;
     border-color: #ccc;
@@ -130,113 +133,113 @@
     width: 6px;
   }
 
-  .group--children>.group-or-rule-container>.group-or-rule::before {
+  .group--children > .group-or-rule-container > .group-or-rule::before {
     border-width: 0 0 2px 2px;
   }
 
-  .group--children>.group-or-rule-container>.group-or-rule::after {
+  .group--children > .group-or-rule-container > .group-or-rule::after {
     border-width: 0 0 0 2px;
   }
 
-  .group--children>.group-or-rule-container>.group-or-rule::before,
-  .group--children>.group-or-rule-container>.group-or-rule::after {
-    content: "";
+  .group--children > .group-or-rule-container > .group-or-rule::before,
+  .group--children > .group-or-rule-container > .group-or-rule::after {
+    content: '';
     position: absolute;
     border-color: #ccc;
     border-style: solid;
     box-sizing: border-box;
   }
 
-  .group--children>.group-or-rule-container>.group-or-rule::before {
+  .group--children > .group-or-rule-container > .group-or-rule::before {
     top: -1px;
     height: calc(50% + 1px + 1px);
   }
 
-  .group--children>.group-or-rule-container>.group-or-rule::after {
+  .group--children > .group-or-rule-container > .group-or-rule::after {
     top: calc(50% + 1px);
     height: calc(50% - 1px + 5px + 2px);
   }
 
-  .group--children>.group-or-rule-container>.group-or-rule::before,
-  .group--children>.group-or-rule-container>.group-or-rule::after {
+  .group--children > .group-or-rule-container > .group-or-rule::before,
+  .group--children > .group-or-rule-container > .group-or-rule::after {
     left: -7px;
     width: 6px;
   }
 
-  .group--children>.group-or-rule-container:last-child>.group-or-rule::before {
+  .group--children > .group-or-rule-container:last-child > .group-or-rule::before {
     border-radius: 0 0 0 4px;
   }
 
-  .group--children>.group-or-rule-container:last-child>.group-or-rule::after {
+  .group--children > .group-or-rule-container:last-child > .group-or-rule::after {
     display: none;
   }
 
-  .group--children.hide--conjs>.group-or-rule-container:first-child>.group-or-rule::before {
+  .group--children.hide--conjs > .group-or-rule-container:first-child > .group-or-rule::before {
     display: none;
   }
 
-  .group--children.hide--conjs>.group-or-rule-container:first-child>.group-or-rule::after {
+  .group--children.hide--conjs > .group-or-rule-container:first-child > .group-or-rule::after {
     border-radius: 4px 0 0 0;
     border-width: 2px 0 0 2px;
   }
 
-  .group--children.hide--conjs>.group-or-rule-container:first-child>.group-or-rule::after {
+  .group--children.hide--conjs > .group-or-rule-container:first-child > .group-or-rule::after {
     top: calc(50% - 1px);
     height: calc(50% + 1px + 5px + 2px);
   }
 
-  .group--children.hide--line>.group-or-rule-container>.group-or-rule::before,
-  .group--children.hide--line>.group-or-rule-container>.group-or-rule::after {
+  .group--children.hide--line > .group-or-rule-container > .group-or-rule::before,
+  .group--children.hide--line > .group-or-rule-container > .group-or-rule::after {
     border-color: rgba(128, 128, 128, 0.1);
   }
 
-  .rule_group--children>.group-or-rule-container:first-child>.group-or-rule::before {
+  .rule_group--children > .group-or-rule-container:first-child > .group-or-rule::before {
     display: none;
   }
 
-  .rule_group--children>.group-or-rule-container:first-child>.group-or-rule::after {
+  .rule_group--children > .group-or-rule-container:first-child > .group-or-rule::after {
     border-radius: 4px 0 0 0;
     border-width: 2px 0 0 2px;
   }
 
-  .rule_group--children>.group-or-rule-container:first-child>.group-or-rule::after {
+  .rule_group--children > .group-or-rule-container:first-child > .group-or-rule::after {
     top: calc(50% - 1px);
     height: calc(50% + 1px + 5px + 2px);
   }
 
-  .rule_group--children>.group-or-rule-container>.group-or-rule::before {
+  .rule_group--children > .group-or-rule-container > .group-or-rule::before {
     top: -1px;
     height: calc(50% + 1px + 1px);
   }
 
-  .rule_group--children>.group-or-rule-container>.group-or-rule::after {
+  .rule_group--children > .group-or-rule-container > .group-or-rule::after {
     top: calc(50% + 1px);
     height: calc(50% - 1px + 5px + 2px);
   }
 
-  .rule_group--children>.group-or-rule-container>.group-or-rule::before,
-  .rule_group--children>.group-or-rule-container>.group-or-rule::after {
+  .rule_group--children > .group-or-rule-container > .group-or-rule::before,
+  .rule_group--children > .group-or-rule-container > .group-or-rule::after {
     left: -7px;
     width: 6px;
   }
 
-  .switch_group>.group--children>.group-or-rule-container>.group-or-rule::before {
+  .switch_group > .group--children > .group-or-rule-container > .group-or-rule::before {
     top: -2px;
     height: calc(50% + 1px + 2px);
   }
 
-  .switch_group>.group--children>.group-or-rule-container>.group-or-rule::after {
+  .switch_group > .group--children > .group-or-rule-container > .group-or-rule::after {
     top: calc(50% + 1px);
     height: calc(50% - 1px + 5px + 4px);
   }
 
-  .switch_group>.group--children>.group-or-rule-container>.group-or-rule::before,
-  .switch_group>.group--children>.group-or-rule-container>.group-or-rule::after {
+  .switch_group > .group--children > .group-or-rule-container > .group-or-rule::before,
+  .switch_group > .group--children > .group-or-rule-container > .group-or-rule::after {
     left: -8px;
     width: 6px;
   }
 
-  .switch_group>.group--header:not(.no--children):not(.hide--conjs)::before {
+  .switch_group > .group--header:not(.no--children):not(.hide--conjs)::before {
     top: 20px;
     height: calc(100% + 5px - 20px);
     left: 4px;
@@ -403,7 +406,7 @@
     flex: none;
   }
 
-  .group--header.hide--drag.with--conjs>.group--field--count--rule {
+  .group--header.hide--drag.with--conjs > .group--field--count--rule {
     margin-left: 20px;
   }
 
@@ -441,7 +444,10 @@
   .operator--options--sep,
   .rule--before-widget,
   .rule--after-widget {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
   }
 
   .widget--sep,
@@ -466,11 +472,6 @@
   .widget--sep.widget--sep-first {
     margin-right: 5px;
     margin-left: 0;
-  }
-
-  .rule--operator {
-    margin-left: 10px;
-    margin-right: 10px;
   }
 
   .operator--options--sep {
@@ -525,6 +526,18 @@
     font-weight: bold;
   }
 
+  .rule--value {
+    width: calc(100% - 250px);
+
+    .rule--widget {
+      width: 100%;
+
+      .widget--widget {
+        width: calc(100% - 38px);
+      }
+    }
+  }
+
   /******************************************************************************/
   /** FUNC **********************************************************************/
   /******************************************************************************/
@@ -561,7 +574,7 @@
   .rule--func--args,
   .rule--func--arg,
   .rule--func--arg-value,
-  .rule--func--arg-value>.rule--widget,
+  .rule--func--arg-value > .rule--widget,
   .widget--func {
     display: contents;
   }
@@ -569,6 +582,7 @@
   .rule--func,
   .widget--widget {
     margin-bottom: 2px;
+    width: calc(100% - 38px);
   }
 
   .rule--body--wrapper {
@@ -583,26 +597,8 @@
     transition: opacity 0.2s;
   }
 
-  .qb-lite .group--header:hover .group--header .group--drag-handler,
-  .qb-lite .group--header:hover .group--header .group--actions,
-  .qb-lite .group--header:not(:hover) .group--drag-handler,
-  .qb-lite .group--header:not(:hover) .group--actions,
-  .qb-lite .rule_group:not(:hover) .group--drag-handler,
-  .qb-lite .rule_group:not(:hover) .group--actions {
-    opacity: 0;
-  }
-
   .qb-lite .group--conjunctions .ant-btn:not(.ant-btn-primary) {
     transition: padding 0.2s;
-  }
-
-  .qb-lite .group--header:hover .group--header .group--conjunctions .ant-btn:not(.ant-btn-primary),
-  .qb-lite .group--header:not(:hover) .group--conjunctions .ant-btn:not(.ant-btn-primary),
-  .qb-lite .rule_group:not(:hover) .group--conjunctions .ant-btn:not(.ant-btn-primary) {
-    width: 0;
-    padding: 0;
-    overflow: hidden;
-    opacity: 0;
   }
 
   .qb-lite .rule--fieldsrc,
@@ -632,13 +628,6 @@
     opacity: 0 !important;
   }
 
-  .qb-lite.qb-dragging .group--conjunctions .ant-btn:not(.ant-btn-primary) {
-    width: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    opacity: 0 !important;
-  }
-
   /******************************************************************************/
   /** Shrink textarea ***********************************************************/
   /******************************************************************************/
@@ -646,12 +635,12 @@
     flex: 1;
   }
 
-  .rule--body.can--shrink--value .rule--value>.rule--widget {
+  .rule--body.can--shrink--value .rule--value > .rule--widget {
     width: 100%;
     display: flex;
   }
 
-  .rule--body.can--shrink--value .rule--value>.rule--widget .widget--widget {
+  .rule--body.can--shrink--value .rule--value > .rule--widget .widget--widget {
     flex: 1;
   }
 
@@ -685,7 +674,7 @@
   }
 
   /* tree */
-  .ant-select-tree-dropdown>div[role=listbox] {
+  .ant-select-tree-dropdown > div[role='listbox'] {
     outline: none;
   }
 
