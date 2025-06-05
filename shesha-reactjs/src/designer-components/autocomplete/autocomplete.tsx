@@ -75,6 +75,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function')
+              console.log("ARGUMENTS::",args)
               onChange(...args);
           };
           

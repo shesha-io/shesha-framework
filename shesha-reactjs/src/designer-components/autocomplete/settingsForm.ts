@@ -102,23 +102,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                             })
                             .addSettingsInput({
                                 id: nanoid(),
-                                inputType: 'dropdown',
-                                propertyName: 'mode',
-                                label: 'Selection Mode',
-                                size: 'small',
-                                dropdownOptions: [
-                                    { value: 'single', label: 'Single' },
-                                    { value: 'multiple', label: 'Multiple' },
-                                ],
-                                defaultValue: 'single',
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
                                 inputType: 'switch',
                                 propertyName: 'disableSearch',
                                 label: 'Disable Search',
                                 size: 'small',
-                                defaultValue: false,
+                                jsSetting: true,
                             })
                             .toJson()
                         ]
@@ -128,6 +116,19 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                         title: 'Data',
                         id: dataTabId,
                         components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'dropdown',
+                                propertyName: 'mode',
+                                label: 'Selection Mode',
+                                jsSetting: true,
+                                size: 'small',
+                                dropdownOptions: [
+                                    { value: 'single', label: 'Single' },
+                                    { value: 'multiple', label: 'Multiple' },
+                                ],
+                            })
+                            //check defaultValue
                             .addSettingsInput({
                                 id: nanoid(),
                                 inputType: 'codeEditor',
@@ -176,8 +177,28 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInput({
                                         id: nanoid(),
                                         parentId: dataTabId,
+                                        label: "Data Source URL",
+                                        propertyName: "dataSourceURL",
+                                        inputType: "textField",
+                                        size: "small",
+                                        jsSetting: true,
+                                    })
+
+                                    .addSettingsInput({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
                                         label: "Key Prop Name",
                                         propertyName: "keyPropName",
+                                        inputType: "textField",
+                                        size: "small",
+                                        jsSetting: true,
+                                    })
+
+                                    .addSettingsInput({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        label: "Value Prop Name",
+                                        propertyName: "valuePropName",
                                         inputType: "textField",
                                         size: "small",
                                         jsSetting: true,
@@ -220,6 +241,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                             hidden: false,
                                             dataSourceType: 'url',
                                             validate: {},
+                                            jsSetting: true,
                                             dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                                             useRawValues: true
                                         }
@@ -240,7 +262,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 propertyName: 'filter',
                                                 label: 'Entity Filter',
                                                 isDynamic: true,
-                                                jsSetting: true,
                                                 validate: {},
                                                 hidden: false,
                                                 settingsValidationErrors: [],
@@ -254,12 +275,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         ],
                                     })
 
-
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
                                         hidden: {
-                                            _code: "return getSettingValue(data?.dataSourceType) !== 'entitiesList';",
+                                            _code: "return getSettingValue(data?.dataSourceType) === 'entitiesList';",
                                             _mode: 'code',
                                             _value: false
                                         },
@@ -284,7 +304,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         id: nanoid(),
                                         parentId: dataTabId,
                                         hidden: {
-                                            _code: "return getSettingValue(data?.dataSourceType) !== 'url';",
+                                            _code: "return getSettingValue(data?.dataSourceType) === 'url';",
                                             _mode: 'code',
                                             _value: false
                                         },
@@ -301,7 +321,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 httpVerb: "get",
                                                 isDynamic: false,
                                             }
-
                                         ],
                                     })
                                     .addSettingsInputRow({
@@ -401,12 +420,12 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 id: nanoid(),
                                                 type: 'dropdown',
                                                 propertyName: 'valueFormat',
-                                                label: 'Value format',
+                                                label: 'Value Format',
                                                 hidden: false,
                                                 dropdownOptions: {
-                                                    _code: `return getSettingValue(data?.dataSourceType) === 'entitiesList' ? [{\"label\": \"Simple Id\",\"value\":\"simple\",\"id\": \"1\"},
+                                                    _code: `return getSettingValue(data?.dataSourceType) === 'entitiesList' ? [{\"label\": \"Simple ID\",\"value\":\"simple\",\"id\": \"1\"},
                                                     {\"label\": \"Entity reference\",\"value\": \"entityReference\",\"id\": \"2\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}]
-                                                    : [{\"label\": \"Simple Id\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}];`,
+                                                    : [{\"label\": \"Simple ID\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}];`,
                                                     _mode: "code",
                                                     _value: false
                                                 } as any,
@@ -507,10 +526,24 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'simple';", _mode: 'code', _value: false } as any,
                                         inputs: [
                                             {
                                                 id: nanoid(),
+                                                type: 'switch',
+                                                propertyName: 'useRawValues',
+                                                label: 'Use Raw Values',
+                                                labelAlign: 'right',
+                                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            }
+                                        ],
+                                    })
+                                    .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: dataTabId,
+                                        inputs: [
+                                            {
+                                                id: nanoid(),
+                                                hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'simple';", _mode: 'code', _value: false } as any,
                                                 type: 'switch',
                                                 propertyName: 'allowFreeText',
                                                 label: 'Allow Free Text',
@@ -518,7 +551,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 description: 'Allow to use free text that is missing on the source',
                                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             }
-
                                         ],
                                     })
                                     .addSettingsInputRow({
@@ -647,6 +679,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                             type: 'textField',
                                                             propertyName: 'quickviewWidth',
                                                             parentId: dataTabId,
+                                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                                             label: 'Width',
                                                             size: 'small',
                                                             version: 5
