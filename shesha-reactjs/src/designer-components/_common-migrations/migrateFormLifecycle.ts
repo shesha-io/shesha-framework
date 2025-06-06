@@ -31,7 +31,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
 
     // Convert to JSON 
     const initialData = {};
-    const initValues = [...initialValues, {key: "__shaFormData", value: 0}]
+    const initValues = [...initialValues, {key: "__shaFormData", value: 0}];
     initValues.forEach(item => {
         const value = typeof item.value === "string" && /{(.*?)}/gm.test(item.value)
           ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
