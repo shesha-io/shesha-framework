@@ -8,6 +8,7 @@ import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import { DATE_TIME_FORMATS, disabledDate, disabledTime, getFormat } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
+import { useStyles } from './style';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
@@ -40,11 +41,14 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     additionalStyles,
     defaultToMidnight,
     resolveToUTC,
+    allStyles,
     ...rest
   } = props;
 
   const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
+  const fullStyles = {...allStyles.fullStyle}
+  const { styles } = useStyles({ fullStyles });
 
   const { formData } = useForm();
 
@@ -96,7 +100,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   if (range) {
     return (
       <RangePicker
-        className="sha-range-picker"
+        className="sha-range-picker"        
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
         disabledTime={disabledTime(props, formData, globalState)}
         onChange={handleRangePicker}
@@ -107,7 +111,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         disabled={readOnly}
-        style={additionalStyles}
+        style={allStyles.fullStyle}
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
       />
@@ -121,7 +125,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   return (
     <DatePicker
-      className="sha-date-picker"
+      className={styles.dateField}
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabledTime={disabledTime(props, formData, globalState)}
       onChange={handleDatePickerChange}
@@ -131,7 +135,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       showNow={showNow}
       picker={picker}
       format={pickerFormat}
-      style={additionalStyles}
+      style={allStyles.fullStyle}
       {...rest}
       value={momentValue}
       allowClear

@@ -228,7 +228,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       </>
     );
     return (
-      <span key={tag} style={{ display: 'inline-block' }}>
+      <span key={tag} style={{ display: 'inline-block', marginTop:13 }}>
         {tagElem}
       </span>
     );
@@ -238,7 +238,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   return (
     <>
-      <Space.Compact style={{ width: "100%", ...props.style }}>
+      <Space.Compact style={{ width: "100%", ...props.style, marginTop: tagChild?.length ? 4 : 0 }}>
         <AutoComplete
           disabled={readOnly}
           value={multipleValue}
@@ -260,7 +260,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           size={props.size}
         />
       </Space.Compact>
-      <div style={{ marginTop: 16 }}>
+      <div >
         {tagChild}
       </div>
     </>
