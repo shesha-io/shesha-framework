@@ -12,6 +12,7 @@ import { getSettings } from './settingsForm';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { useTheme } from '@/providers';
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -21,6 +22,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   isInput: false,
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => {
+    const { theme } = useTheme();
     const { allStyles } = model;
     const shadow = model?.shadow;
     const jsStyle = allStyles?.jsStyle;
@@ -31,6 +33,9 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     const backgroundStyles = allStyles?.backgroundStyles;
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
+      ...(theme?.text?.applyTextStylesGlobally ? {
+        color: theme?.text?.default,
+      } : {}),
       ...stylingBoxAsCSS,
       ...borderStyles,
       ...fontStyles,

@@ -40,12 +40,12 @@ const formatColor = (color: Color, format: ColorFormat) => {
  * @returns a (object) map of theme colors with keys as `primary`, `success`, `warning`, `error`, `info`, `processing`
  */
 export const readThemeColor = (theme: IConfigurableTheme) => ({
-  'primary': theme.application?.primaryColor,
-  'success': theme.application?.successColor,
-  'warning': theme.application?.warningColor,
-  'error': theme.application?.errorColor,
-  'info': theme.application?.infoColor,
-  'processing': theme.application?.processingColor,
+  'primary': theme?.application?.primaryColor,
+  'success': theme?.application?.successColor,
+  'warning': theme?.application?.warningColor,
+  'error': theme?.application?.errorColor,
+  'info': theme?.application?.infoColor,
+  'processing': theme?.application?.processingColor,
   'primaryTextColor': theme?.text?.default,
   'secondaryTextColor': theme?.text?.secondary
 });
