@@ -393,6 +393,11 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: commonTabId,
+                        hidden: {
+                          _code: 'return !(getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`)',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -412,6 +417,26 @@ export const getSettings = (data: any) => {
                               'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
                             parentId: commonTabId,
                             defaultValue: false,
+                          },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: commonTabId,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'showTitle',
+                            label: 'Show Title',
+                            description: 'Show the title of the chart',
+                            parentId: commonTabId,
+                            defaultValue: true,
                           },
                         ],
                       })
@@ -439,6 +464,11 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: commonTabId,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
@@ -466,6 +496,11 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: commonTabId,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         inputs: [
                           {
                             id: nanoid(),
