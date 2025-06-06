@@ -22,6 +22,7 @@
                         {
                             Default = "#000000",
                             Secondary = "#8c8c8c",
+                            ApplyTextStylesGlobally = false
                         },
                         Sidebar = "dark",
                         LayoutBackground = "#fafafa",
@@ -44,6 +45,7 @@
         {
             public string? Default { get; set; }
             public string? Secondary { get; set; }
+            public bool? ApplyTextStylesGlobally { get; set; } = false;
         }
 
         public ThemeSettings.ApplicationSettings? Application { get; set; }

@@ -34,7 +34,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     applicationTheme.current = theme;
   });
 
-  const changeTheme = (theme: IConfigurableTheme, isApplication: Boolean = false) => {
+  const changeTheme = (theme: IConfigurableTheme, isApplication: boolean = false) => {
     // save theme to the state
     dispatch(setThemeAction(theme));
     if (isApplication)
@@ -89,8 +89,10 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
             ...themeConfig,
             token: {
               ...themeConfig.token,
-              colorText: state.theme?.text?.default,
-              colorTextDescription: state.theme?.text?.secondary
+              ...(state.theme?.text?.applyTextStylesGlobally ? {
+                colorText: state.theme?.text?.default,
+                colorTextDescription: state.theme?.text?.secondary,
+              } : {}),                    
             },
           }}
           form={{

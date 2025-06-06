@@ -46,7 +46,7 @@ const buttonItemLayout = {
 const FormExample: FC = () => (
   <Form {...formItemLayout}>
     <Form.Item label="Fail" validateStatus="error" help="Should be combination of numbers & alphabets">
-      <Input placeholder="unavailable choice" id="error" />
+      <Input placeholder="Unavailable choice" id="error" />
     </Form.Item>
 
     <Form.Item label="Warning" validateStatus="warning">

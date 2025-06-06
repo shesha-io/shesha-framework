@@ -18,13 +18,30 @@ export const useStyles = createStyles(({ css, cx }) => {
     const themeHeader = cx(
         'theme-parameters',
         css`
-    font-size: 18px;
-    font-weight: 700;
+        font-size: 18px;
+        font-weight: 700;
     `
     );
 
+    const margin10 = cx('margin-10', css`
+        margin-top: 10px;
+    `);
+
+    const renderColorBoxFlex = cx('render-color-box-flex', css`
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    `);
+
+    const cursorPointer = cx('cursor-pointer', css`
+        cursor: pointer;
+    `);
+
     return {
         themeParameters,
-        themeHeader
+        themeHeader,
+        margin10,
+        renderColorBoxFlex,
+        cursorPointer
     };
 });

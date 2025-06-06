@@ -5,6 +5,7 @@ interface ITextTheme {
   default?: string;
   secondary?: string;
   link?: string;
+  applyTextStylesGlobally?: boolean;
 }
 
 export interface IConfigurableTheme {
@@ -47,6 +48,7 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
       default: '#000000d9',
       secondary: '#00000073',
       link: '',
+      applyTextStylesGlobally: false,
     },
   },
   prefixCls: 'antd',

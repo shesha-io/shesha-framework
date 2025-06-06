@@ -1,5 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Radio, Space, Tooltip, InputNumber } from 'antd';
+import { Form, Radio, Space, Tooltip, InputNumber, Switch } from 'antd';
 import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
@@ -7,6 +7,7 @@ import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
 import { formItemLayout } from './form';
+import { useStyles } from './styles/styles';
 
 interface IThemeConfig {
   name: string;
@@ -22,6 +23,7 @@ export interface ThemeParametersProps {
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly }) => {
   //const { theme, changeTheme } = useTheme();
+  const { cx, styles } = useStyles();
 
   const changeThemeInternal = (theme: IConfigurableTheme) => {
     if (onChange) onChange(theme);
@@ -53,7 +55,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       presetColors?: string[],
       hint?: string
     ) => (
-      <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+      <div key={key} className={styles.renderColorBoxFlex}>
         <Space>
           <ColorPicker
             title={humanizeString(colorName)}
@@ -65,7 +67,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           <span>{humanizeString(colorName)} </span>
           <Show when={Boolean(hint)}>
             <Tooltip title={hint}>
-              <span className="sha-color-tooltip" style={{ cursor: 'pointer' }}>
+              <span className={cx("sha-color-tooltip", styles.cursorPointer)}>
                 <QuestionCircleOutlined />
               </span>
             </Tooltip>
@@ -90,9 +92,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
   ];
 
   return (
-    <div style={{ marginTop: '10px' }}>
+    <div className={styles.margin10}>
       <SectionSeparator title="Theme" />
-
       <Space direction="vertical" align="start" size={24}>
         <Space direction="vertical" align="start">
           {colorConfigs.map((config, index) =>
@@ -111,8 +112,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       </Space>
 
       <SectionSeparator title="Text" containerStyle={{ marginTop: '8px' }} />
-
-      <Space direction="vertical" align="start">
+      <Space direction="vertical" align="start" style={{ width: '100%' }}>
         {textConfigs.map((config, index) =>
           renderColor(
             `text_${index}`,
@@ -123,10 +123,26 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             config?.hint
           )
         )}
+        <Form labelAlign='right'>            
+          <Form.Item label="Apply Globally" name="applyTextStylesGlobally">
+            <Switch 
+              style={{ width: '100%' }}
+              checked={theme?.text?.applyTextStylesGlobally}
+              onChange={(checked: boolean) => {
+                changeThemeInternal({
+                  ...theme,
+                  text: {
+                    ...theme?.text,
+                    applyTextStylesGlobally: checked,
+                  },
+                });
+              }}
+              disabled={readonly} />
+            </Form.Item>
+        </Form>
       </Space>
 
       <SectionSeparator title="Sidebar" containerStyle={{ marginTop: '8px' }} />
-
       <Form>
         <Form.Item label="Theme">
           <Radio.Group
@@ -178,7 +194,6 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             readOnly={readonly}
           />
         </Form.Item>
-
         <Form.Item label="Component" name={'component'}>
           <InputNumber
             placeholder="Component Span"
