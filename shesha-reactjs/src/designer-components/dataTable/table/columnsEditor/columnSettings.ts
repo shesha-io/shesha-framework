@@ -186,7 +186,7 @@ export const getColumnSettings = (data?: any) => ({
                             "propertyName": "displayContainer",
                             "label": "Display Settings",
                             "hidden": {
-                                "_code": "console.log(getSettingValue(data)); return getSettingValue(data?.columnType) !== 'data';",
+                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
                                 "_mode": "code",
                                 "_value": false
                             },
