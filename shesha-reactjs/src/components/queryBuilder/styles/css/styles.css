@@ -504,13 +504,8 @@
   .qb-lite .group--drag-handler, .qb-lite .group--actions {
     transition: opacity 0.2s;
   }
-  .qb-lite .group--header:hover .group--header .group--drag-handler, .qb-lite .group--header:hover .group--header .group--actions,
-  .qb-lite .group--header:not(:hover) .group--drag-handler,
-  .qb-lite .group--header:not(:hover) .group--actions,
-  .qb-lite .rule_group:not(:hover) .group--drag-handler,
-  .qb-lite .rule_group:not(:hover) .group--actions {
-    opacity: 0;
-  }
+
+
   .qb-lite .group--conjunctions .ant-btn:not(.ant-btn-primary) {
     transition: padding 0.2s;
   }
@@ -524,13 +519,6 @@
   }
   .qb-lite .rule--fieldsrc, .qb-lite .widget--valuesrc, .qb-lite .rule--drag-handler, .qb-lite .rule--header {
     transition: opacity 0.2s;
-  }
-  .qb-lite .rule:hover .rule .rule--fieldsrc, .qb-lite .rule:hover .rule .widget--valuesrc, .qb-lite .rule:hover .rule .rule--drag-handler, .qb-lite .rule:hover .rule .rule--header,
-  .qb-lite .rule:not(:hover) .rule--fieldsrc,
-  .qb-lite .rule:not(:hover) .widget--valuesrc,
-  .qb-lite .rule:not(:hover) .rule--drag-handler,
-  .qb-lite .rule:not(:hover) .rule--header {
-    opacity: 0;
   }
   .qb-lite.qb-dragging .rule--fieldsrc, .qb-lite.qb-dragging .widget--valuesrc, .qb-lite.qb-dragging .rule--drag-handler, .qb-lite.qb-dragging .rule--header, .qb-lite.qb-dragging .group--drag-handler, .qb-lite.qb-dragging .group--actions {
     opacity: 0 !important;

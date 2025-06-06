@@ -43,14 +43,17 @@
 
   .rule--body {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     text-align: center;
+    gap: 8px;
+    width: 100%;
   }
 
   .rule--body--wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
+    width: calc(100% - 38px);
   }
 
   .rule--error {
@@ -441,7 +444,10 @@
   .operator--options--sep,
   .rule--before-widget,
   .rule--after-widget {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
   }
 
   .widget--sep,
@@ -525,6 +531,18 @@
     font-weight: bold;
   }
 
+  .rule--value {
+    width: calc(100% - 250px);
+
+    .rule--widget {
+      width: 100%;
+
+      .widget--widget {
+        width: calc(100% - 38px);
+      }
+    }
+  }
+
   /******************************************************************************/
   /** FUNC **********************************************************************/
   /******************************************************************************/
@@ -569,6 +587,7 @@
   .rule--func,
   .widget--widget {
     margin-bottom: 2px;
+    width: calc(100% - 38px);
   }
 
   .rule--body--wrapper {
@@ -583,26 +602,8 @@
     transition: opacity 0.2s;
   }
 
-  .qb-lite .group--header:hover .group--header .group--drag-handler,
-  .qb-lite .group--header:hover .group--header .group--actions,
-  .qb-lite .group--header:not(:hover) .group--drag-handler,
-  .qb-lite .group--header:not(:hover) .group--actions,
-  .qb-lite .rule_group:not(:hover) .group--drag-handler,
-  .qb-lite .rule_group:not(:hover) .group--actions {
-    opacity: 0;
-  }
-
   .qb-lite .group--conjunctions .ant-btn:not(.ant-btn-primary) {
     transition: padding 0.2s;
-  }
-
-  .qb-lite .group--header:hover .group--header .group--conjunctions .ant-btn:not(.ant-btn-primary),
-  .qb-lite .group--header:not(:hover) .group--conjunctions .ant-btn:not(.ant-btn-primary),
-  .qb-lite .rule_group:not(:hover) .group--conjunctions .ant-btn:not(.ant-btn-primary) {
-    width: 0;
-    padding: 0;
-    overflow: hidden;
-    opacity: 0;
   }
 
   .qb-lite .rule--fieldsrc,
@@ -629,13 +630,6 @@
   .qb-lite.qb-dragging .rule--header,
   .qb-lite.qb-dragging .group--drag-handler,
   .qb-lite.qb-dragging .group--actions {
-    opacity: 0 !important;
-  }
-
-  .qb-lite.qb-dragging .group--conjunctions .ant-btn:not(.ant-btn-primary) {
-    width: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
     opacity: 0 !important;
   }
 
