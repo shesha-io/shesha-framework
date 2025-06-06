@@ -301,7 +301,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 }
             />;
         case 'configurableActionConfigurator':
-            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} />;
+            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
         case 'typeAutoComplete':
             return <Autocomplete
                 dataSourceType="url"

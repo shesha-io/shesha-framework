@@ -603,7 +603,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         inputType: 'numberField',
                         jsSetting: true,
                         defaultValue: 600,
-                        min: 201,
                       })
                       .toJson(),
                   ],
