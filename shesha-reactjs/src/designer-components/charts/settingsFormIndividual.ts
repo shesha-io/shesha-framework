@@ -62,36 +62,42 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
-                        .addSettingsInput({
+                        .addSettingsInputRow({
                           id: nanoid(),
-                          propertyName: 'simpleOrPivot',
                           parentId: commonTabId,
-                          hidden: false,
-                          label: 'Simple / Pivot',
-                          inputType: 'dropdown',
-                          allowClear: true,
-                          dropdownOptions: [
-                            { label: 'Simple', value: 'simple' },
-                            { label: 'Pivot', value: 'pivot' },
-                          ],
-                          validate: { required: true },
-                          defaultValue: 'simple',
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          propertyName: 'dataMode',
-                          parentId: commonTabId,
-                          label: 'Data Source Type',
-                          description:
-                            'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
-                          inputType: 'dropdown',
-                          allowClear: true,
-                          dropdownOptions: [
-                            { label: 'URL', value: 'url' },
-                            { label: 'Entity Type', value: 'entityType' },
-                          ],
-                          validate: { required: true },
-                          defaultValue: 'entityType',
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'simpleOrPivot',
+                              parentId: commonTabId,
+                              hidden: false,
+                              label: 'Simple / Pivot',
+                              type: 'dropdown',
+                              allowClear: true,
+                              dropdownOptions: [
+                                { label: 'Simple', value: 'simple' },
+                                { label: 'Pivot', value: 'pivot' },
+                              ],
+                              validate: { required: true },
+                              defaultValue: 'simple',
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'dataMode',
+                              parentId: commonTabId,
+                              label: 'Data Source Type',
+                              description:
+                                'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                              type: 'dropdown',
+                              allowClear: true,
+                              dropdownOptions: [
+                                { label: 'URL', value: 'url' },
+                                { label: 'Entity Type', value: 'entityType' },
+                              ],
+                              validate: { required: true },
+                              defaultValue: 'entityType',
+                            }
+                          ]
                         })
                         .addContainer({
                           id: dataSettingsForUrlId,
