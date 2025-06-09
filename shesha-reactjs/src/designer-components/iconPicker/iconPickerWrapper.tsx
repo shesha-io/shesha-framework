@@ -50,9 +50,6 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     if (onChange) onChange(iconName);
   };
 
-
-  console.log('IconPickerWrapper props',value);
-
   const fontSize = parseFloat(String(fullStyles?.fontSize).replace('px', ''));
 
   const style: CSSProperties = {
