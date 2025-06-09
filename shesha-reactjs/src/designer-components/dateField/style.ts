@@ -14,15 +14,12 @@ export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles
       
           .ant-picker-input input {
             font-weight: var(--ant-font-weight) !important;
+            text-align: var(--ant-text-align) !important;
           }
       
           .ant-picker-cell-inner {
             font-weight: var(--ant-font-weight) !important;
           }
-
-          .ant-picker-input input {
-            text-align: var(--ant-text-align) !important;
-        }
         `
     );
 
