@@ -27,7 +27,7 @@ import {
 import { getButtonGroupMenuItem } from './utils';
 import { IButtonGroupProps } from './models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useDeepCompareMemo } from '@/hooks';
+import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useSheshaApplication } from '@/providers';
 import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
@@ -42,6 +42,7 @@ import ValidationErrors from '@/components/validationErrors';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
+import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -328,8 +329,11 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+    const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
+    const memoizedItems = useDeepCompareMemo(() => items, [items]);
+
     return (
-        <DynamicActionsEvaluator items={props.items}>
+        <DynamicActionsEvaluator items={memoizedItems}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}
         </DynamicActionsEvaluator>
     );
