@@ -48,7 +48,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
       
         .${shaReactTable} {
           margin: unset;
-        }
+          overflow: auto;
+          ${sheshaStyles.thinScrollbars}
       
         .${entityPickerModalPagerContainer} {
           display: flex;

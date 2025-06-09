@@ -215,7 +215,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       modelType: {
                         _code: 'return getSettingValue(data?.entityType);',
                         _mode: 'code',
-                        _value: false
+                        _value: false,
                       } as any,
                       autoFillProps: false,
                     },
@@ -603,7 +603,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         inputType: 'numberField',
                         jsSetting: true,
                         defaultValue: 600,
-                        min: 0,
                       })
                       .toJson(),
                   ],

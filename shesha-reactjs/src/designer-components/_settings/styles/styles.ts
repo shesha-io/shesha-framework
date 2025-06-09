@@ -1,6 +1,6 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) => {
+export const useStyles = createStyles(({ css, cx, responsive, token }) => {
 
     const contentJs = cx(css`
         position: relative;
@@ -78,7 +78,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) 
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
-                top: ${hasCode ? '-38px' : '-25px'};
+                top: -25px;
             }
         
     `);

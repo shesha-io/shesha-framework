@@ -7,7 +7,7 @@ import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { convertFormMarkupToFlatStructure } from '../form/utils';
 import { DEFAULT_FORM_SETTINGS, IFormSettings } from '../form/models';
 import { useFormById, useFormByMarkup } from './hooks';
-import { migrateFormSettings2 } from '../form/migration/formSettingsMigrations';
+import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 
 export interface IFormManagerProps {
 
@@ -87,12 +87,12 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
             ? { ...formSettings, isSettingsForm: true }
             : formSettings;
 
-        const upToDateSettings = migrateFormSettings2(settings);        
-        const flatStructure = convertFormMarkupToFlatStructure(markup, upToDateSettings, designerComponents);
+        const upToDateForm = migrateFormSettings({ markup, settings }, designerComponents);        
+        const flatStructure = convertFormMarkupToFlatStructure(upToDateForm.markup, upToDateForm.settings, designerComponents);
 
         const result: UpToDateForm = {
             flatStructure,
-            settings: upToDateSettings,
+            settings: upToDateForm.settings,
         };
         return result;
     };
