@@ -47,8 +47,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-  const fullStyles = {...allStyles.fullStyle}
-  const { styles } = useStyles({ fullStyles });
+    const fullStyles = {...allStyles?.fullStyle || {}}
+    const { styles } = useStyles({ fullStyles });
 
   const { formData } = useForm();
 
