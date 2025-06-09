@@ -45,7 +45,7 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
       
       const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
       return (
-          <span style={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
             {baseContent}
             <Tooltip title={tooltipText} placement="right">
               <QuestionCircleOutlined style={{ marginLeft: 8, fontSize: '12px', opacity: 0.6, zIndex: 1000 }} />

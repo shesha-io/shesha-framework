@@ -3,12 +3,12 @@ export const getOverflowStyle = (overflow: boolean, hideScrollBar: boolean): Rea
     return {
         overflow: 'auto',
         scrollbarWidth: 'thin',
-        '::-webkit-scrollbar': {
+        '::WebkitScrollbar': {
             width: '8px',
             backgroundColor: 'transparent'
         },
         ...(hideScrollBar && {
-            '::-webkit-scrollbar': { display: 'none' },
+            '::WebkitScrollbar': { display: 'none' },
             'msOverflowStyle': 'none',
             'scrollbarWidth': 'none',
         })
