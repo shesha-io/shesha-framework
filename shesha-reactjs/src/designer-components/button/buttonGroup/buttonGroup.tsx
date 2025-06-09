@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -33,6 +33,7 @@ import { addPx } from '../util';
 import { removeNullUndefined } from '@/providers/utils';
 import { useActualContextData } from '@/hooks/useActualContextData';
 import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
+import { useDeepCompareMemo } from '@/hooks';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -227,11 +228,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
-
-    const memoizedItems = useMemo(() => items, [
-        props.items,
-        props.readOnly
-    ]);
+    const memoizedItems = useDeepCompareMemo(() => items, [items]);
 
     return (
         <DynamicActionsEvaluator items={memoizedItems}>
