@@ -229,7 +229,8 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
 
     const memoizedItems = useMemo(() => items, [
-        props.items
+        props.items,
+        props.readOnly
     ]);
 
     return (
