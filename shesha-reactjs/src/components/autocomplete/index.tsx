@@ -247,7 +247,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
-
+  
   const {width, ...restOfDropdownStyles} = style ?? {};
 
   return (
@@ -273,7 +273,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         style={style}
         size={props.size}
         ref={selectRef}
-        variant={Object.keys(style).length === 0 ? 'outlined' :'borderless'}
+        variant={style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth")  ? 'borderless' : undefined}
         mode={props.value && props.mode === 'multiple' ? props.mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
       >
         {freeTextValuesList /* this is need for showing free text value */}

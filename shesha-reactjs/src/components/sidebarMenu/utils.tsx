@@ -1,10 +1,11 @@
-import { MenuProps } from 'antd';
+import { MenuProps, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration } from '@/providers/index';
 import Link from 'next/link';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -18,9 +19,10 @@ interface IGetItemArgs {
   url?: string;
   navigationType?: string;
   onClick?: () => void;
+  tooltip?: string | ReactNode;
 }
 
-function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url }: IGetItemArgs): MenuItem {
+function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url, tooltip }: IGetItemArgs): MenuItem {
   const clickHandler = (event) => {
     event.preventDefault();
     onClick();
@@ -32,9 +34,25 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     key,
     icon,
     children,
-    label: Boolean(onClick)
-      ? navigationType === 'url' || navigationType === 'form' ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link> : <Link href={''} className={className} onClick={clickHandler}>{label}</Link>
-      : <span className={className}>{label}</span>,
+    label: (() => {
+      const baseContent = onClick
+        ? ((navigationType === 'url' || navigationType === 'form')
+          ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link>
+          : <Link href={''} className={className} onClick={clickHandler}>{label}</Link>)
+        : <span className={className}>{label}</span>;
+      
+      if (!tooltip) return baseContent;
+      
+      const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
+      return (
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+            {baseContent}
+            <Tooltip title={tooltipText} placement="right">
+              <QuestionCircleOutlined style={{ marginLeft: 8, fontSize: '12px', opacity: 0.6, zIndex: 1000 }} />
+            </Tooltip>
+          </span>
+      );
+    })(),
     type: itemType === 'divider' ? 'divider' : undefined,
   } as MenuItem;
 }
@@ -86,6 +104,7 @@ export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluatio
     url,
     navigationType,
     onClick: actionConfiguration ? () => onButtonClick(id, actionConfiguration) : undefined,
+    tooltip: item.tooltip,
   };
   if (onItemEvaluation)
     onItemEvaluation(item);

@@ -87,13 +87,15 @@ export const getItemSettings = (data: any) => {
                                                 label: "Icon",
                                                 jsSetting: true,
                                             })
-                                            .addConfigurableActionConfigurator({
+                                            .addSettingsInput({
                                                 id: nanoid(),
+                                                inputType: "configurableActionConfigurator",
                                                 propertyName: "actionConfiguration",
                                                 parentId: commonTabId,
-                                                label: "Action",
+                                                label: "Action Configuration",
                                                 allowedActions: ["shesha.common"],
-                                                jsSetting: false
+                                                jsSetting: false,
+                                                hideLabel: true,
                                             })
                                             .toJson()
                                     ]

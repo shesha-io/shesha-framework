@@ -186,7 +186,7 @@ export const getColumnSettings = (data?: any) => ({
                             "propertyName": "displayContainer",
                             "label": "Display Settings",
                             "hidden": {
-                                "_code": "console.log(getSettingValue(data)); return getSettingValue(data?.columnType) !== 'data';",
+                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
                                 "_mode": "code",
                                 "_value": false
                             },
@@ -341,7 +341,7 @@ export const getColumnSettings = (data?: any) => ({
                                                     id: 'dimensionsStyleRowWidth',
                                                     parentId: 'dimensionsStylePnl',
                                                     inline: true,
-                                                                        inputs: [
+                                                    inputs: [
                                                         {
                                                             "id": "minWidth1",
                                                             "type": "numberField",
@@ -368,7 +368,7 @@ export const getColumnSettings = (data?: any) => ({
                                                         _mode: "code",
                                                         _value: false
                                                     },
-                                                                        inputs: [
+                                                    inputs: [
                                                         {
                                                             "id": "minHeight1",
                                                             "type": "numberField",
