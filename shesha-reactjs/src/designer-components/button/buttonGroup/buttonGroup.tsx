@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -226,9 +226,14 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter );
+    const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
+
+    const memoizedItems = useMemo(() => items, [
+        props.items
+    ]);
+
     return (
-        <DynamicActionsEvaluator items={items}>
+        <DynamicActionsEvaluator items={memoizedItems}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}
         </DynamicActionsEvaluator>
     );
