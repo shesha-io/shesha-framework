@@ -1,5 +1,5 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormOutlined } from '@ant-design/icons';
 import { getStyle } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/providers/form/models';
@@ -35,11 +35,14 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     const { namePrefix } = useFormItem();
 
     if (model.hidden && formMode !== 'designer') return null;
-
+    
     const name = namePrefix ? [namePrefix, model?.propertyName]?.join('.') : model?.propertyName;
+
+    const rerenderKey = `${model?.label || ''}-${model?.hideLabel || false}-${model?.labelCol || 0}`;
 
     return (
       <ConfigurableFormItem
+        key={rerenderKey}
         model={model}
         labelCol={{ span: model?.hideLabel ? 0 : model?.labelCol }}
         wrapperCol={{ span: model?.hideLabel ? 24 : model?.wrapperCol }}
@@ -60,7 +63,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onCreated: migrateFormApi.withoutFormData(prev?.onCreated),
       onUpdated: migrateFormApi.withoutFormData(prev?.onUpdated),
     }))
-        .add<ISubFormComponentProps>(4, prev => ({ ...prev, hideLabel: true })),
+    .add<ISubFormComponentProps>(4, prev => ({ ...prev, hideLabel: true })),
   settingsFormMarkup: (props) => getSettings(props),
   initModel: model => {
     const customProps: ISubFormComponentProps = {
