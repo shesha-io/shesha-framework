@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useState } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -41,6 +41,7 @@ import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components
 import ValidationErrors from '@/components/validationErrors';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { addPx } from '@/utils/style';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -48,6 +49,8 @@ type PrepareItemFunc = (item: ButtonGroupItemProps, parentReadOnly: boolean) => 
 
 type MenuButton = ButtonGroupItemProps & {
     childItems?: MenuButton[];
+    dividerWidth?: string;
+    dividerColor?: string;
 };
 
 const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: IApplicationContext; form?: FormInstance<any> }> = ({ props, uuid, appContext, form }) => {
@@ -126,7 +129,7 @@ const createMenuItem = (
         : null;
 
     return isDivider
-        ? { type: 'divider' }
+        ? { type: 'divider', style: { height: addPx(props.dividerWidth), backgroundColor: props.dividerColor } }
         : getButtonGroupMenuItem(
             <RenderButton props={props} uuid={props.id} appContext={appContext} form={form} />,
             props.id,
@@ -184,7 +187,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
                 return <RenderButton props={{ ...item }} uuid={item.id} appContext={appContext} form={form} />;
             case 'separator':
             case 'line':
-                return <Divider type='vertical' key={uuid} />;
+                return <Divider type='vertical' key={uuid} style={{ width: addPx(item.dividerWidth), backgroundColor: item.dividerColor }} />;
             default:
                 return null;
         }
@@ -200,53 +203,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
 
-    const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form, dimensions, shadow, border, background, style, stylingBox } = props;
-    const jsStyle = getStyle(style, props);
-
-    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-        const fetchStyles = async () => {
-            const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-                ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-                    { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-                    .then((response) => {
-                        return response.blob();
-                    })
-                    .then((blob) => {
-                        return URL.createObjectURL(blob);
-                    }) : '';
-
-            const bgStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
-
-            setBackgroundStyles((prevStyles) => {
-                if (JSON.stringify(prevStyles) !== JSON.stringify(bgStyle)) {
-                    return bgStyle;
-                }
-                return prevStyles;
-            });
-        };
-
-        fetchStyles();
-    }, [background, backendUrl, httpHeaders, jsStyle]);
-
-    const styling = JSON.parse(stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles = removeUndefinedProps({
-        ...dimensionsStyles,
-        ...borderStyles,
-        ...backgroundStyles,
-        ...shadowStyles,
-        ...stylingBoxAsCSS,
-        ...jsStyle
-    });
-
-    const finalStyle = removeUndefinedProps({ ...additionalStyles });
-
+    const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form } = props;
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
@@ -330,7 +287,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     const filteredItems = resolvedItems?.filter(getIsVisible);
 
-    if (background?.type === 'storedFile' && background.storedFile?.id && !isValidGuid(background.storedFile.id)) {
+    if (props?.background?.type === 'storedFile' && props?.background.storedFile?.id && !isValidGuid(props?.background.storedFile.id)) {
         return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -346,7 +303,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     if (isInline) {
         return (
-            <Button.Group size={size} style={finalStyle}>
+            <Button.Group size={size} style={props.styles}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
                         (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
@@ -358,7 +315,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
 
         return (
-            <div className={styles.shaResponsiveButtonGroupContainer} style={finalStyle}>
+            <div className={styles.shaResponsiveButtonGroupContainer} style={props.styles}>
                 <Menu
                     mode="horizontal"
                     items={menuItems}

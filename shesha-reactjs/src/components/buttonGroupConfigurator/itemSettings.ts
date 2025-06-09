@@ -216,15 +216,48 @@ export const getItemSettings = (data) => {
                         id: appearanceTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'buttonType',
-                                    label: 'Type',
-                                    validate: {
-                                        required: true,
-                                    },
-                                    inputType: 'dropdown',
-                                    dropdownOptions: buttonTypes,
+                                    inline: true,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'buttonType',
+                                            label: 'Type',
+                                            validate: {
+                                                required: true,
+                                            },
+                                            type: 'dropdown',
+                                            dropdownOptions: buttonTypes,
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any,
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            type: 'textField',
+                                            propertyName: 'dividerWidth',
+                                            label: "Width",
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any,
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            type: 'colorPicker',
+                                            propertyName: 'dividerColor',
+                                            label: 'Color',
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any,
+                                        }
+                                    ]
                                 })
                                 .addCollapsiblePanel({
                                     id: nanoid(),

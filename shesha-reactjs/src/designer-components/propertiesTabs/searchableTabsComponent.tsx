@@ -9,12 +9,9 @@ import { ITabsComponentProps } from './models';
 
 interface SearchableTabsProps {
     model: ITabsComponentProps;
-    data?: any;
-    value: any;
-    onChange?: (value: any) => void;
 }
 
-const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
+const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
@@ -43,9 +40,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        if (onChange) {
-            onChange(e.target.value);
-        }
     };
 
     return (
