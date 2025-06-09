@@ -22,14 +22,14 @@ namespace Shesha.Domain
 
         public const string RoleAppointmentTypeName = "role-appointment-type";
         public override string ItemType => RoleAppointmentTypeName;
-        public EntityConfig PermissionedEntity1Type { get; set; }
-        public RefListPermissionedEntityIsRequired PermissionedEntity1IsRequired { get; set; }
-        public EntityConfig PermissionedEntity2Type { get; set; }
-        public RefListPermissionedEntityIsRequired PermissionedEntity2IsRequired { get; set; }
-        public EntityConfig PermissionedEntity3Type { get; set; }
-        public RefListPermissionedEntityIsRequired PermissionedEntity3IsRequired { get; set; }
-        public FormConfiguration RoleAppointmentCreateForm { get; set; }
-        public FormConfiguration RoleAppointmentDetailsForm { get; set; }
-        public FormConfiguration RoleAppointmentListItemForm { get; set; }
+        public virtual EntityConfig PermissionedEntity1Type { get; set; }
+        public virtual RefListPermissionedEntityIsRequired PermissionedEntity1IsRequired { get; set; }
+        public virtual EntityConfig PermissionedEntity2Type { get; set; }
+        public virtual RefListPermissionedEntityIsRequired PermissionedEntity2IsRequired { get; set; }
+        public virtual EntityConfig PermissionedEntity3Type { get; set; }
+        public virtual RefListPermissionedEntityIsRequired PermissionedEntity3IsRequired { get; set; }
+        public virtual FormConfiguration RoleAppointmentCreateForm { get; set; }
+        public virtual FormConfiguration RoleAppointmentDetailsForm { get; set; }
+        public virtual FormConfiguration RoleAppointmentListItemForm { get; set; }
     }
 }
