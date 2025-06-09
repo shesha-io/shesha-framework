@@ -2,8 +2,8 @@
 
 namespace Shesha.Domain.Enums
 {
-    [ReferenceList("PermissionedEntity3IsRequired")]
-    public enum RefListPermissionedEntity3IsRequired
+    [ReferenceList("PermissionedEntityIsRequired")]
+    public enum RefListPermissionedEntityIsRequired
     {
         Yes = 1,
         No = 2,

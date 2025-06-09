@@ -8,13 +8,13 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Create.Table("Core_RoleTypeConfigs")
+            Create.Table("Core_RoleAppointmentTypeConfigs")
                    .WithIdAsGuid()
                    .WithColumn("PermissionedEntity1IsRequiredLkp").AsInt64().Nullable()
                    .WithColumn("PermissionedEntity2IsRequiredLkp").AsInt64().Nullable()
                    .WithColumn("PermissionedEntity3IsRequiredLkp").AsInt64().Nullable();
 
-            Alter.Table("Core_RoleTypeConfigs")
+            Alter.Table("Core_RoleAppointmentTypeConfigs")
                 .AddForeignKeyColumn("RoleAppointmentCreateFormId", "Frwk_FormConfigurations")
                 .AddForeignKeyColumn("RoleAppointmentDetailsFormId", "Frwk_FormConfigurations")
                 .AddForeignKeyColumn("RoleAppointmentListItemFormId", "Frwk_FormConfigurations")
@@ -23,7 +23,7 @@ namespace Shesha.Migrations
                 .AddForeignKeyColumn("PermissionedEntity3TypeId", "Frwk_EntityConfigs");
 
             Alter.Table("Core_ShaRoles")
-                .AddForeignKeyColumn("RoleTypeId", "Core_RoleTypeConfigs");
+                .AddForeignKeyColumn("RoleAppointmentTypeId", "Core_RoleAppointmentTypeConfigs");
         }
     }
 }
