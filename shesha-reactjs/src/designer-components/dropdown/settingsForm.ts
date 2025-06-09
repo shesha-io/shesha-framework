@@ -97,7 +97,36 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     }
                                 ]
                             })
-
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: commonTabId,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'editModeSelector',
+                                        propertyName: 'editMode',
+                                        label: 'Edit Mode',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'hidden',
+                                        label: 'Hide',
+                                        jsSetting: true,
+                                        layout: 'horizontal',
+                                    },
+                                ],
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '2',
+                        title: 'Data',
+                        id: dataTabId,
+                        components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
@@ -129,36 +158,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
 
                                 ],
                             })
-                            .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: commonTabId,
-                                inputs: [
-                                    {
-                                        id: nanoid(),
-                                        type: 'editModeSelector',
-                                        propertyName: 'editMode',
-                                        label: 'Edit Mode',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        id: nanoid(),
-                                        type: 'switch',
-                                        propertyName: 'hidden',
-                                        label: 'Hide',
-                                        jsSetting: true,
-                                        layout: 'horizontal',
-                                    },
-                                ],
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '2',
-                        title: 'Data',
-                        id: dataTabId,
-                        components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,

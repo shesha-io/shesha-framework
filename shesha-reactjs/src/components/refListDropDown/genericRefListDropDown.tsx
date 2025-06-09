@@ -122,6 +122,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         value={wrapValue(value, options)}
         disabled={disabled}
         showIcon={showIcon}
+        showItemName={showItemName}
         solidColor={solidColor}
         style={displayStyle === 'tags' ? tagStyle : style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}

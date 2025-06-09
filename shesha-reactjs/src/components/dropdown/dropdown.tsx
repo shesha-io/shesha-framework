@@ -176,8 +176,10 @@ export const Dropdown: FC<IDropdownProps> = ({
     if (displayStyle === 'tags' && mode !== 'multiple') {
         return <Select
             {...commonSelectProps}
+            className={styles.dropdown}
+            showSearch
+            style={{ ...style, width: 'max-content' }}
             popupMatchSelectWidth={false}
-            style={{ width: 'max-content' }}
             placeholder={<Tag
                 style={{ ...getTagStyle(tagStyle, true), background: '#d9d9d9' }}
             >
