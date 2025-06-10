@@ -84,7 +84,6 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
 
       if (isLineOrCircle) {
         // tslint:disable-next-line:function-constructor
-        //console.log(color)
         return color;
       } else {
         return color;

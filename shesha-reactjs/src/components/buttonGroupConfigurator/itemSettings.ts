@@ -188,24 +188,25 @@ export const getItemSettings = (data) => {
                                     _mode: 'code',
                                     _value: false
                                 },
-                                inputs: [{
-                                    id: nanoid(),
-                                    type: "dynamicItemsConfigurator",
-                                    propertyName: "dynamicItemsConfiguration",
-                                    componentName: "configurableActionConfigurator1",
-                                    label: "",
-                                    hideLabel: true,
-                                    labelAlign: "right",
-                                    parentId: commonTabId,
-                                    hidden: false,
-                                    isDynamic: false,
-                                    settingsValidationErrors: [],
-                                    _formFields: [
-                                        "propertyName",
-                                        "description",
-                                        "customVisibility"
-                                    ]
-                                }]
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: "dynamicItemsConfigurator",
+                                        propertyName: "dynamicItemsConfiguration",
+                                        componentName: "configurableActionConfigurator1",
+                                        label: "",
+                                        hideLabel: true,
+                                        labelAlign: "right",
+                                        hidden: false,
+                                        isDynamic: false,
+                                        settingsValidationErrors: [],
+                                        _formFields: [
+                                            "propertyName",
+                                            "description",
+                                            "customVisibility"
+                                        ]
+                                    }
+                                ]
                             })
                             .toJson()
                         ]
@@ -239,7 +240,7 @@ export const getItemSettings = (data) => {
                                             id: nanoid(),
                                             type: 'textField',
                                             propertyName: 'dividerWidth',
-                                            label: "Width",
+                                            label: "thickness",
                                             hidden: {
                                                 _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
                                                 _mode: 'code',
