@@ -33,6 +33,8 @@ namespace Shesha.Domain
         [Audited]
         public override string? Description { get; set; }
 
+        public virtual RoleAppointmentTypeConfig RoleAppointmentType { get; set; }
+
         [Obsolete]
         public virtual int SortIndex { get; set; }
 

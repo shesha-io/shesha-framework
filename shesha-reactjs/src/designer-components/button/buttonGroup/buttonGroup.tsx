@@ -200,7 +200,15 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
 
-    const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form, dimensions, shadow, border, background, style, stylingBox } = props;
+    // ToDo: AS - review optimization
+    const preparedItems = props.items?.map((item) => {
+        // add editMode property if not exists
+        const preparedItem = { ...item, editMode: typeof item['editMode'] === 'undefined' ? undefined : item['editMode'] };
+        return getActualModel(preparedItem, allData, props.readOnly);
+    });
+    const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
+
+    const { size, spaceSize = 'middle', isInline, readOnly: disabled, form, dimensions, shadow, border, background, style, stylingBox } = props;
     const jsStyle = getStyle(style, props);
 
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
