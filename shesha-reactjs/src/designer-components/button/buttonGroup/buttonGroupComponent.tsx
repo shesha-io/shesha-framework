@@ -14,18 +14,14 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { defaultStyles } from '../util';
 import { defaultContainerStyles } from './utils';
-import { getActualModel } from '@/index';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
   isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
-  calculateModel: (model, allData) => ({
-    items: model.items?.map((item) => getActualModel(item, allData, model.readOnly)),
-  }),
-  Factory: ({ model, form, calculatedModel }) => {
-    return model.hidden ? null : <ButtonGroup {...model} items={calculatedModel.items} readOnly={model.readOnly} form={form} />;
+  Factory: ({ model, form }) => {
+    return model.hidden ? null : <ButtonGroup {...model} form={form} />;
   },
   actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
