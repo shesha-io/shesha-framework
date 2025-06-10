@@ -665,14 +665,13 @@ export const getSettings = (data: any) => {
             id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addPermissionAutocomplete({
-                  id: nanoid(),
+                .addSettingsInput({
+                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                  inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
-                  labelAlign: 'right',
-                  parentId: securityTabId,
-                  hidden: false,
-                  validate: {},
+                  size: 'small',
+                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
                 })
                 .toJson(),
             ],
