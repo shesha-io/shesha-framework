@@ -58,9 +58,10 @@ export function useActualContextData<T = any>(
   let actualModel = undefined;
   const modelChanged = !isEqual(prevModel.current, model);
   if (contextProxyRef.current.changed || modelChanged || !isEqual(prevParentReadonly.current, pReadonly)) {
-    const preparedData = model === null || model === undefined || Array.isArray(model)
-      ? model
-      : { ...model, editMode: typeof model['editMode'] === 'undefined' ? undefined : model['editMode'] }; // add editMode property if not exists
+    const preparedData = Array.isArray(model)
+      ? model.map((item) => ({ ...item, editMode: typeof item['editMode'] === 'undefined' ? undefined : item['editMode'] }))
+      : model === null || model === undefined ? model
+        : { ...model, editMode: typeof model['editMode'] === 'undefined' ? undefined : model['editMode'] }; // add editMode property if not exists
 
     actualModel = executor
       ? executor(preparedData, contextProxyRef.current)

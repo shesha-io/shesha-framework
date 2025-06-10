@@ -202,7 +202,7 @@ type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
-    const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
+    const { anyOfPermissionsGranted } = useSheshaApplication();
 
     const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form } = props;
 
@@ -242,41 +242,16 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     };
 
     const prepareItem: PrepareItemFunc = useCallback((item, parentReadOnly) => {
-        if (item.editMode === undefined)
-            item.editMode = 'inherited'; // prepare editMode property if not exist for updating inside getActualModel
+        if (item.editMode === undefined || item.readOnly === undefined)
+            item.editMode = 'inherited';
+        // prepare editMode property if not exist for updating inside getActualModel
         const result = getActualModel(item, allData, parentReadOnly);
         return { ...result };
     }, [allData]);
 
     const actualItems = useDeepCompareMemo(() => {
         return Promise.all(items?.map(async (item) => {
-            const jsStyle = getStyle(item.style);
-            const dimensions = item?.dimensions;
-            const border = item?.border;
-            const font = item?.font;
-            const shadow = item?.shadow;
-            const background = item.background;
-
-            const dimensionsStyles = getDimensionsStyle(dimensions);
-            const borderStyles = getBorderStyle(border, jsStyle);
-            const fontStyles = getFontStyle(font);
-            const shadowStyles = getShadowStyle(shadow);
-
-            const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-
-            const backgroundStyle = getBackgroundStyle(item.background, getStyle(item.style), storedImageUrl);
-
-            const newStyles = {
-                ...dimensionsStyles,
-                ...(['primary', 'default'].includes(item.buttonType) && borderStyles),
-                ...fontStyles,
-                ...(['primary', 'default'].includes(item.buttonType) && shadowStyles),
-                ...(['dashed', 'default'].includes(item.buttonType) && backgroundStyle),
-                ...jsStyle,
-                justifyContent: font?.align,
-            };
-
-            return prepareItem({ ...item, styles: newStyles }, disabled);
+            return prepareItem({ ...item }, disabled);
         }) || []);
     }, [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
@@ -330,6 +305,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
+
     const memoizedItems = useDeepCompareMemo(() => items, [items]);
 
     return (
