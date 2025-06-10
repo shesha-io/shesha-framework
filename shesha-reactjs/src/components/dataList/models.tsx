@@ -1,5 +1,5 @@
 import { MutableRefObject } from 'react';
-import { FormIdentifier } from '@/interfaces';
+import { FormIdentifier, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
@@ -38,7 +38,7 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   noDataIcon?: string;
 }
 
-export interface IDataListBaseProps {
+export interface IDataListBaseProps extends IStyleType {
   id: string;
   
   dataSource?: string;
