@@ -3,7 +3,6 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from "antd/es/form/Form";
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "../_settings/utils/background/utils";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
-import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
 
 export const getSettings = (data: any) => {
 
@@ -252,7 +251,7 @@ export const getSettings = (data: any) => {
                         {
                           id: nanoid(),
                           propertyName: 'createFormType',
-                          label: 'Form',
+                          label: 'Form Type',
                           type: 'formTypeAutocomplete',
                           jsSetting: true,
                           width: '100%',
@@ -268,7 +267,7 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           propertyName: 'customCreateUrl',
                           label: 'Custom Create URL',
-                          type: 'textField',
+                          type: 'endpointsAutocomplete',
                           jsSetting: true,
                         }
                       ]
@@ -347,7 +346,7 @@ export const getSettings = (data: any) => {
                         {
                           id: nanoid(),
                           propertyName: 'inlineEditMode',
-                          label: 'Inline Edit Mode',
+                          label: 'Edit Mode',
                           type: 'dropdown',
                           dropdownOptions: [
                             { value: 'all-at-once', label: 'All at Once' },
@@ -375,7 +374,7 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           propertyName: 'customUpdateUrl',
                           label: 'Custom Update URL',
-                          type: 'textField',
+                          type: 'endpointsAutocomplete',
                           parentId: dataTabId,
                           jsSetting: true,
                         }
@@ -418,7 +417,7 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           propertyName: 'customDeleteUrl',
                           label: 'Custom Delete URL',
-                          type: 'textField',
+                          type: 'endpointsAutocomplete',
                           parentId: dataTabId,
                           jsSetting: true,
                         }
@@ -526,71 +525,6 @@ export const getSettings = (data: any) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
-                    .addCollapsiblePanel({
-                      id: nanoid(),
-                      propertyName: 'pnlFontStyle',
-                      label: 'Font',
-                      labelAlign: 'right',
-                      parentId: styleRouterId,
-                      ghost: true,
-                      collapsible: 'header',
-                      content: {
-                        id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: styleRouterId,
-                            inline: true,
-                            propertyName: 'font',
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                label: 'Family',
-                                propertyName: 'font.type',
-                                hideLabel: true,
-                                dropdownOptions: fontTypes,
-                              },
-                              {
-                                type: 'numberField',
-                                id: nanoid(),
-                                label: 'Size',
-                                propertyName: 'font.size',
-                                hideLabel: true,
-                                width: 50,
-                              },
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                label: 'Weight',
-                                propertyName: 'font.weight',
-                                hideLabel: true,
-                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                dropdownOptions: fontWeights,
-                                width: 100,
-                              },
-                              {
-                                type: 'colorPicker',
-                                id: nanoid(),
-                                label: 'Color',
-                                hideLabel: true,
-                                propertyName: 'font.color',
-                              },
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                label: 'Align',
-                                propertyName: 'font.align',
-                                hideLabel: true,
-                                width: 60,
-                                dropdownOptions: textAlign,
-                              },
-                            ],
-                          })
-                          .toJson()
-                        ]
-                      }
-                    })
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'pnlDimensions',

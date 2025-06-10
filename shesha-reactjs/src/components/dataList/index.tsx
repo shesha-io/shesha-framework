@@ -446,6 +446,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
 
+    const hasBorder = () => {
+      const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
+      return borderProps.some(prop => {
+        const value = stylesAsCSS[prop];
+        return value && value !== 'none' && value !== '0' && value !== '0px';
+      }) || showBorder;
+    };
+
     const baseStyles = orientation === 'wrap' ? {
       ...(showBorder && { border: '1px #d3d3d3 solid' })
     } : itemWidthCalc as React.CSSProperties;
@@ -479,8 +487,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </div>
 
         </ConditionalWrap>{' '}
-        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
-      </div>
+        {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
+        </div>
     );
   };
 
