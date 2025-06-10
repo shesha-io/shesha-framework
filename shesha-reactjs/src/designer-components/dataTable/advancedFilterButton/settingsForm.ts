@@ -252,12 +252,6 @@ export const getSettings = (data: any) => {
                                     width: 85,
                                     propertyName: 'dimensions.width',
                                     icon: 'widthIcon',
-                                    hidden: {
-                                      _code:
-                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType) === "link";',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                   {
