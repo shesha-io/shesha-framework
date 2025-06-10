@@ -263,6 +263,8 @@ export interface IConfigurableFormComponent
 
   permissions?: string[];
 
+  _formFields?: string[];
+
   layout?: FormLayout;
 
   inputStyles?: IStyleType;

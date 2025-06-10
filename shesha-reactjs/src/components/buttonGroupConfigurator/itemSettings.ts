@@ -180,7 +180,7 @@ export const getItemSettings = (data) => {
                                         }).toJson()
                                 ]
                             })
-                            .addSettingsInputRow({
+                            .addContainer({
                                 id: nanoid(),
                                 parentId: commonTabId,
                                 hidden: {
@@ -188,15 +188,14 @@ export const getItemSettings = (data) => {
                                     _mode: 'code',
                                     _value: false
                                 },
-                                inputs: [
+                                components: [
                                     {
                                         id: nanoid(),
                                         type: "dynamicItemsConfigurator",
                                         propertyName: "dynamicItemsConfiguration",
                                         componentName: "configurableActionConfigurator1",
-                                        label: "",
-                                        hideLabel: true,
                                         labelAlign: "right",
+                                        parentId: commonTabId,
                                         hidden: false,
                                         isDynamic: false,
                                         settingsValidationErrors: [],
