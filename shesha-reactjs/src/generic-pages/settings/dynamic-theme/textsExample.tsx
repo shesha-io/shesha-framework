@@ -1,15 +1,16 @@
 import { Space, Typography } from 'antd';
 import React, { FC } from 'react';
-import { GenericText } from '@/designer-components/text/genericText';
 
 const TextsExample: FC = () => {
   return (
     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-      <GenericText textType={'span'} propertyName="">Default text</GenericText>
+      <Typography.Text>
+        Default text
+      </Typography.Text>
 
-      <GenericText textType={'span'} contentType="secondary" propertyName="">
+      <Typography.Text type='secondary'>
         Secondary text
-      </GenericText>
+      </Typography.Text>
 
       <Typography.Link>Link text</Typography.Link>
     </Space>

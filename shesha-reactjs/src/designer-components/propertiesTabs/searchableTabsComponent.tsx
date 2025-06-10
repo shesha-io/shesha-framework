@@ -14,7 +14,7 @@ interface SearchableTabsProps {
     onChange?: (value: any) => void;
 }
 
-const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }) => {
+const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
 
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
@@ -22,7 +22,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
 
     const newFilteredTabs = tabs
         .map((tab: any) => {
-            const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery, data);
+            const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery);
             const hasVisibleComponents = Array.isArray(filteredComponents)
                 ? filteredComponents.some(comp => !comp.hidden)
                 : !!filteredComponents;
@@ -36,7 +36,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
                         containerId={tab.id + tab.key}
                         dynamicComponents={filteredComponents} />
                 </ParentProvider>,
-                hidden: !hasVisibleComponents
+                hidden: tab.hidden || !hasVisibleComponents
             };
         })
         .filter(tab => !tab.hidden);

@@ -77,7 +77,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function')
               onChange(...args);
           };
-          
+
+
           return <Autocomplete
             {...model}
             grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
