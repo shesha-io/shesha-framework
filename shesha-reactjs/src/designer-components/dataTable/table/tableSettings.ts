@@ -160,6 +160,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     propertyName: 'canEditInline',
                                     label: 'Can Edit Inline',
                                     inputType: 'dropdown',
+                                    jsSetting: true,
                                     parentId: crudTabId,
                                     dropdownOptions: [
                                         { value: 'yes', label: 'Yes' },
@@ -227,7 +228,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'customUpdateUrl',
                                             label: 'Custom Update URL',
-                                            type: 'textField',
+                                            type: 'endpointsAutocomplete',
                                             parentId: crudTabId,
                                         }
                                     ]
@@ -241,6 +242,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             propertyName: 'canAddInline',
                                             label: 'Can Add Inline',
                                             type: 'dropdown',
+                                            jsSetting: true,
                                             parentId: crudTabId,
                                             dropdownOptions: [
                                                 { value: 'yes', label: 'Yes' },
@@ -309,7 +311,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'customCreateUrl',
                                             label: 'Custom Create URL',
-                                            type: 'textField',
+                                            type: 'endpointsAutocomplete',
                                             parentId: crudTabId,
                                         }
                                     ]
@@ -348,6 +350,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     label: 'Can Delete Inline',
                                     inputType: 'dropdown',
                                     parentId: crudTabId,
+                                    jsSetting: true,
                                     dropdownOptions: [
                                         { value: 'yes', label: 'Yes' },
                                         { value: 'no', label: 'No' },
@@ -380,7 +383,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'customDeleteUrl',
                                             label: 'Custom Delete URL',
-                                            type: 'textField',
+                                            type: 'endpointsAutocomplete',
                                             parentId: crudTabId,
                                         }
                                     ]
