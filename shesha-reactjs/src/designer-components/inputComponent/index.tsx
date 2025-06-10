@@ -3,7 +3,7 @@ import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch 
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
+import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useMetadata, useShaFormInstance } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -30,7 +30,7 @@ import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
-import { editModes, getEditor, iconElement } from './utils';
+import { CustomLabelValueEditorInputs, editModes, getEditor, iconElement } from './utils';
 
 const { Password } = Input;
 
@@ -44,8 +44,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     );
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
-    const { data: formData } = useFormData();
-    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt,
+    const { formData } = useShaFormInstance();
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
+
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
 
@@ -103,7 +104,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
         case 'dropdown': {
             const options = dropdownOptions as IDropdownOption[];
-
             return <Select
                 size={size}
                 mode={dropdownMode}
@@ -113,7 +113,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 className={className}
                 showSearch={showSearch}
                 value={value || defaultValue}
-                style={{ width: "100%" }}
+                style={{ width: props.width ?? "100%" }}
                 defaultValue={defaultValue}
                 onChange={onChange}
                 placeholder={placeholder}
@@ -138,8 +138,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 variant={variant} readOnly={readOnly}
                 size={size}
-                value={value || defaultValue}
+                value={value}
                 style={{ width: "100%" }}
+                min={props.min}
                 onChange={onChange}
                 addonAfter={iconElement(icon, null, tooltip || label, {}, styles)}
             />;
@@ -148,6 +149,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
             return <CustomDropdown value={value || defaultValue} placeholder={placeholder}
                 defaultValue={defaultValue} options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
+        }
+        case 'customLabelValueEditor': {
+            return <CustomLabelValueEditorInputs {...props} exposedVariables={null} />;
         }
         case 'textArea':
             return <Input.TextArea
@@ -159,7 +163,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'codeEditor':
             return getEditor(availableConstantsExpression, codeEditorProps, constantsAccessor);
         case 'iconPicker':
-            return <IconPickerWrapper iconSize={20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+            return <IconPickerWrapper iconSize={iconSize ?? 20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImagePicker
                 value={value || defaultValue}
@@ -297,7 +301,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 }
             />;
         case 'configurableActionConfigurator':
-            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} />;
+            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
         case 'typeAutoComplete':
             return <Autocomplete
                 dataSourceType="url"
@@ -338,6 +342,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 variant={variant}
                 placeholder={placeholder}
+                style={{ width: props.width ?? "100%" }}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip, {}, styles)}</span>}
                 value={value}
                 type={textType}

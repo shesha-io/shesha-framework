@@ -371,6 +371,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+    // TODO: AS - do not add useActualContextData (it is already fixed on top level). Remove before V1 release
     return (
         <DynamicActionsEvaluator items={props.items}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}

@@ -2,7 +2,9 @@ import { IFormLifecycleSettings, IFormSettings } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { GqlLoaderSettings } from "@/providers/form/loaders/interfaces";
 import { GqlSubmitterSettings } from "@/providers/form/submitters/interfaces";
-import { extractJsFieldFromKeyValue } from "./keyValueUtils";
+import { convertFormMarkupToFlatStructure } from "@/index";
+import { IFormMigrationContext } from "./models";
+import { setValueByPropertyName } from "@/utils/object";
 
 const getPrepareSubmitData = (preparedValues: string): string => {
     const normalizedPreparedValues = (preparedValues ?? "").trim();
@@ -26,23 +28,46 @@ const getBeforeDataLoad = (onInitialized: string): string => {
 const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
     if (!initialValues || initialValues.length === 0)
         return null;
-    
-    let result = "    const initialValues = {\r\n";
-    initialValues.forEach(item => {
-        if (item.key) {
-            const value = extractJsFieldFromKeyValue(item.value?.trim());
-            const currentPropLine = `        ${item.key}: ${value},\r\n`;
-            result += currentPropLine;
-        }
-    });
-    result += "    };\r\n";
-    result += "    form.setFieldsValue(initialValues);";
+
+    // Convert to JSON 
+    const initialData = {};
+    const initValues = [...initialValues, {key: "__shaFormData", value: 0}];
+    initValues.forEach(item => {
+        const value = typeof item.value === "string" && /{(.*?)}/gm.test(item.value)
+          ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
+          : item.value;
+        setValueByPropertyName(initialData, item.key, value);
+    });        
+    const initialObjString = JSON.stringify(initialData, null, 4)
+        .replaceAll("\"'' + ", "").replaceAll(" + ''\"", "")
+        .replaceAll("\"'", "'").replaceAll("'\"", "'")
+        .replace("\"__shaFormData\": 0", "...form.data"); // add loaded form data
+
+    let result = '\r\n// Migrated from Initial Values and components defaults\r\n';
+    result += `const initialData = ${initialObjString};\r\n`;
+    result += 'form.setFieldsValue(initialData);\r\n';
+    result += '// ----------------------------------------------------\r\n\r\n';
 
     const normalizedJs = onDataLoaded?.trim();
     if (normalizedJs)
         result += `    ${normalizedJs}`;    
 
     return result;
+};
+
+export const migrateDefaults = (settings: IFormSettings, context: IFormMigrationContext) => {
+    const initialData: IKeyValue[] = [];
+    const flatStructure = convertFormMarkupToFlatStructure(context.form.markup, settings, context.designerComponents);
+    for(const id in flatStructure.allComponents) {
+        if (!flatStructure.allComponents.hasOwnProperty(id)) continue;
+        const component = flatStructure.allComponents[id];
+        if (component.defaultValue !== undefined)
+            initialData.push({ key: component.propertyName, value: component.defaultValue });
+        if (component['initialValue'] !== undefined)
+            initialData.push({ key: component.propertyName, value: component['initialValue'] });
+    }
+    const onAfterDataLoad = getAfterDataLoad(settings.onAfterDataLoad, initialData);
+    return { ...settings, onAfterDataLoad };
 };
 
 export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => {

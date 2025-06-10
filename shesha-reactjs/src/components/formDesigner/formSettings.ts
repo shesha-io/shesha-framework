@@ -7,6 +7,7 @@ export const getSettings = () => {
     const dataTabId = nanoid();
     const appearanceTabId = nanoid();
     const securityTabId = nanoid();
+    const dataLoaderTypeId = nanoid();
 
     return {
         components: new DesignerToolbarSettings()
@@ -72,7 +73,7 @@ export const getSettings = () => {
                                             } as any
                                         })
                                         .addContainer({
-                                            id: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                            id: dataLoaderTypeId,
                                             propertyName: "container1",
                                             componentName: "cntGQLLoader",
                                             label: "Container1",
@@ -106,12 +107,12 @@ export const getSettings = () => {
                                                     id: 'endpint-additional-fields-to-fetch',
                                                     inputs: [
                                                         {
-                                                            id: "oamRBlEs6O2Jlc2FGL_gY",
+                                                            id: nanoid(),
                                                             type: "endpointsAutocomplete",
                                                             propertyName: "dataLoadersSettings.gql.staticEndpoint.url",
                                                             label: "Endpoint",
                                                             labelAlign: "right",
-                                                            parentId: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                                            parentId: dataLoaderTypeId,
                                                             hidden: {
                                                                 _mode: "code",
                                                                 _code: "    return data?.dataLoadersSettings?.gql?.endpointType !== 'static';",
@@ -123,13 +124,13 @@ export const getSettings = () => {
                                                             httpVerb: "get"
                                                         },
                                                         {
-                                                            id: "_9lX9iOOPifIBM_dfaIQxsNjK9ZQs7",
+                                                            id: nanoid(),
                                                             type: "codeEditor",
                                                             propertyName: "dataLoadersSettings.gql.dynamicEndpoint",
                                                             componentName: "dataLoadersSettings.gql.dynamicEndpoint",
                                                             label: "Endpoint",
                                                             labelAlign: "right",
-                                                            parentId: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                                            parentId: dataLoaderTypeId,
                                                             hidden: {
                                                                 _mode: "code",
                                                                 _code: "    return data?.dataLoadersSettings?.gql?.endpointType !== 'dynamic';",
@@ -148,7 +149,7 @@ export const getSettings = () => {
                                                             resultTypeExpression: "    return metadataBuilder\n        .object(\"IApiEndpoint\")\n        .addString(\"url\", \"Endpoint Url\")\n        .addString(\"httpVerb\", \"HTTP verb (GET/POST/PUT etc.)\")\n        .build();"
                                                         },
                                                         {
-                                                            id: "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
+                                                            id: nanoid(),
                                                             type: "propertyAutocomplete",
                                                             propertyName: "dataLoadersSettings.gql.fieldsToFetch",
                                                             label: "Additional fields for fetch",
@@ -158,7 +159,7 @@ export const getSettings = () => {
                                                             validate: {},
                                                             settingsValidationErrors: [],
                                                             description: "A list of fields you want to fetch",
-                                                            parentId: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                                            parentId: dataLoaderTypeId,
                                                             version: 2
                                                         }
                                                     ]

@@ -1,15 +1,3 @@
-const evaluateString = (expression: string, data: any): any => {
-    try {
-        // Create a new function with 'data' as a parameter and the expression as the function body
-        const func = new Function('data', expression);
-        // Execute the function with the provided data
-        return func(data);
-    } catch (error) {
-        console.error('Error evaluating expression:', expression, error);
-        return null;
-    }
-};
-
 const getHeaderStyles = () => (
     {
         font: {
@@ -70,8 +58,9 @@ const getBodyStyles = () => ({
     }
 });
 
-export const filterDynamicComponents = (components, query, data) => {
+export const filterDynamicComponents = (components, query) => {
     if (!components || !Array.isArray(components)) return [];
+
 
     const lowerCaseQuery = query.toLowerCase();
 
@@ -80,8 +69,12 @@ export const filterDynamicComponents = (components, query, data) => {
         return hidden || (!directMatch && !hasVisibleChildren);
     };
 
-    // Helper function to check if text matches query
-    const matchesQuery = (text) => text?.toLowerCase().includes(lowerCaseQuery);
+    // Helper function to check if text 
+    // matches query
+
+    const matchesQuery = (text) => {
+        return text?.toLowerCase().includes(lowerCaseQuery);
+    };
 
     const filterResult = components.map(component => {
         // Deep clone the component to avoid mutations
@@ -96,7 +89,7 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle propertyRouter
         if (c.componentName === 'propertyRouter') {
-            const filteredComponents = filterDynamicComponents(c.components, query, data);
+            const filteredComponents = filterDynamicComponents(c.components, query);
 
             return {
                 ...c,
@@ -107,7 +100,7 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle collapsiblePanel
         if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data);
+            const contentComponents = filterDynamicComponents(c.content?.components || [], query);
             const hasVisibleChildren = contentComponents.length > 0;
 
             return {
@@ -122,7 +115,7 @@ export const filterDynamicComponents = (components, query, data) => {
                 headerStyles: getHeaderStyles(),
                 allStyles: getBodyStyles(),
                 border: getBodyStyles().border,
-                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
+                stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"0\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }
@@ -144,7 +137,7 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle components with nested components
         if (c.components) {
-            const filteredComponents = filterDynamicComponents(c.components, query, data);
+            const filteredComponents = filterDynamicComponents(c.components, query);
             const hasVisibleChildren = filteredComponents.length > 0;
 
             return {
@@ -172,10 +165,6 @@ export const filterDynamicComponents = (components, query, data) => {
             (c.inputs && c.inputs.length > 0)
         );
 
-        const isHidden = typeof c.hidden === 'string'
-            ? evaluateString(c.hidden, data)
-            : c.hidden;
-
-        return !isHidden || hasVisibleChildren;
+        return !c.hidden || hasVisibleChildren;
     });
 };

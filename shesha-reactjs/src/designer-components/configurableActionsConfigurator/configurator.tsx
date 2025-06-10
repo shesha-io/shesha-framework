@@ -116,7 +116,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
+        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description} hideLabel={props.hideLabel}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </FormItem>
         {selectedAction && selectedAction.hasArguments && (
@@ -166,6 +166,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
 interface IConfigurableActionConfiguratorProps {
   label?: string;
+  hideLabel?: boolean;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;

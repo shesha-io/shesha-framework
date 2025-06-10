@@ -105,25 +105,55 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
   useEffect(() => {
-    if (
-      !Boolean(formIdentifier) &&
-      props.formSelectionMode === 'dynamic' &&
-      Boolean(entityType) &&
-      Boolean(formType) &&
-      props.entityReferenceType !== 'Quickview'
-    ) {
-      getEntityFormId(entityType, formType).then((formid) => {
-        setFormIdentifier({ name: formid.name, module: formid.module });
-      });
-    }
-  }, [formIdentifier, entityType, formType]);
+    let isSubscribed = true;
+
+    const fetchFormId = async () => {
+      if (
+        !formIdentifier &&
+        props.formSelectionMode === 'dynamic' &&
+        Boolean(entityType) &&
+        Boolean(formType) &&
+        props.entityReferenceType !== 'Quickview'
+      ) {
+        try {
+          const formid = await getEntityFormId(entityType, formType);
+          if (isSubscribed) {
+            setFormIdentifier({ name: formid.name, module: formid.module });
+          }
+        } catch (error) {
+          console.error('Error fetching form ID:', error);
+        }
+      }
+    };
+
+    fetchFormId();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [formIdentifier, entityType, formType, props.formSelectionMode, props.entityReferenceType]);
 
   useEffect(() => {
-    if (entityType) {
-      getMetadata({ modelType: entityType, dataType: null }).then((res) => {
-        setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
-      });
-    }
+    let isSubscribed = true;
+
+    const fetchMetadata = async () => {
+      if (entityType) {
+        try {
+          const res = await getMetadata({ modelType: entityType, dataType: null });
+          if (isSubscribed) {
+            setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
+          }
+        } catch (error) {
+          console.error('Error fetching metadata:', error);
+        }
+      }
+    };
+
+    fetchMetadata();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [entityType]);
 
   useEffect(() => {
@@ -146,12 +176,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
         });
     }
-  }, [fetched, entityId, props.entityReferenceType, props.getEntityUrl, entityType]);
+  }, [fetched, entityId, props.entityReferenceType, props.getEntityUrl, entityType, backendUrl, displayText, httpHeaders, notification, props.displayProperty]);
 
   useEffect(() => {
     setFetched(false);
     if (props?.value?._displayName) setDisplayText(props?.value?._displayName);
-  }, [entityId, entityType]);
+    else setDisplayText(!props?.value ? props?.placeholder : '');
+  }, [entityId, entityType, props?.placeholder, props?.value]);
 
   useEffect(() => {
     if (props.formIdentifier) {
@@ -214,7 +245,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     ) : (
       displayText
     );
-  }, [props.displayType, props.iconName, props.textTitle, displayText]);
+  }, [props.displayType, props.iconName, props.textTitle, displayText, props.style]);
 
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
