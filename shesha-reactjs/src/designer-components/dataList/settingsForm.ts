@@ -3,7 +3,6 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from "antd/es/form/Form";
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "../_settings/utils/background/utils";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
-import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
 
 export const getSettings = (data: any) => {
 
