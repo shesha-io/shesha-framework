@@ -252,7 +252,7 @@ export const getSettings = (data: any) => {
                         {
                           id: nanoid(),
                           propertyName: 'createFormType',
-                          label: 'Form',
+                          label: 'Form Type',
                           type: 'formTypeAutocomplete',
                           jsSetting: true,
                           width: '100%',
