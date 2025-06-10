@@ -47,7 +47,8 @@ export const readThemeColor = (theme: IConfigurableTheme) => ({
   'info': theme.application?.infoColor,
   'processing': theme.application?.processingColor,
   'primaryTextColor': theme?.text?.default,
-  'secondaryTextColor': theme?.text?.secondary
+  'secondaryTextColor': theme?.text?.secondary,
+  'globalTextColor': theme?.text?.global
 });
 
 export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly, size, style, defaultValue }) => {
@@ -96,7 +97,6 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
             >
               {title}
             </div>
-
           )}
           {panel}
         </div>

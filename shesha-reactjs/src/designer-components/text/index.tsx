@@ -12,6 +12,7 @@ import { getSettings } from './settingsForm';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { useTheme } from '@/providers';
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -21,6 +22,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   isInput: false,
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => {
+    const { theme } = useTheme();
     const { allStyles } = model;
     const shadow = model?.shadow;
     const jsStyle = allStyles?.jsStyle;
@@ -29,8 +31,9 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     const borderStyles = allStyles?.borderStyles;
     const fontStyles = allStyles?.fontStyles;
     const backgroundStyles = allStyles?.backgroundStyles;
-
+  
     const additionalStyles: CSSProperties = removeUndefinedProps({
+      ...(theme?.text?.default && { color: theme?.text?.default }),
       ...stylingBoxAsCSS,
       ...borderStyles,
       ...fontStyles,
@@ -75,7 +78,8 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
         backgroundColor: legacyColor2Hex(prev.backgroundColor),
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) })),
+      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
+      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: 'default' })),
 };
 
 export default TextComponent;

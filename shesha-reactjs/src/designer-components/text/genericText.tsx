@@ -6,6 +6,7 @@ import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
+import { useTheme } from '@/providers';
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -33,6 +34,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   const { styles } = useStyles();
   const [updateKey, setUpdateKey] = useState(0);
   // NOTE: to be replaced with a generic context implementation
+  const { theme } = useTheme();
 
   useEffect(() => {
     setUpdateKey((prev) => prev + 1);
@@ -48,6 +50,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     model.strong,
   ]);
 
+  const colorDefaultOrUndefined = contentType === 'default' ? theme?.text?.default : undefined;
   const baseProps: ITypographyProps = {
     code: model?.code,
     copyable: model?.copyable,
@@ -57,10 +60,10 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     underline: model?.underline,
     keyboard: model?.keyboard,
     italic: model?.italic,
-    type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
+    type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' && contentType !== 'default' ? contentType : null,
     style: {
       ...style,
-      color: contentType === 'custom' ? style.color : undefined,
+      color: contentType === 'custom' ? style.color : colorDefaultOrUndefined,
       fontSize: textType === 'title' ? undefined : style?.fontSize,
       justifyContent: style?.textAlign,
     },

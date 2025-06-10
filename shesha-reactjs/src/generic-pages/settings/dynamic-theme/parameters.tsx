@@ -61,6 +61,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             value={initialColor}
             onChange={onChange}
             readOnly={readonly}
+            allowClear={true}
           />
           <span>{humanizeString(colorName)} </span>
           <Show when={Boolean(hint)}>
@@ -87,6 +88,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
   const textConfigs: IThemeConfig[] = [
     { name: 'default', onChange: (hex: string) => updateTheme('text', { default: hex }) },
     { name: 'secondary', onChange: (hex: string) => updateTheme('text', { secondary: hex }) },
+    { name: 'global', onChange: (hex: string) => updateTheme('text', { global: hex }) },
   ];
 
   return (

@@ -342,7 +342,11 @@ export const getSettings = (data: any) => {
                             dropdownOptions: [
                               {
                                 label: 'Default',
-                                value: '',
+                                value: 'default',
+                              },
+                              {
+                                label: 'Global',
+                                value: 'globalTextColor',
                               },
                               {
                                 label: 'Primary',

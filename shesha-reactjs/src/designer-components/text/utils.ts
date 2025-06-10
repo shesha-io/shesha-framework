@@ -26,7 +26,7 @@ const SUPPORTED_DATE_FORMATS = [
 export const getFontSizeStyle = (key: TypographyFontSize) => FONT_SIZES[key];
 export const getPaddingSizeStyle = (key: TypographyPaddingSize) => PADDING_SIZES[key];
 
-export const DEFAULT_CONTENT_TYPE = '';
+export const DEFAULT_CONTENT_TYPE = 'default';
 export const DEFAULT_CONTENT_DISPLAY: ContentDisplay = 'content';
 export const DEFAULT_PADDING_SIZE: TypographyPaddingSize = 'none';
 
