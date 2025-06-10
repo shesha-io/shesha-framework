@@ -75,7 +75,6 @@ export const getSettings = (data: any) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       jsSetting: true,
-                      defaultValue: 'inherited',
                     },
                     {
                       type: 'switch',
@@ -117,7 +116,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               propertyName: 'toolbar',
                               label: 'Show Toolbar',
-                              defaultValue: true,
                               jsSetting: true,
                             },
                             {
@@ -125,7 +123,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               propertyName: 'toolbarSticky',
                               label: 'Sticky Toolbar',
-                              defaultValue: false,
                               jsSetting: true,
                               tooltip: "Keeps the toolbar visible at the top of the editor when scrolling"
                             },
@@ -324,7 +321,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               propertyName: 'showCharsCounter',
                               label: 'Show Characters Counter',
-                              defaultValue: true,
                               jsSetting: true,
                             },
                             {
@@ -332,7 +328,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               propertyName: 'showWordsCounter',
                               label: 'Show Words Counter',
-                              defaultValue: true,
                               jsSetting: true,
                             },
                           ],
@@ -389,14 +384,12 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               propertyName: 'insertImageAsBase64URI',
                               label: 'Insert Image As Base64 URI',
-                              defaultValue: false,
                             },
                             {
                               type: 'switch',
                               id: nanoid(),
                               propertyName: 'iframe',
                               label: 'Iframe Mode',
-                              defaultValue: false,
                               tooltip: "Isolates the editor content in a separate iframe for better style separation",
                             }
                           ],
@@ -480,7 +473,6 @@ export const getSettings = (data: any) => {
                           { label: 'Default', value: 'default' },
                           { label: 'Dark', value: 'dark' },
                         ],
-                        defaultValue: 'default',
                       })
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
