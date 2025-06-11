@@ -25,9 +25,9 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
 
     const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme) => {
         const hideBorder = input?.border?.[part]?.style === 'none';
-        if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
-        if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
-        if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;
+        if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width ?? all?.width);
+        if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style ?? all?.style;
+        if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color ?? all?.color;
 
         if (theme && readThemeColor(theme)[`${input?.border?.all?.color}`]) {
             style[`borderColor`] = readThemeColor(theme)[`${input?.border?.all?.color}`];
@@ -72,15 +72,15 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     if (input?.radius) {
         const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
         if (input?.radiusType === 'all') {
-            style.borderTopRightRadius = `${all || 0}px`;
-            style.borderBottomRightRadius = `${all || 0}px`;
-            style.borderBottomLeftRadius = `${all || 0}px`;
-            style.borderTopLeftRadius = `${all || 0}px`;
+            style.borderTopRightRadius = addPx(all ?? 0);
+            style.borderBottomRightRadius = addPx(all ?? 0);
+            style.borderBottomLeftRadius = addPx(all ?? 0);
+            style.borderTopLeftRadius = addPx(all ?? 0);
         } else {
-            style.borderTopRightRadius = `${topRight || 0}px`;
-            style.borderBottomRightRadius = `${bottomRight || 0}px`;
-            style.borderBottomLeftRadius = `${bottomLeft || 0}px`;
-            style.borderTopLeftRadius = `${topLeft || 0}px`;
+            style.borderTopRightRadius = addPx(topRight ?? 0);
+            style.borderBottomRightRadius = addPx(bottomRight ?? 0);
+            style.borderBottomLeftRadius = addPx(bottomLeft ?? 0);
+            style.borderTopLeftRadius = addPx(topLeft ?? 0);
         }
     };
 

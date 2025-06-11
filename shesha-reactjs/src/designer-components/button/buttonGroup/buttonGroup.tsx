@@ -286,7 +286,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
             <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
-                        (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
+                        (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
                     )}
                 </Space>
             </Button.Group>
