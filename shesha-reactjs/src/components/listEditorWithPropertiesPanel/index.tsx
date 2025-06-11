@@ -70,16 +70,11 @@ export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ va
     const onItemUpdate = (newValues: TItem) => {
         if (!selectedItem || selectedItem.id !== newValues.id) return;
 
-        if (newValues?.itemType === 'item' && newValues?.itemSubType === 'button') {
-            Object.assign(selectedItem, newValues);
-            onChange([...value]);
+        const result = findAndUpdateItemRecursively(value, newValues.id, newValues);
+        if (result.updated) {
+            onChange(result.newItems);
         } else {
-            const result = findAndUpdateItemRecursively(value, newValues.id, newValues);
-            if (result.updated) {
-                onChange(result.newItems);
-            } else {
-                console.warn('item not found');
-            }
+            console.warn('item not found');
         }
     };
 
