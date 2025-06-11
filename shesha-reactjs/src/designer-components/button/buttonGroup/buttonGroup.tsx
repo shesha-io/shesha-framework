@@ -41,8 +41,9 @@ import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components
 import ValidationErrors from '@/components/validationErrors';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
-import { addPx } from '@/utils/style';
+import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
+import { addPx } from '@/utils/style';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -250,9 +251,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     };
 
     const prepareItem: PrepareItemFunc = useCallback((item, parentReadOnly) => {
-        if (item.editMode === undefined || item.readOnly === undefined)
-            item.editMode = 'inherited';
-        // prepare editMode property if not exist for updating inside getActualModel
+        if (item.editMode === undefined)
+            item.editMode = 'inherited'; // prepare editMode property if not exist for updating inside getActualModel
         const result = getActualModel(item, allData, parentReadOnly);
         return { ...result };
     }, [allData]);
@@ -283,7 +283,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     if (isInline) {
         return (
-            <Button.Group size={size} style={props.styles}>
+            <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
                         (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)

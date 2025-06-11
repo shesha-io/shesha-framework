@@ -1,14 +1,14 @@
-import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
     return {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
-                id: 'endpointsAutocomplete-labelValueEditor-row',
-                    inputs: [
+                id: nanoid(),
+                inputs: [
                     {
-                        id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D',
+                        id: nanoid(),
                         type: 'endpointsAutocomplete',
                         propertyName: 'dataSourceUrl',
                         parentId: 'root',
@@ -17,7 +17,7 @@ export const getSettings = () => {
                         settingsValidationErrors: [],
                     },
                     {
-                        id: 'b395c0e9-dbc1-44f1-8fef-c18a49442871',
+                        id: nanoid(),
                         type: 'labelValueEditor',
                         propertyName: 'queryParams',
                         parentId: 'Xp6zDosEy-IrSeDfHHwh-',
@@ -35,15 +35,15 @@ export const getSettings = () => {
                 ]
             })
             .addSettingsInputRow({
-                id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D-row',
-                    hidden: {
+                id: nanoid(),
+                hidden: {
                     _code: 'return !getSettingValue(data?.dataSourceUrl);',
                     _mode: 'code',
                     _value: false
                 },
                 inputs: [
                     {
-                        id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D',
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'labelProperty',
                         label: 'Label Property',
@@ -54,7 +54,7 @@ export const getSettings = () => {
                         }
                     },
                     {
-                        id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D',
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'tooltipProperty',
                         label: 'Tooltip Property',
@@ -67,21 +67,7 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: 'Vl0_92oM-SeCukk5VlgXm-row',
-                    inputs: [
-                    {
-                        id: 'Vl0_92oM-SeCukk5VlgXm',
-                        type: 'dropdown',
-                        propertyName: 'buttonType',
-                        label: 'Button Type',
-                        labelAlign: 'right',
-                        parentId: '345c2181-fb9f-48ed-9631-864ac357807b',
-                        hidden: false,
-                        validate: {
-                            required: true
-                        },
-                        dropdownOptions: buttonTypes,
-                        jsSetting: false
-                    },
+                inputs: [
                     {
                         id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                         type: 'configurableActionConfigurator',
