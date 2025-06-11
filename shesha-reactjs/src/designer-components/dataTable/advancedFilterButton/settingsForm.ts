@@ -252,12 +252,6 @@ export const getSettings = (data: any) => {
                                     width: 85,
                                     propertyName: 'dimensions.width',
                                     icon: 'widthIcon',
-                                    hidden: {
-                                      _code:
-                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType) === "link";',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                   {
@@ -665,14 +659,13 @@ export const getSettings = (data: any) => {
             id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addPermissionAutocomplete({
-                  id: nanoid(),
+                .addSettingsInput({
+                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                  inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
-                  labelAlign: 'right',
-                  parentId: securityTabId,
-                  hidden: false,
-                  validate: {},
+                  size: 'small',
+                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
                 })
                 .toJson(),
             ],

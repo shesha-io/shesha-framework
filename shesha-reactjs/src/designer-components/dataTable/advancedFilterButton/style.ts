@@ -1,7 +1,6 @@
 import { createStyles } from "@/styles";
 
-export const useStyles = createStyles(({ token, cx, css }, {fontSize}) => {
-
+export const useStyles = createStyles(({ token, cx, css }, fontSize: string | number) => {
   const primaryColor = token.colorPrimary;
   const secondaryColor = token.colorPrimaryBgHover;
   const arrowLeft = "scroll-arrow-left";
@@ -35,7 +34,7 @@ export const useStyles = createStyles(({ token, cx, css }, {fontSize}) => {
 
   const button = cx("filter-btn", css`
     .ant-btn-icon{
-    font-size: ${fontSize} !important;
+     font-size: ${fontSize} !important;
     }
       &.ant-btn-icon-only {
         width: max-content;
