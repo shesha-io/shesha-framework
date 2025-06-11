@@ -66,8 +66,11 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
       };
       return typedConfig;
     }, [model, model.readOnly]);
+
+    const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
+
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} key={rerenderKey}>
         {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );
