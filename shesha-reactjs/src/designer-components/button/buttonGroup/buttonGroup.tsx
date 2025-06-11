@@ -295,12 +295,12 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
 
         return (
-            <div className={styles.shaResponsiveButtonGroupContainer} style={props.styles}>
+            <div className={styles.shaResponsiveButtonGroupContainer}>
                 <Menu
                     mode="horizontal"
                     items={menuItems}
                     className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
-                    style={{ width: '30px' }}
+                    style={{ ...props.styles, width: '30px', height: '30px' }}
                 />
             </div>
         );
