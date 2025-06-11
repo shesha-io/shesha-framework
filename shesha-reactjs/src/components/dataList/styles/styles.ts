@@ -117,7 +117,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         .${shaDatalistWrapParent} {
             width: 100%;
             display: grid;
-            padding: 8px;
             overflow-wrap: break-word;
         }
 

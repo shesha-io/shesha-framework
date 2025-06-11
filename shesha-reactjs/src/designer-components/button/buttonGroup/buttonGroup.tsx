@@ -204,7 +204,15 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
 
-    const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form } = props;
+    // ToDo: AS - review optimization
+    const preparedItems = props.items?.map((item) => {
+        // add editMode property if not exists
+        const preparedItem = { ...item, editMode: typeof item['editMode'] === 'undefined' ? undefined : item['editMode'] };
+        return getActualModel(preparedItem, allData, props.readOnly);
+    });
+    const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
+
+    const { size, spaceSize = 'middle', isInline, readOnly: disabled, form } = props;
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
@@ -262,10 +270,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     }, [actualItems]);
 
     const filteredItems = resolvedItems?.filter(getIsVisible);
-
-    if (props?.background?.type === 'storedFile' && props?.background.storedFile?.id && !isValidGuid(props?.background.storedFile.id)) {
-        return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
 
     if (resolvedItems.length === 0 && isDesignMode)
         return (
