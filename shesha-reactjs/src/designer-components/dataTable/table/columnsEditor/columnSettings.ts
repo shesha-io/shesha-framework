@@ -223,6 +223,31 @@ export const getColumnSettings = (data?: any) => ({
                                     "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
                                     "hidden": data?.type === 'entityPicker'
+                                },
+                                {
+                                    "id": "customVisibility1",
+                                    "type": "settingsInput",
+                                    "inputType": "codeEditor",
+                                    "propertyName": "customVisibility",
+                                    "label": "Custom Visibility",
+                                    "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+                                    "exposedVariables": [
+                                        {
+                                            "name": "globalState",
+                                            "description": "The global state of the application",
+                                            "type": "object"
+                                        },
+                                        {
+                                            "name": "data",
+                                            "description": "Selected form values",
+                                            "type": "object"
+                                        }
+                                    ],
+                                    "language": "typescript",
+                                    "wrapInTemplate": true,
+                                    "templateSettings": {
+                                        "functionName": "customVisibility"
+                                    }
                                 }
                             ]
                         },
@@ -278,38 +303,6 @@ export const getColumnSettings = (data?: any) => ({
                             "label": "Allow Sorting",
 
                         },]
-                    }
-                    ]
-                },
-                {
-                    "key": "visibility",
-                    "title": "Visibility",
-                    "id": "visibilityTab1",
-                    "components": [
-                        {
-                            "id": "customVisibility1",
-                            "type": "settingsInput",
-                            "inputType": "codeEditor",
-                            "propertyName": "customVisibility",
-                            "label": "Custom Visibility",
-                            "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-                            "exposedVariables": [
-                                {
-                                    "name": "globalState",
-                                    "description": "The global state of the application",
-                                    "type": "object"
-                                },
-                                {
-                                    "name": "data",
-                                    "description": "Selected form values",
-                                    "type": "object"
-                                }
-                            ],
-                            "language": "typescript",
-                            "wrapInTemplate": true,
-                            "templateSettings": {
-                                "functionName": "customVisibility"
-                            }
                         }
                     ]
                 },

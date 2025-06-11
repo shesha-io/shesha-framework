@@ -457,23 +457,28 @@ export const getSettings = (data: ITableComponentProps) => {
                                 content: {
                                     id: 'tableStylesCollapsible',
                                     components: [...new DesignerToolbarSettings()
-                                        .addSettingsInput({
+                                        .addSettingsInputRow({
                                             id: nanoid(),
-                                            propertyName: 'containerStyle',
-                                            label: 'Table container style',
-                                            inputType: 'codeEditor',
-                                            parentId: layoutTabId,
-                                            description: 'The style that will be applied to the table container/wrapper',
-                                            exposedVariables: [],
-                                        })
-                                        .addSettingsInput({
-                                            id: nanoid(),
-                                            propertyName: 'tableStyle',
-                                            label: 'Table style',
-                                            inputType: 'codeEditor',
-                                            parentId: layoutTabId,
-                                            description: 'The style that will be applied to the table',
-                                            exposedVariables: [],
+                                            inputs: [
+                                                {
+                                                    id: nanoid(),
+                                                    propertyName: 'tableStyle',
+                                                    label: 'Table Style',
+                                                    type: 'codeEditor',
+                                                    parentId: layoutTabId,
+                                                    description: 'The style that will be applied to the table',
+                                                    exposedVariables: [],
+                                                },
+                                                {
+                                                    id: nanoid(),
+                                                    propertyName: 'containerStyle',
+                                                    label: 'Table Container style',
+                                                    type: 'codeEditor',
+                                                    parentId: layoutTabId,
+                                                    description: 'The style that will be applied to the table container/wrapper',
+                                                    exposedVariables: [],
+                                                }
+                                            ]
                                         })
                                         .toJson()
                                     ]

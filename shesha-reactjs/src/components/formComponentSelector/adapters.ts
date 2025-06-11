@@ -35,8 +35,10 @@ export const getAllExceptPredicate = (names: string[]): PropertyInclusionPredica
 const labelProperties = ['label', 'hideLabel', 'labelAlign', 'description'];
 const bindingProperties = ['name', 'propertyName', 'defaultValue'];
 const visibilityProperties = ['hidden', 'disabled', 'readOnly', 'visibility', 'hideBorder', 'editMode'];
-const styleProperties = ['style', 'size'];
+const styleProperties = ['propertyRouter1', 'propertyRouter', 'container', 'style', 'size','pnlFontStyle', 'pnlShadowStyle', 'stylingBox'];
 const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibilityProperties, ...styleProperties];
+
+console.log("AUTOCOMPLETE TYPE::",AutocompleteComponent.type)
 
 export const editorAdapters: IDictionary<IEditorAdapter> = {
   [HtmlComponent.type]: {
@@ -64,14 +66,13 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'dataSourceType',
       'dataSourceUrl',
       'entityType',
-      'height',
-      'width',
-      'borderSize',
-      'borderRadius',
-      'borderColor',
-      'borderType',
-      'backgroundColor',
-      'stylingBox'
+      'editMode',
+      'description',
+      'tooltip',
+      'customSourceUrl',
+      'disableSearch',
+      'propertyRouter1',
+      'required'
     ]),
   },
   [CheckboxComponent.type]: {
@@ -101,10 +102,8 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'borderRadius',
       'borderColor',
       'backgroundColor',
-      'fontSize',
-      'fontColor',
-      'borderType',
-      'stylingBox'
+      'permissions',
+      'placeholder'
     ]),
   },
   [EntityReferenceComponent.type]: {

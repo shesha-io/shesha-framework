@@ -57,6 +57,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
       <Spin spinning={saving} tip="Please wait...">
         {/* <ValidationErrors error={error?.data}></ValidationErrors> */}
         <ComponentPropertiesEditor
+          isInModal={true}
           componentModel={model}
           readOnly={readOnly}
           onSave={onSave}
@@ -67,7 +68,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
           layoutSettings={{
             labelCol: { span: 8 },
             wrapperCol: { span: 16 },
-            layout: 'horizontal'
+            layout: 'vertical'
           }}
         />
       </Spin>
