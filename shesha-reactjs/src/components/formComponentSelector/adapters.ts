@@ -38,8 +38,6 @@ const visibilityProperties = ['hidden', 'disabled', 'readOnly', 'visibility', 'h
 const styleProperties = ['propertyRouter1', 'propertyRouter', 'container', 'style', 'size','pnlFontStyle', 'pnlShadowStyle', 'stylingBox'];
 const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibilityProperties, ...styleProperties];
 
-console.log("AUTOCOMPLETE TYPE::",AutocompleteComponent.type)
-
 export const editorAdapters: IDictionary<IEditorAdapter> = {
   [HtmlComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
