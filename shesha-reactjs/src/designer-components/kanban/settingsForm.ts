@@ -2,7 +2,7 @@ import { IKanbanProps } from '@/components/kanban/model';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 
@@ -30,8 +30,6 @@ export const getSettings = (data: IKanbanProps) => {
   const bgStylePanelId = nanoid();
   const bgStyleContentId = nanoid();
   //const bgStyleRowId = nanoid();
-  const bgStyleControlsRowId = nanoid();
-  const bgStyleRepeatRowId = nanoid();
 
   // Generate IDs for shadow panels
   const shadowStylePanelId = nanoid();
@@ -249,11 +247,11 @@ export const getSettings = (data: IKanbanProps) => {
                 .addSettingsInput({
                   id: nanoid(),
                   parentId: columnsTabId,
-                      inputType: 'referenceListAutocomplete',
-                      propertyName: 'referenceList',
-                      label: 'Reference List',
-                      tooltip: 'Make sure to reselect the reference list if any changes are made to its items',
-                      filter: { and: [{ '==': [{ var: 'isLast' }, true] }] },
+                  inputType: 'referenceListAutocomplete',
+                  propertyName: 'referenceList',
+                  label: 'Reference List',
+                  tooltip: 'Make sure to reselect the reference list if any changes are made to its items',
+                  filter: { and: [{ '==': [{ var: 'isLast' }, true] }] },
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -381,33 +379,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         propertyName: 'background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
-                                        buttonGroupOptions: [
-                                          {
-                                            value: 'color',
-                                            icon: 'FormatPainterOutlined',
-                                            title: 'Color',
-                                          },
-                                          {
-                                            value: 'gradient',
-                                            icon: 'BgColorsOutlined',
-                                            title: 'Gradient',
-                                          },
-                                          {
-                                            value: 'image',
-                                            icon: 'PictureOutlined',
-                                            title: 'Image',
-                                          },
-                                          {
-                                            value: 'url',
-                                            icon: 'LinkOutlined',
-                                            title: 'URL',
-                                          },
-                                          {
-                                            value: 'storedFile',
-                                            icon: 'DatabaseOutlined',
-                                            title: 'Stored File',
-                                          },
-                                        ],
+                                        buttonGroupOptions: backgroundTypeOptions,
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -507,104 +479,45 @@ export const getSettings = (data: IKanbanProps) => {
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: bgStyleControlsRowId,
-                                        parentId: bgStyleContentId,
-                                        hidden: {
-                                          _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
+                                        id: nanoid(),
+                                        parentId: styleRouterId,
                                         inline: true,
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
                                             id: nanoid(),
-                                            label: 'Size',
+                                            label: "Size",
                                             hideLabel: true,
-                                            propertyName: 'background.size',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'cover',
-                                                label: 'Cover',
-                                              },
-                                              {
-                                                value: 'contain',
-                                                label: 'Contain',
-                                              },
-                                              {
-                                                value: 'auto',
-                                                label: 'Auto',
-                                              },
-                                            ],
+                                            propertyName: "background.size",
+                                            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                            dropdownOptions: sizeOptions,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                           },
                                           {
                                             type: 'customDropdown',
                                             id: nanoid(),
-                                            label: 'Position',
+                                            label: "Position",
                                             hideLabel: true,
-                                            propertyName: 'background.position',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'center',
-                                                label: 'Center',
-                                              },
-                                              {
-                                                value: 'top',
-                                                label: 'Top',
-                                              },
-                                              {
-                                                value: 'left',
-                                                label: 'Left',
-                                              },
-                                              {
-                                                value: 'right',
-                                                label: 'Right',
-                                              },
-                                              {
-                                                value: 'bottom',
-                                                label: 'Bottom',
-                                              },
-                                              {
-                                                value: 'top left',
-                                                label: 'Top Left',
-                                              },
-                                              {
-                                                value: 'top right',
-                                                label: 'Top Right',
-                                              },
-                                              {
-                                                value: 'bottom left',
-                                                label: 'Bottom Left',
-                                              },
-                                              {
-                                                value: 'bottom right',
-                                                label: 'Bottom Right',
-                                              },
-                                            ],
+                                            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
+                                            propertyName: "background.position",
+                                            dropdownOptions: positionOptions,
                                           },
-                                        ],
+                                        ]
                                       })
                                       .addSettingsInputRow({
-                                        id: bgStyleRepeatRowId,
-                                        parentId: bgStyleContentId,
-                                        inputs: [
-                                          {
-                                            type: 'radio',
-                                            id: nanoid(),
-                                            label: 'Repeat',
-                                            hideLabel: true,
-                                            propertyName: 'background.repeat',
-                                            inputType: 'radio',
-                                            buttonGroupOptions: repeatOptions,
-                                          },
-                                        ],
-                                        hidden: {
-                                          _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
+                                        id: nanoid(),
+                                        parentId: styleRouterId,
+                                        inputs: [{
+                                          type: 'radio',
+                                          id: nanoid(),
+                                          label: 'Repeat',
+                                          hideLabel: true,
+                                          propertyName: 'background.repeat',
+                                          inputType: 'radio',
+                                          buttonGroupOptions: repeatOptions,
+                                        }],
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                       })
                                       .toJson(),
                                   ],
@@ -749,6 +662,14 @@ export const getSettings = (data: IKanbanProps) => {
                           id: columnStylesContentId,
                           components: [
                             ...new DesignerToolbarSettings()
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'gap',
+                                label: 'Gap',
+                                inputType: 'numberField',
+                                tooltip: 'The gap between the columns',
+                                jsSetting: true,
+                              })
                               .addCollapsiblePanel({
                                 id: colDimensionsPanelId,
                                 propertyName: 'pnlcolumnStyles.dimensions',
@@ -855,33 +776,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         propertyName: 'columnStyles.background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
-                                        buttonGroupOptions: [
-                                          {
-                                            value: 'color',
-                                            icon: 'FormatPainterOutlined',
-                                            title: 'Color',
-                                          },
-                                          {
-                                            value: 'gradient',
-                                            icon: 'BgColorsOutlined',
-                                            title: 'Gradient',
-                                          },
-                                          {
-                                            value: 'image',
-                                            icon: 'PictureOutlined',
-                                            title: 'Image',
-                                          },
-                                          {
-                                            value: 'url',
-                                            icon: 'LinkOutlined',
-                                            title: 'URL',
-                                          },
-                                          {
-                                            value: 'storedFile',
-                                            icon: 'DatabaseOutlined',
-                                            title: 'Stored File',
-                                          },
-                                        ],
+                                        buttonGroupOptions: backgroundTypeOptions
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -997,20 +892,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             label: 'Size',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.size',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'cover',
-                                                label: 'Cover',
-                                              },
-                                              {
-                                                value: 'contain',
-                                                label: 'Contain',
-                                              },
-                                              {
-                                                value: 'auto',
-                                                label: 'Auto',
-                                              },
-                                            ],
+                                            dropdownOptions: sizeOptions,
                                           },
                                           {
                                             type: 'customDropdown',
@@ -1018,44 +900,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             label: 'Position',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.position',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'center',
-                                                label: 'Center',
-                                              },
-                                              {
-                                                value: 'top',
-                                                label: 'Top',
-                                              },
-                                              {
-                                                value: 'left',
-                                                label: 'Left',
-                                              },
-                                              {
-                                                value: 'right',
-                                                label: 'Right',
-                                              },
-                                              {
-                                                value: 'bottom',
-                                                label: 'Bottom',
-                                              },
-                                              {
-                                                value: 'top left',
-                                                label: 'Top Left',
-                                              },
-                                              {
-                                                value: 'top right',
-                                                label: 'Top Right',
-                                              },
-                                              {
-                                                value: 'bottom left',
-                                                label: 'Bottom Left',
-                                              },
-                                              {
-                                                value: 'bottom right',
-                                                label: 'Bottom Right',
-                                              },
-                                            ],
+                                            dropdownOptions: positionOptions,
                                           },
                                         ],
                                       })

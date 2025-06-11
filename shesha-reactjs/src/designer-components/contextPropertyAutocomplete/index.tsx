@@ -124,10 +124,8 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
             readOnly={readOnly}
             value={value}
             onChange={(value) => {
-              if (value !== undefined) {
-                onChange(value);
-                setState({ ...state, context: value });
-              }
+              onChange(value);
+              setState({ ...state, context: value });
             }}
           />;
         }}
