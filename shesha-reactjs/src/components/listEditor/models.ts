@@ -4,7 +4,7 @@ export type ListMode = 'create' | 'read' | 'update';
 
 export interface ListItem {
     itemType?: 'item' | 'group';
-    itemSubType?: 'button' | 'item' | 'divider';
+    itemSubType?: 'button' | 'item' | 'divider' | 'dynamic' | 'separator' | 'line';
 }
 
 export interface ListItemWithId extends ListItem {

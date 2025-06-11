@@ -3,6 +3,7 @@ import { ListEditor, PropertyAutocomplete } from '@/components/index';
 import { ColumnSorting, GroupingItem as SortingItem } from '@/providers/dataTable/interfaces';
 import React, { FC } from 'react';
 import { getNanoId } from '@/utils/uuid';
+import { ListItem } from '@/components/listEditor/models';
 
 const { Option } = Select;
 
@@ -16,10 +17,10 @@ export interface ISortingEditorProps {
 export const SortingEditor: FC<ISortingEditorProps> = (props) => {
     const { value, onChange, readOnly: editorReadOnly, maxItemsCount } = props;
     return (
-        <ListEditor<SortingItem>
+        <ListEditor<SortingItem & ListItem>
             value={value}
             onChange={onChange}
-            initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sorting: 'asc' })}
+            initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sorting: 'asc', itemType: 'item' })}
             readOnly={editorReadOnly}
             maxItemsCount={maxItemsCount}
         >

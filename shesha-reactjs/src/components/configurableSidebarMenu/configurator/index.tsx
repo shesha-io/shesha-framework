@@ -26,12 +26,11 @@ export const SidebarConfigurator: FC<ISidebarConfiguratorProps> = ({ value, onCh
 
     return newItem;
   };
-
   return (
-    <ListEditorWithPropertiesPanel<ISidebarMenuItem>
-      value={value}
-      onChange={onChange}
-      initNewItem={makeNewItem}
+    <ListEditorWithPropertiesPanel<ISidebarMenuItem & { itemType?: 'item' | 'group' }>
+      value={value as (ISidebarMenuItem & { itemType: 'item' | 'group' })[]}
+      onChange={onChange as (newValue: (ISidebarMenuItem & { itemType: 'item' | 'group' })[]) => void}
+      initNewItem={makeNewItem as (items: (ISidebarMenuItem & { itemType: 'item' | 'group' })[]) => ISidebarMenuItem & { itemType: 'item' | 'group' }}
       readOnly={readOnly}
       header={<Alert message={readOnly ? 'Here you can view sidebar configuration.' : 'Here you can configure the sidebar menu items by adjusting their settings and ordering.'} />}
       itemProperties={(itemProps) => (<SidebarItemProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
