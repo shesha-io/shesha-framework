@@ -95,7 +95,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
 
   const handleCalendarDatePickerChange = (dates) => {
-    if (!dates || defaultToMidnight) return;
+    if (!dates) return;
   
     const getDatePart = (date) => date.format('YYYY-MM-DD');
   
@@ -233,8 +233,8 @@ const handleCalendarRangeChange = (dates) => {
       format={pickerFormat}
       style={allStyles.fullStyle}
       onCalendarChange={(dates) => {
-        if (dates && showTime) handleCalendarDatePickerChange(dates);
-      }}
+        if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);   
+         }}
       {...rest}
       value={momentValue}
       allowClear
