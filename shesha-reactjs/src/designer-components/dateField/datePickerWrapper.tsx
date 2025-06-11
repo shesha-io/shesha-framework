@@ -68,7 +68,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
               : !showTime
                 ? newValue.startOf('day')
                 : newValue;
-    return !resolveToUTC ? val.utc(true) : val.local(true);
+    return !resolveToUTC ? val?.utc(true) : val.local(true);
   };
 
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {
