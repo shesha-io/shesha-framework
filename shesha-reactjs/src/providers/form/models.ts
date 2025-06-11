@@ -88,6 +88,8 @@ export interface IInputStyles extends IStyleType {
   borderSize?: string | number;
   borderRadius?: string | number;
   borderType?: string;
+  borderStyle?: string;
+  borderWidth?: string | number;
   borderColor?: string;
   fontColor?: string;
   color?: string;

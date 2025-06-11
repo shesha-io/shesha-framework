@@ -9,8 +9,8 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
 
     const border = (side) => ({
         ...prev?.border?.border?.[side],
-        width: prevStyles?.borderSize as string ?? prev?.border?.border?.[side]?.width ?? defaults?.border?.border?.[side]?.width,
-        style: prevStyles?.borderType ?? prev?.border?.border?.[side]?.style ?? defaults?.border?.border?.[side]?.style,
+        width: prevStyles?.borderSize ?? prevStyles?.borderWidth ?? prev?.border?.border?.[side]?.width ?? defaults?.border?.border?.[side]?.width,
+        style: prevStyles?.borderType ?? prevStyles?.borderStyle ?? prev?.border?.border?.[side]?.style ?? defaults?.border?.border?.[side]?.style,
         color: prevStyles?.borderColor ?? prev?.border?.border?.[side]?.color ?? defaults?.border?.border?.[side]?.color
     });
 

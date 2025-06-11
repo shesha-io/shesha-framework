@@ -43,7 +43,7 @@ export const defaultStyles = (prev): IStyleType => {
           color: prev.borderColor ?? '#d9d9d9'
         },
       },
-      radius: { all: Number(prev.borderRadius ?? 8) }
+      radius: { all: prev.borderRadius ?? 8 }
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
     dimensions: {

@@ -46,7 +46,7 @@ export const defaultStyles = (prev): IStyleType => {
         },
         dimensions: {
             width: prev.block ? '100%' : 'auto',
-            minHeight: '0px',
+            height: '32px', minHeight: '0px',
             maxHeight: 'auto',
             minWidth: '0px',
             maxWidth: 'auto'
