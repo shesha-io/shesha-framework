@@ -99,8 +99,10 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
         .then(() => {
           changeMainMenu(form.formData);
         })
-        .then(() => {
-          saveSetting();
+        .then(async () => {
+          if (saveSetting) {
+            await saveSetting();
+          } 
         })
         .then(() => {
           message.success('Menu saved successfully!');
