@@ -7,12 +7,10 @@ export interface ListItem {
     itemSubType?: 'button' | 'item' | 'divider' | 'dynamic' | 'separator' | 'line';
 }
 
-export type ListGroup = { id?: string; itemType: 'group'; childItems?: ListItemWithId[] };
-export type ListButton = { id: string; itemType: 'item'; itemSubType: 'button' };
-export type ListDivider = { id: string; itemType: 'item'; itemSubType: 'divider' };
-export type ListGenericItem = { id: string; itemType: 'item'; itemSubType: 'item' };
-
-export type ListItemWithId = ListGroup | ListButton | ListDivider | ListGenericItem;
+export interface ListItemWithId extends ListItem {
+    childItems?: ListItemWithId[];
+    id: string;
+}
 
 export interface SortableItem<ListItemType> extends ItemInterface {
     data: ListItemType;
