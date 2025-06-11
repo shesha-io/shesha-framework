@@ -7,6 +7,8 @@ import { SidebarItemProperties } from './itemProperties';
 import { SidebarListItemCommon } from './sidebarListItemCommon';
 import { Alert } from 'antd';
 
+type SidebarConfigItem = ISidebarMenuItem & { itemType?: 'item' | 'group' };
+
 export interface ISidebarConfiguratorProps {
   readOnly: boolean;
   value: ISidebarMenuItem[];
@@ -27,10 +29,10 @@ export const SidebarConfigurator: FC<ISidebarConfiguratorProps> = ({ value, onCh
     return newItem;
   };
   return (
-    <ListEditorWithPropertiesPanel<ISidebarMenuItem & { itemType?: 'item' | 'group' }>
-      value={value as (ISidebarMenuItem & { itemType: 'item' | 'group' })[]}
-      onChange={onChange as (newValue: (ISidebarMenuItem & { itemType: 'item' | 'group' })[]) => void}
-      initNewItem={makeNewItem as (items: (ISidebarMenuItem & { itemType: 'item' | 'group' })[]) => ISidebarMenuItem & { itemType: 'item' | 'group' }}
+    <ListEditorWithPropertiesPanel<SidebarConfigItem>
+      value={value as SidebarConfigItem[]}
+      onChange={onChange as (newValue: SidebarConfigItem[]) => void}
+      initNewItem={makeNewItem as (items: SidebarConfigItem[]) => SidebarConfigItem}
       readOnly={readOnly}
       header={<Alert message={readOnly ? 'Here you can view sidebar configuration.' : 'Here you can configure the sidebar menu items by adjusting their settings and ordering.'} />}
       itemProperties={(itemProps) => (<SidebarItemProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
