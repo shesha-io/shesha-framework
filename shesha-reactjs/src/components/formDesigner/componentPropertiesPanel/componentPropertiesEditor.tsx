@@ -15,9 +15,10 @@ export interface IComponentPropertiesEditorProps {
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
+  isInModal?: boolean;
 }
 
-const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
+const getDefaultFactory = (markup: FormMarkup, isInModal?: boolean): ISettingsFormFactory => {
   const evaluatedMarkup = typeof markup === 'function'
     ? markup({})
     : markup;
@@ -34,13 +35,14 @@ const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
         formRef={formRef}
         propertyFilter={propertyFilter}
         layoutSettings={layoutSettings}
+        isInModal={isInModal} 
       />
     );
   };
 };
 
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {
-  const { componentModel, readOnly, toolboxComponent } = props;
+  const { componentModel, readOnly, toolboxComponent, isInModal } = props;
 
   const { getCachedComponentEditor } = useFormDesignerActions();
 
@@ -48,7 +50,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     return toolboxComponent?.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
       : toolboxComponent?.settingsFormMarkup
-        ? getDefaultFactory(toolboxComponent.settingsFormMarkup)
+        ? getDefaultFactory(toolboxComponent.settingsFormMarkup, isInModal)
         : null;
   });
 
@@ -83,6 +85,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         formRef={formRef}
         propertyFilter={propertyFilter}
         layoutSettings={layoutSettings}
+        isInModal={isInModal}
       />
     )
     : null;

@@ -17,6 +17,7 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
+  isInModal?: boolean;
 }
 
 function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
@@ -29,6 +30,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   formRef,
   propertyFilter,
   layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
+  isInModal
 }: IProps<TModel>) {
   const [form] = Form.useForm();
 
@@ -63,7 +65,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   return (
     <ConfigurableForm
-      formName='componentSettings'
+      formName={isInModal ? 'modalSettings' : 'componentSettings'}
       labelCol={layoutSettings?.labelCol}
       wrapperCol={layoutSettings?.wrapperCol}
       layout={layoutSettings?.layout}
