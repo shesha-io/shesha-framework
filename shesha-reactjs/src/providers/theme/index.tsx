@@ -76,10 +76,10 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   return (
     <UiStateContext.Provider value={state}>
       <UiActionsContext.Provider
-        value={useMemo(() => ({
+        value={{
           changeTheme,
           resetToApplicationTheme,
-        }), [changeTheme, resetToApplicationTheme])}
+        }}
       >
         <ConfigProvider
           prefixCls={prefixCls}

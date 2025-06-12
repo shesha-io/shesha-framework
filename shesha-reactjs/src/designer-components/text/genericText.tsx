@@ -7,7 +7,7 @@ import { TitleProps } from 'antd/lib/typography/Title';
 import { BaseType } from 'antd/lib/typography/Base';
 import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
-import { useTheme } from '@/providers';
+import { IConfigurableTheme, useTheme } from '@/providers';
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -17,6 +17,19 @@ interface IGenericTextProps
   extends Omit<ITextTypographyProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {
   style?: CSSProperties;
 }
+
+const getColorByContentType = (contentType: ContentType, style: CSSProperties, theme: IConfigurableTheme) => {
+  switch (contentType) {
+    case 'custom':
+      return style?.color;
+    case 'secondary':
+      return theme?.text?.secondary;
+    case '':
+      return theme?.text?.default;
+    default:
+      return undefined;
+  }
+};
 
 export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   children,
@@ -51,19 +64,6 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     model.strong,
   ]);
 
-  const remainingColors: string | undefined = ((contentType: ContentType) => {
-    switch (contentType) {
-      case 'custom':
-        return style?.color;
-      case 'secondary':
-        return theme?.text?.secondary;
-      case '':
-        return theme?.text?.default;
-      default:
-        return undefined;
-    }
-  })(contentType);
-
   const chosenType: BaseType | undefined = contentType === 'secondary' ? undefined : (contentType as BaseType);
 
   const baseProps: ITypographyProps = {
@@ -78,7 +78,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     type: chosenType,
     style: {
       ...style,
-      color: contentType === 'custom' ? style.color : remainingColors,
+      color: getColorByContentType(contentType, style, theme),
       fontSize: textType === 'title' ? undefined : style?.fontSize,
       justifyContent: style?.textAlign,
     },
