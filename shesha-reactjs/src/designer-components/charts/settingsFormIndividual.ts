@@ -400,7 +400,7 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: commonTabId,
                         hidden: {
-                          _code: 'return !(getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`)',
+                          _code: 'return !(getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`)',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -430,7 +430,7 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         parentId: commonTabId,
                         hidden: {
-                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`',
                           _mode: 'code',
                           _value: false,
                         } as any,
