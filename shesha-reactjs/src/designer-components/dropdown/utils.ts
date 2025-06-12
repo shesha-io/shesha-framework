@@ -70,10 +70,6 @@ export const presetColors = [
         label: 'Success'
     },
     {
-        value: 'processing',
-        label: 'Processing'
-    },
-    {
         value: 'warning',
         label: 'Warning'
     },
@@ -88,10 +84,6 @@ export const presetColors = [
     {
         value: 'red',
         label: 'Red'
-    },
-    {
-        value: 'volcano',
-        label: 'Volcano'
     },
     {
         value: 'orange',

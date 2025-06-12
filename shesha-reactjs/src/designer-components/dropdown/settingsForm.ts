@@ -1024,7 +1024,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                             propertyName: 'solidColor',
                                                                             label: 'Show Solid Color',
                                                                             size: 'small',
-                                                                            tooltip: 'When checked the background will be solid color',
+                                                                            tooltip: 'When checked solid color fills the entire background, when unchecked creates a subtle light background with a prominent colored border.',
                                                                         })
                                                                         .addSettingsInput({
                                                                             id: nanoid(),
