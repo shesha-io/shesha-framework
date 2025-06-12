@@ -80,23 +80,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     },
                                 ],
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                parentId: commonTabId,
-                                propertyName: 'displayStyle',
-                                label: 'Display Style',
-                                inputType: 'dropdown',
-                                dropdownOptions: [
-                                    {
-                                        value: 'text',
-                                        label: 'Plain text'
-                                    },
-                                    {
-                                        value: 'tags',
-                                        label: 'Tags'
-                                    }
-                                ]
-                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
@@ -374,6 +357,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         id: nanoid(),
                                         type: 'customLabelValueEditor',
                                         propertyName: 'values',
+                                        jsSetting: true,
                                         label: 'Values',
                                         labelName: 'label',
                                         labelTitle: 'Label',
@@ -468,6 +452,23 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            parentId: styleRouterId,
+                                            propertyName: 'displayStyle',
+                                            label: 'Display Style',
+                                            inputType: 'dropdown',
+                                            dropdownOptions: [
+                                                {
+                                                    value: 'text',
+                                                    label: 'Plain text'
+                                                },
+                                                {
+                                                    value: 'tags',
+                                                    label: 'Tags'
+                                                }
+                                            ]
+                                        })
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'pnlFontStyle',
@@ -654,22 +655,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                 id: nanoid(),
                                                 components: [
                                                     ...new DesignerToolbarSettings()
-                                                        .addContainer({
-                                                            id: nanoid(),
-                                                            parentId: nanoid(),
-                                                            components: [
-                                                                ...new DesignerToolbarSettings()
-                                                                    .addSettingsInput({
-                                                                        id: nanoid(),
-                                                                        inputType: 'switch',
-                                                                        propertyName: 'solidColor',
-                                                                        label: 'Show Solid Color',
-                                                                        size: 'small',
-                                                                        tooltip: 'When checked the background will be solid color',
-                                                                    })
-                                                                    .toJson()
-                                                            ]
-                                                        })
                                                         .addSettingsInput({
                                                             id: nanoid(),
                                                             parentId: nanoid(),
@@ -906,6 +891,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Default Tag Style',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false } as any,
                                             collapsible: 'header',
                                             content: {
                                                 id: DefaultTagStyleId,
@@ -1032,6 +1018,14 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 id: tagBackgroundStyleId,
                                                                 components: [
                                                                     ...new DesignerToolbarSettings()
+                                                                        .addSettingsInput({
+                                                                            id: nanoid(),
+                                                                            inputType: 'switch',
+                                                                            propertyName: 'solidColor',
+                                                                            label: 'Show Solid Color',
+                                                                            size: 'small',
+                                                                            tooltip: 'When checked the background will be solid color',
+                                                                        })
                                                                         .addSettingsInput({
                                                                             id: nanoid(),
                                                                             parentId: tagBackgroundStyleId,
