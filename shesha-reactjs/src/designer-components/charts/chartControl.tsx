@@ -19,7 +19,7 @@ import { formatDate, getChartDataRefetchParams } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty,
-    axisProperty, simpleOrPivot, filterProperties, allowFilter, 
+    axisProperty, filterProperties, allowFilter, 
     isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
@@ -101,8 +101,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     }
   }, [state.data]);
 
-  const simpleChartData = useProcessedChartData();
-  const pivotChartData = useProcessedChartData();
+  const data: IChartData = useProcessedChartData();
 
   if (!entityType || !chartType || !valueProperty || !axisProperty) {
     // Collect the missing properties in an array
@@ -159,7 +158,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       >
       {
         (() => {
-          const data: IChartData = simpleOrPivot === 'simple' ? simpleChartData : pivotChartData;
           switch (chartType) {
             case 'line':
               return <LineChart data={data} />;
