@@ -18,12 +18,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
   const { styles, cx } = useStyles();
 
-  useEffect(() => {
-    setControlProps({
-      ...props
-    });
-  }, [props, formData]);
-
+  useEffect(() => setControlProps(props), [props, formData]);
   useEffect(() => {
     if (!url) {
       return;
@@ -59,7 +54,6 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     if (!chartType) missingProperties.push("'chartType'");
 
     const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
-
     return (
       <Alert
         showIcon

@@ -140,22 +140,29 @@ export const getSettings = (data: any) => {
                                   _value: false,
                                 } as any,
                               })
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'valueProperty',
-                                label: 'Value axis label',
-                                inputType: 'textField',
-                                labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
-                                isDynamic: false,
-                                description: 'Label for the value property',
-                                validate: { required: false },
-                                hidden: {
-                                  _code:
-                                    'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
+                                inline: true,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'valueProperty',
+                                    label: 'Value axis label',
+                                    type: 'textField',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsForUrlId,
+                                    isDynamic: false,
+                                    description: 'Label for the value property',
+                                    validate: { required: false },
+                                    hidden: {
+                                      _code:
+                                        'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  }
+                                ]
                               })
                               .toJson(),
                           ],
@@ -382,19 +389,23 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        inputType: 'textField',
-                        propertyName: 'title',
                         parentId: commonTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.showTitle) !== true',
-                          _mode: 'code',
-                          _value: false,
-                        },
-                        label: 'Title',
-                        description: 'The title of the chart (if any)',
-                        labelAlign: 'right',
+                        inline: true,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'textField',
+                            propertyName: 'title',
+                            parentId: commonTabId,
+                            label: 'Title',
+                            tooltip: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
+                            description: 'The title of the chart (if any)',
+                            labelAlign: 'right',
+                            width: '100%',
+                          }
+                        ]
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -446,26 +457,33 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'legendPosition',
                         parentId: commonTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.showLegend) !== true',
-                          _mode: 'code',
-                          _value: true,
-                        },
-                        label: 'Legend Position',
-                        inputType: 'dropdown',
-                        allowClear: true,
-                        dropdownOptions: [
-                          { label: 'Top', value: 'top' },
-                          { label: 'Bottom', value: 'bottom' },
-                          { label: 'Left', value: 'left' },
-                          { label: 'Right', value: 'right' },
-                        ],
-                        validate: { required: true },
-                        defaultValue: 'top',
+                        inline: true,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'legendPosition',
+                            parentId: commonTabId,
+                            hidden: {
+                              _code: 'return getSettingValue(data?.showLegend) !== true',
+                              _mode: 'code',
+                              _value: true,
+                            } as any,
+                            label: 'Legend Position',
+                            type: 'dropdown',
+                            allowClear: true,
+                            dropdownOptions: [
+                              { label: 'Top', value: 'top' },
+                              { label: 'Bottom', value: 'bottom' },
+                              { label: 'Left', value: 'left' },
+                              { label: 'Right', value: 'right' },
+                            ],
+                            validate: { required: true },
+                            defaultValue: 'top',
+                          }
+                        ]
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -594,30 +612,19 @@ export const getSettings = (data: any) => {
                         isDynamic: false,
                         description: 'Label for the axis property',
                         validate: { required: false },
-                        hidden: {
-                          _code:
-                            'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
                       })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'valueProperty',
-                        label: 'Value axis label',
-                        inputType: 'textField',
-                        labelAlign: 'right',
-                        parentId: dataTabId,
-                        isDynamic: false,
-                        description: 'Label for the value property',
-                        validate: { required: false },
-                        hidden: {
-                          _code:
-                            'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                      })
+                      .addSettingsInput(
+                        {
+                          id: nanoid(),
+                          propertyName: 'valueProperty',
+                          label: 'Value Axis Label',
+                          inputType: 'textField',
+                          labelAlign: 'right',
+                          parentId: dataTabId,
+                          isDynamic: false,
+                          description: 'Label for the value property',
+                          validate: { required: false },
+                        })
                       .toJson(),
                   ],
                 })
@@ -839,24 +846,31 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'orderDirection',
                         parentId: dataTabId,
-                        label: 'Order Direction',
-                        inputType: 'dropdown',
-                        allowClear: true,
-                        dropdownOptions: [
-                          { label: 'Ascending', value: 'asc' },
-                          { label: 'Descending', value: 'desc' },
-                        ],
-                        validate: { required: true },
-                        defaultValue: 'asc',
-                        hidden: {
-                          _code: 'return !(getSettingValue(data?.orderBy))',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
+                        inline: true,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'orderDirection',
+                            parentId: dataTabId,
+                            label: 'Order Direction',
+                            type: 'dropdown',
+                            allowClear: true,
+                            dropdownOptions: [
+                              { label: 'Ascending', value: 'asc' },
+                              { label: 'Descending', value: 'desc' },
+                            ],
+                            validate: { required: true },
+                            defaultValue: 'asc',
+                            hidden: {
+                              _code: 'return !(getSettingValue(data?.orderBy))',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
+                          }
+                        ]
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -880,7 +894,7 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         inline: true,
                         hidden: {
-                          _code: 'return getSettingValue(data?.dataMode) === `url`',
+                          _code: 'return getSettingValue(data?.dataMode) === `url` || !getSettingValue(data?.entityType)',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -888,7 +902,7 @@ export const getSettings = (data: any) => {
                           {
                             id: nanoid(),
                             propertyName: 'filters',
-                            label: 'Entity filter',
+                            label: 'Entity Filter',
                             labelAlign: 'right',
                             parentId: dataTabId,
                             type: 'queryBuilder',
@@ -946,41 +960,47 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'showBorder',
-                  label: 'Show Border',
-                  parentId: 'root',
-                  defaultValue: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'isDoughnut',
-                  label: 'Is Doughnut',
                   parentId: appearanceTabId,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.chartType) !== `pie`',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                  defaultValue: false,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'stacked',
-                  label: 'Stacked',
-                  parentId: appearanceTabId,
-                  hidden: {
-                    _code:
-                      'return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)',
-                    _mode: 'code',
-                    _value: true,
-                  },
-                  defaultValue: true,
-                })                
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'showBorder',
+                      label: 'Show Border',
+                      parentId: 'root',
+                      defaultValue: true,
+                    },
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'isDoughnut',
+                      label: 'Is Doughnut',
+                      parentId: appearanceTabId,
+                      defaultValue: false,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.chartType) !== `pie`',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                    },                    
+                    {
+                      id: nanoid(),
+                      type: 'switch',
+                      propertyName: 'stacked',
+                      label: 'Stacked',
+                      parentId: appearanceTabId,
+                      defaultValue: false,
+                      hidden: {
+                        _code:
+                          'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot`',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                    }
+                  ]
+                })             
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: appearanceTabId,
@@ -990,7 +1010,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'strokeWidth',
                       parentId: appearanceTabId,
                       type: 'numberField',
-                      label: 'Stroke width',
+                      label: 'Stroke Width',
                       defaultValue: 0.0,
                       description:
                         'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
@@ -1006,19 +1026,25 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: 'numberField',
-                  propertyName: 'tension',
                   parentId: appearanceTabId,
-                  label: 'Tension',
-                  defaultValue: 0,
-                  min: 0,
-                  hidden: {
-                    _code: 'return getSettingValue(data?.chartType) !== `line`',
-                    _mode: 'code',
-                    _value: true,
-                  },
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'numberField',
+                      propertyName: 'tension',
+                      parentId: appearanceTabId,
+                      label: 'Tension',
+                      defaultValue: 0,
+                      min: 0,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.chartType) !== `line`',
+                        _mode: 'code',
+                        _value: true,
+                      } as any,
+                    }
+                  ]
                 })
                 .toJson(),
             ],

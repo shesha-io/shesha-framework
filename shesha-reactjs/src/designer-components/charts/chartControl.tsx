@@ -6,7 +6,7 @@ import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher'
 import { toCamelCase } from '@/utils/string';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Flex, Spin } from 'antd';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from "./hooks";
 import { IChartData, IChartsProps } from './model';
@@ -14,7 +14,7 @@ import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, renderChart } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, filters, legendProperty,
+  const { chartType, entityType, valueProperty, legendProperty,
     axisProperty, filterProperties, allowFilter, 
     isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
@@ -27,16 +27,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   const { styles, cx } = useStyles();
 
-  useEffect(() => {
-    setControlProps({
-      ...props
-    });
-  }, [props, formData]);
-
-  const memoFilters = useMemo(() => filters, [filters, formData]);
+  useEffect(() => setControlProps(props), [props, formData]);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = useFormEvaluatedFilter({ filter: memoFilters, metadataAccessor: propertyMetadataAccessor });
+  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor });
   useEffect(() => {
     if (!entityType || !valueProperty || !axisProperty) {
       return;

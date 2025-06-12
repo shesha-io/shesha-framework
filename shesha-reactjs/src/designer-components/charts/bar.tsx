@@ -49,6 +49,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(5, prev => ({ 
       ...prev, 
       ...defaultConfigFiller,
+      stacked: false
     }))
 };
 
