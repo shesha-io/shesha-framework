@@ -1171,6 +1171,7 @@ export const getSettings = (data: any) => {
                         label: "Collapsible",
                         labelAlign: "right",
                         hidden: false,
+                        jsSetting: true,
                       },
                       {
                         id: nanoid(),
@@ -1179,6 +1180,7 @@ export const getSettings = (data: any) => {
                         label: "Collapsible By Default",
                         labelAlign: "right",
                         hidden: false,
+                        jsSetting: true,
                       }],
                       hideLabel: true,
                     })
