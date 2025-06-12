@@ -7,6 +7,7 @@ import KanbanColumn from './components/renderColumn';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
+import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
@@ -154,12 +155,14 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     }));
   }, [columns, tasks, groupingProperty, settings]);
 
+  const overflowStyle = getOverflowStyle(true,false);
+  
   return (
     <>
       {!columns || columns.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex style={{...stylingBoxAsCSS, overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
+        <Flex style={{...stylingBoxAsCSS, ...overflowStyle , overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
           {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}

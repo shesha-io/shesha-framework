@@ -42,7 +42,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     readOnly,
     noDataText = "No Data",
     noDataSecondaryText = "No data is available for this list",
-    noDataIcon
+    noDataIcon,
+    allStyles
   } = props;
   const {
     tableData,
@@ -217,6 +218,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       <DataList
         {...props}
+        style={allStyles.fullStyle as string}
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
         canAddInline={canAction(canAddInline)}
