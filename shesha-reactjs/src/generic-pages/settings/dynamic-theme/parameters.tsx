@@ -5,7 +5,7 @@ import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
-import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
+import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, SHESHA_COLORS, TEXT_PRESET_COLORS } from './presetColors';
 import { formItemLayout } from './form';
 
 interface IThemeConfig {
@@ -57,7 +57,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
         <Space>
           <ColorPicker
             title={humanizeString(colorName)}
-            presets={[{ label: 'Presets', defaultOpen: true, colors: presetColors ?? PRESET_COLORS }]}
+            presets={[{ label: 'Presets', defaultOpen: true, colors: presetColors ?? PRESET_COLORS }, { label: 'Shesha', defaultOpen: false, colors: SHESHA_COLORS }]}
             value={initialColor}
             onChange={onChange}
             readOnly={readonly}
