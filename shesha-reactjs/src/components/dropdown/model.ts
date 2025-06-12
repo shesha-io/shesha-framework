@@ -11,6 +11,7 @@ export interface ILabelValue<TValue = any> {
   value: TValue;
   color?: string;
   icon?: string;
+  description?: string;
 }
 
 export interface IDropdownProps {

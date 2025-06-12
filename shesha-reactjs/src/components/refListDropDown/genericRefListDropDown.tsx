@@ -167,9 +167,9 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       labelRender={(props) => {
         const option = options.find((o) => o.value === props.value);
         return <ReflistTag
-          key={props.value}
-          value={props.value}
-          tooltip={value}
+          key={option?.value}
+          value={option?.value}
+          tooltip={option?.description}
           color={option?.color}
           icon={option?.icon}
           showIcon={showIcon}

@@ -16,7 +16,7 @@ function ReflistTag({ value, tooltip, color, icon, showIcon, tagStyle, solidColo
                 color={memoizedColor}
                 icon={(icon && showIcon) && <Icon type={icon} />}
                 style={getTagStyle(tagStyle, !!color)}
-            >{showItemName && label}</Tag>
+            >{showItemName && label.toUpperCase()}</Tag>
         </Tooltip>
     );
 };

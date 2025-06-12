@@ -191,7 +191,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             labelRender={(props) => {
                 const option = options.find((o) => o.value === props.value);
                 return <ReflistTag
-                    key={props.value}
+                    key={option?.value}
                     color={option?.color}
                     icon={((option?.icon && showIcon)) && <Icon type={option?.icon} />}
                     tagStyle={tagStyle}
@@ -199,8 +199,8 @@ export const Dropdown: FC<IDropdownProps> = ({
                     solidColor={solidColor}
                     showItemName={showItemName}
                     label={option?.label}
-                    value={props.value}
-                    tooltip={"Single"}
+                    value={option?.value}
+                    tooltip={option?.description}
                 />;
             }}
         >
@@ -229,9 +229,9 @@ export const Dropdown: FC<IDropdownProps> = ({
                         tagStyle={tagStyle}
                         solidColor={solidColor}
                         label={option?.label}
-                        value={props.value}
-                        key={props.value}
-                        tooltip={"multiple"}
+                        value={option.value}
+                        key={option.value}
+                        tooltip={option?.description}
                         color={option?.color}
                         icon={option?.icon && showIcon && <Icon type={option?.icon} />}
                     ></ReflistTag>;
