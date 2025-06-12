@@ -45,7 +45,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         theme: typeof model?.theme === 'string' ? model?.theme : 'default',
         iframe: model?.iframe,
         direction: model?.direction,
-        disablePlugins: model?.disablePlugins?.join(',') + ',spellcheck' || 'spellcheck',
+        disablePlugins: [...(model?.disablePlugins || []), 'spellcheck'].join(','),
         ...(!model.autoHeight && { height, minHeight, maxHeight }),
         ...(!model.autoWidth && { width, minWidth, maxWidth }),
         placeholder: model?.placeholder ?? '',
