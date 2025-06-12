@@ -8,6 +8,7 @@ import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/r
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { useStyles } from './style';
 import { getTagStyle } from '@/utils/style';
+import ReflistTag from '../refListDropDown/reflistTag';
 
 
 export const Dropdown: FC<IDropdownProps> = ({
@@ -37,7 +38,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     tagStyle
 }) => {
 
-    const { styles } = useStyles({ style, tagStyle });
+    const { styles } = useStyles({ style });
 
     const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
 
@@ -79,6 +80,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             color: item?.color,
             icon: item?.icon,
             data: item?.data,
+            description: item?.description,
         };
     }, [incomeValueFunc]);
 
@@ -104,6 +106,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             data: outcomeValueFunc(fetchedItem, args),
             color: fetchedItem?.color,
             icon: fetchedItem?.icon,
+            description: fetchedItem?.description,
         };
     }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
 
@@ -187,14 +190,18 @@ export const Dropdown: FC<IDropdownProps> = ({
             </Tag>}
             labelRender={(props) => {
                 const option = options.find((o) => o.value === props.value);
-                return <Tag
+                return <ReflistTag
                     key={props.value}
                     color={option?.color}
                     icon={((option?.icon && showIcon)) && <Icon type={option?.icon} />}
-                    style={getTagStyle(tagStyle, !!option?.color && solidColor)}
-                >
-                    {showItemName && option?.label}
-                </Tag>;
+                    tagStyle={tagStyle}
+                    showIcon={showIcon}
+                    solidColor={solidColor}
+                    showItemName={showItemName}
+                    label={option?.label}
+                    value={props.value}
+                    tooltip={"Single"}
+                />;
             }}
         >
             {
@@ -216,12 +223,18 @@ export const Dropdown: FC<IDropdownProps> = ({
             {...(displayStyle === 'tags' ? {
                 labelRender: (props) => {
                     const option = options.find((o) => o.value === props.value);
-                    return <Tag
+                    return <ReflistTag
+                        showIcon={showIcon}
+                        showItemName={showItemName}
+                        tagStyle={tagStyle}
+                        solidColor={solidColor}
+                        label={option?.label}
+                        value={props.value}
                         key={props.value}
+                        tooltip={"multiple"}
                         color={option?.color}
                         icon={option?.icon && showIcon && <Icon type={option?.icon} />}
-                        style={getTagStyle(tagStyle, !!option?.color && solidColor)}
-                    >{showItemName && option?.label}</Tag>;
+                    ></ReflistTag>;
                 }
             } : {})}
         >

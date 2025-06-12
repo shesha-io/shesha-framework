@@ -63,6 +63,7 @@ export interface ISelectOption<TValue = any> {
   disabled?: boolean;
   color?: string;
   icon?: string;
+  description?: string;
 }
 
 export type CustomLabeledValue<TValue = any> = LabeledValue & { data: TValue };

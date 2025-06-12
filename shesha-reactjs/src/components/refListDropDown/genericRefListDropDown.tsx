@@ -35,6 +35,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     ...rest
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
+
   const filter = ({ itemValue }: ReferenceListItemDto) => {
     if (!filters?.length) {
       return true;
@@ -168,6 +169,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return <ReflistTag
           key={props.value}
           value={props.value}
+          tooltip={value}
           color={option?.color}
           icon={option?.icon}
           showIcon={showIcon}
@@ -197,6 +199,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
           const option = options.find((o) => o.value === props.value);
           return <ReflistTag
             value={option?.value}
+            tooltip={value}
             color={option?.color}
             icon={option?.icon}
             showIcon={showIcon}

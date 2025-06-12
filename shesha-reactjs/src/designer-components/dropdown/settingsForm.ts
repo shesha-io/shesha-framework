@@ -113,11 +113,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
-                                hidden: {
-                                    _code: 'return  getSettingValue(data.displayStyle) !== "tags";',
-                                    _mode: 'code',
-                                    _value: false
-                                } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -1217,7 +1213,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         .addCollapsiblePanel({
                                                             id: nanoid(),
                                                             propertyName: 'tagCustomStyle',
-                                                            label: 'Custom Style',
+                                                            label: 'Custom Styles',
                                                             labelAlign: 'right',
                                                             ghost: true,
                                                             collapsible: 'header',

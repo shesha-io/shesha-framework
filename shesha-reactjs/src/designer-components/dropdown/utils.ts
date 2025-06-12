@@ -34,7 +34,7 @@ export const defaultStyles = (): IStyleType => {
 
 export const defaultTagStyles = (): IStyleType => {
     return {
-        background: { type: 'color', color: '#fff' },
+        background: { type: 'color', color: '' },
         font: {
             weight: '400',
             size: 14,

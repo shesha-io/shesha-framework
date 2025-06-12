@@ -78,16 +78,18 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               />
             );
           } else {
-            return dropdownDisplayMode === 'tags' ? <ReflistTag
-              value={value}
-              color={value?.color}
-              icon={value?.icon}
-              showIcon={showIcon}
-              tagStyle={style}
-              solidColor={solidColor}
-              showItemName={showItemName}
-              label={displayName}
-            /> : displayName || value;
+            return dropdownDisplayMode === 'tags' ?
+              <ReflistTag
+                value={value}
+                color={value?.color}
+                icon={value?.icon}
+                showIcon={showIcon}
+                tagStyle={style}
+                tooltip={value?.description}
+                solidColor={solidColor}
+                showItemName={showItemName}
+                label={displayName}
+              /> : displayName ?? value;
           }
         }
 
@@ -100,13 +102,13 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           return dropdownDisplayMode === 'raw'
             ? values?.join(', ')
             : <Space size={8}>
-              {value?.map(({ label, color, icon, value }) => {
-
+              {value?.map(({ label, color, icon, value, description }) => {
                 return <ReflistTag
                   key={value}
                   value={value}
                   color={color}
                   icon={icon}
+                  tooltip={description}
                   showIcon={showIcon}
                   tagStyle={style}
                   solidColor={solidColor}
