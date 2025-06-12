@@ -888,7 +888,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'defaultTagStyle',
-                                            label: 'Default Tag Style',
+                                            label: 'Custom Tag Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false } as any,
@@ -1033,7 +1033,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                             jsSetting: false,
                                                                             propertyName: "tag.background.type",
                                                                             inputType: "radio",
-                                                                            tooltip: "Select a type of background",
+                                                                            tooltip: "Select a type of background, the default background color for tags when no specific color is assigned. Acts as a fallback background style for uncolored tags.",
                                                                             buttonGroupOptions: backgroundTypeOptions,
                                                                         })
                                                                         .addSettingsInputRow({
