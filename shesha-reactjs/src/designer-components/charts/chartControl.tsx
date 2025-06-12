@@ -5,17 +5,13 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Flex, Result, Spin } from 'antd';
+import { Alert, Flex, Spin } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import BarChart from './components/bar';
-import LineChart from './components/line';
-import PieChart from './components/pie';
-import PolarAreaChart from './components/polarArea';
 import { useProcessedChartData } from "./hooks";
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { formatDate, getChartDataRefetchParams } from './utils';
+import { formatDate, getChartDataRefetchParams, renderChart } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty,
@@ -156,22 +152,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         )}
         style={getResponsiveStyle()}
       >
-      {
-        (() => {
-          switch (chartType) {
-            case 'line':
-              return <LineChart data={data} />;
-            case 'bar':
-              return <BarChart data={data} />;
-            case 'pie':
-              return <PieChart data={data} />;
-            case 'polarArea':
-              return <PolarAreaChart data={data} />;
-            default:
-              return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
-          }
-        })()
-      }
+      {renderChart(chartType, data)}
       </div>
   );
 };

@@ -1,4 +1,24 @@
-import { TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import { IChartData, TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import LineChart from "./components/line";
+import BarChart from "./components/bar";
+import PieChart from "./components/pie";
+import PolarAreaChart from "./components/polarArea";
+import { Result } from "antd";
+
+export const renderChart = (chartType: string, data: IChartData) => {
+  switch (chartType) {
+    case 'line':
+      return <LineChart data={data} />;
+    case 'bar':
+      return <BarChart data={data} />;
+    case 'pie':
+      return <PieChart data={data} />;
+    case 'polarArea':
+      return <PolarAreaChart data={data} />;
+    default:
+      return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
+  }
+};
 
 export const defaultConfigFiller: {
   showTitle: boolean;

@@ -4,14 +4,10 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Flex, Result, Spin } from 'antd';
 import React, { useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import BarChart from './components/bar';
-import LineChart from './components/line';
-import PieChart from './components/pie';
-import PolarAreaChart from './components/polarArea';
 import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
-import { getURLChartDataRefetchParams } from './utils';
+import { getURLChartDataRefetchParams, renderChart } from './utils';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType } = props;
@@ -98,22 +94,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       width: props?.width > 300 ? props.width : 'auto',
       border: props?.showBorder ? '1px solid #ddd' : 'none'
     }}>
-      {
-        (() => {
-          switch (chartType) {
-            case 'line':
-              return <LineChart data={memoUrlTypeData as any} />;
-            case 'bar':
-              return <BarChart data={memoUrlTypeData as any} />;
-            case 'pie':
-              return <PieChart data={memoUrlTypeData as any} />;
-            case 'polarArea':
-              return <PolarAreaChart data={memoUrlTypeData as any} />;
-            default:
-              return <Result status="404" title="404" subTitle="Sorry, please select a valid chart type." />;
-          }
-        })()
-      }
+      {renderChart(chartType, memoUrlTypeData)}
     </Flex>
   );
 };
