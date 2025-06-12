@@ -75,9 +75,9 @@ const useStyles = createStyles(() => ({
   
   chartContainerNoBorder: {
     border: 'none',
-    borderRadius: 'none',
+    borderRadius: 0,
     padding: '8px',
-  }
+  },
 }));
 
 export default useStyles;
