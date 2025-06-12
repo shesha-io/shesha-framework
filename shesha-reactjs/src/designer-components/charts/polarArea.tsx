@@ -8,6 +8,7 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
+import { defaultConfigFiller } from './utils';
 
 const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   type: 'polarAreaChart',
@@ -45,6 +46,10 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
     .add<IChartProps>(4, prev => ({ ...prev, showTitle: true }))
+    .add<IChartProps>(5, prev => ({ 
+      ...prev, 
+      ...defaultConfigFiller,
+    }))
 };
 
 export default PolarAreaChartComponent;

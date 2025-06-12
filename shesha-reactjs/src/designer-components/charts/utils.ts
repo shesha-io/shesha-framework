@@ -1,4 +1,22 @@
-import { TAggregationMethod, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import { TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+
+export const defaultConfigFiller: {
+  showTitle: boolean;
+  simpleOrPivot: 'simple' | 'pivot';
+  dataMode: TDataMode;
+  entityType: string;
+  axisProperty: string;
+  valueProperty: string;
+  aggregationMethod: TAggregationMethod;
+} = {
+  showTitle: true, 
+  simpleOrPivot: 'simple',
+  dataMode: 'entityType',
+  entityType: 'Shesha.Domain.FormConfiguration',
+  axisProperty: 'versionStatus',
+  valueProperty: 'id',
+  aggregationMethod: 'count',
+};
 
 /**
  * Function to stringify values in an array of objects
