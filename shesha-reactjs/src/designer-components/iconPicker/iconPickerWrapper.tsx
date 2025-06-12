@@ -67,7 +67,6 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
   const iconValue = finalValue ?? defaultValue;
 
-
   return (
     <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
       <Tooltip title={props?.description}>
@@ -79,7 +78,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         >
           <IconPicker
             value={iconValue as ShaIconTypes}
-            defaultValue={defaultValue as ShaIconTypes}
+            defaultValue={iconValue as ShaIconTypes}
             onIconChange={onIconChange}
             selectBtnSize={selectBtnSize}
             iconSize={

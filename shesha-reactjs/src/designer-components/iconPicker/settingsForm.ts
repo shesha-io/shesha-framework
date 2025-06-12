@@ -65,7 +65,6 @@ export const getSettings = (data: any) => {
                       propertyName: 'defaultValue',
                       label: 'Default Icon',
                       jsSetting: true,
-                      defaultValue: 'UpCircleOutlined',
                     },
                   ],
                 })
