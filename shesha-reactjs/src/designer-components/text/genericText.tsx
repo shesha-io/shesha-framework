@@ -51,10 +51,10 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     model.strong,
   ]);
 
-  const remainingColors = ((contentType: ContentType) => {
+  const remainingColors: string | undefined = ((contentType: ContentType) => {
     switch (contentType) {
       case 'custom':
-        return style.color;
+        return style?.color;
       case 'secondary':
         return theme?.text?.secondary;
       case '':
@@ -64,7 +64,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     }
   })(contentType);
 
-  const chosenType = contentType === 'secondary' ? null : (contentType as BaseType);
+  const chosenType: BaseType | undefined = contentType === 'secondary' ? undefined : (contentType as BaseType);
 
   const baseProps: ITypographyProps = {
     code: model?.code,
