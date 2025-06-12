@@ -8,7 +8,7 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
-import { defaultConfigFiller } from './utils';
+import { defaultConfigFiller, filterNonNull } from './utils';
 
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
@@ -46,9 +46,11 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
     .add<IChartProps>(4, prev => ({ ...prev, showTitle: true }))
-    .add<IChartProps>(5, prev => ({ 
-      ...prev, 
+    .add<IChartProps>(5, prev => ({
       ...defaultConfigFiller,
+      ...filterNonNull(prev),
+      type: prev.type,
+      id: prev.id
     }))
 };
 

@@ -1,9 +1,22 @@
+import React from "react";
 import { IChartData, TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
 import LineChart from "./components/line";
 import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
+
+
+/**
+ * Filter out null and undefined values from an object
+ * @param obj the object to filter
+ * @returns the filtered object
+ */
+export function filterNonNull<T extends object>(obj: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== null && v !== undefined)
+  ) as Partial<T>;
+}
 
 export const renderChart = (chartType: string, data: IChartData) => {
   switch (chartType) {
@@ -120,6 +133,7 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
       properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, legendProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
+
     },
   };
 };
