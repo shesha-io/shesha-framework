@@ -61,6 +61,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             value={initialColor}
             onChange={onChange}
             readOnly={readonly}
+            allowClear={true}
           />
           <span>{humanizeString(colorName)} </span>
           <Show when={Boolean(hint)}>
