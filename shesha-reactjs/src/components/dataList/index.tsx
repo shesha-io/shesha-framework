@@ -181,7 +181,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const [measuredRef] = useMeasure();
 
-  const fcContainerStyles = useFormComponentStyles({ ...props.container });
+  const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
   const isReady = (forms: EntityForm[]) => {
     if (!(!forms || forms.length === 0 || forms.find(x => !x.formConfiguration))) {
@@ -415,7 +415,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
     const stylesAsCSS = style as CSSProperties;
-    
+
     const hasBorder = () => {
       const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
       return borderProps.some(prop => {
@@ -428,16 +428,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
 
-      const itemStyles: CSSProperties = {
-        ...(stylesAsCSS || {}),
-        ...(orientation === 'horizontal' && { flexShrink: 0 }),
-        ...(orientation === 'wrap' && showBorder && { 
-          border: '1px solid #d3d3d3',
-          borderRadius: '8px'
-        }),
-        ...(cardHeight && { height: cardHeight }),
-        overflow: 'auto'
-      };
+    const itemStyles: CSSProperties = {
+      ...(stylesAsCSS || {}),
+      ...(orientation === 'horizontal' && { flexShrink: 0 }),
+      ...(orientation === 'wrap' && showBorder && {
+        border: '1px solid #d3d3d3',
+        borderRadius: '8px'
+      }),
+      ...(cardHeight && { height: cardHeight }),
+      overflow: 'auto'
+    };
 
     return (
       <div key={`row-${index}`}>
@@ -456,7 +456,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         >
           <div
             className={classNames(
-              orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, 
+              orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem,
               { selected }
             )}
             onClick={() => {
@@ -468,9 +468,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </div>
         </ConditionalWrap>
         {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
-          <Divider 
-            style={{ margin: '0' }} 
-            className={classNames(styles.shaDatalistComponentDivider, { selected })} 
+          <Divider
+            style={{ margin: '0' }}
+            className={classNames(styles.shaDatalistComponentDivider, { selected })}
           />
         ))}
       </div>
@@ -519,7 +519,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     };
 
-    const itemWidth = (style as CSSProperties)?.width || props.container?.dimensions?.width || '300px';
+
+    const rawItemWidth =
+      (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
+    const itemWidth =
+      rawItemWidth !== undefined
+        ? typeof rawItemWidth === 'number'
+          ? `${rawItemWidth}px`
+          : rawItemWidth
+        : '300px';
 
     switch (orientation) {
       case 'horizontal':
@@ -532,7 +540,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           overflowX: 'auto',
           width: '100%'
         };
-      
+
       case 'wrap':
         return {
           ...containerStyles,
@@ -540,7 +548,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           gridTemplateColumns: `repeat(auto-fill, ${itemWidth})`,
           alignItems: 'start'
         };
-      
+
       case 'vertical':
       default:
         return {
