@@ -155,106 +155,106 @@ export const getSettings = () => {
                                                     id: nanoid(),
                                                     parentId: dataLoaderTypeId,
                                                     inputs: [
-                                                    {
-                                                        id: nanoid(),
-                                                        type: "propertyAutocomplete",
-                                                        propertyName: "dataLoadersSettings.gql.fieldsToFetch",
-                                                        label: "Additional fields for fetch",
-                                                        mode: "multiple",
-                                                        labelAlign: "right",
-                                                        hidden: false,
-                                                        validate: {},
-                                                        settingsValidationErrors: [],
-                                                        tooltip: "A list of fields you want to fetch",
-                                                        parentId: dataLoaderTypeId,
-                                                        version: 2
-                                                    }
-                                                ]
+                                                        {
+                                                            id: nanoid(),
+                                                            type: "propertyAutocomplete",
+                                                            propertyName: "dataLoadersSettings.gql.fieldsToFetch",
+                                                            label: "Additional fields for fetch",
+                                                            mode: "multiple",
+                                                            labelAlign: "right",
+                                                            hidden: false,
+                                                            validate: {},
+                                                            settingsValidationErrors: [],
+                                                            tooltip: "A list of fields you want to fetch",
+                                                            parentId: dataLoaderTypeId,
+                                                            version: 2
+                                                        }
+                                                    ]
                                                 })
+                                                .toJson()
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: nanoid(),
+                                            parentId: 'root',
+                                            hidden: {
+                                                _mode: "code",
+                                                _code: "    return data?.dataLoaderType !== 'custom';",
+                                                _value: false
+                                            },
+                                            inputs: [
+                                                {
+                                                    type: 'codeEditor',
+                                                    id: nanoid(),
+                                                    propertyName: 'dataLoadersSettings.custom.onDataLoad',
+                                                    label: 'On Load',
+                                                    mode: 'dialog',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'onLoad'
+                                                    },
+                                                    language: 'typescript'
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: 'on-beforeload-data-on-after-load-data',
+                                            inputs: [
+                                                {
+                                                    id: nanoid(),
+                                                    type: 'codeEditor',
+                                                    propertyName: 'onBeforeDataLoad',
+                                                    label: 'On Before Data Load',
+                                                    parentId: 'root',
+                                                    mode: 'dialog',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'onBeforeDataLoad'
+                                                    },
+                                                    language: 'typescript'
+                                                },
+                                                {
+                                                    id: nanoid(),
+                                                    type: 'codeEditor',
+                                                    propertyName: 'onAfterDataLoad',
+                                                    label: 'On After Data Load',
+                                                    parentId: 'root',
+                                                    mode: 'dialog',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'onAfterDataLoad'
+                                                    },
+                                                    language: 'typescript'
+                                                }]
+                                        })
                                         .toJson()
                                     ]
-                                })
-                            .addSettingsInputRow({
+                                }
+                            })
+                            .addCollapsiblePanel({
                                 id: nanoid(),
-                                parentId: 'root',
-                                hidden: {
-                                    _mode: "code",
-                                    _code: "    return data?.dataLoaderType !== 'custom';",
-                                    _value: false
-                                },
-                                inputs: [
-                                    {
-                                        type: 'codeEditor',
-                                        id: nanoid(),
-                                        propertyName: 'dataLoadersSettings.custom.onDataLoad',
-                                        label: 'On Load',
-                                        mode: 'dialog',
-                                        wrapInTemplate: true,
-                                        templateSettings: {
-                                            useAsyncDeclaration: true,
-                                            functionName: 'onLoad'
-                                        },
-                                        language: 'typescript'
-                                    }
-                                ]
-                            })
-                            .addSettingsInputRow({
-                                id: 'on-beforeload-data-on-after-load-data',
-                                inputs: [
-                                    {
-                                        id: nanoid(),
-                                        type: 'codeEditor',
-                                        propertyName: 'onBeforeDataLoad',
-                                        label: 'On Before Data Load',
-                                        parentId: 'root',
-                                        mode: 'dialog',
-                                        wrapInTemplate: true,
-                                        templateSettings: {
-                                            useAsyncDeclaration: true,
-                                            functionName: 'onBeforeDataLoad'
-                                        },
-                                        language: 'typescript'
-                                    },
-                                    {
-                                        id: nanoid(),
-                                        type: 'codeEditor',
-                                        propertyName: 'onAfterDataLoad',
-                                        label: 'On After Data Load',
-                                        parentId: 'root',
-                                        mode: 'dialog',
-                                        wrapInTemplate: true,
-                                        templateSettings: {
-                                            useAsyncDeclaration: true,
-                                            functionName: 'onAfterDataLoad'
-                                        },
-                                        language: 'typescript'
-                                    }]
-                            })
-                            .toJson()
-                        ]
-                    }
-                            })
-            .addCollapsiblePanel({
-                id: nanoid(),
-                propertyName: 'pnlDataSave',
-                label: 'Data Save',
-                labelAlign: 'right',
-                parentId: dataTabId,
-                ghost: true,
-                expandIconPosition: 'end',
-                collapsible: 'header',
-                content: {
-                    id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
-                        .addSettingsInput({
-                            id: nanoid(),
-                            inputType: 'radio',
-                            propertyName: 'dataSubmitterType',
-                            label: 'Submit Type',
-                            parentId: 'root',
-                            buttonGroupOptions: {
-                                _mode: 'value',
-                                _code: `    const result = [];
+                                propertyName: 'pnlDataSave',
+                                label: 'Data Save',
+                                labelAlign: 'right',
+                                parentId: dataTabId,
+                                ghost: true,
+                                expandIconPosition: 'end',
+                                collapsible: 'header',
+                                content: {
+                                    id: nanoid(),
+                                    components: [...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            inputType: 'radio',
+                                            propertyName: 'dataSubmitterType',
+                                            label: 'Submit Type',
+                                            parentId: 'root',
+                                            buttonGroupOptions: {
+                                                _mode: 'value',
+                                                _code: `    const result = [];
                                                             const isEntity = Boolean(data?.modelType);
                                                             if (isEntity)
                                                                 result.push({ title: 'Default', value: 'gql' });
@@ -262,296 +262,296 @@ export const getSettings = () => {
                                                             result.push({ title: 'Custom', value: 'custom' });
                                                             result.push({ title: 'None', value: 'none' });
                                                             return result;`,
-                                _value: [
-                                    { title: 'Default', value: 'gql' },
-                                    { title: 'Custom', value: 'custom' },
-                                    { title: 'None', value: 'none' }
-                                ]
-                            } as any
-                        })
-                        .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'root',
-                            hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
-                            inputs: [
-                                {
-                                    type: 'radio',
-                                    id: nanoid(),
-                                    propertyName: 'dataSubmittersSettings.gql.endpointType',
-                                    label: 'API Endpoint Type',
-                                    labelAlign: 'right',
-                                    buttonGroupOptions: [
-                                        { title: 'Default', value: 'default' },
-                                        { title: 'Custom: static', value: 'static' },
-                                        { title: 'Custom: dynamic', value: 'dynamic' }
-                                    ]
-                                }
-                            ]
-                        })
-                        .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'root',
-                            inputs: [
-                                {
-                                    type: 'endpointsAutocomplete',
-                                    id: nanoid(),
-                                    propertyName: 'dataSubmittersSettings.gql.staticEndpoint',
-                                    label: 'Endpoint',
-                                    mode: 'endpoint',
-                                    availableHttpVerbs: [
-                                        { label: 'POST', value: 'post', id: nanoid() },
-                                        { label: 'PUT', value: 'put', id: nanoid() },
-                                        { label: 'PATCH', value: 'patch', id: nanoid() },
-                                        { label: 'DELETE', value: 'delete', id: nanoid() }
-                                    ],
-                                    hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "static" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
-                                },
-                                {
-                                    type: 'codeEditor',
-                                    id: nanoid(),
-                                    propertyName: 'dataSubmittersSettings.gql.dynamicEndpoint',
-                                    label: 'Endpoint',
-                                    mode: 'dialog',
-                                    language: 'typescript',
-                                    wrapInTemplate: true,
-                                    templateSettings: {
-                                        useAsyncDeclaration: true,
-                                        functionName: 'getSubmitterEndpoint'
-                                    },
-                                    resultTypeExpression: `    return metadataBuilder
+                                                _value: [
+                                                    { title: 'Default', value: 'gql' },
+                                                    { title: 'Custom', value: 'custom' },
+                                                    { title: 'None', value: 'none' }
+                                                ]
+                                            } as any
+                                        })
+                                        .addSettingsInputRow({
+                                            id: nanoid(),
+                                            parentId: 'root',
+                                            hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                                            inputs: [
+                                                {
+                                                    type: 'radio',
+                                                    id: nanoid(),
+                                                    propertyName: 'dataSubmittersSettings.gql.endpointType',
+                                                    label: 'API Endpoint Type',
+                                                    labelAlign: 'right',
+                                                    buttonGroupOptions: [
+                                                        { title: 'Default', value: 'default' },
+                                                        { title: 'Custom: static', value: 'static' },
+                                                        { title: 'Custom: dynamic', value: 'dynamic' }
+                                                    ]
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: nanoid(),
+                                            parentId: 'root',
+                                            inputs: [
+                                                {
+                                                    type: 'endpointsAutocomplete',
+                                                    id: nanoid(),
+                                                    propertyName: 'dataSubmittersSettings.gql.staticEndpoint',
+                                                    label: 'Endpoint',
+                                                    mode: 'endpoint',
+                                                    availableHttpVerbs: [
+                                                        { label: 'POST', value: 'post', id: nanoid() },
+                                                        { label: 'PUT', value: 'put', id: nanoid() },
+                                                        { label: 'PATCH', value: 'patch', id: nanoid() },
+                                                        { label: 'DELETE', value: 'delete', id: nanoid() }
+                                                    ],
+                                                    hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "static" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                                                },
+                                                {
+                                                    type: 'codeEditor',
+                                                    id: nanoid(),
+                                                    propertyName: 'dataSubmittersSettings.gql.dynamicEndpoint',
+                                                    label: 'Endpoint',
+                                                    mode: 'dialog',
+                                                    language: 'typescript',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'getSubmitterEndpoint'
+                                                    },
+                                                    resultTypeExpression: `    return metadataBuilder
                                                     .object("IApiEndpoint")
                                                     .addString("url", "Endpoint Url")
                                                     .addString("httpVerb", "HTTP verb (GET/POST/PUT etc.)")
                                                     .build();`,
-                                    hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "dynamic" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
-                                }
-                            ]
-                        })
-                        .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'root',
-                            hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
-                            inputs: [
-                                {
-                                    type: 'switch',
-                                    id: nanoid(),
-                                    propertyName: 'dataSubmittersSettings.gql.excludeFormFields',
-                                    label: 'Exclude \'_formFields\' in the payload?',
-                                    tooltip: 'Whether or not _formFields should be included in the payload. By default it is included.'
-                                }
-                            ]
-                        })
-                        .addSettingsInputRow({
-                            id: 'on-prepare-submit-data-on-before-sumbit',
-                            inputs: [
-                                {
-                                    id: nanoid(),
-                                    type: 'codeEditor',
-                                    propertyName: 'onPrepareSubmitData',
-                                    label: 'Prepare Submit Data',
-                                    parentId: 'root',
-                                    tooltip: 'Here you can modify data before the form submission',
-                                    mode: 'dialog',
-                                    wrapInTemplate: true,
-                                    templateSettings: {
-                                        useAsyncDeclaration: true,
-                                        functionName: 'onPrepareSubmitData'
-                                    },
-                                    language: 'typescript',
-                                    resultTypeExpression: `    const { modelType } = data ?? {};
+                                                    hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "dynamic" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: nanoid(),
+                                            parentId: 'root',
+                                            hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                                            inputs: [
+                                                {
+                                                    type: 'switch',
+                                                    id: nanoid(),
+                                                    propertyName: 'dataSubmittersSettings.gql.excludeFormFields',
+                                                    label: 'Exclude \'_formFields\' in the payload?',
+                                                    tooltip: 'Whether or not _formFields should be included in the payload. By default it is included.'
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: 'on-prepare-submit-data-on-before-sumbit',
+                                            inputs: [
+                                                {
+                                                    id: nanoid(),
+                                                    type: 'codeEditor',
+                                                    propertyName: 'onPrepareSubmitData',
+                                                    label: 'Prepare Submit Data',
+                                                    parentId: 'root',
+                                                    tooltip: 'Here you can modify data before the form submission',
+                                                    mode: 'dialog',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'onPrepareSubmitData'
+                                                    },
+                                                    language: 'typescript',
+                                                    resultTypeExpression: `    const { modelType } = data ?? {};
                                                 const isEntity = modelType ? await metadataBuilder.isEntityAsync(modelType) : false;
                                                 return isEntity
                                                     ? metadataBuilder.entity(modelType)
                                                     : metadataBuilder.anyObject();`
-                                },
-                                {
-                                    id: nanoid(),
-                                    type: 'codeEditor',
-                                    propertyName: 'onBeforeSubmit',
-                                    label: 'On Before Submit',
-                                    parentId: 'root',
-                                    tooltip: 'This event is called before the form submission. Here you can specify custom page level validation or modify the data before submission',
-                                    mode: 'dialog',
-                                    wrapInTemplate: true,
-                                    templateSettings: {
-                                        useAsyncDeclaration: true,
-                                        functionName: 'onBeforeSubmit'
-                                    },
-                                    language: 'typescript'
+                                                },
+                                                {
+                                                    id: nanoid(),
+                                                    type: 'codeEditor',
+                                                    propertyName: 'onBeforeSubmit',
+                                                    label: 'On Before Submit',
+                                                    parentId: 'root',
+                                                    tooltip: 'This event is called before the form submission. Here you can specify custom page level validation or modify the data before submission',
+                                                    mode: 'dialog',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'onBeforeSubmit'
+                                                    },
+                                                    language: 'typescript'
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: nanoid(),
+                                            inputs: [
+                                                {
+                                                    id: nanoid(),
+                                                    type: 'codeEditor',
+                                                    propertyName: 'onSubmitSuccess',
+                                                    label: 'On Submit Success',
+                                                    parentId: 'root',
+                                                    mode: 'dialog',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'onSubmitSuccess'
+                                                    },
+                                                    language: 'typescript'
+                                                },
+                                                {
+                                                    id: nanoid(),
+                                                    type: 'codeEditor',
+                                                    propertyName: 'onSubmitFailed',
+                                                    label: 'On Submit Failed',
+                                                    parentId: 'root',
+                                                    mode: 'dialog',
+                                                    wrapInTemplate: true,
+                                                    templateSettings: {
+                                                        useAsyncDeclaration: true,
+                                                        functionName: 'onSubmitFailed'
+                                                    },
+                                                    language: 'typescript'
+                                                }
+                                            ]
+                                        })
+                                        .toJson()
+                                    ]
                                 }
-                            ]
-                        })
-                        .addSettingsInputRow({
-                            id: 'on-submit-success-submit-fail',
-                            inputs: [
-                                {
+                            })
+                            .addCollapsiblePanel({
+                                id: nanoid(),
+                                propertyName: 'pnlEvents',
+                                label: 'Events',
+                                labelAlign: 'right',
+                                parentId: dataTabId,
+                                ghost: true,
+                                expandIconPosition: 'end',
+                                collapsible: 'header',
+                                content: {
                                     id: nanoid(),
-                                    type: 'codeEditor',
-                                    propertyName: 'onSubmitSuccess',
-                                    label: 'On Submit Success',
-                                    parentId: 'root',
-                                    mode: 'dialog',
-                                    wrapInTemplate: true,
-                                    templateSettings: {
-                                        useAsyncDeclaration: true,
-                                        functionName: 'onSubmitSuccess'
-                                    },
-                                    language: 'typescript'
-                                },
-                                {
-                                    id: nanoid(),
-                                    type: 'codeEditor',
-                                    propertyName: 'onSubmitFailed',
-                                    label: 'On Submit Failed',
-                                    parentId: 'root',
-                                    mode: 'dialog',
-                                    wrapInTemplate: true,
-                                    templateSettings: {
-                                        useAsyncDeclaration: true,
-                                        functionName: 'onSubmitFailed'
-                                    },
-                                    language: 'typescript'
+                                    components: [...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            inputType: 'codeEditor',
+                                            propertyName: 'onValuesUpdate',
+                                            label: 'On Values Update',
+                                            parentId: 'root',
+                                            tooltip: 'This action will be executed whenever the form updates',
+                                            mode: 'dialog',
+                                            wrapInTemplate: true,
+                                            templateSettings: {
+                                                functionName: 'onValuesUpdate'
+                                            },
+                                            language: 'typescript'
+                                        })
+                                        .toJson()
+                                    ]
                                 }
-                            ]
-                        })
-                        .toJson()
-                    ]
-                }
-            })
-            .addCollapsiblePanel({
-                id: nanoid(),
-                propertyName: 'pnlEvents',
-                label: 'Events',
-                labelAlign: 'right',
-                parentId: dataTabId,
-                ghost: true,
-                expandIconPosition: 'end',
-                collapsible: 'header',
-                content: {
-                    id: nanoid(),
-                    components: [...new DesignerToolbarSettings()
-                        .addSettingsInput({
-                            id: nanoid(),
-                            inputType: 'codeEditor',
-                            propertyName: 'onValuesUpdate',
-                            label: 'On Values Update',
-                            parentId: 'root',
-                            tooltip: 'This action will be executed whenever the form updates',
-                            mode: 'dialog',
-                            wrapInTemplate: true,
-                            templateSettings: {
-                                functionName: 'onValuesUpdate'
-                            },
-                            language: 'typescript'
-                        })
-                        .toJson()
-                    ]
-                }
-            })
-            .toJson()
+                            })
+                            .toJson()
                         ]
                     },
-{
-    key: 'appearance',
-        title: 'Appearance',
-            id: appearanceTabId,
-                components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'dropdown',
-                        propertyName: 'layout',
-                        label: 'Layout',
-                        parentId: appearanceTabId,
-                        validate: {
-                            required: true
-                        },
-                        dropdownOptions: [
-                            { label: 'horizontal', value: 'horizontal' },
-                            { label: 'vertical', value: 'vertical' }
-                        ]
-                    })
-                    .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'dropdown',
-                        propertyName: 'size',
-                        label: 'Size',
-                        parentId: appearanceTabId,
-                        allowClear: true,
-                        dropdownOptions: [
-                            { label: 'Small', value: 'small' },
-                            { label: 'Middle', value: 'middle' },
-                            { label: 'Large', value: 'large' }
-                        ]
-                    })
-                    .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'switch',
-                        propertyName: 'colon',
-                        label: 'Colon',
-                        parentId: appearanceTabId,
-                        tooltip: 'Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)'
-                    })
-                    .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'numberField',
-                        propertyName: 'labelCol.span',
-                        label: 'Label span',
-                        parentId: appearanceTabId,
-                        tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none',
-                    })
-                    .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'numberField',
-                        propertyName: 'wrapperCol.span',
-                        label: 'Component span',
-                        parentId: appearanceTabId,
-                        tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none'
-
-                    })
-                    .toJson()
-                ]
-},
-{
-    key: 'security',
-        title: 'Security',
-            id: securityTabId,
-                components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'dropdown',
-                        propertyName: 'access',
-                        label: 'Access',
-                        parentId: securityTabId,
-                        dropdownOptions: [
-                            { label: 'Any authenticated', value: '3' },
-                            { label: 'Requires permissions', value: '4' },
-                            { label: 'Allow anonymous', value: '5' }
-                        ]
-                    })
-                    .addSettingsInputRow({
-                        id: 'on-submit-success-submit-fail',
-                        inputs: [
-                            {
+                    {
+                        key: 'appearance',
+                        title: 'Appearance',
+                        id: appearanceTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
                                 id: nanoid(),
-                                type: 'permissions',
-                                propertyName: 'permissions',
-                                label: 'Permissions',
-                                parentId: securityTabId,
-                                hidden: { _code: 'return data?.access != 4;', _mode: 'code', _value: false } as any
-                            }
+                                inputType: 'dropdown',
+                                propertyName: 'layout',
+                                label: 'Layout',
+                                parentId: appearanceTabId,
+                                validate: {
+                                    required: true
+                                },
+                                dropdownOptions: [
+                                    { label: 'horizontal', value: 'horizontal' },
+                                    { label: 'vertical', value: 'vertical' }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'dropdown',
+                                propertyName: 'size',
+                                label: 'Size',
+                                parentId: appearanceTabId,
+                                allowClear: true,
+                                dropdownOptions: [
+                                    { label: 'Small', value: 'small' },
+                                    { label: 'Middle', value: 'middle' },
+                                    { label: 'Large', value: 'large' }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'switch',
+                                propertyName: 'colon',
+                                label: 'Colon',
+                                parentId: appearanceTabId,
+                                tooltip: 'Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)'
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'numberField',
+                                propertyName: 'labelCol.span',
+                                label: 'Label span',
+                                parentId: appearanceTabId,
+                                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none',
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'numberField',
+                                propertyName: 'wrapperCol.span',
+                                label: 'Component span',
+                                parentId: appearanceTabId,
+                                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none'
+
+                            })
+                            .toJson()
                         ]
-                    })
-                    .toJson()
-                ]
-}
+                    },
+                    {
+                        key: 'security',
+                        title: 'Security',
+                        id: securityTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'dropdown',
+                                propertyName: 'access',
+                                label: 'Access',
+                                parentId: securityTabId,
+                                dropdownOptions: [
+                                    { label: 'Any authenticated', value: '3' },
+                                    { label: 'Requires permissions', value: '4' },
+                                    { label: 'Allow anonymous', value: '5' }
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'permissions',
+                                        propertyName: 'permissions',
+                                        label: 'Permissions',
+                                        parentId: securityTabId,
+                                        hidden: { _code: 'return data?.access != 4;', _mode: 'code', _value: false } as any
+                                    }
+                                ]
+                            })
+                            .toJson()
+                        ]
+                    }
                 ]
             })
             .toJson(),
-    formSettings: {
-    colon: false,
-        layout: 'vertical' as FormLayout,
+        formSettings: {
+            colon: false,
+            layout: 'vertical' as FormLayout,
             labelCol: { span: 24 },
-    wrapperCol: { span: 24 }
-}
+            wrapperCol: { span: 24 }
+        }
     };
 };
