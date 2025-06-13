@@ -1,7 +1,7 @@
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import React, { FC, useMemo, useState } from 'react';
 import { getDynamicActionsItemsLevel, getItemsWithResolved, IDynamicItemsEvaluationStore, IResolvedDynamicItem } from './utils';
-import { SingleDynamicItemEvaluator } from './singleDynamicItemEvaluator';
+import { getDynamicItemKey, SingleDynamicItemEvaluator } from './singleDynamicItemEvaluator';
 
 export interface IDynamicActionsEvaluatorProps {
     items: ButtonGroupItemProps[];
@@ -38,7 +38,7 @@ export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ ite
 
     return (
         <>
-            {evaluation.dynamicItems.map(item => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={item.id} />))}
+            {evaluation.dynamicItems.map(item => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={getDynamicItemKey(item)} />))}
             {children(finalItems)}
         </>
     );
