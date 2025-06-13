@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
 import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
-import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
+import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -73,10 +73,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   noDataSecondaryText,
   noDataText,
   cardHeight,
-  cardMaxWidth = '350px',
-  cardMinWidth = '350px',
   showBorder,
   cardSpacing,
+  style,
   ...props
 }) => {
 
@@ -191,13 +190,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   // TODO: Horisontal orientation works incorrect under Container with Display = `grid`
 
-  //The below forces the card to use max-width, therefore avoiding the issue of having cards
-  //with varying sizes. This is only a problem when selection mode is not "none"
-
-  if (orientation === "wrap" && selectionMode !== "none") {
-    cardMinWidth = cardMaxWidth;
-  }
-
   useEffect(() => {
     if (measured?.width === 0) return;
     let res = null;
@@ -307,7 +299,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -454,6 +446,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
 
+    const hasBorder = () => {
+      const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
+      return borderProps.some(prop => {
+        const value = stylesAsCSS[prop];
+        return value && value !== 'none' && value !== '0' && value !== '0px';
+      }) || showBorder;
+    };
+
+    const baseStyles = orientation === 'wrap' ? {
+      ...(showBorder && { border: '1px #d3d3d3 solid' })
+    } : itemWidthCalc as React.CSSProperties;
+
     const selected =
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
@@ -477,16 +481,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={orientation === 'wrap' ? {
-              minWidth: `${Number(cardMinWidth) ? cardMinWidth + 'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth + 'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight + 'px' : cardHeight}`,
-              ...(showBorder && { border: '1px #d3d3d3 solid' })
-            } : itemWidthCalc}
+            style={{...baseStyles, ...style as CSSProperties}}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
+
         </ConditionalWrap>{' '}
-        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
-      </div>
+        {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
+        </div>
     );
   };
 
@@ -522,6 +524,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index))
     );
   };
+
+
+  const stylesAsCSS = style as CSSProperties;
 
   return (
     <>
@@ -581,7 +586,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
             <Show when={records?.length > 0}>
               {orientation === "wrap" &&
-                <div className={styles.shaDatalistWrapParent} style={{ gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))` }}>
+                <div className={styles.shaDatalistWrapParent} style={{ gap: `${cardSpacing}`,gridTemplateColumns: `repeat(auto-fit, minmax(min(${stylesAsCSS.width}, 100%), 1fr))` }}>
                   {content}
                 </div>
               }

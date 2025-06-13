@@ -19,7 +19,7 @@ import { getSettings } from './entitySettings';
 const settingsMarkup = getSettings() as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType } = settings ?? {};
+  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
   const { data: FormData } = useFormData();
@@ -52,6 +52,8 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
+
+    const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
     const result = data?.map((p) => ({
       id: p.id,
       name: p.name,
@@ -62,6 +64,12 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       sortOrder: 0,
       dynamicItem: p,
       buttonType: buttonType,
+      background,
+      border,
+      shadow,
+      font,
+      dimensions,
+      stylingBox,
       actionConfiguration: actionConfiguration,
     }));
 

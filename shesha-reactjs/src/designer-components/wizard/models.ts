@@ -2,7 +2,7 @@ import { IConfigurableFormComponent, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormInstance, StepProps } from 'antd';
 
-export interface IWizardStepProps {
+export interface IWizardStepProps extends IStyleType {
   id: string;
   icon?: string;
   key: string;
@@ -79,4 +79,5 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   primaryBgColor?: React.CSSProperties['color'];
   secondaryBgColor?: React.CSSProperties['color'];
   secondaryTextColor?: React.CSSProperties['color'];
+  stepWidth?: string;
 }

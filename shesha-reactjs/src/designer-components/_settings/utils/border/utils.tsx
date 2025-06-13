@@ -70,17 +70,17 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     };
 
     if (input?.radius) {
-        const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
+        const { all = 0, topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0 } = input.radius;
         if (input?.radiusType === 'all') {
-            style.borderTopRightRadius = `${all || 0}px`;
-            style.borderBottomRightRadius = `${all || 0}px`;
-            style.borderBottomLeftRadius = `${all || 0}px`;
-            style.borderTopLeftRadius = `${all || 0}px`;
+            style.borderTopRightRadius = addPx(all);
+            style.borderBottomRightRadius = addPx(all);
+            style.borderBottomLeftRadius = addPx(all);
+            style.borderTopLeftRadius = addPx(all);
         } else {
-            style.borderTopRightRadius = `${topRight || 0}px`;
-            style.borderBottomRightRadius = `${bottomRight || 0}px`;
-            style.borderBottomLeftRadius = `${bottomLeft || 0}px`;
-            style.borderTopLeftRadius = `${topLeft || 0}px`;
+            style.borderTopRightRadius = addPx(topRight);
+            style.borderBottomRightRadius = addPx(bottomRight);
+            style.borderBottomLeftRadius = addPx(bottomLeft);
+            style.borderTopLeftRadius = addPx(topLeft);
         }
     };
 
@@ -166,6 +166,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                     type: 'textField',
                     label: "Width",
                     hideLabel: true,
+                    placeholder: '0',
                     propertyName: `${borderProp}.all.width`,
                 },
                 {
@@ -174,6 +175,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                     propertyName: `${borderProp}.all.style`,
                     type: "dropdown",
                     hideLabel: true,
+                    placeholder: 'Solid',
                     width: 60,
                     dropdownOptions: borderStyles,
                 },
@@ -214,6 +216,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                                 type: 'textField',
                                 label: "Width",
                                 hideLabel: true,
+                                placeholder: '0',
                                 propertyName: `${borderProp}.${side}.width`,
                             },
                             {
@@ -222,6 +225,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                                 propertyName: `${borderProp}.${side}.style`,
                                 type: "dropdown",
                                 hideLabel: true,
+                                placeholder: 'Solid',
                                 width: 60,
                                 dropdownOptions: borderStyles,
                             },
@@ -271,6 +275,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
                     type: 'numberField',
                     icon: 'ExpandOutlined',
                     tooltip: 'Styles will apply to all corners',
+                    placeholder: '0',
                     propertyName: path ? `${path}.border.radius.all` : 'border.radius.all',
                 }
             ]
@@ -290,6 +295,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
                     defaultValue: 0,
                     type: 'numberField',
                     icon: cornerValue.icon,
+                    placeholder: '0',
                     hidden: { _code: hideCornerConditions[corner], _mode: 'code', _value: false } as any,
                     tooltip: `${humanizeString(corner)} corner`,
                     propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,

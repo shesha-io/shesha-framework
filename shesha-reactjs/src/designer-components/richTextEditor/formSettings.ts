@@ -3,18 +3,16 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
 export const getSettings = (data: any) => {
-  // Generate IDs for tabs and panels
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const mainTabId = nanoid();
+  const dataTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
-
-  // Generate IDs for collapsible panels in main tab
-  const stateCollapsiblePanelId = nanoid();
   const optionsCollapsiblePanelId = nanoid();
-  const pluginsCollapsiblePanelId = nanoid();
+  const toolbarCollapsiblePanelId = nanoid();
+  const displayCollapsiblePanelId = nanoid();
+  const advancedCollapsiblePanelId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -60,6 +58,13 @@ export const getSettings = (data: any) => {
                   parentId: commonTabId,
                   jsSetting: true,
                 })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'textArea',
+                  propertyName: 'description',
+                  label: 'Tooltip',
+                  parentId: commonTabId,
+                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
@@ -70,7 +75,6 @@ export const getSettings = (data: any) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       jsSetting: true,
-                      defaultValue: 'inherited',
                     },
                     {
                       type: 'switch',
@@ -85,18 +89,18 @@ export const getSettings = (data: any) => {
             ],
           },
           {
-            key: 'main',
-            title: 'Main',
-            id: mainTabId,
+            key: 'data',
+            title: 'Data',
+            id: dataTabId,
             components: [
               ...new DesignerToolbarSettings()
-                // State section in a collapsible panel
+                // Toolbar section
                 .addCollapsiblePanel({
-                  id: stateCollapsiblePanelId,
-                  propertyName: 'statePanel',
-                  label: 'State',
+                  id: toolbarCollapsiblePanelId,
+                  propertyName: 'toolbarPanel',
+                  label: 'Toolbar',
                   labelAlign: 'right',
-                  parentId: mainTabId,
+                  parentId: dataTabId,
                   ghost: true,
                   collapsible: 'header',
                   content: {
@@ -105,107 +109,15 @@ export const getSettings = (data: any) => {
                       ...new DesignerToolbarSettings()
                         .addSettingsInputRow({
                           id: nanoid(),
-                          parentId: stateCollapsiblePanelId,
-                          inputs: [
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'saveHeightInStorage',
-                              label: 'Save Height In Storage',
-                              jsSetting: true,
-                            },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'saveModeInStorage',
-                              label: 'Save Mode In Storage',
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: stateCollapsiblePanelId,
-                          inputs: [
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'askBeforePasteHTML',
-                              label: 'Ask Before Paste HTML',
-                              jsSetting: true,
-                            },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'askBeforePasteFromWord',
-                              label: 'Ask Before Paste From Word/Excel',
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          inputType: 'dropdown',
-                          propertyName: 'defaultActionOnPaste',
-                          label: 'Default Insert Method',
-                          parentId: stateCollapsiblePanelId,
-                          jsSetting: true,
-                          dropdownOptions: [
-                            { label: 'Insert as HTML', value: 'insert_as_html' },
-                            { label: 'Insert cleared HTML', value: 'insert_clear_html' },
-                            { label: 'Insert as plain text', value: 'insert_as_text' },
-                            { label: 'Insert only text', value: 'Insert only text' },
-                          ],
-                        })
-                        .toJson(),
-                    ],
-                  },
-                })
-                // Options section in a collapsible panel
-                .addCollapsiblePanel({
-                  id: optionsCollapsiblePanelId,
-                  propertyName: 'optionsPanel',
-                  label: 'Options',
-                  labelAlign: 'right',
-                  parentId: mainTabId,
-                  ghost: true,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [
-                      ...new DesignerToolbarSettings()
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: optionsCollapsiblePanelId,
+                          parentId: toolbarCollapsiblePanelId,
                           inputs: [
                             {
                               type: 'switch',
                               id: nanoid(),
                               propertyName: 'toolbar',
                               label: 'Show Toolbar',
-                              defaultValue: true,
                               jsSetting: true,
                             },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'textIcons',
-                              label: 'Text Icons',
-                              defaultValue: false,
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          inputType: 'dropdown',
-                          propertyName: 'preset',
-                          label: 'Presets',
-                          parentId: optionsCollapsiblePanelId,
-                          jsSetting: true,
-                          dropdownOptions: [
-                            { label: 'None', value: 'null' },
-                            { label: 'Inline Mode', value: 'inline' },
                           ],
                         })
                         .addSettingsInput({
@@ -213,7 +125,7 @@ export const getSettings = (data: any) => {
                           inputType: 'dropdown',
                           propertyName: 'toolbarButtonSize',
                           label: 'Size Of Icons',
-                          parentId: optionsCollapsiblePanelId,
+                          parentId: toolbarCollapsiblePanelId,
                           jsSetting: true,
                           dropdownOptions: [
                             { label: 'Tiny', value: 'tiny' },
@@ -222,187 +134,14 @@ export const getSettings = (data: any) => {
                             { label: 'Large', value: 'large' },
                           ],
                         })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: optionsCollapsiblePanelId,
-                          inputs: [
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'toolbarSticky',
-                              label: 'Sticky Toolbar',
-                              defaultValue: false,
-                              jsSetting: true,
-                            },
-                            {
-                              type: 'numberField',
-                              id: nanoid(),
-                              propertyName: 'toolbarStickyOffset',
-                              label: 'Sticky Offset',
-                              min: 0,
-                              jsSetting: true,
-                              hidden: {
-                                _code: 'return !getSettingValue(data?.toolbarSticky);',
-                                _mode: 'code',
-                                _value: false,
-                              } as any,
-                            },
-                          ],
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: optionsCollapsiblePanelId,
-                          inputs: [
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'autofocus',
-                              label: 'Auto Focus',
-                              defaultValue: false,
-                              jsSetting: true,
-                            },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'useSearch',
-                              label: 'Use Search',
-                              defaultValue: true,
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: optionsCollapsiblePanelId,
-                          inputs: [
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'iframe',
-                              label: 'Iframe Mode',
-                              defaultValue: false,
-                              jsSetting: true,
-                            },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'spellcheck',
-                              label: 'Spell Check',
-                              defaultValue: false,
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          inputType: 'dropdown',
-                          propertyName: 'direction',
-                          label: 'Direction',
-                          parentId: optionsCollapsiblePanelId,
-                          jsSetting: true,
-                          dropdownOptions: [
-                            { label: 'Auto', value: '' },
-                            { label: 'rtl', value: 'rtl' },
-                            { label: 'ltr', value: 'ltr' },
-                          ],
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          inputType: 'dropdown',
-                          propertyName: 'enter',
-                          label: 'Element That Will Be Created On Enter',
-                          parentId: optionsCollapsiblePanelId,
-                          jsSetting: true,
-                          dropdownOptions: [
-                            { label: 'Break (BR)', value: 'BR' },
-                            { label: 'Paragraph (P)', value: 'P' },
-                            { label: 'Block (DIV)', value: 'DIV' },
-                          ],
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          inputType: 'dropdown',
-                          propertyName: 'defaultMode',
-                          label: 'Default Mode',
-                          parentId: optionsCollapsiblePanelId,
-                          jsSetting: true,
-                          dropdownOptions: [
-                            { label: 'WYSIWYG', value: '1' },
-                            { label: 'Source code', value: '2' },
-                            { label: 'Split code', value: '3' },
-                          ],
-                          defaultValue: ['1'],
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: optionsCollapsiblePanelId,
-                          inputs: [
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'showCharsCounter',
-                              label: 'Show Characters Counter',
-                              defaultValue: true,
-                              jsSetting: true,
-                            },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'showWordsCounter',
-                              label: 'Show Words Counter',
-                              defaultValue: true,
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: optionsCollapsiblePanelId,
-                          inputs: [
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'showXPathInStatusbar',
-                              label: 'Show Path To Selected Element',
-                              defaultValue: true,
-                              jsSetting: true,
-                            },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'insertImageAsBase64URI',
-                              label: 'Insert Image As Base64 URI',
-                              defaultValue: false,
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .toJson(),
-                    ],
-                  },
-                })
-                // Plugins section in a collapsible panel
-                .addCollapsiblePanel({
-                  id: pluginsCollapsiblePanelId,
-                  propertyName: 'pluginsPanel',
-                  label: 'Plugins',
-                  labelAlign: 'right',
-                  parentId: mainTabId,
-                  ghost: true,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [
-                      ...new DesignerToolbarSettings()
                         .addSettingsInput({
                           id: nanoid(),
                           inputType: 'dropdown',
                           propertyName: 'disablePlugins',
-                          label: 'Disabled Plugins',
-                          parentId: pluginsCollapsiblePanelId,
+                          label: 'Hidden Actions',
+                          parentId: toolbarCollapsiblePanelId,
                           jsSetting: true,
                           dropdownMode: 'multiple',
-                          //allowSearch: true,
                           dropdownOptions: [
                             { label: 'add-new-line', value: 'add-new-line' },
                             { label: 'about', value: 'about' },
@@ -471,6 +210,191 @@ export const getSettings = (data: any) => {
                     ],
                   },
                 })
+                // Options section
+                .addCollapsiblePanel({
+                  id: optionsCollapsiblePanelId,
+                  propertyName: 'optionsPanel',
+                  label: 'Options',
+                  labelAlign: 'right',
+                  parentId: dataTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: optionsCollapsiblePanelId,
+                          inputs: [
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'autofocus',
+                              label: 'Auto Focus',
+                              tooltip: "If yes, will automatically be focused (be selected component) when the page loads",
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: optionsCollapsiblePanelId,
+                          inputs: [
+                            {
+                              type: 'dropdown',
+                              id: nanoid(),
+                              propertyName: 'preset',
+                              label: 'Presets',
+                              tooltip: "Choose a pre-configured toolbar layout",
+                              dropdownOptions: [
+                                { label: 'None', value: 'null' },
+                                { label: 'Inline', value: 'inline' },
+                              ],
+                            }
+                          ],
+                        })
+                        .toJson(),
+                    ],
+                  },
+                })
+                // Display section
+                .addCollapsiblePanel({
+                  id: displayCollapsiblePanelId,
+                  propertyName: 'displayPanel',
+                  label: 'Display',
+                  labelAlign: 'right',
+                  parentId: dataTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInput({
+                          id: nanoid(),
+                          inputType: 'dropdown',
+                          propertyName: 'direction',
+                          label: 'Direction',
+                          parentId: displayCollapsiblePanelId,
+                          jsSetting: true,
+                          dropdownOptions: [
+                            { label: 'Auto', value: '' },
+                            { label: 'rtl', value: 'rtl' },
+                            { label: 'ltr', value: 'ltr' },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: displayCollapsiblePanelId,
+                          inputs: [
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'showCharsCounter',
+                              label: 'Show Characters Counter',
+                              jsSetting: true,
+                            },
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'showWordsCounter',
+                              label: 'Show Words Counter',
+                              jsSetting: true,
+                            },
+                          ],
+                        })
+                        .toJson(),
+                    ],
+                  },
+                })
+                // Advanced section
+                .addCollapsiblePanel({
+                  id: advancedCollapsiblePanelId,
+                  propertyName: 'advancedPanel',
+                  label: 'Advanced',
+                  labelAlign: 'right',
+                  parentId: dataTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInput({
+                          id: nanoid(),
+                          inputType: 'dropdown',
+                          propertyName: 'enter',
+                          label: 'Element That Will Be Created On Enter',
+                          parentId: advancedCollapsiblePanelId,
+                          dropdownOptions: [
+                            { label: 'Break (BR)', value: 'BR' },
+                            { label: 'Paragraph (P)', value: 'P' },
+                            { label: 'Block (DIV)', value: 'DIV' },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: advancedCollapsiblePanelId,
+                          inputs: [
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'insertImageAsBase64URI',
+                              label: 'Insert Image As Base64 URI',
+                            },
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'iframe',
+                              label: 'Iframe Mode',
+                              tooltip: "Isolates the editor content in a separate iframe for better style separation",
+                            }
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: advancedCollapsiblePanelId,
+                          inputs: [
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'saveHeightInStorage',
+                              label: 'Remember Height',
+                              tooltip: "Remembers the editor height for the next session",
+                            },
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'saveModeInStorage',
+                              label: 'Remember Mode',
+                              tooltip: "Remembers the editor mode (WYSIWYG/Source) for the next session",
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: advancedCollapsiblePanelId,
+                          inputs: [
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'askBeforePasteHTML',
+                              label: 'Ask Before Paste HTML',
+                              tooltip: "If yes, will ask the user to confirm before allowing content copied from a Web page to be pasted in",
+                            },
+                            {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'askBeforePasteFromWord',
+                              label: 'Ask Before Paste From Word/Excel',
+                              tooltip: "If yes, will ask the user to confirm before allowing content from Excel or Word to be pasted in",
+                            },
+                          ],
+                        })
+                        .toJson(),
+                    ],
+                  },
+                })
                 .toJson(),
             ],
           },
@@ -506,7 +430,6 @@ export const getSettings = (data: any) => {
                           { label: 'Default', value: 'default' },
                           { label: 'Dark', value: 'dark' },
                         ],
-                        defaultValue: ['default'],
                       })
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
@@ -527,70 +450,22 @@ export const getSettings = (data: any) => {
                                   {
                                     type: 'switch',
                                     id: nanoid(),
-                                    propertyName: 'autoHeight',
-                                    label: 'Auto Height',
-                                    jsSetting: true,
-                                  },
-                                  {
-                                    type: 'switch',
-                                    id: nanoid(),
                                     propertyName: 'autoWidth',
                                     label: 'Auto Width',
                                     jsSetting: true,
                                   },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: 'dimensionsStyleRowWidth',
-                                parentId: 'dimensionsStylePnl',
-                                inputs: [
                                   {
                                     type: 'switch',
                                     id: nanoid(),
-                                    propertyName: 'allowResizeX',
-                                    label: 'Allow Width Resize',
-                                    defaultValue: true,
+                                    propertyName: 'autoHeight',
+                                    label: 'Auto Height',
                                     jsSetting: true,
-                                    hidden: {
-                                      _code:
-                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
                                   },
-                                  {
-                                    type: 'switch',
-                                    id: nanoid(),
-                                    propertyName: 'allowResizeY',
-                                    label: 'Allow Height Resize',
-                                    defaultValue: true,
-                                    jsSetting: true,
-                                    hidden: {
-                                      _code:
-                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
-                                  },
-                                  // {
-                                  //   type: 'textField',
-                                  //   id: nanoid(),
-                                  //   label: 'Width',
-                                  //   width: 85,
-                                  //   propertyName: 'width',
-                                  //   icon: 'widthIcon',
-                                  //   tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                  //   hidden: {
-                                  //     _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
-                                  //     _mode: 'code',
-                                  //     _value: false,
-                                  //   } as any,
-                                  // },
                                 ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: styleRouterId,
+                                parentId: 'dimensionsStylePnl',
                                 inline: true,
                                 hidden: {
                                   _code:
@@ -642,7 +517,7 @@ export const getSettings = (data: any) => {
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
-                                parentId: styleRouterId,
+                                parentId: 'dimensionsStylePnl',
                                 inline: true,
                                 hidden: {
                                   _code:
@@ -686,6 +561,38 @@ export const getSettings = (data: any) => {
                                     hidden: {
                                       _code:
                                         'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.allowResizeY);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: 'dimensionsStyleRowResize',
+                                parentId: 'dimensionsStylePnl',
+                                inputs: [
+                                  {
+                                    type: 'switch',
+                                    id: nanoid(),
+                                    propertyName: 'allowResizeX',
+                                    label: 'Allow Width Resize',
+                                    jsSetting: true,
+                                    hidden: {
+                                      _code:
+                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoWidth);',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                  {
+                                    type: 'switch',
+                                    id: nanoid(),
+                                    propertyName: 'allowResizeY',
+                                    label: 'Allow Height Resize',
+                                    jsSetting: true,
+                                    hidden: {
+                                      _code:
+                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.autoHeight);',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,

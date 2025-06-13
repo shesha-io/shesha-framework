@@ -10,7 +10,7 @@ import { getSettings } from './urlSettings';
 const settingsMarkup = getSettings() as FormMarkup;
 
 const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, labelProperty, tooltipProperty, buttonType } = settings ?? {};
+  const { actionConfiguration, labelProperty, tooltipProperty } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
   const [data, setData] = useState(null);
@@ -28,6 +28,8 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
 
   const { configurationItemMode } = useAppConfigurator();
 
+  const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
+
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
     const result = data?.map((p) => ({
@@ -39,7 +41,13 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType: buttonType,
+      buttonType,
+      background,
+      border,
+      shadow,
+      font,
+      dimensions,
+      stylingBox,
       actionConfiguration: actionConfiguration,
     }));
 

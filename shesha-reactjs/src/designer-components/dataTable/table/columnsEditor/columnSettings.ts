@@ -186,7 +186,7 @@ export const getColumnSettings = (data?: any) => ({
                             "propertyName": "displayContainer",
                             "label": "Display Settings",
                             "hidden": {
-                                "_code": "console.log(getSettingValue(data)); return getSettingValue(data?.columnType) !== 'data';",
+                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
                                 "_mode": "code",
                                 "_value": false
                             },
@@ -196,7 +196,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "componentSelector",
                                     "propertyName": "displayComponent",
-                                    "label": "Display component",
+                                    "label": "Display Component",
                                     "componentType": "output",
                                     "noSelectionItemText": "Default",
                                     "noSelectionItemValue": "[default]",
@@ -207,9 +207,9 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "componentSelector",
                                     "propertyName": "editComponent",
-                                    "label": "Edit component",
+                                    "label": "Edit Component",
                                     "componentType": "input",
-                                    "noSelectionItemText": "Not editable",
+                                    "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
                                     "hidden": data?.type === 'entityPicker'
                                 },
@@ -218,11 +218,36 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "componentSelector",
                                     "propertyName": "createComponent",
-                                    "label": "Create component",
+                                    "label": "Create Component",
                                     "componentType": "input",
-                                    "noSelectionItemText": "Not editable",
+                                    "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
                                     "hidden": data?.type === 'entityPicker'
+                                },
+                                {
+                                    "id": "customVisibility1",
+                                    "type": "settingsInput",
+                                    "inputType": "codeEditor",
+                                    "propertyName": "customVisibility",
+                                    "label": "Custom Visibility",
+                                    "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+                                    "exposedVariables": [
+                                        {
+                                            "name": "globalState",
+                                            "description": "The global state of the application",
+                                            "type": "object"
+                                        },
+                                        {
+                                            "name": "data",
+                                            "description": "Selected form values",
+                                            "type": "object"
+                                        }
+                                    ],
+                                    "language": "typescript",
+                                    "wrapInTemplate": true,
+                                    "templateSettings": {
+                                        "functionName": "customVisibility"
+                                    }
                                 }
                             ]
                         },
@@ -261,48 +286,23 @@ export const getColumnSettings = (data?: any) => ({
                             ]
                         },
                         {
-                            "id": "allowSorting1",
-                            "type": "settingsInput",
-                            "inputType": "switch",
-                            "propertyName": "allowSorting",
-                            "label": "Allow sorting",
+                            "id": "allowSortingContainer1",
+                            "type": "container",
+                            "propertyName": "allowSortingContainer",
                             "hidden": {
                                 "_code": "return getSettingValue(data?.columnType) !== 'data';",
                                 "_mode": "code",
                                 "_value": false
-                            }
-                        },
-                    ]
-                },
-                {
-                    "key": "visibility",
-                    "title": "Visibility",
-                    "id": "visibilityTab1",
-                    "components": [
+                            },
+                            "components": [
                         {
-                            "id": "customVisibility1",
+                            "id": "allowSorting1",
                             "type": "settingsInput",
-                            "inputType": "codeEditor",
-                            "propertyName": "customVisibility",
-                            "label": "Custom Visibility",
-                            "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-                            "exposedVariables": [
-                                {
-                                    "name": "globalState",
-                                    "description": "The global state of the application",
-                                    "type": "object"
-                                },
-                                {
-                                    "name": "data",
-                                    "description": "Selected form values",
-                                    "type": "object"
-                                }
-                            ],
-                            "language": "typescript",
-                            "wrapInTemplate": true,
-                            "templateSettings": {
-                                "functionName": "customVisibility"
-                            }
+                            "inputType": "switch",
+                            "propertyName": "allowSorting",
+                            "label": "Allow Sorting",
+
+                        },]
                         }
                     ]
                 },
@@ -341,7 +341,7 @@ export const getColumnSettings = (data?: any) => ({
                                                     id: 'dimensionsStyleRowWidth',
                                                     parentId: 'dimensionsStylePnl',
                                                     inline: true,
-                                                                        inputs: [
+                                                    inputs: [
                                                         {
                                                             "id": "minWidth1",
                                                             "type": "numberField",
@@ -368,7 +368,7 @@ export const getColumnSettings = (data?: any) => ({
                                                         _mode: "code",
                                                         _value: false
                                                     },
-                                                                        inputs: [
+                                                    inputs: [
                                                         {
                                                             "id": "minHeight1",
                                                             "type": "numberField",
@@ -402,7 +402,8 @@ export const getColumnSettings = (data?: any) => ({
                                                             "propertyName": "backgroundColor",
                                                             "label": "Background Color",
                                                             "allowClear": true,
-                                                            "showText": true
+                                                            "showText": true,
+                                                            "jsSetting": true,
                                                         })
                                                     .toJson()
                                             ],

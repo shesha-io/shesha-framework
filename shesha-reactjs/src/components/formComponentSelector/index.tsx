@@ -52,7 +52,10 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   }, [allComponents, componentType]);
 
   const options = useMemo<DefaultOptionType[]>(() => {
-    const result = editors.map<DefaultOptionType>((editor) => ({ label: editor.name, value: editor.type }));
+    const result = editors.map<DefaultOptionType>((editor) => ({
+      //capitalise the first letter of each word
+      label: editor?.name?.replace(/\b\w/g, (char) => char.toUpperCase()), 
+      value: editor.type }));
     if (noSelectionItem) result.splice(0, 0, noSelectionItem);
 
     return result;
@@ -65,7 +68,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   }, [value?.type]);
 
   const canConfigure = Boolean(formComponent);
-  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%' };
+  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%'};
 
   const getComponentModel = (toolboxComponent: IToolboxComponent) => {
     if (!toolboxComponent) return null;
@@ -127,7 +130,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   };
 
   return (
-    <Space.Compact style={{ width: "100%" }}>
+    <Space.Compact style={{ width: "100%", borderRadius: '5px' }}>
       <Select<string>
         disabled={readOnly}
         options={options}
@@ -139,7 +142,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         allowClear
       />
       {canConfigure && (
-        <Button style={{ width: '100px' }} size={props.size} onClick={onConfigureClick}>
+        <Button style={{ width: '100px', borderBottomRightRadius: '5px', borderTopRightRadius: '5px' }} size={props.size} onClick={onConfigureClick}>
           Configure
         </Button>
       )}

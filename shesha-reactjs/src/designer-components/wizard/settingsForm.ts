@@ -294,7 +294,7 @@ export const getSettings = () => {
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
                                                                 icon: "heightIcon",
-                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                                tooltip: "This is the height of the body of the wizard. You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
                                                                 type: 'textField',
@@ -598,6 +598,22 @@ export const getSettings = () => {
                                             content: {
                                                 id: additionalStylesContentId,
                                                 components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: additionalStylesContentId,
+                                                        inputs: [
+                                                            {
+                                                                type: 'textField',
+                                                                id: nanoid(),
+                                                                label: "Step Width",
+                                                                width: 85,
+                                                                defaultValue: '200px',
+                                                                propertyName: "stepWidth",
+                                                                icon: "widthIcon",
+                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                            }
+                                                        ]
+                                                    })
                                                     .addSettingsInput({
                                                         id: nanoid(),
                                                         propertyName: 'buttonsLayout',

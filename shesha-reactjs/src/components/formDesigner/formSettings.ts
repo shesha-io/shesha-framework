@@ -7,6 +7,7 @@ export const getSettings = () => {
     const dataTabId = nanoid();
     const appearanceTabId = nanoid();
     const securityTabId = nanoid();
+    const dataLoaderTypeId = nanoid();
 
     return {
         components: new DesignerToolbarSettings()
@@ -72,7 +73,7 @@ export const getSettings = () => {
                                             } as any
                                         })
                                         .addContainer({
-                                            id: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                            id: dataLoaderTypeId,
                                             propertyName: "container1",
                                             componentName: "cntGQLLoader",
                                             label: "Container1",
@@ -106,12 +107,12 @@ export const getSettings = () => {
                                                     id: 'endpint-additional-fields-to-fetch',
                                                     inputs: [
                                                         {
-                                                            id: "oamRBlEs6O2Jlc2FGL_gY",
+                                                            id: nanoid(),
                                                             type: "endpointsAutocomplete",
                                                             propertyName: "dataLoadersSettings.gql.staticEndpoint.url",
                                                             label: "Endpoint",
                                                             labelAlign: "right",
-                                                            parentId: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                                            parentId: dataLoaderTypeId,
                                                             hidden: {
                                                                 _mode: "code",
                                                                 _code: "    return data?.dataLoadersSettings?.gql?.endpointType !== 'static';",
@@ -123,13 +124,13 @@ export const getSettings = () => {
                                                             httpVerb: "get"
                                                         },
                                                         {
-                                                            id: "_9lX9iOOPifIBM_dfaIQxsNjK9ZQs7",
+                                                            id: nanoid(),
                                                             type: "codeEditor",
                                                             propertyName: "dataLoadersSettings.gql.dynamicEndpoint",
                                                             componentName: "dataLoadersSettings.gql.dynamicEndpoint",
                                                             label: "Endpoint",
                                                             labelAlign: "right",
-                                                            parentId: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                                            parentId: dataLoaderTypeId,
                                                             hidden: {
                                                                 _mode: "code",
                                                                 _code: "    return data?.dataLoadersSettings?.gql?.endpointType !== 'dynamic';",
@@ -148,7 +149,7 @@ export const getSettings = () => {
                                                             resultTypeExpression: "    return metadataBuilder\n        .object(\"IApiEndpoint\")\n        .addString(\"url\", \"Endpoint Url\")\n        .addString(\"httpVerb\", \"HTTP verb (GET/POST/PUT etc.)\")\n        .build();"
                                                         },
                                                         {
-                                                            id: "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
+                                                            id: nanoid(),
                                                             type: "propertyAutocomplete",
                                                             propertyName: "dataLoadersSettings.gql.fieldsToFetch",
                                                             label: "Additional fields for fetch",
@@ -157,8 +158,8 @@ export const getSettings = () => {
                                                             hidden: false,
                                                             validate: {},
                                                             settingsValidationErrors: [],
-                                                            description: "A list of fields you want to fetch",
-                                                            parentId: "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                                            tooltip: "A list of fields you want to fetch",
+                                                            parentId: dataLoaderTypeId,
                                                             version: 2
                                                         }
                                                     ]
@@ -329,7 +330,7 @@ export const getSettings = () => {
                                                     id: nanoid(),
                                                     propertyName: 'dataSubmittersSettings.gql.excludeFormFields',
                                                     label: 'Exclude \'_formFields\' in the payload?',
-                                                    description: 'Whether or not _formFields should be included in the payload. By default it is included.'
+                                                    tooltip: 'Whether or not _formFields should be included in the payload. By default it is included.'
                                                 }
                                             ]
                                         })
@@ -342,7 +343,7 @@ export const getSettings = () => {
                                                     propertyName: 'onPrepareSubmitData',
                                                     label: 'Prepare Submit Data',
                                                     parentId: 'root',
-                                                    description: 'Here you can modify data before the form submission',
+                                                    tooltip: 'Here you can modify data before the form submission',
                                                     mode: 'dialog',
                                                     wrapInTemplate: true,
                                                     templateSettings: {
@@ -362,7 +363,7 @@ export const getSettings = () => {
                                                     propertyName: 'onBeforeSubmit',
                                                     label: 'On Before Submit',
                                                     parentId: 'root',
-                                                    description: 'This event is called before the form submission. Here you can specify custom page level validation or modify the data before submission',
+                                                    tooltip: 'This event is called before the form submission. Here you can specify custom page level validation or modify the data before submission',
                                                     mode: 'dialog',
                                                     wrapInTemplate: true,
                                                     templateSettings: {
@@ -428,7 +429,7 @@ export const getSettings = () => {
                                             propertyName: 'onValuesUpdate',
                                             label: 'On Values Update',
                                             parentId: 'root',
-                                            description: 'This action will be executed whenever the form updates',
+                                            tooltip: 'This action will be executed whenever the form updates',
                                             mode: 'dialog',
                                             wrapInTemplate: true,
                                             templateSettings: {
@@ -481,7 +482,7 @@ export const getSettings = () => {
                                 propertyName: 'colon',
                                 label: 'Colon',
                                 parentId: appearanceTabId,
-                                description: 'Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)'
+                                tooltip: 'Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)'
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -489,7 +490,7 @@ export const getSettings = () => {
                                 propertyName: 'labelCol.span',
                                 label: 'Label span',
                                 parentId: appearanceTabId,
-                                description: 'Raster number of cells to occupy, 0 corresponds to display: none'
+                                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none',
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -497,7 +498,8 @@ export const getSettings = () => {
                                 propertyName: 'wrapperCol.span',
                                 label: 'Component span',
                                 parentId: appearanceTabId,
-                                description: 'Raster number of cells to occupy, 0 corresponds to display: none'
+                                tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none'
+
                             })
                             .toJson()
                         ]
@@ -519,13 +521,18 @@ export const getSettings = () => {
                                     { label: 'Allow anonymous', value: '5' }
                                 ]
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'permissions',
-                                propertyName: 'permissions',
-                                label: 'Permissions',
-                                parentId: securityTabId,
-                                hidden: { _code: 'return data?.access != 4;', _mode: 'code', _value: false } as any
+                            .addSettingsInputRow({
+                                id: 'on-submit-success-submit-fail',
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'permissions',
+                                        propertyName: 'permissions',
+                                        label: 'Permissions',
+                                        parentId: securityTabId,
+                                        hidden: { _code: 'return data?.access != 4;', _mode: 'code', _value: false } as any
+                                    }
+                                ]
                             })
                             .toJson()
                         ]

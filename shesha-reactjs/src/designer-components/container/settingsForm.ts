@@ -8,15 +8,13 @@ import {
   FLEX_WRAP,
   JUSTIFY_CONTENT,
   JUSTIFY_ITEMS,
-  JUSTIFY_SELF,
-  TEXT_JUSTIFY,
+  JUSTIFY_SELF
 } from './data';
 
 
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = (data) => {
   // Generate unique IDs for major components
@@ -376,29 +374,19 @@ export const getSettings = (data) => {
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: displayCollapsiblePanelId,
-                                  inline: true,
                                   hidden: {
                                     _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                                     _mode: 'code',
                                     _value: false,
                                   } as any,
-                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  inputs: [
-                                    {
-                                      type: 'textField',
-                                      id: nanoid(),
-                                      label: 'Gap',
-                                      propertyName: 'gap',
-                                      description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
-                                    },
-                                    {
-                                      type: 'dropdown',
-                                      id: nanoid(),
-                                      label: 'Flex Wrap',
-                                      propertyName: 'flexWrap',
-                                      dropdownOptions: FLEX_WRAP
-                                    },
-                                  ],
+                                  inputs: [{
+                                    id: nanoid(),
+                                    type: 'textField',
+                                    label: 'Gap',
+                                    propertyName: 'gap',
+                                    description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
+                                  }]
+
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
@@ -446,6 +434,11 @@ export const getSettings = (data) => {
                                   id: nanoid(),
                                   parentId: displayCollapsiblePanelId,
                                   inline: false,
+                                  hidden: {
+                                    _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
+                                    _mode: 'code',
+                                    _value: false,
+                                  } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
@@ -465,9 +458,15 @@ export const getSettings = (data) => {
                                     {
                                       type: 'dropdown',
                                       id: nanoid(),
-                                      label: 'Align Items',
-                                      propertyName: 'alignItems',
-                                      dropdownOptions: [...ALIGN_ITEMS, ...ALIGN_ITEMS_GRID]
+                                      label: 'Flex Wrap',
+                                      propertyName: 'flexWrap',
+                                      dropdownOptions: FLEX_WRAP,
+                                      hidden: {
+                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.flexDirection) !== "row";',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      description: 'The flex-wrap CSS property sets whether flex items are forced into multiple lines and the direction of that wrapping.'
                                     }
                                   ]
                                 })
@@ -487,15 +486,10 @@ export const getSettings = (data) => {
                                     {
                                       type: 'dropdown',
                                       id: nanoid(),
-                                      label: 'Justify Self',
-                                      propertyName: 'justifySelf',
-                                      hidden: {
-                                        _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
-                                        _mode: 'code',
-                                        _value: false,
-                                      } as any,
-                                      dropdownOptions: JUSTIFY_SELF
-                                    },
+                                      label: 'Align Items',
+                                      propertyName: 'alignItems',
+                                      dropdownOptions: [...ALIGN_ITEMS, ...ALIGN_ITEMS_GRID]
+                                    }
                                   ]
                                 })
                                 .addSettingsInputRow({
@@ -524,43 +518,20 @@ export const getSettings = (data) => {
                                     }
                                   ]
                                 })
+                                .addSettingsInput({
+                                  inputType: 'dropdown',
+                                  id: nanoid(),
+                                  label: 'Justify Self',
+                                  propertyName: 'justifySelf',
+                                  hidden: {
+                                    _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
+                                    _mode: 'code',
+                                    _value: false,
+                                  } as any,
+                                  dropdownOptions: JUSTIFY_SELF
+                                })
                                 .toJson()
                             ]
-                          })
-                          .addSettingsInput(
-                            {
-                              inputType: 'dropdown',
-                              id: nanoid(),
-                              label: 'Text Justify',
-                              propertyName: 'textJustify',
-                              hidden: {
-                                _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "block";',
-                                _mode: 'code',
-                                _value: false,
-                              } as any,
-                              dropdownOptions: TEXT_JUSTIFY
-                            }
-                          )
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: displayCollapsiblePanelId,
-                            inline: false,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                label: 'Overflow',
-                                propertyName: 'overflow',
-                                dropdownOptions: overflowOptions
-                              },
-                              {
-                                id: nanoid(),
-                                type: 'switch',
-                                label: "Hide Scroll Bar",
-                                propertyName: 'hideScrollBar'
-                              }
-                            ],
                           })
                           .toJson()
                         ]

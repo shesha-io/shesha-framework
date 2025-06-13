@@ -11,13 +11,14 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
     size, inline, validate, modelType, ...rest }) => {
     const { formData } = useShaFormInstance();
 
+    const evaluatedModelType = typeof modelType === 'string' ? evaluateString(modelType, { data: formData }) : modelType;
     const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
     return isHidden ? null :
         <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
             <ConditionalWrap
                 condition={Boolean(modelType)}
-                wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
+                wrap={content => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
             >
                 <FormItem
                     name={property}
@@ -36,7 +37,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                         hasUnits={hasUnits} propertyName={property}
                         tooltip={tooltip}
                         readOnly={readOnly}
-                        modelType={modelType}
+                        modelType={evaluatedModelType}
                         {...rest} />
                     }
                 </FormItem>

@@ -40,8 +40,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
     <Modal
       open={isVisible}
       title="Form Settings"
-      width="50vw"
-
+      width="clamp(320px, 50vw, 600px)" // min 320px, preferred 50vw, max 600px
       onOk={() => {
         formRef.current?.submit();
       }}

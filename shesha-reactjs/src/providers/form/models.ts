@@ -80,7 +80,7 @@ export interface IStyleType {
   primaryBgColor?: ColorValueType;
   secondaryBgColor?: ColorValueType;
   secondaryTextColor?: ColorValueType;
-  overflow?: CSSProperties['overflow'];
+  overflow?: boolean;
   hideScrollBar?: boolean;
 }
 
@@ -88,6 +88,8 @@ export interface IInputStyles extends IStyleType {
   borderSize?: string | number;
   borderRadius?: string | number;
   borderType?: string;
+  borderStyle?: string;
+  borderWidth?: string | number;
   borderColor?: string;
   fontColor?: string;
   color?: string;
@@ -262,6 +264,8 @@ export interface IConfigurableFormComponent
   noDataSecondaryText?: string;
 
   permissions?: string[];
+
+  _formFields?: string[];
 
   layout?: FormLayout;
 
