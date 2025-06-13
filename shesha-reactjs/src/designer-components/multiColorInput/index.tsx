@@ -36,7 +36,13 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                                 setColors({ ...value, [id]: undefined });
                             }}
                         >
-                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='colorPicker' id={id} />
+                            <SettingInput
+                                propertyName={`${propertyName}.${id}`}
+                                label='color'
+                                hideLabel={true}
+                                readOnly={readOnly}
+                                type='colorPicker' id={id}
+                            />
                         </Tag>
                     );
                 })}
