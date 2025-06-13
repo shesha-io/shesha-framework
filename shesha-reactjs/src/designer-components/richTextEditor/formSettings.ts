@@ -75,6 +75,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       jsSetting: true,
+                      defaultValue: 'inherited'
                     },
                     {
                       type: 'switch',
