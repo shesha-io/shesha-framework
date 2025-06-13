@@ -891,7 +891,7 @@ export const getSettings = (data: any) => {
                             id: nanoid(),
                             inputType: 'dropdown',
                             propertyName: "orientation",
-                            parentId: appearanceTabId,
+                            parentId: containerStylePnlId,
                             label: "Orientation",
                             jsSetting: true,
                             dropdownOptions: [
@@ -930,7 +930,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.dataListLayout) === "vertical";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -963,9 +963,9 @@ export const getSettings = (data: any) => {
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
-                                  parentId: styleRouterId,
+                                  parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.dataListLayout) === "horizontal";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "horizontal";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',

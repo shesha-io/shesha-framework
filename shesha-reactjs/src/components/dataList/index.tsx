@@ -511,7 +511,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const getContainerStyles = (): CSSProperties => {
     const containerStyles: CSSProperties = {
-      gap: gap !== undefined ? `${gap}px` : '0px',
+      gap: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
       ...fcContainerStyles.jsStyle,
       ...fcContainerStyles.stylingBoxAsCSS,
       ...fcContainerStyles.dimensionsStyles
