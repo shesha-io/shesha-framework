@@ -428,15 +428,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
 
-    const itemStyles: CSSProperties = {
-      ...(stylesAsCSS || {}),
-      ...(orientation === 'wrap' && showBorder && { 
-        border: '1px solid #d3d3d3',
-        borderRadius: '8px'
-      }),
-      ...(cardHeight && { height: cardHeight }),
-      overflow: 'auto'
-    };
+      const itemStyles: CSSProperties = {
+        ...(stylesAsCSS || {}),
+        ...(orientation === 'horizontal' && { flexShrink: 0 }),
+        ...(orientation === 'wrap' && showBorder && { 
+          border: '1px solid #d3d3d3',
+          borderRadius: '8px'
+        }),
+        ...(cardHeight && { height: cardHeight }),
+        overflow: 'auto'
+      };
 
     return (
       <div key={`row-${index}`}>
@@ -518,18 +519,21 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     };
 
+    const itemWidth = (style as CSSProperties)?.width || props.container?.dimensions?.width || '300px';
+
     switch (orientation) {
       case 'horizontal':
         return {
           ...containerStyles,
           display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'nowrap',
-          alignItems: 'stretch'
+          gridAutoFlow: 'row',
+          gridAutoColumns: 'max-content',
+          alignItems: 'start',
+          overflowX: 'auto',
+          width: '100%'
         };
       
       case 'wrap':
-        const itemWidth = (style as CSSProperties)?.width || props.container?.dimensions?.width || '300px';
         return {
           ...containerStyles,
           display: 'grid',
@@ -603,7 +607,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                   key: child.key || index,
                   style: {
                     ...child.props.style,
-                    overflow: 'visible'
+                    overflow: 'visible',
+                    flex: '0 0 100%'
                   }
                 });
               })}
