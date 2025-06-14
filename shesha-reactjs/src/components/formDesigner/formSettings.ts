@@ -148,6 +148,13 @@ export const getSettings = () => {
                                                             },
                                                             resultTypeExpression: "    return metadataBuilder\n        .object(\"IApiEndpoint\")\n        .addString(\"url\", \"Endpoint Url\")\n        .addString(\"httpVerb\", \"HTTP verb (GET/POST/PUT etc.)\")\n        .build();"
                                                         },
+
+                                                    ]
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: nanoid(),
+                                                    parentId: dataLoaderTypeId,
+                                                    inputs: [
                                                         {
                                                             id: nanoid(),
                                                             type: "propertyAutocomplete",
@@ -375,7 +382,7 @@ export const getSettings = () => {
                                             ]
                                         })
                                         .addSettingsInputRow({
-                                            id: 'on-submit-success-submit-fail',
+                                            id: nanoid(),
                                             inputs: [
                                                 {
                                                     id: nanoid(),
@@ -522,7 +529,7 @@ export const getSettings = () => {
                                 ]
                             })
                             .addSettingsInputRow({
-                                id: 'on-submit-success-submit-fail',
+                                id: nanoid(),
                                 inputs: [
                                     {
                                         id: nanoid(),

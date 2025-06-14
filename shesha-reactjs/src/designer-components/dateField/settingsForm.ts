@@ -243,7 +243,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                     {
                                         id: nanoid(),
                                         type: 'codeEditor',
-                                        propertyName: 'isDateDisabled',
+                                        propertyName: 'disabledDateFunc',
                                         label: 'Disabled Date Func',
                                         description: "Enter disabled date code. You must return true to hide the date. Two objects are exposed to work with, namely 'current' and 'moment'. Use these variables to write the code that will hide the dates you want.",
                                         hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'customFunction'", _mode: 'code', _value: false } as any,
@@ -289,7 +289,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                     {
                                         id: nanoid(),
                                         type: 'codeEditor',
-                                        propertyName: 'isTimeDisabled',
+                                        propertyName: 'disabledTimeFunc',
                                         label: 'Disabled Time Func',
                                         hidden: { _code: "return  getSettingValue(data.disabledTimeMode) !== 'customTimeFunction';", _mode: 'code', _value: false } as any,
                                     }

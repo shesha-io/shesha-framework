@@ -40,7 +40,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
     <Modal
       open={isVisible}
       title="Form Settings"
-      width="clamp(320px, 50vw, 600px)" // min 320px, preferred 50vw, max 600px
+      width="clamp(590px, 50vw, 800px)" // min 320px, preferred 50vw, max 700px
       onOk={() => {
         formRef.current?.submit();
       }}
@@ -55,7 +55,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
-
+          className='sha-form-settings-editor'
           shaFormRef={formRef}
           onFinish={onSave}
           markup={formSettingsMarkup}
