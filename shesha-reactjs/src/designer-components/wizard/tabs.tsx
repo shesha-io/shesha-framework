@@ -49,7 +49,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     const { styles } = useStyles({
         styles: { ...model.allStyles.fullStyle, overflow: '', ...rest },
         colors, activeStepStyle: activeStepStyle.fullStyle, stepWidth: addPx(stepWidth),
-        vertical: direction === 'vertical', overflow
+        overflow
     });
 
     const steps = useMemo(() => {

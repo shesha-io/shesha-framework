@@ -34,7 +34,7 @@ export const defaultStyles = (): IStyleType => {
 
 export const defaultTagStyles = (): IStyleType => {
     return {
-        background: { type: 'color', color: '#fff' },
+        background: { type: 'color', color: '' },
         font: {
             weight: '400',
             size: 14,
@@ -70,10 +70,6 @@ export const presetColors = [
         label: 'Success'
     },
     {
-        value: 'processing',
-        label: 'Processing'
-    },
-    {
         value: 'warning',
         label: 'Warning'
     },
@@ -88,10 +84,6 @@ export const presetColors = [
     {
         value: 'red',
         label: 'Red'
-    },
-    {
-        value: 'volcano',
-        label: 'Volcano'
     },
     {
         value: 'orange',

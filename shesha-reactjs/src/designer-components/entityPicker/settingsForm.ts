@@ -354,7 +354,7 @@ export const getSettings = (data) => {
                       label: 'Dialog Width',
                       allowClear: true,
                       jsSetting: true,
-                      tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                      customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                       customDropdownMode: 'single',
                       dropdownOptions: [
                         {
