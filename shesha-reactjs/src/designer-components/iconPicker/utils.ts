@@ -5,16 +5,16 @@ export const defaultStyles = (): IStyleType => {
         background: { type: 'color', color: '#fff' },
         font: {
             weight: '400',
-            size: 20,
+            size: 24,
             color: '#000',
             type: 'Segoe UI',
         },
         border: {
             border: {
                 all: {
-                    width: 1,
+                    width: 0,
                     style: 'solid',
-                    color: '#d9d9d9',
+                    color: '#ffffff',
                 },
             },
             radius: { all: 8 },
@@ -22,12 +22,13 @@ export const defaultStyles = (): IStyleType => {
             radiusType: 'all',
         },
         dimensions: {
-            width: '34px',
-            height: '34px',
+            width: 'auto',
+            height: 'auto',
             minHeight: '0px',
             maxHeight: 'auto',
             minWidth: '0px',
             maxWidth: 'auto',
+
         },
     };
 };

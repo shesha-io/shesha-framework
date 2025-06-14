@@ -154,7 +154,6 @@ const IconPicker: FC<IIconPickerProps> = ({
             <Button
               size={selectBtnSize}
               title={'Select icon'}
-              style={{ borderWidth: 0, height: 25 }}
               disabled={readOnly}
               icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}
             ></Button>
