@@ -40,6 +40,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
+    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    aspectRatio: 2, // Width to height ratio (2:1)
     plugins: {
       legend: {
         display: showLegend ? true : false,

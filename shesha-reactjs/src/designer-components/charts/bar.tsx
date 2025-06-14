@@ -8,6 +8,7 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
+import { defaultConfigFiller, filterNonNull } from './utils';
 
 const BarChartComponent: IToolboxComponent<IChartProps> = {
   type: 'barChart',
@@ -45,6 +46,13 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
     .add<IChartProps>(4, prev => ({ ...prev, showLegend: false, showTitle: true }))
+    .add<IChartProps>(5, prev => ({ 
+      ...defaultConfigFiller,
+      stacked: false,
+      ...filterNonNull(prev),
+      type: prev.type,
+      id: prev.id
+    }))
 };
 
 export default BarChartComponent;

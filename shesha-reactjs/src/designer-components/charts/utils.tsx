@@ -1,4 +1,55 @@
-import { TAggregationMethod, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import React from "react";
+import { IChartData, TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import LineChart from "./components/line";
+import BarChart from "./components/bar";
+import PieChart from "./components/pie";
+import PolarAreaChart from "./components/polarArea";
+import { Result } from "antd";
+
+
+/**
+ * Filter out null and undefined values from an object
+ * @param obj the object to filter
+ * @returns the filtered object
+ */
+export function filterNonNull<T extends object>(obj: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== null && v !== undefined)
+  ) as Partial<T>;
+}
+
+export const renderChart = (chartType: string, data: IChartData) => {
+  switch (chartType) {
+    case 'line':
+      return <LineChart data={data} />;
+    case 'bar':
+      return <BarChart data={data} />;
+    case 'pie':
+      return <PieChart data={data} />;
+    case 'polarArea':
+      return <PolarAreaChart data={data} />;
+    default:
+      return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
+  }
+};
+
+export const defaultConfigFiller: {
+  showTitle: boolean;
+  simpleOrPivot: 'simple' | 'pivot';
+  dataMode: TDataMode;
+  entityType: string;
+  axisProperty: string;
+  valueProperty: string;
+  aggregationMethod: TAggregationMethod;
+} = {
+  showTitle: true, 
+  simpleOrPivot: 'simple',
+  dataMode: 'entityType',
+  entityType: 'Shesha.Domain.FormConfiguration',
+  axisProperty: 'versionStatus',
+  valueProperty: 'id',
+  aggregationMethod: 'count',
+};
 
 /**
  * Function to stringify values in an array of objects
@@ -82,6 +133,7 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
       properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, legendProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
+
     },
   };
 };

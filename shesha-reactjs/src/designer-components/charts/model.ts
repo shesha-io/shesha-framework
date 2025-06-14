@@ -27,7 +27,6 @@ export interface IChartsProps {
     showLegend?: boolean;
     legendPosition?: TLegendPosition;
     entityType?: string;
-    filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
     isAxisTimeSeries?: boolean;

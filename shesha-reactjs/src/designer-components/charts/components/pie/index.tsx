@@ -72,6 +72,8 @@ const PieChart = ({ data }: IPieChartProps) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
+    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    aspectRatio: 1, // Square aspect ratio for pie charts
     plugins: {
       legend: {
         display: showLegend ? true : false,
