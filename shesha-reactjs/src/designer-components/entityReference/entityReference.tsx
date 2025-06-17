@@ -95,6 +95,10 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
           ...prev.desktop,
           style: prev.style,
         },
+      }))
+      .add<IEntityReferenceControlProps>(10, (prev) => ({
+        ...prev,
+        modalWidth: (prev.modalWidth as string) === 'custom' ? '80%' : prev.modalWidth,
       })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

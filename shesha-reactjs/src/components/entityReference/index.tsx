@@ -212,8 +212,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: props.modalWidth,
-        customWidth: props.customWidth,
-        widthUnits: props.widthUnits,
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
