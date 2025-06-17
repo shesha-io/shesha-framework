@@ -23,7 +23,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const { styles, cx } = useStyles();
+    const { styles, cx } = useStyles({ borderRadius: model.allStyles.borderStyles });
     const {
       dimensionsStyles,
       borderStyles,

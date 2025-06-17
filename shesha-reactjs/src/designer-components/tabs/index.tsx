@@ -1,5 +1,5 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -30,10 +30,15 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   Factory: ({ model }) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
+    const [activeKey, setActiveKey] = useState<string>(model.defaultActiveKey || (model.tabs?.length && model.tabs[0]?.key));
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
 
-    const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
+    useEffect(() => {
+      if (defaultActiveKey) {
+        setActiveKey(defaultActiveKey);
+      }
+    }, [defaultActiveKey]);
 
     const cardStyles = useFormComponentStyles({ ...model.card });
 
@@ -95,7 +100,16 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     }, [tabs]);
 
     return model.hidden ? null : (
-      <Tabs animated={false} defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
+      <Tabs
+        animated={false}
+        activeKey={activeKey}
+        onChange={setActiveKey}
+        size={size}
+        type={tabType}
+        tabPosition={tabPosition}
+        items={items}
+        className={styles.content}
+      />
     );
   },
   initModel: (model) => {
