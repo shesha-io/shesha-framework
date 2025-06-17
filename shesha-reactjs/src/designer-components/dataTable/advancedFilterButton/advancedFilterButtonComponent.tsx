@@ -29,8 +29,8 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: m =>
     m
-      .add<IButtonComponentProps>(1, (prev) => migrateReadOnly(prev, 'inherited'))
-      .add<IButtonComponentProps>(2, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+      .add<IButtonComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
+      .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default AdvancedFilterButtonComponent;
