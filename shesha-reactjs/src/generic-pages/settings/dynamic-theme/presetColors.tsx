@@ -1,5 +1,17 @@
 export const PRESET_COLORS = ['#1890ff', '#25b864', '#ff6f00', '#ff4d4f', '#faad14', '#52c41a'];
 
+export const SHESHA_COLORS = [
+  '#19B411ff',
+  '#007E00ff',
+  '#7BC42Cff',
+  '#D60805ff',
+  '#FF6201ff',
+  '#F8BD00ff',
+  '#00068Dff',
+  '#0038B1ff',
+  '#000000ff',
+];
+
 export const TEXT_PRESET_COLORS = [
   '#8c8c8c',
   '#595959',

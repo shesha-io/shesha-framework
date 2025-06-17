@@ -10,12 +10,9 @@ import { useFormState, useFormActions } from '@/providers/form';
 
 interface SearchableTabsProps {
     model: ITabsComponentProps;
-    data?: any;
-    value: any;
-    onChange?: (value: any) => void;
 }
 
-const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
+const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const { styles } = useStyles();
@@ -23,7 +20,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const formState = useFormState(false);
     const formActions = useFormActions(false);
 
-    const isComponentHidden = (component) => {        
+    const isComponentHidden = (component) => {
         if (formState.name === "modalSettings") {
             if (component.inputs) {
 
@@ -31,16 +28,16 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                     if (!input.propertyName) return true;
                     return formActions.isComponentFiltered(input);
                 });
-                
+
                 if (visibleInputs.length === 0) {
                     return false;
                 }
-                
+
                 component.inputs = visibleInputs;
 
                 return visibleInputs.length > 0;
             }
-            
+
             return formActions.isComponentFiltered(component);
         } else {
             return true;
@@ -50,7 +47,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const newFilteredTabs = tabs
         .map((tab: any) => {
             const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery);
-            
+
             const visibleComponents = Array.isArray(filteredComponents)
                 ? filteredComponents.filter(comp => isComponentHidden(comp))
                 : filteredComponents;
@@ -63,23 +60,20 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                 ...tab,
                 label: tab.label ?? tab.title,
                 components: visibleComponents,
-                children: visibleComponents.length === 0 
-                    ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" /> 
+                children: visibleComponents.length === 0
+                    ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
                     : <ParentProvider model={model}>
                         <ComponentsContainer
                             containerId={tab.id + tab.key}
                             dynamicComponents={visibleComponents} />
-                      </ParentProvider>,
-                hidden: tab.hidden || !hasVisibleComponents
+                    </ParentProvider>,
+                hidden: tab.hidden ?? !hasVisibleComponents
             };
         })
         .filter(tab => !tab.hidden);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        if (onChange) {
-            onChange(e.target.value);
-        }
     };
 
     return (
@@ -105,7 +99,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                     }
                 />
             </div>
-            {newFilteredTabs.length === 0 && searchQuery ? 
+            {newFilteredTabs.length === 0 && searchQuery ?
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" /> :
                 <Tabs
                     defaultActiveKey={'1'}

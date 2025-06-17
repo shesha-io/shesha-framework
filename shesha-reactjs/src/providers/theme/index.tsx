@@ -1,5 +1,5 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useMemo, useReducer, useRef } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
 import { setThemeAction } from './actions';
 import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { uiReducer } from './reducer';
@@ -34,18 +34,17 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     applicationTheme.current = theme;
   });
 
-  const changeTheme = (theme: IConfigurableTheme, isApplication: Boolean = false) => {
+  const changeTheme = useCallback((theme: IConfigurableTheme, isApplication: boolean = false) => {
     // save theme to the state
     dispatch(setThemeAction(theme));
     if (isApplication)
       applicationTheme.current = theme;
-  };
+  }, [dispatch, applicationTheme]);
 
-  const resetToApplicationTheme = () => {
+  const resetToApplicationTheme =  useCallback(() => {
     // save theme to the state
     dispatch(setThemeAction(applicationTheme.current));
-  };
-
+  }, [dispatch]);
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
@@ -87,11 +86,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
           iconPrefixCls={iconPrefixCls}
           theme={{
             ...themeConfig,
-            token: {
-              ...themeConfig.token,
-              colorText: state.theme?.text?.default,
-              colorTextDescription: state.theme?.text?.secondary
-            },
+            token: { ...themeConfig.token },
           }}
           form={{
             // override required mark position

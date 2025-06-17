@@ -45,7 +45,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         theme: typeof model?.theme === 'string' ? model?.theme : 'default',
         iframe: model?.iframe,
         direction: model?.direction,
-        disablePlugins: model?.disablePlugins?.join(',') || '',
+        disablePlugins: [...(model?.disablePlugins || []), 'spellcheck'].join(','),
         ...(!model.autoHeight && { height, minHeight, maxHeight }),
         ...(!model.autoWidth && { width, minWidth, maxWidth }),
         placeholder: model?.placeholder ?? '',
@@ -66,8 +66,11 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
       };
       return typedConfig;
     }, [model, model.readOnly]);
+
+    const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
+
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} key={rerenderKey}>
         {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );
