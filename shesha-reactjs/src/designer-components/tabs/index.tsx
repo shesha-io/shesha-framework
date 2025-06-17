@@ -99,7 +99,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       return tabItems;
     }, [tabs]);
 
-    return model.hidden ? null : (
+    return model.hidden || !items.length ? null : (
       <Tabs
         animated={false}
         activeKey={activeKey}
