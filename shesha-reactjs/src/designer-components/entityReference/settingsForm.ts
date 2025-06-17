@@ -84,26 +84,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   inputs: [
                     {
                       id: nanoid(),
-                      propertyName: 'displayType',
-                      label: 'Display Type',
-                      type: 'dropdown',
-                      allowClear: true,
-                      size: 'small',
-                      jsSetting: true,
-                      dropdownOptions: [
-                        { value: 'displayProperty', label: 'Display property' },
-                        { value: 'icon', label: 'Icon' },
-                        { value: 'textTitle', label: 'Text title' },
-                      ],
-                      readOnly: {
-                        _code: 'return getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                      parentId: commonTabId,
-                    },
-                    {
-                      id: nanoid(),
                       propertyName: 'iconName',
                       label: 'Icon',
                       parentId: commonTabId,
@@ -187,11 +167,43 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   parentId: dataTabId,
                   hidden: false,
                   dataSourceType: 'url',
-                  validate: { required: true },
+                  validate: {
+                    required: {
+                      _code: 'return !getSettingValue(data?.entityType);',
+                      _mode: 'code',
+                      _value: true,
+                    } as any,
+                  },
                   dataSourceUrl: '/api/services/app/Api/Endpoints',
                   settingsValidationErrors: [],
                   useRawValues: true,
                   width: '100%',
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'displayType',
+                      label: 'Display Type',
+                      type: 'dropdown',
+                      allowClear: true,
+                      size: 'small',
+                      jsSetting: true,
+                      dropdownOptions: [
+                        { value: 'displayProperty', label: 'Display property' },
+                        { value: 'icon', label: 'Icon' },
+                        { value: 'textTitle', label: 'Text title' },
+                      ],
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      parentId: commonTabId,
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -445,7 +457,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                               { value: '40%', label: 'Small' },
                               { value: '60%', label: 'Medium' },
                               { value: '80%', label: 'Large' },
-                              { value: 'custom', label: 'Custom' },
                             ],
                             width: '100%',
                           },
@@ -564,10 +575,12 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         id: nanoid(),
                         propertyName: 'quickviewWidth',
                         label: 'Quickview Width',
+                        description: 'You can use any unit (%, px, em, etc). px by default if without unit',
                         parentId: dataTabId,
-                        inputType: 'numberField',
+                        inputType: 'textField',
                         jsSetting: true,
-                        defaultValue: 600,
+                        icon: 'widthIcon',
+                        width: '30%',
                       })
                       .toJson(),
                   ],

@@ -99,6 +99,10 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       .add<IEntityReferenceControlProps>(10, (prev) => ({
         ...prev,
         modalWidth: (prev.modalWidth as string) === 'custom' ? '80%' : prev.modalWidth,
+        quickviewWidth: typeof prev.quickviewWidth === 'number' || 
+          (typeof prev.quickviewWidth === 'string' && !prev.quickviewWidth.endsWith('px') && !prev.quickviewWidth.endsWith('%'))
+          ? `${prev.quickviewWidth}px`
+          : prev.quickviewWidth,
       })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
