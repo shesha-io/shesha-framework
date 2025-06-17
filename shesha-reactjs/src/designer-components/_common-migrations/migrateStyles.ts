@@ -2,7 +2,7 @@ import { nanoid } from "@/utils/uuid";
 import { addPx } from '@/utils/style';
 import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
+type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean; type?: string };
 
 export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
     const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
@@ -70,7 +70,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
         },
         dimensions: {
             width: prev.block ? '100%' : addPx(prevStyles?.width) ?? addPx(prev?.width) ?? addPx(prev?.dimensions?.width) ?? defaults?.dimensions?.width,
-            height: addPx(prevStyles?.height) ?? heightFromSize ?? addPx(prev?.dimensions?.height) ?? defaults?.dimensions?.height,
+            height: prev.type !== 'button' ? 'auto' : addPx(prevStyles?.height) ?? heightFromSize ?? addPx(prev?.dimensions?.height) ?? defaults?.dimensions?.height,
             minHeight: addPx(prev?.dimensions?.minHeight) ?? defaults?.dimensions?.minHeight,
             maxHeight: addPx(prev?.dimensions?.maxHeight) ?? defaults?.dimensions?.maxHeight,
             minWidth: addPx(prev?.dimensions?.minWidth) ?? defaults?.dimensions?.minWidth,
