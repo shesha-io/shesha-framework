@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useTemplates } from '../utils';
+import { defaultStyles, useTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup, useDataContextManagerActions, useFormData, useGlobalState } from '@/providers';
@@ -28,7 +28,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
 
   const { configurationItemMode } = useAppConfigurator();
 
-  const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
+  const styles = defaultStyles(item);
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
@@ -41,13 +41,8 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType: buttonType ?? buttonTypeSetting,
-      background,
-      border,
-      shadow,
-      font,
-      dimensions,
-      stylingBox,
+      buttonType: item.buttonType ?? buttonTypeSetting,
+      ...styles,
       actionConfiguration: actionConfiguration,
     }));
 

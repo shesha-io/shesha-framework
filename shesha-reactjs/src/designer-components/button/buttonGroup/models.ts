@@ -20,4 +20,5 @@ export interface IBaseButtonGroupProps {
   isInline?: boolean;
   noStyles?: boolean;
   styles?: CSSProperties;
+  gap?: SizeType;
 }

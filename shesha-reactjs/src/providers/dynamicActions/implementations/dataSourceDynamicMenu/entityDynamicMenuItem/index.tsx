@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useTemplates } from '../utils';
+import { defaultStyles, useTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import {
@@ -53,7 +53,8 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
 
-    const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
+    const styles = defaultStyles(item);
+
     const result = data?.map((p) => ({
       id: p.id,
       name: p.name,
@@ -63,13 +64,8 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType: buttonType ?? buttonTypeSetting,
-      background,
-      border,
-      shadow,
-      font,
-      dimensions,
-      stylingBox,
+      buttonType: item.buttonType ?? buttonTypeSetting,
+      ...styles,
       actionConfiguration: actionConfiguration,
     }));
 

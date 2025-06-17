@@ -172,7 +172,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     });
     const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
 
-    const { size, spaceSize = 'middle', isInline, readOnly: disabled, form } = props;
+    const { size, gap = 'middle', isInline, readOnly: disabled, form } = props;
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
@@ -243,7 +243,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     if (isInline) {
         return (
             <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }}>
-                <Space size={spaceSize}>
+                <Space size={gap}>
                     {filteredItems?.map((item) =>
                         (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
                     )}
@@ -258,7 +258,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                 <Menu
                     mode="horizontal"
                     items={menuItems}
-                    className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
+                    className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${gap}`)}
                     style={{ ...props.styles, width: '30px', height: '30px' }}
                 />
             </div>
@@ -267,7 +267,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
+    const items = useActualContextData(props.items.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })), props.readOnly, null, standartActualModelPropertyFilter);
 
     const memoizedItems = useDeepCompareMemo(() => items, [items]);
 
