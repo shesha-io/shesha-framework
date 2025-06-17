@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useTemplates } from '../utils';
+import { useUrlTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup, useDataContextManagerActions, useFormData, useGlobalState } from '@/providers';
@@ -12,14 +12,14 @@ const settingsMarkup = getSettings() as FormMarkup;
 const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
   const { actionConfiguration, labelProperty, tooltipProperty } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
-  const { getTemplateState } = useTemplates(settings);
+  const { getUrlTemplateState } = useUrlTemplates(settings);
   const [data, setData] = useState(null);
   const pageContext = useDataContextManagerActions(false)?.getPageContext();
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
 
   useEffect(() => {
-    refetch(getTemplateState()).then((response) => {
+    refetch(getUrlTemplateState()).then((response) => {
       const result = Array.isArray(response.result) ? response.result : response.result.items;
       setData(result);
     });
