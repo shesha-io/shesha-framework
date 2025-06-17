@@ -52,6 +52,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         } else {
             data?.datasets?.map((dataset: any) => {
                 dataset.tension = tension;
+                dataset.borderColor = strokeColor || 'black';
                 return dataset;
             });
         }
@@ -59,6 +60,8 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
 
     const options: any = {
         responsive: true,
+        maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+        aspectRatio: 2, // Width to height ratio (2:1)
         plugins: {
             legend: {
                 display: showLegend ? true : false,

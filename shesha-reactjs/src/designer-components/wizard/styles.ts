@@ -1,6 +1,20 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle, stepWidth, overflow }) => {
+interface IWizardStylesProps {
+  styles: CSSProperties;
+  colors: {
+    primaryTextColor: string;
+    secondaryTextColor: string;
+    primaryBgColor: string;
+    secondaryBgColor: string;
+  };
+  activeStepStyle: CSSProperties;
+  stepWidth: string;
+  overflow: CSSProperties;
+}
+
+export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors, activeStepStyle, stepWidth, overflow }: IWizardStylesProps) => {
   const shaWizardContainer = "sha-wizard-container";
   const shaStepsContent = "sha-steps-content";
   const shaStepsButtonsContainer = "sha-steps-buttons-container";
@@ -8,6 +22,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
 
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = colors;
   const { color, ...rest } = styles;
+  const { ...overflowStyle } = overflow;
   const shaWizard = cx("sha-wizard", css`
 
     ${rest}
@@ -74,9 +89,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
       flex-direction: column;
       .${shaStepsContent} {
         flex: 1 1 auto;
-        white-space: nowrap;
         margin: 20px 0;
-        ${overflow}
+        ${overflowStyle}
       }
   
       &.vertical {

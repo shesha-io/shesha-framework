@@ -1,14 +1,13 @@
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token }, { style, tagStyle }: { style: CSSProperties; tagStyle: CSSProperties }) => {
+export const useStyles = createStyles(({ css, cx, token }, { style }: { style: CSSProperties }) => {
 
   const dropdown = cx("sha-dropdown", css`
     --ant-color-text: ${style.color} !important;
     --ant-font-size: ${style.fontSize} !important;
     --ant-font-weight-strong: ${style.fontWeight} !important;
     --ant-select-multiple-item-bg: transparent !important;
-    --ant-select-multiple-item-height: ${tagStyle.height} !important;
 
     .ant-select-selector{
         overflow: auto;
@@ -31,15 +30,13 @@ export const useStyles = createStyles(({ css, cx, token }, { style, tagStyle }: 
 
       :hover {
         border: none !important;
-        .ant-tag {
+        .ant-tag {  
           align-content: center;
           cursor: default !important;
           pointer-events: none !important;  
         }
       }
     }
-
-
 
     &.ant-select-open, &:hover {
       border-color: ${token.colorPrimary} !important;
