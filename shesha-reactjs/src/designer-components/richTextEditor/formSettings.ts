@@ -75,6 +75,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       jsSetting: true,
+                      defaultValue: 'inherited'
                     },
                     {
                       type: 'switch',
@@ -117,14 +118,6 @@ export const getSettings = (data: any) => {
                               propertyName: 'toolbar',
                               label: 'Show Toolbar',
                               jsSetting: true,
-                            },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'toolbarSticky',
-                              label: 'Sticky Toolbar',
-                              jsSetting: true,
-                              tooltip: "Keeps the toolbar visible at the top of the editor when scrolling"
                             },
                           ],
                         })
@@ -242,14 +235,6 @@ export const getSettings = (data: any) => {
                               label: 'Auto Focus',
                               tooltip: "If yes, will automatically be focused (be selected component) when the page loads",
                             },
-                            {
-                              type: 'switch',
-                              id: nanoid(),
-                              propertyName: 'useSearch',
-                              label: 'Use Search',
-                              tooltip: "Enables find and replace functionality in the editor",
-                            },
- 
                           ],
                         })
                         .addSettingsInputRow({
@@ -265,19 +250,6 @@ export const getSettings = (data: any) => {
                               dropdownOptions: [
                                 { label: 'None', value: 'null' },
                                 { label: 'Inline', value: 'inline' },
-                              ],
-                            },
-                            {
-                              id: nanoid(),
-                              type: 'dropdown',
-                              propertyName: 'defaultMode',
-                              label: 'Default Mode',
-                              parentId: optionsCollapsiblePanelId,
-                              tooltip: "Sets the initial view mode when the editor loads",
-                              dropdownOptions: [
-                                { label: 'WYSIWYG', value: '1' },
-                                { label: 'Source code', value: '2' },
-                                { label: 'Split code', value: '3' },
                               ],
                             }
                           ],
@@ -359,20 +331,6 @@ export const getSettings = (data: any) => {
                             { label: 'Break (BR)', value: 'BR' },
                             { label: 'Paragraph (P)', value: 'P' },
                             { label: 'Block (DIV)', value: 'DIV' },
-                          ],
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          inputType: 'dropdown',
-                          propertyName: 'defaultActionOnPaste',
-                          label: 'Default Insert Method',
-                          parentId: advancedCollapsiblePanelId,
-                          tooltip: "Determines how content is inserted when pasted",
-                          dropdownOptions: [
-                            { label: 'Insert as HTML', value: 'insert_as_html' },
-                            { label: 'Insert cleared HTML', value: 'insert_clear_html' },
-                            { label: 'Insert as plain text', value: 'insert_as_text' },
-                            { label: 'Insert only text', value: 'insert_only_text' },
                           ],
                         })
                         .addSettingsInputRow({

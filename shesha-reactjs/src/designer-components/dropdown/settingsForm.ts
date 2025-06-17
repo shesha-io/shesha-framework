@@ -80,55 +80,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     },
                                 ],
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                parentId: commonTabId,
-                                propertyName: 'displayStyle',
-                                label: 'Display Style',
-                                inputType: 'dropdown',
-                                dropdownOptions: [
-                                    {
-                                        value: 'text',
-                                        label: 'Plain text'
-                                    },
-                                    {
-                                        value: 'tags',
-                                        label: 'Tags'
-                                    }
-                                ]
-                            })
-
-                            .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: commonTabId,
-                                hidden: {
-                                    _code: 'return  getSettingValue(data.displayStyle) !== "tags";',
-                                    _mode: 'code',
-                                    _value: false
-                                } as any,
-                                inputs: [
-                                    {
-                                        id: nanoid(),
-                                        type: 'switch',
-                                        propertyName: 'showItemName',
-                                        label: 'Show Item Name',
-                                        jsSetting: true,
-                                        tooltip: 'When checked the DisplayName/RefList Name will be shown.',
-                                        layout: 'horizontal',
-                                    },
-                                    {
-                                        id: nanoid(),
-                                        type: 'switch',
-                                        propertyName: 'showIcon',
-                                        label: 'Show Icon',
-                                        size: 'small',
-                                        jsSetting: true,
-                                        defaultValue: true,
-                                        tooltip: 'When checked the icon will display on the left side of the DisplayName',
-                                    }
-
-                                ],
-                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
@@ -159,6 +110,33 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         title: 'Data',
                         id: dataTabId,
                         components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: commonTabId,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'showItemName',
+                                        label: 'Show Item Name',
+                                        jsSetting: true,
+                                        tooltip: 'When checked the DisplayName/RefList Name will be shown.',
+                                        layout: 'horizontal',
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'showIcon',
+                                        label: 'Show Icon',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        defaultValue: true,
+                                        tooltip: 'When checked the icon will display on the left side of the DisplayName',
+                                    }
+
+                                ],
+                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,
@@ -375,6 +353,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         id: nanoid(),
                                         type: 'customLabelValueEditor',
                                         propertyName: 'values',
+                                        jsSetting: true,
                                         label: 'Values',
                                         labelName: 'label',
                                         labelTitle: 'Label',
@@ -469,6 +448,23 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            parentId: styleRouterId,
+                                            propertyName: 'displayStyle',
+                                            label: 'Display Style',
+                                            inputType: 'dropdown',
+                                            dropdownOptions: [
+                                                {
+                                                    value: 'text',
+                                                    label: 'Plain text'
+                                                },
+                                                {
+                                                    value: 'tags',
+                                                    label: 'Tags'
+                                                }
+                                            ]
+                                        })
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'pnlFontStyle',
@@ -655,22 +651,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                 id: nanoid(),
                                                 components: [
                                                     ...new DesignerToolbarSettings()
-                                                        .addContainer({
-                                                            id: nanoid(),
-                                                            parentId: nanoid(),
-                                                            components: [
-                                                                ...new DesignerToolbarSettings()
-                                                                    .addSettingsInput({
-                                                                        id: nanoid(),
-                                                                        inputType: 'switch',
-                                                                        propertyName: 'solidColor',
-                                                                        label: 'Show Solid Color',
-                                                                        size: 'small',
-                                                                        tooltip: 'When checked the background will be solid color',
-                                                                    })
-                                                                    .toJson()
-                                                            ]
-                                                        })
                                                         .addSettingsInput({
                                                             id: nanoid(),
                                                             parentId: nanoid(),
@@ -904,9 +884,10 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'defaultTagStyle',
-                                            label: 'Default Tag Style',
+                                            label: 'Custom Tag Styles',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false } as any,
                                             collapsible: 'header',
                                             content: {
                                                 id: DefaultTagStyleId,
@@ -1035,12 +1016,20 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                     ...new DesignerToolbarSettings()
                                                                         .addSettingsInput({
                                                                             id: nanoid(),
+                                                                            inputType: 'switch',
+                                                                            propertyName: 'solidColor',
+                                                                            label: 'Show Solid Color',
+                                                                            size: 'small',
+                                                                            tooltip: 'When checked solid color fills the entire background, when unchecked creates a subtle light background with a prominent colored border.',
+                                                                        })
+                                                                        .addSettingsInput({
+                                                                            id: nanoid(),
                                                                             parentId: tagBackgroundStyleId,
                                                                             label: "Type",
                                                                             jsSetting: false,
                                                                             propertyName: "tag.background.type",
                                                                             inputType: "radio",
-                                                                            tooltip: "Select a type of background",
+                                                                            tooltip: "Select a type of background, the default background color for tags when no specific color is assigned. Acts as a fallback background style for uncolored tags.",
                                                                             buttonGroupOptions: backgroundTypeOptions,
                                                                         })
                                                                         .addSettingsInputRow({
@@ -1224,7 +1213,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         .addCollapsiblePanel({
                                                             id: nanoid(),
                                                             propertyName: 'tagCustomStyle',
-                                                            label: 'Custom Style',
+                                                            label: 'Custom Styles',
                                                             labelAlign: 'right',
                                                             ghost: true,
                                                             collapsible: 'header',

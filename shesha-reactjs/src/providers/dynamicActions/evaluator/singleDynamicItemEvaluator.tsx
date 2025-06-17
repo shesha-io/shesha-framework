@@ -15,6 +15,11 @@ const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
   useEvaluator: () => EMPTY_ITEMS, // note: it's important to use constant to prevent infinite re-calculation ([] !== [])
 };
 
+export const getDynamicItemKey = (item: IResolvedDynamicItem): string => {
+  const { providerUid } = item.dynamicItemsConfiguration ?? {};  
+  return `${item.id}:${providerUid}`;
+};
+
 /**
  * Pseudo-component with no UI, is used as a proxy for evaluation of the dynamic items
  */
@@ -22,7 +27,7 @@ const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
 export const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item, onEvaluated }) => {
   const dispatcher = useDynamicActionsDispatcher();
 
-  const { providerUid } = item?.dynamicItemsConfiguration ?? {};
+  const { providerUid } = item.dynamicItemsConfiguration ?? {};
   const providers = dispatcher.getProviders();
   const provider = providerUid ? providers[providerUid] : undefined;
   const actionsContext = provider ? provider.contextValue : DEFAULT_DYNAMIC_EVALUATOR;
