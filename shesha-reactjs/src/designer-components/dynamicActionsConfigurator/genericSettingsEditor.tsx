@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IProviderSettings } from './interfaces';
@@ -21,10 +21,6 @@ export function GenericSettingsEditor<TModel extends IProviderSettings>({
   readOnly = false,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
-
-  useEffect(() => {
-    formRef.current?.resetFields();
-  });
 
   return (
     <ConfigurableForm

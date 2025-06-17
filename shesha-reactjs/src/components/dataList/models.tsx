@@ -65,6 +65,8 @@ export interface IDataListBaseProps extends IStyleType {
   cardHeight?: string;
   cardSpacing?: string;
   showBorder?: boolean;
+  gap?: number;
+  container?: IStyleType;
 
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
 

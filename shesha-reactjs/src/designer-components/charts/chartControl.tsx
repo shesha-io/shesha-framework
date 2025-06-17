@@ -1,4 +1,3 @@
-import ConditionalWrap from '@/components/conditionalWrapper';
 import { useGet } from '@/hooks';
 import { useFormData, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
 import { IRefListPropertyMetadata } from '@/interfaces/metadata';
@@ -6,21 +5,17 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Flex, Result, Spin } from 'antd';
-import React, { useEffect, useMemo } from 'react';
+import { Alert, Flex, Spin } from 'antd';
+import React, { useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import BarChart from './components/bar';
-import LineChart from './components/line';
-import PieChart from './components/pie';
-import PolarAreaChart from './components/polarArea';
 import { useProcessedChartData } from "./hooks";
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { formatDate, getChartDataRefetchParams } from './utils';
+import { formatDate, getChartDataRefetchParams, renderChart } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, filters, legendProperty,
-    axisProperty, simpleOrPivot, filterProperties, allowFilter, 
+  const { chartType, entityType, valueProperty, legendProperty,
+    axisProperty, filterProperties, allowFilter, 
     isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
@@ -32,16 +27,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   const { styles, cx } = useStyles();
 
-  useEffect(() => {
-    setControlProps({
-      ...props
-    });
-  }, [props, formData]);
-
-  const memoFilters = useMemo(() => filters, [filters, formData]);
+  useEffect(() => setControlProps(props), [props, formData]);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = useFormEvaluatedFilter({ filter: memoFilters, metadataAccessor: propertyMetadataAccessor });
+  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor });
   useEffect(() => {
     if (!entityType || !valueProperty || !axisProperty) {
       return;
@@ -102,10 +91,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     }
   }, [state.data]);
 
-  const lineChartData = useProcessedChartData();
-  const barChartData = useProcessedChartData();
-  const pieOrPolarAreaChartData = useProcessedChartData();
-  const pivotChartData = useProcessedChartData();
+  const data: IChartData = useProcessedChartData();
 
   if (!entityType || !chartType || !valueProperty || !axisProperty) {
     // Collect the missing properties in an array
@@ -128,8 +114,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  let data: IChartData;
-
   if (!state.isLoaded) {
     return (
       <Flex align="center" justify='center'>
@@ -138,56 +122,32 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  const wrapperDiv = (children: React.ReactNode) => (
-    <div className={cx(styles.chartControlContainer)} style={{
-      height: props?.height > 200 ? props.height : 'auto',
-      width: props?.width > 300 ? props.width : 'auto',
-      border: props?.showBorder ? '1px solid #ddd' : 'none'
-    }}>
-      {children}
-    </div>
-  );
+  const getResponsiveStyle = () => {
+    if (allowFilter) return {};
+    
+    return {
+      // Responsive height with fallbacks
+      height: props?.height 
+        ? `min(${props.height}px, 80vh)` // Use provided height but cap at 80% viewport height
+        : 'clamp(300px, 50vh, 600px)',   // Responsive height between 300px and 600px
+      
+      // Responsive width with fallbacks  
+      width: props?.width 
+        ? `min(${props.width}px, 95vw)`  // Use provided width but cap at 95% viewport width
+        : 'clamp(300px, 90vw, 100%)',   // Responsive width between 300px and 800px
+    };
+  };
 
   return (
-    <ConditionalWrap
-      condition={allowFilter}
-      wrap={(children) => wrapperDiv(children)}
-    >
-      <Flex align='center' justify='center' className={!allowFilter && cx(styles.chartControlContainer)} style={!allowFilter && {
-        height: props?.height > 200 ? props.height : 'auto',
-        width: props?.width > 300 ? props.width : 'auto',
-        border: props?.showBorder ? '1px solid #ddd' : 'none'
-      }}>
-      {
-        (() => {
-          switch (chartType) {
-            case 'line':
-              data = simpleOrPivot === 'simple'
-                ? lineChartData
-                : pivotChartData;
-              return <LineChart data={data} />;
-            case 'bar':
-              data = simpleOrPivot === 'simple'
-                ? barChartData
-                : pivotChartData;
-              return <BarChart data={data} />;
-            case 'pie':
-              data = simpleOrPivot === 'simple'
-                ? pieOrPolarAreaChartData
-                : pivotChartData;
-              return <PieChart data={data} />;
-            case 'polarArea':
-              data = simpleOrPivot === 'simple'
-                ? pieOrPolarAreaChartData
-                : pivotChartData;
-              return <PolarAreaChart data={data} />;
-            default:
-              return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
-          }
-        })()
-      }
-      </Flex>
-    </ConditionalWrap>
+      <div 
+        className={cx(
+          styles.responsiveChartContainer,
+          props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+        )}
+        style={getResponsiveStyle()}
+      >
+      {renderChart(chartType, data)}
+      </div>
   );
 };
 
