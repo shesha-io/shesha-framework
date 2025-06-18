@@ -1,10 +1,10 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useUrlTemplates } from '../utils';
+import { useGet } from '@/hooks';
+import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup } from '@/providers';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
-import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup, useDataContextManagerActions, useFormData, useGlobalState } from '@/providers';
-import { useGet } from '@/hooks';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
+import { useUrlTemplates } from '../utils';
 import { getSettings } from './urlSettings';
 
 const settingsMarkup = getSettings() as FormMarkup;
@@ -14,16 +14,16 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
   const { refetch } = useGet({ path: '', lazy: true });
   const { getUrlTemplateState } = useUrlTemplates(settings);
   const [data, setData] = useState(null);
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
-  const { data: FormData } = useFormData();
-  const { globalState } = useGlobalState();
 
   useEffect(() => {
-    refetch(getUrlTemplateState()).then((response) => {
-      const result = Array.isArray(response.result) ? response.result : response.result.items;
-      setData(result);
-    });
-  }, [item, settings, pageContext, FormData, globalState]);
+    const templateState = getUrlTemplateState();
+    if (templateState) {
+      refetch(templateState).then((response) => {
+        const result = Array.isArray(response.result) ? response.result : response.result.items;
+        setData(result);
+      });
+    }
+  }, [getUrlTemplateState, refetch]);
 
 
   const { configurationItemMode } = useAppConfigurator();
@@ -35,7 +35,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
     const result = data?.map((p) => ({
       id: p.id,
       name: p.name,
-      label: p[`${labelProperty}`] || 'Not Configured Properly',
+      label: p[`${labelProperty}`] ?? 'Not Configured Properly',
       tooltip: p[`${tooltipProperty}`],
       itemType: 'item',
       itemSubType: 'button',
