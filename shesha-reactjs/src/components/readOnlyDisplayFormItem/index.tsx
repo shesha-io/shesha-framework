@@ -1,4 +1,4 @@
-import { Space, Switch, Tag } from 'antd';
+import { Space, Switch } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import React, { FC, useMemo } from 'react';
@@ -7,7 +7,7 @@ import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
-import { getTagStyle } from '@/utils/style';
+import ReflistTag from '../refListDropDown/reflistTag';
 
 type AutocompleteType = ISelectOption;
 
@@ -78,13 +78,18 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               />
             );
           } else {
-            return dropdownDisplayMode === 'tags' ? <Tag
-              color={value?.color}
-              icon={((value?.icon && showIcon)) && <Icon type={value?.icon} />}
-              style={getTagStyle(style, !!value?.color && solidColor)}
-            >
-              {showItemName && displayName}
-            </Tag> : displayName || value;
+            return dropdownDisplayMode === 'tags' ?
+              <ReflistTag
+                value={value}
+                color={value?.color}
+                icon={value?.icon}
+                showIcon={showIcon}
+                tagStyle={style}
+                tooltip={value?.description}
+                solidColor={solidColor}
+                showItemName={showItemName}
+                label={displayName}
+              /> : displayName ?? value;
           }
         }
 
@@ -97,16 +102,19 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           return dropdownDisplayMode === 'raw'
             ? values?.join(', ')
             : <Space size={8}>
-              {value?.map(({ label, color, icon, value }) => {
-
-                return <Tag
+              {value?.map(({ label, color, icon, value, description }) => {
+                return <ReflistTag
                   key={value}
+                  value={value}
                   color={color}
-                  icon={((icon && showIcon)) && <Icon type={icon} />}
-                  style={getTagStyle(style, !!color && solidColor)}
-                >
-                  {showItemName && label}
-                </Tag>;
+                  icon={icon}
+                  tooltip={description}
+                  showIcon={showIcon}
+                  tagStyle={style}
+                  solidColor={solidColor}
+                  showItemName={showItemName}
+                  label={label}
+                />;
               })}
             </Space>;
         }

@@ -69,8 +69,6 @@ export const useProcessedChartData = (): IChartData => {
   let datasets;
 
   if (simpleOrPivot === 'simple' || !legendProperty) {
-    // Simple mode - single dataset like bar or line chart
-    const barBackgroundColor = getPredictableColor(valueProperty);
     // Generate different colors for each data point based on the label
     const colors = labels.map((label) => getPredictableColor(typeof label === 'string' ? label : label + ''));
 
@@ -84,7 +82,7 @@ export const useProcessedChartData = (): IChartData => {
           return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
         }),
         fill: false,
-        borderColor: chartType === 'line' ? barBackgroundColor : strokeColor || '#fff',
+        borderColor: strokeColor || '#fff',
         backgroundColor: colors,
         pointRadius: 5,
         borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
