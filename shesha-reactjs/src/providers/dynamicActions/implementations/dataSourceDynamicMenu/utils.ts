@@ -1,5 +1,5 @@
 import { evaluateString, useDataContextManagerActions, useFormData, useGlobalState } from '@/index';
-import { Key } from 'react';
+import { Key, useMemo } from 'react';
 import { IDataSourceArguments } from './model';
 import { buildUrl } from '@/utils/url';
 
@@ -13,28 +13,32 @@ export const useUrlTemplates = (settings: IDataSourceArguments) => {
   const { globalState } = useGlobalState();
   const pageContext = useDataContextManagerActions(false)?.getPageContext();
 
-  const getQueryParams = (): IQueryParams => {
-    const queryParamObj: IQueryParams = {};
-    if (queryParams?.length) {
-      queryParams?.forEach(({ param, value }) => {
-        const valueAsString = value as string;
-        if (param?.length && valueAsString.length) {
-          queryParamObj[param] = /{.*}/i.test(valueAsString)
-            ? evaluateString(valueAsString, { data, globalState, pageContext: { ...pageContext.getFull() } })
-            : value;
-        }
-      });
-    }
-    return queryParamObj;
-  };
-
-  const getUrlTemplateState = () => {
-    const dataSourceUrlString = dataSourceUrl.id ?? dataSourceUrl;
-    const path = buildUrl(dataSourceUrlString, getQueryParams());
-    return {
-      path,
+  const getQueryParams = useMemo(() => {
+    return (): IQueryParams => {
+      const queryParamObj: IQueryParams = {};
+      if (queryParams?.length) {
+        queryParams.forEach(({ param, value }) => {
+          const valueAsString = value as string;
+          if (param?.length && valueAsString?.length) {
+            queryParamObj[param] = /{.*}/i.test(valueAsString)
+              ? evaluateString(valueAsString, { data, globalState, pageContext: { ...pageContext?.getFull() } })
+              : value;
+          }
+        });
+      }
+      return queryParamObj;
     };
-  };
+  }, [queryParams, data, globalState, pageContext]);
+
+  const getUrlTemplateState = useMemo(() => {
+    return () => {
+      if (!dataSourceUrl) return null;
+
+      const dataSourceUrlString = dataSourceUrl.id ?? dataSourceUrl;
+      const path = buildUrl(dataSourceUrlString, getQueryParams());
+      return { path };
+    };
+  }, [dataSourceUrl, getQueryParams]);
 
   return { getUrlTemplateState };
 };
