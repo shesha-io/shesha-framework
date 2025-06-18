@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useState } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -27,7 +27,7 @@ import {
 import { getButtonGroupMenuItem } from './utils';
 import { IButtonGroupProps } from './models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useDeepCompareMemo } from '@/hooks';
+import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useSheshaApplication } from '@/providers';
 import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
@@ -41,6 +41,9 @@ import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components
 import ValidationErrors from '@/components/validationErrors';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
+import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
+import { addPx } from '@/utils/style';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -48,6 +51,8 @@ type PrepareItemFunc = (item: ButtonGroupItemProps, parentReadOnly: boolean) => 
 
 type MenuButton = ButtonGroupItemProps & {
     childItems?: MenuButton[];
+    dividerWidth?: string;
+    dividerColor?: string;
 };
 
 const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: IApplicationContext; form?: FormInstance<any> }> = ({ props, uuid, appContext, form }) => {
@@ -126,7 +131,7 @@ const createMenuItem = (
         : null;
 
     return isDivider
-        ? { type: 'divider' }
+        ? { type: 'divider', style: { height: addPx(props.dividerWidth), backgroundColor: props.dividerColor } }
         : getButtonGroupMenuItem(
             <RenderButton props={props} uuid={props.id} appContext={appContext} form={form} />,
             props.id,
@@ -184,7 +189,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
                 return <RenderButton props={{ ...item }} uuid={item.id} appContext={appContext} form={form} />;
             case 'separator':
             case 'line':
-                return <Divider type='vertical' key={uuid} />;
+                return <Divider type='vertical' key={uuid} style={{ width: addPx(item.dividerWidth), backgroundColor: item.dividerColor }} />;
             default:
                 return null;
         }
@@ -198,55 +203,17 @@ type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
-    const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
+    const { anyOfPermissionsGranted } = useSheshaApplication();
 
-    const { items, size, spaceSize = 'middle', isInline, readOnly: disabled, form, dimensions, shadow, border, background, style, stylingBox } = props;
-    const jsStyle = getStyle(style, props);
-
-    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-        const fetchStyles = async () => {
-            const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-                ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-                    { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-                    .then((response) => {
-                        return response.blob();
-                    })
-                    .then((blob) => {
-                        return URL.createObjectURL(blob);
-                    }) : '';
-
-            const bgStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
-
-            setBackgroundStyles((prevStyles) => {
-                if (JSON.stringify(prevStyles) !== JSON.stringify(bgStyle)) {
-                    return bgStyle;
-                }
-                return prevStyles;
-            });
-        };
-
-        fetchStyles();
-    }, [background, backendUrl, httpHeaders, jsStyle]);
-
-    const styling = JSON.parse(stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles = removeUndefinedProps({
-        ...dimensionsStyles,
-        ...borderStyles,
-        ...backgroundStyles,
-        ...shadowStyles,
-        ...stylingBoxAsCSS,
-        ...jsStyle
+    // ToDo: AS - review optimization
+    const preparedItems = props.items?.map((item) => {
+        // add editMode property if not exists
+        const preparedItem = { ...item, editMode: typeof item['editMode'] === 'undefined' ? undefined : item['editMode'] };
+        return getActualModel(preparedItem, allData, props.readOnly);
     });
+    const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles });
-
+    const { size, spaceSize = 'middle', isInline, readOnly: disabled, form } = props;
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
@@ -292,33 +259,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     const actualItems = useDeepCompareMemo(() => {
         return Promise.all(items?.map(async (item) => {
-            const jsStyle = getStyle(item.style);
-            const dimensions = item?.dimensions;
-            const border = item?.border;
-            const font = item?.font;
-            const shadow = item?.shadow;
-            const background = item.background;
-
-            const dimensionsStyles = getDimensionsStyle(dimensions);
-            const borderStyles = getBorderStyle(border, jsStyle);
-            const fontStyles = getFontStyle(font);
-            const shadowStyles = getShadowStyle(shadow);
-
-            const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-
-            const backgroundStyle = getBackgroundStyle(item.background, getStyle(item.style), storedImageUrl);
-
-            const newStyles = {
-                ...dimensionsStyles,
-                ...(['primary', 'default'].includes(item.buttonType) && borderStyles),
-                ...fontStyles,
-                ...(['primary', 'default'].includes(item.buttonType) && shadowStyles),
-                ...(['dashed', 'default'].includes(item.buttonType) && backgroundStyle),
-                ...jsStyle,
-                justifyContent: font?.align,
-            };
-
-            return prepareItem({ ...item, styles: newStyles }, disabled);
+            return prepareItem({ ...item }, disabled);
         }) || []);
     }, [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
@@ -329,10 +270,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     }, [actualItems]);
 
     const filteredItems = resolvedItems?.filter(getIsVisible);
-
-    if (background?.type === 'storedFile' && background.storedFile?.id && !isValidGuid(background.storedFile.id)) {
-        return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
 
     if (resolvedItems.length === 0 && isDesignMode)
         return (
@@ -346,10 +283,10 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     if (isInline) {
         return (
-            <Button.Group size={size} style={finalStyle}>
+            <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
-                        (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
+                        (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
                     )}
                 </Space>
             </Button.Group>
@@ -358,12 +295,12 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
 
         return (
-            <div className={styles.shaResponsiveButtonGroupContainer} style={finalStyle}>
+            <div className={styles.shaResponsiveButtonGroupContainer}>
                 <Menu
                     mode="horizontal"
                     items={menuItems}
                     className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
-                    style={{ width: '30px' }}
+                    style={{ ...props.styles, width: '30px', height: '30px' }}
                 />
             </div>
         );
@@ -371,8 +308,12 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+    const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
+
+    const memoizedItems = useDeepCompareMemo(() => items, [items]);
+
     return (
-        <DynamicActionsEvaluator items={props.items}>
+        <DynamicActionsEvaluator items={memoizedItems}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}
         </DynamicActionsEvaluator>
     );

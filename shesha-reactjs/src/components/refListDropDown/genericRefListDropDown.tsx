@@ -1,11 +1,11 @@
-import { Empty, Select, Spin, Tag } from 'antd';
+import { Empty, Select, Spin } from 'antd';
 import { ValidationErrors } from '@/components';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import React, { useMemo } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
-import ReadOnlyDisplayFormItem, { Icon } from '@/components/readOnlyDisplayFormItem';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
-import { getTagStyle } from '@/utils/style';
+import ReflistTag from './reflistTag';
 
 // tslint:disable-next-line:whitespace
 export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownProps<TValue>) => {
@@ -35,6 +35,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     ...rest
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
+
   const filter = ({ itemValue }: ReferenceListItemDto) => {
     if (!filters?.length) {
       return true;
@@ -122,6 +123,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         value={wrapValue(value, options)}
         disabled={disabled}
         showIcon={showIcon}
+        showItemName={showItemName}
         solidColor={solidColor}
         style={displayStyle === 'tags' ? tagStyle : style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
@@ -164,12 +166,18 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       style={{ width: 'max-content' }}
       labelRender={(props) => {
         const option = options.find((o) => o.value === props.value);
-        return <Tag
-          key={props.value}
+        return <ReflistTag
+          key={option?.value}
+          value={option?.value}
+          tooltip={option?.description}
           color={option?.color}
-          icon={option?.icon && showIcon && <Icon type={option?.icon} />}
-          style={getTagStyle(tagStyle, !!option?.color && solidColor)}
-        >{showItemName && option?.label}</Tag>;
+          icon={option?.icon}
+          showIcon={showIcon}
+          tagStyle={tagStyle}
+          solidColor={solidColor}
+          showItemName={showItemName}
+          label={option?.label}
+        />;
       }}
     >
       {options?.map(({ value: localValue, label, data, disabled }) => (
@@ -189,12 +197,17 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       {...(displayStyle === 'tags' ? {
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);
-          return <Tag
-            key={props.value}
+          return <ReflistTag
+            value={option?.value}
+            tooltip={value}
             color={option?.color}
-            icon={(option?.icon && showIcon) && <Icon type={option?.icon} />}
-            style={getTagStyle(tagStyle, !!option?.color && solidColor)}
-          >{showItemName && option?.label}</Tag>;
+            icon={option?.icon}
+            showIcon={showIcon}
+            tagStyle={tagStyle}
+            solidColor={solidColor}
+            showItemName={showItemName}
+            label={option?.label}
+          />;
         }
       } : {})}
     >

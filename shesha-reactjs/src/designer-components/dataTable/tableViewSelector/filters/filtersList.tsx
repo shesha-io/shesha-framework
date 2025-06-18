@@ -3,6 +3,7 @@ import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { nanoid } from '@/utils/uuid';
 import React, { FC } from 'react';
 import { FilterItem } from './filterItem';
+import { ListItem } from '@/components/listEditor/models';
 
 export interface IFiltersListProps {
     value?: ITableViewProps[];
@@ -26,7 +27,7 @@ export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }
     };
 
     return (
-        <ListEditor<ITableViewProps>
+        <ListEditor<ITableViewProps & ListItem>
             value={value}
             onChange={localOnChange}
             initNewItem={makeNewFilter}

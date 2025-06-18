@@ -67,6 +67,25 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
     event.stopPropagation();
   };
 
+  const panelRender = (panel: React.ReactNode) => (
+        <div onClick={onPanelClick}>
+        {title && (
+          <div
+            style={{
+              fontSize: 12,
+              color: 'rgba(0, 0, 0, 0.88)',
+              lineHeight: '20px',
+              marginBottom: 8,
+            }}
+          >
+            {title}
+          </div>
+
+        )}
+        {panel}
+      </div>
+    );
+
   return (
     <AntdColorPicker
       trigger='click'
@@ -83,24 +102,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
       defaultValue={readThemeColor(theme)?.[defaultValue as string] ?? defaultValue}
       onChange={handleChange}
       presets={presets}
-      panelRender={(panel) => (
-        <div onClick={onPanelClick}>
-          {title && (
-            <div
-              style={{
-                fontSize: 12,
-                color: 'rgba(0, 0, 0, 0.88)',
-                lineHeight: '20px',
-                marginBottom: 8,
-              }}
-            >
-              {title}
-            </div>
-
-          )}
-          {panel}
-        </div>
-      )}
+      panelRender={panelRender}
     />
   );
 };

@@ -70,17 +70,17 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     };
 
     if (input?.radius) {
-        const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
+        const { all = 0, topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0 } = input.radius;
         if (input?.radiusType === 'all') {
-            style.borderTopRightRadius = `${all || 0}px`;
-            style.borderBottomRightRadius = `${all || 0}px`;
-            style.borderBottomLeftRadius = `${all || 0}px`;
-            style.borderTopLeftRadius = `${all || 0}px`;
+            style.borderTopRightRadius = addPx(all);
+            style.borderBottomRightRadius = addPx(all);
+            style.borderBottomLeftRadius = addPx(all);
+            style.borderTopLeftRadius = addPx(all);
         } else {
-            style.borderTopRightRadius = `${topRight || 0}px`;
-            style.borderBottomRightRadius = `${bottomRight || 0}px`;
-            style.borderBottomLeftRadius = `${bottomLeft || 0}px`;
-            style.borderTopLeftRadius = `${topLeft || 0}px`;
+            style.borderTopRightRadius = addPx(topRight);
+            style.borderBottomRightRadius = addPx(bottomRight);
+            style.borderBottomLeftRadius = addPx(bottomLeft);
+            style.borderTopLeftRadius = addPx(topLeft);
         }
     };
 

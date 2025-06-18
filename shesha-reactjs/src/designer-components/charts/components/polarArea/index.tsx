@@ -36,6 +36,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
+    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    aspectRatio: 1, // Square aspect ratio for polar area charts
     plugins: {
       scales: {
         r: {
