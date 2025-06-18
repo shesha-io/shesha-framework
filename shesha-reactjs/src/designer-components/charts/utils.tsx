@@ -13,18 +13,18 @@ export const MAX_TITLE_LINE_LENGTH = 14;
  * @param title the title to manage
  * @returns the managed title
  */
-export const splitTitleIntoLines = (title: string) => {
+export const splitTitleIntoLines = (title: string): string | string[] => {
   const words = title.split(' ');
   const lines = [];
   let currentLine = '';
 
-  if (title.split(' ').length< MAX_TITLE_LINE_LENGTH) {
+  if (title.split(' ').length < MAX_TITLE_LINE_LENGTH) {
     return title;
   }
 
   for (const word of words) {
     if (currentLine.split(' ').length < MAX_TITLE_LINE_LENGTH) {
-      currentLine += ' ' + word;
+      currentLine += (currentLine ? ' ' : '') + word;
     } else {
       if (lines.length === 5) {
         lines.push("...");
@@ -34,6 +34,8 @@ export const splitTitleIntoLines = (title: string) => {
       currentLine = '';
     }
   }
+
+  if (currentLine) lines.push(currentLine);
   return lines;
 };
 
