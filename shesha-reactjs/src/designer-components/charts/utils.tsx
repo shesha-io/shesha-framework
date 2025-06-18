@@ -1,11 +1,60 @@
 import React from "react";
-import { IChartData, TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import { IChartData, IChartsProps, TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
 import LineChart from "./components/line";
 import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
 
+export const MAX_TITLE_LINE_LENGTH = 14;
+
+/**
+ * Function to manage the length of the title, ie if the title is too long, we need to split it into multiple lines
+ * @param title the title to manage
+ * @returns the managed title
+ */
+export const splitTitleIntoLines = (title: string) => {
+  const words = title.split(' ');
+  const lines = [];
+  let currentLine = '';
+
+  if (title.split(' ').length< MAX_TITLE_LINE_LENGTH) {
+    return title;
+  }
+
+  for (const word of words) {
+    if (currentLine.split(' ').length < MAX_TITLE_LINE_LENGTH) {
+      currentLine += ' ' + word;
+    } else {
+      if (lines.length === 5) {
+        lines.push("...");
+        return lines;
+      }
+      lines.push(currentLine);
+      currentLine = '';
+    }
+  }
+  return lines;
+};
+
+/**
+ * Function to generate the responsive style for the chart
+ * @param props.height the height of the chart
+ * @param props.width the width of the chart
+ * @returns the responsive style
+ */
+export const getResponsiveStyle = (props: IChartsProps) =>
+({
+  // Responsive height with fallbacks
+  height: props?.height 
+    ? `min(${props.height}px, 80vh)` // Use provided height but cap at 80% viewport height
+    : 'clamp(300px, 50vh, 600px)',   // Responsive height between 300px and 600px
+  
+  // Responsive width with fallbacks  
+  width: props?.width 
+    ? `min(${props.width}px, 95vw)`  // Use provided width but cap at 95% viewport width
+    : 'clamp(300px, 90vw, 100%)',   // Responsive width between 300px and 800px
+});
 
 /**
  * Filter out null and undefined values from an object

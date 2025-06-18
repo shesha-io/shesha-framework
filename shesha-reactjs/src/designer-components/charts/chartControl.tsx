@@ -11,12 +11,13 @@ import { useChartDataActionsContext, useChartDataStateContext } from '../../prov
 import { useProcessedChartData } from "./hooks";
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { formatDate, getChartDataRefetchParams, renderChart } from './utils';
+import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
+
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, legendProperty,
-    axisProperty, filterProperties, allowFilter, 
-    isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
+    axisProperty, filterProperties, isAxisTimeSeries, timeSeriesFormat,
+    orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -122,29 +123,13 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  const getResponsiveStyle = () => {
-    if (allowFilter) return {};
-    
-    return {
-      // Responsive height with fallbacks
-      height: props?.height 
-        ? `min(${props.height}px, 80vh)` // Use provided height but cap at 80% viewport height
-        : 'clamp(300px, 50vh, 600px)',   // Responsive height between 300px and 600px
-      
-      // Responsive width with fallbacks  
-      width: props?.width 
-        ? `min(${props.width}px, 95vw)`  // Use provided width but cap at 95% viewport width
-        : 'clamp(300px, 90vw, 100%)',   // Responsive width between 300px and 800px
-    };
-  };
-
   return (
       <div 
         className={cx(
           styles.responsiveChartContainer,
           props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
         )}
-        style={getResponsiveStyle()}
+        style={getResponsiveStyle(props)}
       >
       {renderChart(chartType, data)}
       </div>
