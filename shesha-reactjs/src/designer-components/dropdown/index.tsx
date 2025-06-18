@@ -13,7 +13,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
@@ -126,7 +126,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDropdownComponentProps>(10, (prev) => {
       const newModel = migratePrevStyles(prev, defaultStyles());
-      const initTagStyle = { ...defaultTagStyles() };
+      const initTagStyle = migrateStyles({ id: '' }, defaultTagStyles());
 
       return {
         ...newModel,
