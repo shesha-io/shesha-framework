@@ -125,22 +125,20 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     })
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDropdownComponentProps>(10, (prev) => {
-      const newModel = migratePrevStyles(prev, defaultStyles());
-      const initTagStyle = migrateStyles({ id: '' }, defaultTagStyles());
+      const initTagStyle = migrateStyles({}, defaultTagStyles());
 
       return {
-        ...newModel,
+        ...prev,
         tag: { ...initTagStyle },
         showItemName: prev.showItemName ?? true,
         showIcon: prev.showIcon ?? true,
         solidColor: prev.solidColor ?? true,
         displayStyle: prev.displayStyle ?? 'text',
-        desktop: { ...newModel.desktop, tag: { ...initTagStyle } },
-        tablet: { ...newModel.tablet, tag: { ...initTagStyle } },
-        mobile: { ...newModel.mobile, tag: { ...initTagStyle } }
+        desktop: { ...prev.desktop, tag: { ...initTagStyle } },
+        tablet: { ...prev.tablet, tag: { ...initTagStyle } },
+        mobile: { ...prev.mobile, tag: { ...initTagStyle } }
       };
-    })
-  ,
+    }),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
     const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';
