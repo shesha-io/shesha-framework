@@ -7,15 +7,15 @@ interface IQueryParams {
   [name: string]: Key;
 }
 
-export const useTemplates = (settings: IDataSourceArguments) => {
-  const { dataSourceUrl, queryParams, entityTypeShortAlias, maxResultCount } = settings ?? {};
+export const useUrlTemplates = (settings: IDataSourceArguments) => {
+  const { dataSourceUrl, queryParams } = settings ?? {};
   const { data } = useFormData();
   const { globalState } = useGlobalState();
   const pageContext = useDataContextManagerActions(false)?.getPageContext();
 
   const getQueryParams = (): IQueryParams => {
     const queryParamObj: IQueryParams = {};
-    if (queryParams && queryParams?.length) {
+    if (queryParams?.length) {
       queryParams?.forEach(({ param, value }) => {
         const valueAsString = value as string;
         if (param?.length && valueAsString.length) {
@@ -28,15 +28,20 @@ export const useTemplates = (settings: IDataSourceArguments) => {
     return queryParamObj;
   };
 
-  const getTemplateState = (evaluatedFilters?: any) => {
-    if (dataSourceUrl !== undefined) {
-      const dataSourceUrlString = dataSourceUrl.id ? dataSourceUrl.id : dataSourceUrl;
-      const path = buildUrl(dataSourceUrlString, getQueryParams());
-      return {
-        path,
-      };
-    }
+  const getUrlTemplateState = () => {
+    const dataSourceUrlString = dataSourceUrl.id ?? dataSourceUrl;
+    const path = buildUrl(dataSourceUrlString, getQueryParams());
+    return {
+      path,
+    };
+  };
 
+  return { getUrlTemplateState };
+};
+
+export const useEntityTemplates = (settings: IDataSourceArguments) => {
+  const { entityTypeShortAlias, maxResultCount } = settings ?? {};
+  const getEntityTemplateState = (evaluatedFilters?: any) => {
     return {
       path: `/api/services/app/Entities/GetAll`,
       queryParams: {
@@ -47,5 +52,5 @@ export const useTemplates = (settings: IDataSourceArguments) => {
     };
   };
 
-  return { getTemplateState, getQueryParams };
+  return { getEntityTemplateState };
 };
