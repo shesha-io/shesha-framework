@@ -150,7 +150,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
-                        null,
+                        attachments,
                         null,
                         null,
                         channel

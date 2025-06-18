@@ -50,8 +50,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// Identification document for the Member
         /// </summary>
-        [NotMapped]
-        public virtual StoredFile IdDocument { get; set; }
+        //[NotMapped]
+        //public virtual StoredFile IdDocument { get; set; }
         /// <summary>
         /// The status of the membership
         /// </summary>
