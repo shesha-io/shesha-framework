@@ -93,7 +93,9 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       y: {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
-          text: `${yProperty?.trim() ?? ''} ${dataMode === 'url' ? '' : '(' + aggregationMethod + ')'}`,
+          text: dataMode === 'url' || !aggregationMethod
+            ? yProperty?.trim() ?? ''
+            : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
         },
         display: !!showYAxisScale,
         beginAtZero: true,

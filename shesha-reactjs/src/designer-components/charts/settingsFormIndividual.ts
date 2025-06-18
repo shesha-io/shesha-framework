@@ -564,11 +564,7 @@ export const getSettings = (data: any) => {
                   ],
                   validate: { required: true },
                   defaultValue: 'entityType',
-                  hidden: {
-                    _code: 'return getSettingValue(data?.dataMode) === `url`',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
+                  hidden: false
                 })
                 .addContainer({
                   id: dataSettingsForUrlId,

@@ -75,10 +75,9 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       y: {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
-          text:
-            dataMode === 'url' || !aggregationMethod
-              ? yProperty?.trim() ?? ''
-              : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
+          text: dataMode === 'url' || !aggregationMethod
+            ? yProperty?.trim() ?? ''
+            : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
         },
         display: !!showYAxisScale,
         stacked: stacked,
