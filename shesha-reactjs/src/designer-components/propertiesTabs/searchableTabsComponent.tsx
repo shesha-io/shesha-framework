@@ -67,6 +67,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                             containerId={tab.id + tab.key}
                             dynamicComponents={visibleComponents} />
                     </ParentProvider>,
+                forceRender: true,
                 hidden: tab.hidden ?? !hasVisibleComponents
             };
         })
