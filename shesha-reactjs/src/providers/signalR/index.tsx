@@ -56,6 +56,29 @@ function SignalRProvider({
     setConnection(connection);
 
     setConnection(connection);
+    const connection: ISignalRConnection = builder.build();
+
+    connection
+      .start()
+      .then(() => {
+        onConnected?.(connection);
+      })
+      .catch((err) => console.error('SignalR start failed:', err));
+
+    if (enableReconnect) {
+      connection.onreconnecting((error) => {
+        console.warn('SignalR reconnecting...', error);
+      });
+
+      connection.onreconnected(() => {
+        onConnected?.(connection);
+      });
+    }
+
+    connection.onclose((error) => {
+      console.error('SignalR connection closed', error);
+      onDisconnected?.();
+    });
 
     return () => {
       connection
