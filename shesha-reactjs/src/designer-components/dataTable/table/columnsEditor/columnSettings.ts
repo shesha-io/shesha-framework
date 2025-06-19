@@ -200,6 +200,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "output",
                                     "noSelectionItemText": "Default",
                                     "noSelectionItemValue": "[default]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
@@ -211,6 +212,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "input",
                                     "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
@@ -222,6 +224,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "input",
                                     "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
@@ -307,25 +310,12 @@ export const getColumnSettings = (data?: any) => ({
                     ]
                 },
                 {
-                    key: '2',
+                    key: 'appearance',
+                    forceRender: true,
                     title: 'Appearance',
                     id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                     components: [...new DesignerToolbarSettings()
-                        .addPropertyRouter({
-                            id: 'styleRouter',
-                            propertyName: 'propertyRouter1',
-                            componentName: 'propertyRouter',
-                            label: 'Property router1',
-                            labelAlign: 'right',
-                            parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
-                            hidden: false,
-                            propertyRouteName: {
-                                _mode: "code",
-                                _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                                _value: ""
-                            },
-                            components: [
-                                ...new DesignerToolbarSettings()
+ 
                                     .addCollapsiblePanel({
                                         id: 'dimensionsStyleCollapsiblePanel',
                                         propertyName: 'pnlDimensions',
@@ -347,15 +337,14 @@ export const getColumnSettings = (data?: any) => ({
                                                             "type": "numberField",
                                                             "propertyName": "minWidth",
                                                             "label": "Min Width",
-                                                            "defaultValue": "100",
-                                                            "labelAlign": "right"
+                                                            "labelAlign": "right",
                                                         },
                                                         {
                                                             "id": "maxWidth1",
                                                             "type": "numberField",
                                                             "propertyName": "maxWidth",
                                                             "label": "Max Width",
-                                                            "labelAlign": "right"
+                                                            "labelAlign": "right",
                                                         },
                                                     ]
                                                 })
@@ -374,7 +363,7 @@ export const getColumnSettings = (data?: any) => ({
                                                             "type": "numberField",
                                                             "propertyName": "minHeight",
                                                             "label": "Min Height",
-                                                            "labelAlign": "right"
+                                                            "labelAlign": "right",
                                                         }
                                                     ]
                                                 })
@@ -409,8 +398,7 @@ export const getColumnSettings = (data?: any) => ({
                                             ],
                                         }
                                     })
-                                    .toJson()]
-                        }).toJson()]
+                            .toJson()]
                 },
                 {
                     "key": "security",

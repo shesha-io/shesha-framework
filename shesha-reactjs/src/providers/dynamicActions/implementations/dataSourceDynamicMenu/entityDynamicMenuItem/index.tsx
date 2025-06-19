@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useTemplates } from '../utils';
+import { useEntityTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import {
@@ -21,7 +21,7 @@ const settingsMarkup = getSettings() as FormMarkup;
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
   const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
-  const { getTemplateState } = useTemplates(settings);
+  const { getEntityTemplateState } = useEntityTemplates(settings);
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
   const [data, setData] = useState(null);
@@ -33,7 +33,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   });
 
   const fetchTemplateData = async () => {
-    const response = await refetch(getTemplateState(evaluatedFilters ?? null));
+    const response = await refetch(getEntityTemplateState(evaluatedFilters));
     const result = Array.isArray(response.result) ? response.result : response.result.items;
     setData(result);
   };
