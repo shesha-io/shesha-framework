@@ -7,7 +7,6 @@ import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getResponsiveStyle, getURLChartDataRefetchParams, renderChart } from './utils';
-import Image from 'next/image';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType } = props;
@@ -53,7 +52,8 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   if (!state.isLoaded) {
     return (
       <Flex align="center" justify="center">
-        <Image src={'/images/SheshaLoadingAnimation.gif'} alt="Loading" width={100} height={100} unoptimized />
+        <div className={cx(styles.octagonalLoader)}></div>
+        <div className={cx(styles.loadingText)}>Loading data...</div>
       </Flex>
     );
   }

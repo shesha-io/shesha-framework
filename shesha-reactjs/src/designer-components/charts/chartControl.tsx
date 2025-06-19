@@ -4,15 +4,13 @@ import { IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Flex, Spin } from 'antd';
+import { Alert, Flex } from 'antd';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from "./hooks";
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
-import Image from 'next/image';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, groupingProperty,
@@ -25,7 +23,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setFilterdData, setControlProps } = useChartDataActionsContext();
   const { data: formData } = useFormData();
-  const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>(null);
+  const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>({
+    current: 0,
+    total: -1
+  });
 
   const { styles, cx } = useStyles();
 
@@ -102,7 +103,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     const fetchAndProcessData = async () => {
       try {
         setIsLoaded(false);
-        setLoadingProgress(null);
 
         // Get metadata first to identify reference list properties
         const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
@@ -218,11 +218,13 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         
         setData(processedItems);
         setIsLoaded(true);
-        setLoadingProgress(null);
       } catch (error) {
         console.error('Error in fetchAndProcessData:', error);
         setIsLoaded(true);
-        setLoadingProgress(null);
+        setLoadingProgress({
+          current: 0,
+          total: -1
+        });
       }
     };
 
@@ -260,13 +262,13 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
     }
     
-    if (!state.isLoaded) {
+    if (loadingProgress?.current !== loadingProgress?.total) {
       return (
         <>
           {loadingProgress && (
             <Flex align="center" justify='center' vertical gap={16}>
-              <Image src={'/images/SheshaLoadingAnimation.gif'} alt="Loading" width={100} height={100} unoptimized />
-              <div>Loading data...</div>
+              <div className={cx(styles.octagonalLoader)}></div>
+              <div className={cx(styles.loadingText)}>Loading data...</div>
               <div>{loadingProgress.current} / {loadingProgress.total} items</div>
             </Flex>
           )}

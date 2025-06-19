@@ -120,7 +120,7 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'url',
                                 inputType: 'textField',
-                                label: 'URL',
+                                label: 'Url',
                                 description: 'The URL you want to use for the chart',
                                 labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
@@ -139,7 +139,7 @@ export const getSettings = (data: any) => {
                                   {
                                     id: nanoid(),
                                     propertyName: 'axisProperty',
-                                    label: 'Axis label',
+                                    label: 'Axis Label',
                                     type: 'textField',
                                     labelAlign: 'right',
                                     parentId: dataSettingsForUrlId,
@@ -162,7 +162,7 @@ export const getSettings = (data: any) => {
                                   {
                                     id: nanoid(),
                                     propertyName: 'valueProperty',
-                                    label: 'Value axis label',
+                                    label: 'Value Axis Label',
                                     type: 'textField',
                                     labelAlign: 'right',
                                     parentId: dataSettingsForUrlId,
@@ -670,7 +670,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'axisProperty',
-                        label: 'Axis label',
+                        label: 'Axis Label',
                         inputType: 'textField',
                         labelAlign: 'right',
                         parentId: dataTabId,
@@ -870,7 +870,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
+                              _value: false
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
