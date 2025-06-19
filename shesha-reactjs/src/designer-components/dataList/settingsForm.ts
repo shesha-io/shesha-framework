@@ -12,6 +12,8 @@ export const getSettings = (data: any) => {
   const eventsTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
+  const containerStylePnlId = nanoid();
+  const containerDimensionsStylePnlId = nanoid();
 
   const ROW_SAVE_EXPOSED_VARIABLES = [
     {
@@ -293,6 +295,7 @@ export const getSettings = (data: any) => {
                         {
                           id: nanoid(),
                           propertyName: 'modalWidth',
+                          customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                           label: 'Dialog Width',
                           parentId: dataTabId,
                           type: 'customDropdown',
@@ -300,12 +303,20 @@ export const getSettings = (data: any) => {
                           jsSetting: true,
                           customDropdownMode: 'single',
                           dropdownOptions: [
-                            { value: 'small', label: 'Small' },
-                            { value: 'medium', label: 'Medium' },
-                            { value: 'large', label: 'Large' },
-                            { value: 'custom', label: 'Custom' },
+                            {
+                              label: 'Small',
+                              value: '40%',
+                            },
+                            {
+                              label: 'Medium',
+                              value: '60%',
+                            },
+                            {
+                              label: 'Large',
+                              value: '80%',
+                            }
                           ],
-                          width: '100%',
+                          width: '60%',
                         },
                       ],
                       hideLabel: true,
@@ -496,20 +507,6 @@ export const getSettings = (data: any) => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'dropdown',
-                propertyName: "orientation",
-                parentId: appearanceTabId,
-                label: "Orientation",
-                jsSetting: true,
-                dropdownOptions: [
-                  { label: 'Vertical', value: 'vertical' },
-                  { label: 'Horizontal', value: 'horizontal' },
-                  { label: 'Wrap', value: 'wrap' },
-                ],
-              })
-
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -879,6 +876,180 @@ export const getSettings = (data: any) => {
                         ]
                       }
                     })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'pnlContainerStyle',
+                      label: 'Container Styles',
+                      labelAlign: 'right',
+                      ghost: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: containerStylePnlId,
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInput({
+                            id: nanoid(),
+                            inputType: 'dropdown',
+                            propertyName: "orientation",
+                            parentId: containerStylePnlId,
+                            label: "Orientation",
+                            jsSetting: true,
+                            dropdownOptions: [
+                              { label: 'Vertical', value: 'vertical' },
+                              { label: 'Horizontal', value: 'horizontal' },
+                              { label: 'Wrap', value: 'wrap' },
+                            ],
+                          })
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: containerStylePnlId,
+                            //hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
+                            inputs: [
+                              {
+                                id: nanoid(),
+                                propertyName: 'gap',
+                                label: 'Gap',
+                                type: 'numberField',
+                                description: 'The gap between the datalist cards.',
+                                jsSetting: true,
+                              }
+                            ]
+                          })
+                          .addCollapsiblePanel({
+                            id: nanoid(),
+                            propertyName: 'containerDimensionsPanel',
+                            label: 'Dimensions',
+                            parentId: styleRouterId,
+                            labelAlign: 'right',
+                            ghost: true,
+                            collapsible: 'header',
+                            content: {
+                              id: containerDimensionsStylePnlId,
+                              components: [...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: containerDimensionsStylePnlId,
+                                  inline: true,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'textField',
+                                      id: nanoid(),
+                                      label: "Width",
+                                      width: 85,
+                                      propertyName: "container.dimensions.width",
+                                      icon: "widthIcon",
+                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                    },
+                                    {
+                                      type: 'textField',
+                                      id: nanoid(),
+                                      label: "Min Width",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.minWidth",
+                                      icon: "minWidthIcon",
+                                    },
+                                    {
+                                      type: 'textField',
+                                      id: nanoid(),
+                                      label: "Max Width",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.maxWidth",
+                                      icon: "maxWidthIcon",
+                                    }
+                                  ]
+                                })
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: containerDimensionsStylePnlId,
+                                  inline: true,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "horizontal";', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'textField',
+                                      id: nanoid(),
+                                      label: "Height",
+                                      width: 85,
+                                      propertyName: "container.dimensions.height",
+                                      icon: "heightIcon",
+                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                    },
+                                    {
+                                      type: 'textField',
+                                      id: nanoid(),
+                                      label: "Min Height",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.minHeight",
+                                      icon: "minHeightIcon",
+                                    },
+                                    {
+                                      type: 'textField',
+                                      id: nanoid(),
+                                      label: "Max Height",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.maxHeight",
+                                      icon: "maxHeightIcon",
+                                    }
+                                  ]
+                                })
+                                .toJson()
+                              ]
+                            }
+                          })
+                          .addCollapsiblePanel({
+                            id: nanoid(),
+                            propertyName: 'containerStylingBoxPanel',
+                            label: 'Margin & Padding',
+                            labelAlign: 'right',
+                            collapsible: 'header',
+                            ghost: true,
+                            parentId: styleRouterId,
+                            content: {
+                              id: 'containerStylingBoxPanel',
+                              components: [
+                                ...new DesignerToolbarSettings()
+                                  .addStyleBox({
+                                    id: nanoid(),
+                                    label: 'Margin Padding',
+                                    hideLabel: true,
+                                    propertyName: 'container.stylingBox',
+                                    parentId: 'containerStylingBoxPanel'
+                                  })
+                                  .toJson()
+                              ]
+                            }
+                          })
+                          .addCollapsiblePanel({
+                            id: nanoid(),
+                            propertyName: 'containerCustomStylePanel',
+                            label: 'Custom Styles',
+                            labelAlign: 'right',
+                            ghost: true,
+                            parentId: styleRouterId,
+                            collapsible: 'header',
+                            content: {
+                              id: 'containerCustomStylePanel',
+                              components: [...new DesignerToolbarSettings()
+                                .addSettingsInput({
+                                  id: nanoid(),
+                                  inputType: 'codeEditor',
+                                  propertyName: 'container.style',
+                                  hideLabel: false,
+                                  label: 'Style',
+                                  description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                  parentId: 'containerCustomStylePanel'
+                                })
+                                .toJson()
+                              ]
+                            }
+                          })
+                          .toJson()]
+                      }
+                    })
                     .toJson()]
               })
 
@@ -1000,6 +1171,7 @@ export const getSettings = (data: any) => {
                         label: "Collapsible",
                         labelAlign: "right",
                         hidden: false,
+                        jsSetting: true,
                       },
                       {
                         id: nanoid(),
@@ -1008,6 +1180,7 @@ export const getSettings = (data: any) => {
                         label: "Collapsible By Default",
                         labelAlign: "right",
                         hidden: false,
+                        jsSetting: true,
                       }],
                       hideLabel: true,
                     })
@@ -1016,7 +1189,7 @@ export const getSettings = (data: any) => {
                       inputs: [{
                         id: nanoid(),
                         type: 'codeEditor',
-                        propertyName: "headerStyle",
+                        propertyName: "groupStyle",
                         parentId: appearanceTabId,
                         label: "Header Style",
                         jsSetting: false,
