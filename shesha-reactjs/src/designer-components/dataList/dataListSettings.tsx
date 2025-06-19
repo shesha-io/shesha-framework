@@ -207,7 +207,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
     ],
     onBuild: (builder) => {
       builder.addObject("item", "List item", undefined);
-      builder.addObject("selectedListItem", "Selected list item of nearest table (null if not available)", undefined);      
+      builder.addObject("selectedListItem", "Selected list item of nearest table (null if not available)", undefined);
     }
   });
 
@@ -327,28 +327,28 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Show>
 
         <Show when={model?.orientation === 'wrap'}>
-            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-         
-            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-          
-            <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-      
-            <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
+          <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-            <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
-              <Checkbox disabled={readOnly} />
-            </SettingsFormItem>
-          </Show>
+          <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-          
+          <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
+
+          <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
+
+          <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
+        </Show>
+
+
 
         <SettingsFormItem name="hidden" label="Hidden" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />
@@ -484,34 +484,44 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
-      </SettingsCollapsiblePanel>
 
-      <Show when={model.orientation === "vertical" || model.orientation === "horizontal" }>
-        <SettingsCollapsiblePanel header="Grouping">
-        <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
-
-        <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName='checked' jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
-
-        <SettingsFormItem name="groupStyle" label="Style of group headers">
-          <CodeEditor
-            readOnly={readOnly}
-            mode="dialog"
-            propertyName="groupStyle"
-            label="Style of group headers"
-            exposedVariables={[
-              { name: "data", description: "Selected form values", type: "object" },
-            ]}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getGroupHeadersStyle',
-            }}
-            availableConstants={getGroupStyleConstants}
+        <SettingsFormItem name="onRowDeleteSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} hidden={model.canDeleteInline === 'no'}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On row delete success"
+            description="Custom business logic to be executed after successfull deletion of a row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <Show when={model.orientation === "vertical" || model.orientation === "horizontal"}>
+        <SettingsCollapsiblePanel header="Grouping">
+          <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
+
+          <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName='checked' jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
+
+          <SettingsFormItem name="groupStyle" label="Style of group headers">
+            <CodeEditor
+              readOnly={readOnly}
+              mode="dialog"
+              propertyName="groupStyle"
+              label="Style of group headers"
+              exposedVariables={[
+                { name: "data", description: "Selected form values", type: "object" },
+              ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getGroupHeadersStyle',
+              }}
+              availableConstants={getGroupStyleConstants}
+            />
+          </SettingsFormItem>
         </SettingsCollapsiblePanel>
       </Show>
 

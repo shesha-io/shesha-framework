@@ -42,7 +42,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     readOnly,
     noDataText = "No Data",
     noDataSecondaryText = "No data is available for this list",
-    noDataIcon
+    noDataIcon,
+    onRowDeleteSuccessAction,
   } = props;
   const {
     tableData,
@@ -106,6 +107,34 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   }, [onListItemSave]);
 
   const { executeAction } = useConfigurableActionDispatcher();
+
+    const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+      if (!onRowDeleteSuccessAction)
+        return () => {
+          /*nop*/
+        };
+  
+      return (data, formApi, globalState, setGlobalState) => {
+        const evaluationContext = {
+          data,
+          formApi,
+          globalState,
+          setGlobalState,
+          http: allData.http,
+          moment,
+        };
+  
+        try {
+          executeAction({
+            actionConfiguration: onRowDeleteSuccessAction,
+            argumentsEvaluationContext: evaluationContext,
+          });
+        } catch (error) {
+          console.error('Error executing row delete success action:', error);
+        }
+      };
+    }, [onRowDeleteSuccessAction, allData.http]);
+  
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)
       return () => {
@@ -175,6 +204,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
+      performOnRowDeleteSuccessAction(rowData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
       dataSource.refreshTable();
     });
   };
