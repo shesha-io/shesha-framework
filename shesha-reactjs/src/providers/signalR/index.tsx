@@ -52,6 +52,8 @@ function SignalRProvider({
         onConnected(connection);
       }
     });
+    
+    setConnection(connection);
 
     setConnection(connection);
 
