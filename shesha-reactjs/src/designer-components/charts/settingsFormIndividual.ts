@@ -885,7 +885,7 @@ export const getSettings = (data: any) => {
                         parentId: dataSettingsId,
                         inline: true,
                         hidden: {
-                          _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
+                          _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -893,7 +893,7 @@ export const getSettings = (data: any) => {
                           {
                             id: nanoid(),
                             propertyName: 'groupingTimeSeriesFormat',
-                            parentId: dataSettingsId,
+                            parentId: dataTabId,
                             label: 'Grouping Time Series Format',
                             type: 'dropdown',
                             allowClear: true,
