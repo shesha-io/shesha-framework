@@ -10,7 +10,7 @@ import { aggregateValues, getPredictableColor, getPropertyValue, stringifyValues
  * @listens xProperty x-axis property
  * @listens yProperty y-axis property
  * @listens aggregationMethod aggregation method
- * @listens legendProperty legend property
+ * @listens groupingProperty legend property
  * @listens entityType entity type
  * @listens title title
  * @returns title for the chart
@@ -21,7 +21,7 @@ export const useGeneratedTitle = (): string => {
     valueProperty: yProperty,
     aggregationMethod,
     title,
-    legendProperty,
+    groupingProperty,
     dataMode,
     entityType,
     simpleOrPivot,
@@ -32,7 +32,7 @@ export const useGeneratedTitle = (): string => {
   return dataMode === 'entityType'
     ? title?.trim().length > 0
       ? title
-      : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${legendProperty && simpleOrPivot === 'pivot' ? `, grouped by ${legendProperty}` : ''}`
+      : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${groupingProperty && simpleOrPivot === 'pivot' ? `, grouped by ${groupingProperty}` : ''}`
     : title?.trim().length > 0
       ? title
       : ``;
@@ -42,7 +42,7 @@ export const useGeneratedTitle = (): string => {
  * Prepare pivot chart data
  * @param data raw data
  * @param axisProperty axis property
- * @param legendProperty legend property
+ * @param groupingProperty legend property
  * @param valueProperty value property
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @param chartType chart type (bar, line, pie)
@@ -53,7 +53,7 @@ export const useProcessedChartData = (): IChartData => {
   const {
     filteredData: data,
     axisProperty,
-    legendProperty,
+    groupingProperty,
     valueProperty,
     strokeColor,
     aggregationMethod,
@@ -68,7 +68,7 @@ export const useProcessedChartData = (): IChartData => {
     : [];
   let datasets;
 
-  if (simpleOrPivot === 'simple' || !legendProperty) {
+  if (simpleOrPivot === 'simple' || !groupingProperty) {
     // Generate different colors for each data point based on the label
     const colors = labels.map((label) => getPredictableColor(typeof label === 'string' ? label : label + ''));
 
@@ -92,7 +92,7 @@ export const useProcessedChartData = (): IChartData => {
   } else {
     // Pivot mode - multiple datasets based on legend property
     const legendItems = [
-      ...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty))),
+      ...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, groupingProperty))),
     ];
 
     datasets = legendItems?.map((legend) => {
@@ -104,7 +104,7 @@ export const useProcessedChartData = (): IChartData => {
         label: legendDisplayValue,
         data: labels?.map((label) => {
           const matchingItems = memoData.filter((item: { [key: string]: any }) => {
-            return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, legendProperty) === legend;
+            return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, groupingProperty) === legend;
           });
           switch (chartType) {
             case 'bar':

@@ -186,17 +186,17 @@ function convertNestedPropertiesToObjectFormat(array?: string[]) {
  * @param entityType entity type to get data from
  * @param dataProperty property to get data from
  * @param filters filters to apply to the data before returning
- * @param legendProperty legend property to use for the chart
+ * @param groupingProperty legend property to use for the chart
  * @param axisProperty axis property to use for the chart
  * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, legendProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
+      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       skipCount: skipCount ?? 0,

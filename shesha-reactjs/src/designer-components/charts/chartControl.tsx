@@ -14,9 +14,9 @@ import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, legendProperty,
+  const { chartType, entityType, valueProperty, groupingProperty,
     axisProperty, filterProperties, isAxisTimeSeries, timeSeriesFormat,
-    orderBy, orderDirection
+    orderBy, orderDirection, isGroupingTimeSeries, groupingTimeSeriesFormat
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -44,7 +44,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
         let allItems: any[] = [];
         let currentSkipCount = 0;
-        const batchSize = 100;
+        const batchSize = 1000;
         let totalCount = 0;
         let isFirstRequest = true;
 
@@ -54,7 +54,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             entityType, 
             valueProperty, 
             evaluatedFilters, 
-            legendProperty, 
+            groupingProperty, 
             axisProperty, 
             filterProperties, 
             orderBy, 
@@ -110,13 +110,25 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime()
           );
         } else {
-          processedItems = processedItems.sort((a: { [key: string]: any }, b: { [key: string]: any }) => 
-            a[axisProperty] - b[axisProperty]
-          );
+          processedItems = processedItems.sort((a: { [key: string]: any }, b: { [key: string]: any }) => {
+            const aVal = a[axisProperty];
+            const bVal = b[axisProperty];
+            
+            // Handle numeric values
+            if (typeof aVal === 'number' && typeof bVal === 'number') {
+              return aVal - bVal;
+            }
+            
+            // Handle string values
+            return String(aVal).localeCompare(String(bVal));
+          });
         }
 
         // Format dates
         processedItems = formatDate(processedItems, timeSeriesFormat, [axisProperty]);
+        if (isGroupingTimeSeries) {
+          processedItems = formatDate(processedItems, groupingTimeSeriesFormat, [groupingProperty]);
+        }
 
         // Get metadata and process reference lists
         const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
@@ -156,7 +168,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     };
 
     fetchAndProcessData();
-  }, [entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, isAxisTimeSeries, timeSeriesFormat, filterProperties, orderBy, orderDirection, formData]);
+  }, [entityType, valueProperty, evaluatedFilters, groupingProperty, axisProperty, isAxisTimeSeries, timeSeriesFormat, filterProperties, orderBy, orderDirection, formData, isGroupingTimeSeries, groupingTimeSeriesFormat]);
 
   useEffect(() => {
     if (state.data) {
