@@ -196,7 +196,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const title = loadingState === 'error' ? 'Quickview not configured properly' : formTitle;
   return (
     <Popover 
-      overlayInnerStyle={{ width, minWidth: width, maxHeight: '80vh', overflowY: 'scroll', overflowX: 'hidden' }} 
+      overlayInnerStyle={{ width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }} 
       content={formContent} 
       title={<div style={{ width, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{title}</div>} 
       {...popoverProps}
