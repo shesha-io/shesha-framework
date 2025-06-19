@@ -42,13 +42,6 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data?.datasets || !data?.labels) {
-    if (!data) throw new Error('LineChart: No data to display. Please check the data source');
-
-    if (!data.datasets || !data.labels)
-      throw new Error('LineChart: No datasets or labels to display. Please check the data source');
-  }
-
   useEffect(() => {
     if (dataMode === 'url') {
       data?.datasets?.map((dataset: any) => {
@@ -62,6 +55,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       data?.datasets?.map((dataset: any) => {
         dataset.tension = tension;
         dataset.borderColor = strokeColor || 'black';
+        dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
         return dataset;
       });
     }
@@ -79,6 +73,10 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
       },
     },
     scales: {
@@ -86,6 +84,10 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: xProperty?.trim() ?? '',
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
         },
         display: !!showXAxisScale,
         offset: true, // Ensure the x-axis does not coincide with the y-axis
@@ -96,6 +98,10 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
           text: dataMode === 'url' || !aggregationMethod
             ? yProperty?.trim() ?? ''
             : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
         },
         display: !!showYAxisScale,
         beginAtZero: true,

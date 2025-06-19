@@ -49,16 +49,9 @@ ChartJS.register(
 );
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, dataMode, strokeWidth } = useChartDataStateContext();
+  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, strokeWidth, dataMode } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
-
-  if (!data?.datasets || !data?.labels) {
-    if (!data) throw new Error('PieChart: No data to display. Please check the data source');
-
-    if (!data.datasets || !data.labels)
-      throw new Error('PieChart: No datasets or labels to display. Please check the data source');
-  }
 
   data.datasets.forEach((dataset: { data: any[] }) => {
     dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
@@ -67,7 +60,7 @@ const PieChart = ({ data }: IPieChartProps) => {
   if (dataMode === 'url') {
     data?.datasets?.map((dataset: any) => {
       dataset.borderColor = strokeColor || 'black';
-      dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
+      dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
       dataset.strokeColor = strokeColor || 'black';
       return dataset;
     });
@@ -85,6 +78,10 @@ const PieChart = ({ data }: IPieChartProps) => {
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
       },
     },
     layout: {

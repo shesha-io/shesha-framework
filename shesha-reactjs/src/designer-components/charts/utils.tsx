@@ -108,7 +108,7 @@ export const defaultConfigFiller: {
  * @returns array of objects with stringified values
  */
 export const stringifyValues = (data: object[]) => {
-  return data.map(item => {
+  return data?.map(item => {
     const processValue = (value: any): any => {
       if (value === null || value === undefined) {
         return 'undefined';
@@ -157,7 +157,7 @@ function removePropertyDuplicates(str) {
 function convertNestedPropertiesToObjectFormat(array?: string[]) {
   if (!array) return '';
 
-  return array?.filter(path => path && path?.trim() !== '').map(path => {
+  return array?.filter(path => path && path?.trim() !== '')?.map(path => {
     let parts = path.split('.');
     let result = '';
     let indentation = 0;

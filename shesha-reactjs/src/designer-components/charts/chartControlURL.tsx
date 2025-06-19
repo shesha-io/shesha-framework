@@ -20,26 +20,12 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
   useEffect(() => setControlProps(props), [props, formData]);
   useEffect(() => {
-    if (!url) {
+    if (!url || url === '') {
       return;
     }
     refetch(getURLChartDataRefetchParams(url))
       .then((data) => {
-        if (!data.result) {
-          setIsLoaded(true);
-          throw new Error('No data returned from the server. Please check the URL and try again.');
-        }
-        if (!data.result.datasets || !data.result.labels) {
-          let errors: string[] = [];
-          if (!data.result.datasets) {
-            errors.push('No datasets returned from the server. Please check the URL and try again.');
-          }
-          if (!data.result.labels) {
-            errors.push('No labels returned from the server. Please check the URL and try again.');
-          }
-          throw new Error(errors.join(' '));
-        }
-        setUrlTypeData(data.result);
+        setUrlTypeData(data?.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
       })
       .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err))
@@ -52,7 +38,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     const missingProperties: string[] = [];
     if (!url) missingProperties.push("'url'");
     if (!chartType) missingProperties.push("'chartType'");
-
+    
     const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
     return (
       <Alert
