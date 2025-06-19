@@ -36,9 +36,20 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     showYAxisTitle,
     stacked,
     dataMode,
+    strokeColor,
+    strokeWidth,
   } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
+
+  if (dataMode === 'url') {
+    data?.datasets?.map((dataset: any) => {
+      dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
+      dataset.borderColor = strokeColor || 'black';
+      dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
+      return dataset;
+    });
+  }
 
   const options: ChartOptions<any> = {
     responsive: true,
@@ -52,6 +63,10 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
       },
     },
     scales: {
@@ -59,6 +74,10 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: xProperty?.trim() ?? '',
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
         },
         display: !!showXAxisScale,
         stacked: stacked,
@@ -71,6 +90,10 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
           text: dataMode === 'url' || !aggregationMethod
             ? yProperty?.trim() ?? ''
             : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
         },
         display: !!showYAxisScale,
         stacked: stacked,

@@ -127,29 +127,51 @@ export const getSettings = (data: any) => {
                                 hidden: false,
                                 validate: { required: true },
                               })
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'axisProperty',
-                                label: 'Axis label',
-                                inputType: 'textField',
-                                labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
-                                isDynamic: false,
-                                description: 'Label for the axis property',
-                                validate: { required: false },
-                                width: '100%',
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'axisProperty',
+                                    label: 'Axis label',
+                                    type: 'textField',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsForUrlId,
+                                    isDynamic: false,
+                                    description: 'Label for the axis property',
+                                    validate: { required: false },
+                                    width: '100%',
+                                  }  
+                                ]
                               })
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'valueProperty',
-                                label: 'Value axis label',
-                                inputType: 'textField',
-                                labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
-                                isDynamic: false,
-                                description: 'Label for the value property',
-                                validate: { required: false },
-                                width: '100%',
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'valueProperty',
+                                    label: 'Value axis label',
+                                    type: 'textField',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsForUrlId,
+                                    isDynamic: false,
+                                    description: 'Label for the value property',
+                                    validate: { required: false },
+                                    width: '100%',
+                                  }
+                                ]
                               })
                               .toJson(),
                           ],

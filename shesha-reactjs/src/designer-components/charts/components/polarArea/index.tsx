@@ -56,6 +56,10 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
       },
     },
     layout: {
