@@ -1,15 +1,13 @@
-import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { getSettings } from './settingsForm';
-import { AdvancedFilterButton } from './advancedFilterButton';
-import { IButtonComponentProps } from '@/designer-components/button/interfaces';
-import { Show } from '@/components';
-import { Tooltip } from 'antd';
-import { defaultStyles } from './utils';
-import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
+import { IButtonComponentProps } from '@/designer-components/button/interfaces';
+import { IToolboxComponent } from '@/interfaces';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { FilterOutlined } from '@ant-design/icons';
+import React from 'react';
+import { AdvancedFilterButton } from './advancedFilterButton';
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
@@ -18,14 +16,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
   icon: <FilterOutlined />,
   Factory: ({ model }) =>
     model.hidden ? null : (
-      <div>
-        <AdvancedFilterButton {...model} styles={model.allStyles.fullStyle} />
-        <Show when={Boolean(model.tooltip?.trim())}>
-          <Tooltip title={model.tooltip}>
-            <QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />
-          </Tooltip>
-        </Show>
-      </div>
+      <AdvancedFilterButton {...model} styles={model.allStyles.fullStyle} />
     ),
   initModel: (model) => {
     return {

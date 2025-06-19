@@ -200,6 +200,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "output",
                                     "noSelectionItemText": "Default",
                                     "noSelectionItemValue": "[default]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
@@ -211,6 +212,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "input",
                                     "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
@@ -222,6 +224,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "input",
                                     "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
