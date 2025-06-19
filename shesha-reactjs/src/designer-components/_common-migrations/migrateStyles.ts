@@ -4,8 +4,8 @@ import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyle
 
 type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean; type?: string };
 
-const inputTypes = ['textField', 'numberField', 'passwordCombo', 'textArea', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
-const isInput = (prev: ExtendedType) => inputTypes.includes(prev.type);
+const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
+const isInputField = (prev: ExtendedType) => inputTypes.includes(prev.type);
 export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
     const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
 
@@ -16,7 +16,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
         color: prevStyles?.borderColor ?? prev?.border?.border?.[side]?.color ?? defaults?.border?.border?.[side]?.color
     });
 
-    const heightFromSize = !isInput(prev) ? null : prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
+    const heightFromSize = !isInputField(prev) ? null : prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
     const fontSizeFromSize = prevStyles?.size === 'small' ? 14 : prevStyles?.size === 'large' ? 16 : null;
     const isColor = prevStyles.backgroundType === 'color' || prev.backgroundType === 'color';
     const isBase64 = prevStyles.backgroundDataSource === 'base64' || prev.backgroundDataSource === 'base64';
