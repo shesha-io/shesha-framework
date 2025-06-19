@@ -90,7 +90,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     })
     .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles(prev)) }))
     .add<IButtonGroupComponentProps>(12, (prev) => {
-      const newModel = { ...prev };
+      const newModel = { ...prev, gap: prev.spaceSize ?? 'middle' };
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         const newItem = { ...item, ...migrateStyles(item, defaultStyles(item)) };
         if (Array.isArray(newItem['childItems']))
@@ -100,8 +100,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
       newModel.items = newModel.items.map(updateItems);
       return newModel;
-    })
-    .add<IButtonGroupComponentProps>(13, (prev) => ({ ...prev, gap: prev.spaceSize ?? 'middle' })),
+    }),
   settingsFormMarkup: (props) => getSettings(props),
 };
 
