@@ -28,7 +28,7 @@ export interface IQuickViewProps extends PropsWithChildren {
   /** Metadata properties of value */
   dataProperties?: { [key in string]: any }[];
   /** The width of the quickview */
-  width?: number;
+  width?: number | string;
 
   className?: string;
 
@@ -70,7 +70,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   displayProperty,
   displayName,
   initialFormData,
-  width = 600,
+  width = 400,
   popoverProps,
   dataProperties = [],
   disabled,
