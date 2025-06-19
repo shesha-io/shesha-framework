@@ -389,7 +389,7 @@ export const getSettings = (data: any) => {
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
                                     validate: { required: true },
-                                    defaultValue: 'day-month-year',
+                                    defaultValue: 'month-year',
                                     width: '100%',
                                   },
                                 ],
