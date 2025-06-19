@@ -4,6 +4,7 @@ import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks';
+import { splitTitleIntoLines } from '../../utils';
 
 interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
@@ -58,8 +59,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle && chartTitle.length > 0,
-        text: chartTitle,
+        display: !!(showTitle && chartTitle?.length > 0),
+        text: splitTitleIntoLines(chartTitle),
       },
     },
     layout: {
