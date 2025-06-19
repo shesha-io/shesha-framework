@@ -1,4 +1,4 @@
 # Release Notes
 
 ## 💪 Enhancements
-- Independent Notes Instances on Same Form
+- Implemented the event On Row Deleted on datatable and datalist components
