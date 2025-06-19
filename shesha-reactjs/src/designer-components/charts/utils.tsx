@@ -109,12 +109,27 @@ export const defaultConfigFiller: {
  */
 export const stringifyValues = (data: object[]) => {
   return data.map(item => {
+    const processValue = (value: any): any => {
+      if (value === null || value === undefined) {
+        return 'undefined';
+      }
+      if (typeof value === 'object' && !(value instanceof Date)) {
+        // Don't stringify objects, keep them as is for nested property access
+        return value;
+      }
+      if (typeof value !== 'string') {
+        return `${value}`;
+      }
+      return value;
+    };
+
+    const newItem: any = {};
     for (const key in item) {
-      if (typeof item[key] !== 'string') {
-        item[key] = `${item[key]}`;
+      if (Object.prototype.hasOwnProperty.call(item, key)) {
+        newItem[key] = processValue(item[key]);
       }
     }
-    return item;
+    return newItem;
   });
 };
 
