@@ -326,6 +326,17 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
+
+        <SettingsFormItem name="onRowDeleteSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On row delete success"
+            description="Custom business logic to be executed after successfull deletion of a row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
+          />
+        </SettingsFormItem>
+
         <SettingsFormItem name="canDeleteInline" label="Can delete inline">
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
