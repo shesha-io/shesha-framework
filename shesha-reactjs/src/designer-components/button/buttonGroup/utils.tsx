@@ -30,9 +30,10 @@ export function getButtonGroupMenuItem(
 };
 
 export const defaultStyles = (prev): IStyleType => {
+
   return {
     background: { type: 'color', color: prev.backgroundColor, },
-    font: { weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev.fontFamily ?? 'Segoe UI', align: 'center' },
+    font: { color: prev.buttonType === 'primary' ? '#fff' : prev.fontColor ?? '#000', weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev.fontFamily ?? 'Segoe UI', align: 'center' },
     border: {
       borderType: 'all',
       radiusType: 'all',
@@ -43,12 +44,12 @@ export const defaultStyles = (prev): IStyleType => {
           color: prev.borderColor ?? '#d9d9d9'
         },
       },
-      radius: { all: prev.borderRadius ?? 8 }
+      radius: { all: prev.borderRadius ?? prev.size === 'small' ? 4 : 8 }
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
     dimensions: {
       width: prev.block ? '100%' : 'auto',
-      height: prev.size === 'small' ? '24px' : prev.size === 'middle' ? '32px' : '40px',
+      height: prev.height ?? prev.size === 'small' ? '24px' : prev.size === 'middle' ? '32px' : '40px',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
