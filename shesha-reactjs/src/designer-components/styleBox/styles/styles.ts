@@ -26,6 +26,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         height: 155px;
         overflow: hidden;
         width: 240px;
+        margin-top: 10px;
       
         .${prefixCls}-input {
           border: none;
@@ -55,7 +56,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         .${margTop} {
           position: absolute;
           position: absolute;
-          top: 2px;
+          top: 12px;
           left: 107px;
           left: 107px;
         }
@@ -64,8 +65,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           position: absolute;
           position: absolute;
           left: 2px;
-          top: 69px;
-          top: 69px;
+          top: 79px;
         }
       
         .${margBottom} {
@@ -79,7 +79,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         .${margRight} {
           position: absolute;
           left: 205px;
-          top: 69px;
+          top: 79px;
           position: absolute;
           left: 205px;
           top: 69px;
