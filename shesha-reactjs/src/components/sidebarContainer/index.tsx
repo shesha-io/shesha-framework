@@ -40,8 +40,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
   );
 
-  const handleDrag = (newSizes) => setCurrentSizes(newSizes);
-
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
@@ -70,8 +68,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         gutterSize={8}
         gutterAlign="center"
         snapOffset={5}
-        dragInterval={1}
-        onDrag={handleDrag}
+        dragInterval={12}
         direction="horizontal"
         cursor="col-resize"
         className={classNames(styles.sidebarContainerBody)}
