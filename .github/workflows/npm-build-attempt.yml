@@ -5,6 +5,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'shesha-reactjs/**'
 
 permissions:
   pull-requests: write
@@ -34,4 +36,3 @@ jobs:
       - name: Build
         id: build
         run: npm run build
-        
