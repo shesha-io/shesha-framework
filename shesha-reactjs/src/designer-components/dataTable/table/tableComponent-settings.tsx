@@ -165,23 +165,22 @@ export interface IProps {
 
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
   const { readOnly } = props;
-  
   const { model } = useSettingsForm<ITableComponentProps>();
 
-  const crudConstants = useAvailableConstantsMetadata({ 
+  const crudConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData, SheshaConstants.moment
     ]
   });
 
-  const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
+  const onNewRowInitializeConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
-  const onRowSaveConstants = useAvailableConstantsMetadata({ 
+  const onRowSaveConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
@@ -191,7 +190,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
     }
   });
 
-  const styleConstants = useAvailableConstantsMetadata({ 
+  const styleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData
@@ -317,6 +316,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={onRowSaveConstants}
           />
         </SettingsFormItem>
+
         <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
             editorConfig={null}
@@ -325,6 +325,14 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             description="Custom business logic to be executed after successfull saving of new/updated row."
             exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="canDeleteInline" label="Can delete inline">
+          <Select disabled={readOnly} options={yesNoInheritOptions} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
+          <Input readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="onRowDeleteSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
@@ -337,9 +345,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
           />
         </SettingsFormItem>
 
-        <SettingsFormItem name="canDeleteInline" label="Can delete inline">
-          <Select disabled={readOnly} options={yesNoInheritOptions} />
-        </SettingsFormItem>
         <SettingsFormItem name="canDeleteInlineExpression" label="Can delete inline expression" hidden={model.canDeleteInline !== 'js'}>
           <CodeEditor
             propertyName="canDeleteInlineExpression"
@@ -355,10 +360,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={crudConstants}
           />
         </SettingsFormItem>
-        <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
-          <Input readOnly={readOnly} />
-        </SettingsFormItem>
-
       </SettingsCollapsiblePanel>
       <SettingsCollapsiblePanel header="Layout">
         <SettingsFormItem jsSetting
