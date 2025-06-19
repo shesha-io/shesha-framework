@@ -55,6 +55,23 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     responsive: true,
     maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
     aspectRatio: 2, // Width to height ratio (2:1)
+    animation: {
+      duration: 1000, // Animation duration in milliseconds
+      easing: 'easeInOutQuart', // Smooth easing function
+      delay: (context) => context.dataIndex * 50, // Staggered animation for bars
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 400, // Quick animation for hover effects
+        },
+      },
+      resize: {
+        animation: {
+          duration: 800, // Smooth resize animation
+        },
+      },
+    },
     plugins: {
       legend: {
         display: !!showLegend,

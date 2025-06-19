@@ -30,8 +30,8 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     width: 120px;
     height: 120px;
     position: relative;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
+    -webkit-animation: spin 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation: spin 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 
     &::before {
       content: '';
@@ -102,13 +102,31 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     }
 
     @-webkit-keyframes spin {
-      0% { -webkit-transform: rotate(0deg); }
-      100% { -webkit-transform: rotate(360deg); }
+      0% { 
+        -webkit-transform: rotate(0deg); 
+        -webkit-filter: brightness(1);
+      }
+      50% {
+        -webkit-filter: brightness(1.1);
+      }
+      100% { 
+        -webkit-transform: rotate(360deg); 
+        -webkit-filter: brightness(1);
+      }
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% { 
+        transform: rotate(0deg); 
+        filter: brightness(1);
+      }
+      50% {
+        filter: brightness(1.1);
+      }
+      100% { 
+        transform: rotate(360deg); 
+        filter: brightness(1);
+      }
     }
   `);
 

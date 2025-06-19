@@ -34,6 +34,23 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
     responsive: true,
     maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
     aspectRatio: 1, // Square aspect ratio for polar area charts
+    animation: {
+      duration: 1400, // Animation duration in milliseconds
+      easing: 'easeInOutCubic', // Smooth easing function for polar areas
+      delay: (context) => context.dataIndex * 80, // Staggered animation for polar areas
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 350, // Quick animation for hover effects
+        },
+      },
+      resize: {
+        animation: {
+          duration: 700, // Smooth resize animation
+        },
+      },
+    },
     plugins: {
       scales: {
         r: {

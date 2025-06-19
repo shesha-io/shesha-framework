@@ -37,7 +37,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     const missingProperties: string[] = [];
     if (!url) missingProperties.push("'url'");
     if (!chartType) missingProperties.push("'chartType'");
-    
+
     const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
     return (
       <Alert
@@ -51,7 +51,15 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
   if (!state.isLoaded) {
     return (
-      <Flex align="center" justify="center">
+      <Flex
+        align="center"
+        justify="center"
+        className={cx(
+          styles.responsiveChartContainer,
+          props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+        )}
+        style={getResponsiveStyle(props)}
+      >
         <div className={cx(styles.octagonalLoader)}></div>
         <div className={cx(styles.loadingText)}>Loading data...</div>
       </Flex>

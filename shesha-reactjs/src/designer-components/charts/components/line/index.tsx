@@ -65,6 +65,23 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     responsive: true,
     maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
     aspectRatio: 2, // Width to height ratio (2:1)
+    animation: {
+      duration: 1200, // Animation duration in milliseconds
+      easing: 'easeInOutCubic', // Smooth easing function for lines
+      delay: (context) => context.dataIndex * 30, // Staggered animation for data points
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 300, // Quick animation for hover effects
+        },
+      },
+      resize: {
+        animation: {
+          duration: 600, // Smooth resize animation
+        },
+      },
+    },
     plugins: {
       legend: {
         display: !!showLegend,

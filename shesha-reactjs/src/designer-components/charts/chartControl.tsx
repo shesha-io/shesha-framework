@@ -5,17 +5,27 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { Alert, Flex } from 'antd';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import { useProcessedChartData } from "./hooks";
+import { useProcessedChartData } from './hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, groupingProperty,
-    axisProperty, filterProperties, isAxisTimeSeries, timeSeriesFormat,
-    orderBy, orderDirection, isGroupingTimeSeries, groupingTimeSeriesFormat
+  const {
+    chartType,
+    entityType,
+    valueProperty,
+    groupingProperty,
+    axisProperty,
+    filterProperties,
+    isAxisTimeSeries,
+    timeSeriesFormat,
+    orderBy,
+    orderDirection,
+    isGroupingTimeSeries,
+    groupingTimeSeriesFormat,
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -25,9 +35,11 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { data: formData } = useFormData();
   const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>({
     current: 0,
-    total: -1
+    total: -1,
   });
+  const [showLoader, setShowLoader] = useState(true);
   const [metadataProcessed, setMetadataProcessed] = useState(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { styles, cx } = useStyles();
 
@@ -45,32 +57,32 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   // Optimized data processing function
   const processItems = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
     const processedItems = new Array(items.length);
-    
+
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const processedItem: any = {};
-      
+
       // Process all properties in a single pass
       for (const key in item) {
         if (Object.hasOwn(item, key)) {
           let value = item[key];
-          
+
           // Handle null/undefined values
           value ??= 'undefined';
-          
+
           // Apply reference list mapping if available
           if (refListMap.has(key)) {
             const refMap = refListMap.get(key);
             value = refMap.get(value) || value;
           }
-          
+
           processedItem[key] = value;
         }
       }
-      
+
       processedItems[i] = processedItem;
     }
-    
+
     return processedItems;
   }, []);
 
@@ -86,11 +98,11 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       return items.sort((a, b) => {
         const aVal = a[property];
         const bVal = b[property];
-        
+
         if (typeof aVal === 'number' && typeof bVal === 'number') {
           return aVal - bVal;
         }
-        
+
         return String(aVal).localeCompare(String(bVal));
       });
     }
@@ -107,28 +119,29 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
         // Get metadata first to identify reference list properties
         const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
-        
+
         // Pre-filter reference list properties and create lookup maps
-        const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>)
-          .filter((metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item');
-        
+        const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
+          (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item'
+        );
+
         // Create reference list lookup maps in parallel
         const refListMap = new Map<string, Map<any, string>>();
         const refListPromises = refListProperties.map(async (metaItem: IRefListPropertyMetadata) => {
           const fieldName = toCamelCase(metaItem.path);
           try {
-            const refListItem = await getReferenceList({ 
-              refListId: { 
-                module: metaItem.referenceListModule, 
-                name: metaItem.referenceListName 
-              } 
+            const refListItem = await getReferenceList({
+              refListId: {
+                module: metaItem.referenceListModule,
+                name: metaItem.referenceListName,
+              },
             }).promise;
-            
+
             const valueMap = new Map();
             refListItem.items.forEach((x) => {
               valueMap.set(x.itemValue, x.item?.trim() || `${x.itemValue}`);
             });
-            
+
             refListMap.set(fieldName, valueMap);
           } catch (err) {
             console.error('getReferenceList error:', err);
@@ -142,26 +155,26 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         setMetadataProcessed(true);
 
         // Fetch data with optimized batch size and parallel requests
-        const batchSize = 1000; 
+        const batchSize = 1000;
         let allItems: any[] = [];
         let totalCount = 0;
 
         // Get first batch to determine total count
         const firstParams = getChartDataRefetchParams(
-          entityType, 
-          valueProperty, 
-          evaluatedFilters, 
-          groupingProperty, 
-          axisProperty, 
-          filterProperties, 
-          orderBy, 
+          entityType,
+          valueProperty,
+          evaluatedFilters,
+          groupingProperty,
+          axisProperty,
+          filterProperties,
+          orderBy,
           orderDirection,
           0,
           batchSize
         );
 
         const firstResponse = await refetch(firstParams);
-        
+
         if (!firstResponse?.result) {
           throw new Error('Invalid response structure');
         }
@@ -176,27 +189,27 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         const remainingBatches = Math.ceil((totalCount - allItems.length) / batchSize);
         if (remainingBatches > 0) {
           const batchPromises = [];
-          
+
           for (let i = 1; i <= remainingBatches; i++) {
             const skipCount = i * batchSize;
             const params = getChartDataRefetchParams(
-              entityType, 
-              valueProperty, 
-              evaluatedFilters, 
-              groupingProperty, 
-              axisProperty, 
-              filterProperties, 
-              orderBy, 
+              entityType,
+              valueProperty,
+              evaluatedFilters,
+              groupingProperty,
+              axisProperty,
+              filterProperties,
+              orderBy,
               orderDirection,
               skipCount,
               batchSize
             );
-                        
+
             batchPromises.push(refetch(params));
           }
 
           // Wait for all batches to complete
-           // Collect all batch results
+          // Collect all batch results
           const batchResults = await Promise.all(batchPromises);
           batchResults.forEach((response) => {
             if (response?.result?.items && Array.isArray(response.result.items)) {
@@ -217,32 +230,68 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         if (isGroupingTimeSeries) {
           processedItems = formatDate(processedItems, groupingTimeSeriesFormat, [groupingProperty]);
         }
-        
+
         setData(processedItems);
         setIsLoaded(true);
-        
+
+        // Debounce the loader hiding to prevent flickering
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+        debounceTimeoutRef.current = setTimeout(() => {
+          setShowLoader(false);
+        }, 1000);
+
         setLoadingProgress(null);
       } catch (error) {
         console.error('Error in fetchAndProcessData:', error);
         setIsLoaded(true);
+        setShowLoader(false);
         setMetadataProcessed(false);
         setLoadingProgress({
           current: 0,
-          total: -1
+          total: -1,
         });
       }
     };
 
     fetchAndProcessData();
-  }, [requiredProperties, evaluatedFilters, groupingProperty, isAxisTimeSeries, timeSeriesFormat, 
-    filterProperties, orderBy, orderDirection, formData, isGroupingTimeSeries, groupingTimeSeriesFormat, 
-    processItems, sortItems, entityType, valueProperty, axisProperty, getMetadata, getReferenceList, refetch]);
+  }, [
+    requiredProperties,
+    evaluatedFilters,
+    groupingProperty,
+    isAxisTimeSeries,
+    timeSeriesFormat,
+    filterProperties,
+    orderBy,
+    orderDirection,
+    formData,
+    isGroupingTimeSeries,
+    groupingTimeSeriesFormat,
+    processItems,
+    sortItems,
+    entityType,
+    valueProperty,
+    axisProperty,
+    getMetadata,
+    getReferenceList,
+    refetch,
+  ]);
 
   useEffect(() => {
     if (state.data) {
       setFilterdData(state.data);
     }
   }, [state.data]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const data: IChartData = useProcessedChartData();
 
@@ -265,33 +314,45 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         type="warning"
       />
     );
-    }
-    
-    if (loadingProgress?.current !== loadingProgress?.total) {
-      return (
-        <>
-          {loadingProgress && (!state.isLoaded || !metadataProcessed) && (
-            <Flex align="center" justify='center' vertical gap={16}>
-              <div className={cx(styles.octagonalLoader)}></div>
-              <div className={cx(styles.loadingText)}>Loading data...</div>
-              <div>{loadingProgress.current} / {loadingProgress.total} items</div>
-            </Flex>
-          )}
-        </>
-      );
-    }
-    
+  }
+
+  if (loadingProgress?.current !== loadingProgress?.total) {
     return (
-        <div 
-          className={cx(
-            styles.responsiveChartContainer,
-            props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
-          )}
-          style={getResponsiveStyle(props)}
-        >
-        {renderChart(chartType, data)}
-        </div>
+      <>
+        {loadingProgress && (!state.isLoaded || !metadataProcessed) && showLoader && (
+          <Flex
+            align="center"
+            justify="center"
+            vertical
+            gap={16}
+            className={cx(
+              styles.responsiveChartContainer,
+              props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+            )}
+            style={getResponsiveStyle(props)}
+          >
+            <div className={cx(styles.octagonalLoader)}></div>
+            <div className={cx(styles.loadingText)}>Loading data...</div>
+            <div>
+              {loadingProgress.current} / {loadingProgress.total} items
+            </div>
+          </Flex>
+        )}
+      </>
     );
-    };
-    
-    export default ChartControl;
+  }
+
+  return (
+    <div
+      className={cx(
+        styles.responsiveChartContainer,
+        props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+      )}
+      style={getResponsiveStyle(props)}
+    >
+      {renderChart(chartType, data)}
+    </div>
+  );
+};
+
+export default ChartControl;
