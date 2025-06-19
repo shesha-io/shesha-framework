@@ -265,7 +265,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     if (loadingProgress?.current !== loadingProgress?.total) {
       return (
         <>
-          {loadingProgress && (
+          {loadingProgress && !state.isLoaded && (
             <Flex align="center" justify='center' vertical gap={16}>
               <div className={cx(styles.octagonalLoader)}></div>
               <div className={cx(styles.loadingText)}>Loading data...</div>
