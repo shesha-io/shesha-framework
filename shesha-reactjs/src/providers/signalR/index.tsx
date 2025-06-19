@@ -76,6 +76,8 @@ function SignalRProvider({
       console.error('SignalR connection closed', error);
       onDisconnected?.();
     });
+    
+    setConnection(connection);
 
     return () => {
       connection
