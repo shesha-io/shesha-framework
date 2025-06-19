@@ -20,6 +20,8 @@ export interface ISignalRProvider {
   baseUrl?: string;
   onConnected?: (connection: ISignalRConnection) => void;
   onDisconnected?: () => void;
+  enableReconnect?: boolean;
+  reconnectIntervals?: number[]; // default: [0, 2000, 5000, 10000]
 }
 
 function SignalRProvider({
@@ -28,6 +30,8 @@ function SignalRProvider({
   hubUrl,
   onConnected,
   onDisconnected,
+  enableReconnect,
+  reconnectIntervals,
 }: PropsWithChildren<ISignalRProvider>) {
   const [state, dispatch] = useReducer(signalRReducer, { ...SIGNAL_R_CONTEXT_INITIAL_STATE });
   const { backendUrl } = useSheshaApplication();
@@ -43,19 +47,12 @@ function SignalRProvider({
       return undefined;
     }
 
-    const connection: ISignalRConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl ?? backendUrl}${hubUrl}`)
-      .build();
+    let builder = new signalR.HubConnectionBuilder().withUrl(`${baseUrl ?? backendUrl}${hubUrl}`);
 
-    connection.start().then(() => {
-      if (onConnected) {
-        onConnected(connection);
-      }
-    });
-    
-    setConnection(connection);
+    if (enableReconnect) {
+      builder = builder.withAutomaticReconnect(reconnectIntervals ?? [0, 2000, 5000, 10000]);
+    }
 
-    setConnection(connection);
     const connection: ISignalRConnection = builder.build();
 
     connection
@@ -80,6 +77,8 @@ function SignalRProvider({
       onDisconnected?.();
     });
 
+    setConnection(connection);
+
     return () => {
       connection
         ?.stop()
@@ -92,7 +91,7 @@ function SignalRProvider({
 
       setConnection();
     };
-  }, [baseUrl, backendUrl, hubUrl]);
+  }, [baseUrl, backendUrl, hubUrl, enableReconnect, reconnectIntervals]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
