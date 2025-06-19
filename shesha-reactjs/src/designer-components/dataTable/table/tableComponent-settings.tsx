@@ -248,16 +248,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
           <Input readOnly={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
-          <ConfigurableActionConfigurator
-            editorConfig={null}
-            level={1}
-            label="On row save success"
-            description="Custom business logic to be executed after successfull saving of new/updated row."
-            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
-          />
-        </SettingsFormItem>
-
         <SettingsFormItem name="canAddInline" label="Can add inline">
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
@@ -327,6 +317,24 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
           />
         </SettingsFormItem>
 
+        <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On row save success"
+            description="Custom business logic to be executed after successfull saving of new/updated row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
+          />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="canDeleteInline" label="Can delete inline">
+          <Select disabled={readOnly} options={yesNoInheritOptions} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
+          <Input readOnly={readOnly} />
+        </SettingsFormItem>
+
         <SettingsFormItem name="onRowDeleteSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
             editorConfig={null}
@@ -337,9 +345,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
           />
         </SettingsFormItem>
 
-        <SettingsFormItem name="canDeleteInline" label="Can delete inline">
-          <Select disabled={readOnly} options={yesNoInheritOptions} />
-        </SettingsFormItem>
         <SettingsFormItem name="canDeleteInlineExpression" label="Can delete inline expression" hidden={model.canDeleteInline !== 'js'}>
           <CodeEditor
             propertyName="canDeleteInlineExpression"
@@ -355,10 +360,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={crudConstants}
           />
         </SettingsFormItem>
-        <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
-          <Input readOnly={readOnly} />
-        </SettingsFormItem>
-
       </SettingsCollapsiblePanel>
       <SettingsCollapsiblePanel header="Layout">
         <SettingsFormItem jsSetting
