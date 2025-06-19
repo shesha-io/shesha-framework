@@ -27,7 +27,7 @@ export const useGeneratedTitle = (): string => {
     simpleOrPivot,
   } = useChartDataStateContext();
 
-  const entityTypeArray = dataMode === 'entityType' ? entityType?.split('.') : undefined;
+  const entityTypeArray = dataMode === 'entityType' && entityType ? entityType?.split('.') : [];
   const entityClassName = dataMode === 'entityType' ? entityTypeArray[entityTypeArray?.length - 1] : '';
   return dataMode === 'entityType'
     ? title?.trim().length > 0
@@ -66,7 +66,7 @@ export const useProcessedChartData = (): IChartData => {
   let labels = memoData.length
     ? [...new Set(memoData.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))]
     : [];
-  let datasets;
+  let datasets = [];
 
   if (simpleOrPivot === 'simple' || !legendProperty) {
     // Generate different colors for each data point based on the label
@@ -92,7 +92,7 @@ export const useProcessedChartData = (): IChartData => {
   } else {
     // Pivot mode - multiple datasets based on legend property
     const legendItems = [
-      ...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty))),
+      ...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)) ?? []),
     ];
 
     datasets = legendItems?.map((legend) => {
@@ -137,8 +137,8 @@ export const useProcessedChartData = (): IChartData => {
   labels = labels?.map((label) => label ?? 'null');
 
   return {
-    labels,
-    datasets,
+    labels: labels ?? [],
+    datasets: datasets ?? [],
   };
 };
 
@@ -149,11 +149,9 @@ export const useProcessedChartData = (): IChartData => {
 export const useChartURLData = () => {
   const { urlTypeData, strokeColor, strokeWidth, tension } = useChartDataStateContext();
 
-  const memoData = useMemo(() => urlTypeData, [urlTypeData]);
-
   return {
-    labels: memoData?.labels,
-    datasets: urlTypeData?.datasets?.map((dataset: any) => {
+    labels: urlTypeData?.labels ?? [],
+    datasets: (urlTypeData?.datasets ?? []).map((dataset: any) => {
       dataset.borderColor = strokeColor || 'black';
       dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
       dataset.strokeColor = strokeColor || 'black';

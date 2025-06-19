@@ -53,13 +53,6 @@ const PieChart = ({ data }: IPieChartProps) => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data?.datasets || !data?.labels) {
-    if (!data) throw new Error('PieChart: No data to display. Please check the data source');
-
-    if (!data.datasets || !data.labels)
-      throw new Error('PieChart: No datasets or labels to display. Please check the data source');
-  }
-
   data.datasets.forEach((dataset: { data: any[] }) => {
     dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
   });

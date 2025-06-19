@@ -40,13 +40,6 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data?.datasets || !data?.labels) {
-    if (!data) throw new Error('BarChart: No data to display. Please check the data source');
-
-    if (!data.datasets || !data.labels)
-      throw new Error('BarChart: No datasets or labels to display. Please check the data source');
-  }
-
   const options: ChartOptions<any> = {
     responsive: true,
     maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow

@@ -13,7 +13,6 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
 
-
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, legendProperty,
     axisProperty, filterProperties, isAxisTimeSeries, timeSeriesFormat,
@@ -36,6 +35,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     if (!entityType || !valueProperty || !axisProperty) {
       return;
     }
+
     refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties, orderBy, orderDirection))
       .then((data) => {
         data.result.items = data?.result?.items?.map((item: { [key: string]: any }) => {
