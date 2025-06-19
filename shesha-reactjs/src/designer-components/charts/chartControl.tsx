@@ -262,16 +262,15 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     
     if (!state.isLoaded) {
       return (
-        <Flex align="center" justify='center' vertical gap={16}>
-          <Spin indicator={<LoadingOutlined className={cx(styles.chartControlSpinFontSize)} spin />} />
+        <>
           {loadingProgress && (
-            <div style={{ textAlign: 'center' }}>
+            <Flex align="center" justify='center' vertical gap={16}>
               <Image src={'/images/SheshaLoadingAnimation.gif'} alt="Loading" width={100} height={100} unoptimized />
               <div>Loading data...</div>
               <div>{loadingProgress.current} / {loadingProgress.total} items</div>
-            </div>
+            </Flex>
           )}
-        </Flex>
+        </>
       );
     }
     

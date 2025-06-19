@@ -1,13 +1,13 @@
 import { useGet } from '@/hooks';
 import { useFormData } from '@/index';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Flex, Result, Spin } from 'antd';
+import { Alert, Flex, Result } from 'antd';
 import React, { useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getResponsiveStyle, getURLChartDataRefetchParams, renderChart } from './utils';
+import Image from 'next/image';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType } = props;
@@ -53,7 +53,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   if (!state.isLoaded) {
     return (
       <Flex align="center" justify="center">
-        <Spin indicator={<LoadingOutlined className={cx(styles.chartControlSpinFontSize)} spin />} />
+        <Image src={'/images/SheshaLoadingAnimation.gif'} alt="Loading" width={100} height={100} unoptimized />
       </Flex>
     );
   }
