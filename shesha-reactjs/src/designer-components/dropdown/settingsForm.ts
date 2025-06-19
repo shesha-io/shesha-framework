@@ -473,6 +473,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             parentId: styleRouterId,
                                             ghost: true,
                                             collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
@@ -537,6 +538,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             parentId: styleRouterId,
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             collapsible: 'header',
                                             content: {
                                                 id: nanoid(),
@@ -620,6 +622,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Border',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
@@ -645,6 +648,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Background',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
@@ -776,6 +780,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Shadow',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
@@ -845,6 +850,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Margin & Padding',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             collapsible: 'header',
                                             content: {
                                                 id: nanoid(),
@@ -865,6 +871,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {

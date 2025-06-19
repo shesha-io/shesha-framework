@@ -1,13 +1,28 @@
 import { getTagStyle } from '@/utils/style';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Tag, Tooltip, TooltipProps } from 'antd';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { Icon } from '../readOnlyDisplayFormItem';
-function ReflistTag({ value, tooltip, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }) {
 
-    const memoizedColor = solidColor
-        ? convertCssColorNameToHex(color ?? '')
-        : color?.toLowerCase();
+interface IReflistTagProps {
+    value?: string | number;
+    tooltip?: string;
+    color?: string;
+    icon?: string | React.ReactNode;
+    showIcon?: boolean;
+    tagStyle?: CSSProperties;
+    solidColor?: boolean;
+    showItemName?: boolean;
+    label?: string | React.ReactNode;
+    placement?: TooltipProps['placement'];
+}
+function ReflistTag({ value, tooltip, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps) {
+
+    const memoizedColor = !solidColor
+        ? color?.toLowerCase()
+        : convertCssColorNameToHex(color ?? '');
+
+    const labelToRender = typeof label === 'string' ? label.toUpperCase() : label;
 
     return (
         <Tooltip title={tooltip} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer' }}>
@@ -16,7 +31,7 @@ function ReflistTag({ value, tooltip, color, icon, showIcon, tagStyle, solidColo
                 color={memoizedColor}
                 icon={(icon && showIcon) && <Icon type={icon} />}
                 style={getTagStyle(tagStyle, !!color)}
-            >{showItemName && label.toUpperCase()}</Tag>
+            >{showItemName && labelToRender}</Tag>
         </Tooltip>
     );
 };
