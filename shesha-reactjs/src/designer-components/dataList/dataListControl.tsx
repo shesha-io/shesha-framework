@@ -114,10 +114,11 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           /*nop*/
         };
   
-      return (data, formApi, globalState, setGlobalState) => {
+      return (data, form, contexts, globalState, setGlobalState) => {
         const evaluationContext = {
           data,
-          formApi,
+          form,
+          contexts,
           globalState,
           setGlobalState,
           http: allData.http,
