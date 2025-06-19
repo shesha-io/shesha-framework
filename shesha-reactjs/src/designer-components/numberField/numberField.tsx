@@ -41,10 +41,10 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   calculateModel: (model, allData) => {
     return {
-      defaultValue: model?.defaultValue 
-        ? evaluateString(model?.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) 
+      defaultValue: model?.defaultValue
+        ? evaluateString(model?.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
         : undefined,
-      eventHandlers: {...getEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData)},
+      eventHandlers: { ...getEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData) },
     };
   },
   Factory: ({ model, calculatedModel }) => {
@@ -60,15 +60,14 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
     const properties = asPropertiesArray(metaProperties, []);
 
     const inputProps: InputNumberProps = {
-      className: 'sha-number-field',
       disabled: model.readOnly,
       variant: model.hideBorder ? 'borderless' : undefined,
-      min: model?.validate?.minValue ?? 0,
-      max: model?.validate?.maxValue ?? Number.MAX_SAFE_INTEGER,
+      min: model.min ?? 0,
+      max: model.max ?? Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
       style: model.style ? model.allStyles.jsStyle : { width: '100%' },
-      step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
+      step: model?.highPrecision ? model?.stepString : model?.stepNumeric,
       ...calculatedModel.eventHandlers,
       defaultValue: calculatedModel.defaultValue,
       changeOnWheel: false,
@@ -80,21 +79,21 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange(args[0]);
-            onChange(...args);
+          const onChangeInternal = (val: React.ChangeEvent<HTMLInputElement>) => {
+            const newValue = !val ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
+            customEvents.onChange(newValue);
+            onChange(newValue);
           };
           return model.readOnly 
             ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} /> 
             : <InputNumber
+              type='number'
               value={value ?? model?.defaultValue}
               {...inputProps}
-              stringMode={!model?.highPrecision}
               style={model.allStyles.fullStyle}
-              className={`sha-input ${styles.numberField}`}
+              className={`sha-input sha-number-field ${styles.numberField}`}
               onChange={onChangeInternal}
-            />
-          ;
+            />;
         }}
       </ConfigurableFormItem>
     );
