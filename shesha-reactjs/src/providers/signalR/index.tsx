@@ -70,13 +70,12 @@ function SignalRProvider({
       connection.onreconnected(() => {
         onConnected?.(connection);
       });
-
-      connection.onclose((error) => {
-        console.error('SignalR connection closed', error);
-        onDisconnected?.();
-      });
     }
-    setConnection(connection);
+
+    connection.onclose((error) => {
+      console.error('SignalR connection closed', error);
+      onDisconnected?.();
+    });
 
     return () => {
       connection
