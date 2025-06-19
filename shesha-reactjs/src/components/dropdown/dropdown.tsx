@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import ReadOnlyDisplayFormItem, { Icon } from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
-import { Select, Tag } from 'antd';
+import { Select } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
@@ -80,7 +80,6 @@ export const Dropdown: FC<IDropdownProps> = ({
             color: item?.color,
             icon: item?.icon,
             data: item?.data,
-            description: item?.description,
         };
     }, [incomeValueFunc]);
 
@@ -106,7 +105,6 @@ export const Dropdown: FC<IDropdownProps> = ({
             data: outcomeValueFunc(fetchedItem, args),
             color: fetchedItem?.color,
             icon: fetchedItem?.icon,
-            description: fetchedItem?.description,
         };
     }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
 
@@ -161,7 +159,8 @@ export const Dropdown: FC<IDropdownProps> = ({
                 displayStyle === 'tags' ?
                     selectedValue?.map(x => options.find((o) => o.value === x)) :
                     getSelectValue() :
-                options.find((o) => o.value === selectedValue)} />;
+                options.find((o) => o.value === selectedValue)}
+        />;
     }
 
     const commonSelectProps = {
@@ -179,28 +178,23 @@ export const Dropdown: FC<IDropdownProps> = ({
     if (displayStyle === 'tags' && mode !== 'multiple') {
         return <Select
             {...commonSelectProps}
-            className={styles.dropdown}
-            showSearch
-            style={{ ...style, width: 'max-content' }}
             popupMatchSelectWidth={false}
-            placeholder={<Tag
-                style={{ ...getTagStyle(tagStyle, true), background: '#d9d9d9' }}
-            >
-                {placeholder ?? <span style={{ whiteSpace: 'pre' }}>{'      '}</span>}
-            </Tag>}
+            style={{ width: 'max-content' }}
+            placeholder={<ReflistTag
+                key={'placeholder'}
+                color={'#d9d9d9'}
+                showItemName={showItemName}
+                label={placeholder ?? <span style={{ whiteSpace: 'pre' }}>{'      '}</span>}
+            />}
             labelRender={(props) => {
                 const option = options.find((o) => o.value === props.value);
                 return <ReflistTag
-                    key={option?.value}
+                    key={props.value}
                     color={option?.color}
-                    icon={((option?.icon && showIcon)) && <Icon type={option?.icon} />}
-                    tagStyle={tagStyle}
-                    showIcon={showIcon}
-                    solidColor={solidColor}
                     showItemName={showItemName}
-                    label={option?.label}
-                    value={option?.value}
-                    tooltip={option?.description}
+                    label={showItemName && option?.label}
+                    icon={((option?.icon && showIcon)) && <Icon type={option?.icon} />}
+                    tagStyle={getTagStyle(tagStyle, !!option?.color && solidColor)}
                 />;
             }}
         >
@@ -224,17 +218,13 @@ export const Dropdown: FC<IDropdownProps> = ({
                 labelRender: (props) => {
                     const option = options.find((o) => o.value === props.value);
                     return <ReflistTag
-                        showIcon={showIcon}
-                        showItemName={showItemName}
-                        tagStyle={tagStyle}
-                        solidColor={solidColor}
-                        label={option?.label}
-                        value={option.value}
-                        key={option.value}
-                        tooltip={option?.description}
+                        key={props.value}
                         color={option?.color}
+                        showItemName={showItemName}
                         icon={option?.icon && showIcon && <Icon type={option?.icon} />}
-                    ></ReflistTag>;
+                        tagStyle={getTagStyle(tagStyle, !!option?.color && solidColor)}
+                        label={showItemName && option?.label}
+                    />;
                 }
             } : {})}
         >

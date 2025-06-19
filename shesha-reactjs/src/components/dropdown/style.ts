@@ -9,8 +9,14 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     --ant-font-weight-strong: ${style.fontWeight} !important;
     --ant-select-multiple-item-bg: transparent !important;
 
-    .ant-select-selector{
-        overflow: auto;
+    .ant-select-selector {
+        ${(style.height !== 'auto' || !style.height) && 'overflow: auto;'}
+        .ant-select-selection-overflow {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            height: 100%;
+        }
         scrollbar-width: thin;
         ::-webkit-scrollbar {
             width: 8px;
@@ -21,11 +27,12 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     .ant-select-selection-item {
       font-weight: var(--ant-font-weight) !important;
       --ant-line-width: 0px !important;
-
+      overflow: visible;
       height: 100%;
 
       .ant-select-selection-item-content {
         display: flex;
+        overflow: visible;
       }
 
       :hover {
