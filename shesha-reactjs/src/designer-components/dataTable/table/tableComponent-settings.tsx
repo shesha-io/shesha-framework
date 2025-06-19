@@ -165,23 +165,22 @@ export interface IProps {
 
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
   const { readOnly } = props;
-  
   const { model } = useSettingsForm<ITableComponentProps>();
 
-  const crudConstants = useAvailableConstantsMetadata({ 
+  const crudConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData, SheshaConstants.moment
     ]
   });
 
-  const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
+  const onNewRowInitializeConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
-  const onRowSaveConstants = useAvailableConstantsMetadata({ 
+  const onRowSaveConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
@@ -191,7 +190,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
     }
   });
 
-  const styleConstants = useAvailableConstantsMetadata({ 
+  const styleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData
@@ -247,6 +246,16 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         </SettingsFormItem>
         <SettingsFormItem name="customUpdateUrl" label="Custom update url" hidden={model.canEditInline === 'no'}>
           <Input readOnly={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On row save success"
+            description="Custom business logic to be executed after successfull saving of new/updated row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
+          />
         </SettingsFormItem>
 
         <SettingsFormItem name="canAddInline" label="Can add inline">
@@ -315,15 +324,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
               useAsyncDeclaration: true,
             }}
             availableConstants={onRowSaveConstants}
-          />
-        </SettingsFormItem>
-        <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
-          <ConfigurableActionConfigurator
-            editorConfig={null}
-            level={1}
-            label="On row save success"
-            description="Custom business logic to be executed after successfull saving of new/updated row."
-            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
 
