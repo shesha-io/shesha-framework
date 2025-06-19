@@ -118,6 +118,55 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     color: #333;
     margin-top: 30px;
   `);
+
+  const chartControlContainer = cx(`${prefixCls}-chart-control-container`, css`
+    padding: 10px;
+    position: relative;
+    box-sizing: border-box;
+    text-align: center;
+  `);
+
+  const chartControlButtonContainer = cx(`${prefixCls}-chart-control-button-container`, css`
+    margin-top: 10px;
+    gap: 10px;
+  `);
+
+  const filterComponentContainer = cx(`${prefixCls}-filter-component-container`, css`
+    margin-top: 10px;
+    padding: 10px;
+    display: block;
+    border: 1px solid #ddd;
+  `);
+
+  const fullWidth = cx(`${prefixCls}-full-width`, css`
+    width: 100%;
+  `);
+
+  const marginTop5 = cx(`${prefixCls}-margin-top-5`, css`
+    margin-top: 5px;
+  `);
+
+  const flexCenterCenter = cx(`${prefixCls}-flex-center-center`, css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `);
+
+  const margin10 = cx(`${prefixCls}-margin-10`, css`
+    margin: 10px;
+  `);
+
+  const marginTop10 = cx(`${prefixCls}-margin-top-10`, css`
+    margin-top: 10px;
+  `);
+
+  const marginBottom10 = cx(`${prefixCls}-margin-bottom-10`, css`
+    margin-bottom: 10px;
+  `);
+
+  const gap10 = cx(`${prefixCls}-gap-10`, css`
+    gap: 10px;
+  `);
   
   return {
     chartControlSpinFontSize,
@@ -126,16 +175,16 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     chartContainerNoBorder,
     octagonalLoader,
     loadingText,
-    chartControlContainer: { padding: 10, position: 'relative', boxSizing: 'border-box' , textAlign: 'center' },
-    chartControlButtonContainer: { marginTop: 10, gap: 10 },
-    filterComponentContainer: { marginTop: 10, padding: 10, display: 'block', border: '1px solid #ddd' },
-    fullWidth: { width: '100%' },
-    'margin-top-5': { marginTop: 5 },
-    flexCenterCenter: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
-    'margin-10': { margin: 10 },
-    'margin-top-10': { marginTop: 10 },
-    'margin-bottom-10': { marginBottom: 10 },
-    'gap-10': { gap: 10 }
+    chartControlContainer,
+    chartControlButtonContainer,
+    filterComponentContainer,
+    fullWidth,
+    marginTop5,
+    flexCenterCenter,
+    margin10,
+    marginTop10,
+    marginBottom10,
+    gap10
   };
 });
 

@@ -27,6 +27,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     current: 0,
     total: -1
   });
+  const [metadataProcessed, setMetadataProcessed] = useState(false);
 
   const { styles, cx } = useStyles();
 
@@ -51,7 +52,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       
       // Process all properties in a single pass
       for (const key in item) {
-        if (Object.prototype.hasOwnProperty.call(item, key)) {
+        if (Object.hasOwn(item, key)) {
           let value = item[key];
           
           // Handle null/undefined values
@@ -59,7 +60,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           
           // Apply reference list mapping if available
           if (refListMap.has(key)) {
-            const refMap = refListMap.get(key)!;
+            const refMap = refListMap.get(key);
             value = refMap.get(value) || value;
           }
           
@@ -137,6 +138,9 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         // Wait for reference lists to load
         await Promise.all(refListPromises);
 
+        // Mark metadata as processed
+        setMetadataProcessed(true);
+
         // Fetch data with optimized batch size and parallel requests
         const batchSize = 1000; 
         let allItems: any[] = [];
@@ -187,21 +191,19 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
               skipCount,
               batchSize
             );
-            
-            // Create promise that updates progress when resolved
-            const batchPromise = refetch(params).then((response) => {
-              if (response?.result?.items && Array.isArray(response.result.items)) {
-                allItems = allItems.concat(response.result.items);
-                setLoadingProgress({ current: allItems.length, total: totalCount });
-              }
-              return response;
-            });
-            
-            batchPromises.push(batchPromise);
+                        
+            batchPromises.push(refetch(params));
           }
 
           // Wait for all batches to complete
-          await Promise.all(batchPromises);
+           // Collect all batch results
+          const batchResults = await Promise.all(batchPromises);
+          batchResults.forEach((response) => {
+            if (response?.result?.items && Array.isArray(response.result.items)) {
+              allItems = allItems.concat(response.result.items);
+            }
+          });
+          setLoadingProgress({ current: allItems.length, total: totalCount });
         }
 
         // Process all items efficiently
@@ -218,9 +220,12 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         
         setData(processedItems);
         setIsLoaded(true);
+        
+        setLoadingProgress(null);
       } catch (error) {
         console.error('Error in fetchAndProcessData:', error);
         setIsLoaded(true);
+        setMetadataProcessed(false);
         setLoadingProgress({
           current: 0,
           total: -1
@@ -265,7 +270,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     if (loadingProgress?.current !== loadingProgress?.total) {
       return (
         <>
-          {loadingProgress && !state.isLoaded && (
+          {loadingProgress && (!state.isLoaded || !metadataProcessed) && (
             <Flex align="center" justify='center' vertical gap={16}>
               <div className={cx(styles.octagonalLoader)}></div>
               <div className={cx(styles.loadingText)}>Loading data...</div>
