@@ -102,6 +102,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   noDataSecondaryText,
   noDataIcon,
   onRowSaveSuccessAction: onRowSaveSuccess,
+  onRowDeleteSuccessAction,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -385,6 +386,36 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     sortMode === 'standard' ? userSorting?.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc })) : undefined;
 
   // http, moment
+  const { executeAction } = useConfigurableActionDispatcher();
+
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /*nop*/
+      };
+
+    return (data, formApi, globalState, setGlobalState) => {
+      const evaluationContext = {
+        data,
+        formApi,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, httpClient]);
+
+
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave) return (data) => Promise.resolve(data);
 
@@ -395,7 +426,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSave, httpClient]);
 
-  const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {
@@ -418,6 +448,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       });
     };
   }, [onRowSaveSuccess, backendUrl]);
+
+  const deleter = (rowIndex: number, rowData: any): Promise<any> => {
+    const repository = store.getRepository();
+    if (!repository) return Promise.reject('Repository is not specified');
+
+    const options =
+      repository.repositoryType === BackendRepositoryType
+        ? ({ customUrl: customDeleteUrl } as IDeleteOptions)
+        : undefined;
+
+    return repository.performDelete(rowIndex, rowData, options).then(() => {
+      performOnRowDeleteSuccessAction(rowData, formApi, globalState, setGlobalState);
+      store.refreshTable();
+    });
+  };
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
@@ -451,20 +496,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         store.refreshTable();
         performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
       });
-    });
-  };
-
-  const deleter = (rowIndex: number, rowData: any): Promise<any> => {
-    const repository = store.getRepository();
-    if (!repository) return Promise.reject('Repository is not specified');
-
-    const options =
-      repository.repositoryType === BackendRepositoryType
-        ? ({ customUrl: customDeleteUrl } as IDeleteOptions)
-        : undefined;
-
-    return repository.performDelete(rowIndex, rowData, options).then(() => {
-      store.refreshTable();
     });
   };
 
