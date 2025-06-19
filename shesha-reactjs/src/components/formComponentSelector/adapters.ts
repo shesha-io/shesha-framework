@@ -63,7 +63,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
       ...styleProperties,
-
       'mode',
       'dataSourceType',
       'dataSourceUrl',
@@ -73,7 +72,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'tooltip',
       'customSourceUrl',
       'disableSearch',
-      'propertyRouter1',
       'required'
     ]),
   },
@@ -106,8 +104,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'borderRadius',
       'borderColor',
       'backgroundColor',
-      'permissions',
-      'placeholder'
     ]),
   },
   [EntityReferenceComponent.type]: {
