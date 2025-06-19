@@ -68,21 +68,6 @@ export const getSettings = (data: any) => {
                           inputs: [
                             {
                               id: nanoid(),
-                              propertyName: 'simpleOrPivot',
-                              parentId: commonTabId,
-                              hidden: false,
-                              label: 'Simple / Pivot',
-                              type: 'dropdown',
-                              allowClear: true,
-                              dropdownOptions: [
-                                { label: 'Simple', value: 'simple' },
-                                { label: 'Pivot', value: 'pivot' },
-                              ],
-                              validate: { required: true },
-                              defaultValue: 'simple',
-                            },
-                            {
-                              id: nanoid(),
                               propertyName: 'dataMode',
                               parentId: commonTabId,
                               label: 'Data Source Type',
@@ -96,7 +81,26 @@ export const getSettings = (data: any) => {
                               ],
                               validate: { required: true },
                               defaultValue: 'entityType',
-                            }
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'simpleOrPivot',
+                              parentId: commonTabId,
+                              label: 'Simple / Pivot',
+                              type: 'dropdown',
+                              allowClear: true,
+                              dropdownOptions: [
+                                { label: 'Simple', value: 'simple' },
+                                { label: 'Pivot', value: 'pivot' },
+                              ],
+                              validate: { required: true },
+                              defaultValue: 'simple',
+                              hidden: {
+                                _code: 'return getSettingValue(data?.dataMode) === `url`',
+                                _mode: 'code',
+                                _value: false,
+                              } as any,
+                            },
                           ]
                         })
                         .addContainer({
@@ -133,36 +137,19 @@ export const getSettings = (data: any) => {
                                 isDynamic: false,
                                 description: 'Label for the axis property',
                                 validate: { required: false },
-                                hidden: {
-                                  _code:
-                                    'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
+                                width: '100%',
                               })
-                              .addSettingsInputRow({
+                              .addSettingsInput({
                                 id: nanoid(),
+                                propertyName: 'valueProperty',
+                                label: 'Value axis label',
+                                inputType: 'textField',
+                                labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
-                                inline: true,
-                                inputs: [
-                                  {
-                                    id: nanoid(),
-                                    propertyName: 'valueProperty',
-                                    label: 'Value axis label',
-                                    type: 'textField',
-                                    labelAlign: 'right',
-                                    parentId: dataSettingsForUrlId,
-                                    isDynamic: false,
-                                    description: 'Label for the value property',
-                                    validate: { required: false },
-                                    hidden: {
-                                      _code:
-                                        'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
-                                  }
-                                ]
+                                isDynamic: false,
+                                description: 'Label for the value property',
+                                validate: { required: false },
+                                width: '100%',
                               })
                               .toJson(),
                           ],
@@ -577,6 +564,7 @@ export const getSettings = (data: any) => {
                   ],
                   validate: { required: true },
                   defaultValue: 'entityType',
+                  hidden: false
                 })
                 .addContainer({
                   id: dataSettingsForUrlId,

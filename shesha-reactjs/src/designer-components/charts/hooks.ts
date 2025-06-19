@@ -149,8 +149,10 @@ export const useProcessedChartData = (): IChartData => {
 export const useChartURLData = () => {
   const { urlTypeData, strokeColor, strokeWidth, tension } = useChartDataStateContext();
 
+  const memoData = useMemo(() => urlTypeData, [urlTypeData]);
+
   return {
-    labels: urlTypeData?.labels,
+    labels: memoData?.labels,
     datasets: urlTypeData?.datasets?.map((dataset: any) => {
       dataset.borderColor = strokeColor || 'black';
       dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
