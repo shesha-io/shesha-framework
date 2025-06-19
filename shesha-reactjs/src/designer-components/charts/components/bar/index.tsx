@@ -43,12 +43,12 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
   const chartTitle: string = useGeneratedTitle();
 
   if (dataMode === 'url') {
-    data?.datasets?.map((dataset: any) => {
-      dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
-      dataset.borderColor = strokeColor || 'black';
-      dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
-      return dataset;
-    });
+    data.datasets = data?.datasets?.map((dataset: any) => ({
+      ...dataset,
+      data: dataset?.data?.map((item) => item ?? 'undefined'),
+      borderColor: strokeColor || 'black',
+      borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
+    }));
   }
 
   const options: ChartOptions<any> = {
