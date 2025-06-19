@@ -2,7 +2,7 @@ import { nanoid } from "@/utils/uuid";
 import { addPx } from '@/utils/style';
 import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
+type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type' | 'id'> & { block?: boolean };
 
 export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
     const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;

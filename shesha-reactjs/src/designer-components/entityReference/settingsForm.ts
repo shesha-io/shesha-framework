@@ -181,7 +181,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: commonTabId,
+                  parentId: dataTabId,
                   inputs: [
                     {
                       id: nanoid(),
@@ -201,7 +201,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
-                      parentId: commonTabId,
+                      parentId: dataTabId,
                     },
                   ],
                 })
