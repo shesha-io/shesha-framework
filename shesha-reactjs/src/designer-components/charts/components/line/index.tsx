@@ -14,7 +14,7 @@ import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks';
-import { splitTitleIntoLines } from '../../utils';
+import { splitTitleIntoLines, getPredictableColor } from '../../utils';
 
 interface ILineChartProps extends IChartDataProps {
   data: IChartData;
@@ -38,6 +38,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     strokeColor,
     dataMode,
     strokeWidth,
+    simpleOrPivot
   } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
@@ -55,11 +56,25 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         return dataset;
       });
     } else {
-      data?.datasets?.map((dataset: any) => {
+      // For entity mode, use different colors for each dataset in pivot mode
+      const isPivotMode = simpleOrPivot === 'pivot';
+      
+      data?.datasets?.map((dataset: any, index: number) => {
         dataset.tension = tension;
-        dataset.borderColor = strokeColor || 'black';
         dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
         dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
+        
+        // Use different colors for each group in pivot mode
+        if (isPivotMode) {
+          // Generate a unique color for each dataset based on its label
+          const label = dataset.label || `Dataset ${index}`;
+          dataset.borderColor = getPredictableColor(label);
+          dataset.backgroundColor = dataset.borderColor;
+        } else {
+          // Use the stroke color for single dataset
+          dataset.borderColor = strokeColor || 'black';
+        }
+        
         return dataset;
       });
     }

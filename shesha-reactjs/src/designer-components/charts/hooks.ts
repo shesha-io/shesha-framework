@@ -119,7 +119,7 @@ export const useProcessedChartData = (): IChartData => {
           return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
         }),
         fill: false,
-        borderColor: strokeColor || '#fff',
+        borderColor: (simpleOrPivot === 'pivot' ? getPredictableColor(strLegend) : strokeColor) || '#fff',
         backgroundColor: colors,
         pointRadius: 5,
         borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
