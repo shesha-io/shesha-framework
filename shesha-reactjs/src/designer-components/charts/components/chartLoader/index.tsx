@@ -1,7 +1,8 @@
 import React from 'react';
 import useStyles from '../../styles';
+import { TChartType } from '../../model';
 
-const ChartLoader = ({ chartType }: { chartType: string }) => {
+const ChartLoader = ({ chartType }: { chartType: TChartType }) => {
   const { styles, cx } = useStyles();
   
   const colors = [

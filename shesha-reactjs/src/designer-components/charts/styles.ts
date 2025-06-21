@@ -1,4 +1,58 @@
-import { createStyles } from 'antd-style';
+import { createStyles, keyframes } from 'antd-style';
+
+const growAnimation = keyframes`
+  0%, 100% {
+    transform: scaleY(0.3);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+`;
+
+const rotatePieAnimation = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+const drawLineAnimation = keyframes`
+  0% {
+    stroke-dashoffset: 400;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+`;
+
+const showDotAnimation = keyframes`
+  0%, 20% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
+
+const polarPulseAnimation = keyframes`
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+`;
 
 const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
@@ -59,7 +113,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const bar = cx(`${prefixCls}-bar`, css`
     width: 30px;
-    animation: grow 1.5s ease-in-out infinite;
+    animation: ${growAnimation} 1.5s ease-in-out infinite;
     transform-origin: bottom;
 
     &:nth-child(1) { animation-delay: 0s; }
@@ -91,7 +145,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
       #00068Dff 270deg 315deg,
       #0038B1ff 315deg 360deg
     );
-    animation: rotatePie 2s linear infinite;
+    animation: ${rotatePieAnimation} 2s linear infinite;
 
     &::after {
       content: '';
@@ -112,12 +166,12 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     stroke-width: 3;
     stroke-dasharray: 400;
     stroke-dashoffset: 400;
-    animation: drawLine 2s ease-in-out infinite;
+    animation: ${drawLineAnimation} 2s ease-in-out infinite;
   `);
 
   const dot = cx(`${prefixCls}-dot`, css`
     opacity: 0;
-    animation: showDot 2s ease-in-out infinite;
+    animation: ${showDotAnimation} 2s ease-in-out infinite;
 
     &:nth-child(2) { animation-delay: 0s; }
     &:nth-child(3) { animation-delay: 0.25s; }
@@ -133,7 +187,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const segment = cx(`${prefixCls}-segment`, css`
     opacity: 0.3;
     transform-origin: 0 0;
-    animation: polarPulse 2s ease-in-out infinite;
+    animation: ${polarPulseAnimation} 2s ease-in-out infinite;
 
     &:nth-child(1) { animation-delay: 0s; }
     &:nth-child(2) { animation-delay: 0.125s; }
@@ -144,63 +198,6 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     &:nth-child(7) { animation-delay: 0.75s; }
     &:nth-child(8) { animation-delay: 0.875s; }
   `);
-
-  // Keyframe animations
-  const keyframes = css`
-    @keyframes grow {
-      0%, 100% {
-        transform: scaleY(0.3);
-        opacity: 0.7;
-      }
-      50% {
-        transform: scaleY(1);
-        opacity: 1;
-      }
-    }
-
-    @keyframes rotatePie {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes drawLine {
-      0% {
-        stroke-dashoffset: 400;
-      }
-      50% {
-        stroke-dashoffset: 0;
-      }
-      100% {
-        stroke-dashoffset: 0;
-      }
-    }
-
-    @keyframes showDot {
-      0%, 20% {
-        opacity: 0;
-        transform: scale(0);
-      }
-      50%, 100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    @keyframes polarPulse {
-      0%, 100% {
-        opacity: 0.3;
-        transform: scale(0.8);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.1);
-      }
-    }
-  `;
   
   return {
     responsiveChartContainer,
@@ -216,8 +213,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     pieLoader,
     line,
     dot,
-    segment,
-    keyframes
+    segment
   };
 });
 
