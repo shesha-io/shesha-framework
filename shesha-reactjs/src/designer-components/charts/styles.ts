@@ -4,6 +4,8 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const responsiveChartContainer = cx(`${prefixCls}-responsive-chart-container`, css`
     width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     height: 100%;
     min-height: 300px;
     display: flex;
@@ -23,7 +25,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
   `);
 
   const loadingText = cx(`${prefixCls}-loading-text`, css`
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     color: #333;
     margin-top: 30px;

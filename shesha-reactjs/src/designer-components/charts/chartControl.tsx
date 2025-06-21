@@ -4,7 +4,7 @@ import { IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
-import { Alert, Flex } from 'antd';
+import { Alert, Flex, Spin } from 'antd';
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from './hooks';
@@ -40,6 +40,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   });
   const [showLoader, setShowLoader] = useState(true);
   const [metadataProcessed, setMetadataProcessed] = useState(false);
+  const [hasInitialData, setHasInitialData] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { styles, cx } = useStyles();
@@ -109,6 +110,23 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     }
   }, []);
 
+  // Function to process and update chart data
+  const processAndUpdateData = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
+    // Process all items efficiently
+    let processedItems = processItems(items, refListMap);
+
+    // Sort items
+    processedItems = sortItems(processedItems, isAxisTimeSeries, axisProperty);
+
+    // Format dates
+    processedItems = formatDate(processedItems, timeSeriesFormat, [axisProperty]);
+    if (isGroupingTimeSeries) {
+      processedItems = formatDate(processedItems, groupingTimeSeriesFormat, [groupingProperty]);
+    }
+
+    setData(processedItems);
+  }, [processItems, sortItems, isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, setData]);
+
   useEffect(() => {
     if (!requiredProperties) {
       return;
@@ -117,6 +135,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     const fetchAndProcessData = async () => {
       try {
         setIsLoaded(false);
+        setHasInitialData(false);
 
         // Get metadata first to identify reference list properties
         const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
@@ -184,6 +203,11 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         if (firstResponse.result.items && Array.isArray(firstResponse.result.items)) {
           allItems = firstResponse.result.items;
           setLoadingProgress({ current: allItems.length, total: totalCount });
+
+          // Process and show initial data immediately
+          processAndUpdateData(allItems, refListMap);
+          setHasInitialData(true);
+          setShowLoader(false);
         }
 
         // Calculate remaining batches and fetch them in parallel
@@ -209,46 +233,27 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             batchPromises.push(refetch(params));
           }
 
-          // Wait for all batches to complete
-          // Collect all batch results
+          // Process batches as they complete
           const batchResults = await Promise.all(batchPromises);
           batchResults.forEach((response) => {
             if (response?.result?.items && Array.isArray(response.result.items)) {
               allItems = allItems.concat(response.result.items);
+              setLoadingProgress({ current: allItems.length, total: totalCount });
+
+              // Update chart with new data as it comes in
+              processAndUpdateData(allItems, refListMap);
             }
           });
-          setLoadingProgress({ current: allItems.length, total: totalCount });
         }
 
-        // Process all items efficiently
-        let processedItems = processItems(allItems, refListMap);
-
-        // Sort items
-        processedItems = sortItems(processedItems, isAxisTimeSeries, axisProperty);
-
-        // Format dates
-        processedItems = formatDate(processedItems, timeSeriesFormat, [axisProperty]);
-        if (isGroupingTimeSeries) {
-          processedItems = formatDate(processedItems, groupingTimeSeriesFormat, [groupingProperty]);
-        }
-
-        setData(processedItems);
         setIsLoaded(true);
-
-        // Debounce the loader hiding to prevent flickering
-        if (debounceTimeoutRef.current) {
-          clearTimeout(debounceTimeoutRef.current);
-        }
-        debounceTimeoutRef.current = setTimeout(() => {
-          setShowLoader(false);
-        }, 1000);
-
         setLoadingProgress(null);
       } catch (error) {
         console.error('Error in fetchAndProcessData:', error);
         setIsLoaded(true);
         setShowLoader(false);
         setMetadataProcessed(false);
+        setHasInitialData(false);
         setLoadingProgress({
           current: 0,
           total: -1,
@@ -269,8 +274,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     formData,
     isGroupingTimeSeries,
     groupingTimeSeriesFormat,
-    processItems,
-    sortItems,
+    processAndUpdateData,
     entityType,
     valueProperty,
     axisProperty,
@@ -317,7 +321,8 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  if (loadingProgress?.current !== loadingProgress?.total) {
+  // Show loader only if we don't have any data yet
+  if (!hasInitialData && loadingProgress?.current !== loadingProgress?.total) {
     return (
       <>
         {loadingProgress && (!state.isLoaded || !metadataProcessed) && showLoader && (
@@ -332,8 +337,8 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             )}
             style={getResponsiveStyle(props)}
           >
-          <ChartLoader chartType={chartType} />
-          <div className={cx(styles.loadingText)}>Loading data...</div>
+            <ChartLoader chartType={chartType} />
+            <div className={cx(styles.loadingText)}>Loading data...</div>
             <div>
               {loadingProgress.current} / {loadingProgress.total} items
             </div>
@@ -352,6 +357,21 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       style={getResponsiveStyle(props)}
     >
       {renderChart(chartType, data)}
+      {/* Show progress indicator if still loading more data */}
+      {loadingProgress && hasInitialData && (
+        <Flex
+          align="center"
+          justify="center"
+          vertical
+          gap={4}
+          style={{ margin: 16 }}>
+          <Spin size="small" />
+          <div className={cx(styles.loadingText)}>Fetching more data...</div>
+          <div>
+            ({loadingProgress.current} / {loadingProgress.total} items)
+          </div>
+        </Flex>
+      )}
     </div>
   );
 };
