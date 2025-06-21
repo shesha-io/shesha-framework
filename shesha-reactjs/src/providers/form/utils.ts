@@ -226,12 +226,13 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
     setGlobalState,
     httpClient,
     message,
+    // for testing purposes
     test: {
       getArguments: (args) => {
         var fArgs = args.length === 1 ? args[0] : args;
-        return fArgs._propAccessors != undefined
+        return fArgs._propAccessors !== undefined
           ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({n, v: v() && v()['getData'] ? v().getData() : v() }))
-          : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v ))
+          : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v ));
       }
     }
   };
