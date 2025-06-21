@@ -338,7 +338,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             style={getResponsiveStyle(props)}
           >
             <ChartLoader chartType={chartType} />
-            <div className={cx(styles.loadingText)}>Loading data...</div>
+            <div className={cx(styles.loadingText)}>Fetching data...</div>
             <div>
               {loadingProgress.current} / {loadingProgress.total} items
             </div>
