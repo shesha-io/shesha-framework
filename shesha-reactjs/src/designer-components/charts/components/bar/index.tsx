@@ -42,6 +42,9 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
 
   const chartTitle: string = useGeneratedTitle();
 
+  // Check if we're on a small screen
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
+
   if (dataMode === 'url') {
     data.datasets = data?.datasets?.map((dataset: any) => ({
       ...dataset,
@@ -53,36 +56,47 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
-    aspectRatio: 2, // Width to height ratio (2:1)
+    maintainAspectRatio: true,
+    aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
     animation: {
-      duration: 1000, // Animation duration in milliseconds
-      easing: 'easeInOutQuart', // Smooth easing function
-      delay: (context) => context.dataIndex * 50, // Staggered animation for bars
+      duration: isSmallScreen ? 800 : 1000, // Faster animations on mobile
+      easing: 'easeInOutQuart',
+      delay: (context) => context.dataIndex * (isSmallScreen ? 30 : 50),
     },
     transitions: {
       active: {
         animation: {
-          duration: 400, // Quick animation for hover effects
+          duration: isSmallScreen ? 300 : 400,
         },
       },
       resize: {
         animation: {
-          duration: 800, // Smooth resize animation
+          duration: isSmallScreen ? 600 : 800,
         },
       },
     },
     plugins: {
       legend: {
         display: !!showLegend,
-        position: legendPosition ?? 'top',
+        position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
+        labels: {
+          boxWidth: isSmallScreen ? 12 : 40,
+          padding: isSmallScreen ? 8 : 10,
+          font: {
+            size: isSmallScreen ? 10 : 12,
+          },
+        },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
         font: {
-          size: 16,
+          size: isSmallScreen ? 12 : 16,
           weight: 'bold',
+        },
+        padding: {
+          top: isSmallScreen ? 8 : 16,
+          bottom: isSmallScreen ? 8 : 16,
         },
       },
     },
@@ -92,14 +106,31 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: xProperty?.trim() ?? '',
           font: {
-            size: 12,
+            size: isSmallScreen ? 10 : 12,
             weight: 'bold',
+          },
+          padding: {
+            top: isSmallScreen ? 4 : 8,
+            bottom: isSmallScreen ? 4 : 8,
           },
         },
         display: !!showXAxisScale,
         stacked: stacked,
-        offset: true, // Ensure the x-axis does not coincide with the y-axis
+        offset: true,
         beginAtZero: false,
+        ticks: {
+          maxRotation: 45, // Allow rotation up to 45 degrees
+          minRotation: 0,
+          font: {
+            size: isSmallScreen ? 9 : 12,
+          },
+          padding: isSmallScreen ? 4 : 8,
+          autoSkip: false, // Show all labels
+          maxTicksLimit: undefined, // Remove tick limit
+        },
+        grid: {
+          display: !isSmallScreen, // Hide grid on mobile for cleaner look
+        },
       },
       y: {
         title: {
@@ -108,12 +139,32 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
             ? yProperty?.trim() ?? ''
             : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
           font: {
-            size: 12,
+            size: isSmallScreen ? 10 : 12,
             weight: 'bold',
+          },
+          padding: {
+            top: isSmallScreen ? 4 : 8,
+            bottom: isSmallScreen ? 4 : 8,
           },
         },
         display: !!showYAxisScale,
         stacked: stacked,
+        ticks: {
+          font: {
+            size: isSmallScreen ? 9 : 12,
+          },
+          padding: isSmallScreen ? 4 : 8,
+          callback: function(value) {
+            // Format large numbers on mobile
+            if (isSmallScreen && value >= 1000) {
+              return (value / 1000).toFixed(1) + 'k';
+            }
+            return value;
+          }
+        },
+        grid: {
+          display: !isSmallScreen, // Hide grid on mobile
+        },
       },
     },
   };

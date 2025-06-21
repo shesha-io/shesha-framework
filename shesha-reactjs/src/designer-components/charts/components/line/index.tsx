@@ -42,11 +42,14 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
 
   const chartTitle: string = useGeneratedTitle();
 
+  // Check if we're on a small screen
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
+
   useEffect(() => {
     if (dataMode === 'url') {
       data?.datasets?.map((dataset: any) => {
         dataset.borderColor = strokeColor || 'black';
-        dataset.pointRadius = 5;
+        dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
         dataset.borderWidth = typeof strokeWidth === 'number' || strokeWidth > 1 ? strokeWidth : 1;
         dataset.tension = tension;
         return dataset;
@@ -56,43 +59,55 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         dataset.tension = tension;
         dataset.borderColor = strokeColor || 'black';
         dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
+        dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
         return dataset;
       });
     }
-  }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension]);
+  }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension, isSmallScreen]);
 
   const options: any = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
-    aspectRatio: 2, // Width to height ratio (2:1)
+    maintainAspectRatio: true,
+    aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
     animation: {
-      duration: 1200, // Animation duration in milliseconds
-      easing: 'easeInOutCubic', // Smooth easing function for lines
-      delay: (context) => context.dataIndex * 30, // Staggered animation for data points
+      duration: isSmallScreen ? 1000 : 1200, // Faster animations on mobile
+      easing: 'easeInOutCubic',
+      delay: (context) => context.dataIndex * (isSmallScreen ? 20 : 30),
     },
     transitions: {
       active: {
         animation: {
-          duration: 300, // Quick animation for hover effects
+          duration: isSmallScreen ? 250 : 300,
         },
       },
       resize: {
         animation: {
-          duration: 600, // Smooth resize animation
+          duration: isSmallScreen ? 500 : 600,
         },
       },
     },
     plugins: {
       legend: {
         display: !!showLegend,
-        position: legendPosition ?? 'top',
+        position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
+        labels: {
+          boxWidth: isSmallScreen ? 12 : 40,
+          padding: isSmallScreen ? 8 : 10,
+          font: {
+            size: isSmallScreen ? 10 : 12,
+          },
+        },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
         font: {
-          size: 16,
+          size: isSmallScreen ? 12 : 16,
           weight: 'bold',
+        },
+        padding: {
+          top: isSmallScreen ? 8 : 16,
+          bottom: isSmallScreen ? 8 : 16,
         },
       },
     },
@@ -102,12 +117,29 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: xProperty?.trim() ?? '',
           font: {
-            size: 12,
+            size: isSmallScreen ? 10 : 12,
             weight: 'bold',
+          },
+          padding: {
+            top: isSmallScreen ? 4 : 8,
+            bottom: isSmallScreen ? 4 : 8,
           },
         },
         display: !!showXAxisScale,
-        offset: true, // Ensure the x-axis does not coincide with the y-axis
+        offset: true,
+        ticks: {
+          maxRotation: 45, // Allow rotation up to 45 degrees
+          minRotation: 0,
+          font: {
+            size: isSmallScreen ? 9 : 12,
+          },
+          padding: isSmallScreen ? 4 : 8,
+          autoSkip: false, // Show all labels
+          maxTicksLimit: undefined, // Remove tick limit
+        },
+        grid: {
+          display: !isSmallScreen, // Hide grid on mobile for cleaner look
+        },
       },
       y: {
         title: {
@@ -116,12 +148,32 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
             ? yProperty?.trim() ?? ''
             : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
           font: {
-            size: 12,
+            size: isSmallScreen ? 10 : 12,
             weight: 'bold',
+          },
+          padding: {
+            top: isSmallScreen ? 4 : 8,
+            bottom: isSmallScreen ? 4 : 8,
           },
         },
         display: !!showYAxisScale,
         beginAtZero: true,
+        ticks: {
+          font: {
+            size: isSmallScreen ? 9 : 12,
+          },
+          padding: isSmallScreen ? 4 : 8,
+          callback: function(value) {
+            // Format large numbers on mobile
+            if (isSmallScreen && value >= 1000) {
+              return (value / 1000).toFixed(1) + 'k';
+            }
+            return value;
+          }
+        },
+        grid: {
+          display: !isSmallScreen, // Hide grid on mobile
+        },
       },
     },
   };
