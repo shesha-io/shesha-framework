@@ -7,6 +7,7 @@ import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getResponsiveStyle, getURLChartDataRefetchParams, renderChart } from './utils';
+import ChartLoader from './components/chartLoader';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType } = props;
@@ -60,7 +61,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         )}
         style={getResponsiveStyle(props)}
       >
-        <div className={cx(styles.octagonalLoader)}></div>
+        <ChartLoader chartType={chartType} />
         <div className={cx(styles.loadingText)}>Loading data...</div>
       </Flex>
     );

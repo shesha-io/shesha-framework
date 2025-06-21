@@ -11,6 +11,7 @@ import { useProcessedChartData } from './hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
+import ChartLoader from './components/chartLoader';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const {
@@ -331,8 +332,8 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             )}
             style={getResponsiveStyle(props)}
           >
-            <div className={cx(styles.octagonalLoader)}></div>
-            <div className={cx(styles.loadingText)}>Loading data...</div>
+          <ChartLoader chartType={chartType} />
+          <div className={cx(styles.loadingText)}>Loading data...</div>
             <div>
               {loadingProgress.current} / {loadingProgress.total} items
             </div>
