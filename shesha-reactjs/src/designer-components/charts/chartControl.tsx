@@ -4,20 +4,29 @@ import { IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
-import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Flex, Spin } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import { useProcessedChartData } from "./hooks";
+import { useProcessedChartData } from './hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
-
+import ChartLoader from './components/chartLoader';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, legendProperty,
-    axisProperty, filterProperties, isAxisTimeSeries, timeSeriesFormat,
-    orderBy, orderDirection
+  const {
+    chartType,
+    entityType,
+    valueProperty,
+    groupingProperty,
+    axisProperty,
+    filterProperties,
+    isAxisTimeSeries,
+    timeSeriesFormat,
+    orderBy,
+    orderDirection,
+    isGroupingTimeSeries,
+    groupingTimeSeriesFormat,
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -25,6 +34,14 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setFilterdData, setControlProps } = useChartDataActionsContext();
   const { data: formData } = useFormData();
+  const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>({
+    current: 0,
+    total: -1,
+  });
+  const [showLoader, setShowLoader] = useState(true);
+  const [metadataProcessed, setMetadataProcessed] = useState(false);
+  const [hasInitialData, setHasInitialData] = useState(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { styles, cx } = useStyles();
 
@@ -32,65 +49,254 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor });
+
+  // Memoize the required properties to avoid unnecessary re-renders
+  const requiredProperties = useMemo(() => {
+    if (!entityType || !valueProperty || !axisProperty) return null;
+    return { entityType, valueProperty, axisProperty };
+  }, [entityType, valueProperty, axisProperty]);
+
+  // Optimized data processing function
+  const processItems = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
+    const processedItems = new Array(items.length);
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const processedItem: any = {};
+
+      // Process all properties in a single pass
+      for (const key in item) {
+        if (Object.hasOwn(item, key)) {
+          let value = item[key];
+
+          // Handle null/undefined values
+          value ??= 'undefined';
+
+          // Apply reference list mapping if available
+          if (refListMap.has(key)) {
+            const refMap = refListMap.get(key);
+            value = refMap.get(value) || value;
+          }
+
+          processedItem[key] = value;
+        }
+      }
+
+      processedItems[i] = processedItem;
+    }
+
+    return processedItems;
+  }, []);
+
+  // Optimized sorting function
+  const sortItems = useCallback((items: any[], isTimeSeries: boolean, property: string) => {
+    if (isTimeSeries) {
+      return items.sort((a, b) => {
+        const aTime = new Date(a[property]).getTime();
+        const bTime = new Date(b[property]).getTime();
+        return aTime - bTime;
+      });
+    } else {
+      return items.sort((a, b) => {
+        const aVal = a[property];
+        const bVal = b[property];
+
+        if (typeof aVal === 'number' && typeof bVal === 'number') {
+          return aVal - bVal;
+        }
+
+        return String(aVal).localeCompare(String(bVal));
+      });
+    }
+  }, []);
+
+  // Function to process and update chart data
+  const processAndUpdateData = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
+    // Process all items efficiently
+    let processedItems = processItems(items, refListMap);
+
+    // Sort items
+    processedItems = sortItems(processedItems, isAxisTimeSeries, axisProperty);
+
+    // Format dates
+    processedItems = formatDate(processedItems, timeSeriesFormat, [axisProperty]);
+    if (isGroupingTimeSeries) {
+      processedItems = formatDate(processedItems, groupingTimeSeriesFormat, [groupingProperty]);
+    }
+
+    setData(processedItems);
+  }, [processItems, sortItems, isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, setData]);
+
   useEffect(() => {
-    if (!entityType || !valueProperty || !axisProperty) {
+    if (!requiredProperties) {
       return;
     }
-    refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties, orderBy, orderDirection))
-      .then((data) => {
-        data.result.items = data?.result?.items?.map((item: { [key: string]: any }) => {
-          for (const key in item) {
-            if (item[key] === null || item[key] === undefined) {
-              item[key] = 'undefined';
-            }
-          }
-          return item;
-        });
-        return data;
-      })
-      .then((data) => {
-        if (isAxisTimeSeries) {
-          data.result.items = data?.result?.items?.sort((a: { [key: string]: any }, b: { [key: string]: any }) => new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime());
-        } else {
-          data.result.items = data?.result?.items?.sort((a: { [key: string]: any }, b: { [key: string]: any }) => a[axisProperty] - b[axisProperty]);
-        }
-        return data;
-      })
-      .then((data) => {
-        data.result.items = formatDate(data.result.items, timeSeriesFormat, [axisProperty]);
-        return data;
-      })
-      .then((data) => {
-        getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
-          const refListPromises = (metaData.properties as Array<IRefListPropertyMetadata>)
-            .filter((metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item')
-            .map((metaItem: IRefListPropertyMetadata) => {
-              const fieldName = toCamelCase(metaItem.path);
-              return getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } })
-              .promise
-              .then((refListItem) => {
-                data.result?.items?.forEach((item: any) => {
-                  if (item[fieldName] !== undefined) {
-                    const referenceName = refListItem.items.find((x) => x.itemValue === item[fieldName])?.item;
-                    item[fieldName] = referenceName?.trim() || `${item[fieldName]}`;
-                  }
-                });
-              })
-              .catch((err: any) => console.error('getReferenceList, err metadata', err));
+
+    const fetchAndProcessData = async () => {
+      try {
+        setIsLoaded(false);
+        setHasInitialData(false);
+
+        // Get metadata first to identify reference list properties
+        const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
+
+        // Pre-filter reference list properties and create lookup maps
+        const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
+          (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item'
+        );
+
+        // Create reference list lookup maps in parallel
+        const refListMap = new Map<string, Map<any, string>>();
+        const refListPromises = refListProperties.map(async (metaItem: IRefListPropertyMetadata) => {
+          const fieldName = toCamelCase(metaItem.path);
+          try {
+            const refListItem = await getReferenceList({
+              refListId: {
+                module: metaItem.referenceListModule,
+                name: metaItem.referenceListName,
+              },
+            }).promise;
+
+            const valueMap = new Map();
+            refListItem.items.forEach((x) => {
+              valueMap.set(x.itemValue, x.item?.trim() || `${x.itemValue}`);
             });
 
-            Promise.all(refListPromises).then(() => setData(data.result.items));
+            refListMap.set(fieldName, valueMap);
+          } catch (err) {
+            console.error('getReferenceList error:', err);
+          }
         });
-      })
-      .then(() => setIsLoaded(true))
-      .catch((err: any) => console.error('getChartDataRefetchParams, err data', err));
-  }, [entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, isAxisTimeSeries, timeSeriesFormat, filterProperties, orderBy, orderDirection, formData]);
+
+        // Wait for reference lists to load
+        await Promise.all(refListPromises);
+
+        // Mark metadata as processed
+        setMetadataProcessed(true);
+
+        // Fetch data with optimized batch size and parallel requests
+        const batchSize = 1000;
+        let allItems: any[] = [];
+        let totalCount = 0;
+
+        // Get first batch to determine total count
+        const firstParams = getChartDataRefetchParams(
+          entityType,
+          valueProperty,
+          evaluatedFilters,
+          groupingProperty,
+          axisProperty,
+          filterProperties,
+          orderBy,
+          orderDirection,
+          0,
+          batchSize
+        );
+
+        const firstResponse = await refetch(firstParams);
+
+        if (!firstResponse?.result) {
+          throw new Error('Invalid response structure');
+        }
+
+        totalCount = firstResponse.result.totalCount || 0;
+        if (firstResponse.result.items && Array.isArray(firstResponse.result.items)) {
+          allItems = firstResponse.result.items;
+          setLoadingProgress({ current: allItems.length, total: totalCount });
+
+          // Process and show initial data immediately
+          processAndUpdateData(allItems, refListMap);
+          setHasInitialData(true);
+          setShowLoader(false);
+        }
+
+        // Calculate remaining batches and fetch them in parallel
+        const remainingBatches = Math.ceil((totalCount - allItems.length) / batchSize);
+        if (remainingBatches > 0) {
+          const batchPromises = [];
+
+          for (let i = 1; i <= remainingBatches; i++) {
+            const skipCount = i * batchSize;
+            const params = getChartDataRefetchParams(
+              entityType,
+              valueProperty,
+              evaluatedFilters,
+              groupingProperty,
+              axisProperty,
+              filterProperties,
+              orderBy,
+              orderDirection,
+              skipCount,
+              batchSize
+            );
+
+            batchPromises.push(refetch(params));
+          }
+
+          // Process batches as they complete
+          const batchResults = await Promise.all(batchPromises);
+          batchResults.forEach((response) => {
+            if (response?.result?.items && Array.isArray(response.result.items)) {
+              allItems = allItems.concat(response.result.items);
+              setLoadingProgress({ current: allItems.length, total: totalCount });
+
+              // Update chart with new data as it comes in
+              processAndUpdateData(allItems, refListMap);
+            }
+          });
+        }
+
+        setIsLoaded(true);
+        setLoadingProgress(null);
+      } catch (error) {
+        console.error('Error in fetchAndProcessData:', error);
+        setIsLoaded(true);
+        setShowLoader(false);
+        setMetadataProcessed(false);
+        setHasInitialData(false);
+        setLoadingProgress({
+          current: 0,
+          total: -1,
+        });
+      }
+    };
+
+    fetchAndProcessData();
+  }, [
+    requiredProperties,
+    evaluatedFilters,
+    groupingProperty,
+    isAxisTimeSeries,
+    timeSeriesFormat,
+    filterProperties,
+    orderBy,
+    orderDirection,
+    formData,
+    isGroupingTimeSeries,
+    groupingTimeSeriesFormat,
+    processAndUpdateData,
+    entityType,
+    valueProperty,
+    axisProperty,
+    getMetadata,
+    getReferenceList,
+    refetch,
+  ]);
 
   useEffect(() => {
     if (state.data) {
       setFilterdData(state.data);
     }
   }, [state.data]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const data: IChartData = useProcessedChartData();
 
@@ -115,24 +321,58 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  if (!state.isLoaded) {
+  // Show loader only if we don't have any data yet
+  if (!hasInitialData && loadingProgress?.current !== loadingProgress?.total) {
     return (
-      <Flex align="center" justify='center'>
-        <Spin indicator={<LoadingOutlined className={cx(styles.chartControlSpinFontSize)} spin />} />
-      </Flex>
+      <>
+        {loadingProgress && (!state.isLoaded || !metadataProcessed) && showLoader && (
+          <Flex
+            align="center"
+            justify="center"
+            vertical
+            gap={16}
+            className={cx(
+              styles.responsiveChartContainer,
+              props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+            )}
+            style={getResponsiveStyle(props)}
+          >
+            <ChartLoader chartType={chartType} />
+            <div className={cx(styles.loadingText)}>Fetching data...</div>
+            <div>
+              {loadingProgress.current} / {loadingProgress.total} items
+            </div>
+          </Flex>
+        )}
+      </>
     );
   }
 
   return (
-      <div 
-        className={cx(
-          styles.responsiveChartContainer,
-          props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
-        )}
-        style={getResponsiveStyle(props)}
-      >
+    <div
+      className={cx(
+        styles.responsiveChartContainer,
+        props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+      )}
+      style={getResponsiveStyle(props)}
+    >
       {renderChart(chartType, data)}
-      </div>
+      {/* Show progress indicator if still loading more data */}
+      {loadingProgress && hasInitialData && (
+        <Flex
+          align="center"
+          justify="center"
+          vertical
+          gap={4}
+          style={{ margin: 16 }}>
+          <Spin size="small" />
+          <div className={cx(styles.loadingText)}>Fetching more data...</div>
+          <div>
+            ({loadingProgress.current} / {loadingProgress.total} items)
+          </div>
+        </Flex>
+      )}
+    </div>
   );
 };
 

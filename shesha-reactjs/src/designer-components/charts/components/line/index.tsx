@@ -14,7 +14,7 @@ import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks';
-import { splitTitleIntoLines } from '../../utils';
+import { splitTitleIntoLines, getPredictableColor } from '../../utils';
 
 interface ILineChartProps extends IChartDataProps {
   data: IChartData;
@@ -38,47 +38,92 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     strokeColor,
     dataMode,
     strokeWidth,
+    simpleOrPivot
   } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data?.datasets || !data?.labels) {
-    if (!data) throw new Error('LineChart: No data to display. Please check the data source');
-
-    if (!data.datasets || !data.labels)
-      throw new Error('LineChart: No datasets or labels to display. Please check the data source');
-  }
+  // Check if we're on a small screen
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
 
   useEffect(() => {
     if (dataMode === 'url') {
       data?.datasets?.map((dataset: any) => {
         dataset.borderColor = strokeColor || 'black';
-        dataset.pointRadius = 5;
+        dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
         dataset.borderWidth = typeof strokeWidth === 'number' || strokeWidth > 1 ? strokeWidth : 1;
         dataset.tension = tension;
         return dataset;
       });
     } else {
-      data?.datasets?.map((dataset: any) => {
+      // For entity mode, use different colors for each dataset in pivot mode
+      const isPivotMode = simpleOrPivot === 'pivot';
+      
+      data?.datasets?.map((dataset: any, index: number) => {
         dataset.tension = tension;
-        dataset.borderColor = strokeColor || 'black';
+        dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
+        dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
+        
+        // Use different colors for each group in pivot mode
+        if (isPivotMode) {
+          // Generate a unique color for each dataset based on its label
+          const label = dataset.label || `Dataset ${index}`;
+          dataset.borderColor = getPredictableColor(label);
+          dataset.backgroundColor = dataset.borderColor;
+        } else {
+          // Use the stroke color for single dataset
+          dataset.borderColor = strokeColor || 'black';
+        }
+        
         return dataset;
       });
     }
-  }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension]);
+  }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension, isSmallScreen]);
 
   const options: any = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
-    aspectRatio: 2, // Width to height ratio (2:1)
+    maintainAspectRatio: true,
+    aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
+    animation: {
+      duration: isSmallScreen ? 1000 : 1200, // Faster animations on mobile
+      easing: 'easeInOutCubic',
+      delay: (context) => context.dataIndex * (isSmallScreen ? 20 : 30),
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: isSmallScreen ? 250 : 300,
+        },
+      },
+      resize: {
+        animation: {
+          duration: isSmallScreen ? 500 : 600,
+        },
+      },
+    },
     plugins: {
       legend: {
         display: !!showLegend,
-        position: legendPosition ?? 'top',
+        position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
+        labels: {
+          boxWidth: isSmallScreen ? 12 : 40,
+          padding: isSmallScreen ? 8 : 10,
+          font: {
+            size: isSmallScreen ? 10 : 12,
+          },
+        },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
+        font: {
+          size: isSmallScreen ? 12 : 16,
+          weight: 'bold',
+        },
+        padding: {
+          top: isSmallScreen ? 8 : 16,
+          bottom: isSmallScreen ? 8 : 16,
+        },
       },
     },
     scales: {
@@ -86,9 +131,30 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: xProperty?.trim() ?? '',
+          font: {
+            size: isSmallScreen ? 10 : 12,
+            weight: 'bold',
+          },
+          padding: {
+            top: isSmallScreen ? 4 : 8,
+            bottom: isSmallScreen ? 4 : 8,
+          },
         },
         display: !!showXAxisScale,
-        offset: true, // Ensure the x-axis does not coincide with the y-axis
+        offset: true,
+        ticks: {
+          maxRotation: 45, // Allow rotation up to 45 degrees
+          minRotation: 0,
+          font: {
+            size: isSmallScreen ? 9 : 12,
+          },
+          padding: isSmallScreen ? 4 : 8,
+          autoSkip: false, // Show all labels
+          maxTicksLimit: undefined, // Remove tick limit
+        },
+        grid: {
+          display: !isSmallScreen, // Hide grid on mobile for cleaner look
+        },
       },
       y: {
         title: {
@@ -96,9 +162,33 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
           text: dataMode === 'url' || !aggregationMethod
             ? yProperty?.trim() ?? ''
             : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
+          font: {
+            size: isSmallScreen ? 10 : 12,
+            weight: 'bold',
+          },
+          padding: {
+            top: isSmallScreen ? 4 : 8,
+            bottom: isSmallScreen ? 4 : 8,
+          },
         },
         display: !!showYAxisScale,
         beginAtZero: true,
+        ticks: {
+          font: {
+            size: isSmallScreen ? 9 : 12,
+          },
+          padding: isSmallScreen ? 4 : 8,
+          callback: function(value) {
+            // Format large numbers on mobile
+            if (isSmallScreen && value >= 1000) {
+              return (value / 1000).toFixed(1) + 'k';
+            }
+            return value;
+          }
+        },
+        grid: {
+          display: !isSmallScreen, // Hide grid on mobile
+        },
       },
     },
   };

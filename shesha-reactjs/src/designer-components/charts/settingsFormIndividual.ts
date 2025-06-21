@@ -120,36 +120,58 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'url',
                                 inputType: 'textField',
-                                label: 'URL',
+                                label: 'Url',
                                 description: 'The URL you want to use for the chart',
                                 labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
                                 hidden: false,
                                 validate: { required: true },
                               })
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'axisProperty',
-                                label: 'Axis label',
-                                inputType: 'textField',
-                                labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
-                                isDynamic: false,
-                                description: 'Label for the axis property',
-                                validate: { required: false },
-                                width: '100%',
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'axisProperty',
+                                    label: 'Axis Label',
+                                    type: 'textField',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsForUrlId,
+                                    isDynamic: false,
+                                    description: 'Label for the axis property',
+                                    validate: { required: false },
+                                    width: '100%',
+                                  }  
+                                ]
                               })
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'valueProperty',
-                                label: 'Value axis label',
-                                inputType: 'textField',
-                                labelAlign: 'right',
                                 parentId: dataSettingsForUrlId,
-                                isDynamic: false,
-                                description: 'Label for the value property',
-                                validate: { required: false },
-                                width: '100%',
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'valueProperty',
+                                    label: 'Value Axis Label',
+                                    type: 'textField',
+                                    labelAlign: 'right',
+                                    parentId: dataSettingsForUrlId,
+                                    isDynamic: false,
+                                    description: 'Label for the value property',
+                                    validate: { required: false },
+                                    width: '100%',
+                                  }
+                                ]
                               })
                               .toJson(),
                           ],
@@ -237,7 +259,7 @@ export const getSettings = (data: any) => {
                                     type: 'switch',
                                     propertyName: 'isAxisTimeSeries',
                                     label: 'Is Axis Property Time Series?',
-                                    description: 'If the x-axis is a time series, check this box.',
+                                    description: 'If the x-axis is a time series, switch to true.',
                                     parentId: dataSettingsId,
                                     defaultValue: false,
                                     validate: { required: true },
@@ -271,7 +293,7 @@ export const getSettings = (data: any) => {
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
                                     validate: { required: true },
-                                    defaultValue: 'day-month-year',
+                                    defaultValue: 'month-year',
                                     width: '100%',
                                   },
                                 ],
@@ -319,8 +341,8 @@ export const getSettings = (data: any) => {
                                 inputs: [
                                   {
                                     id: nanoid(),
-                                    propertyName: 'legendProperty',
-                                    label: 'Legend Property',
+                                    propertyName: 'groupingProperty',
+                                    label: 'Grouping Property',
                                     labelAlign: 'right',
                                     parentId: dataSettingsId,
                                     type: 'propertyAutocomplete',
@@ -335,6 +357,61 @@ export const getSettings = (data: any) => {
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
+                                    width: '100%',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                hidden: {
+                                  _code: 'return !getSettingValue(data?.groupingProperty)',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    type: 'switch',
+                                    propertyName: 'isGroupingTimeSeries',
+                                    label: 'Is Grouping Property Time Series?',
+                                    description: 'If the grouping property is a time series, switch to true.',
+                                    parentId: dataSettingsId,
+                                    defaultValue: false,
+                                    validate: { required: true },
+                                    width: '100%',
+                                  },
+                                ],
+                              })
+                              
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataSettingsId,
+                                inline: true,
+                                hidden: {
+                                  _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'groupingTimeSeriesFormat',
+                                    parentId: dataSettingsId,
+                                    label: 'Grouping Time Series Format',
+                                    type: 'dropdown',
+                                    allowClear: true,
+                                    dropdownOptions: [
+                                      { label: 'Day', value: 'day' },
+                                      { label: 'Month', value: 'month' },
+                                      { label: 'Year', value: 'year' },
+                                      { label: 'Day-Month', value: 'day-month' },
+                                      { label: 'Day-Month-Year', value: 'day-month-year' },
+                                      { label: 'Month-Year', value: 'month-year' },
+                                    ],
+                                    validate: { required: true },
+                                    defaultValue: 'month-year',
                                     width: '100%',
                                   },
                                 ],
@@ -593,7 +670,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'axisProperty',
-                        label: 'Axis label',
+                        label: 'Axis Label',
                         inputType: 'textField',
                         labelAlign: 'right',
                         parentId: dataTabId,
@@ -699,7 +776,7 @@ export const getSettings = (data: any) => {
                             type: 'switch',
                             propertyName: 'isAxisTimeSeries',
                             label: 'Is Axis Property Time Series?',
-                            description: 'If the x-axis is a time series, check this box.',
+                            description: 'If the x-axis is a time series, switch to true.',
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: true },
@@ -733,7 +810,7 @@ export const getSettings = (data: any) => {
                               { label: 'Month-Year', value: 'month-year' },
                             ],
                             validate: { required: true },
-                            defaultValue: 'day-month-year',
+                            defaultValue: 'month-year',
                             width: '100%',
                           },
                         ],
@@ -781,8 +858,8 @@ export const getSettings = (data: any) => {
                         inputs: [
                           {
                             id: nanoid(),
-                            propertyName: 'legendProperty',
-                            label: 'Legend Property',
+                            propertyName: 'groupingProperty',
+                            label: 'Grouping Property',
                             labelAlign: 'right',
                             parentId: dataTabId,
                             type: 'propertyAutocomplete',
@@ -793,10 +870,65 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
+                              _value: false
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
+                            width: '100%',
+                          },
+                        ],
+                      })                      
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        inline: true,
+                        hidden: {
+                          _code: 'return !getSettingValue(data?.groupingProperty)',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            type: 'switch',
+                            propertyName: 'isGroupingTimeSeries',
+                            label: 'Is Grouping Property Time Series?',
+                            description: 'If the grouping property is a time series, switch to true.',
+                            parentId: dataTabId,
+                            defaultValue: false,
+                            validate: { required: true },
+                            width: '100%',
+                          },
+                        ],
+                      })
+                      
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataSettingsId,
+                        inline: true,
+                        hidden: {
+                          _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'groupingTimeSeriesFormat',
+                            parentId: dataTabId,
+                            label: 'Grouping Time Series Format',
+                            type: 'dropdown',
+                            allowClear: true,
+                            dropdownOptions: [
+                              { label: 'Day', value: 'day' },
+                              { label: 'Month', value: 'month' },
+                              { label: 'Year', value: 'year' },
+                              { label: 'Day-Month', value: 'day-month' },
+                              { label: 'Day-Month-Year', value: 'day-month-year' },
+                              { label: 'Month-Year', value: 'month-year' },
+                            ],
+                            validate: { required: true },
+                            defaultValue: 'month-year',
                             width: '100%',
                           },
                         ],

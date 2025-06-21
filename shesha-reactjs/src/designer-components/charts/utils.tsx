@@ -45,18 +45,33 @@ export const splitTitleIntoLines = (title: string): string | string[] => {
  * @param props.width the width of the chart
  * @returns the responsive style
  */
-export const getResponsiveStyle = (props: IChartsProps) =>
-({
-  // Responsive height with fallbacks
-  height: props?.height 
-    ? `min(${props.height}px, 80vh)` // Use provided height but cap at 80% viewport height
-    : 'clamp(300px, 50vh, 600px)',   // Responsive height between 300px and 600px
+export const getResponsiveStyle = (props: IChartsProps) => {
+  // Check if we're on a small screen (iPhone SE width is 375px)
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
   
-  // Responsive width with fallbacks  
-  width: props?.width 
-    ? `min(${props.width}px, 95vw)`  // Use provided width but cap at 95% viewport width
-    : 'clamp(300px, 90vw, 100%)',   // Responsive width between 300px and 800px
-});
+  return {
+    // Responsive height with better mobile support
+    height: props?.height 
+      ? `min(${props.height}px, ${isSmallScreen ? '60vh' : '80vh'})` // Smaller max height on mobile
+      : isSmallScreen 
+        ? 'clamp(250px, 40vh, 400px)'  // Smaller range for mobile
+        : 'clamp(300px, 50vh, 600px)', // Desktop range
+    
+    // Responsive width with better mobile support
+    width: props?.width 
+      ? `min(${props.width}px, ${isSmallScreen ? '98vw' : '95vw'})` // Use more width on mobile
+      : isSmallScreen 
+        ? 'clamp(280px, 98vw, 100%)'  // Use more viewport width on mobile
+        : 'clamp(300px, 90vw, 100%)', // Desktop range
+    
+    // Additional mobile optimizations
+    ...(isSmallScreen && {
+      minHeight: '250px',
+      maxHeight: '400px',
+      overflow: 'hidden'
+    })
+  };
+};
 
 /**
  * Filter out null and undefined values from an object
@@ -108,7 +123,7 @@ export const defaultConfigFiller: {
  * @returns array of objects with stringified values
  */
 export const stringifyValues = (data: object[]) => {
-  return data.map(item => {
+  return data?.map(item => {
     const processValue = (value: any): any => {
       if (value === null || value === undefined) {
         return 'undefined';
@@ -157,7 +172,7 @@ function removePropertyDuplicates(str) {
 function convertNestedPropertiesToObjectFormat(array?: string[]) {
   if (!array) return '';
 
-  return array?.filter(path => path && path?.trim() !== '').map(path => {
+  return array?.filter(path => path && path?.trim() !== '')?.map(path => {
     let parts = path.split('.');
     let result = '';
     let indentation = 0;
@@ -186,20 +201,21 @@ function convertNestedPropertiesToObjectFormat(array?: string[]) {
  * @param entityType entity type to get data from
  * @param dataProperty property to get data from
  * @param filters filters to apply to the data before returning
- * @param legendProperty legend property to use for the chart
+ * @param groupingProperty legend property to use for the chart
  * @param axisProperty axis property to use for the chart
  * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, legendProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
+      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
-
+      skipCount: skipCount ?? 0,
+      maxResultCount: maxResultCount ?? 100,
     },
   };
 };

@@ -22,7 +22,9 @@ export interface IChartDataContext {
   axisProperty?: string;
   isAxisTimeSeries?: boolean;
   timeSeriesFormat?: TTimeSeriesFormat;
-  legendProperty?: string;
+  groupingProperty?: string;
+  isGroupingTimeSeries?: boolean;
+  groupingTimeSeriesFormat?: TTimeSeriesFormat;
   filterProperties?: string[];
   xProperty?: string;
   yProperty?: string;
@@ -72,11 +74,13 @@ export const INITIAL_STATE: IChartDataContext = {
   legendPosition: 'top',
   entityType: 'entity',
   filters: {},
-  valueProperty: 'value',
-  axisProperty: 'axis',
+  valueProperty: '',
+  axisProperty: '',
   isAxisTimeSeries: false,
-  timeSeriesFormat: 'day-month-year',
-  legendProperty: 'legend',
+  timeSeriesFormat: 'month-year',
+  groupingProperty: '',
+  isGroupingTimeSeries: false,
+  groupingTimeSeriesFormat: 'month-year',
   xProperty: 'x',
   yProperty: 'y',
   simpleOrPivot: 'simple',
