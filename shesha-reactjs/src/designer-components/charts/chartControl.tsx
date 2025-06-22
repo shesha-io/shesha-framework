@@ -354,9 +354,29 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         styles.responsiveChartContainer,
         props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
       )}
-      style={getResponsiveStyle(props)}
+      style={{
+        ...getResponsiveStyle(props),
+        width: '100%',
+        height: '100%',
+        minHeight: '400px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
     >
-      {renderChart(chartType, data)}
+      <div style={{ 
+        flex: 1, 
+        width: '100%', 
+        height: '100%', 
+        minHeight: '350px', 
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {renderChart(chartType, data)}
+      </div>
       {/* Show progress indicator if still loading more data */}
       {loadingProgress && hasInitialData && (
         <Flex
@@ -364,7 +384,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           justify="center"
           vertical
           gap={4}
-          style={{ margin: 16 }}>
+          style={{ margin: 16, flexShrink: 0 }}>
           <Spin size="small" />
           <div className={cx(styles.loadingText)}>Fetching more data...</div>
           <div>

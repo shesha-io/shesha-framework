@@ -52,24 +52,19 @@ export const getResponsiveStyle = (props: IChartsProps) => {
   return {
     // Responsive height with better mobile support
     height: props?.height 
-      ? `min(${props.height}px, ${isSmallScreen ? '60vh' : '80vh'})` // Smaller max height on mobile
+      ? `${props.height}px`
       : isSmallScreen 
-        ? 'clamp(250px, 40vh, 400px)'  // Smaller range for mobile
-        : 'clamp(300px, 50vh, 600px)', // Desktop range
+        ? 'clamp(300px, 60vh, 600px)'  // Better mobile height utilization
+        : 'clamp(400px, 70vh, 800px)', // Better desktop height utilization
     
-    // Responsive width with better mobile support
+    // Responsive width - use full available space
     width: props?.width 
-      ? `min(${props.width}px, ${isSmallScreen ? '98vw' : '95vw'})` // Use more width on mobile
-      : isSmallScreen 
-        ? 'clamp(280px, 98vw, 100%)'  // Use more viewport width on mobile
-        : 'clamp(300px, 90vw, 100%)', // Desktop range
+      ? `${props.width}px`
+      : '100%', // Use full width available
     
-    // Additional mobile optimizations
-    ...(isSmallScreen && {
-      minHeight: '250px',
-      maxHeight: '400px',
-      overflow: 'hidden'
-    })
+    // Additional responsive optimizations
+    minHeight: isSmallScreen ? '300px' : '400px',
+    maxHeight: isSmallScreen ? '600px' : '800px'
   };
 };
 

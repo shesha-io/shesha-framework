@@ -79,9 +79,29 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         styles.responsiveChartContainer,
         props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
       )}
-      style={getResponsiveStyle(props)}
+      style={{
+        ...getResponsiveStyle(props),
+        width: '100%',
+        height: '100%',
+        minHeight: '400px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
     >
-      {renderChart(chartType, memoUrlTypeData)}
+      <div style={{ 
+        flex: 1, 
+        width: '100%', 
+        height: '100%', 
+        minHeight: '350px', 
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {renderChart(chartType, memoUrlTypeData)}
+      </div>
     </div>
   );
 };

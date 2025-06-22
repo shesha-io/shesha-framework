@@ -34,6 +34,14 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
     responsive: true,
     maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
     aspectRatio: 1, // Square aspect ratio for polar area charts
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
+    },
     animation: {
       duration: 1400, // Animation duration in milliseconds
       easing: 'easeInOutCubic', // Smooth easing function for polar areas
@@ -69,6 +77,15 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       legend: {
         display: !!showLegend,
         position: legendPosition ?? 'top',
+        align: 'center',
+        fullSize: false, // This ensures legend doesn't consume chart space
+        labels: {
+          boxWidth: 20,
+          padding: 10,
+          font: {
+            size: 12,
+          },
+        },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
@@ -77,14 +94,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
           size: 16,
           weight: 'bold',
         },
-      },
-    },
-    layout: {
-      padding: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
+        align: 'center',
+        fullSize: false, // This ensures title doesn't consume chart space
       },
     },
   };

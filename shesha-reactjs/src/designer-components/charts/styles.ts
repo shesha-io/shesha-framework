@@ -57,8 +57,8 @@ const polarPulseAnimation = keyframes`
 const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const responsiveChartContainer = cx(`${prefixCls}-responsive-chart-container`, css`
-    width: 95%;
-    max-width: 95%;
+    width: 100%;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     height: 100%;
@@ -72,11 +72,25 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     border: 1px solid #d9d9d9;
     border-radius: 6px;
     padding: 16px;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   `);
 
   const chartContainerNoBorder = cx(`${prefixCls}-chart-container-no-border`, css`
     border: none;
     padding: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   `);
 
   const loadingText = cx(`${prefixCls}-loading-text`, css`
