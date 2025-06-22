@@ -36,7 +36,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { data: formData } = useFormData();
   const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>({
     current: 0,
-    total: -1,
+    total: 0,
   });
   const [showLoader, setShowLoader] = useState(true);
   const [metadataProcessed, setMetadataProcessed] = useState(false);
@@ -256,7 +256,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         setHasInitialData(false);
         setLoadingProgress({
           current: 0,
-          total: -1,
+          total: 0,
         });
       }
     };
