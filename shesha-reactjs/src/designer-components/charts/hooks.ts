@@ -1,7 +1,25 @@
 import { useChartDataStateContext } from '@/providers';
-import { useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { IChartData } from './model';
 import { aggregateValues, getPredictableColor, getPropertyValue, stringifyValues } from './utils';
+
+export const useIsSmallScreen = () => {
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== 'undefined' && window.innerWidth <= 480
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 480);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isSmallScreen;
+};
+
 
 /**
  * Create title for the chart based on the chart type

@@ -57,8 +57,8 @@ const polarPulseAnimation = keyframes`
 const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const responsiveChartContainer = cx(`${prefixCls}-responsive-chart-container`, css`
-    width: 100%;
-    max-width: 100%;
+    width: 95%;
+    max-width: 95%;
     margin-left: auto;
     margin-right: auto;
     height: 100%;

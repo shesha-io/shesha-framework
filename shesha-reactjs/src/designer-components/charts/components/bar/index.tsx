@@ -12,7 +12,7 @@ import {
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-import { useGeneratedTitle } from '../../hooks';
+import { useGeneratedTitle, useIsSmallScreen } from '../../hooks';
 import { IChartData, IChartDataProps } from '../../model';
 import { splitTitleIntoLines } from '../../utils';
 
@@ -41,33 +41,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
   } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
-
-// At the top of the file, alongside your other imports
-import { useState, useEffect } from 'react';
-
-// Add this custom hook for reactive screen size detection
-const useIsSmallScreen = () => {
-  const [isSmallScreen, setIsSmallScreen] = useState(
-    typeof window !== 'undefined' && window.innerWidth <= 480
-  );
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth <= 480);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return isSmallScreen;
-};
-
-// …later in your component…
-
--  // Check if we're on a small screen
--  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
-+  const isSmallScreen = useIsSmallScreen();
+  const isSmallScreen = useIsSmallScreen();
 
   if (dataMode === 'url') {
     data.datasets = data?.datasets?.map((dataset: any) => ({
@@ -178,7 +152,7 @@ const useIsSmallScreen = () => {
             size: isSmallScreen ? 9 : 12,
           },
           padding: isSmallScreen ? 4 : 8,
-          callback: function(value) {
+          callback: function (value) {
             // Format large numbers on mobile
             if (isSmallScreen && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';
