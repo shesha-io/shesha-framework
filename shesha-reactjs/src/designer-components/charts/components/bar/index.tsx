@@ -42,8 +42,32 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  // Check if we're on a small screen
-  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
+// At the top of the file, alongside your other imports
+import { useState, useEffect } from 'react';
+
+// Add this custom hook for reactive screen size detection
+const useIsSmallScreen = () => {
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== 'undefined' && window.innerWidth <= 480
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 480);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isSmallScreen;
+};
+
+// …later in your component…
+
+-  // Check if we're on a small screen
+-  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
++  const isSmallScreen = useIsSmallScreen();
 
   if (dataMode === 'url') {
     data.datasets = data?.datasets?.map((dataset: any) => ({
