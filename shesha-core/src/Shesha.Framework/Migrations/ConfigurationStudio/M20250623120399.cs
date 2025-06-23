@@ -34,13 +34,15 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .ToTable("configuration_items")
                 .InSchema("frwk")
                 .PrimaryColumn("id");
-            
+
+            Execute.Sql(@"delete from Core_NotificationTemplates where PartOfId is null");
+
             Delete.ForeignKey("FK_Core_NotificationTemplates_PartOfId_Core_NotificationTypeConfigs_Id").OnTable("Core_NotificationTemplates");
 
             Create.ForeignKey("FK_Core_NotificationTemplates_PartOfId")
                 .FromTable("Core_NotificationTemplates")
                 .ForeignColumn("PartOfId")
-                .ToTable("configuration_items")
+                .ToTable("configuration_item_revisions")
                 .InSchema("frwk")
                 .PrimaryColumn("id");
                         

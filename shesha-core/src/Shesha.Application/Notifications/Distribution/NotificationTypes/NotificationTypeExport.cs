@@ -61,10 +61,13 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             return await Task.FromResult<DistributedConfigurableItemBase>(result);
         }
 
-        private async Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfig notification)
+        private Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfig notification)
         {
+            throw new NotImplementedException();
+            /*
             var templates = await _templateRepo.GetAll().Where(t => t.PartOf == notification).ToListAsync();
             return templates.Select(e => new DistributedNotificationTemplateDto { Id = e.Id }.CopyTemplatePropsFrom(e)).ToList();
+            */
         }
 
         /// inheritedDoc

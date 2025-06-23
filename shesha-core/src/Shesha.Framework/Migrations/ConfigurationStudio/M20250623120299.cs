@@ -8,6 +8,11 @@ namespace Shesha.Migrations.ConfigurationStudio
     {
         public override void Up()
         {
+            /**/
+            Delete.ForeignKey("FK_Core_ShaRoles_RoleAppointmentTypeId_Core_RoleAppointmentTypeConfigs_Id").OnTable("Core_ShaRoles");
+            Delete.Table("Core_RoleAppointmentTypeConfigs");
+            /**/
+
             // Shesha.Domain.ReferenceListItem
             Create.Table("reference_list_items").InSchema("frwk")
                 .WithIdAsGuid("id")

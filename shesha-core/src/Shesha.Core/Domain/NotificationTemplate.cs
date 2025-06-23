@@ -16,7 +16,7 @@ namespace Shesha.Domain
     public class NotificationTemplate : FullAuditedEntity<Guid>, INotificationTemplateProps
     {
         public virtual RefListNotificationMessageFormat? MessageFormat { get; set; }
-        public virtual NotificationTypeConfig PartOf { get; set; }
+        public virtual NotificationTypeConfigRevision PartOf { get; set; }
         [MaxLength(2000)]
         public virtual string TitleTemplate { get; set; }
         [MaxLength(int.MaxValue)]

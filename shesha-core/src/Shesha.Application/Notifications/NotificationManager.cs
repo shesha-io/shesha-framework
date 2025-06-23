@@ -162,8 +162,10 @@ namespace Shesha.Notifications
             return newCopy;
         }
 
-        private async Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
+        private Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
         {
+            throw new NotImplementedException();
+            /*
             var srcItems = await _templateRepository.GetAll().Where(i => i.PartOf == source).ToListAsync();
 
             foreach (var srcItem in srcItems)
@@ -173,6 +175,7 @@ namespace Shesha.Notifications
 
                 await _templateRepository.InsertAsync(dstItem);
             }
+            */
         }        
 
         public async Task<NotificationTypeConfig> CreateNewVersionWithoutDetailsAsync(NotificationTypeConfig src)

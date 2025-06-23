@@ -86,13 +86,16 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             }
         }
 
-        private async Task ImportTemplatesAsync(NotificationTypeConfig newVersion, List<DistributedNotificationTemplateDto> templates)
+        private Task ImportTemplatesAsync(NotificationTypeConfig newVersion, List<DistributedNotificationTemplateDto> templates)
         {
+            throw new NotImplementedException();
+            /*
             foreach (var templateDto in templates) 
             {
                 var template = new NotificationTemplate { PartOf = newVersion }.CopyTemplatePropsFrom(templateDto);
                 await _templateRepo.InsertAsync(template);
             }
+            */
         }
 
         protected async Task<NotificationTypeConfig> MapConfigAsync(DistributedNotificationType item, NotificationTypeConfig dbItem, IConfigurationItemsImportContext context)
