@@ -42,7 +42,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     readOnly,
     noDataText = "No Data",
     noDataSecondaryText = "No data is available for this list",
-    noDataIcon
+    noDataIcon,
+    onRowDeleteSuccessAction
   } = props;
   const {
     tableData,
@@ -165,6 +166,35 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     });
   };
 
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /*nop*/
+      };
+
+    return (data, form, contexts, globalState, setGlobalState) => {
+      const evaluationContext = {
+        data,
+        form,
+        contexts,
+        globalState,
+        setGlobalState,
+        http: allData.http,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, allData.http]);
+
+
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
@@ -175,6 +205,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
+      performOnRowDeleteSuccessAction(rowData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
       dataSource.refreshTable();
     });
   };

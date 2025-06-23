@@ -355,7 +355,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="CRUD">
+   <SettingsCollapsiblePanel header="CRUD">
         <SettingsFormItem name="canEditInline" label="Can edit inline" jsSetting>
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
@@ -483,6 +483,16 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
         <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
           <Input readOnly={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="onRowDeleteSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} hidden={model.canDeleteInline === 'no'}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On row delete success"
+            description="Custom business logic to be executed after successfull deletion of a row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
+          />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
