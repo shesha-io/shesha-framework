@@ -216,7 +216,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       </SettingsFormItem>
 
 
-      <SettingsCollapsiblePanel header='CRUD'>
+ <SettingsCollapsiblePanel header='CRUD'>
         <SettingsFormItem
           name="canEditInline"
           label="Can edit inline"
@@ -317,6 +317,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={onRowSaveConstants}
           />
         </SettingsFormItem>
+
         <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
             editorConfig={null}
@@ -326,9 +327,25 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
+
         <SettingsFormItem name="canDeleteInline" label="Can delete inline">
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
+
+        <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
+          <Input readOnly={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="onRowDeleteSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On row delete success"
+            description="Custom business logic to be executed after successfull deletion of a row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
+          />
+        </SettingsFormItem>
+
         <SettingsFormItem name="canDeleteInlineExpression" label="Can delete inline expression" hidden={model.canDeleteInline !== 'js'}>
           <CodeEditor
             propertyName="canDeleteInlineExpression"
@@ -344,11 +361,8 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={crudConstants}
           />
         </SettingsFormItem>
-        <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
-          <Input readOnly={readOnly} />
-        </SettingsFormItem>
-
       </SettingsCollapsiblePanel>
+
       <SettingsCollapsiblePanel header="Layout">
         <SettingsFormItem jsSetting
           name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
