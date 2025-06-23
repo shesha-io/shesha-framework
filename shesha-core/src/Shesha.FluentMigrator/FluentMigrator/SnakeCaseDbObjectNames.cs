@@ -17,5 +17,7 @@
         public string LastModificationTimeColumn => "last_modification_time";
 
         public string LastModifierUserIdColumn => "last_modifier_user_id";
+
+        public static SnakeCaseDbObjectNames Instance = new SnakeCaseDbObjectNames();
     }
 }

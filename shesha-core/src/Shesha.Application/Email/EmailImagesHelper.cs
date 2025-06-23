@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Abp.Dependency;
+using MimeTypes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
-using Abp.Dependency;
-using MimeTypes;
-using Shesha.Utilities;
 
 namespace Shesha.Email
 {
@@ -80,117 +79,6 @@ namespace Shesha.Email
             message.IsBodyHtml = true;
 
             return true;
-        }
-
-        private static string CopySizeFromStyle(string html)
-        {
-            var imgRegex = new Regex(@"<img(.*)\/>|<img(.*)</img>");
-            var styleRegex = new Regex(@"(?<=\bstyle="")[^""]*");
-            var widthRegex = new Regex(@"(?<=\bwidth="")[^ ""]*");
-            var heightRegex = new Regex(@"(?<=\bheight="")[^ ""]*");
-
-            var newHtml = imgRegex.Replace(html, m =>
-            {
-                var res = m.Value;
-
-                var widthMatch = widthRegex.Match(m.Value);
-                var heightMatch = heightRegex.Match(m.Value);
-                var styleMatch = styleRegex.Match(m.Value);
-                if (styleMatch.Success)
-                {
-                    var style = styleMatch.Value;
-
-                    if (!widthMatch.Success)
-                    {
-                        var styleWidth = new Regex(@"(?<=\bwidth:)[^;""]*").Match(style);
-                        if (styleWidth.Success)
-                        {
-                            res = styleRegex.Replace(res, mm => mm.Value + $"\" width=\"{styleWidth.Value.RemovePostfix("px")}");
-                        }
-                    }
-                    if (!heightMatch.Success)
-                    {
-                        var styleHeight = new Regex(@"(?<=\bheight:)[^;""]*").Match(style);
-                        if (styleHeight.Success)
-                        {
-                            res = styleRegex.Replace(res, mm => mm.Value + $"\" height=\"{styleHeight.Value.RemovePostfix("px")}");
-                        }
-                    }
-                }
-
-                return res;
-            });
-
-            return newHtml;
-
-        }
-
-        /// <summary>
-        /// inheritedDoc
-        /// </summary>
-        public string LocalImagesToEmbedded(string html)
-        {
-            // todo: convert to use in Shesha 3 and uncomment
-            throw new NotImplementedException();
-            /*
-            var imgRegex = new Regex(@"(?<=img\s+[\w\s\""\'\=\:\;\\\/\.]*src\=[\x27\x22])(?<Url>[^\x27\x22]*)(?=[\x27\x22])");
-            var newHtml = imgRegex.Replace(html, m =>
-            {
-                var res = m.Value;
-
-                var fileName = string.Empty;
-
-                if (res.TrimStart('/').StartsWith("fileManager", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    // path
-                    var decoded = HttpUtility.UrlDecode(HttpUtility.HtmlDecode(res));
-                    var queryParams = HttpUtility.ParseQueryString(decoded);
-                    fileName = (queryParams["path"] ?? "").Replace('/', '\\').TrimStart('\\');
-                }
-                else
-                {
-                    var storedFileUrlRegex = new Regex(@"/StoredFile/Get/(?'fileId'[\d]+)");
-                    var match = storedFileUrlRegex.Match(m.Value);
-                    if (match.Success)
-                    {
-                        var id = match.Groups["fileId"].Value?.ToGuid();
-                        if (id.HasValue && id != Guid.Empty)
-                        {
-                            var fileRepository = StaticContext.IocManager.Resolve<IRepository<StoredFile, Guid>>();
-                            fileName = fileRepository.Get(id.Value)?.PhysicalFilePath();
-                        }
-                    }
-                }
-
-                if (!string.IsNullOrWhiteSpace(fileName))
-                {
-                    var settings = StaticContext.IocManager.Resolve<ISheshaSettings>();
-                    var imagesPhysicalPath = Path.Combine(settings.UploadFolder, "UserFiles");
-                    var imagesDir = new DirectoryInfo(imagesPhysicalPath);
-                    if (!imagesDir.Exists)
-                        imagesDir.Create();
-                    var fullFileName = Path.Combine(imagesDir.FullName, fileName);
-
-                    if (!File.Exists(fullFileName))
-                        return res;
-
-                    var mimeMapper = StaticContext.IocManager.Resolve<IMimeMappingService>();
-
-                    var base64Img = new Base64Image
-                    {
-                        FileContents = File.ReadAllBytes(fullFileName),
-                        ContentType = mimeMapper.Map(fullFileName)
-                    };
-
-                    var base64EncodedImg = base64Img.ToString();
-                    res = base64EncodedImg;
-                }
-
-                return res;
-            });
-
-            return newHtml;
-            */
         }
 
         // todo: remove, it's a copy of the same method from the FileHelper

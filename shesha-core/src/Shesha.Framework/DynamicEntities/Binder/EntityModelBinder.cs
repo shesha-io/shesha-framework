@@ -694,8 +694,8 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace
-                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
+                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfigRevision.Namespace
+                && (x.Name == reference.EntityConfigRevision.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfigRevision.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
                 if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 

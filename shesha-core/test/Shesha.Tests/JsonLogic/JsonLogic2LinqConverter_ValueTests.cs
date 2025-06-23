@@ -929,7 +929,7 @@ namespace Shesha.Tests.JsonLogic
     {
       ""=="": [
         {
-          ""var"": ""ShaRole""
+          ""var"": ""Address""
         },
         ""852c4011-4e94-463a-9e0d-b0054ab88f7d""
       ]
@@ -940,15 +940,15 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public void EntityReference_Equals_Convert()
         {
-            var expression = ConvertToExpression<ShaRolePermission>(_entityReference_Equals_expression);
+            var expression = ConvertToExpression<Person>(_entityReference_Equals_expression);
 
-            Assert.Equal($@"ent => (ent.{nameof(ShaRolePermission.ShaRole)}.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid())", expression?.ToInvariantString());            
+            Assert.Equal($@"ent => (ent.{nameof(Person.Address)}.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid())", expression?.ToInvariantString());            
         }
 
         [Fact]
         public async Task EntityReference_Equals_FetchAsync()
         {
-            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_entityReference_Equals_expression);
             Assert.NotNull(data);
         }
 
@@ -1127,23 +1127,23 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task ComplexExpression_Fetch_SortBy_NestedEntity_Property_AscAsync()
+        public Task ComplexExpression_Fetch_SortBy_NestedEntity_Property_AscAsync()
         {
-            await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression, 
-                queryable => queryable.OrderBy($"{nameof(ShaRolePermission.ShaRole)}.{nameof(ShaRolePermission.ShaRole.Name)}"),
+            return TryFetchDataAsync<Person, Guid>(_entityReference_Equals_expression, 
+                queryable => queryable.OrderBy($"{nameof(Person.User)}.{nameof(Person.User.UserName)}"),
                 data => {
                     Assert.NotNull(data);
                     
-                    var roleNames = data.Select(e => e.ShaRole?.Name).ToList();
-                    roleNames.Should().BeInAscendingOrder(e => e);
+                    var names = data.Select(e => e.User?.UserName).ToList();
+                    names.Should().BeInAscendingOrder(e => e);
                 }
             );
         }
 
         [Fact]
-        public async Task ComplexExpression_Fetch_SortBy_Title_AscAsync()
+        public Task ComplexExpression_Fetch_SortBy_Title_AscAsync()
         {
-            await TryFetchDataAsync<User, Int64>(_booleanField_NotEquals_expression,
+            return TryFetchDataAsync<User, Int64>(_booleanField_NotEquals_expression,
                 queryable => queryable.OrderBy($"{nameof(User.TypeOfAccount)}"),
                 data => {
                     Assert.NotNull(data);

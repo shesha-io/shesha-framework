@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Shesha.AutoMapper.Dto;
+﻿using Shesha.AutoMapper.Dto;
+using System;
 
 namespace Shesha.ShaRoleAppointedPersons.Dto
 {
@@ -8,6 +7,5 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
     {
         Guid RoleId { get; }
         EntityReferenceDto<Guid?> Person { get; }
-        List<EntityReferenceDto<Guid>> Regions { get; }
     }
 }

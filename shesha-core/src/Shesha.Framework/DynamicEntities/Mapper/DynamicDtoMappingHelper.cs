@@ -43,17 +43,18 @@ namespace Shesha.DynamicEntities.Mapper
             return $"{@namespace}.{name}";
         }
 
-        private string GetCacheKey(EntityConfig entityConfig)
+        private string GetCacheKey(EntityConfigRevision entityConfigRevision)
         {
-            return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
+            // TODO: V1 review cache should take versions into account
+            return GetCacheKey(entityConfigRevision.Namespace, entityConfigRevision.ClassName);
         }
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            if (eventData.Entity?.EntityConfig == null)
+            if (eventData.Entity?.EntityConfigRevision == null)
                 return;
 
-            var cacheKey = GetCacheKey(eventData.Entity.EntityConfig);
+            var cacheKey = GetCacheKey(eventData.Entity.EntityConfigRevision);
             _internalCache.Remove(cacheKey);
         }
 
@@ -79,14 +80,14 @@ namespace Shesha.DynamicEntities.Mapper
             return mapper;
         }
 
-        public async Task<IMapper> GetEntityToDtoMapperAsync(Type entityType, Type dtoType)
+        public Task<IMapper> GetEntityToDtoMapperAsync(Type entityType, Type dtoType)
         {
-            return await GetMapperAsync(entityType, dtoType, MappingDirection.Entity2Dto);
+            return GetMapperAsync(entityType, dtoType, MappingDirection.Entity2Dto);
         }
 
-        public async Task<IMapper> GetDtoToEntityMapperAsync(Type entityType, Type dtoType)
+        public Task<IMapper> GetDtoToEntityMapperAsync(Type entityType, Type dtoType)
         {
-            return await GetMapperAsync(entityType, dtoType, MappingDirection.Dto2Entity);
+            return GetMapperAsync(entityType, dtoType, MappingDirection.Dto2Entity);
         }
 
         private async Task<IMapper> GetMapperAsync(Type entityType, Type dtoType, MappingDirection direction)

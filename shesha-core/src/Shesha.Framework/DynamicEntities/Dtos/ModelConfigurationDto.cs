@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
 using Shesha.Permissions;
@@ -13,7 +12,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// <summary>
     /// Model configuration DTO
     /// </summary>
-    public class ModelConfigurationDto : EntityDto<Guid?>, IConfigurationItemDto
+    public class ModelConfigurationDto : EntityDto<Guid>, IConfigurationItemDto
     {
         public string ClassName { get; set; }
         public string Namespace { get; set; }
@@ -33,8 +32,6 @@ namespace Shesha.DynamicEntities.Dtos
         public string Name { get; set; }
         public string? Label { get; set; }
         public string? Description { get; set; }
-        public int VersionNo { get; set; }
-        public ConfigurationItemVersionStatus VersionStatus { get; set; }
         public bool Suppress { get; set; }
         public bool NotImplemented { get; set; }
 
@@ -56,8 +53,9 @@ namespace Shesha.DynamicEntities.Dtos
 
         public void NormalizeViewConfigurations(EntityConfig model)
         {
+            var revision = model.Revision;
             var list = new List<EntityViewConfigurationDto>();
-            if (model.EntityConfigType == EntityConfigTypes.Class)
+            if (revision != null && revision.EntityConfigType == EntityConfigTypes.Class)
                 list.AddRange(new List<EntityViewConfigurationDto>()
                 {
                     new EntityViewConfigurationDto { IsStandard = true, Type = "Table", FormId = null },
@@ -73,9 +71,9 @@ namespace Shesha.DynamicEntities.Dtos
                 new EntityViewConfigurationDto { IsStandard = true, Type = "List item", FormId = null },
             });
 
-            if (model?.ViewConfigurations != null)
+            if (revision?.ViewConfigurations != null)
             {
-                foreach (var view in model.ViewConfigurations)
+                foreach (var view in revision.ViewConfigurations)
                 {
                     var vc = list.FirstOrDefault(x => x.Type == view.Type);
                     if (vc != null)
@@ -85,7 +83,6 @@ namespace Shesha.DynamicEntities.Dtos
                 }
             }
             ViewConfigurations = list;
-
         }
     }
 }

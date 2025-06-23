@@ -17,24 +17,24 @@ namespace Shesha.Domain
         public virtual int? AddressType { get; set; }
 
 
-        [StringLength(200)]
+        [MaxLength(200)]
         [EntityDisplayNameAttribute]
         [Required]
         public virtual string AddressLine1 { get; set; }
 
-        [StringLength(200)]
+        [MaxLength(200)]
         public virtual string AddressLine2 { get; set; }
 
-        [StringLength(200)]
+        [MaxLength(200)]
         public virtual string AddressLine3 { get; set; }
 
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string Suburb { get; set; }
 
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string Town { get; set; }
 
-        [StringLength(10)]
+        [MaxLength(10)]
         public virtual string POBox { get; set; }
 
         [Range(-90, 90, ErrorMessage = "Latitude should be in range (-90, 90)")]

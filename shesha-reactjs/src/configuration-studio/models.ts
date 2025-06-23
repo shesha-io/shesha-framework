@@ -1,0 +1,149 @@
+import { FormFullName } from "@/interfaces";
+import { DataNode } from "antd/lib/tree";
+import { PropsWithChildren, ReactNode } from "react";
+
+export type ForceRenderFunc = () => void;
+
+export enum TreeNodeType {
+    Module = 1,
+    ConfigurationItem = 2,
+    Folder = 3,
+}
+
+export type TreeNode = DataNode & {
+    id: string;
+    parentId?: string;
+    moduleId: string;
+    name: string;
+    nodeType: TreeNodeType;
+};
+
+export type ConfigItemTreeNode = TreeNode & {
+    itemType: string;
+};
+
+export type NodeWithChilds = {
+    children: TreeNode[];
+};
+
+export type ModuleTreeNode = TreeNode & NodeWithChilds & {
+};
+
+export type FolderTreeNode = TreeNode & NodeWithChilds & {
+};
+
+export type FlatTreeNode = {
+    id: string;
+    parentId?: string;
+    moduleId: string;
+    name: string;
+    label: string;
+    nodeType: number;
+    itemType?: string;
+};
+
+export const isTreeNode = (node: DataNode): node is TreeNode => {
+    const casted = node as TreeNode;
+    return Boolean(casted?.nodeType);
+};
+
+export const isConfigItemTreeNode = (node: DataNode): node is ConfigItemTreeNode => {
+    return isTreeNode(node) && node.nodeType === TreeNodeType.ConfigurationItem;
+};
+
+export const isFolderTreeNode = (node: DataNode): node is FolderTreeNode => {
+    return isTreeNode(node) && node.nodeType === TreeNodeType.Folder;
+};
+
+export const isModuleTreeNode = (node: DataNode): node is ModuleTreeNode => {
+    return isTreeNode(node) && node.nodeType === TreeNodeType.Module;
+};
+
+export const TREE_NODE_TYPES =
+{
+    Module: 1,
+    ConfigurationItem: 2,
+    Folder: 3,
+};
+
+export const ITEM_TYPES = {
+    FORM: 'form',
+    ROLE: 'role',
+    ENTITY: 'entity',
+    PERMISSION: 'permission-definition',
+    REFLIST: 'reference-list',
+    SETTING: 'setting-configuration',
+    NOTIFICATION: 'notification-type',
+    NOTIFICATION_CHANNEL: 'notification-channel',
+};
+
+export type ItemTypeBackendDefinition = {
+    itemType: string;
+    entityClassName: string;
+    friendlyName: string;
+    createFormId: FormFullName;
+    renameFormId: FormFullName;
+};
+
+export type ItemTypeDefinition = ItemTypeBackendDefinition & {
+    // front-end specific
+    editor?: DocumentDefinition;
+    icon?: ReactNode;
+};
+
+export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
+
+export type DocumentType = 'ci' | 'custom';
+
+export type StoredDocumentInfo = {
+    itemId: string;
+    label: string;
+    type: DocumentType;
+};
+
+export type DocumentBase = StoredDocumentInfo;
+
+export type CIDocument = DocumentBase & {
+    itemType: string;
+    definition: DocumentDefinition;
+    loadingState: LoadingStatus;
+    isHistoryVisible: boolean;
+};
+
+export const isCIDocument = (doc: StoredDocumentInfo): doc is CIDocument => {
+    return doc && doc.type === 'ci';
+};
+
+export type ItemEditorProps<TDoc extends IDocumentInstance = IDocumentInstance> = {
+    doc: TDoc;
+};
+export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEditorProps<TDoc>) => ReactNode;
+
+
+export type ItemToolbarProps = {
+
+};
+
+export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
+export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
+
+export interface IDocumentInstance extends CIDocument {
+    // state
+    toolbarForceRender?: ForceRenderFunc;
+};
+
+export type DocumentInstanceFactoryArgs = {
+    itemId: string;
+    label: string;
+};
+export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
+
+export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
+    itemType: string;
+    Editor: ItemEditorRenderer<TDoc>;
+    Provider: ProviderRenderer<TDoc>;
+    Toolbar: ItemEditorRenderer<TDoc>;
+    documentInstanceFactory: DocumentInstanceFactory;
+};
+
+export type DocumentDefinitions = Map<string, DocumentDefinition>;

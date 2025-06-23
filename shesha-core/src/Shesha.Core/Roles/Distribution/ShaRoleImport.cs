@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Roles.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -28,7 +27,7 @@ namespace Shesha.DynamicEntities.Distribution
             _roleRepo = roleRepo;
         }
 
-        public async Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        public Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -36,53 +35,45 @@ namespace Shesha.DynamicEntities.Distribution
             if (!(item is DistributedShaRole itemConfig))
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(ShaRole)}. Actual type is {item.GetType().FullName}");
 
-            return await ImportAsync(itemConfig, context);
+            return ImportAsync(itemConfig, context);
         }
 
-        protected async Task<ConfigurationItemBase> ImportAsync(DistributedShaRole item, IConfigurationItemsImportContext context) 
+        protected async Task<ConfigurationItem> ImportAsync(DistributedShaRole item, IConfigurationItemsImportContext context) 
         {
-            // use status specified in the context with fallback to imported value
-            var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
-
             // get DB config
             var dbItem = await _roleRepo.FirstOrDefaultAsync(x =>
-                x.Name == item.Name && x.NameSpace == item.NameSpace
+                x.Name == item.Name
                 && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
-                && x.IsLast);
+            );
 
             if (dbItem != null)
             {
-
-                // ToDo: Temporary update the current version.
-                // Need to update the rest of the other code to work with versioning first
-
                 await MapConfigAsync(item, dbItem, context);
                 await _roleRepo.UpdateAsync(dbItem);
 
-                await _rolePermissionRepo.DeleteAsync(x => x.ShaRole.Id == dbItem.Id);
+                // TODO: V1 review
+                //await _rolePermissionRepo.DeleteAsync(x => x.ShaRole.Id == dbItem.Id);
             }
             else
             {
                 dbItem = new ShaRole();
                 await MapConfigAsync(item, dbItem, context);
 
-                // fill audit?
-                dbItem.VersionNo = 1;
                 dbItem.Module = await GetModuleAsync(item.ModuleName, context);
 
-                // important: set status according to the context
-                dbItem.VersionStatus = statusToImport;
-                dbItem.CreatedByImport = context.ImportResult;
+                // TODO: V1 review
+                //dbItem.CreatedByImport = context.ImportResult;
 
                 dbItem.Normalize();
                 await _roleRepo.InsertAsync(dbItem);
             }
 
+            var revision = dbItem.EnsureLatestRevision();
             foreach (var perm in item.Permissions)
             {
                 await _rolePermissionRepo.InsertAsync(new ShaRolePermission()
                 {
-                    ShaRole = dbItem,
+                    RoleRevision = revision,
                     Permission = perm.Permission,
                     IsGranted = perm.IsGranted,
                 });
@@ -98,28 +89,14 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
             dbItem.ItemType = item.ItemType;
 
-            //dbItem.Origin = item.OriginId;
-            //dbItem.BaseItem = item.BaseItem;
-            //dbItem.ParentVersion = item.ParentVersionId;
-
-            dbItem.Label = item.Label;
-            dbItem.Description = item.Description;
-            dbItem.VersionNo = item.VersionNo;
-            dbItem.VersionStatus = item.VersionStatus;
+            var revision = dbItem.EnsureLatestRevision();
+            revision.Label = item.Label;
+            revision.Description = item.Description;
             dbItem.Suppress = item.Suppress;
 
             // entity config specific properties
-            dbItem.NameSpace = item.NameSpace;
-            dbItem.SortIndex = item.SortIndex;
-            dbItem.IsRegionSpecific = item.IsRegionSpecific;
-            dbItem.IsProcessConfigurationSpecific = item.IsProcessConfigurationSpecific;
-            dbItem.CanAssignToMultiple = item.CanAssignToMultiple;
-            dbItem.CanAssignToPerson = item.CanAssignToPerson;
-            dbItem.CanAssignToRole = item.CanAssignToRole;
-            dbItem.CanAssignToOrganisationRoleLevel = item.CanAssignToOrganisationRoleLevel;
-            dbItem.CanAssignToUnit = item.CanAssignToUnit;
-
-            dbItem.SetHardLinkToApplication(item.HardLinkToApplication);
+            revision.NameSpace = item.NameSpace;
+            revision.SetHardLinkToApplication(item.HardLinkToApplication);
 
             return dbItem;
         }

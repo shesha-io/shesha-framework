@@ -32,10 +32,12 @@ namespace Shesha.DynamicEntities.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item)
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item)
         {
             if (!(item is PermissionDefinition itemConfig))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(PermissionDefinition)}, actual: {item.GetType().FullName}");
+
+            var revision = itemConfig.Revision;
 
             var result = new DistributedPermissionDefinition
             {
@@ -44,18 +46,14 @@ namespace Shesha.DynamicEntities.Distribution
                 ModuleName = itemConfig.Module?.Name,
                 FrontEndApplication = itemConfig.Application?.AppKey,
                 ItemType = itemConfig.ItemType,
-
-                Label = itemConfig.Label,
-                Description = itemConfig.Description,
                 OriginId = itemConfig.Origin?.Id,
-                BaseItem = itemConfig.BaseItem?.Id,
-                VersionNo = itemConfig.VersionNo,
-                VersionStatus = itemConfig.VersionStatus,
-                ParentVersionId = itemConfig.ParentVersion?.Id,
                 Suppress = itemConfig.Suppress,
+                
+                Label = revision.Label,
+                Description = revision.Description,
 
                 // specific properties
-                Parent = itemConfig.Parent,
+                Parent = revision.Parent,
             };
 
             return await Task.FromResult(result);

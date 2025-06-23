@@ -88,7 +88,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   }
 
   if (message) {
-    return renderValidationErrors({ message, ...rest });
+    return renderValidationErrors({ message, description: details, ...rest });
   }
 
   if (details) {

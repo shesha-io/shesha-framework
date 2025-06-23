@@ -4,6 +4,7 @@ using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using Shesha.NHibernate.Interceptors;
+using Shesha.Orm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,13 +64,6 @@ namespace Shesha.NHibernate.Session
                 return true;
             }
             return entity is ISoftDelete && entity.As<ISoftDelete>().IsDeleted;
-        }
-
-        public class DirtyPropertyInfo
-        {
-            public required string Name { get; init; }
-            public object? OldValue { get; init; }
-            public object? NewValue { get; init; }
         }
 
         /// <summary>

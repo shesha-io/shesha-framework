@@ -33,7 +33,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
         /// <summary>
         /// List of NotificationChannelConfigs
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public string? OverrideChannels { get; set; }
         /// <summary>
         ///  messages without which the user should not proceed in any case e.g. OTP

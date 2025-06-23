@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
+using Abp.Threading;
 using Castle.Core.Logging;
 using Microsoft.Extensions.Configuration;
 using Shesha.Authorization.Users;
@@ -342,9 +343,9 @@ namespace Shesha.Scheduler
             }
         }
 
-        public async Task<Guid> AddStartExecutionRecordAsync(Guid executionId, Int64? startedById)
+        public Task<Guid> AddStartExecutionRecordAsync(Guid executionId, Int64? startedById)
         {
-            return await CreateExecutionRecordAsync(executionId,
+            return CreateExecutionRecordAsync(executionId,
                 execution =>
                 {
                     JobExecutionId = execution.Id;
@@ -446,11 +447,11 @@ namespace Shesha.Scheduler
             try
             {
                 using var stream = File.OpenRead(LogFilePath);
-                var storedFile = await _storedFileService.SaveFileAsync(stream, LogFileName, file =>
+                var storedFileVersion = await _storedFileService.CreateFileAsync(stream, LogFileName, file =>
                 {
                     file.Folder = LogFolderName;
                 });
-                return storedFile;
+                return storedFileVersion.File;
             }
             catch (Exception e) 
             {

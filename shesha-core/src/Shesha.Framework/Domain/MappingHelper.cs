@@ -1,11 +1,14 @@
 ﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using PluralizeService.Core;
+using Shesha.Authorization.Users;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Conventions;
 using Shesha.Domain.Interfaces;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.FluentMigrator;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
 using System;
@@ -99,10 +102,10 @@ namespace Shesha.Domain
                 if (tableAttribute != null)
                     return tableAttribute.Name;
 
-                var name = PluralizationProvider.Pluralize(entityType.Name);
+                var plural = PluralizationProvider.Pluralize(entityType.Name);
+                var conventions = GetNamingConventions(entityType);
                 var prefix = GetTablePrefix(entityType);
-                if (!string.IsNullOrWhiteSpace(prefix))
-                    name = $"{prefix}{name}";
+                var name = conventions.GetTableName(prefix, plural);
 
                 return name;
             }
@@ -226,6 +229,12 @@ namespace Shesha.Domain
         {
             var conventionsType = type.GetAttributeOrNull<NamingConventionsAttribute>(false)?.ConventionsType ?? typeof(DefaultNamingConventions);
             return ActivatorHelper.CreateNotNullObject(conventionsType).ForceCastAs<INamingConventions>();
+        }
+
+        public static string? GetDbNamesExpression(Type type) 
+        {
+            var conventions = GetNamingConventions(type);
+            return conventions.DbNamesExpression;
         }
 
         public static Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
@@ -403,13 +412,27 @@ namespace Shesha.Domain
         public static string GetForeignKeyColumn(MemberInfo prop)
         {
             var foreignKeyAttribute = prop.GetAttributeOrNull<ForeignKeyAttribute>(true);
-            if (foreignKeyAttribute != null)
-                return foreignKeyAttribute.Name;
+            if (foreignKeyAttribute != null) 
+            {
+                var skipFkAttribute = IsDeclaredInGenericType(prop, typeof(AuditedEntity<,>)) && prop.Name == nameof(AuditedEntity<Guid, User>.CreatorUser)
+                    || IsDeclaredInGenericType(prop, typeof(AuditedEntity<,>)) && prop.Name == nameof(AuditedEntity<Guid, User>.LastModifierUser)
+                    || IsDeclaredInGenericType(prop, typeof(FullAuditedEntity<,>)) && prop.Name == nameof(FullAuditedEntity<Guid, User>.DeleterUser);
+                
+                if (!skipFkAttribute)
+                    return foreignKeyAttribute.Name;
+            }                
 
             var columnPrefix = GetColumnPrefix(prop.DeclaringType.NotNull());
 
             var conventions = GetNamingConventions(prop);
             return conventions.GetColumnName(columnPrefix, prop.Name, "Id");
+        }
+
+        private static bool IsDeclaredInGenericType(MemberInfo prop, Type type) 
+        {
+            return prop.DeclaringType != null &&
+                prop.DeclaringType.IsGenericType &&
+                prop.DeclaringType.GetGenericTypeDefinition() == type;
         }
 
         /// <summary>

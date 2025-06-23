@@ -37,7 +37,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
       title="Columns Configuration"
       onCancel={onCancel}
       onOk={onOk}
-      destroyOnClose={true}
+      destroyOnHidden={true}
     >
       <ColumnsConfigurator
         readOnly={readOnly}

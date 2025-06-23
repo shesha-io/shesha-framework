@@ -103,10 +103,10 @@ namespace Shesha.GraphQL.Provider
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            if (eventData.Entity?.EntityConfig == null)
+            if (eventData.Entity?.EntityConfigRevision == null)
                 return;
 
-            Cache.Remove(GetEntitySchemaName(eventData.Entity.EntityConfig.ClassName));
+            Cache.Remove(GetEntitySchemaName(eventData.Entity.EntityConfigRevision.ClassName));
         }
 
         public void RegisterCustomSchema(string name, ISchema schema)

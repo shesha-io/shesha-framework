@@ -6,11 +6,11 @@ namespace Shesha.Models.TokenAuth
     public class AuthenticateModel
     {
         [Required]
-        [StringLength(AbpUserBase.MaxEmailAddressLength)]
+        [MaxLength(AbpUserBase.MaxEmailAddressLength)]
         public required string UserNameOrEmailAddress { get; set; }
 
         [Required]
-        [StringLength(AbpUserBase.MaxPlainPasswordLength)]
+        [MaxLength(AbpUserBase.MaxPlainPasswordLength)]
         public required string Password { get; set; }
 
         //public bool RememberClient { get; set; }

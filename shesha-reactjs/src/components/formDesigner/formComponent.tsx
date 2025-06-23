@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
@@ -8,11 +8,10 @@ import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
-  componentRef?: MutableRefObject<any>;
 }
 
 // skip some properties by default
@@ -28,9 +27,9 @@ export const formComponentActualModelPropertyFilter = (component: IToolboxCompon
     && propertiesToSkip.indexOf(name) === -1;
 };
 
-const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
+const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
-  useShaFormUpdateDate();
+  useShaFormDataUpdate();
 
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
@@ -68,7 +67,6 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
 
   const control = useMemo(() => (
     <toolboxComponent.Factory 
-      componentRef={componentRef}
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}
@@ -125,10 +123,10 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   );
 };
 
-const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
+const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel }) => {
   return (
     <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} componentId={componentModel.id}>
-      <FormComponent componentModel={componentModel} componentRef={componentRef} />
+      <FormComponent componentModel={componentModel} />
     </CustomErrorBoundary>
   );
 };

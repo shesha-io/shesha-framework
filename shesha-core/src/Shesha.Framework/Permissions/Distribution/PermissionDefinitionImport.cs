@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Permissions.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -59,7 +58,7 @@ namespace Shesha.DynamicEntities.Distribution
             return Task.FromResult(result);
         }
 
-        public async Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        public Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -67,19 +66,16 @@ namespace Shesha.DynamicEntities.Distribution
             if (!(item is DistributedPermissionDefinition itemConfig))
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(PermissionDefinition)}. Actual type is {item.GetType().FullName}");
 
-            return await ImportAsync(itemConfig, context);
+            return ImportAsync(itemConfig, context);
         }
 
-        protected async Task<ConfigurationItemBase> ImportAsync(DistributedPermissionDefinition item, IConfigurationItemsImportContext context) 
+        protected async Task<ConfigurationItem> ImportAsync(DistributedPermissionDefinition item, IConfigurationItemsImportContext context) 
         {
-            // use status specified in the context with fallback to imported value
-            var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
-
             // get DB config
             var dbItem = await _permissionDefinitionRepo.FirstOrDefaultAsync(x =>
                 x.Name == item.Name
                 && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
-                && x.IsLast);
+            );
 
             if (dbItem != null)
             {
@@ -98,13 +94,11 @@ namespace Shesha.DynamicEntities.Distribution
                 var newItem = new PermissionDefinition();
                 await MapConfigAsync(item, newItem, context);
 
-                // fill audit?
-                newItem.VersionNo = 1;
                 newItem.Module = await GetModuleAsync(item.ModuleName, context);
 
-                // important: set status according to the context
-                newItem.VersionStatus = statusToImport;
-                newItem.CreatedByImport = context.ImportResult;
+
+                // TODO: V1 review
+                //newItem.CreatedByImport = context.ImportResult;
 
                 newItem.Normalize();
                 await _shaPermissionManager.CreatePermissionAsync(newItem);
@@ -121,14 +115,13 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
             dbItem.ItemType = item.ItemType;
 
-            dbItem.Label = item.Label;
-            dbItem.Description = item.Description;
-            dbItem.VersionNo = item.VersionNo;
-            dbItem.VersionStatus = item.VersionStatus;
+            var revision = dbItem.EnsureLatestRevision();
+            revision.Label = item.Label;
+            revision.Description = item.Description;
             dbItem.Suppress = item.Suppress;
 
             // entity config specific properties
-            dbItem.Parent = item.Parent;
+            revision.Parent = item.Parent;
             return dbItem;
         }
     }

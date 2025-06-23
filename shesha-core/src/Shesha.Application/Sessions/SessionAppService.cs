@@ -27,15 +27,6 @@ namespace Shesha.Sessions
             _permissionChecker = permissionChecker;
         }
 
-        [Obsolete]
-        [AllowAnonymous]
-
-        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInformationsAsync()
-        {
-            return await GetCurrentLoginInfoAsync();
-        }
-
-
         [AllowAnonymous]
         public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfoAsync()
         {
@@ -89,7 +80,7 @@ namespace Shesha.Sessions
                 {
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var permissionRoles = roles.Where(x => x.Role != null && x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
+                        var permissionRoles = roles.Where(x => x.Role != null && x.Role.Revision != null && x.Role.Revision.Permissions.Any(p => p.Permission == permissionName)).ToList();
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
@@ -104,10 +95,11 @@ namespace Shesha.Sessions
 
                 foreach(var role in roles)
                 {
-                    if (role.Role == null || !role.Role.Permissions.Any())
+                    var permissions = role.Role?.Revision?.Permissions;
+                    if (permissions == null || permissions.Any())
                         continue;
 
-                    foreach (var permission in role.Role.Permissions.Where(x => x.IsGranted))
+                    foreach (var permission in permissions.Where(x => x.IsGranted))
                     {
                         var grantedPermission = new GrantedPermissionDto
                         {
@@ -146,9 +138,9 @@ namespace Shesha.Sessions
         /// Clears permissions cache
         /// </summary>
         [HttpPost]
-        public async Task ClearPermissionsCacheAsync()
+        public Task ClearPermissionsCacheAsync()
         {
-            await _permissionChecker.ClearPermissionsCacheAsync();
+            return _permissionChecker.ClearPermissionsCacheAsync();
         }
     }
 }

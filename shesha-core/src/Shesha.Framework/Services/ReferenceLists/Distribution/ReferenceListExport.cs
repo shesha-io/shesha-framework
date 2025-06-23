@@ -36,7 +36,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item) 
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item) 
         {
             if (!(item is ReferenceList refList))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(ReferenceList)}, actual: {item.GetType().FullName}");
@@ -49,13 +49,9 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 FrontEndApplication = refList.Application?.AppKey,
                 ItemType = refList.ItemType,
 
-                Label = refList.Label,
-                Description = refList.Description,
+                Label = refList.Revision.Label,
+                Description = refList.Revision.Description,
                 OriginId = refList.Origin?.Id,
-                BaseItem = refList.BaseItem?.Id,
-                VersionNo = refList.VersionNo,
-                VersionStatus = refList.VersionStatus,
-                ParentVersionId = refList.ParentVersion?.Id,
                 Suppress = refList.Suppress,
 
                 // reflist specific properties
@@ -68,7 +64,8 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
         private async Task<List<DistributedReferenceListItem>> ExportRefListItemsAsync(ReferenceList refList)
         {
-            var items = await _refListItemRepo.GetAll().Where(item => item.ReferenceList == refList).ToListAsync();
+            var revision = refList.EnsureLatestRevision();
+            var items = await _refListItemRepo.GetAll().Where(item => item.ReferenceListRevision == revision).ToListAsync();
 
             async Task ProcessRecursiveAsync(ReferenceListItem? parent, List<DistributedReferenceListItem> container) 
             {

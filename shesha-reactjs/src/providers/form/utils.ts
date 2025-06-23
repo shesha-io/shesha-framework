@@ -77,7 +77,7 @@ import { IFormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstance, useShaFormUpdateDate } from './providers/shaFormProvider';
+import { useShaFormInstance, useShaFormDataUpdate } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
 import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
@@ -319,7 +319,7 @@ export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDa
  */
 export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
   // use ShaFormUpdateDate to be responsive to changes in form data
-  useShaFormUpdateDate();
+  useShaFormDataUpdate();
 
   const fullContext = useAvailableConstantsContexts();
   // override DataContextManager to be responsive to changes in contexts

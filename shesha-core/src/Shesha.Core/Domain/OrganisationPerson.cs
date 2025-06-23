@@ -10,7 +10,7 @@ namespace Shesha.Domain
     {
         public virtual Boolean IsPrimary { get; set; }
 
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string Description { get; set; }
 
         [AllowInherited]

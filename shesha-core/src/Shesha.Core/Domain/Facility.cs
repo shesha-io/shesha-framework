@@ -17,7 +17,7 @@ namespace Shesha.Domain
         [EntityDisplayName, Required]
         public virtual string Name { get; set; }
 
-        [StringLength(300)]
+        [MaxLength(300)]
         [DataType(DataType.MultilineText)]
         public virtual string Description { get; set; }
 

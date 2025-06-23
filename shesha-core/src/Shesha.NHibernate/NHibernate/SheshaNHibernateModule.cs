@@ -1,9 +1,11 @@
 ﻿using Abp;
 using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
+using Abp.Authorization.Roles;
 using Abp.Authorization.Users;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
@@ -14,12 +16,16 @@ using Castle.MicroKernel.Registration;
 using Microsoft.Extensions.Configuration;
 using NHibernate;
 using Shesha.Attributes;
+using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Startup;
 using Shesha.Domain;
+using Shesha.Domain.Attributes;
+using Shesha.Extensions;
 using Shesha.FluentMigrator;
 using Shesha.Generators;
 using Shesha.Locks;
+using Shesha.Migrations;
 using Shesha.NHibernate.Configuration;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Interceptors;
@@ -219,6 +225,7 @@ namespace Shesha.NHibernate
                 });
                 Configuration.EntityHistory.IsEnabledForAnonymousUsers = prev;
             }
+            IocManager.Resolve<ShaPermissionManager>().Initialize();
         }
 
         /// <summary>
@@ -333,12 +340,12 @@ namespace Shesha.NHibernate
                                         var uowManager = ioc.Resolve<IUnitOfWorkManager>();
                                         using (var unitOfWork = uowManager.Begin())
                                         {
-                                            await bootstrapper.ProcessAsync();
+                                            await bootstrapper.ProcessAsync(false);
                                             await unitOfWork.CompleteAsync();
                                         }
                                     }
                                     else
-                                        await bootstrapper.ProcessAsync();
+                                        await bootstrapper.ProcessAsync(false);
 
                                     Logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
                                 }
@@ -353,6 +360,9 @@ namespace Shesha.NHibernate
                 }
                 catch(Exception e)
                 {
+                    //
+                    TestEntities();
+
                     if (startupDto != null) {
                         await appStartup.StartupFailedAsync(startupDto.Id, e);
                     }                        
@@ -366,6 +376,65 @@ namespace Shesha.NHibernate
             Logger.Warn(initializedByCurrentInstance 
                 ? "Database initialization finished" : 
                 "Database initialization skipped (locked by another instance)");
+        }
+
+        public string TestEntities()
+        {
+            try
+            {
+                var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+                var migrationGenerator = StaticContext.IocManager.Resolve<IMigrationGenerator>();
+
+                var types = typeFinder.FindAll().Where(t => t.IsEntityType()
+                    && t != typeof(AggregateRoot)
+                    && t != typeof(UserPermissionSetting)
+                    && t != typeof(RolePermissionSetting)
+                    ).ToList();
+
+                var errors = new Dictionary<Type, Exception>();
+
+                foreach (var type in types)
+                {
+                    TryFetch(type, e => errors.Add(type, e));
+                }
+
+                var typesToMap = errors.Select(e => e.Key).Where(t => !(t.Namespace ?? "").StartsWith("Abp") && !t.HasAttribute<ImMutableAttribute>()).ToList();
+
+                var migration = migrationGenerator.GenerateMigrations(typesToMap);
+
+                var grupped = migrationGenerator.GroupByPrefixes(typesToMap);
+                var grouppedMigrations = grupped.Select(g => new { Prefix = g.Key, Migration = migrationGenerator.GenerateMigrations(g.Value) })
+                    .ToList();
+
+
+                return migration;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private void TryFetch(Type type, Action<Exception> onException)
+        {
+            var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
+            var unitOfWorkManager = StaticContext.IocManager.Resolve<IUnitOfWorkManager>();
+            var currentSessionContext = StaticContext.IocManager.Resolve<INhCurrentSessionContext>();
+
+            using (var uow = unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew))
+            {
+                try
+                {
+                    var hql = $"from {type.FullName}";
+                    var session = currentSessionContext.Session;
+                    var list = session.CreateQuery(hql).SetMaxResults(1).List();
+                }
+                catch (Exception e)
+                {
+                    onException.Invoke(e);
+                }
+                uow.Complete();
+            }
         }
 
         private List<Type> SortByDependencies(List<Type> types)

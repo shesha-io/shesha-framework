@@ -17,9 +17,9 @@ namespace Shesha.Domain
     {
         public virtual RefListNotificationMessageFormat? MessageFormat { get; set; }
         public virtual NotificationTypeConfig PartOf { get; set; }
-        [StringLength(2000)]
+        [MaxLength(2000)]
         public virtual string TitleTemplate { get; set; }
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string BodyTemplate { get; set; }
 
         public NotificationTemplate Clone()

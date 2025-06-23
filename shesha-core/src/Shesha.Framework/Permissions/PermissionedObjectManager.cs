@@ -6,12 +6,12 @@ using Abp.Events.Bus.Handlers;
 using Abp.Linq.Extensions;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
+using Abp.Threading;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Application.Services;
 using Shesha.Cache;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Permissions.Cache;
@@ -210,7 +210,7 @@ namespace Shesha.Permissions
             {
                 Object = objectName,
                 Name = objectName,
-                Parent = inh,
+                Parent = inh ?? string.Empty,
                 Access = RefListPermissionedAccess.Inherited,
                 Module = module,
                 Type = objectType
@@ -238,7 +238,7 @@ namespace Shesha.Permissions
             {
                 Object = objectName,
                 Name = objectName,
-                Parent = inh,
+                Parent = inh ?? string.Empty,
                 Access = RefListPermissionedAccess.Inherited,
                 Module = module?.Name,
                 ModuleId = module?.Id,
@@ -283,10 +283,10 @@ namespace Shesha.Permissions
             return dtoObj;
         }
 
-        private async Task<PermissionedObjectDto?> GetDtoOrNullAsync(PermissionedObject dbObj, bool useInherited = true, bool useHidden = false)
+        private Task<PermissionedObjectDto?> GetDtoOrNullAsync(PermissionedObject dbObj, bool useInherited = true, bool useHidden = false)
         {
             var obj = _objectMapper.Map<PermissionedObjectDto>(dbObj);
-            return await GetDtoOrNullAsync(obj, useInherited, useHidden);
+            return GetDtoOrNullAsync(obj, useInherited, useHidden);
         }
 
         private async Task<PermissionedObjectDto> GetCacheOrDtoAsync(PermissionedObject dbObj)
@@ -384,7 +384,7 @@ namespace Shesha.Permissions
                         : !string.IsNullOrWhiteSpace(permissionedObject.Module)
                             ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
                             : null,
-                    Parent = permissionedObject.Parent,
+                    Parent = permissionedObject.Parent ?? string.Empty,
                     Name = permissionedObject.Name ?? permissionedObject.Object,
                 };
 

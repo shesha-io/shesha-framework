@@ -1,0 +1,91 @@
+import { useEffect, useState } from "react";
+import { ConfigItemTreeNode, DocumentDefinition, IDocumentInstance, TreeNode } from "../models";
+import { CsSubscriptionType, ProcessingState } from "./configurationStudio";
+import { useConfigurationStudio } from "./contexts";
+import { TreeProps } from "antd";
+
+type ExpandedKeys = TreeProps['expandedKeys'];
+type SeletcedKeys = TreeProps['selectedKeys'];
+type OnTreeExpand = TreeProps['onExpand'];
+
+export const useCsSubscription = (subscriptionType: CsSubscriptionType) => {
+    const cs = useConfigurationStudio();
+    const [dummy, forceUpdate] = useState({});
+    useEffect(() => {
+        // Subscribe to changes
+        const unsubscribe = cs.subscribe(subscriptionType, () => forceUpdate({}));
+        return unsubscribe; // Cleanup on unmount
+    }, [cs, subscriptionType]);
+
+    return dummy;
+};
+
+export type UseCsTreeResponse = {
+    readonly treeNodes?: TreeNode[];
+    readonly treeLoadingState: ProcessingState;
+    loadTreeAsync: () => Promise<void>;
+
+    expandedKeys: ExpandedKeys;
+    selectedKeys: SeletcedKeys;
+    selectedItemNode?: ConfigItemTreeNode;
+    onNodeExpand: OnTreeExpand;    
+};
+export const useCsTree = (): UseCsTreeResponse => {
+    const cs = useConfigurationStudio();
+    useCsSubscription('tree');
+
+    return {
+        treeNodes: cs.treeNodes,
+        loadTreeAsync: cs.loadTreeAsync,
+        treeLoadingState: cs.treeLoadingState,
+        expandedKeys: cs.treeExpandedKeys,
+        selectedKeys: cs.treeSelectedKeys,
+        selectedItemNode: cs.treeSelectedItemNode,
+        onNodeExpand: cs.onTreeNodeExpand,
+    };
+};
+
+export type UseCsTabsResponse = {
+    readonly docs: IDocumentInstance[];
+    readonly activeDocId?: string;
+    readonly activeDocument?: IDocumentInstance;
+    readonly openDocById: (tabId?: string) => void;
+    readonly removeTab: (tabId?: string) => void;
+};
+export const useCsTabs = (): UseCsTabsResponse => {
+    const cs = useConfigurationStudio();
+    useCsSubscription('tabs');
+
+    return {
+        docs: cs.docs,
+        activeDocId: cs.activeDocId,
+        activeDocument: cs.activeDocument,
+        openDocById: cs.openDocById,
+        removeTab: cs.removeTabAsync,
+    };
+};
+
+export type UseActiveDocResponse = IDocumentInstance | undefined;
+
+export const useActiveDoc = (): UseActiveDocResponse => {
+    const cs = useConfigurationStudio();
+    useCsSubscription('doc');
+
+    return cs.activeDocument;
+};
+
+export const useConfigurationStudioDocumentDefinitions = (definitions: DocumentDefinition[]): void => {
+    const cs = useConfigurationStudio();
+
+    useEffect(() => {
+        definitions.forEach(definition => {
+            cs.registerDocumentDefinition(definition);
+        });
+
+        return () => {
+            definitions.forEach(definition => {
+                cs.unregisterDocumentDefinition(definition);
+            });
+        };
+    }, [cs, definitions]);
+};

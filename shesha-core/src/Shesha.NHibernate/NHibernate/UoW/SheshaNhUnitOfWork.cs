@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Uow;
 using NHibernate;
+using Shesha.ConfigurationItems;
 
 namespace Shesha.NHibernate.UoW
 {
@@ -13,8 +14,9 @@ namespace Shesha.NHibernate.UoW
             ISessionFactory sessionFactory,
             IConnectionStringResolver connectionStringResolver,
             IUnitOfWorkDefaultOptions defaultOptions,
-            IUnitOfWorkFilterExecuter filterExecuter)
-            : base(sessionFactory, connectionStringResolver, defaultOptions, filterExecuter)
+            IUnitOfWorkFilterExecuter filterExecuter,
+            IConfigurationFrameworkRuntime cfRuntime)
+            : base(sessionFactory, connectionStringResolver, defaultOptions, filterExecuter, cfRuntime)
         {
         }
     }

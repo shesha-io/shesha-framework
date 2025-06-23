@@ -1,11 +1,8 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
-using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
@@ -25,10 +22,10 @@ namespace Shesha.DynamicEntities.Distribution
 
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepo;
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
-        private readonly IEntityConfigManager _entityConfigManager;
         private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
+        private readonly IModelConfigsCacheHolder _modelConfigsCacheHolder;
+        
 
         public EntityConfigImport(
             IRepository<Module, Guid> moduleRepo,
@@ -36,20 +33,17 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<EntityConfig, Guid> entityConfigRepo,
             IRepository<EntityProperty, Guid> propertyConfigRepo,
             IPermissionedObjectManager permissionedObjectManager,
-            IEntityConfigManager entityConfigManager,
-            IUnitOfWorkManager unitOfWorkManager,
             IModelConfigsCacheHolder modelConfigsCacheHolder
         ) : base (moduleRepo, frontEndAppRepo)
         {
             _entityConfigRepo = entityConfigRepo;
             _propertyConfigRepo = propertyConfigRepo;
-            _unitOfWorkManager = unitOfWorkManager;
             _permissionedObjectManager = permissionedObjectManager;
-            _entityConfigManager = entityConfigManager;
+            _modelConfigsCacheHolder = modelConfigsCacheHolder;
             _modelConfigsCache = modelConfigsCacheHolder.Cache;
         }
 
-        public async Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        public Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -57,33 +51,23 @@ namespace Shesha.DynamicEntities.Distribution
             if (!(item is DistributedEntityConfig distributedEntityConfig))
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(DistributedEntityConfig)}. Actual type is {item.GetType().FullName}");
 
-            return await ImportEntityConfigAsync(distributedEntityConfig, context);
+            return ImportEntityConfigAsync(distributedEntityConfig, context);
         }
 
-        protected async Task<ConfigurationItemBase> ImportEntityConfigAsync(DistributedEntityConfig item, IConfigurationItemsImportContext context) 
+        protected async Task<ConfigurationItem> ImportEntityConfigAsync(DistributedEntityConfig item, IConfigurationItemsImportContext context) 
         {
-            // use status specified in the context with fallback to imported value
-            var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
-
             // get DB config
-            var dbItem = await _entityConfigRepo.FirstOrDefaultAsync(x =>
-                x.Namespace == item.Namespace && x.ClassName == item.ClassName
-                //x.Name == item.Name 
-                && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
-                && x.IsLast);
+            var dbItem = await _entityConfigRepo.FirstOrDefaultAsync(x => x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName);
 
             if (dbItem != null)
             {
-
-                // ToDo: Tempjrary update the current version.
-                // Need to update the rest of the other code to work with versioning EntityConfigs first
-
                 await MapEntityConfigAsync(item, dbItem, context);
                 await _entityConfigRepo.UpdateAsync(dbItem);
 
                 await MapPropertiesAsync(dbItem, item.Properties);
 
-                await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
+                var key = _modelConfigsCacheHolder.GetCacheKey(dbItem.LatestRevision.Namespace, dbItem.LatestRevision.ClassName);
+                await _modelConfigsCache.RemoveAsync(key);
 
                 return dbItem;
             }
@@ -92,13 +76,10 @@ namespace Shesha.DynamicEntities.Distribution
                 var newItem = new EntityConfig();
                 await MapEntityConfigAsync(item, newItem, context);
 
-                // fill audit?
-                newItem.VersionNo = 1;
                 newItem.Module = await GetModuleAsync(item.ModuleName, context);
 
-                // important: set status according to the context
-                newItem.VersionStatus = statusToImport;
-                newItem.CreatedByImport = context.ImportResult;
+                // TODO: V1 review
+                //newItem.CreatedByImport = context.ImportResult;
 
                 newItem.Normalize();
 
@@ -117,25 +98,26 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
             dbItem.ItemType = item.ItemType;
 
-            dbItem.Label = item.Label;
-            dbItem.Description = item.Description;
-            dbItem.VersionNo = item.VersionNo;
-            dbItem.VersionStatus = item.VersionStatus;
+            var revision = dbItem.EnsureLatestRevision();
+
+            revision.Label = item.Label;
+            revision.Description = item.Description;
+
             dbItem.Suppress = item.Suppress;
 
             // entity config specific properties
-            dbItem.FriendlyName = item.FriendlyName;
-            dbItem.TypeShortAlias = item.TypeShortAlias;
-            dbItem.TableName = item.TableName;
-            dbItem.ClassName = item.ClassName;
-            dbItem.Namespace = item.Namespace;
-            dbItem.DiscriminatorValue = item.DiscriminatorValue;
-            dbItem.GenerateAppService = item.GenerateAppService;
-            dbItem.Source = item.Source;
-            dbItem.EntityConfigType = item.EntityConfigType;
-            dbItem.HardcodedPropertiesMD5 = item.PropertiesMD5;
+            revision.TypeShortAlias = item.TypeShortAlias;
+            revision.ClassName = item.ClassName;
+            revision.Namespace = item.Namespace;
+            revision.DiscriminatorValue = item.DiscriminatorValue;
+            revision.Source = item.Source;
+            revision.EntityConfigType = item.EntityConfigType;
 
-            dbItem.ViewConfigurations = item.ViewConfigurations.ToList();
+            revision.GenerateAppService = item.GenerateAppService;
+            revision.FriendlyName = item.FriendlyName;
+            revision.HardcodedPropertiesMD5 = item.PropertiesMD5;
+            revision.ViewConfigurations = item.ViewConfigurations.ToList();
+            revision.TableName = item.TableName;
 
             if (item.Permission != null)
             {
@@ -172,12 +154,14 @@ namespace Shesha.DynamicEntities.Distribution
             List<DistributedEntityConfigProperty> Properties
         )
         {
+            var revision = item.EnsureLatestRevision();
+
             foreach (var src in Properties)
             {
-                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty() { EntityConfig = item };
+                // TODO: V1 review. fetch all properties and compare
+                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfigRevision == revision)
+                    ?? new EntityProperty() { EntityConfigRevision = revision };
                 
-                dbItem.EntityConfig = item;
                 dbItem.Name = src.Name;
                 dbItem.Label = src.Label;
                 dbItem.Description = src.Description;

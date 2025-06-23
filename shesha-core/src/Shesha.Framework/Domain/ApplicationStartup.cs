@@ -15,10 +15,10 @@ namespace Shesha.Domain
     [Table("frwk_application_startups")]
     public class ApplicationStartup: Entity<Guid>
     {
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? MachineName { get; set; }
         public virtual string? Folder { get; set; }
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? Account { get; set; }
         public virtual DateTime StartedOn { get; set; }
         public virtual DateTime? FinishedOn { get; set; }

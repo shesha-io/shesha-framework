@@ -32,7 +32,7 @@ namespace Shesha.Domain
         /// <summary>
         /// List of NotificationChannelConfigs
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public string? OverrideChannels { get; set; }
 
         /// <summary>

@@ -11,20 +11,20 @@ namespace Shesha.Users.Dto
     public class UserDto : EntityDto<long>
     {
         [Required]
-        [StringLength(AbpUserBase.MaxUserNameLength)]
+        [MaxLength(AbpUserBase.MaxUserNameLength)]
         public string? UserName { get; set; }
 
         [Required]
-        [StringLength(AbpUserBase.MaxNameLength)]
+        [MaxLength(AbpUserBase.MaxNameLength)]
         public string? Name { get; set; }
 
         [Required]
-        [StringLength(AbpUserBase.MaxSurnameLength)]
+        [MaxLength(AbpUserBase.MaxSurnameLength)]
         public string? Surname { get; set; }
 
         [Required]
         [EmailAddress]
-        [StringLength(AbpUserBase.MaxEmailAddressLength)]
+        [MaxLength(AbpUserBase.MaxEmailAddressLength)]
         public string? EmailAddress { get; set; }
 
         public bool IsActive { get; set; }

@@ -344,7 +344,8 @@ namespace Shesha.NHibernate.Interceptors
         {
             for (var i = 0; i < types.Count; i++)
             {
-                var prop = entity.GetType().GetProperty(propertyNames[i]);
+                //var prop = entity.GetType().GetProperty(propertyNames[i]);
+                var prop = entity.GetType().GetClosestPropertyOrNull(propertyNames[i]);
                 if (prop != null && prop.IsDefined(typeof(DisableDateTimeNormalizationAttribute), true))
                 {
                     continue;

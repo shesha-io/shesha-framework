@@ -26,7 +26,7 @@ namespace Shesha.Domain
         /// <summary>
         /// 
         /// </summary>
-        [StringLength(500)]
+        [MaxLength(500)]
         public virtual string Answer { get; set; }
 
         /// <summary>

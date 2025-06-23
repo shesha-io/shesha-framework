@@ -13,12 +13,14 @@ namespace Shesha.Domain
     /// Configuration of the entity property
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.EntityProperty", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [SnakeCaseNaming]
+    [Table("entity_properties", Schema = "frwk")]
     public class EntityProperty: FullAuditedEntity<Guid>
     {
         /// <summary>
-        /// Owner entity config
+        /// Entity Config Revision
         /// </summary>
-        public required virtual EntityConfig EntityConfig { get; set; }
+        public required virtual EntityConfigRevision EntityConfigRevision { get; set; }
 
         /// <summary>
         /// Property Name
@@ -28,7 +30,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Label (display name)
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string? Label { get; set; }
 
         /// <summary>
@@ -40,31 +42,31 @@ namespace Shesha.Domain
         /// <summary>
         /// Data type
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? DataType { get; set; }
 
         /// <summary>
         /// Data format
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? DataFormat { get; set; }
 
         /// <summary>
-        /// Entity type. Aplicable for entity references
+        /// Entity type. Applicable for entity references
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string? EntityType { get; set; }
 
         /// <summary>
         /// Reference list name
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? ReferenceListName { get; set; }
 
         /// <summary>
         /// Reference list module
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string? ReferenceListModule { get; set; }
         
         /// <summary>
@@ -85,7 +87,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Child properties (applicable for objects)
         /// </summary>
-        [InverseProperty("ParentPropertyId")]
+        [InverseProperty("parent_property_id")]
         public virtual IList<EntityProperty> Properties { get; set; } = new List<EntityProperty>();
 
         /// <summary>

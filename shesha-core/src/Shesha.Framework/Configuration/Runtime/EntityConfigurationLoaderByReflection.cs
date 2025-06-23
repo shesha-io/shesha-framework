@@ -59,12 +59,9 @@ namespace Shesha.Configuration.Runtime
         {
             var entityAtt = config.EntityType.GetUniqueAttribute<EntityAttribute>();
 
-            if (entityAtt != null)
-            {
-                config.FriendlyName = string.IsNullOrEmpty(entityAtt.FriendlyName)
-                                          ? config.EntityType.Name // Fall back to type name when friendly name is not specified
-                                          : entityAtt.FriendlyName;
-            }
+            config.FriendlyName = entityAtt != null && !string.IsNullOrEmpty(entityAtt.FriendlyName)
+                ? entityAtt.FriendlyName
+                : config.EntityType.Name; // Fall back to type name when friendly name is not specified
 
             config.Accessor = config.EntityType.GetTypeAccessor();
             config.SetTypeShortAlias(config.EntityType.GetTypeShortAliasOrNull());

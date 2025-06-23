@@ -36,9 +36,6 @@ namespace Shesha.ShaRoles
             CheckCreatePermission();
 
             var role = ObjectMapper.Map<ShaRole>(input);
-            role.VersionNo = 1;
-            // ToDo: implement versioning of ShaRole
-            role.VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live;
 
             await Repository.InsertAsync(role);
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -53,6 +50,7 @@ namespace Shesha.ShaRoles
             var role = await Repository.GetAsync(input.Id);
 
             ObjectMapper.Map(input, role);
+            role.MapPermissions(input.Permissions);            
 
             await _shaPermissionChecker.ClearPermissionsCacheAsync();
 

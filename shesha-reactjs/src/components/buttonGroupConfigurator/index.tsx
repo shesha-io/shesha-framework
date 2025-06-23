@@ -61,7 +61,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
         okText="Save"
         onOk={onOkClick}
         okButtonProps={{ hidden: readOnly }}
-        destroyOnClose={true}
+        destroyOnHidden={true}
       >
         <ButtonGroupSettingsEditor
           readOnly={readOnly}
