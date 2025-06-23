@@ -20,3 +20,24 @@ export const defaultStyles = (): IStyleType => {
         stylingBox: '{"paddingLeft":"0","paddingBottom":"0","paddingTop":"0","paddingRight":"0"}',
     };
 };
+
+/**
+ * Validate the single dimensions (width, height, ...) so that they always have units
+ * @param dimension - The dimension to validate
+ * @returns The validated dimension with units
+ */
+export const validateDimension = (dimension?: string | number) => {
+    if (dimension == null || dimension === '') return undefined;
+
+    const keywords = ['auto', 'fit-content', 'fill-available', 'fill-parent', 'fill-screen', 'fill-viewport', 'fill-window', 'fill-body', 'fill-html', 'fill-root', 'fill-parent', 'fill-screen', 'fill-viewport', 'fill-window', 'fill-body', 'fill-html', 'fill-root'];
+    switch (typeof dimension) {
+      case 'number':
+        return `${dimension}px`;
+      case 'string':
+        if (/^\d+$/.test(dimension)) return `${dimension}px`; // digit-only string
+        if (/^\d+(px|%|em|rem|vh|vw)$/.test(dimension)) return dimension; // already valid
+        if (keywords.includes(dimension)) return dimension; // keep keywords like 'auto', 'fit-content', etc.
+      default:
+        return undefined;
+    }
+};

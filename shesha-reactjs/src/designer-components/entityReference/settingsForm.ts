@@ -451,6 +451,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             label: 'Dialog Width',
                             parentId: dataTabId,
                             type: 'customDropdown',
+                            customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                            customDropdownMode: 'single',
                             allowClear: true,
                             jsSetting: true,
                             dropdownOptions: [
