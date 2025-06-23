@@ -134,23 +134,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     { value: 'multiple', label: 'Multiple' },
                                 ],
                             })
-                            // //check defaultValue
-                            // .addSettingsInput({
-                            //     id: nanoid(),
-                            //     inputType: 'codeEditor',
-                            //     propertyName: 'defaultValue',
-                            //     label: 'Default Value',
-                            //     size: 'small',
-                            //     jsSetting: true,
-                            //     parentId: dataTabId,
-                            //     wrapInTemplate: true,
-                            //     validate: {},
-                            //     settingsValidationErrors: [],
-                            //     templateSettings: {
-                            //         "functionName": "getDefaultValue"
-                            //       },
-                            //     availableConstantsExpression: "    return metadataBuilder\n       .object(\"constants\")\n        .addAllStandard(\"shesha:selectedRow\").build();"
-                            // })
                             .addSettingsInput({
                                 id: nanoid(),
                                 parentId: dataTabId,
