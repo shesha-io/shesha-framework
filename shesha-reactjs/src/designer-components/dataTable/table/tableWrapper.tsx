@@ -30,7 +30,7 @@ const NotConfiguredWarning: FC = () => {
 
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-    const { id, items, useMultiselect, tableStyle, containerStyle } = props;
+    const { id, items, useMultiselect, tableStyle, containerStyle, onRowDeleteSuccessAction } = props;
 
     const { formMode } = useForm();
     const { data: formData } = useFormData();
@@ -102,6 +102,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             <GlobalTableStyles />
             {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
             <DataTable
+                onRowDeleteSuccessAction={onRowDeleteSuccessAction}
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}
                 useMultiselect={useMultiselect}
