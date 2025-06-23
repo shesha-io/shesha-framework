@@ -577,7 +577,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         id: nanoid(),
                         propertyName: 'quickviewWidth',
                         label: 'Quickview Width',
-                        description: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                        description: 'You can use any unit (%, px, em, etc). px by default if without unit.',
                         parentId: dataTabId,
                         inputType: 'textField',
                         jsSetting: true,
