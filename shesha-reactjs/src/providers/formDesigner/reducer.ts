@@ -487,7 +487,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       return {
         ...state,
         selectedComponentId: payload.id,
-        selectedComponentRef: payload.componentRef,
       };
     },
 

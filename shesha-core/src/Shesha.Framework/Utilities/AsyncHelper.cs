@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Utilities
 {
+    /*
     public static class AsyncHelper
     {
         /// <summary>
@@ -159,4 +160,5 @@ namespace Shesha.Utilities
             }
         }
     }
+    */
 }

@@ -118,7 +118,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchTestPerson_RefList_Fetch_TestAsync()
+        public Task SearchTestPerson_RefList_Fetch_TestAsync()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -126,7 +126,7 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestPerson.Title)
             });
 
-            await TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
+            return TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
                 // check data
             });
         }
@@ -162,10 +162,12 @@ namespace Shesha.Tests.QuickSearch
 
             var refList = new ReferenceList {
                 Id = Guid.NewGuid(),
-                Namespace = "Shesha.Core",
                 Name = "PreferredContactMethod",
-                Module = new Domain.ConfigurationItems.Module { Name = "Shesha" }
+                Module = new Domain.Module { Name = "Shesha" }
             };
+            var refListRevision = refList.EnsureLatestRevision();
+            refListRevision.Namespace = "Shesha.Core";
+
             var refListItems = new List<ReferenceListItem>();
             var enumValues = Enum.GetValues(typeof(TestContactMethod));
             foreach (var enumValue in enumValues)
@@ -173,7 +175,7 @@ namespace Shesha.Tests.QuickSearch
                 refListItems.Add(new ReferenceListItem
                 {
                     Id = Guid.NewGuid(),
-                    ReferenceList = refList,
+                    ReferenceListRevision = refListRevision,
                     Item = Enum.GetName(typeof(TestContactMethod), enumValue),
                     ItemValue = (Int64)enumValue
                 });

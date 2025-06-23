@@ -19,6 +19,16 @@ namespace Shesha.ConfigurationItems
         string? FrontEndApplication { get; }
 
         /// <summary>
+        /// Current module (top level)
+        /// </summary>
+        string CurrentModule { get; }
+
+        /// <summary>
+        /// Current module (top level)
+        /// </summary>
+        string? CurrentModuleOrNull { get; }
+
+        /// <summary>
         /// Begin runtime scope
         /// </summary>
         /// <param name="initAction">Initialization of the scope</param>

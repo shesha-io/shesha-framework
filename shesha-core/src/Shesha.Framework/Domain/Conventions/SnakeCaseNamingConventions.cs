@@ -1,4 +1,5 @@
-﻿using Shesha.Utilities;
+﻿using Shesha.FluentMigrator;
+using Shesha.Utilities;
 
 namespace Shesha.Domain.Conventions
 {
@@ -7,11 +8,10 @@ namespace Shesha.Domain.Conventions
     /// </summary>
     public class SnakeCaseNamingConventions : INamingConventions
     {
-        public SnakeCaseNamingConventions()
-        {
-                
-        }
+        /// inheritedDoc
+        public string? DbNamesExpression => $"{nameof(SnakeCaseDbObjectNames)}.{nameof(SnakeCaseDbObjectNames.Instance)}";
 
+        /// inheritedDoc
         public string GetColumnName(string prefix, string propertyName, string? suffix)
         {
             return $"{ConvertPrefix(prefix)}{propertyName.ToSnakeCase()}{ConvertSuffix(suffix)}";
@@ -31,9 +31,10 @@ namespace Shesha.Domain.Conventions
                 : "_" + suffix.ToSnakeCase().TrimStart('_');
         }
 
-        public string GetTableName(string className)
+        /// inheritedDoc
+        public string GetTableName(string prefix, string className)
         {
-            return className.ToSnakeCase();
+            return $"{prefix}{className}".ToSnakeCase();
         }
     }
 }

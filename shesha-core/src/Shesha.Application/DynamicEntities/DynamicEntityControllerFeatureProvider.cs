@@ -54,7 +54,10 @@ namespace Shesha.DynamicEntities
                 {
                     try
                     {
-                        var entityType = entityConfigurationStore.Get($"{entityConfig.FullClassName}")?.EntityType;
+                        if (entityConfig.Revision == null)
+                            continue;
+
+                        var entityType = entityConfigurationStore.Get($"{entityConfig.Revision.FullClassName}")?.EntityType;
                         if (entityType == null) 
                             continue;
 

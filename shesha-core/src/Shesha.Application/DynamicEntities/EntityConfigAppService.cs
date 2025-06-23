@@ -6,7 +6,6 @@ using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -46,17 +45,17 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         _propertyRepository = propertyRepository;
     }
 
-    public async Task<FormIdFullNameDto?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
+    public async Task<FormIdentifier?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
     {
-        var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
+        var entityConfig = await Repository.GetAll().Where(x => x.Name == entityConfigName || x.Revision.TypeShortAlias == entityConfigName).FirstOrDefaultAsync();
         if (entityConfig == null)
             return null;
 
         typeName = typeName.Replace(" ", "").ToLower();
 
-        return entityConfig.ViewConfigurations
-            .FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId
-            ?? new FormIdFullNameDto() { Name = $"{entityConfigName}-{typeName}", Module = entityConfig.Module?.Name };
+        var configFormId = entityConfig.Revision.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
+
+        return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityConfigName}-{typeName}");
     }
 
     // Used to avoid performance issues
@@ -112,23 +111,9 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         return DeleteConfigAsync(input.Id);
     }
 
-    public async Task RemoveConfigurationsOfMissingClassesAsync()
-    {
-        var entityTypes = _typeFinder.Find(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity)).ToList();
-
-        var dbConfigs = await Repository.GetAll().Where(ec => ec.Source == MetadataSourceType.ApplicationCode)
-            .Select(ec => new { Id = ec.Id, Namespace = ec.Namespace, ClassName = ec.ClassName })
-            .ToListAsync();
-
-        var toDelete = dbConfigs.Where(ec => !entityTypes.Any(ct => ct.Namespace == ec.Namespace && ct.Name == ec.ClassName)).ToList();
-
-        foreach (var config in toDelete)
-            await DeleteConfigAsync(config.Id);
-    }
-
     private async Task DeleteConfigAsync(Guid id)
     {
-        await _propertyRepository.DeleteAsync(x => x.EntityConfig.Id == id);
+        await _propertyRepository.DeleteAsync(x => x.EntityConfigRevision.ConfigurationItem.Id == id);
         await _configItemRepository.DeleteAsync(id);
     }
 

@@ -47,7 +47,6 @@ export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISett
 
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   model: TModel;
-  componentRef: MutableRefObject<any>;
   children?: JSX.Element;
   calculatedModel?: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;

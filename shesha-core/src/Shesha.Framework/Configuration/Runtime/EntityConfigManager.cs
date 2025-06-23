@@ -1,11 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -23,12 +21,7 @@ namespace Shesha.Configuration.Runtime
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
-        public EntityConfigManager(
-            IRepository<EntityConfig, Guid> repository,
-            IRepository<EntityProperty, Guid> propertyConfigRepo,
-            IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager            
-        ) : base(repository, moduleRepository, unitOfWorkManager)
+        public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {
             _propertyConfigRepo = propertyConfigRepo;
         }
@@ -41,20 +34,20 @@ namespace Shesha.Configuration.Runtime
                 .Select(x => new EntityConfigDto()
                 {
                     Id = x.Id,
-                    ClassName = x.ClassName,
-                    FriendlyName = x.FriendlyName,
-                    TypeShortAlias = x.TypeShortAlias,
-                    TableName = x.TableName,
-                    Namespace = x.Namespace,
-                    DiscriminatorValue = x.DiscriminatorValue,
-                    Source = x.Source,
-                    EntityConfigType = x.EntityConfigType,
+                    
+                    ClassName = x.Revision.ClassName,
+                    FriendlyName = x.Revision.FriendlyName,
+                    Label = x.Revision.Label,
+                    TypeShortAlias = x.Revision.TypeShortAlias,
+                    TableName = x.Revision.TableName,
+                    Namespace = x.Revision.Namespace,
+                    DiscriminatorValue = x.Revision.DiscriminatorValue,
+
+                    Source = x.Revision.Source,
+                    EntityConfigType = x.Revision.EntityConfigType,
                     Suppress = x.Suppress,
                     Module = x.Module!.Name,
                     Name = x.Name,
-                    Label = x.Label,
-
-                    VersionStatus = x.VersionStatus,
                 }).ToListAsync();
 
             return implemented ?? false
@@ -69,10 +62,6 @@ namespace Shesha.Configuration.Runtime
             var newVersion =new EntityConfig();
 
             MapEntityConfig(item, newVersion);
-
-            newVersion.ParentVersion = item; // set parent version
-            newVersion.VersionNo = item.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
 
             await Repository.InsertAsync(newVersion);
 
@@ -89,28 +78,27 @@ namespace Shesha.Configuration.Runtime
             dest.ItemType = src.ItemType;
 
             dest.Origin = src.Origin;
-            dest.BaseItem = src.BaseItem;
-            dest.ParentVersion = src.ParentVersion;
 
-            dest.Label = src.Label;
-            dest.Description = src.Description;
-            dest.VersionNo = src.VersionNo;
-            dest.VersionStatus = src.VersionStatus;
+            var revision = dest.EnsureLatestRevision();
+            var srcRevision = src.Revision;
+            revision.Label = srcRevision.Label;
+            revision.Description = srcRevision.Description;
+
             dest.Suppress = src.Suppress;
 
             // entity config specific properties
-            dest.FriendlyName = src.FriendlyName;
-            dest.TypeShortAlias = src.TypeShortAlias;
-            dest.TableName = src.TableName;
-            dest.ClassName = src.ClassName;
-            dest.Namespace = src.Namespace;
-            dest.DiscriminatorValue = src.DiscriminatorValue;
-            dest.GenerateAppService = src.GenerateAppService;
-            dest.Source = src.Source;
-            dest.EntityConfigType = src.EntityConfigType;
-            dest.HardcodedPropertiesMD5 = src.HardcodedPropertiesMD5;
+            revision.TypeShortAlias = srcRevision.TypeShortAlias;
+            revision.ClassName = srcRevision.ClassName;
+            revision.Namespace = srcRevision.Namespace;
+            revision.DiscriminatorValue = srcRevision.DiscriminatorValue;
+            revision.Source = srcRevision.Source;
+            revision.EntityConfigType = srcRevision.EntityConfigType;
 
-            dest.ViewConfigurations = src.ViewConfigurations.ToList();
+            revision.GenerateAppService = srcRevision.GenerateAppService;
+            revision.FriendlyName = srcRevision.FriendlyName;
+            revision.HardcodedPropertiesMD5 = srcRevision.HardcodedPropertiesMD5;
+            revision.ViewConfigurations = srcRevision.ViewConfigurations.ToList();
+            revision.TableName = srcRevision.TableName;
 
             return dest;
         }
@@ -120,12 +108,13 @@ namespace Shesha.Configuration.Runtime
             EntityConfig item
         )
         {
-            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == srcItem);
+            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfigRevision == srcItem.Revision);
+            var revision = item.EnsureLatestRevision();
             foreach (var src in properties)
             {
-                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
+                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfigRevision == revision)
                     ?? new EntityProperty { 
-                        EntityConfig = item,
+                        EntityConfigRevision = revision,
                         Name = src.Name,
                         DataType = src.DataType
                     };
@@ -164,6 +153,21 @@ namespace Shesha.Configuration.Runtime
         }
 
         public override Task<IConfigurationItemDto> MapToDtoAsync(EntityConfig item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<EntityConfig> ExposeAsync(EntityConfig item, Module module)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<EntityConfig> CreateItemAsync(CreateItemInput input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<EntityConfig> DuplicateAsync(EntityConfig item)
         {
             throw new NotImplementedException();
         }

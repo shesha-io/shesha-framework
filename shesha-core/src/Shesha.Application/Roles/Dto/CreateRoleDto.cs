@@ -8,16 +8,16 @@ namespace Shesha.Roles.Dto
     public class CreateRoleDto
     {
         [Required]
-        [StringLength(AbpRoleBase.MaxNameLength)]
+        [MaxLength(AbpRoleBase.MaxNameLength)]
         public string Name { get; set; }
         
         [Required]
-        [StringLength(AbpRoleBase.MaxDisplayNameLength)]
+        [MaxLength(AbpRoleBase.MaxDisplayNameLength)]
         public string DisplayName { get; set; }
 
         public string NormalizedName { get; set; }
         
-        [StringLength(Role.MaxDescriptionLength)]
+        [MaxLength(Role.MaxDescriptionLength)]
         public string Description { get; set; }
 
         public List<string> GrantedPermissions { get; set; }

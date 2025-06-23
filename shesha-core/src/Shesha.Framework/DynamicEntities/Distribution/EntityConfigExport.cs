@@ -43,10 +43,13 @@ namespace Shesha.DynamicEntities.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item)
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item)
         {
             if (!(item is EntityConfig entityConfig))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(EntityConfig)}, actual: {item.GetType().FullName}");
+
+            var readRevision = entityConfig.LatestRevision;
+            var fullClassName = readRevision.FullClassName;
 
             var result = new DistributedEntityConfig
             {
@@ -56,35 +59,32 @@ namespace Shesha.DynamicEntities.Distribution
                 FrontEndApplication = entityConfig.Application?.AppKey,
                 ItemType = entityConfig.ItemType,
 
-                Label = entityConfig.Label,
-                Description = entityConfig.Description,
+                Label = readRevision.Label,
+                Description = readRevision.Description,
                 OriginId = entityConfig.Origin?.Id,
-                BaseItem = entityConfig.BaseItem?.Id,
-                VersionNo = entityConfig.VersionNo,
-                VersionStatus = entityConfig.VersionStatus,
-                ParentVersionId = entityConfig.ParentVersion?.Id,
                 Suppress = entityConfig.Suppress,
 
                 // entity config specific properties
-                FriendlyName = entityConfig.FriendlyName,
-                TypeShortAlias = entityConfig.TypeShortAlias,
-                TableName = entityConfig.TableName,
-                ClassName = entityConfig.ClassName,
-                Namespace = entityConfig.Namespace,
-                DiscriminatorValue = entityConfig.DiscriminatorValue,
-                GenerateAppService = entityConfig.GenerateAppService,
-                Source = entityConfig.Source,
-                EntityConfigType = entityConfig.EntityConfigType,
-                PropertiesMD5 = entityConfig.HardcodedPropertiesMD5,
-               
+                TypeShortAlias = readRevision.TypeShortAlias,
+                TableName = readRevision.TableName,
+                ClassName = readRevision.ClassName,
+                Namespace = readRevision.Namespace,
+                DiscriminatorValue = readRevision.DiscriminatorValue,
+                GenerateAppService = readRevision.GenerateAppService,
+                Source = readRevision.Source,
+                EntityConfigType = readRevision.EntityConfigType,
+
+                FriendlyName = readRevision.FriendlyName,
+                PropertiesMD5 = readRevision.HardcodedPropertiesMD5,
+
                 ViewConfigurations = MapViewConfigurations(entityConfig),
                 Properties = await MapPropertiesAsync(entityConfig),
 
-                Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}", ShaPermissionedObjectsTypes.Entity),
-                PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction),
-                PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Create", ShaPermissionedObjectsTypes.EntityAction),
-                PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Update", ShaPermissionedObjectsTypes.EntityAction),
-                PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction),
+                Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}", ShaPermissionedObjectsTypes.Entity),
+                PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Get", ShaPermissionedObjectsTypes.EntityAction),
+                PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Create", ShaPermissionedObjectsTypes.EntityAction),
+                PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Update", ShaPermissionedObjectsTypes.EntityAction),
+                PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction),
             };
 
             return result;
@@ -92,7 +92,7 @@ namespace Shesha.DynamicEntities.Distribution
         
         private async Task<List<DistributedEntityConfigProperty>> MapPropertiesAsync(EntityConfig entityConfig)
         {
-            var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
+            var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfigRevision == entityConfig.Revision).ToListAsync();
             var properties = new List<DistributedEntityConfigProperty>();
             foreach (var dbProp in dbProperties)
             {
@@ -144,7 +144,7 @@ namespace Shesha.DynamicEntities.Distribution
 
         private List<EntityViewConfigurationDto> MapViewConfigurations(EntityConfig entityConfig)
         {
-            return entityConfig.ViewConfigurations?.ToList() ?? new();
+            return entityConfig.LatestRevision.ViewConfigurations?.ToList() ?? new();
         }
 
         /// inheritedDoc

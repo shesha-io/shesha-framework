@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useMemo } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useActualContextData, useActualContextExecution, useCalculatedModel, useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
@@ -7,7 +7,7 @@ import { IModelValidation } from '@/utils/errors';
 import ComponentError from '@/components/componentErrors';
 import { formComponentActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import AttributeDecorator from '@/components/attributeDecorator';
-import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
@@ -15,7 +15,7 @@ export interface IConfigurableFormComponentProps {
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componentModel }) => {
 
-  useShaFormUpdateDate();
+  useShaFormDataUpdate();
 
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
@@ -24,7 +24,6 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(componentModel.type);
 
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
@@ -56,7 +55,6 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
 
   const control = useMemo(() => (
     <toolboxComponent.Factory 
-      componentRef={componentRef}
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}

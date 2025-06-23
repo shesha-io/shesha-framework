@@ -1,28 +1,25 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Shesha.Domain;
 
 namespace Shesha.DynamicEntities.Dtos
 {
+    /// <summary>
+    /// View configuration DTO
+    /// </summary>
     public class EntityViewConfigurationDto
     {
+        /// <summary>
+        /// If true, indicates that view is a standard one
+        /// </summary>
         public bool IsStandard { get; set; }
 
+        /// <summary>
+        /// View type
+        /// </summary>
         public string Type { get; set; }
 
-        public FormIdFullNameDto? FormId { get; set; }
-    }
-
-    // TODO: replace with FormIdentifier
-    public class FormIdFullNameDto
-    {
-        public string? Name { get; set; }
-        public string? Module { get; set; }
-    }
-
-    public static class FormIdFullNameDtoExtensions
-    {
-        public static bool IsEmpty([NotNullWhen(false)]this FormIdFullNameDto? formId)
-        {
-            return formId == null || string.IsNullOrWhiteSpace(formId.Name);
-        }
+        /// <summary>
+        /// Identifier of form to use for current veiew
+        /// </summary>
+        public FormIdentifier? FormId { get; set; }
     }
 }

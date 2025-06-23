@@ -36,11 +36,12 @@ namespace Shesha.Services.Settings.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item) 
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item) 
         {
             if (!(item is SettingConfiguration settingConfig))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(SettingConfiguration)}, actual: {item.GetType().FullName}");
 
+            var revision = settingConfig.Revision;
             var result = new DistributedSettingConfiguration
             {
                 Id = settingConfig.Id,
@@ -49,25 +50,21 @@ namespace Shesha.Services.Settings.Distribution
                 FrontEndApplication = settingConfig.Application?.AppKey,
                 ItemType = settingConfig.ItemType,
 
-                Label = settingConfig.Label,
-                Description = settingConfig.Description,
+                Label = revision.Label,
+                Description = revision.Description,
                 OriginId = settingConfig.Origin?.Id,
-                BaseItem = settingConfig.BaseItem?.Id,
-                VersionNo = settingConfig.VersionNo,
-                VersionStatus = settingConfig.VersionStatus,
-                ParentVersionId = settingConfig.ParentVersion?.Id,
                 Suppress = settingConfig.Suppress,
 
                 // setting configuration specific properties
-                DataType = settingConfig.DataType,
-                EditorFormName = settingConfig.EditorFormName,
-                EditorFormModule = settingConfig.EditorFormModule,
-                OrderIndex = settingConfig.OrderIndex,
-                Category = settingConfig.Category,
-                IsClientSpecific = settingConfig.IsClientSpecific,
-                AccessMode = settingConfig.AccessMode,
-                ClientAccess = settingConfig.ClientAccess,
-                IsUserSpecific = settingConfig.IsUserSpecific,
+                DataType = revision.DataType,
+                EditorFormName = revision.EditorFormName,
+                EditorFormModule = revision.EditorFormModule,
+                OrderIndex = revision.OrderIndex,
+                Category = revision.Category,
+                IsClientSpecific = revision.IsClientSpecific,
+                AccessMode = revision.AccessMode,
+                ClientAccess = revision.ClientAccess,
+                IsUserSpecific = revision.IsUserSpecific,
             };
             result.Values = await ExportSettingValuesAsync(settingConfig);
 

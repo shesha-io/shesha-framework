@@ -3,7 +3,6 @@ using Abp.Domain.Uow;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -88,7 +87,7 @@ namespace Shesha.Services.ConfigurationItems
     }
 
     public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase 
-        where TItem : ConfigurationItemBase
+        where TItem : ConfigurationItem
         where TDistributedItem : DistributedConfigurableItemBase
     {
         protected ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo) : base(_moduleRepo, _frontendAppRepo)

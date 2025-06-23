@@ -165,8 +165,6 @@ namespace Shesha
 
         public override void PostInitialize()
         {
-            IocManager.Resolve<ShaPermissionManager>().Initialize();
-
             var def = IocManager.Resolve<IPermissionDefinitionContext>();
 
             // register Shesha exception to error converter

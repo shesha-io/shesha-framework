@@ -103,7 +103,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
         okButtonProps={{ hidden: readOnly }}
         onCancel={() => setModalVisible(false)}
         cancelText={readOnly ? 'Close' : undefined}
-        destroyOnClose
+        destroyOnHidden
       >
         <h4>Here you can create your own filter using the query builder below</h4>
 

@@ -23,6 +23,7 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
@@ -219,8 +220,8 @@ namespace Shesha.NHibernate.Maps
 
                             j.Fetch(FetchKind.Join);
 
-                            var idProp = type.GetProperty("Id");
-                            var idColumn = idProp.GetAttribute<ColumnAttribute>()?.Name ?? "Id";
+                            var idProp = type.GetRequiredProperty("Id");
+                            var idColumn = MappingHelper.GetColumnName(idProp);
 
                             j.Key(k =>
                             {
@@ -268,9 +269,13 @@ namespace Shesha.NHibernate.Maps
                     member.LocalMember.GetMemberType() == typeof(GenericEntityReference))
                 {
                     var attr = member.LocalMember.GetCustomAttribute<EntityReferenceAttribute>();
-                    var idn = attr?.IdColumnName ?? $"{member.LocalMember.Name}Id";
-                    var cnn = attr?.ClassNameColumnName ?? $"{member.LocalMember.Name}ClassName";
-                    var dnn = attr?.DisplayNameColumnName ?? $"{member.LocalMember.Name}DisplayName";
+
+                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType.NotNull());
+
+                    var idn = attr?.IdColumnName ?? MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, "Id");
+                    var cnn = attr?.ClassNameColumnName ?? MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, "ClassName");
+                    var dnn = attr?.DisplayNameColumnName ?? MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, "DisplayName");
+
                     if (attr?.StoreDisplayName ?? false)
                     {
                         propertyCustomizer.Columns(
@@ -370,8 +375,6 @@ namespace Shesha.NHibernate.Maps
                 var isId = mi.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase);
                 return isId;
             });
-
-
 
             mapper.BeforeMapClass += (modelInspector, type, classCustomizer) =>
             {
@@ -509,12 +512,23 @@ namespace Shesha.NHibernate.Maps
                var foreignKeyColumn = MappingHelper.GetForeignKeyColumn(propertyPath.LocalMember);
                map.Column(foreignKeyColumn);
 
-               var directlyMappedFk = propertyPath.LocalMember.DeclaringType?.GetProperty(foreignKeyColumn);
-
-               if (foreignKeyColumn.ToLower() == "id" || directlyMappedFk != null)
+               var readonlyAttribute = propertyPath.LocalMember.GetAttributeOrNull<ReadonlyPropertyAttribute>();
+               if (readonlyAttribute != null)
                {
-                   map.Insert(false);
-                   map.Update(false);
+                   map.Insert(readonlyAttribute.Insert);
+                   map.Update(readonlyAttribute.Update);
+               }
+               else 
+               {
+                   var directlyMappedFk = propertyPath.LocalMember.ReflectedType != null
+                       ? propertyPath.LocalMember.ReflectedType.GetProperties().FirstOrDefault(p => p != propertyPath.LocalMember && modelInspector.IsPersistentProperty(p) && MappingHelper.GetColumnName(p) == foreignKeyColumn)
+                        : null;
+
+                   if (foreignKeyColumn.ToLower() == "id" || directlyMappedFk != null)
+                   {
+                       map.Insert(false);
+                       map.Update(false);
+                   }
                }
 
                var cascadeAttribute = propertyPath.LocalMember.GetAttributeOrNull<CascadeAttribute>(true);
@@ -573,9 +587,12 @@ namespace Shesha.NHibernate.Maps
                 }
                 else if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType))
                 {
-                    //TODO: Check IsDeletedColumn for Many-To-Many
+                    var isDeletedProp = bagMapper.ElementType.GetRequiredProperty(nameof(ISoftDelete.IsDeleted));
+                    var isDeletedColumnName = MappingHelper.GetColumnName(isDeletedProp);
                     map.Filter("SoftDelete", m =>
                     {
+                        if (isDeletedColumnName != isDeletedProp.Name)
+                            m.Condition(SoftDeleteFilter.GetCondition(isDeletedColumnName));
                     });
                 }
 

@@ -5,8 +5,7 @@ import React, {
   FC,
   MutableRefObject,
   memo,
-  useMemo,
-  useRef
+  useMemo
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
@@ -29,7 +28,6 @@ import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
-  componentRef: MutableRefObject<any>;
   selectedComponentId?: string;
   readOnly?: boolean;
   settingsPanelRef?: MutableRefObject<any>;
@@ -38,7 +36,6 @@ export interface IConfigurableFormComponentDesignerProps {
 }
 const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({ 
   componentModel,
-  componentRef,
   selectedComponentId,
   readOnly,
   settingsPanelRef,
@@ -119,9 +116,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       <div>
-        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
+        <DragWrapper componentId={componentModel.id} readOnly={readOnly} >
           <div style={{ padding: '5px 3px' }}>
-            <FormComponent componentModel={componentModel} componentRef={componentRef} />
+            <FormComponent componentModel={componentModel} />
           </div>
         </DragWrapper>
       </div>
@@ -149,7 +146,6 @@ export interface IConfigurableFormComponentProps {
 export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id }) => {
   const isDrawing = useIsDrawingForm();
 
-  const componentRef = useRef(null);
   const componentModel = ShaForm.useComponentModel(id);
 
   const ComponentRenderer = !isDrawing || componentModel?.isDynamic
@@ -157,6 +153,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={componentModel} componentRef={componentRef}  />
+    <ComponentRenderer componentModel={componentModel}  />
   );
 };

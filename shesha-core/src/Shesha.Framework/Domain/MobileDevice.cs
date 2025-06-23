@@ -17,13 +17,13 @@ namespace Shesha.Domain
         /// <summary>
         /// Device name
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string Name { get; set; }
         
         /// <summary>
         /// Device IMEI number
         /// </summary>
-        [StringLength(30)]
+        [MaxLength(30)]
         public virtual string IMEI { get; set; }
 
         /// <summary>
@@ -41,50 +41,50 @@ namespace Shesha.Domain
         /// <summary>
         /// The timestamp of the last heartbeat received from the device.
         /// </summary>
-        public DateTime? LastHeartBeatTime { get; set; }
+        public virtual DateTime? LastHeartBeatTime { get; set; }
 
         /// <summary>
         /// The last known location of the device as per the last heartbeat received.
         /// </summary>
-        public Decimal? LastLat { get; set; }
+        public virtual Decimal? LastLat { get; set; }
 
         /// <summary>
         /// The last known location of the device as per the last heartbeat received.
         /// </summary>
-        public Decimal? LastLong { get; set; }
+        public virtual Decimal? LastLong { get; set; }
 
         /// <summary>
         /// The last known bearing (direction) of the device as per the last heartbeat received.
         /// </summary>
-        public Decimal? LastBearing { get; set; }
+        public virtual Decimal? LastBearing { get; set; }
 
         /// <summary>
         /// The last known speed of the device as per the last heartbeat received.
         /// </summary>
-        public Decimal? LastSpeed { get; set; }
+        public virtual Decimal? LastSpeed { get; set; }
 
         /// <summary>
         /// Indicates if the devices was stationary as of the last heartbeat.
         /// This is either based on the speed being below a certain threshold or
         /// the device being in the same location for a certain period of time.
         /// </summary>
-        public bool? LastHeartBeatIsStationary { get; set; }
+        public virtual bool? LastHeartBeatIsStationary { get; set; }
         
         /// <summary>
         /// The timestamp the device was first recorded at the current location.
         /// This is used to determine how long the device has been stationary.
         /// </summary>
-        public DateTime? StationaryTime { get; set; }
+        public virtual DateTime? StationaryTime { get; set; }
 
         /// <summary>
         /// The lat the device was first recorded at the current location.
         /// </summary>
-        public Decimal? StationaryLat { get; set; }
+        public virtual Decimal? StationaryLat { get; set; }
 
         /// <summary>
         /// The long the device was first recorded at the current location.
         /// </summary>
-        public Decimal? StationaryLong { get; set; }
+        public virtual Decimal? StationaryLong { get; set; }
 
     }
 }

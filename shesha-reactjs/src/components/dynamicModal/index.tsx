@@ -38,7 +38,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       onOk={onOk}
       onCancel={hideForm}
       footer={footer}
-      destroyOnClose
+      destroyOnHidden
       width={isSmall ? '90%' : width}
       maskClosable={false}
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}

@@ -1,11 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Permissions;
@@ -26,14 +24,18 @@ namespace Shesha.Web.FormsDesigner.Services
     public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
+        private readonly IModuleManager _moduleManager;
+        private readonly IRepository<FormConfigurationRevision, Guid> _revisionRepo;
+
         public FormManager(
-            IRepository<FormConfiguration, Guid> repository,
-            IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager,
-            IPermissionedObjectManager permissionedObjectManager
-        ) : base(repository, moduleRepository, unitOfWorkManager)
+            IPermissionedObjectManager permissionedObjectManager,
+            IModuleManager moduleManager,
+            IRepository<FormConfigurationRevision, Guid> revisionRepo
+        ) : base()
         {
             _permissionedObjectManager = permissionedObjectManager;
+            _moduleManager = moduleManager;
+            _revisionRepo = revisionRepo;
         }
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
@@ -52,18 +54,14 @@ namespace Shesha.Web.FormsDesigner.Services
             newVersion.Origin = form.Origin;
             newVersion.Name = form.Name;
             newVersion.Module = form.Module;
-            newVersion.Description = form.Description;
-            newVersion.Label = form.Label;
-            newVersion.TenantId = form.TenantId;
 
-            newVersion.ParentVersion = form; // set parent version
-            newVersion.VersionNo = form.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
-
-            newVersion.Markup = form.Markup;
-            newVersion.ModelType = form.ModelType;
-            newVersion.IsTemplate = form.IsTemplate;
-            newVersion.Template = form.Template;
+            // TODO: V1 review
+            //newVersion.Description = form.Description;
+            //newVersion.Label = form.Label;
+            //newVersion.Markup = form.Markup;
+            //newVersion.ModelType = form.ModelType;
+            //newVersion.IsTemplate = form.IsTemplate;
+            //newVersion.Template = form.Template;
             newVersion.Normalize();
 
             await Repository.InsertAsync(newVersion);
@@ -79,37 +77,9 @@ namespace Shesha.Web.FormsDesigner.Services
             return newVersion;
         }
 
-        /// inheritedDoc
-        public override async Task UpdateStatusAsync(FormConfiguration form, ConfigurationItemVersionStatus status)
+        public Task<List<FormConfiguration>> GetAllAsync()
         {
-            // todo: implement transition rules
-            // todo: cover transition rules by unit tests
-
-            // mark previously published version as retired
-            if (status == ConfigurationItemVersionStatus.Live)
-            {
-                var liveVersionsQuery = Repository.GetAll().Where(v => v.Module == form.Module &&
-                    v.Name == form.Name &&
-                    v != form && 
-                    v.VersionStatus == ConfigurationItemVersionStatus.Live);
-                var liveVersions = await liveVersionsQuery.ToListAsync();
-
-                foreach (var version in liveVersions)
-                {
-                    version.VersionStatus = ConfigurationItemVersionStatus.Retired;
-                    await Repository.UpdateAsync(version);
-                }
-
-                await UnitOfWorkManager.Current.SaveChangesAsync();
-            }
-
-            form.VersionStatus = status;
-            await Repository.UpdateAsync(form);
-        }
-
-        public async Task<List<FormConfiguration>> GetAllAsync()
-        {
-            return await Repository.GetAllListAsync();
+            return Repository.GetAllListAsync();
         }
 
         /// inheritedDoc
@@ -154,6 +124,7 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         /// inheritedDoc
+        [Obsolete]
         public async Task<FormConfiguration> CreateAsync(CreateFormConfigurationDto input)
         {
             var module = input.ModuleId.HasValue
@@ -179,17 +150,17 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = new FormConfiguration();
             form.Name = input.Name;
             form.Module = module;
-            form.Description = input.Description;
-            form.Label = input.Label;
 
-            form.VersionNo = 1;
-            form.VersionStatus = ConfigurationItemVersionStatus.Draft;
             form.Origin = form;
 
-            form.Markup = input.Markup ?? "";
-            form.ModelType = input.ModelType;
-            form.IsTemplate = input.IsTemplate;
-            form.Template = template;
+            // TODO: V1 review
+            var revision = form.EnsureLatestRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            revision.Markup = input.Markup ?? "";
+            revision.ModelType = input.ModelType;
+            revision.IsTemplate = input.IsTemplate;
+            //revision.Template = template;
             form.Normalize();
 
             await Repository.InsertAsync(form);
@@ -234,17 +205,17 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = new FormConfiguration();
             form.Name = input.Name;
             form.Module = module;
-            form.Description = input.Description;
-            form.Label = input.Label;
 
-            form.VersionNo = 1;
-            form.VersionStatus = ConfigurationItemVersionStatus.Draft;
             form.Origin = form;
 
-            form.Markup = srcForm.Markup;
-            form.ModelType = srcForm.ModelType;
-            form.IsTemplate = srcForm.IsTemplate;
-            form.Template = srcForm.Template;
+            // TODO: V1 review
+            var revision = form.EnsureLatestRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            revision.Markup = srcForm.Revision.Markup;
+            revision.ModelType = srcForm.Revision.ModelType;
+            revision.IsTemplate = srcForm.Revision.IsTemplate;
+            //revision.Template = srcForm.Template;
             form.Normalize();
 
             await Repository.InsertAsync(form);
@@ -262,6 +233,88 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             var srcForm = await Repository.GetAsync(input.ItemId);
             return await CopyAsync(srcForm, input) as FormConfiguration;
+        }
+
+        public override async Task<FormConfiguration> ExposeAsync(FormConfiguration item, Module module)
+        {
+            var srcRevision = item.LatestRevision;
+
+            var exposedConfig = new FormConfiguration { 
+                Name = item.Name,
+                Module = module,
+                ExposedFrom = item,
+                ExposedFromRevision = srcRevision,
+                SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
+            };
+            var exposedRevision = exposedConfig.EnsureLatestRevision();
+
+            await MapRevisionAsync(srcRevision, exposedRevision);
+            exposedRevision.VersionNo = 1;
+            exposedRevision.VersionName = null;            
+
+            await Repository.InsertAsync(exposedConfig);
+            await _revisionRepo.InsertOrUpdateAsync(exposedRevision);
+
+            return exposedConfig;
+        }
+
+        
+        private async Task MapRevisionAsync(FormConfigurationRevision srcRevision, FormConfigurationRevision dstRevision) 
+        {
+            await MapRevisionBaseAsync(srcRevision, dstRevision);
+
+            dstRevision.Markup = srcRevision.Markup;
+            dstRevision.ModelType = srcRevision.ModelType;
+            dstRevision.IsTemplate = srcRevision.IsTemplate;
+        }
+
+        private Task MapRevisionBaseAsync(ConfigurationItemRevision srcRevision, ConfigurationItemRevision dstRevision) 
+        {
+            dstRevision.Label = srcRevision.Label;
+            dstRevision.Description = srcRevision.Description;
+            dstRevision.Comments = srcRevision.Comments;
+            dstRevision.ConfigHash = srcRevision.ConfigHash;
+
+            return Task.CompletedTask;
+        }
+
+        public override async Task<FormConfiguration> CreateItemAsync(CreateItemInput input)
+        {
+            var validationResults = new ValidationResults();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            /* TODO: V1 review. Implement templates processing, combine with new templating engine
+            var template = input.TemplateId.HasValue
+                ? await Repository.GetAsync(input.TemplateId.Value)
+                : null;
+            */
+
+            var form = new FormConfiguration {
+                Name = input.Name,
+                Module = input.Module,
+                Folder = input.Folder,
+                OrderIndex = input.OrderIndex,
+            };
+            form.Origin = form;
+
+            var revision = form.EnsureLatestRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            revision.Markup = string.Empty;
+            revision.IsTemplate = false;
+            form.Normalize();
+
+            await Repository.InsertAsync(form);
+
+            return form;
+        }
+
+        public override Task<FormConfiguration> DuplicateAsync(FormConfiguration item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

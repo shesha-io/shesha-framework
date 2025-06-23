@@ -5,18 +5,17 @@ using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
+using Abp.Threading;
 using Shesha.AutoMapper.Dto;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Cache;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Services.ReferenceLists.Exceptions;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,7 +135,7 @@ namespace Shesha.Services
         public List<ReferenceListItemDto> GetItems(Guid listId) 
         {
             var items = _itemsRepository.GetAll()
-                .Where(e => e.ReferenceList.Id == listId)
+                .Where(e => e.ReferenceListRevision.Id == listId)
                 .OrderBy(e => e.OrderIndex).ThenBy(e => e.Item)
                 .ToList();
 
@@ -147,7 +146,7 @@ namespace Shesha.Services
         public async Task<List<ReferenceListItemDto>> GetItemsAsync(Guid listId)
         {
             var items = await _itemsRepository.GetAll()
-                .Where(e => e.ReferenceList.Id == listId)
+                .Where(e => e.ReferenceListRevision.Id == listId)
                 .OrderBy(e => e.OrderIndex).ThenBy(e => e.Item)
                 .ToListAsync();
 
@@ -166,32 +165,6 @@ namespace Shesha.Services
 
             var query = _listRepository.GetAll().Where(f => (anyModule || f.Module != null && !f.Module.IsDeleted && f.Module.Name == refListId.Module) && f.Name == refListId.Name);
 
-            switch (mode)
-            {
-                case ConfigurationItemViewMode.Live:
-                    query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    break;
-                case ConfigurationItemViewMode.Ready:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready
-                        };
-
-                        query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
-                        break;
-                    }
-                case ConfigurationItemViewMode.Latest:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready,
-                            ConfigurationItemVersionStatus.Draft
-                        };
-                        query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
-                        break;
-                    }
-            }
             return query;
         }
 
@@ -252,20 +225,22 @@ namespace Shesha.Services
 
         public void HandleEvent(EntityChangedEventData<ReferenceListItem> eventData)
         {
-            var refList = eventData.Entity?.ReferenceList;
+            var refList = eventData.Entity?.ReferenceListRevision;
 
             if (refList != null)
                 ClearCacheForRefList(refList);
         }
 
-        private void ClearCacheForRefList(ReferenceList refList) 
+        private void ClearCacheForRefList(ReferenceListRevision refListRevision) 
         {
             // clear items cache by Id
-            _listItemsCache.Remove(refList.Id);
+            _listItemsCache.Remove(refListRevision.Id);
 
             // clear ids cache by module, nameapce and name
             var modes = Enum.GetValues(typeof(ConfigurationItemViewMode)).Cast<ConfigurationItemViewMode>().ToList();
-            var refListId = refList.GetReferenceListIdentifier();
+            var refListId = refListRevision.RefList.GetReferenceListIdentifier();
+            //var refListId = refListRevision.ConfigurationItem.GetId();
+            
             var keys = modes.Select(mode => GetListIdCacheKey(refListId, mode)).ToArray();
             _listIdsCache.Remove(keys);
 
@@ -279,9 +254,9 @@ namespace Shesha.Services
         /// <summary>
         /// Clear reference list cache
         /// </summary>
-        public async Task ClearCacheAsync()
+        public Task ClearCacheAsync()
         {
-            await _listItemsCache.ClearAsync();
+            return _listItemsCache.ClearAsync();
         }
 
         /// <summary>
@@ -323,8 +298,8 @@ namespace Shesha.Services
             {
                 var item = _itemsRepository.FirstOrDefault(itemId);
 
-                if (item?.ReferenceList != null)
-                    ClearCacheForRefList(item.ReferenceList);
+                if (item?.ReferenceListRevision != null)
+                    ClearCacheForRefList(item.ReferenceListRevision);
                 
                 uow.Complete();
             }

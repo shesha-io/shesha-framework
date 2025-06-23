@@ -24,7 +24,6 @@ namespace Shesha.DynamicEntities
     public class ModelConfigurationsAppService : SheshaAppServiceBase, IApplicationService
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModelConfigurationManager _modelConfigurationManager;
         private readonly ISwaggerProvider _swaggerProvider;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
@@ -32,13 +31,11 @@ namespace Shesha.DynamicEntities
 
         public ModelConfigurationsAppService(
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IRepository<EntityProperty, Guid> entityPropertyRepository,
             IModelConfigurationManager modelConfigurationProvider,
             ISwaggerProvider swaggerProvider,
             IEntityConfigurationStore entityConfigurationStore)
         {
             _entityConfigRepository = entityConfigRepository;
-            _entityPropertyRepository = entityPropertyRepository;
             _modelConfigurationManager = modelConfigurationProvider;
             _swaggerProvider = swaggerProvider;
             _entityConfigurationStore = entityConfigurationStore;
@@ -73,15 +70,15 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpPost, Route("")]
-        public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input)
+        public Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input)
         {
-            return await _modelConfigurationManager.CreateAsync(input);
+            return _modelConfigurationManager.CreateAsync(input);
         }
 
         [HttpPut, Route("")]
-        public async Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input)
+        public Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input)
         {
-            return await _modelConfigurationManager.UpdateAsync(input);
+            return _modelConfigurationManager.UpdateAsync(input);
         }
 
         [HttpPost, Route("merge")]
@@ -98,10 +95,10 @@ namespace Shesha.DynamicEntities
             {
                 await _modelConfigurationManager.MergeConfigurationsAsync(source, destination, input.DeleteAfterMerge,
                     // use deep update if merge from not implemented to implemented application entity
-                    source.Source == MetadataSourceType.ApplicationCode
-                    && destination.Source == MetadataSourceType.ApplicationCode
-                    && _entityConfigurationStore.GetOrNull(source.FullClassName) == null
-                    && _entityConfigurationStore.GetOrNull(destination.FullClassName) != null);
+                    source.Revision.Source == MetadataSourceType.ApplicationCode
+                    && destination.LatestRevision.Source == MetadataSourceType.ApplicationCode
+                    && _entityConfigurationStore.GetOrNull(source.LatestRevision.FullClassName) == null
+                    && _entityConfigurationStore.GetOrNull(destination.LatestRevision.FullClassName) != null);
 
                 await uow.CompleteAsync();
             }

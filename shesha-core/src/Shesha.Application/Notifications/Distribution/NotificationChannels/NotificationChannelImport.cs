@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Notifications.Distribution.NotificationChannels.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -28,7 +27,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
 
         public string ItemType => NotificationChannelConfig.ItemTypeName;
 
-        public async Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        public Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -36,25 +35,16 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             if (!(item is DistributedNotificationChannel itemConfig))
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(NotificationChannelConfig)}. Actual type is {item.GetType().FullName}");
 
-            return await ImportAsync(itemConfig, context);
+            return ImportAsync(itemConfig, context);
         }
 
-        protected async Task<ConfigurationItemBase> ImportAsync(DistributedNotificationChannel item, IConfigurationItemsImportContext context)
+        protected async Task<ConfigurationItem> ImportAsync(DistributedNotificationChannel item, IConfigurationItemsImportContext context)
         {
-            // use status specified in the context with fallback to imported value
-            var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
-
             // get DB config
-            var dbItem = await _configurationRepo.FirstOrDefaultAsync(x => x.Name == item.Name && x.Description == item.Description
-                                                                                && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
-                                                                                && x.IsLast);
+            var dbItem = await _configurationRepo.FirstOrDefaultAsync(x => x.Name == item.Name && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName));
 
             if (dbItem != null)
             {
-
-                // ToDo: Temporary update the current version.
-                // Need to update the rest of the other code to work with versioning first
-
                 await MapConfigAsync(item, dbItem, context);
                 await _configurationRepo.UpdateAsync(dbItem);
             }
@@ -63,13 +53,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
                 dbItem = new NotificationChannelConfig();
                 await MapConfigAsync(item, dbItem, context);
 
-                // fill audit?
-                dbItem.VersionNo = 1;
                 dbItem.Module = await GetModuleAsync(item.ModuleName, context);
-
-                // important: set status according to the context
-                dbItem.VersionStatus = statusToImport;
-                dbItem.CreatedByImport = context.ImportResult;
 
                 dbItem.Normalize();
                 await _configurationRepo.InsertAsync(dbItem);
@@ -85,19 +69,19 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
             dbItem.ItemType = item.ItemType;
 
-            dbItem.Label = item.Label;
-            dbItem.Description = item.Description;
-            dbItem.VersionNo = item.VersionNo;
-            dbItem.VersionStatus = item.VersionStatus;
+            var revision = dbItem.EnsureLatestRevision();
+
+            revision.Label = item.Label;
+            revision.Description = item.Description;
             dbItem.Suppress = item.Suppress;
 
             // entity specific properties
-            dbItem.SupportedFormat = item.SupportedFormat;
-            dbItem.MaxMessageSize = item.MaxMessageSize;
-            dbItem.SupportedMechanism = item.SupportedMechanism;
-            dbItem.SenderTypeName = item.SenderTypeName;
-            dbItem.DefaultPriority = item.DefaultPriority;
-            dbItem.Status = item.Status;
+            revision.SupportedFormat = item.SupportedFormat;
+            revision.MaxMessageSize = item.MaxMessageSize;
+            revision.SupportedMechanism = item.SupportedMechanism;
+            revision.SenderTypeName = item.SenderTypeName;
+            revision.DefaultPriority = item.DefaultPriority;
+            revision.Status = item.Status;
 
             return dbItem;
         }

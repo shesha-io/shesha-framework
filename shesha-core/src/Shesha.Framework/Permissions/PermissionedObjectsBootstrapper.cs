@@ -4,7 +4,6 @@ using Abp.ObjectMapping;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
@@ -38,7 +37,7 @@ namespace Shesha.Permission
             _iocResolver = iocResolver;
         }
 
-        public async Task ProcessAsync()
+        public async Task ProcessAsync(bool force)
         {
             var providers = _iocResolver.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)
@@ -77,7 +76,7 @@ namespace Shesha.Permission
                         if (item == null) continue;
 
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
-                        dbItem.Parent = item.Parent;
+                        dbItem.Parent = item.Parent ?? string.Empty;
                         dbItem.Name = item.Name;
                         if (dbItem.Hardcoded.HasValue && (item.Hardcoded == true || item.Hardcoded != dbItem.Hardcoded))
                         {

@@ -66,7 +66,7 @@ namespace Shesha.Extensions
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>The minimum value in the sequence or default value if sequence is empty.</returns>
-        public static TResult MinOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult defaultValue)
+        public static TResult? MinOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult? defaultValue)
         {
             return source.Any()
                 ? source.Min(selector) ?? defaultValue
@@ -129,6 +129,14 @@ namespace Shesha.Extensions
         /// Returns a sequence with the `null` instances removed.
         /// </summary>
         public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source) where T : class
+        {
+            return source.Where(x => x != null).OfType<T>();
+        }
+
+        /// <summary>
+        /// Returns a sequence with the `null` instances removed.
+        /// </summary>
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source) where T : struct
         {
             return source.Where(x => x != null).OfType<T>();
         }

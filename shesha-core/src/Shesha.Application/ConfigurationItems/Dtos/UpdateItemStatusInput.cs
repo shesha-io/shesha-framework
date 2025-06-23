@@ -1,4 +1,4 @@
-﻿using Shesha.Domain.ConfigurationItems;
+﻿using Shesha.Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.ConfigurationItems.Dtos

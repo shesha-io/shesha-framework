@@ -1,10 +1,8 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Reflection;
@@ -23,11 +21,7 @@ namespace Shesha.Services.ReferenceLists
     {
         private readonly IRepository<ReferenceListItem, Guid> _listItemsRepository;
 
-        public ReferenceListManager(IRepository<ReferenceList, Guid> repository, 
-            IRepository<ConfigurationItem, Guid> configurationItemRepository, 
-            IRepository<Module, Guid> moduleRepository, 
-            IUnitOfWorkManager unitOfWorkManager, 
-            IRepository<ReferenceListItem, Guid> listItemsRepository) : base(repository, moduleRepository, unitOfWorkManager)
+        public ReferenceListManager(IRepository<ReferenceListItem, Guid> listItemsRepository) : base()
         {
             _listItemsRepository = listItemsRepository;
         }
@@ -51,13 +45,13 @@ namespace Shesha.Services.ReferenceLists
             validationResults.ThrowValidationExceptionIfAny(L);
 
             var refList = new ReferenceList();
+            var revision = refList.EnsureLatestRevision();
+
             refList.Name = input.Name;
             refList.Module = module;
-            refList.Description = input.Description;
-            refList.Label = input.Label;
+            revision.Description = input.Description;
+            revision.Label = input.Label;
 
-            refList.VersionNo = 1;
-            refList.VersionStatus = ConfigurationItemVersionStatus.Draft;
             refList.Origin = refList;
 
             refList.Normalize();
@@ -71,8 +65,10 @@ namespace Shesha.Services.ReferenceLists
         {
             await UpdateNameAndModuleAsync(refList, input.ModuleId, input.Name);
 
-            refList.Label = input.Label;
-            refList.Description = input.Description;
+            var revision = refList.EnsureLatestRevision();
+
+            revision.Label = input.Label;
+            revision.Description = input.Description;
 
             await Repository.UpdateAsync(refList);
         }
@@ -92,9 +88,9 @@ namespace Shesha.Services.ReferenceLists
             if (string.IsNullOrWhiteSpace(name))
                 validationResults.Add(new ValidationResult("Name field is required"));
             else {
-                if (refList.Name != name && refList.HardLinkToApplication)
+                if (refList.Name != name && refList.LatestRevision != null && refList.LatestRevision.HardLinkToApplication)
                     validationResults.Add(new ValidationResult("Name can't be changed for the Reference List that is hard linked to the application code"));
-                if (refList.Module?.Id != moduleId && refList.HardLinkToApplication)
+                if (refList.Module?.Id != moduleId && refList.LatestRevision != null && refList.LatestRevision.HardLinkToApplication)
                     validationResults.Add(new ValidationResult("Module can't be changed for the Reference List that is hard linked to the application code"));
 
                 var alreadyExists = await Repository.GetAll().Where(v => v.Name == name && v.Module == newModule).AnyAsync();
@@ -159,14 +155,14 @@ namespace Shesha.Services.ReferenceLists
             var listCopy = new ReferenceList();
             listCopy.Name = input.Name;
             listCopy.Module = module;
-            listCopy.Description = input.Description;
-            listCopy.Label = input.Label;
 
-            listCopy.VersionNo = 1;
-            listCopy.VersionStatus = ConfigurationItemVersionStatus.Draft;
             listCopy.Origin = listCopy;
 
-            listCopy.NoSelectionValue = srcList.NoSelectionValue;
+            var revision = listCopy.EnsureLatestRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            revision.NoSelectionValue = srcList.Revision?.NoSelectionValue;
+
             listCopy.Normalize();
 
             await Repository.InsertAsync(listCopy);
@@ -178,18 +174,19 @@ namespace Shesha.Services.ReferenceLists
 
         private async Task CopyItemsAsync(ReferenceList source, ReferenceList destination) 
         {
-            var srcItems = await _listItemsRepository.GetAll().Where(i => i.ReferenceList == source).ToListAsync();
+            var srcItems = await _listItemsRepository.GetAll().Where(i => i.ReferenceListRevision == source.Revision).ToListAsync();
 
             await CopyItemsAsync(srcItems, null, null, destination);
         }
 
         private async Task CopyItemsAsync(List<ReferenceListItem> sourceItems, ReferenceListItem? sourceParent, ReferenceListItem? destinationParent, ReferenceList destination)
         {
+            var dstRevision = destination.EnsureLatestRevision();
             var levelItems = sourceItems.Where(i => i.Parent == sourceParent).ToList();
             foreach (var srcItem in levelItems) 
             {
                 var dstItem = CloneListItem(srcItem);
-                dstItem.ReferenceList = destination;
+                dstItem.ReferenceListRevision = dstRevision;
                 dstItem.Parent = destinationParent;
 
                 await _listItemsRepository.InsertAsync(dstItem);
@@ -206,7 +203,7 @@ namespace Shesha.Services.ReferenceLists
                 Description = source.Description,
                 OrderIndex = source.OrderIndex,
                 //HardLinkToApplication = source.HardLinkToApplication,
-                ReferenceList = source.ReferenceList,
+                ReferenceListRevision = source.ReferenceListRevision,
                 Parent = source.Parent,
                 Color = source.Color,
                 Icon = source.Icon,
@@ -217,16 +214,14 @@ namespace Shesha.Services.ReferenceLists
         public async Task<ReferenceList> CreateNewVersionWithoutItemsAsync(ReferenceList srcList) 
         {
             var newVersion = new ReferenceList();
+            var revision = newVersion.EnsureLatestRevision();
+
             newVersion.Origin = srcList.Origin;
             newVersion.Name = srcList.Name;
             newVersion.Module = srcList.Module;
-            newVersion.Description = srcList.Description;
-            newVersion.Label = srcList.Label;
-            newVersion.TenantId = srcList.TenantId;
 
-            newVersion.ParentVersion = srcList; // set parent version
-            newVersion.VersionNo = srcList.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
+            revision.Description = srcList.Revision.Description;
+            revision.Label = srcList.Revision.Label;
 
             newVersion.Normalize();
 
@@ -242,6 +237,44 @@ namespace Shesha.Services.ReferenceLists
             await CopyItemsAsync(srcList, newVersion);
 
             return newVersion;
+        }
+
+        public override Task<ReferenceList> ExposeAsync(ReferenceList item, Module module)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task<ReferenceList> CreateItemAsync(CreateItemInput input)
+        {
+            var validationResults = new ValidationResults();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add($"Reference List with name `{input.Name}` already exists in module `{input.Module.Name}`");
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            var refList = new ReferenceList
+            {
+                Name = input.Name,
+                Module = input.Module,
+                Folder = input.Folder,
+                OrderIndex = input.OrderIndex,
+            };
+            refList.Origin = refList;
+
+            var revision = refList.EnsureLatestRevision();
+
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            refList.Normalize();
+
+            await Repository.InsertAsync(refList);
+
+            return refList;
+        }
+
+        public override Task<ReferenceList> DuplicateAsync(ReferenceList item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

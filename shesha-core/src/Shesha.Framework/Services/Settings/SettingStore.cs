@@ -1,13 +1,11 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Services.Settings.Cache;
@@ -29,6 +27,7 @@ namespace Shesha.Services.Settings
         IAsyncEventHandler<EntityChangedEventData<SettingDefinition>>,
         IAsyncEventHandler<EntityChangingEventData<SettingValue>>
     {
+        private readonly IRepository<SettingConfigurationRevision, Guid> _revisionRepository;
         private readonly IRepository<SettingValue, Guid> _settingValueRepository;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly ISettingCacheHolder _cacheHolder;
@@ -38,14 +37,12 @@ namespace Shesha.Services.Settings
         /// Default constructor
         /// </summary>
         public SettingStore(
-            IRepository<SettingConfiguration, Guid> repository, 
-            IRepository<ConfigurationItem, Guid> configurationItemRepository, 
-            IRepository<Module, Guid> moduleRepository, 
-            IUnitOfWorkManager unitOfWorkManager,
+            IRepository<SettingConfigurationRevision, Guid> revisionRepository,
             IRepository<SettingValue, Guid> settingValueRepository,
             IConfigurationFrameworkRuntime cfRuntime,
-            ISettingCacheHolder cacheHolder) : base(repository, moduleRepository, unitOfWorkManager)
+            ISettingCacheHolder cacheHolder) : base()
         {
+            _revisionRepository = revisionRepository;
             _settingValueRepository = settingValueRepository;
             _cfRuntime = cfRuntime;
             _cacheHolder = cacheHolder;
@@ -79,25 +76,25 @@ namespace Shesha.Services.Settings
             var definition = new SettingConfiguration();
             definition.Name = input.Name;
             definition.Module = module;
-            definition.Description = input.Description;
-            definition.Label = input.Label;
 
-            definition.VersionNo = 1;
-            definition.VersionStatus = ConfigurationItemVersionStatus.Live;
             definition.Origin = definition;
 
-            definition.DataType = input.DataType;
-            definition.EditorFormName = input.EditorFormName;
-            definition.EditorFormModule = input.EditorFormModule;
-            definition.OrderIndex = input.OrderIndex;
-            definition.IsClientSpecific = input.IsClientSpecific;
-            definition.AccessMode = input.AccessMode;
-            definition.Category = input.Category;
-            definition.IsUserSpecific = input.IsUserSpecific;
-            definition.ClientAccess = input.ClientAccess;
+            var revision = definition.EnsureLatestRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            revision.DataType = input.DataType;
+            revision.EditorFormName = input.EditorFormName;
+            revision.EditorFormModule = input.EditorFormModule;
+            revision.OrderIndex = input.OrderIndex;
+            revision.IsClientSpecific = input.IsClientSpecific;
+            revision.AccessMode = input.AccessMode;
+            revision.Category = input.Category;
+            revision.IsUserSpecific = input.IsUserSpecific;
+            revision.ClientAccess = input.ClientAccess;
             
             definition.Normalize();
 
+            await _revisionRepository.InsertOrUpdateAsync(revision);
             await Repository.InsertAsync(definition);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -113,14 +110,11 @@ namespace Shesha.Services.Settings
             newVersion.Name = item.Name;
             newVersion.Module = item.Module;
             newVersion.Application = item.Application;
+
+            /*
+             * TODO: V1 review
             newVersion.Description = item.Description;
             newVersion.Label = item.Label;
-            newVersion.TenantId = item.TenantId;
-
-            newVersion.ParentVersion = item; // set parent version
-            newVersion.VersionNo = item.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
-
             newVersion.DataType = item.DataType;
             newVersion.EditorFormName = item.EditorFormName;
             newVersion.EditorFormModule = item.EditorFormModule;
@@ -131,6 +125,7 @@ namespace Shesha.Services.Settings
             newVersion.IsUserSpecific = item.IsUserSpecific;
             newVersion.ClientAccess = item.ClientAccess;
             newVersion.Normalize();
+            */
 
             await Repository.InsertAsync(newVersion);
 
@@ -142,7 +137,6 @@ namespace Shesha.Services.Settings
         {
             return Repository.GetAll()
                 .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
-                .Where(s => s.IsLast && s.VersionStatus == ConfigurationItemVersionStatus.Live)
                 .FirstOrDefaultAsync();
         }
 
@@ -154,10 +148,13 @@ namespace Shesha.Services.Settings
         }
 
         /// inheritedDoc
-        public Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
+        public Task<SettingValue?> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             return WithUnitOfWorkAsync(async () => {
                 var settingConfiguration = await GetSettingConfigurationAsync(setting);
+                if (settingConfiguration == null)
+                    return null;
+
                 var query = _settingValueRepository.GetAll()
                     .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
 
@@ -239,6 +236,22 @@ namespace Shesha.Services.Settings
             var cacheKey = GetCacheKey(new CacheKeyArgs(eventData.Entity));
             await _cacheHolder.Cache.RemoveAsync(cacheKey);
         }
+
+        public override Task<SettingConfiguration> ExposeAsync(SettingConfiguration item, Module module)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<SettingConfiguration> CreateItemAsync(CreateItemInput input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<SettingConfiguration> DuplicateAsync(SettingConfiguration item)
+        {
+            throw new NotImplementedException();
+        }
+
         private class CacheKeyArgs
         {
             public string? Module { get; private set; }
@@ -263,8 +276,10 @@ namespace Shesha.Services.Settings
 
                 Module = config.Module?.Name;
                 Name = config.Name;
-                IsClientSpecific = config.IsClientSpecific;
-                IsUserSpecific = config.IsUserSpecific;
+                
+                var revision = config.Revision;
+                IsClientSpecific = revision?.IsClientSpecific ?? false;
+                IsUserSpecific = revision?.IsUserSpecific ?? false;
                 AppKey = settingValue.Application?.AppKey;
                 UserId = settingValue.User?.Id;
             }

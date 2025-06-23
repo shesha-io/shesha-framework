@@ -8,7 +8,6 @@ using Abp.ObjectMapping;
 using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using System;
@@ -20,8 +19,8 @@ namespace Shesha.DynamicEntities.Cache
 {
     public class EntityConfigCache : IEntityConfigCache, ITransientDependency,
         IEventHandler<EntityChangedEventData<EntityProperty>>,
-        IEventHandler<EntityChangedEventData<EntityConfig>>,
-        IEventHandler<EntityChangingEventData<ConfigurationItem>>
+        IEventHandler<EntityChangedEventData<EntityConfigRevision>>,
+        IEventHandler<EntityChangingEventData<EntityConfigRevision>>
     {
         private readonly IRepository<EntityProperty, Guid> _propertyRepository;
         private readonly IRepository<EntityConfig, Guid> _configReprository;
@@ -52,9 +51,10 @@ namespace Shesha.DynamicEntities.Cache
             return GetCacheKey(entityType.Namespace, entityType.Name);
         }
 
-        private string GetCacheKey(EntityConfig entityConfig)
+        private string GetCacheKey(EntityConfigRevision entityConfigRevision)
         {
-            return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
+            // TODO: V1 review take versions into account
+            return GetCacheKey(entityConfigRevision.Namespace, entityConfigRevision.ClassName);
         }
 
         private string GetCacheKey(string? @namespace, string name)
@@ -62,16 +62,24 @@ namespace Shesha.DynamicEntities.Cache
             return $"{@namespace}.{name}";
         }
 
-        private async Task<EntityConfigCacheItem> FetchConfigAsync(Type entityType)
+        private async Task<EntityConfigCacheItem?> FetchConfigAsync(Type entityType)
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
+                var conf = await _configReprository.GetAll().Where(x => x.LatestRevision.ClassName == entityType.Name && x.LatestRevision.Namespace == entityType.Namespace).FirstOrDefaultAsync();
+                if (conf == null)
+                {
+                    await uow.CompleteAsync();
+                    return null;
+                }
+
+                var revision = conf.LatestRevision;
+
                 var properties = await _propertyRepository.GetAll()
-                    .Where(p => p.EntityConfig.ClassName == entityType.Name && p.EntityConfig.Namespace == entityType.Namespace && p.ParentProperty == null)
+                    .Where(p => p.EntityConfigRevision == revision && p.ParentProperty == null)
                     .ToListAsync();
                 var propertyDtos = properties.Select(p => _mapper.Map<EntityPropertyDto>(p)).ToList();
-
-                var conf = await _configReprository.GetAll().Where(x => x.ClassName == entityType.Name && x.Namespace == entityType.Namespace).FirstOrDefaultAsync();
+                
                 var confDto = _mapper.Map<EntityConfigDto>(conf);
 
                 await uow.CompleteAsync();
@@ -136,22 +144,18 @@ namespace Shesha.DynamicEntities.Cache
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            if (eventData.Entity?.EntityConfig == null)
+            if (eventData.Entity?.EntityConfigRevision == null)
                 return;
 
-            _propertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
+            _propertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfigRevision));
         }
 
-        public void HandleEvent(EntityChangingEventData<ConfigurationItem> eventData)
+        public void HandleEvent(EntityChangingEventData<EntityConfigRevision> eventData)
         {
-            var conf = _configReprository.GetAll().FirstOrDefault(x => x.Id == eventData.Entity.Id);
-            if (conf != null)
-            {
-                _propertyCache.Remove(GetCacheKey(conf));
-            };
+            _propertyCache.Remove(GetCacheKey(eventData.Entity));
         }
 
-        public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
+        public void HandleEvent(EntityChangedEventData<EntityConfigRevision> eventData)
         {
             _propertyCache.Remove(GetCacheKey(eventData.Entity));
         }

@@ -15,7 +15,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
-using Module = Shesha.Domain.ConfigurationItems.Module;
+using Module = Shesha.Domain.Module;
 
 namespace Shesha.Settings
 {
@@ -83,7 +83,7 @@ namespace Shesha.Settings
                 await EnsureConfigurationAsync(setting);
 
                 var value = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
-                return value != null
+                return value != null && value.Value != null
                     ? Deserialize(value.Value, setting.GetValueType())
                     : setting.GetDefaultValue();
             }

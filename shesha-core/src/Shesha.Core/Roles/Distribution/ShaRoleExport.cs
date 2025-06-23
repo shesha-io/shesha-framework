@@ -15,16 +15,11 @@ namespace Shesha.DynamicEntities.Distribution
     public class ShaRoleExport : IShaRoleExport, ITransientDependency
     {
         private readonly IRepository<ShaRole, Guid> _roleRepo;
-        private readonly IRepository<ShaRolePermission, Guid> _rolePermissionRepo;
 
         public string ItemType => ShaRole.ItemTypeName;
 
-        public ShaRoleExport(
-            IRepository<ShaRole, Guid> roleRepo,
-            IRepository<ShaRolePermission, Guid> rolePermissionRepo
-        )
+        public ShaRoleExport(IRepository<ShaRole, Guid> roleRepo)
         {
-            _rolePermissionRepo = rolePermissionRepo;
             _roleRepo = roleRepo;
         }
 
@@ -36,10 +31,12 @@ namespace Shesha.DynamicEntities.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item)
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item)
         {
             if (!(item is ShaRole itemConfig))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(ShaRole)}, actual: {item.GetType().FullName}");
+
+            var revision = itemConfig.Revision;
 
             var result = new DistributedShaRole
             {
@@ -49,31 +46,21 @@ namespace Shesha.DynamicEntities.Distribution
                 FrontEndApplication = itemConfig.Application?.AppKey,
                 ItemType = itemConfig.ItemType,
 
-                Label = itemConfig.Label,
-                Description = itemConfig.Description,
+                
                 OriginId = itemConfig.Origin?.Id,
-                BaseItem = itemConfig.BaseItem?.Id,
-                VersionNo = itemConfig.VersionNo,
-                VersionStatus = itemConfig.VersionStatus,
-                ParentVersionId = itemConfig.ParentVersion?.Id,
                 Suppress = itemConfig.Suppress,
 
+                Label = revision.Label,
+                Description = revision.Description,
+
                 // specific properties
-                NameSpace = itemConfig.NameSpace,
-                SortIndex = itemConfig.SortIndex,
-                IsRegionSpecific = itemConfig.IsRegionSpecific,
-                IsProcessConfigurationSpecific = itemConfig.IsProcessConfigurationSpecific,
-                HardLinkToApplication = itemConfig.HardLinkToApplication,
-                CanAssignToMultiple = itemConfig.CanAssignToMultiple,
-                CanAssignToPerson = itemConfig.CanAssignToPerson,
-                CanAssignToRole = itemConfig.CanAssignToRole,
-                CanAssignToOrganisationRoleLevel = itemConfig.CanAssignToOrganisationRoleLevel,
-                CanAssignToUnit = itemConfig.CanAssignToUnit,
+                NameSpace = revision.NameSpace,
+                HardLinkToApplication = revision.HardLinkToApplication,
 
                 Permissions = new List<DistributedShaRolePermission>(),
             };
 
-            foreach (var perm in itemConfig.Permissions)
+            foreach (var perm in revision.Permissions)
             {
                 result.Permissions.Add(new DistributedShaRolePermission()
                 {

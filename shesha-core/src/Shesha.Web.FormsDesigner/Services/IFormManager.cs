@@ -1,7 +1,6 @@
 ﻿using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;
@@ -20,14 +19,6 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <param name="form">Form configuration</param>
         /// <returns></returns>
         Task<FormConfiguration> CreateNewVersionAsync(FormConfiguration form);
-
-        /// <summary>
-        /// Update version status
-        /// </summary>
-        /// <param name="form">Form</param>
-        /// <param name="status">New status</param>
-        /// <returns></returns>
-        Task UpdateStatusAsync(FormConfiguration form, ConfigurationItemVersionStatus status);
 
         /// <summary>
         /// Delete all versions of form with specified <paramref name="id"/>

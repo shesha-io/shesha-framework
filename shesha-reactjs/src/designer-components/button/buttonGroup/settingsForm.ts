@@ -517,7 +517,7 @@ export const getSettings = (data: IButtonGroupComponentProps) => {
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd8',
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',

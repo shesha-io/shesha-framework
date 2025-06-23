@@ -53,9 +53,9 @@ namespace Shesha.DynamicEntities
         }
 
         /// inheritedDoc
-        public async Task<Type> BuildDtoProxyTypeAsync(DynamicDtoTypeBuildingContext context)
+        public Task<Type> BuildDtoProxyTypeAsync(DynamicDtoTypeBuildingContext context)
         {
-            return await CompileResultTypeAsync(context);
+            return CompileResultTypeAsync(context);
         }
 
         public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
@@ -73,7 +73,7 @@ namespace Shesha.DynamicEntities
 
             var hardCodedDtoProperties = type.GetProperties().Select(p => p.Name.ToLower()).ToList();
 
-            var configuredProperties = (await GetEntityPropertiesAsync(entityType)).Where(p => !p.Suppress);
+            var configuredProperties = (await GetEntityPropertiesAsync(entityType)).Where(p => !p.Suppress).ToList();
             foreach (var property in configuredProperties)
             {
                 // skip property if already included into the DTO (hardcoded)
@@ -419,11 +419,11 @@ namespace Shesha.DynamicEntities
             if (eventData.Entity == null)
                 return;
 
-            var entityConfig = eventData.Entity?.EntityConfig;
-            if (entityConfig != null)
+            var revision = eventData.Entity.EntityConfigRevision;
+            if (revision != null)
             {
-                var cacheKey = $"{entityConfig.Namespace}.{entityConfig.ClassName}";
-
+                // TODO: V1 review take versions into account
+                var cacheKey = $"{revision.Namespace}.{revision.ClassName}";
                 _fullProxyCache.Remove(cacheKey);
             }
 

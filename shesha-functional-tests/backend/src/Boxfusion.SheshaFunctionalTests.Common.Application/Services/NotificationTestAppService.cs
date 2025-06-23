@@ -46,7 +46,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = recipientPerson?.FullName ?? "Unknown Recipient",
                 Subject = type.Name,
-                Body = type.Description ?? string.Empty
+                Body = type.Revision?.Description ?? string.Empty
             };
 
             // Get attachments only if recipient is provided

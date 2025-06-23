@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Uow;
+using Abp.Threading;
 using Shesha.Application.Services;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
@@ -40,7 +41,9 @@ namespace Shesha.Swagger
                         var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
                         var entityType = genericInterface.GenericTypeArguments.First();
                         var model = AsyncHelper.RunSync(() => entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
-                        model.NotNull();
+                        if (model == null)
+                            continue;
+
                         var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
                         var crudAttribute = entityType.GetAttributeOrNull<CrudAccessAttribute>();
                         var permission = pmo.Get($"{entityType.FullName}", ShaPermissionedObjectsTypes.Entity);

@@ -4,9 +4,9 @@ using Abp.Domain.Services;
 using Abp.Reflection;
 using Abp.Runtime.Caching;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
@@ -35,8 +35,10 @@ namespace Shesha.DynamicEntities
         private readonly ITypeFinder _typeFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IMappingMetadataProvider _mappingMetadataProvider;
-        private readonly IRepository<Domain.ConfigurationItems.Module, Guid> _moduleRepository;
+        private readonly IRepository<Domain.Module, Guid> _moduleRepository;
         private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
+        private readonly IModelConfigsCacheHolder _modelConfigsCacheHolder;
+        
 
         public ModelConfigurationManager(
             IRepository<EntityConfig, Guid> entityConfigRepository,
@@ -46,7 +48,7 @@ namespace Shesha.DynamicEntities
             IHardcodeMetadataProvider metadataProvider,
             IRepository<ConfigurationItem, Guid> configurationItemRepository,
             IMappingMetadataProvider mappingMetadataProvider,
-            IRepository<Domain.ConfigurationItems.Module, Guid> moduleRepository,
+            IRepository<Domain.Module, Guid> moduleRepository,
             IModelConfigsCacheHolder modelConfigsCacheHolder
             )
         {
@@ -58,14 +60,16 @@ namespace Shesha.DynamicEntities
             _configurationItemRepository = configurationItemRepository;
             _mappingMetadataProvider = mappingMetadataProvider;
             _moduleRepository = moduleRepository;
+            _modelConfigsCacheHolder = modelConfigsCacheHolder;
             _modelConfigsCache = modelConfigsCacheHolder.Cache;
         }
 
         public async Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate)
         {
             // Copy main data
-            destination.Label = source.Label;
-            destination.GenerateAppService = source.GenerateAppService;
+            var revision = destination.EnsureLatestRevision();
+            revision.Label = source.Revision.Label;
+            revision.GenerateAppService = source.Revision.GenerateAppService;
 
             // Copy View configs
             CopyViewConfigs(source, destination);
@@ -82,45 +86,41 @@ namespace Shesha.DynamicEntities
 
             if (deleteAfterMerge)
             {
-                await _entityPropertyRepository.DeleteAsync(x => x.EntityConfig.Id == source.Id);
+                // TODO: V1 review should we delete entire configuration of only revision? or maybe close the revision
+                await _entityPropertyRepository.DeleteAsync(x => x.EntityConfigRevision.ConfigurationItem.Id == source.Id);
                 await _configurationItemRepository.DeleteAsync(source.Id);
             }
 
-            await _modelConfigsCache.RemoveAsync($"{destination.Namespace}|{destination.ClassName}");
+            var key = _modelConfigsCacheHolder.GetCacheKey(destination.LatestRevision.Namespace, destination.LatestRevision.ClassName);
+            await _modelConfigsCache.RemoveAsync(key);
         }
 
         private void CopyViewConfigs(EntityConfig source, EntityConfig destination)
         {
-            // update only empty ViewConfigurations
-            if (source.ViewConfigurations != null)
-            {
-                if (destination.ViewConfigurations == null)
-                    destination.ViewConfigurations = new List<EntityViewConfigurationDto>();
+            var srcViewConfigs = source.Revision?.ViewConfigurations;
 
-                foreach (var configuration in source.ViewConfigurations)
+            // update only empty ViewConfigurations
+            if (srcViewConfigs != null)
+            {
+                var revision = destination.EnsureLatestRevision();
+                var dstViewConfigs = revision.ViewConfigurations ??= new List<EntityViewConfigurationDto>();
+
+                foreach (var configuration in srcViewConfigs)
                 {
-                    var vconfig = destination.ViewConfigurations.FirstOrDefault(x => x.Type == configuration.Type);
+                    var vconfig = dstViewConfigs.FirstOrDefault(x => x.Type == configuration.Type);
                     if (vconfig == null)
                     {
-                        destination.ViewConfigurations.Add(
+                        dstViewConfigs.Add(
                             new EntityViewConfigurationDto()
                             {
                                 Type = configuration.Type,
-                                FormId = new FormIdFullNameDto()
-                                {
-                                    Name = configuration.FormId?.Name,
-                                    Module = configuration.FormId?.Module
-                                },
+                                FormId = configuration.FormId,
                                 IsStandard = configuration.IsStandard,
                             });
                     }
-                    else if (vconfig.FormId.IsEmpty())
+                    else if (vconfig.FormId == null)
                     {
-                        vconfig.FormId = new FormIdFullNameDto()
-                        {
-                            Name = configuration.FormId?.Name,
-                            Module = configuration.FormId?.Module
-                        };
+                        vconfig.FormId = configuration.FormId;
                     }
                 }
             }
@@ -128,6 +128,8 @@ namespace Shesha.DynamicEntities
 
         private async Task CopyPropertiesAsync(EntityConfig destination, List<EntityProperty>? destPs, List<EntityProperty> sourcePs, EntityProperty? parent)
         {
+            var dstRevision = destination.EnsureLatestRevision();
+
             foreach (var prop in sourcePs)
             {
                 var destProp = destPs?.FirstOrDefault(x => x.Name == prop.Name);
@@ -135,8 +137,9 @@ namespace Shesha.DynamicEntities
                 {
                     destProp = new EntityProperty()
                     {
+                        EntityConfigRevision = dstRevision,
+
                         Name = prop.Name,
-                        EntityConfig = destination,
                         DataType = prop.DataType,
                         DataFormat = prop.DataFormat,
                         EntityType = prop.EntityType,
@@ -144,7 +147,9 @@ namespace Shesha.DynamicEntities
                         ItemsType = prop.ItemsType,
                         ReferenceListName = prop.ReferenceListName,
                         ReferenceListModule = prop.ReferenceListModule,
-                        Source = destination.Source == MetadataSourceType.ApplicationCode ? prop.Source : MetadataSourceType.UserDefined,
+                        Source = dstRevision.Source == MetadataSourceType.ApplicationCode 
+                            ? prop.Source 
+                            : MetadataSourceType.UserDefined,
                         Suppress = prop.Suppress,
                         ParentProperty = parent
                     };
@@ -176,8 +181,11 @@ namespace Shesha.DynamicEntities
 
         private async Task CopyPropertiesAsync(EntityConfig source, EntityConfig destination)
         {
-            var destProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == destination.Id).ToListAsync();
-            var sourceProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == source.Id).ToListAsync();
+            var srcRevision = source.LatestRevision;
+            var dstRevision = destination.EnsureLatestRevision();
+            
+            var destProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfigRevision.Id == dstRevision.Id).ToListAsync();
+            var sourceProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfigRevision.Id == srcRevision.Id).ToListAsync();
 
             await CopyPropertiesAsync(destination, destProps, sourceProps, null);
         }
@@ -186,8 +194,8 @@ namespace Shesha.DynamicEntities
         {
             var copyPermission = async (string method, string type) =>
             {
-                var sourcePermission = await _permissionedObjectManager.GetOrDefaultAsync($"{source.FullClassName}{method}", type);
-                var destinationPermission = await _permissionedObjectManager.GetOrDefaultAsync($"{destination.FullClassName}{method}", type);
+                var sourcePermission = await _permissionedObjectManager.GetOrDefaultAsync($"{source.Revision.FullClassName}{method}", type);
+                var destinationPermission = await _permissionedObjectManager.GetOrDefaultAsync($"{destination.Revision.FullClassName}{method}", type);
                 destinationPermission.Access = sourcePermission.Access;
                 destinationPermission.Type = type;
                 if (sourcePermission.Permissions != null) 
@@ -212,11 +220,14 @@ namespace Shesha.DynamicEntities
 
         private async Task DeepUpdateAsync(EntityConfig source, EntityConfig destination)
         {
+            var srcClassName = source.Revision.FullClassName;
+            var dstClassName = destination.Revision.FullClassName;
+
             // update Properties
-            var toUpdate = _entityPropertyRepository.GetAll().Where(x => x.EntityType == source.FullClassName);
+            var toUpdate = _entityPropertyRepository.GetAll().Where(x => x.EntityType == srcClassName);
             foreach (var entity in toUpdate)
             {
-                entity.EntityType = destination.FullClassName;
+                entity.EntityType = dstClassName;
                 await _entityPropertyRepository.UpdateAsync(entity);
             }
 
@@ -231,20 +242,20 @@ namespace Shesha.DynamicEntities
                 if (jsonProps.Any())
                     try
                     {
-                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
+                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, jsonProps, srcClassName, dstClassName, true);
                     }
                     catch { /* hide exception for entities without tables */ }
 
                 if (genericProps.Any())
                     try
                     {
-                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
+                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, genericProps, srcClassName, dstClassName, false);
                     }
                     catch { /* hide exception for entities without tables */ }
             }
         }
 
-        public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input)
+        public Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input)
         {
             var modelConfig = new EntityConfig();
 
@@ -253,7 +264,7 @@ namespace Shesha.DynamicEntities
 
             // todo: add validation
 
-            return await CreateOrUpdateAsync(modelConfig, input, true);
+            return CreateOrUpdateAsync(modelConfig, input, true);
         }
 
         public async Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input)
@@ -262,7 +273,7 @@ namespace Shesha.DynamicEntities
             if (modelConfig == null)
                 throw new ModelConfigurationNotFoundException(input.Namespace, input.Name);
 
-            if (modelConfig.Source == MetadataSourceType.UserDefined)
+            if (modelConfig.LatestRevision.Source == MetadataSourceType.UserDefined)
             {
                 input.Namespace = "Dynamic";
                 input.ClassName = input.Name;
@@ -271,14 +282,16 @@ namespace Shesha.DynamicEntities
             // todo: add validation
 
             var res = await CreateOrUpdateAsync(modelConfig, input, false);
-            await _modelConfigsCache.RemoveAsync($"{res.Namespace}|{res.ClassName}");
+            
+            var key = _modelConfigsCacheHolder.GetCacheKey(res.Namespace, res.ClassName);
+            await _modelConfigsCache.RemoveAsync(key);
 
             return res;
         }
 
         private async Task<ModelConfigurationDto> CreateOrUpdateAsync(EntityConfig modelConfig, ModelConfigurationDto input, bool create)
         {
-            var mapper = GetModelConfigMapper(modelConfig.Source ?? Domain.Enums.MetadataSourceType.UserDefined);
+            var mapper = GetModelConfigMapper(modelConfig.Revision.Source ?? MetadataSourceType.UserDefined);
             mapper.Map(input, modelConfig);
 
             var module = input.ModuleId.HasValue
@@ -286,10 +299,6 @@ namespace Shesha.DynamicEntities
                 : null;
 
             modelConfig.Module = module;
-
-            // ToDo: Temporary
-            modelConfig.VersionNo = 1;
-            modelConfig.VersionStatus = ConfigurationItemVersionStatus.Live;
 
             modelConfig.Normalize();
 
@@ -302,7 +311,8 @@ namespace Shesha.DynamicEntities
                 await _entityConfigRepository.UpdateAsync(modelConfig);
             }
 
-            var properties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfig == modelConfig).OrderBy(p => p.SortOrder).ToListAsync();
+            var revision = modelConfig.EnsureLatestRevision();
+            var properties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfigRevision == revision).OrderBy(p => p.SortOrder).ToListAsync();
 
             var mappers = new Dictionary<MetadataSourceType, IMapper> {
                 { MetadataSourceType.ApplicationCode, GetPropertyMapper(MetadataSourceType.ApplicationCode) },
@@ -414,8 +424,11 @@ namespace Shesha.DynamicEntities
 
                 if (sourceType == MetadataSourceType.ApplicationCode)
                 {
+                    // TODO: V1 review
+                    /*
                     mapExpression.ForMember(d => d.ClassName, o => o.Ignore());
                     mapExpression.ForMember(d => d.Namespace, o => o.Ignore());
+                    */
                     mapExpression.ForMember(e => e.Module, c => c.Ignore());
                 }
             });
@@ -448,7 +461,7 @@ namespace Shesha.DynamicEntities
                 if (dbProp == null)
                     dbProp = new EntityProperty
                     {
-                        EntityConfig = modelConfig,
+                        EntityConfigRevision = modelConfig.EnsureLatestRevision(),
                     };
                 dbProp.ParentProperty = parentProperty;
 
@@ -474,7 +487,7 @@ namespace Shesha.DynamicEntities
 
                 var mapExpression = cfg.CreateMap<ModelPropertyDto, EntityProperty>()
                     .ForMember(d => d.Id, o => o.Ignore())
-                    .ForMember(d => d.EntityConfig, o => o.Ignore())
+                    .ForMember(d => d.EntityConfigRevision, o => o.Ignore())
                     .ForMember(d => d.SortOrder, o => o.Ignore())
                     .ForMember(d => d.Properties, o => o.Ignore())
                     .ForMember(d => d.Source, o => o.Ignore());
@@ -492,15 +505,25 @@ namespace Shesha.DynamicEntities
 
         public async Task<ModelConfigurationDto> GetModelConfigurationAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null)
         {
+            try
+            {
+                var dto1 = ObjectMapper.Map<ModelConfigurationDto>(modelConfig);
+            }
+            catch
+            { 
+            }
+            
             var dto = ObjectMapper.Map<ModelConfigurationDto>(modelConfig);
 
+            var revision = modelConfig.Revision;
+
             var properties = await _entityPropertyRepository.GetAll()
-                .Where(p => p.EntityConfig == modelConfig && p.ParentProperty == null)
+                .Where(p => p.EntityConfigRevision == revision && p.ParentProperty == null)
                 .OrderBy(p => p.SortOrder).ToListAsync();
 
             dto.Properties = properties.Select(p => ObjectMapper.Map<ModelPropertyDto>(p)).OrderBy(x => x.SortOrder).ToList();
 
-            var containerType = _typeFinder.Find(x => x.Namespace == modelConfig.Namespace && x.Name == modelConfig.ClassName).FirstOrDefault();
+            var containerType = _typeFinder.Find(x => x.Namespace == revision.Namespace && x.Name == revision.ClassName).FirstOrDefault();
 
             if (containerType != null)
             {
@@ -549,17 +572,19 @@ namespace Shesha.DynamicEntities
                 }
             }
 
-            dto.HardcodedPropertiesMD5 = modelConfig.HardcodedPropertiesMD5;
+            dto.HardcodedPropertiesMD5 = modelConfig.Revision?.HardcodedPropertiesMD5;
             
             var changeDates = properties.Select(p => p.LastModificationTime ?? p.CreationTime).ToList();
             changeDates.Add(modelConfig.LastModificationTime ?? modelConfig.CreationTime);
             dto.ChangeTime = changeDates.Max();
 
-            dto.Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}", ShaPermissionedObjectsTypes.Entity);
-            dto.PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction);
-            dto.PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Create", ShaPermissionedObjectsTypes.EntityAction);
-            dto.PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Update", ShaPermissionedObjectsTypes.EntityAction);
-            dto.PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction);
+            var fullClassName = revision.FullClassName;
+
+            dto.Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}", ShaPermissionedObjectsTypes.Entity);
+            dto.PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Get", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Create", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Update", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction);
 
             dto.NormalizeViewConfigurations(modelConfig);
 
@@ -568,11 +593,12 @@ namespace Shesha.DynamicEntities
 
         public async Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null)
         {
-            var cacheKey = $"{@namespace}|{name}";
+            var cacheKey = _modelConfigsCacheHolder.GetCacheKey(@namespace, name);
+
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {
                 using (var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
                 {
-                    var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
+                    var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.LatestRevision.ClassName == name && m.LatestRevision.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
                     if (modelConfig == null)
                         return null;
 

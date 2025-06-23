@@ -29,7 +29,7 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// Log file path
         /// </summary>
-        [StringLength(500)]
+        [MaxLength(500)]
         public virtual string? LogFilePath { get; set; }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// Error message
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string? ErrorMessage { get; set; }
 
         /// <summary>

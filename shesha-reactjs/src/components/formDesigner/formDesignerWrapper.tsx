@@ -1,5 +1,4 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
   Form,
   FormInstance,
@@ -79,7 +78,10 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
               <FormDesignerProvider
                 flatMarkup={flatStructure}
                 formSettings={settings}
+                /*TODO: V1 review
                 readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
+                */
+                readOnly={false}
               >
                 <FormProviderWrapperInner form={form}>
                   {children}

@@ -46,7 +46,7 @@ namespace Shesha.Scheduler.Bootstrappers
             _startupSession = startupSession;
         }
 
-        public async Task ProcessAsync()
+        public async Task ProcessAsync(bool force)
         {
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {

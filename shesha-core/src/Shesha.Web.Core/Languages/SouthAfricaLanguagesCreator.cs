@@ -43,7 +43,7 @@ namespace Shesha.Languages
             };
         }
 
-        public async Task ProcessAsync()
+        public async Task ProcessAsync(bool force)
         {
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {

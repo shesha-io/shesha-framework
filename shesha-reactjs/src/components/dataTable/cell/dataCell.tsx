@@ -3,7 +3,7 @@ import DateCell from './default/dateCell';
 import DateTimeCell from './default/dateTimeCell';
 import EntityCell from './default/entityCell';
 import NumberCell from './default/numberCell';
-import React, { FC, useRef } from 'react';
+import React, { FC } from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components';
@@ -110,8 +110,6 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     return editorModel;
   }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
 
-  const componentRef = useRef();
-
   if (!component) {
     return <div>Component not found</div>;
   }
@@ -122,7 +120,6 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       <FormItemProvider namePrefix=''> 
         <component.Factory
           model={componentModel}
-          componentRef={componentRef}
           form={allData.form?.formInstance}
         />
       </FormItemProvider>

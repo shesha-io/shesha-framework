@@ -49,10 +49,8 @@ interface IOption<TData = ConfigurableItemFullName> {
     options?: IOption[];
 }
 
-const baseItemFilter =
-{
-    "==": [{ "var": "isLast" }, true]
-};
+const baseItemFilter = undefined;
+
 const getFilter = (term: string, staticFilter?: object): string => {
     const termFilter = term
         ? {
@@ -72,7 +70,7 @@ const getFilter = (term: string, staticFilter?: object): string => {
     return JSON.stringify(filter);
 };
 
-const ITEM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
+const ITEM_CONFIG_PROPERTIES = 'id name module { id name } revision { label description versionNo }';
 
 export const itemIdsEqual = (left: ConfigurableItemFullName, right: ConfigurableItemFullName): Boolean => {
     return !left && !right ||

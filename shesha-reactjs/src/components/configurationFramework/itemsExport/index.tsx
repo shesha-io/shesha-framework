@@ -96,8 +96,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     return {
       skipCount: 0,
       maxResultCount: -1,
-      entityType: 'Shesha.Domain.ConfigurationItems.ConfigurationItem',
-      properties: 'id name module { id name description } application { id appKey name } itemType label description',
+      entityType: 'Shesha.Domain.ConfigurationItem',
+      properties: 'id name module { id name description } application { id appKey name } revision { itemType label description }',
       filter: JSON.stringify(finalFilter),
       versionSelectionMode: versionsMode,
       sorting: 'module.name, name',

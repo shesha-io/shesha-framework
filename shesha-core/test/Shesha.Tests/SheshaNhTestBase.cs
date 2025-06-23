@@ -174,20 +174,20 @@ namespace Shesha.Tests
         /// Gets current user if <see cref="IAbpSession.UserId"/> is not null.
         /// Throws exception if it's null.
         /// </summary>
-        protected async Task<User> GetCurrentUserAsync()
+        protected Task<User> GetCurrentUserAsync()
         {
             var userId = AbpSession.GetUserId();
-            return await UsingDbSession(session => session.Query<User>().SingleAsync(u => u.Id == userId));
+            return UsingDbSession(session => session.Query<User>().SingleAsync(u => u.Id == userId));
         }
 
         /// <summary>
         /// Gets current tenant if <see cref="IAbpSession.TenantId"/> is not null.
         /// Throws exception if there is no current tenant.
         /// </summary>
-        protected async Task<Tenant> GetCurrentTenantAsync()
+        protected Task<Tenant> GetCurrentTenantAsync()
         {
             var tenantId = AbpSession.GetTenantId();
-            return await UsingDbSession(session => session.Query<Tenant>().SingleAsync(t => t.Id == tenantId));
+            return UsingDbSession(session => session.Query<Tenant>().SingleAsync(t => t.Id == tenantId));
         }
 
         protected void UsingNhSession(Action<ISession> action)

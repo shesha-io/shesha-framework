@@ -1,42 +1,26 @@
 ﻿using Shesha.Domain.Attributes;
-using System.ComponentModel.DataAnnotations;
+using Shesha.Domain.Constants;
 
 namespace Shesha.Domain
 {
+    [SnakeCaseNaming]
+    public abstract class FormConfigurationBase : ConfigurationItem<FormConfigurationRevision> 
+    { 
+    }
+
     /// <summary>
     /// Form configuration
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration")]
-    [JoinedProperty("Frwk_FormConfigurations")]
+    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", FriendlyName = "Form")]
+    [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-form-create")]
+    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [DiscriminatorValue(ItemTypeName)]
-    public class FormConfiguration : ConfigurationItemBase
+    [SnakeCaseNaming]
+    public class FormConfiguration : FormConfigurationBase
     {
         public const string ItemTypeName = "form";
-
-        /// <summary>
-        /// Form markup
-        /// </summary>
-        [StringLength(int.MaxValue)]
-        [LazyLoad]
-        public virtual string? Markup { get; set; }
-
-        /// <summary>
-        /// ModelType
-        /// </summary>
-        [StringLength(int.MaxValue)]
-        public virtual string? ModelType { get; set; }
-
+        
         public override string ItemType => ItemTypeName;
-
-        /// <summary>
-        /// If true, indeicates that the form is a template
-        /// </summary>
-        public virtual bool IsTemplate { get; set; }
-
-        /// <summary>
-        /// Template that was used for the form creation
-        /// </summary>
-        public virtual FormConfiguration? Template { get; set; }
 
         public virtual string FullName => Module != null
                 ? $"{Module.Name}.{Name}"

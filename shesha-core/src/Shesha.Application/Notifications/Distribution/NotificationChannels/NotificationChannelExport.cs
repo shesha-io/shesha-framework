@@ -4,8 +4,6 @@ using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Notifications.Distribution.NotificationChannels.Dto;
-using Shesha.Services;
-using Shesha.StoredFiles;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -32,10 +30,12 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             return await ExportItemAsync(item);
         }
 
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item)
+        public Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item)
         {
             if (!(item is NotificationChannelConfig itemConfig))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(NotificationChannelConfig)}, actual: {item.GetType().FullName}", nameof(item));
+
+            var revision = itemConfig.Revision;
 
             var result = new DistributedNotificationChannel
             {
@@ -45,26 +45,21 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
                 FrontEndApplication = itemConfig.Application?.AppKey,
                 ItemType = itemConfig.ItemType,
 
-                Label = itemConfig.Label,
-                Description = itemConfig.Description,
+                Label = revision.Label,
+                Description = revision.Description,
                 OriginId = itemConfig.Origin?.Id,
-                BaseItem = itemConfig.BaseItem?.Id,
-                VersionNo = itemConfig.VersionNo,
-                VersionStatus = itemConfig.VersionStatus,
-                ParentVersionId = itemConfig.ParentVersion?.Id,
                 Suppress = itemConfig.Suppress,
 
                 // specific properties
-
-                SupportedFormat = itemConfig.SupportedFormat,
-                MaxMessageSize = itemConfig.MaxMessageSize,
-                SupportedMechanism = itemConfig.SupportedMechanism,
-                SenderTypeName = itemConfig.SenderTypeName,
-                DefaultPriority = itemConfig.DefaultPriority,
-                Status = itemConfig.Status,
+                SupportedFormat = revision.SupportedFormat,
+                MaxMessageSize = revision.MaxMessageSize,
+                SupportedMechanism = revision.SupportedMechanism,
+                SenderTypeName = revision.SenderTypeName,
+                DefaultPriority = revision.DefaultPriority,
+                Status = revision.Status,
             };
 
-            return await Task.FromResult<DistributedConfigurableItemBase>(result);
+            return Task.FromResult<DistributedConfigurableItemBase>(result);
         }
 
         /// inheritedDoc

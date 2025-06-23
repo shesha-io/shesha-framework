@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -220,10 +220,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(UndoableActionCreators.redo());
   }, [dispatch]);
 
-  const setSelectedComponent = useCallback((componentId: string, componentRef?: MutableRefObject<any>) => {
-    if (componentId !== state.present.selectedComponentId ||
-      componentRef !== state.present.selectedComponentRef)
-      dispatch(setSelectedComponentAction({ id: componentId, componentRef }));
+  const setSelectedComponent = useCallback((componentId: string) => {
+    if (componentId !== state.present.selectedComponentId)
+      dispatch(setSelectedComponentAction({ id: componentId }));
       componentInitialization.current = true;
   }, [dispatch]);
 

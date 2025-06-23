@@ -4,7 +4,6 @@ using Abp.Timing;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -26,12 +25,12 @@ namespace Shesha.ConfigurationItems.Distribution
     {
         public const string NoModuleFolder = "[no-module]";
 
-        private readonly IRepository<ConfigurationItemBase, Guid> _itemsRepository;
+        private readonly IRepository<ConfigurationItem, Guid> _itemsRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
         public IIocManager IocManager { get; set; } = default!;
 
-        public ConfigurationPackageManager(IRepository<ConfigurationItemBase, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
+        public ConfigurationPackageManager(IRepository<ConfigurationItem, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
         {
             _itemsRepository = itemsRepository;
             _storedFileService = storedFileService;
@@ -104,7 +103,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return Task.FromResult(pack);
         }
 
-        private async Task ProcessItemExportAsync(ConfigurationItemBase item, ConfigurationItemsExportResult exportResult, PreparePackageContext context)
+        private async Task ProcessItemExportAsync(ConfigurationItem item, ConfigurationItemsExportResult exportResult, PreparePackageContext context)
         {
             var path = GetItemRelativePath(item);
             if (exportResult.Items.Any(i => i.RelativePath == path))
@@ -133,7 +132,7 @@ namespace Shesha.ConfigurationItems.Distribution
                     var dependencies = await depsProvider.GetReferencedItemsAsync(item);
                     foreach (var dependency in dependencies)
                     {
-                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItemBase>();                        
+                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItem>();                        
 
                         var dependencyItem = await query.GetItemByIdAsync(dependency, context.VersionSelectionMode);
 
@@ -152,7 +151,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItemBase item) 
+        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItem item) 
         {
             var requestedType = item.GetType().StripCastleProxyType();
 
@@ -180,7 +179,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return null;
         }
 
-        private string GetItemRelativePath(ConfigurationItemBase item)
+        private string GetItemRelativePath(ConfigurationItem item)
         {
             var moduleFolder = item.Module != null
                 ? item.Module.Name
