@@ -1,16 +1,16 @@
 import { useGet } from '@/hooks';
 import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup } from '@/providers';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
-import { useUrlTemplates } from '../utils';
+import { useUrlTemplates, defaultStyles } from '../utils';
 import { getSettings } from './urlSettings';
 
 const settingsMarkup = getSettings() as FormMarkup;
 
 const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, labelProperty, tooltipProperty } = settings ?? {};
+  const { actionConfiguration, labelProperty, tooltipProperty, buttonType: buttonTypeSetting } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getUrlTemplateState } = useUrlTemplates(settings);
   const [data, setData] = useState(null);
@@ -28,7 +28,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
 
   const { configurationItemMode } = useAppConfigurator();
 
-  const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
+  const styles = defaultStyles(item);
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
@@ -41,13 +41,8 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType,
-      background,
-      border,
-      shadow,
-      font,
-      dimensions,
-      stylingBox,
+      buttonType: item.buttonType ?? buttonTypeSetting,
+      ...styles,
       actionConfiguration: actionConfiguration,
     }));
 
