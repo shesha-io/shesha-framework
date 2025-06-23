@@ -110,8 +110,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         !formIdentifier &&
         props.formSelectionMode === 'dynamic' &&
         Boolean(entityType) &&
-        Boolean(formType) &&
-        props.entityReferenceType !== 'Quickview'
+        Boolean(formType)
       ) {
         try {
           const formid = await getEntityFormId(entityType, formType);
