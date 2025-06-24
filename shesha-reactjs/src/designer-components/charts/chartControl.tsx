@@ -4,7 +4,7 @@ import { IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
-import { Alert, Flex, Spin } from 'antd';
+import { Alert, Flex, Spin, Tooltip } from 'antd';
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from './hooks';
@@ -12,6 +12,7 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems } from './utils';
 import ChartLoader from './components/chartLoader';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const {
@@ -36,12 +37,13 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { data: formData } = useFormData();
   const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>({
     current: 0,
-    total: 0,
+    total: -1,
   });
   const [showLoader, setShowLoader] = useState(true);
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const [hasInitialData, setHasInitialData] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isFetchingRef = useRef(false);
 
   const { styles, cx } = useStyles();
 
@@ -74,9 +76,11 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   }, [processItems, sortItems, isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, setData]);
 
   useEffect(() => {
-    if (!requiredProperties) {
+    if (!requiredProperties || isFetchingRef.current) {
       return;
     }
+
+    isFetchingRef.current = true;
 
     const fetchAndProcessData = async () => {
       try {
@@ -88,7 +92,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
         // Pre-filter reference list properties and create lookup maps
         const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
-          (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item'
+          (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase())
         );
 
         // Create reference list lookup maps in parallel
@@ -145,10 +149,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           throw new Error('Invalid response structure');
         }
 
-        totalCount = firstResponse.result.totalCount || 0;
+        totalCount = firstResponse.result.totalCount ?? 0;
         if (firstResponse.result.items && Array.isArray(firstResponse.result.items)) {
           allItems = firstResponse.result.items;
-          setLoadingProgress({ current: allItems.length, total: totalCount });
+          setLoadingProgress(prev => ({ ...prev, current: allItems.length, total: totalCount }));
 
           // Process and show initial data immediately
           processAndUpdateData(allItems, refListMap);
@@ -179,17 +183,25 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             batchPromises.push(refetch(params));
           }
 
-          // Process batches as they complete
-          const batchResults = await Promise.all(batchPromises);
-          batchResults.forEach((response) => {
+          // Process each batch one by one for progressive updates
+          for (let i = 0; i < batchPromises.length; i++) {
+            // console.warn(`Processing batch ${i + 1} of ${batchPromises.length}`);
+            const response = await batchPromises[i];
             if (response?.result?.items && Array.isArray(response.result.items)) {
               allItems = allItems.concat(response.result.items);
-              setLoadingProgress({ current: allItems.length, total: totalCount });
+              const newLength = allItems.length;
+
+              // console.warn(`Batch ${i + 1} completed: Added ${response.result.items.length} items, total now: ${newLength}`);
+
+              setLoadingProgress(prev => ({ ...prev, current: allItems.length, total: totalCount }));
 
               // Update chart with new data as it comes in
               processAndUpdateData(allItems, refListMap);
+
+              // Small delay to make progress visible
+              await new Promise(resolve => setTimeout(resolve, 200));
             }
-          });
+          }
         }
 
         setIsLoaded(true);
@@ -202,8 +214,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         setHasInitialData(false);
         setLoadingProgress({
           current: 0,
-          total: 0,
+          total: -1,
         });
+      } finally {
+        isFetchingRef.current = false;
       }
     };
 
@@ -285,9 +299,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           >
             <ChartLoader chartType={chartType} />
             <div className={cx(styles.loadingText)}>Fetching data...</div>
-            <div>
-              {loadingProgress.current} / {loadingProgress.total} items
-            </div>
           </Flex>
         )}
       </>
@@ -311,11 +322,11 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         justifyContent: 'center'
       }}
     >
-      <div style={{ 
-        flex: 1, 
-        width: '100%', 
-        height: '100%', 
-        minHeight: '350px', 
+      <div style={{
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        minHeight: '350px',
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
@@ -324,17 +335,20 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         {renderChart(chartType, data)}
       </div>
       {/* Show progress indicator if still loading more data */}
-      {loadingProgress && hasInitialData && (
+      {loadingProgress && hasInitialData && (loadingProgress.current !== loadingProgress.total) && (
         <Flex
+          key={`progress-${loadingProgress.current}`}
           align="center"
           justify="center"
           vertical
           gap={4}
           style={{ margin: 16, flexShrink: 0 }}>
           <Spin size="small" />
-          <div className={cx(styles.loadingText)}>Fetching more data...</div>
-          <div>
-            ({loadingProgress.current} / {loadingProgress.total} items)
+          <div className={cx(styles.loadingText)}>
+            <Tooltip title={`${loadingProgress.current} / ${loadingProgress.total} items`}>
+              <InfoCircleOutlined />
+              <span> Fetching more data...</span>
+            </Tooltip>
           </div>
         </Flex>
       )}
