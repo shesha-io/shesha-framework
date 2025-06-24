@@ -130,12 +130,11 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       isLastVersion: dto.isLastVersion,
 
       markup: markupWithSettings?.components,
-      settings: {
-        ...markupWithSettings?.formSettings,
-       access: dto.access,
-       permissions: dto.permissions,
-      }
+      settings: markupWithSettings?.formSettings,
     };
+
+    result.settings.access = result.settings.access ?? dto.access ?? 3;
+    result.settings.permissions = result.settings.permissions ?? dto.permissions ?? [];
 
     return result;
   };
