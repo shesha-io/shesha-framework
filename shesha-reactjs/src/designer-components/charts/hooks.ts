@@ -1,7 +1,25 @@
 import { useChartDataStateContext } from '@/providers';
-import { useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { IChartData } from './model';
 import { aggregateValues, getPredictableColor, getPropertyValue, stringifyValues } from './utils';
+
+export const useIsSmallScreen = () => {
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== 'undefined' && window.innerWidth <= 480
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 480);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isSmallScreen;
+};
+
 
 /**
  * Create title for the chart based on the chart type
@@ -10,7 +28,7 @@ import { aggregateValues, getPredictableColor, getPropertyValue, stringifyValues
  * @listens xProperty x-axis property
  * @listens yProperty y-axis property
  * @listens aggregationMethod aggregation method
- * @listens legendProperty legend property
+ * @listens groupingProperty legend property
  * @listens entityType entity type
  * @listens title title
  * @returns title for the chart
@@ -21,18 +39,18 @@ export const useGeneratedTitle = (): string => {
     valueProperty: yProperty,
     aggregationMethod,
     title,
-    legendProperty,
+    groupingProperty,
     dataMode,
     entityType,
     simpleOrPivot,
   } = useChartDataStateContext();
 
-  const entityTypeArray = dataMode === 'entityType' ? entityType?.split('.') : undefined;
+  const entityTypeArray = dataMode === 'entityType' && entityType ? entityType?.split('.') : [];
   const entityClassName = dataMode === 'entityType' ? entityTypeArray[entityTypeArray?.length - 1] : '';
   return dataMode === 'entityType'
     ? title?.trim().length > 0
       ? title
-      : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${legendProperty && simpleOrPivot === 'pivot' ? `, grouped by ${legendProperty}` : ''}`
+      : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${groupingProperty && simpleOrPivot === 'pivot' ? `, grouped by ${groupingProperty}` : ''}`
     : title?.trim().length > 0
       ? title
       : ``;
@@ -42,7 +60,7 @@ export const useGeneratedTitle = (): string => {
  * Prepare pivot chart data
  * @param data raw data
  * @param axisProperty axis property
- * @param legendProperty legend property
+ * @param groupingProperty legend property
  * @param valueProperty value property
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @param chartType chart type (bar, line, pie)
@@ -53,7 +71,7 @@ export const useProcessedChartData = (): IChartData => {
   const {
     filteredData: data,
     axisProperty,
-    legendProperty,
+    groupingProperty,
     valueProperty,
     strokeColor,
     aggregationMethod,
@@ -66,9 +84,9 @@ export const useProcessedChartData = (): IChartData => {
   let labels = memoData.length
     ? [...new Set(memoData.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))]
     : [];
-  let datasets;
+  let datasets = [];
 
-  if (simpleOrPivot === 'simple' || !legendProperty) {
+  if (simpleOrPivot === 'simple' || !groupingProperty) {
     // Generate different colors for each data point based on the label
     const colors = labels.map((label) => getPredictableColor(typeof label === 'string' ? label : label + ''));
 
@@ -92,7 +110,7 @@ export const useProcessedChartData = (): IChartData => {
   } else {
     // Pivot mode - multiple datasets based on legend property
     const legendItems = [
-      ...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty))),
+      ...new Set(memoData?.map((item: { [key: string]: any }) => getPropertyValue(item, groupingProperty))),
     ];
 
     datasets = legendItems?.map((legend) => {
@@ -104,7 +122,7 @@ export const useProcessedChartData = (): IChartData => {
         label: legendDisplayValue,
         data: labels?.map((label) => {
           const matchingItems = memoData.filter((item: { [key: string]: any }) => {
-            return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, legendProperty) === legend;
+            return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, groupingProperty) === legend;
           });
           switch (chartType) {
             case 'bar':
@@ -119,7 +137,7 @@ export const useProcessedChartData = (): IChartData => {
           return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
         }),
         fill: false,
-        borderColor: strokeColor || '#fff',
+        borderColor: (simpleOrPivot === 'pivot' ? getPredictableColor(strLegend) : strokeColor) || '#fff',
         backgroundColor: colors,
         pointRadius: 5,
         borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
@@ -137,8 +155,8 @@ export const useProcessedChartData = (): IChartData => {
   labels = labels?.map((label) => label ?? 'null');
 
   return {
-    labels,
-    datasets,
+    labels: labels ?? [],
+    datasets: datasets ?? [],
   };
 };
 
@@ -149,11 +167,9 @@ export const useProcessedChartData = (): IChartData => {
 export const useChartURLData = () => {
   const { urlTypeData, strokeColor, strokeWidth, tension } = useChartDataStateContext();
 
-  const memoData = useMemo(() => urlTypeData, [urlTypeData]);
-
   return {
-    labels: memoData?.labels,
-    datasets: urlTypeData?.datasets?.map((dataset: any) => {
+    labels: urlTypeData?.labels ?? [],
+    datasets: (urlTypeData?.datasets ?? []).map((dataset: any) => {
       dataset.borderColor = strokeColor || 'black';
       dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
       dataset.strokeColor = strokeColor || 'black';

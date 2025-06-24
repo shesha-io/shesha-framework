@@ -25,6 +25,7 @@ import moment from 'moment';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { innerEntityReferenceButtonBoxStyle, innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
+import { addPx } from '@/utils/style';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -208,7 +209,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
-        modalWidth: props.modalWidth,
+        modalWidth: addPx(props.modalWidth),
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
@@ -274,7 +275,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           entityId={props.value?.id ?? props.value}
           className={entityType}
           getEntityUrl={props.getEntityUrl}
-          width={props.quickviewWidth}
+          width={addPx(props.quickviewWidth)}
           formIdentifier={formIdentifier}
           formType={formType}
           disabled={props.disabled}

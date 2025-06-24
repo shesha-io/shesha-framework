@@ -31,7 +31,9 @@ export interface IChartsProps {
     axisProperty?: string;
     isAxisTimeSeries?: boolean;
     timeSeriesFormat?: TTimeSeriesFormat;
-    legendProperty?: string;
+    groupingProperty?: string;
+    isGroupingTimeSeries?: boolean;
+    groupingTimeSeriesFormat?: TTimeSeriesFormat;
     allowFilter?: boolean;
     filterProperties?: string[];
     xProperty?: string;
