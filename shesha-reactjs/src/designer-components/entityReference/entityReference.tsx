@@ -95,6 +95,17 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
           ...prev.desktop,
           style: prev.style,
         },
+      }))
+      .add<IEntityReferenceControlProps>(10, (prev) => ({
+        ...prev,
+        modalWidth: (prev.modalWidth as string) === 'custom' ? '80%' : prev.modalWidth,
+        quickviewWidth: (() => {
+          if (prev.quickviewWidth == null || prev.quickviewWidth === '') return undefined;
+          if (typeof prev.quickviewWidth === 'number') return `${prev.quickviewWidth}px`;
+          if (/^\d+$/.test(prev.quickviewWidth)) return `${prev.quickviewWidth}px`; // digit-only string
+          if (/^\d+(px|%)$/.test(prev.quickviewWidth)) return prev.quickviewWidth;  // already valid
+          return prev.quickviewWidth; // keep keywords like 'auto', 'fit-content', etc.
+        })(),
       })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

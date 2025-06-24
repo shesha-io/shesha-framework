@@ -114,7 +114,7 @@ export const getSettings = (data: IButtonGroupComponentProps) => {
                                                 {
                                                     type: 'dropdown',
                                                     id: nanoid(),
-                                                    propertyName: 'spaceSize',
+                                                    propertyName: 'gap',
                                                     label: 'Gap',
                                                     tooltip: 'The size of space between items',
                                                     jsSetting: true,
