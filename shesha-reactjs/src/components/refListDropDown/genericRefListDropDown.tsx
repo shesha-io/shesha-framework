@@ -32,6 +32,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     showIcon,
     solidColor,
     showItemName,
+    placeholder,
     ...rest
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
@@ -133,7 +134,6 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   }
 
   const commonSelectProps = {
-    className: mode !== 'multiple' && displayStyle === 'tags' ? undefined : "sha-dropdown",
     labelInValue: true,
     defaultActiveFirstOption: false,
     suffixIcon: showArrow ? undefined : null,
@@ -164,6 +164,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       {...commonSelectProps}
       popupMatchSelectWidth={false}
       style={{ width: 'max-content', height: 'max-content' }}
+      placeholder={placeholder}
       labelRender={(props) => {
         const option = options.find((o) => o.value === props.value);
         return <ReflistTag
@@ -194,6 +195,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       style={{ ...style }}
       showSearch
       mode={mode}
+      placeholder={placeholder}
       {...(displayStyle === 'tags' ? {
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);

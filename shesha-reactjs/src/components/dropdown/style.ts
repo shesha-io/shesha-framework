@@ -39,10 +39,12 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     .ant-select-selection-item {
       font-size: ${style.fontSize} !important;
       font-weight: var(--ant-font-weight) !important;
-     --ant-line-width: 0px !important;
-     line-height: unset !important;
+      --ant-line-width: 0px !important;
+      line-height: unset !important;
       overflow: visible;
       height: 100%;
+      display: flex;
+      align-items: center;
 
       .ant-select-selection-item-content {
         display: flex;

@@ -1,13 +1,12 @@
 import React, { FC, useCallback } from 'react';
-import ReadOnlyDisplayFormItem, { Icon } from '@/components/readOnlyDisplayFormItem';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
 import { Select } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
-import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
+import { CustomLabeledValue, IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { useStyles } from './style';
-import { getTagStyle } from '@/utils/style';
 import ReflistTag from '../refListDropDown/reflistTag';
 
 
@@ -164,6 +163,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     }
 
     const commonSelectProps = {
+        className: styles.dropdown,
         allowClear,
         onChange,
         value: selectedValue,
@@ -172,67 +172,68 @@ export const Dropdown: FC<IDropdownProps> = ({
         disabled: readOnly,
         mode: selectedMode,
         placeholder,
-        size
+        size,
     };
 
-    if (displayStyle === 'tags' && mode !== 'multiple') {
-        return <Select
+    if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
+        return <Select<CustomLabeledValue | CustomLabeledValue>
             {...commonSelectProps}
             popupMatchSelectWidth={false}
             style={{ width: 'max-content', height: 'max-content' }}
-            placeholder={placeholder && <ReflistTag
-                key={'placeholder'}
-                color={'#d9d9d9'}
-                showItemName={showItemName}
-                label={placeholder ?? <span style={{ whiteSpace: 'pre' }}>{'      '}</span>}
-            />}
+            placeholder={placeholder}
             labelRender={(props) => {
                 const option = options.find((o) => o.value === props.value);
                 return <ReflistTag
-                    key={props.value}
+                    key={option?.value}
+                    value={option?.value}
+                    tooltip={option?.description}
                     color={option?.color}
+                    icon={option?.icon}
+                    showIcon={showIcon}
+                    tagStyle={tagStyle}
+                    solidColor={solidColor}
                     showItemName={showItemName}
-                    label={showItemName && option?.label}
-                    icon={((option?.icon && showIcon)) && <Icon type={option?.icon} />}
-                    tagStyle={getTagStyle(tagStyle, !!option?.color && solidColor)}
+                    label={option?.label}
                 />;
             }}
         >
-            {
-                options.map((option) => (
-                    <Select.Option key={option.value} value={option.value}>
-                        {option?.label}
-                    </Select.Option>
-                ))
-            }
-        </Select >;
-    };
+            {options?.map(({ value: localValue, label }) => (
+                <Select.Option value={localValue} key={localValue} data={{}}>
+                    {label}
+                </Select.Option>
+            ))}
+        </Select>;
+    }
 
     return (
         <Select
             {...commonSelectProps}
-            className={styles.dropdown}
-            showSearch
             style={{ ...style }}
+            showSearch
+            placeholder={placeholder}
             {...(displayStyle === 'tags' ? {
                 labelRender: (props) => {
                     const option = options.find((o) => o.value === props.value);
                     return <ReflistTag
-                        key={props.value}
+                        value={option?.value}
+                        tooltip={option?.description}
                         color={option?.color}
+                        icon={option?.icon}
+                        showIcon={showIcon}
+                        tagStyle={tagStyle}
+                        solidColor={solidColor}
                         showItemName={showItemName}
-                        icon={option?.icon && showIcon && <Icon type={option?.icon} />}
-                        tagStyle={getTagStyle(tagStyle, !!option?.color && solidColor)}
-                        label={showItemName && option?.label}
+                        label={option?.label}
                     />;
                 }
-            } : {})}
+            } : {})
+            }
         >
-            {options.map((option) => (
-                <Select.Option key={option.value} value={option.value}>
-                    {option.label}
+            {options?.map(({ value: localValue, label }) => (
+                <Select.Option value={localValue} key={localValue}>
+                    {label}
                 </Select.Option>
             ))}
-        </Select>
+        </Select >
     );
 }; 
