@@ -12,7 +12,7 @@ namespace Shesha.Domain
     /// Configuration Item with typed revisions
     /// </summary>
     /// <typeparam name="TRevision"></typeparam>
-    public class ConfigurationItem<TRevision> : ConfigurationItem, IConfigurationItem<TRevision> where TRevision: ConfigurationItemRevision, new()
+    public class ConfigurationItem<TRevision> : ConfigurationItem, IConfigurationItem<TRevision> where TRevision : ConfigurationItemRevision, new()
     {
         /// <summary>
         /// Active (published) revision. Is used when drafts mode is enabled
@@ -43,13 +43,6 @@ namespace Shesha.Domain
             return asyncUpdater.Invoke(LatestRevision);
         }
 
-        public virtual void EditRevision(Action<TRevision> updater)
-        {
-            EnsureLatestRevision();
-
-            updater.Invoke(LatestRevision);
-        }
-
         [MemberNotNull(nameof(LatestRevision))]
         public virtual TRevision EnsureLatestRevision() 
         {
@@ -68,6 +61,16 @@ namespace Shesha.Domain
             };
             return LatestRevision;
         }
+
+        public virtual bool IsCodeBased { get; set; }
+        public virtual bool HasAutstandingCodeGeneration { get; set; }
+        public virtual Guid? LatestImportedRevisionId { get; set; }
+        [ReadonlyProperty]
+        public virtual bool IsUpdated { get; protected set; }
+        [ReadonlyProperty]
+        public virtual bool IsExposed { get; protected set; }
+
+        public bool HasRevision => Revision != null;
 
         /// <summary>
         /// Default constructor

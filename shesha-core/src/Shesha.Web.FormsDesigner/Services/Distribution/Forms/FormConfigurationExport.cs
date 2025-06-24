@@ -13,7 +13,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration export
     /// </summary>
-    public class FormConfigurationExport: IFormConfigurationExport, ITransientDependency
+    public class FormConfigurationExport: ConfigurableItemExportBase, IFormConfigurationExport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
         private readonly IPermissionedObjectManager _permissionedObjectManager;

@@ -57,7 +57,12 @@ export interface DataIndex {
 }
 
 export interface ITreeState {
-    //modules: ModulesDictionary;
+    treeNodes: ConfigItemDataNode[];
+    indexes: DataIndex[];
+    itemsCount: number;
+}
+
+export interface ITreeStateExport {
     treeNodes: ConfigItemDataNode[];
     indexes: DataIndex[];
     itemsCount: number;

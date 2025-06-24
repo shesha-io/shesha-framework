@@ -1,9 +1,12 @@
-import { HttpClientApi } from "@/providers";
-import { FlatTreeNode, ItemTypeBackendDefinition } from "./models";
+import { HttpClientApi, useHttpClient } from "@/providers";
+import { FlatTreeNode, ItemTypeBackendDefinition, TreeNode } from "./models";
 import { IAjaxResponse } from "@/interfaces";
 import { IAbpWrappedResponse } from "@/interfaces/gql";
 import { AxiosResponse } from "axios";
 import qs from "qs";
+import { useCallback } from "react";
+import useSWR from "swr";
+import { flatNode2TreeNode } from "./tree-utils";
 
 export const CS_URLS = {
     GET_FLAT_TREE: '/api/services/app/ConfigurationStudio/GetFlatTree',
@@ -64,6 +67,71 @@ export const deleteFolderAsync = (httpClient: HttpClientApi, payload: DeleteFold
 export const fetchFlatTreeAsync = async (httpClient: HttpClientApi): Promise<FlatTreeNode[]> => {
     const response = await httpClient.get<IAjaxResponse<FlatTreeNode[]>>(CS_URLS.GET_FLAT_TREE);
     return response.data.result;
+};
+
+export const fetchFlatTreeForExportAsync = async (httpClient: HttpClientApi): Promise<FlatTreeNode[]> => {
+    const response = await httpClient.get<IAjaxResponse<FlatTreeNode[]>>(CS_URLS.GET_FLAT_TREE);
+    return response.data.result;
+};
+
+export const useFlatTreeForExport = () => {
+    const httpClient = useHttpClient();
+
+    const fetcher = useCallback(() => {
+        return fetchFlatTreeForExportAsync(httpClient);
+    }, [httpClient]);
+
+    const url = CS_URLS.GET_FLAT_TREE;
+    return useSWR(url, fetcher, { refreshInterval: 0, revalidateOnFocus: false });
+};
+
+export type TreeState = {
+    treeNodeMap: Map<string, TreeNode>;
+    treeNodes: TreeNode[];
+};
+const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState => {
+    try {
+        const treeNodeMap = new Map<string, TreeNode>();
+        const treeNodes: TreeNode[] = [];
+
+        // First pass: create map and shallow copies
+        flatTreeNodes.forEach(node => {
+            treeNodeMap.set(node.id, flatNode2TreeNode(node));
+        });
+
+        // Second pass: build hierarchy
+        flatTreeNodes.forEach(node => {
+            const currentNode = treeNodeMap.get(node.id)!;
+
+            if (node.parentId !== null) {
+                const parent = treeNodeMap.get(node.parentId);
+                if (parent) {
+                    parent.children.push(currentNode);
+                }
+            } else {
+                treeNodes.push(currentNode);
+            }
+        });
+
+        return {
+            treeNodes: treeNodes,
+            treeNodeMap: treeNodeMap,
+        };
+    } catch (error) {
+        throw new Error('Failed to convert tree', error);
+    }
+};
+
+export const useTreeForExport = () => {
+    const httpClient = useHttpClient();
+
+    const fetcher = useCallback(async (): Promise<TreeState> => {
+        const flatTree = await fetchFlatTreeForExportAsync(httpClient);
+        return convertFlatTreeToExportTree(flatTree);
+    }, [httpClient]);
+
+    const url = CS_URLS.GET_FLAT_TREE;
+    return useSWR(url, fetcher, { refreshInterval: 0, revalidateOnFocus: false });
 };
 
 //#endregion

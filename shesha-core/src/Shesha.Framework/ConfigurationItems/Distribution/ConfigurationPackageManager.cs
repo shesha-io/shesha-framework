@@ -113,6 +113,10 @@ namespace Shesha.ConfigurationItems.Distribution
             if (exporter == null)
                 throw new ExporterNotFoundException(item.ItemType);
 
+            var canExport = await exporter.CanExportItemAsync(item);
+            if (!canExport)
+                return;
+
             var dto = await exporter.ExportItemAsync(item);
 
             var exportItem = new ConfigurationItemsExportItem

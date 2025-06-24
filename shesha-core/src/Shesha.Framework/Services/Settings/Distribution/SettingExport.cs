@@ -15,7 +15,7 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting export
     /// </summary>
-    public class SettingExport: ISettingExport, ITransientDependency
+    public class SettingExport: ConfigurableItemExportBase, ISettingExport, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepo;
         private readonly IRepository<SettingValue, Guid> _settingValueRepo;

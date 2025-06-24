@@ -3,12 +3,10 @@ using Abp.Domain.Repositories;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes
@@ -16,7 +14,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationTypeExport : INotificationTypeExport, ITransientDependency
+    public class NotificationTypeExport : ConfigurableItemExportBase, INotificationTypeExport, ITransientDependency
     {
         private readonly IRepository<NotificationTypeConfig, Guid> _configurationRepo;
         private readonly IRepository<NotificationTemplate, Guid> _templateRepo;

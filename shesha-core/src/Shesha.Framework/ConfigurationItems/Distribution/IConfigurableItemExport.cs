@@ -30,6 +30,13 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <returns></returns>
         Task WriteToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream);
+
+        /// <summary>
+        /// Check is item can be exported
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        Task<bool> CanExportItemAsync(ConfigurationItem item);
     }
 
     public interface IConfigurableItemExport<TItem>: IConfigurableItemExport where TItem: ConfigurationItem

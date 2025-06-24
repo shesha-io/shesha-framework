@@ -3,12 +3,7 @@ import { useLocalStorage } from '@/hooks';
 import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import {
   IHasConfigurableItemId,
-  createNewVersion,
-  deleteItem,
   downloadAsJson,
-  itemCancelVersion,
-  publishItem,
-  setItemReady,
 } from '@/utils/configurationFramework/actions';
 import { useAuth } from '@/providers/auth';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
@@ -26,7 +21,6 @@ import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
-import { App } from 'antd';
 import { useHttpClient } from '../sheshaApplication/publicApi';
 
 export interface IAppConfiguratorProviderProps { }
@@ -104,82 +98,12 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   });
 
   const httpClient = useHttpClient();
-  const { message, notification, modal } = App.useApp();
 
   //#region Configuration Framework renamed to Configuration Items
 
   const actionsOwner = 'Configuration Items';
 
   const actionDependencies = [state];
-  useConfigurableAction<IHasConfigurableItemId>(
-    {
-      name: 'Create new item version',
-      owner: actionsOwner,
-      ownerUid: SheshaActionOwners.ConfigurationFramework,
-      hasArguments: true,
-      executer: (actionArgs) => {
-        return createNewVersion({ id: actionArgs.itemId, httpClient, message, notification, modal });
-      },
-      argumentsFormMarkup: genericItemActionArgumentsForm,
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction<IHasConfigurableItemId>(
-    {
-      name: 'Set Item Ready',
-      owner: actionsOwner,
-      ownerUid: SheshaActionOwners.ConfigurationFramework,
-      hasArguments: true,
-      executer: (actionArgs) => {
-        return setItemReady({ id: actionArgs.itemId, httpClient, message, modal });
-      },
-      argumentsFormMarkup: genericItemActionArgumentsForm,
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction<IHasConfigurableItemId>(
-    {
-      name: 'Delete item',
-      owner: actionsOwner,
-      ownerUid: SheshaActionOwners.ConfigurationFramework,
-      hasArguments: true,
-      executer: (actionArgs) => {
-        return deleteItem({ id: actionArgs.itemId, httpClient });
-      },
-      argumentsFormMarkup: genericItemActionArgumentsForm,
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction<IHasConfigurableItemId>(
-    {
-      name: 'Publish Item',
-      owner: actionsOwner,
-      ownerUid: SheshaActionOwners.ConfigurationFramework,
-      hasArguments: true,
-      executer: (actionArgs) => {
-        return publishItem({ id: actionArgs.itemId, httpClient, message, modal });
-      },
-      argumentsFormMarkup: genericItemActionArgumentsForm,
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction<IHasConfigurableItemId>(
-    {
-      name: 'Cancel item version',
-      owner: actionsOwner,
-      ownerUid: SheshaActionOwners.ConfigurationFramework,
-      hasArguments: true,
-      executer: (actionArgs) => {
-        return itemCancelVersion({ id: actionArgs.itemId, httpClient, message, modal });
-      },
-      argumentsFormMarkup: genericItemActionArgumentsForm,
-    },
-    actionDependencies
-  );
 
   useConfigurableAction<IHasConfigurableItemId>(
     {

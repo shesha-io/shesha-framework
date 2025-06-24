@@ -31,8 +31,16 @@ namespace Shesha.ConfigurationItems
         ConfigurationItem? Origin { get; set; }
     }
 
+    public interface IDistributedConfigurationItem 
+    {
+        /// <summary>
+        /// If true, indicated that item has at least one revision
+        /// </summary>
+        bool HasRevision { get; }
+    }
 
-    public interface IConfigurationItem<TRevision> : IConfigurationItem where TRevision: ConfigurationItemRevision
+
+    public interface IConfigurationItem<TRevision> : IConfigurationItem, IDistributedConfigurationItem where TRevision: ConfigurationItemRevision
     {
         /// <summary>
         /// Active (published) revision. Is used when drafts mode is enabled

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class EntityConfigExport : IEntityConfigExport, ITransientDependency
+    public class EntityConfigExport : ConfigurableItemExportBase, IEntityConfigExport, ITransientDependency
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepo;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepo;

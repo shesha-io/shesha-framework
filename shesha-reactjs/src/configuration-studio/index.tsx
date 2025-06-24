@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ConfigurationTree } from '@/configuration-studio/components/configurationTree';
+import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/workArea';
 import { NewButton } from '@/configuration-studio/components/new-button';

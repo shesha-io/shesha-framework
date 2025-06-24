@@ -13,7 +13,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationChannelExport : INotificationChannelExport, ITransientDependency
+    public class NotificationChannelExport : ConfigurableItemExportBase, INotificationChannelExport, ITransientDependency
     {
         private readonly IRepository<NotificationChannelConfig, Guid> _configurationRepo;
 

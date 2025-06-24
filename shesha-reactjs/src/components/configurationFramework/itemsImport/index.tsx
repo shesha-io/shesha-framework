@@ -139,7 +139,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
         setIsPackLoading(true);
         axios
-            .post(`${backendUrl}/api/services/app/ConfigurationItem/AnalyzePackage`,
+            .post(`${backendUrl}/api/services/app/ConfigurationStudio/AnalyzePackage`,
                 formData,
                 {
                     headers: httpHeaders,
@@ -205,7 +205,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
         appendFormData(formData, 'itemsToImport', JSON.stringify(checkedIds));
 
         return axios
-            .post(`${backendUrl}/api/services/app/ConfigurationItem/ImportPackage`,
+            .post(`${backendUrl}/api/services/app/ConfigurationStudio/ImportPackage`,
                 formData,
                 {
                     headers: httpHeaders,

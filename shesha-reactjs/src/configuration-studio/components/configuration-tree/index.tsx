@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 import { Dropdown, Input, MenuProps, Spin, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
-import { MoveNodePayload, ReorderNodePayload } from '../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isTreeNode, TreeNode } from '../models';
+import { MoveNodePayload, ReorderNodePayload } from '../../apis';
+import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isTreeNode, TreeNode } from '../../models';
 import { DownOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components';
-import { useCsTree } from '../cs/hooks';
-import { useConfigurationStudio } from '../cs/contexts';
-import { buildNodeContextMenu } from '../menu-utils';
-import { useStyles } from '../styles';
+import { useCsTree } from '../../cs/hooks';
+import { useConfigurationStudio } from '../../cs/contexts';
+import { buildNodeContextMenu } from '../../menu-utils';
+import { useStyles } from '../../styles';
 
 export interface IConfigurationTreeProps {
 }

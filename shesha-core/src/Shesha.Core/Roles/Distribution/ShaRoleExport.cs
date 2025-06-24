@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class ShaRoleExport : IShaRoleExport, ITransientDependency
+    public class ShaRoleExport : ConfigurableItemExportBase, IShaRoleExport, ITransientDependency
     {
         private readonly IRepository<ShaRole, Guid> _roleRepo;
 

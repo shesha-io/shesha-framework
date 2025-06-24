@@ -1,4 +1,4 @@
-﻿namespace Shesha.ConfigurationItems.Dtos
+﻿namespace Shesha.ConfigurationStudio.Dtos
 {
     /// <summary>
     /// Results of configuration items import
