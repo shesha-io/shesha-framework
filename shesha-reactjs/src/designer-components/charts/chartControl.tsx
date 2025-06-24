@@ -73,7 +73,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     }
 
     setData(processedItems);
-  }, [processItems, sortItems, isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, setData]);
+  }, [isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, groupingProperty, setData]);
 
   useEffect(() => {
     if (!requiredProperties || isFetchingRef.current) {
