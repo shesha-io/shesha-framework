@@ -51,9 +51,19 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
 
     const { size, buttonType } = props;
     const model = props;
-    const styles = useFormComponentStyles(model).fullStyle;
+
+    const { backgroundStyles, fontStyles, borderStyles, shadowStyles, dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(model);
+
+    const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType);
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...styles,
+        ...fontStyles,
+        ...dimensionsStyles,
+        ...stylingBoxAsCSS,
+        ...(isPrimaryOrDefault && borderStyles),
+        ...(isPrimaryOrDefault && shadowStyles),
+        ...(!isPrimaryOrDefault && backgroundStyles),
+        ...jsStyle,
         justifyContent: model?.font?.align,
     });
 

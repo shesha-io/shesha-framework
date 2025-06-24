@@ -12,7 +12,6 @@ export const getItemSettings = (data) => {
     const appearanceTabId = nanoid();
     const securityTabId = nanoid();
     const commonButtonSettingsContainerId = nanoid();
-    const styleRouterId = nanoid();
     const fontStylePnlId = nanoid();
     const dimensionsStylePnlId = nanoid();
     const borderStylePnlId = nanoid();
@@ -217,7 +216,6 @@ export const getItemSettings = (data) => {
                             ...new DesignerToolbarSettings()
                                 .addSettingsInputRow({
                                     id: nanoid(),
-                                    inline: true,
                                     inputs: [
                                         {
                                             id: nanoid(),
@@ -263,7 +261,7 @@ export const getItemSettings = (data) => {
                                     propertyName: 'pnlFontStyle',
                                     label: 'Font',
                                     labelAlign: 'right',
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     ghost: true,
                                     hidden: {
                                         _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
@@ -332,7 +330,7 @@ export const getItemSettings = (data) => {
                                     id: nanoid(),
                                     propertyName: 'pnlDimensions',
                                     label: 'Dimensions',
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: {
@@ -423,7 +421,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
                                         id: borderStylePnlId,
@@ -448,7 +446,7 @@ export const getItemSettings = (data) => {
                                     label: 'Background',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     collapsible: 'header',
                                     hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
                                     content: {
@@ -582,7 +580,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
                                         id: shadowStylePnlId,
@@ -651,7 +649,7 @@ export const getItemSettings = (data) => {
                                     label: 'Margin & Padding',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
                                     collapsible: 'header',
                                     content: {
@@ -674,7 +672,8 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
-                                    parentId: styleRouterId, collapsible: 'header',
+                                    parentId: appearanceTabId,
+                                    collapsible: 'header',
                                     content: {
                                         id: customStylePnlId,
                                         components: [...new DesignerToolbarSettings()
