@@ -184,14 +184,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           }
 
           // Process each batch one by one for progressive updates
-          for (let i = 0; i < batchPromises.length; i++) {
-            // console.warn(`Processing batch ${i + 1} of ${batchPromises.length}`);
-            const response = await batchPromises[i];
+          for (const element of batchPromises) {
+            const response = await element;
             if (response?.result?.items && Array.isArray(response.result.items)) {
               allItems = allItems.concat(response.result.items);
-
-              // console.warn(`Batch ${i + 1} completed: Added ${response.result.items.length} items, total now: ${newLength}`);
-
               setLoadingProgress(prev => ({ ...prev, current: allItems.length, total: totalCount }));
 
               // Update chart with new data as it comes in
@@ -344,7 +340,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           style={{ margin: 16, flexShrink: 0 }}>
           <Spin size="small" />
           <div className={cx(styles.loadingText)}>
-            <Tooltip title={`${loadingProgress.current} / ${loadingProgress.total} items`}>
+            <Tooltip title={`${loadingProgress.current} / ${loadingProgress.total} items fetched so far`}>
               <InfoCircleOutlined />
               <span> Fetching more data...</span>
             </Tooltip>
