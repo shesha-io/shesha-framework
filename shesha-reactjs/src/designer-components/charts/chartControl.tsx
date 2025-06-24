@@ -189,7 +189,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             const response = await batchPromises[i];
             if (response?.result?.items && Array.isArray(response.result.items)) {
               allItems = allItems.concat(response.result.items);
-              const newLength = allItems.length;
 
               // console.warn(`Batch ${i + 1} completed: Added ${response.result.items.length} items, total now: ${newLength}`);
 
