@@ -523,9 +523,9 @@ export const getSettings = () => {
                                 label: 'Access',
                                 parentId: securityTabId,
                                 dropdownOptions: [
-                                    { label: 'Any authenticated', value: '3' },
-                                    { label: 'Requires permissions', value: '4' },
-                                    { label: 'Allow anonymous', value: '5' }
+                                    { label: 'Any authenticated', value: 3 },
+                                    { label: 'Requires permissions', value: 4 },
+                                    { label: 'Allow anonymous', value: 5 }
                                 ]
                             })
                             .addSettingsInputRow({
