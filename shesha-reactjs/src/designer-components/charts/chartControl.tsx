@@ -10,7 +10,7 @@ import { useChartDataActionsContext, useChartDataStateContext } from '../../prov
 import { useProcessedChartData } from './hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { formatDate, getChartDataRefetchParams, getResponsiveStyle, renderChart } from './utils';
+import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems } from './utils';
 import ChartLoader from './components/chartLoader';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
@@ -55,60 +55,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     if (!entityType || !valueProperty || !axisProperty) return null;
     return { entityType, valueProperty, axisProperty };
   }, [entityType, valueProperty, axisProperty]);
-
-  // Optimized data processing function
-  const processItems = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
-    const processedItems = new Array(items.length);
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const processedItem: any = {};
-
-      // Process all properties in a single pass
-      for (const key in item) {
-        if (Object.hasOwn(item, key)) {
-          let value = item[key];
-
-          // Handle null/undefined values
-          value ??= 'undefined';
-
-          // Apply reference list mapping if available
-          if (refListMap.has(key)) {
-            const refMap = refListMap.get(key);
-            value = refMap.get(value) || value;
-          }
-
-          processedItem[key] = value;
-        }
-      }
-
-      processedItems[i] = processedItem;
-    }
-
-    return processedItems;
-  }, []);
-
-  // Optimized sorting function
-  const sortItems = useCallback((items: any[], isTimeSeries: boolean, property: string) => {
-    if (isTimeSeries) {
-      return items.sort((a, b) => {
-        const aTime = new Date(a[property]).getTime();
-        const bTime = new Date(b[property]).getTime();
-        return aTime - bTime;
-      });
-    } else {
-      return items.sort((a, b) => {
-        const aVal = a[property];
-        const bVal = b[property];
-
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-          return aVal - bVal;
-        }
-
-        return String(aVal).localeCompare(String(bVal));
-      });
-    }
-  }, []);
 
   // Function to process and update chart data
   const processAndUpdateData = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {

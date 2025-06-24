@@ -8,6 +8,61 @@ import { Result } from "antd";
 
 export const MAX_TITLE_LINE_LENGTH = 14;
 
+
+  // Optimized data processing function
+export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>) => {
+    const processedItems = new Array(items.length);
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const processedItem: any = {};
+
+      // Process all properties in a single pass
+      for (const key in item) {
+        if (Object.hasOwn(item, key)) {
+          let value = item[key];
+
+          // Handle null/undefined values
+          value ??= 'undefined';
+
+          // Apply reference list mapping if available
+          if (refListMap.has(key)) {
+            const refMap = refListMap.get(key);
+            value = refMap.get(value) || value;
+          }
+
+          processedItem[key] = value;
+        }
+      }
+
+      processedItems[i] = processedItem;
+    }
+
+    return processedItems;
+  };
+
+  // Optimized sorting function
+export const sortItems = (items: any[], isTimeSeries: boolean, property: string) => {
+    if (isTimeSeries) {
+      return items.sort((a, b) => {
+        const aTime = new Date(a[property]).getTime();
+        const bTime = new Date(b[property]).getTime();
+        return aTime - bTime;
+      });
+    } else {
+      return items.sort((a, b) => {
+        const aVal = a[property];
+        const bVal = b[property];
+
+        if (typeof aVal === 'number' && typeof bVal === 'number') {
+          return aVal - bVal;
+        }
+
+        return String(aVal).localeCompare(String(bVal));
+      });
+    }
+  };
+
 /**
  * Function to manage the length of the title, ie if the title is too long, we need to split it into multiple lines
  * @param title the title to manage
