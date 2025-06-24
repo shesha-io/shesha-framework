@@ -179,7 +179,7 @@ export const Dropdown: FC<IDropdownProps> = ({
         return <Select
             {...commonSelectProps}
             popupMatchSelectWidth={false}
-            style={{ width: 'max-content' }}
+            style={{ width: 'max-content', height: 'max-content' }}
             placeholder={placeholder && <ReflistTag
                 key={'placeholder'}
                 color={'#d9d9d9'}

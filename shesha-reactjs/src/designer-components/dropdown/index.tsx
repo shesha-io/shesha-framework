@@ -63,7 +63,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
-            tagStyle={{ ...tagStyle, margin: 0, alignContent: 'center' }}
+            tagStyle={{ ...tagStyle }}
             onChange={onChangeInternal}
           />;
         }}

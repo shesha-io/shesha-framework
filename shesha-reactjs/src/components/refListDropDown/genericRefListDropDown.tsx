@@ -163,7 +163,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     return <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       {...commonSelectProps}
       popupMatchSelectWidth={false}
-      style={{ width: 'max-content' }}
+      style={{ width: 'max-content', height: 'max-content' }}
       labelRender={(props) => {
         const option = options.find((o) => o.value === props.value);
         return <ReflistTag

@@ -5,28 +5,42 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
 
   const dropdown = cx("sha-dropdown", css`
     --ant-color-text: ${style.color} !important;
-    --ant-font-size: ${style.fontSize} !important;
     --ant-font-weight-strong: ${style.fontWeight} !important;
     --ant-select-multiple-item-bg: transparent !important;
 
     .ant-select-selector {
-        ${(style.height !== 'auto' || !style.height) && 'overflow: auto;'}
+        ${(style.height !== 'auto' || !style.height) && 'overflow-y: auto;'}
         .ant-select-selection-overflow {
             display: flex;
             flex-wrap: wrap;
             width: 100%;
             height: 100%;
         }
+
         scrollbar-width: thin;
         ::-webkit-scrollbar {
             width: 8px;
             background-color: transparent;
         }
     }
+
+    input {
+      font-size: ${style.fontSize} !important;
+    }
+
+    .ant-tag {
+      margin: 0;
+      align-content: center;
+      display: inline-flex;
+      align-items: center;
+      overflow: hidden;
+    }
   
     .ant-select-selection-item {
+      font-size: ${style.fontSize} !important;
       font-weight: var(--ant-font-weight) !important;
-      --ant-line-width: 0px !important;
+     --ant-line-width: 0px !important;
+     line-height: unset !important;
       overflow: visible;
       height: 100%;
 
