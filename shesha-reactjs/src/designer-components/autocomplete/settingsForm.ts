@@ -88,6 +88,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         label: 'Edit Mode',
                                         size: 'small',
                                         jsSetting: true,
+                                        defaultValue: 'inherited',
                                     },
                                     {
                                         id: nanoid(),

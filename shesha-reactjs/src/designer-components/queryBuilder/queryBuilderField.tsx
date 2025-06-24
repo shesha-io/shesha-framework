@@ -39,7 +39,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     setJsonExpanded(!jsonExpanded);
   };
 
-  const hasValue = Boolean(props?.value);
+  const hasValue = Boolean(props.value && Object.keys(props.value).length > 0);
 
   return (
     <div className={styles.shaQueryBuilderMarginTop8}>
@@ -75,7 +75,8 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
                     size="small"
                     danger
                     onClick={() => {
-                      if (props?.onChange) props.onChange(null);
+                      
+                      if (props?.onChange) props.onChange([]); 
                     }}
                   >
                     Clear
@@ -106,7 +107,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       >
         <h4>Here you can create your own filter using the query builder below</h4>
 
-        <QueryBuilder value={props.value} onChange={onChange} readOnly={readOnly} />
+        <QueryBuilder value={hasValue ? props.value : null} onChange={onChange} readOnly={readOnly} />
       </Modal>
     </div>
   );

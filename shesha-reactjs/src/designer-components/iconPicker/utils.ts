@@ -22,7 +22,7 @@ export const defaultStyles = (): IStyleType => {
             radiusType: 'all',
         },
         dimensions: {
-            width: 'auto',
+            width: 'max-content',
             height: 'auto',
             minHeight: '0px',
             maxHeight: 'auto',
