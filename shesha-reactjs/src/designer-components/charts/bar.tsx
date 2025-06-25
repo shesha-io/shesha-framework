@@ -60,6 +60,8 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       showYAxisScale: true,
       showXAxisTitle: true,
       showYAxisTitle: true,
+      showXAxisLabel: true,
+      showYAxisLabel: true,
     }))
 };
 

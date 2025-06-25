@@ -61,7 +61,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const [showLoader, setShowLoader] = useState(true);
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const [hasInitialData, setHasInitialData] = useState(false);
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
 
@@ -263,19 +262,9 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     getMetadata,
     getReferenceList,
     refetch,
-    props,
-    setControlProps,
-    formData
+    cleanData,
+    setIsLoaded,
   ]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const data: IChartData = useProcessedChartData();
 

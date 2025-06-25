@@ -52,6 +52,10 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       type: prev.type,
       id: prev.id
     }))
+    .add<IChartProps>(6, prev => ({ 
+      ...prev,
+      isAxisTimeSeries: false,
+    }))
 };
 
 export default PieChartComponent;
