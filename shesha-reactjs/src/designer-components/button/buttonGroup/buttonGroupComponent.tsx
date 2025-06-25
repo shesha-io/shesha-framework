@@ -92,7 +92,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(12, (prev) => {
       const newModel = { ...prev, gap: prev.spaceSize ?? 'middle' };
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        const newItem = { ...item, ...migrateStyles(item, defaultStyles(item)) };
+        const newItem = { ...item, ...migrateStyles({ ...item, size: item.size ?? prev.size }, defaultStyles({ ...item, size: item.size ?? prev.size })) };
         if (Array.isArray(newItem['childItems']))
           newItem['childItems'] = newItem['childItems'].map(updateItems);
         return newItem;
