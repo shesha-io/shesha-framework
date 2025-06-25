@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-   const shaNotesRenderer = cx("sha-notes-renderer", css`
+  const shaNotesRenderer = cx("sha-notes-renderer", css`
    ::-webkit-scrollbar {
         width: 8px;
     }
@@ -13,7 +13,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     ::-webkit-scrollbar-track {
         background-color: lightgrey;
     }    
-  `); 
+  `);
   return {
     shaNotesRenderer
   };
