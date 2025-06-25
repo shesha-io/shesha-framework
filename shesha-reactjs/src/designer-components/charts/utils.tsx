@@ -266,6 +266,7 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       skipCount: skipCount ?? 0,
       maxResultCount: maxResultCount ?? 100,
+      orderBy: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
     },
   };
 };
