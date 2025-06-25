@@ -904,7 +904,6 @@ export const getSettings = (data: any) => {
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: containerStylePnlId,
-                            //hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
                                 id: nanoid(),
@@ -931,7 +930,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                                  // hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -941,7 +940,7 @@ export const getSettings = (data: any) => {
                                       propertyName: "container.dimensions.width",
                                       icon: "widthIcon",
                                       tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                      defaultValue: '600px',
+                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -969,7 +968,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "horizontal";', _mode: 'code', _value: false } as any,
+                                  // hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "horizontal";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -979,7 +978,7 @@ export const getSettings = (data: any) => {
                                       propertyName: "container.dimensions.height",
                                       icon: "heightIcon",
                                       tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                      defaultValue: '600px',
+                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
