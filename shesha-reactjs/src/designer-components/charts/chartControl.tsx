@@ -1,11 +1,11 @@
 import { useGet } from '@/hooks';
 import { useFormData, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
-import { IRefListPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { Alert, Flex, Spin, Tooltip } from 'antd';
-import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from './hooks';
 import { IChartData, IChartsProps } from './model';
@@ -13,6 +13,25 @@ import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems } from './utils';
 import ChartLoader from './components/chartLoader';
 import { InfoCircleOutlined } from '@ant-design/icons';
+
+/**
+ * Make sure the properties are valid for the entity type
+ * @param metaData - The metadata of the entity type
+ * @param axisProperty - The property to use for the axis
+ * @param valueProperty - The property to use for the value
+ * @returns An array of faulty properties by name e.g. ['axisProperty', 'groupingProperty', 'valueProperty']
+ */
+const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null) => {
+  const faultyProperties: string[] = [];
+  
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push('axisProperty');
+  }
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push('valueProperty');
+  }
+  return faultyProperties;
+};
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const {
@@ -33,7 +52,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const state = useChartDataStateContext();
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
-  const { setData, setIsLoaded, setFilterdData, setControlProps } = useChartDataActionsContext();
+  const { setData, setIsLoaded, setControlProps, cleanData } = useChartDataActionsContext();
   const { data: formData } = useFormData();
   const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>({
     current: 0,
@@ -44,19 +63,14 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const [hasInitialData, setHasInitialData] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isFetchingRef = useRef(false);
+  const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
 
   const { styles, cx } = useStyles();
 
-  useEffect(() => setControlProps(props), [props, formData]);
+  useEffect(() => setControlProps(props), [props, formData, setControlProps]);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
-
-  // Memoize the required properties to avoid unnecessary re-renders
-  const requiredProperties = useMemo(() => {
-    if (!entityType || !valueProperty || !axisProperty) return null;
-    return { entityType, valueProperty, axisProperty };
-  }, [entityType, valueProperty, axisProperty]);
 
   // Function to process and update chart data
   const processAndUpdateData = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
@@ -76,19 +90,33 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   }, [isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, groupingProperty, setData]);
 
   useEffect(() => {
-    if (!requiredProperties || isFetchingRef.current) {
+    if (isFetchingRef.current || !entityType || !valueProperty || !axisProperty) {
       return;
     }
 
     isFetchingRef.current = true;
 
     const fetchAndProcessData = async () => {
+      setIsLoaded(false);
+      setHasInitialData(false);
+      setFaultyProperties([]);
+      setMetadataProcessed(false);
+      setLoadingProgress({
+        current: 0,
+        total: -1,
+      });
+      setShowLoader(true);
+      cleanData();
       try {
-        setIsLoaded(false);
-        setHasInitialData(false);
 
         // Get metadata first to identify reference list properties
         const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
+
+        const faultyProperties = validateEntityProperties(metaData.properties as IPropertyMetadata[], axisProperty, valueProperty);
+        if (faultyProperties.length > 0) {
+          setFaultyProperties(faultyProperties);
+          return;
+        }
 
         // Pre-filter reference list properties and create lookup maps
         const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
@@ -218,7 +246,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
     fetchAndProcessData();
   }, [
-    requiredProperties,
     evaluatedFilters,
     groupingProperty,
     isAxisTimeSeries,
@@ -236,13 +263,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     getMetadata,
     getReferenceList,
     refetch,
+    props,
+    setControlProps,
+    formData
   ]);
-
-  useEffect(() => {
-    if (state.data) {
-      setFilterdData(state.data);
-    }
-  }, [state.data]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -255,6 +279,21 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   const data: IChartData = useProcessedChartData();
 
+  if (faultyProperties.length > 0) {
+    
+    // Dynamically build the description with unique properties from the missingProperties array
+    const descriptionMessage = `Please make sure that you've configured the following properties correctly: ${faultyProperties.join(', ')}.`;
+
+    return (
+      <Alert
+        showIcon
+        message="Chart control properties not set correctly!"
+        description={descriptionMessage}
+        type="warning"
+      />
+    );
+  }
+
   if (!entityType || !chartType || !valueProperty || !axisProperty) {
     // Collect the missing properties in an array
     const missingProperties: string[] = [];
@@ -263,8 +302,12 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     if (!valueProperty) missingProperties.push("'valueProperty'");
     if (!axisProperty) missingProperties.push("'axisProperty'");
 
-    // Dynamically build the description
-    const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
+    if (faultyProperties.length > 0) {
+      missingProperties.push(...faultyProperties);
+    }
+
+    // Dynamically build the description with unique properties from the missingProperties array
+    const descriptionMessage = `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`;
 
     return (
       <Alert

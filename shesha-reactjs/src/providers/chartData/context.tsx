@@ -54,13 +54,13 @@ export interface IChartDataContext {
 export interface IChartDataAtionsContext {
   setControlProps?: (controlProps: IChartsProps) => void;
   setData?: (data: object[]) => void;
-  setFilterdData?: (data: object[]) => void;
   onFilter?: () => void;
   /** Sets the data that will be retrieved directly from the backend */
   setUrlTypeData?: (data: object) => void;
 
   setIsLoaded?: (isLoaded: boolean) => void;
   setIsFilterVisible?: (isFilterVisible: boolean) => void;
+  cleanData?: () => void;
 }
 
 export const INITIAL_STATE: IChartDataContext = {
@@ -98,7 +98,7 @@ export const INITIAL_STATE: IChartDataContext = {
 
   isLoaded: false,
 
-  filteredData: [],
+  filteredData: []
 };
 
 export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);

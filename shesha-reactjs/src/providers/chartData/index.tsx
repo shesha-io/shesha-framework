@@ -1,6 +1,6 @@
 import { IChartData, IChartsProps } from "@/designer-components/charts/model";
 import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from "react";
-import { SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsLoadedAction, SetUrlTypeDataAction } from "./actions";
+import { CleanDataAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
 
@@ -9,10 +9,6 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
 
   const setData = (data: IChartData[]) => {
     dispatch(SetDataAction(data));
-  };
-
-  const setFilterdData = (filteredData: object[]) => {
-    dispatch(SetFilterdDataAction(filteredData));
   };
 
   const setIsLoaded = (isLoaded: boolean) => {
@@ -27,14 +23,18 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetUrlTypeDataAction(urlTypeData));
   };
 
+  const cleanData = () => {
+    dispatch(CleanDataAction());
+  };
+
   return (
     <ChartDataStateContext.Provider value={state}>
       <ChartDataActionsContext.Provider value={useMemo(() => ({
         setData,
-        setFilterdData,
         setIsLoaded,
         setControlProps,
-        setUrlTypeData
+        setUrlTypeData,
+        cleanData
       }), [])}>
         {children}
       </ChartDataActionsContext.Provider>

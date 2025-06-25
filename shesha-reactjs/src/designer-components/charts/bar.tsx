@@ -53,6 +53,14 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       type: prev.type,
       id: prev.id
     }))
+    .add<IChartProps>(6, prev => ({ 
+      ...prev,
+      isAxisTimeSeries: false,
+      showXAxisScale: true,
+      showYAxisScale: true,
+      showXAxisTitle: true,
+      showYAxisTitle: true,
+    }))
 };
 
 export default BarChartComponent;

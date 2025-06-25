@@ -901,7 +901,7 @@ export const getSettings = (data: any) => {
                             description: 'If the x-axis is a time series, switch to true.',
                             parentId: dataTabId,
                             defaultValue: false,
-                            validate: { required: true },
+                            validate: { required: false },
                             width: '100%',
                             jsSetting: true,
                           },

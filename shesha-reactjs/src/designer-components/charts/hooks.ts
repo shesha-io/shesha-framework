@@ -69,7 +69,7 @@ export const useGeneratedTitle = (): string => {
  */
 export const useProcessedChartData = (): IChartData => {
   const {
-    filteredData: data,
+    data,
     axisProperty,
     groupingProperty,
     valueProperty,

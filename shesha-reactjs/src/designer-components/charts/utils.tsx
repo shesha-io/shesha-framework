@@ -9,7 +9,7 @@ import { Result } from "antd";
 export const MAX_TITLE_LINE_LENGTH = 14;
 
 
-  // Optimized data processing function
+// Optimized data processing function
 export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>) => {
     const processedItems = new Array(items.length);
 
