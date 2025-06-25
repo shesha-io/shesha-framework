@@ -148,7 +148,7 @@ export const getColumnSettings = (data?: any) => ({
                             "id": "isVisible-anchored-row",
                             "type": "settingsInputRow",
                             "propertyName": "isVisibleAnchoredRow",
-                            "label": "Is Visible & Anchored",
+                            "label": "Hide & Anchored",
                             "labelAlign": "right",
                             "inputs": [
                                 {
@@ -175,7 +175,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "id": "isVisible1",
                                     "type": "switch",
                                     "propertyName": "isVisible",
-                                    "label": "Is Visible",
+                                    "label": "Hide",
                                     "labelAlign": "right"
                                 }
                             ]
@@ -330,21 +330,24 @@ export const getColumnSettings = (data?: any) => ({
                                                 .addSettingsInputRow({
                                                     id: 'dimensionsStyleRowWidth',
                                                     parentId: 'dimensionsStylePnl',
-                                                    inline: true,
                                                     inputs: [
                                                         {
                                                             "id": "minWidth1",
-                                                            "type": "numberField",
+                                                            "type": "textField",
                                                             "propertyName": "minWidth",
                                                             "label": "Min Width",
                                                             "labelAlign": "right",
+                                                            "icon": "minWidthIcon",
+                                                            "tooltip": "You can use any unit (%, px, em, etc). px by default if without unit"
                                                         },
                                                         {
                                                             "id": "maxWidth1",
-                                                            "type": "numberField",
+                                                            "type": "textField",
                                                             "propertyName": "maxWidth",
                                                             "label": "Max Width",
                                                             "labelAlign": "right",
+                                                            "icon": "maxWidthIcon",
+                                                            "tooltip": "You can use any unit (%, px, em, etc). px by default if without unit"
                                                         },
                                                     ]
                                                 })
@@ -360,10 +363,12 @@ export const getColumnSettings = (data?: any) => ({
                                                     inputs: [
                                                         {
                                                             "id": "minHeight1",
-                                                            "type": "numberField",
+                                                            "type": "textField",
                                                             "propertyName": "minHeight",
                                                             "label": "Min Height",
                                                             "labelAlign": "right",
+                                                            "icon": "heightIcon",
+                                                            "tooltip": "You can use any unit (%, px, em, etc). px by default if without unit"
                                                         }
                                                     ]
                                                 })
