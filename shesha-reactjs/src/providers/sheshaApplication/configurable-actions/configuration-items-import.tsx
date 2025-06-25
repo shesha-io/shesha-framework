@@ -16,12 +16,12 @@ import { ValidationErrors } from '@/components';
 
 const actionsOwner = 'Configuration Items';
 
-interface IConfigurationItemsExportFooterProps {
+interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
   importerRef: MutableRefObject<IImportInterface>;
 }
 
-export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
+export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
   const { hideModal, importerRef: exporterRef } = props;
   const { message, notification } = App.useApp();
@@ -90,7 +90,7 @@ export const useConfigurationItemsImportAction = () => {
           },
           showModalFooter: false,
           content: <ConfigurationItemsImport onImported={onImported} importRef={exporterRef} />,
-          footer: <ConfigurationItemsExportFooter hideModal={hideModal} importerRef={exporterRef} />
+          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={exporterRef} />
         };
         createModal({ ...modalProps });
       });

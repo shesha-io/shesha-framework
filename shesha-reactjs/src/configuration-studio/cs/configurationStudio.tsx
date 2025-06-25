@@ -9,6 +9,12 @@ import { flatNode2TreeNode, getIcon } from "../tree-utils";
 import { INotificationApi } from "./notificationApi";
 import { MutableRefObject } from "react";
 import { getUnknownDocumentDefinition } from "../document-definitions/configurable-editor/genericDefinition";
+import ConfigurationItemsExport, { IExportInterface } from "@/components/configurationFramework/itemsExport";
+import React from "react";
+import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-export";
+import { createManualRef } from "./utils";
+import ConfigurationItemsImport, { IImportInterface } from "@/components/configurationFramework/itemsImport";
+import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
@@ -426,8 +432,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
             subscriptions.forEach(s => allSubscriptions.add(s));
         });
 
-        console.log(`LOG: notifySubscribers (${types.join(",")})`, allSubscriptions.size);
-
         allSubscriptions.forEach(s => (s(this)));
     }
 
@@ -538,7 +542,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     //#region crud operations
 
     createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
-        await this.modalApi.showModalAsync({
+        await this.modalApi.showModalFormAsync({
             title: 'Create Folder',
             formId: FORMS.CREATE_FOLDER,
             formArguments: {
@@ -565,7 +569,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     renameFolderAsync = async (node: FolderTreeNode) => {
         try {
-            await this.modalApi.showModalAsync({
+            await this.modalApi.showModalFormAsync({
                 title: 'Rename Folder',
                 formId: FORMS.RENAME_FOLDER,
                 formArguments: {
@@ -585,7 +589,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
         const definition = this.getItemTypeDefinition(itemType);
 
-        const response = await this.modalApi.showModalAsync<CreateItemResponse>({
+        const response = await this.modalApi.showModalFormAsync<CreateItemResponse>({
             title: `Create ${definition.friendlyName}`,
             formId: definition.createFormId,
             formArguments: {
@@ -635,7 +639,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         try {
             const definition = this.getItemTypeDefinition(node.itemType);
 
-            await this.modalApi.showModalAsync({
+            await this.modalApi.showModalFormAsync({
                 title: `Rename ${definition.friendlyName}`,
                 formId: definition.renameFormId,
                 formArguments: {
@@ -683,7 +687,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     exposeExistingAsync = async ({ moduleId, folderId }: ExposeArgs): Promise<void> => {
-        await this.modalApi.showModalAsync({
+        await this.modalApi.showModalFormAsync({
             title: 'Expose Configuration',
             formId: FORMS.EXPOSE_EXISTING,
             formArguments: {
@@ -693,11 +697,51 @@ export class ConfigurationStudio implements IConfigurationStudio {
         });
         await this.loadTreeAsync();
     };
-    importPackageAsync = (_args: ImportPackageArgs): Promise<void> => {
-        throw new Error("Not implemented");
+    importPackageAsync = async (_args: ImportPackageArgs): Promise<void> => {
+        const importerRef = createManualRef<IImportInterface>(undefined);
+
+        const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+            const hideModal = () => {
+                resolve(false);
+                removeModal();
+            };
+
+            const onImported = () => {
+                removeModal();
+                resolve(true);
+            };
+            return {
+                title: 'Import Configuration',
+                content: <ConfigurationItemsImport onImported={onImported} importRef={importerRef} />,
+                footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={importerRef} />
+            };
+        });
+
+        if (exported)
+            await this.loadTreeAsync();
     };
-    exportPackageAsync = (_args: ExportPackageArgs): Promise<void> => {
-        throw new Error("Not implemented");
+    exportPackageAsync = async (_args: ExportPackageArgs): Promise<void> => {
+        const exporterRef = createManualRef<IExportInterface>(undefined);
+
+        const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+            const hideModal = () => {
+                resolve(false);
+                removeModal();
+            };
+
+            const onExported = () => {
+                removeModal();
+                resolve(true);
+            };
+            return {
+                title: 'Export Configuration',
+                content: (<ConfigurationItemsExport exportRef={exporterRef} onExported={onExported} />),
+                footer: (<ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />)
+            };
+        });
+
+        if (exported)
+            await this.loadTreeAsync();
     };
 
     //#endregion

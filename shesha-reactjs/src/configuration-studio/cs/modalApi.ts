@@ -1,15 +1,34 @@
 import { FormFullName, useDynamicModals } from "@/providers";
-import { IModalProps } from "@/providers/dynamicModal/models";
+import { ICommonModalProps, IModalProps } from "@/providers/dynamicModal/models";
 import { nanoid } from "@/utils/uuid";
 import { App } from "antd";
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import { HookAPI as ModalHookAPI } from 'antd/lib/modal/useModal';
 
 export interface ShowModalArgs {
     title?: string;
+};
+
+export interface ShowModalFormArgs extends ShowModalArgs {
     formId: FormFullName;
     formArguments?: any;
 };
+
+//executor: (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void
+
+
+
+export interface ShowModalContentArgs extends ShowModalArgs {
+    footer?: ReactNode;
+    content: ReactNode;
+};
+
+type ShowModalContentExecutorArgs<T> = {
+    resolve: (value: T | PromiseLike<T>) => void;
+    reject: (reason?: any) => void;
+    removeModal: () => void;
+};
+export type ShowModalContentExecutor<T> = (args: ShowModalContentExecutorArgs<T>) => ShowModalContentArgs;
 
 interface ConfirmArgs {
     title: string;
@@ -17,7 +36,8 @@ interface ConfirmArgs {
 };
 
 export interface IModalApi {
-    showModalAsync: <TResponse = void>(args: ShowModalArgs) => Promise<TResponse | undefined>;
+    showModalFormAsync: <TResponse = void>(args: ShowModalFormArgs) => Promise<TResponse | undefined>;
+    showModalContentAsync: <TResponse = void>(executor: ShowModalContentExecutor<TResponse>) => Promise<TResponse | undefined>;
     confirmYesNo: (args: ConfirmArgs) => Promise<boolean>;
 };
 
@@ -58,18 +78,18 @@ export class ModalApi implements IModalApi {
                     resolve(true);
                 },
             });
-        });        
+        });
     };
 
-    showModalAsync = <TResponse = void>(args: ShowModalArgs): Promise<TResponse | undefined> => {
+    showModalFormAsync = <TResponse = void>(args: ShowModalFormArgs): Promise<TResponse | undefined> => {
         const modalId = nanoid();
 
         return new Promise((resolve, reject) => {
             const modalProps: IModalProps = {
                 mode: "edit",
                 id: modalId,
-                formId: args.formId,
                 title: args.title,
+                formId: args.formId,
                 formArguments: args.formArguments,
                 isVisible: true,
                 onCancel: () => {
@@ -87,6 +107,39 @@ export class ModalApi implements IModalApi {
                 },
             };
 
+            this._createModal(modalProps);
+        });
+    };
+
+    showModalContentAsync = <TResponse = void>(executor: ShowModalContentExecutor<TResponse>): Promise<TResponse | undefined> => {
+        const modalId = nanoid();
+
+        return new Promise((resolve, reject) => {
+            const removeModal = () => {
+                this._removeModal(modalId);
+            };
+            const modalArgs = executor({ resolve, reject, removeModal });
+            const modalProps: ICommonModalProps = {
+                mode: "edit",
+                id: modalId,
+                title: modalArgs.title,
+                content: modalArgs.content,
+                footer: modalArgs.footer,
+                isVisible: true,
+                onCancel: () => {
+                    reject("Cancelled");
+                },
+                onSubmitted: (values) => {
+                    removeModal();
+                    resolve(values);
+                },
+                onClose: (positive = false, result) => {
+                    if (positive)
+                        resolve(result);
+                    else
+                        reject(result);
+                },
+            };
             this._createModal(modalProps);
         });
     };

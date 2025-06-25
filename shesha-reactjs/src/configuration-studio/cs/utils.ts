@@ -1,3 +1,5 @@
+import { MutableRefObject } from "react";
+
 export const extractAllSourceUrls = (stack: string): string[] => {
     const patterns = [
         // Chrome/Firefox/Edge format
@@ -86,4 +88,12 @@ export const replaceAllSourceUrls = (stack: string): string => {
         return stack;
 
     return stack.replace(/webpack-internal:\/\/\/\([^)]+\)\/\.\//, 'webpack://_N_E/');
+};
+
+export interface ManualMutableRefObject<T> extends MutableRefObject<T> {
+  current: T;
+}
+
+export const createManualRef = <T>(initialValue: T): ManualMutableRefObject<T> => {
+  return { current: initialValue };
 };
