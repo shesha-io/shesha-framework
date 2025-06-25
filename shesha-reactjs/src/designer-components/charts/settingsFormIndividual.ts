@@ -141,6 +141,7 @@ export const getSettings = (data: any) => {
                                 jsSetting: true,
                                 width: '100%',
                                 placeholder: '',
+                                allowClear: true,
                               })
                               .addSettingsInput({
                                 id: nanoid(),
@@ -748,6 +749,7 @@ export const getSettings = (data: any) => {
                         jsSetting: true,
                         width: '100%',
                         placeholder: '',
+                        allowClear: true,
                       })
                       .addSettingsInput({
                         id: nanoid(),
