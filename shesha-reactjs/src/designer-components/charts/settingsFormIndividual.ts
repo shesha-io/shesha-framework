@@ -48,6 +48,7 @@ export const getSettings = (data: any) => {
                   parentId: 'root',
                   label: 'Hide',
                   inputType: 'switch',
+                  jsSetting: true,
                 })
                 .addCollapsiblePanel({
                   id: nanoid(),
@@ -81,6 +82,7 @@ export const getSettings = (data: any) => {
                               ],
                               validate: { required: true },
                               defaultValue: 'entityType',
+                              jsSetting: true,
                             },
                             {
                               id: nanoid(),
@@ -100,6 +102,7 @@ export const getSettings = (data: any) => {
                                 _mode: 'code',
                                 _value: false,
                               } as any,
+                              jsSetting: true,
                             },
                           ]
                         })
@@ -119,14 +122,61 @@ export const getSettings = (data: any) => {
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'url',
-                                inputType: 'textField',
-                                label: 'Url',
-                                description: 'The URL you want to use for the chart',
+                                label: 'Custom Endpoint',
                                 labelAlign: 'right',
-                                parentId: dataSettingsForUrlId,
-                                hidden: false,
-                                validate: { required: true },
+                                parentId: dataTabId,
+                                inputType: 'endpointsAutocomplete',
+                                description: 'The endpoint to use to fetch data.',
+                                validate: {
+                                  required: {
+                                    _code: "return getSettingValue(data.dataMode) === 'url';",
+                                    _mode: 'code',
+                                    _value: false,
+                                  } as any,
+                                },
+                                dataSourceType: 'url',
+                                dataSourceUrl: '/api/services/app/Api/Endpoints',
+                                settingsValidationErrors: [],
+                                useRawValues: true,
+                                jsSetting: true,
+                                width: '100%',
+                                placeholder: '',
                               })
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'additionalProperties',
+                                label: 'Additional Properties',
+                                parentId: dataSettingsForUrlId,
+                                jsSetting: true,
+                                inputType: 'labelValueEditor',
+                                labelTitle: 'Key',
+                                valueTitle: 'Value',
+                                labelName: 'key',
+                                valueName: 'value',
+                                tooltip:
+                                  'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+                                  'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
+                                  'Id initial value is already initialised with {{entityReference.id}} but you can override it',
+                                exposedVariables: [
+                                  { name: 'data', description: 'This form data', type: 'object' },
+                                  { name: 'form', description: 'Form instance', type: 'object' },
+                                  {
+                                    name: 'formMode',
+                                    description: 'Current form mode',
+                                    type: "'designer' | 'edit' | 'readonly'",
+                                  },
+                                  { name: 'globalState', description: 'Global state', type: 'object' },
+                                  {
+                                    name: 'entityReference.id',
+                                    description: 'Id of entity reference entity',
+                                    type: 'object',
+                                  },
+                                  { name: 'entityReference.entity', description: 'Entity', type: 'object' },
+                                  { name: 'moment', description: 'moment', type: '' },
+                                  { name: 'http', description: 'axiosHttp', type: '' },
+                                ].map((item) => JSON.stringify(item)),
+                              }
+                              )
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsForUrlId,
@@ -147,7 +197,8 @@ export const getSettings = (data: any) => {
                                     description: 'Label for the axis property',
                                     validate: { required: false },
                                     width: '100%',
-                                  }  
+                                    jsSetting: true,
+                                  }
                                 ]
                               })
                               .addSettingsInputRow({
@@ -170,6 +221,7 @@ export const getSettings = (data: any) => {
                                     description: 'Label for the value property',
                                     validate: { required: false },
                                     width: '100%',
+                                    jsSetting: true,
                                   }
                                 ]
                               })
@@ -188,7 +240,7 @@ export const getSettings = (data: any) => {
                             _value: false,
                           } as any,
                           components: [
-                            ...new DesignerToolbarSettings()                      
+                            ...new DesignerToolbarSettings()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
@@ -241,6 +293,7 @@ export const getSettings = (data: any) => {
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
                                     width: '100%',
+                                    jsSetting: true,
                                   },
                                 ],
                               })
@@ -264,6 +317,7 @@ export const getSettings = (data: any) => {
                                     defaultValue: false,
                                     validate: { required: true },
                                     width: '100%',
+                                    jsSetting: true,
                                   }
                                 ]
                               })
@@ -295,6 +349,7 @@ export const getSettings = (data: any) => {
                                     validate: { required: true },
                                     defaultValue: 'month-year',
                                     width: '100%',
+                                    jsSetting: true,
                                   },
                                 ],
                               })
@@ -326,6 +381,7 @@ export const getSettings = (data: any) => {
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
                                     width: '100%',
+                                    jsSetting: true,
                                   },
                                 ],
                               })
@@ -358,6 +414,7 @@ export const getSettings = (data: any) => {
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
                                     width: '100%',
+                                    jsSetting: true,
                                   },
                                 ],
                               })
@@ -381,10 +438,11 @@ export const getSettings = (data: any) => {
                                     defaultValue: false,
                                     validate: { required: true },
                                     width: '100%',
+                                    jsSetting: true,
                                   },
                                 ],
                               })
-                              
+
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
@@ -413,6 +471,7 @@ export const getSettings = (data: any) => {
                                     validate: { required: true },
                                     defaultValue: 'month-year',
                                     width: '100%',
+                                    jsSetting: true,
                                   },
                                 ],
                               })
@@ -453,167 +512,176 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        inline: true,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'textField',
-                            propertyName: 'title',
-                            parentId: commonTabId,
-                            label: 'Title',
-                            tooltip: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
-                            description: 'The title of the chart (if any)',
-                            labelAlign: 'right',
-                            width: '100%',
-                          }
-                        ]
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        hidden: {
-                          _code: 'return !(getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`)',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'showTitle',
-                            label: 'Show Title',
-                            description: 'Show the title of the chart',
-                            parentId: commonTabId,
-                            defaultValue: true,
-                          },
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'showLegend',
-                            label: 'Show Legend',
-                            description:
-                              'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
-                            parentId: commonTabId,
-                            defaultValue: false,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'showTitle',
-                            label: 'Show Title',
-                            description: 'Show the title of the chart',
-                            parentId: commonTabId,
-                            defaultValue: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        inline: true,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'legendPosition',
-                            parentId: commonTabId,
-                            hidden: {
-                              _code: 'return getSettingValue(data?.showLegend) !== true',
-                              _mode: 'code',
-                              _value: true,
-                            } as any,
-                            label: 'Legend Position',
-                            type: 'dropdown',
-                            allowClear: true,
-                            dropdownOptions: [
-                              { label: 'Top', value: 'top' },
-                              { label: 'Bottom', value: 'bottom' },
-                              { label: 'Left', value: 'left' },
-                              { label: 'Right', value: 'right' },
-                            ],
-                            validate: { required: true },
-                            defaultValue: 'top',
-                          }
-                        ]
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'showXAxisScale',
-                            label: 'Show X Axis',
-                            parentId: commonTabId,
-                            defaultValue: true,
-                          },
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'showXAxisTitle',
-                            label: 'Show X Axis Title',
-                            parentId: commonTabId,
-                            defaultValue: true,
-                            hidden: {
-                              _code: 'return getSettingValue(data?.showXAxisScale) !== true',
-                              _mode: 'code',
-                              _value: true,
-                            } as any,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'showYAxisScale',
-                            label: 'Show Y Axis',
-                            parentId: commonTabId,
-                            defaultValue: true,
-                          },
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'showYAxisTitle',
-                            label: 'Show Y Axis Title',
-                            parentId: commonTabId,
-                            defaultValue: true,
-                            hidden: {
-                              _code: 'return getSettingValue(data?.showYAxisScale) !== true',
-                              _mode: 'code',
-                              _value: true,
-                            } as any,
-                          },
-                        ],
-                      })
-                      .toJson(),
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          inline: true,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: 'textField',
+                              propertyName: 'title',
+                              parentId: commonTabId,
+                              label: 'Title',
+                              tooltip: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
+                              description: 'The title of the chart (if any)',
+                              labelAlign: 'right',
+                              width: '100%',
+                              jsSetting: true,
+                            }
+                          ]
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          hidden: {
+                            _code: 'return !(getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`)',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: 'switch',
+                              propertyName: 'showTitle',
+                              label: 'Show Title',
+                              description: 'Show the title of the chart',
+                              parentId: commonTabId,
+                              defaultValue: true,
+                              jsSetting: true,
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'switch',
+                              propertyName: 'showLegend',
+                              label: 'Show Legend',
+                              description:
+                                'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
+                              parentId: commonTabId,
+                              defaultValue: false,
+                              jsSetting: true,
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: 'switch',
+                              propertyName: 'showTitle',
+                              label: 'Show Title',
+                              description: 'Show the title of the chart',
+                              parentId: commonTabId,
+                              defaultValue: true,
+                              jsSetting: true,
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          inline: true,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'legendPosition',
+                              parentId: commonTabId,
+                              hidden: {
+                                _code: 'return getSettingValue(data?.showLegend) !== true',
+                                _mode: 'code',
+                                _value: true,
+                              } as any,
+                              label: 'Legend Position',
+                              type: 'dropdown',
+                              allowClear: true,
+                              dropdownOptions: [
+                                { label: 'Top', value: 'top' },
+                                { label: 'Bottom', value: 'bottom' },
+                                { label: 'Left', value: 'left' },
+                                { label: 'Right', value: 'right' },
+                              ],
+                              validate: { required: true },
+                              defaultValue: 'top',
+                              jsSetting: true,
+                            }
+                          ]
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: 'switch',
+                              propertyName: 'showXAxisScale',
+                              label: 'Show X Axis',
+                              parentId: commonTabId,
+                              defaultValue: true,
+                              jsSetting: true,
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'switch',
+                              propertyName: 'showXAxisTitle',
+                              label: 'Show X Axis Title',
+                              parentId: commonTabId,
+                              defaultValue: true,
+                              hidden: {
+                                _code: 'return getSettingValue(data?.showXAxisScale) !== true',
+                                _mode: 'code',
+                                _value: true,
+                              } as any,
+                              jsSetting: true,
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: 'switch',
+                              propertyName: 'showYAxisScale',
+                              label: 'Show Y Axis',
+                              parentId: commonTabId,
+                              defaultValue: true,
+                              jsSetting: true,
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'switch',
+                              propertyName: 'showYAxisTitle',
+                              label: 'Show Y Axis Title',
+                              parentId: commonTabId,
+                              defaultValue: true,
+                              hidden: {
+                                _code: 'return getSettingValue(data?.showYAxisScale) !== true',
+                                _mode: 'code',
+                                _value: true,
+                              } as any,
+                              jsSetting: true,
+                            },
+                          ],
+                        })
+                        .toJson(),
                     ]
                   }
                 })
@@ -636,12 +704,13 @@ export const getSettings = (data: any) => {
                   inputType: 'dropdown',
                   allowClear: true,
                   dropdownOptions: [
-                    { label: 'URL', value: 'url' },
+                    { label: 'Custom Endpoint', value: 'url' },
                     { label: 'Entity Type', value: 'entityType' },
                   ],
                   validate: { required: true },
                   defaultValue: 'entityType',
-                  hidden: false
+                  hidden: false,
+                  jsSetting: true
                 })
                 .addContainer({
                   id: dataSettingsForUrlId,
@@ -659,14 +728,61 @@ export const getSettings = (data: any) => {
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'url',
-                        inputType: 'textField',
-                        label: 'URL',
-                        description: 'The URL you want to use for the chart',
+                        label: 'Custom Endpoint',
                         labelAlign: 'right',
                         parentId: dataTabId,
-                        hidden: false,
-                        validate: { required: true },
+                        inputType: 'endpointsAutocomplete',
+                        description: 'The endpoint to use to fetch data.',
+                        validate: {
+                          required: {
+                            _code: "return getSettingValue(data.dataMode) === 'url';",
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                        },
+                        dataSourceType: 'url',
+                        dataSourceUrl: '/api/services/app/Api/Endpoints',
+                        settingsValidationErrors: [],
+                        useRawValues: true,
+                        jsSetting: true,
+                        width: '100%',
+                        placeholder: '',
                       })
+                      .addSettingsInput({
+                        id: nanoid(),
+                        propertyName: 'additionalProperties',
+                        label: 'Additional Properties',
+                        parentId: dataSettingsForUrlId,
+                        jsSetting: true,
+                        inputType: 'labelValueEditor',
+                        labelTitle: 'Key',
+                        valueTitle: 'Value',
+                        labelName: 'key',
+                        valueName: 'value',
+                        tooltip:
+                          'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+                          'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
+                          'Id initial value is already initialised with {{entityReference.id}} but you can override it',
+                        exposedVariables: [
+                          { name: 'data', description: 'This form data', type: 'object' },
+                          { name: 'form', description: 'Form instance', type: 'object' },
+                          {
+                            name: 'formMode',
+                            description: 'Current form mode',
+                            type: "'designer' | 'edit' | 'readonly'",
+                          },
+                          { name: 'globalState', description: 'Global state', type: 'object' },
+                          {
+                            name: 'entityReference.id',
+                            description: 'Id of entity reference entity',
+                            type: 'object',
+                          },
+                          { name: 'entityReference.entity', description: 'Entity', type: 'object' },
+                          { name: 'moment', description: 'moment', type: '' },
+                          { name: 'http', description: 'axiosHttp', type: '' },
+                        ].map((item) => JSON.stringify(item)),
+                      }
+                      )
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'axisProperty',
@@ -753,11 +869,12 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
+                              _value: false
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
@@ -781,6 +898,7 @@ export const getSettings = (data: any) => {
                             defaultValue: false,
                             validate: { required: true },
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
@@ -812,6 +930,7 @@ export const getSettings = (data: any) => {
                             validate: { required: true },
                             defaultValue: 'month-year',
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
@@ -838,11 +957,12 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
+                              _value: false
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
@@ -875,9 +995,10 @@ export const getSettings = (data: any) => {
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
-                      })                      
+                      })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -898,10 +1019,11 @@ export const getSettings = (data: any) => {
                             defaultValue: false,
                             validate: { required: true },
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
-                      
+
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataSettingsId,
@@ -930,6 +1052,7 @@ export const getSettings = (data: any) => {
                             validate: { required: true },
                             defaultValue: 'month-year',
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
@@ -1104,7 +1227,7 @@ export const getSettings = (data: any) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
-                    },                    
+                    },
                     {
                       id: nanoid(),
                       type: 'switch',
@@ -1120,7 +1243,7 @@ export const getSettings = (data: any) => {
                       } as any,
                     }
                   ]
-                })             
+                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: appearanceTabId,

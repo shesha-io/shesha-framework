@@ -1,7 +1,7 @@
 import { useGet } from '@/hooks';
 import { useFormData } from '@/index';
 import { Alert, Flex, Result } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
@@ -17,20 +17,27 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { data: formData } = useFormData();
 
   const { styles, cx } = useStyles();
+  const transformedUrl = useMemo(() => {
+    if (!url) return null;
+    const queryString = props.additionalProperties 
+      ? '?' + props.additionalProperties.map(({ key, value }) => key + '=' + value).join('&')
+      : '';
+    return url + queryString;
+  }, [url, props.additionalProperties]);
 
   useEffect(() => setControlProps(props), [props, formData]);
   useEffect(() => {
-    if (!url || url === '') {
+    if (!transformedUrl || transformedUrl === '') {
       return;
     }
-    refetch(getURLChartDataRefetchParams(url))
+    refetch(getURLChartDataRefetchParams(transformedUrl))
       .then((data) => {
         setUrlTypeData(data?.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
       })
       .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err))
       .finally(() => setIsLoaded(true));
-  }, [url, formData]);
+  }, [transformedUrl]);
 
   const memoUrlTypeData = useChartURLData();
 

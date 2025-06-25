@@ -18,6 +18,7 @@ export interface IChartsProps {
     orderDirection?: TOrderDirection;
     dataMode?: TDataMode;
     url?: string;
+    additionalProperties?: Array<{ key: string; value: string }>;
     chartType?: TChartType;
     isDoughnut?: boolean;
     showTitle?: boolean;
