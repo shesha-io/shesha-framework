@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useTemplates } from '../utils';
+import { defaultStyles, useEntityTemplates } from '../utils';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import {
@@ -19,9 +19,9 @@ import { getSettings } from './entitySettings';
 const settingsMarkup = getSettings() as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter } = settings ?? {};
+  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType: buttonTypeSetting } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
-  const { getTemplateState } = useTemplates(settings);
+  const { getEntityTemplateState } = useEntityTemplates(settings);
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
   const [data, setData] = useState(null);
@@ -33,7 +33,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   });
 
   const fetchTemplateData = async () => {
-    const response = await refetch(getTemplateState(evaluatedFilters ?? null));
+    const response = await refetch(getEntityTemplateState(evaluatedFilters));
     const result = Array.isArray(response.result) ? response.result : response.result.items;
     setData(result);
   };
@@ -53,7 +53,8 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
 
-    const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
+    const styles = defaultStyles(item);
+
     const result = data?.map((p) => ({
       id: p.id,
       name: p.name,
@@ -63,13 +64,8 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType: buttonType,
-      background,
-      border,
-      shadow,
-      font,
-      dimensions,
-      stylingBox,
+      buttonType: item.buttonType ?? buttonTypeSetting,
+      ...styles,
       actionConfiguration: actionConfiguration,
     }));
 

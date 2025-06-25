@@ -25,6 +25,7 @@ import moment from 'moment';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { innerEntityReferenceButtonBoxStyle, innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
+import { addPx } from '@/utils/style';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -47,15 +48,13 @@ export interface IEntityReferenceProps {
   formType?: string;
 
   // Quickview properties
-  quickviewWidth?: number;
+  quickviewWidth?: number | string;
 
   // Dialog properties
   modalTitle?: string;
   showModalFooter?: boolean;
   additionalProperties?: IKeyValue[];
   modalWidth?: number | string;
-  customWidth?: number;
-  widthUnits?: '%' | 'px';
   footerButtons?: ModalFooterButtons;
   buttons?: ButtonGroupItemProps[];
   /**
@@ -112,8 +111,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         !formIdentifier &&
         props.formSelectionMode === 'dynamic' &&
         Boolean(entityType) &&
-        Boolean(formType) &&
-        props.entityReferenceType !== 'Quickview'
+        Boolean(formType)
       ) {
         try {
           const formid = await getEntityFormId(entityType, formType);
@@ -211,9 +209,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
-        modalWidth: props.modalWidth,
-        customWidth: props.customWidth,
-        widthUnits: props.widthUnits,
+        modalWidth: addPx(props.modalWidth),
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
@@ -279,7 +275,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           entityId={props.value?.id ?? props.value}
           className={entityType}
           getEntityUrl={props.getEntityUrl}
-          width={props.quickviewWidth}
+          width={addPx(props.quickviewWidth)}
           formIdentifier={formIdentifier}
           formType={formType}
           disabled={props.disabled}
