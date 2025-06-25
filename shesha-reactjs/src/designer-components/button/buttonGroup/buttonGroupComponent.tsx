@@ -88,7 +88,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         items: prev.items.map(setDownIcon),
       };
     })
-    .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles(prev)) }))
+    .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles()) }))
     .add<IButtonGroupComponentProps>(12, (prev) => {
       const newModel = { ...prev, gap: prev.spaceSize ?? 'middle' };
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
