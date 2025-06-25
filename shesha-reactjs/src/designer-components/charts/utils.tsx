@@ -68,20 +68,20 @@ export const sortItems = (items: any[], isTimeSeries: boolean, property: string)
  * @param title the title to manage
  * @returns the managed title
  */
-export const splitTitleIntoLines = (title: string): string | string[] => {
-  const words = title.split(' ');
+export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_TITLE_LINE_LENGTH, lineCount: number = 5): string | string[] => {
+  const words = title?.split(' ') ?? [];
   const lines = [];
   let currentLine = '';
 
-  if (title.split(' ').length < MAX_TITLE_LINE_LENGTH) {
+  if (words?.length < lineWordLength) {
     return title;
   }
 
   for (const word of words) {
-    if (currentLine.split(' ').length < MAX_TITLE_LINE_LENGTH) {
+    if (currentLine?.split(' ').length < lineWordLength) {
       currentLine += (currentLine ? ' ' : '') + word;
     } else {
-      if (lines.length === 5) {
+      if (lines.length === lineCount) {
         lines.push("...");
         return lines;
       }

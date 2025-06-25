@@ -26,6 +26,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
   const {
     axisProperty: xProperty,
     valueProperty: yProperty,
+    axisPropertyLabel,
+    valuePropertyLabel,
     aggregationMethod,
     showLegend,
     showTitle,
@@ -51,6 +53,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
     }));
   }
+
+  const yTitle = (valuePropertyLabel?.trim().length > 0) ? `${valuePropertyLabel}` : `${yProperty} (${aggregationMethod})`;
 
   const options: ChartOptions<any> = {
     responsive: true,
@@ -102,7 +106,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       x: {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
-          text: xProperty?.trim() ?? '',
+          text: splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',
@@ -133,9 +137,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       y: {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
-          text: dataMode === 'url' || !aggregationMethod
-            ? yProperty?.trim() ?? ''
-            : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
+          text: splitTitleIntoLines(dataMode === 'url' ? valuePropertyLabel : yTitle, 10, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',

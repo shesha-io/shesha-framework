@@ -56,12 +56,15 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(6, prev => ({ 
       ...prev,
       isAxisTimeSeries: false,
+      isGroupingTimeSeries: false,
       showXAxisScale: true,
       showYAxisScale: true,
       showXAxisTitle: true,
       showYAxisTitle: true,
       showXAxisLabel: true,
       showYAxisLabel: true,
+      strokeColor: '#000000',
+      strokeWidth: 1,
     }))
 };
 

@@ -54,6 +54,10 @@ export interface IChartsProps {
     stacked?: boolean;
     aggregationMethod?: TAggregationMethod;
     filters?: FilterExpression;
+
+    axisPropertyLabel?: string;
+    valuePropertyLabel?: string;
+    groupingPropertyLabel?: string;
 }
 
 /**

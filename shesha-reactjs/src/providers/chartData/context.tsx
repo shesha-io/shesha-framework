@@ -48,7 +48,9 @@ export interface IChartDataContext {
 
   isLoaded?: boolean;
 
-  filteredData?: object[];
+  axisPropertyLabel?: string;
+  valuePropertyLabel?: string;
+  groupingPropertyLabel?: string;
 }
 
 export interface IChartDataAtionsContext {
@@ -98,7 +100,9 @@ export const INITIAL_STATE: IChartDataContext = {
 
   isLoaded: false,
 
-  filteredData: []
+  axisPropertyLabel: '',
+  valuePropertyLabel: '',
+  groupingPropertyLabel: '',
 };
 
 export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);

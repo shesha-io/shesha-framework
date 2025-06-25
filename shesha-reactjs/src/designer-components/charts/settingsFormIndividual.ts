@@ -178,54 +178,6 @@ export const getSettings = (data: any) => {
                                 ].map((item) => JSON.stringify(item)),
                               }
                               )
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: dataSettingsForUrlId,
-                                hidden: {
-                                  _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
-                                  {
-                                    id: nanoid(),
-                                    propertyName: 'axisProperty',
-                                    label: 'Axis Label',
-                                    type: 'textField',
-                                    labelAlign: 'right',
-                                    parentId: dataSettingsForUrlId,
-                                    isDynamic: false,
-                                    description: 'Label for the axis property',
-                                    validate: { required: false },
-                                    width: '100%',
-                                    jsSetting: true,
-                                  }
-                                ]
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: dataSettingsForUrlId,
-                                hidden: {
-                                  _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
-                                  {
-                                    id: nanoid(),
-                                    propertyName: 'valueProperty',
-                                    label: 'Value Axis Label',
-                                    type: 'textField',
-                                    labelAlign: 'right',
-                                    parentId: dataSettingsForUrlId,
-                                    isDynamic: false,
-                                    description: 'Label for the value property',
-                                    validate: { required: false },
-                                    width: '100%',
-                                    jsSetting: true,
-                                  }
-                                ]
-                              })
                               .toJson(),
                           ],
                         })
@@ -443,7 +395,6 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
@@ -521,15 +472,32 @@ export const getSettings = (data: any) => {
                           inputs: [
                             {
                               id: nanoid(),
-                              type: 'textField',
+                              type: 'switch',
+                              propertyName: 'showTitle',
+                              label: 'Show Title',
+                              description: 'Show the title of the chart',
+                              parentId: commonTabId,
+                              defaultValue: true,
+                              jsSetting: true,
+                              width: '50%',
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'textArea',
                               propertyName: 'title',
                               parentId: commonTabId,
                               label: 'Title',
                               tooltip: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
+                              placeholder: 'The title of the chart (if any), if none then the title will be generated from the entity type.',          
                               description: 'The title of the chart (if any)',
                               labelAlign: 'right',
-                              width: '100%',
+                              width: '50%',
                               jsSetting: true,
+                              hidden: {
+                                _code: 'return getSettingValue(data?.showTitle) !== true',
+                                _mode: 'code',
+                                _value: true,
+                              } as any,
                             }
                           ]
                         })
@@ -545,16 +513,6 @@ export const getSettings = (data: any) => {
                             {
                               id: nanoid(),
                               type: 'switch',
-                              propertyName: 'showTitle',
-                              label: 'Show Title',
-                              description: 'Show the title of the chart',
-                              parentId: commonTabId,
-                              defaultValue: true,
-                              jsSetting: true,
-                            },
-                            {
-                              id: nanoid(),
-                              type: 'switch',
                               propertyName: 'showLegend',
                               label: 'Show Legend',
                               description:
@@ -562,35 +520,8 @@ export const getSettings = (data: any) => {
                               parentId: commonTabId,
                               defaultValue: false,
                               jsSetting: true,
+                              width: '50%',
                             },
-                          ],
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: commonTabId,
-                          hidden: {
-                            _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea` || getSettingValue(data?.simpleOrPivot) === `pivot`',
-                            _mode: 'code',
-                            _value: false,
-                          } as any,
-                          inputs: [
-                            {
-                              id: nanoid(),
-                              type: 'switch',
-                              propertyName: 'showTitle',
-                              label: 'Show Title',
-                              description: 'Show the title of the chart',
-                              parentId: commonTabId,
-                              defaultValue: true,
-                              jsSetting: true,
-                            },
-                          ],
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: commonTabId,
-                          inline: true,
-                          inputs: [
                             {
                               id: nanoid(),
                               propertyName: 'legendPosition',
@@ -612,6 +543,30 @@ export const getSettings = (data: any) => {
                               validate: { required: true },
                               defaultValue: 'top',
                               jsSetting: true,
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          inline: true,
+                          inputs: [                            
+                            {
+                              id: nanoid(),
+                              type: 'textArea',
+                              propertyName: 'groupingPropertyLabel',
+                              label: 'Grouping Property Label',
+                              description: 'Custom label of the grouping property. If not provided, the grouping property will be generated from the entity type property.',
+                              tooltip: 'Custom label of the grouping property. If not provided, the grouping property will be generated from the entity type property.',
+                              placeholder: 'Custom label of the legend. If not provided, the legend will be generated from the entity type property.',
+                              parentId: commonTabId,
+                              jsSetting: true,
+                              hidden: {
+                                _code: 'return getSettingValue(data?.showLegend) !== true',
+                                _mode: 'code',
+                                _value: true,
+                              } as any,
+                              width: '100%',
                             }
                           ]
                         })
@@ -653,6 +608,28 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           parentId: commonTabId,
                           hidden: {
+                            _code: 'return getSettingValue(data?.showXAxisTitle) !== true',
+                            _mode: 'code',
+                            _value: true,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: 'textArea',
+                              propertyName: 'axisPropertyLabel',
+                              label: 'Axis Property Label',
+                              description: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
+                              tooltip: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
+                              placeholder: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
+                              parentId: commonTabId,
+                              jsSetting: true,
+                            },
+                          ]
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          hidden: {
                             _code: 'return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`',
                             _mode: 'code',
                             _value: false,
@@ -682,6 +659,28 @@ export const getSettings = (data: any) => {
                               jsSetting: true,
                             },
                           ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: commonTabId,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.showYAxisTitle) !== true',
+                            _mode: 'code',
+                            _value: true,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: 'textArea',
+                              propertyName: 'valuePropertyLabel',
+                              label: 'Value Property Label',
+                              description: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
+                              tooltip: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
+                              placeholder: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
+                              parentId: commonTabId,
+                              jsSetting: true,
+                            }
+                          ]
                         })
                         .toJson(),
                     ]
@@ -786,31 +785,6 @@ export const getSettings = (data: any) => {
                         jsSetting: true,
                       }
                       )
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'axisProperty',
-                        label: 'Axis Label',
-                        inputType: 'textField',
-                        labelAlign: 'right',
-                        parentId: dataTabId,
-                        isDynamic: false,
-                        description: 'Label for the axis property',
-                        validate: { required: false },
-                        jsSetting: true,
-                      })
-                      .addSettingsInput(
-                        {
-                          id: nanoid(),
-                          propertyName: 'valueProperty',
-                          label: 'Value Axis Label',
-                          inputType: 'textField',
-                          labelAlign: 'right',
-                          parentId: dataTabId,
-                          isDynamic: false,
-                          description: 'Label for the value property',
-                          validate: { required: false },
-                          jsSetting: true,
-                        })
                       .toJson(),
                   ],
                 })
@@ -1022,7 +996,7 @@ export const getSettings = (data: any) => {
                             description: 'If the grouping property is a time series, switch to true.',
                             parentId: dataTabId,
                             defaultValue: false,
-                            validate: { required: true },
+                            validate: { required: false },
                             width: '100%',
                             jsSetting: true,
                           },

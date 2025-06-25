@@ -55,6 +55,9 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(6, prev => ({ 
       ...prev,
       isAxisTimeSeries: false,
+      isGroupingTimeSeries: false,
+      strokeColor: '#000000',
+      strokeWidth: 1,
     }))
 };
 

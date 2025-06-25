@@ -1,6 +1,6 @@
 import { useGet } from '@/hooks';
 import { useFormData } from '@/index';
-import { Alert, Flex, Result } from 'antd';
+import { Alert, Flex } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks';
@@ -74,9 +74,14 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  if (!state.urlTypeData) {
+  if (!state.urlTypeData || state.urlTypeData?.labels?.length === 0 || state.urlTypeData?.datasets?.length === 0 || memoUrlTypeData.datasets.length === 0 || memoUrlTypeData.labels.length === 0) {
     return (
-      <Result status="404" title="404" subTitle="Sorry, no data to display. Please check the URL and try again." />
+      <Alert
+        showIcon
+        message="No data to display!"
+        description="Please check the URL and try again."
+        type="warning"
+      />
     );
   }
 
