@@ -1,4 +1,5 @@
 import { IConfigurableFormComponent } from "@/providers";
+import { FilterExpression } from "@/providers/dataTable/interfaces";
 
 /**
  * Chart data that will go into the actual chart component from ChartJS
@@ -52,6 +53,7 @@ export interface IChartsProps {
     showYAxisTitle?: boolean;
     stacked?: boolean;
     aggregationMethod?: TAggregationMethod;
+    filters?: FilterExpression;
 }
 
 /**

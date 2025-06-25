@@ -50,7 +50,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   useEffect(() => setControlProps(props), [props, formData]);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor });
+  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
 
   // Memoize the required properties to avoid unnecessary re-renders
   const requiredProperties = useMemo(() => {
