@@ -491,6 +491,7 @@ export const getSettings = (data: any) => {
                                 ],
                                 validate: { required: true },
                                 defaultValue: 'count',
+                                jsSetting: true,
                               })
                               .toJson(),
                           ],
@@ -753,7 +754,6 @@ export const getSettings = (data: any) => {
                         propertyName: 'additionalProperties',
                         label: 'Additional Properties',
                         parentId: dataSettingsForUrlId,
-                        jsSetting: true,
                         inputType: 'labelValueEditor',
                         labelTitle: 'Key',
                         valueTitle: 'Value',
@@ -781,6 +781,7 @@ export const getSettings = (data: any) => {
                           { name: 'moment', description: 'moment', type: '' },
                           { name: 'http', description: 'axiosHttp', type: '' },
                         ].map((item) => JSON.stringify(item)),
+                        jsSetting: true,
                       }
                       )
                       .addSettingsInput({
@@ -793,6 +794,7 @@ export const getSettings = (data: any) => {
                         isDynamic: false,
                         description: 'Label for the axis property',
                         validate: { required: false },
+                        jsSetting: true,
                       })
                       .addSettingsInput(
                         {
@@ -805,6 +807,7 @@ export const getSettings = (data: any) => {
                           isDynamic: false,
                           description: 'Label for the value property',
                           validate: { required: false },
+                          jsSetting: true,
                         })
                       .toJson(),
                   ],
@@ -1112,6 +1115,7 @@ export const getSettings = (data: any) => {
                               _mode: 'code',
                               _value: false,
                             } as any,
+                            jsSetting: true,
                           }
                         ]
                       })
@@ -1131,6 +1135,7 @@ export const getSettings = (data: any) => {
                         ],
                         validate: { required: true },
                         defaultValue: 'count',
+                        jsSetting: true,
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -1160,6 +1165,7 @@ export const getSettings = (data: any) => {
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             width: '100%',
+                            jsSetting: true,
                           },
                         ],
                       })
@@ -1189,6 +1195,7 @@ export const getSettings = (data: any) => {
                       type: 'numberField',
                       step: 1,
                       min: 300,
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -1200,6 +1207,7 @@ export const getSettings = (data: any) => {
                       type: 'numberField',
                       step: 1,
                       min: 200,
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -1214,6 +1222,7 @@ export const getSettings = (data: any) => {
                       label: 'Show Border',
                       parentId: 'root',
                       defaultValue: true,
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -1227,6 +1236,7 @@ export const getSettings = (data: any) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -1241,6 +1251,7 @@ export const getSettings = (data: any) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      jsSetting: true,
                     }
                   ]
                 })
@@ -1258,6 +1269,7 @@ export const getSettings = (data: any) => {
                       description:
                         'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
                       step: 0.1,
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -1266,6 +1278,7 @@ export const getSettings = (data: any) => {
                       label: 'Stroke Color',
                       allowClear: true,
                       type: 'colorPicker',
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -1286,6 +1299,7 @@ export const getSettings = (data: any) => {
                         _mode: 'code',
                         _value: true,
                       } as any,
+                      jsSetting: true,
                     }
                   ]
                 })
