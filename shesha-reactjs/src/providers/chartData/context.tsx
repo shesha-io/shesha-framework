@@ -62,6 +62,8 @@ export interface IChartDataAtionsContext {
   setIsLoaded?: (isLoaded: boolean) => void;
   setIsFilterVisible?: (isFilterVisible: boolean) => void;
   cleanData?: () => void;
+  setAxisPropertyLabel?: (axisPropertyLabel: string) => void;
+  setValuePropertyLabel?: (valuePropertyLabel: string) => void;
 }
 
 export const INITIAL_STATE: IChartDataContext = {

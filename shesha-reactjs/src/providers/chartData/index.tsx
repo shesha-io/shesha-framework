@@ -1,6 +1,6 @@
 import { IChartProps } from "@/designer-components/charts/model";
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from "react";
-import { CleanDataAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction } from "./actions";
+import { CleanDataAction, SetAxisPropertyLabelAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction, SetValuePropertyLabelAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
 
@@ -37,6 +37,14 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
     dispatch(CleanDataAction());
   };
 
+  const setAxisPropertyLabel = (axisPropertyLabel: string) => {
+    dispatch(SetAxisPropertyLabelAction(axisPropertyLabel));
+  };
+
+  const setValuePropertyLabel = (valuePropertyLabel: string) => {
+    dispatch(SetValuePropertyLabelAction(valuePropertyLabel));
+  };
+
   return (
     <ChartDataStateContext.Provider value={state}>
       <ChartDataActionsContext.Provider value={{
@@ -44,7 +52,9 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
         setIsLoaded,
         setControlProps,
         setUrlTypeData,
-        cleanData
+        cleanData,
+        setAxisPropertyLabel,
+        setValuePropertyLabel
       }}>
         {children}
       </ChartDataActionsContext.Provider>

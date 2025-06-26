@@ -16,7 +16,7 @@ export const MAX_TITLE_LINE_LENGTH = 14;
  * @param valueProperty - The property to use for the value
  * @returns An array of faulty properties by name e.g. ['axisProperty', 'groupingProperty', 'valueProperty']
  */
-export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null) => {
+export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null, groupingProperty: string | null) => {
   const faultyProperties: string[] = [];
   
   if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
@@ -24,6 +24,9 @@ export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProp
   }
   if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
     faultyProperties.push('valueProperty');
+  }
+  if (groupingProperty && !metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === groupingProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push('groupingProperty');
   }
   return faultyProperties;
 };

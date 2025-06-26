@@ -27,13 +27,15 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
     orderDirection,
     isGroupingTimeSeries,
     groupingTimeSeriesFormat,
+    axisPropertyLabel,
+    valuePropertyLabel,
     ...state
   } = useChartDataStateContext();
 
   const { refetch } = useGet({ path: '', lazy: true });
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
-  const { setData, setIsLoaded } = useChartDataActionsContext();
+  const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
 
   // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
@@ -133,12 +135,15 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
     // Get metadata first to identify reference list properties
     getMetadata({ modelType: entityType, dataType: 'entity' })
       .then((metaData) => {
-        const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty);
+        const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
         if (faultyPropertiesInner.length > 0) {
           setFaultyProperties(faultyPropertiesInner);
           isFetchingRef.current = false;
-          return;
+          return Promise.reject(new Error(`Faulty properties: ${faultyPropertiesInner.join(', ')}`));
         }
+
+        setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
+        setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
 
         // Pre-filter reference list properties and create lookup maps
         const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
@@ -191,7 +196,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
         if (!response?.result) {
           throw new Error('Invalid response structure');
         }
-        const items = response.result.items || [];
+        const items = response.result.items ?? [];
         
         // Process and update data
         processAndUpdateData(items, refListMap);
@@ -279,7 +284,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
     return faultyPropertiesAlert;
   }
 
-  if (!entityType || !chartType || !valueProperty || !axisProperty || faultyProperties?.length > 0) {
+  if (!entityType || !chartType || !valueProperty || !axisProperty) {
     return missingPropertiesAlert;
   }
 

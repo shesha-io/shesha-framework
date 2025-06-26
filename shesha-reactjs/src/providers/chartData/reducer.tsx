@@ -29,6 +29,14 @@ export const chartDataReducer = handleActions(
     [ChartDataActionsEnum.CleanData]: () => ({
       ...INITIAL_STATE,
     }),
+    [ChartDataActionsEnum.SetAxisPropertyLabel]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
+    [ChartDataActionsEnum.SetValuePropertyLabel]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
   },
   INITIAL_STATE,
 );
