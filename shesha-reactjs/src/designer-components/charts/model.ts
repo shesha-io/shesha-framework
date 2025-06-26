@@ -59,6 +59,7 @@ export interface IChartsProps {
 
     axisPropertyLabel?: string;
     valuePropertyLabel?: string;
+    maxResultCount?: number;
 }
 
 /**

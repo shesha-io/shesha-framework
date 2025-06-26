@@ -20,13 +20,13 @@ export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProp
   const faultyProperties: string[] = [];
   
   if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
-    faultyProperties.push('axisProperty');
+    faultyProperties.push(`'axisProperty'`);
   }
   if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
-    faultyProperties.push('valueProperty');
+    faultyProperties.push(`'valueProperty'`);
   }
   if (groupingProperty && !metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === groupingProperty?.split('.')[0]?.toLowerCase())) {
-    faultyProperties.push('groupingProperty');
+    faultyProperties.push(`'groupingProperty'`);
   }
   return faultyProperties;
 };

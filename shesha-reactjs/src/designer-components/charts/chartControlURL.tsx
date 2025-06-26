@@ -1,6 +1,6 @@
 import { useGet } from '@/hooks';
-import { Alert, Flex } from 'antd';
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { Alert, Button, Flex } from 'antd';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
@@ -27,7 +27,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     return url + queryString;
   }, [url, props.additionalProperties]);
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     if (isFetchingRef.current || !transformedUrl || transformedUrl === '') {
       return;
     }
@@ -54,6 +54,10 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         isFetchingRef.current = false;
       });
   }, [transformedUrl]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const memoUrlTypeData = useChartURLData();
 
@@ -92,9 +96,16 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         message="Error loading chart data from URL"
         description={error}
         type="error"
+        action={
+          <Button type="primary" onClick={() => {
+            fetchData();
+          }}>
+            Retry
+          </Button>
+        }
       />
     );
-  }, [error]);
+  }, [error, fetchData]);
 
   const noDataAlert = useMemo(() => {
     if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 && 

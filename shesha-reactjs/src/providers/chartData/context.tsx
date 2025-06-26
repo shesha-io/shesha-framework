@@ -103,6 +103,7 @@ export const INITIAL_STATE: IChartDataContext = {
 
   axisPropertyLabel: '',
   valuePropertyLabel: '',
+  maxResultCount: -1,
 };
 
 export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);

@@ -4,7 +4,7 @@ import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metada
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
-import { Alert, Flex } from 'antd';
+import { Alert, Button, Flex } from 'antd';
 import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from './hooks';
@@ -13,7 +13,7 @@ import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
 
-const ChartControl: React.FC<IChartsProps> = React.memo(() => {
+const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const {
     chartType,
     entityType,
@@ -29,6 +29,8 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
     groupingTimeSeriesFormat,
     axisPropertyLabel,
     valuePropertyLabel,
+    filters,
+    maxResultCount,
     ...state
   } = useChartDataStateContext();
 
@@ -46,7 +48,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
   const { styles, cx } = useStyles();
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: state.filters });
+  const evaluatedFilters = (useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters }));
 
   // Memoize the description message to prevent unnecessary re-renders
   const descriptionMessage = useMemo(() => {
@@ -64,15 +66,11 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
     if (!valueProperty) missingProperties.push("'valueProperty'");
     if (!axisProperty) missingProperties.push("'axisProperty'");
 
-    if (faultyProperties?.length > 0) {
-      missingProperties.push(...faultyProperties);
-    }
-
     return {
       hasMissingProperties: missingProperties.length > 0,
       descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`
     };
-  }, [entityType, chartType, valueProperty, axisProperty, faultyProperties]);
+  }, [entityType, chartType, valueProperty, axisProperty]);
 
   // Memoize the chart container styles to prevent unnecessary re-renders
   const chartContainerStyle = useMemo(() => ({
@@ -119,7 +117,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
     setData(processedItems);
   }, [isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, groupingProperty, setData]);
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     if (isFetchingRef.current || !entityType || !valueProperty || !axisProperty) {
       return;
     }
@@ -139,7 +137,10 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
         if (faultyPropertiesInner.length > 0) {
           setFaultyProperties(faultyPropertiesInner);
           isFetchingRef.current = false;
-          return Promise.reject(new Error(`Faulty properties: ${faultyPropertiesInner.join(', ')}`));
+          // Exit the promise chain without throwing an error to prevent the error from being logged
+          return {
+            skipFetch: true
+          };
         }
 
         setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
@@ -186,7 +187,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
             orderBy,
             orderDirection,
             0,
-            -1 // -1 to get all data without pagination
+            maxResultCount ?? -1
           );
 
           return refetch(params);
@@ -194,6 +195,9 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
       })
       .then((response) => {
         if (!response?.result) {
+          if (response?.skipFetch) {
+            return;
+          }
           throw new Error(response?.error?.details ?? 'Invalid response structure');
         }
         const items = response.result.items ?? [];
@@ -205,7 +209,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
       })
       .catch((error) => {
         console.error('Error in fetchAndProcessData:', error);
-        const errorMessage = error instanceof Error ? error.message : 'An error occurred while fetching chart data';
+        const errorMessage = error as string ?? 'An error occurred while fetching chart data';
         setError(errorMessage);
         setIsLoaded(true);
         setMetadataProcessed(false);
@@ -213,7 +217,11 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
       .finally(() => {
         isFetchingRef.current = false;
       });
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters]);
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const data: IChartData = useProcessedChartData();
 
@@ -253,9 +261,16 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
         message="Error loading chart data"
         description={error}
         type="error"
+        action={
+          <Button type="primary" onClick={() => {
+            fetchData();
+          }}>
+            Retry
+          </Button>
+        }
       />
     );
-  }, [error]);
+  }, [error, fetchData]);
 
   // Memoize the loader component
   const loaderComponent = useMemo(() => {

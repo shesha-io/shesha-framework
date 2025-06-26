@@ -34,9 +34,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       ...stylingBoxAsCSS
     });
     
-    if (model.hidden) return null;
-
-    
+    if (model.hidden) return null;    
 
     return (
       <ConfigurableFormItem model={model}>
@@ -51,7 +49,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
                 display: 'flex',
                 flexDirection: 'column'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' filters={model.filters} />}
               </div>
             </ChartDataProvider>
           );

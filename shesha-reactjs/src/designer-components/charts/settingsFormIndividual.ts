@@ -47,18 +47,19 @@ export const getSettings = (data: any) => {
                   styledLabel: true,
                   jsSetting: true,
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'hidden',
-                  parentId: 'root',
-                  label: 'Hide',
-                  inputType: 'switch',
-                  jsSetting: true,
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'hidden',
+                      parentId: commonTabId,
+                      label: 'Hide',
+                      type: 'switch',
+                      jsSetting: true,
+                      width: '50%',
+                    },
                     {
                       id: nanoid(),
                       type: 'switch',
@@ -117,12 +118,12 @@ export const getSettings = (data: any) => {
                               parentId: commonTabId,
                               label: 'Data Source Type',
                               description:
-                                'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
-                              tooltip: 'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                                'The type of data source you want to use for the chart. If you select `Custom Endpoint`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                              tooltip: 'The type of data source you want to use for the chart. If you select `Custom Endpoint`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
                               type: 'dropdown',
                               allowClear: true,
                               dropdownOptions: [
-                                { label: 'URL', value: 'url' },
+                                { label: 'Custom Endpoint', value: 'url' },
                                 { label: 'Entity Type', value: 'entityType' },
                               ],
                               validate: { required: true },
@@ -155,7 +156,7 @@ export const getSettings = (data: any) => {
                           id: dataSettingsForUrlId,
                           propertyName: 'dataSettingsForUrl',
                           parentId: commonTabId,
-                          label: 'Data Settings (URL)',
+                          label: 'Data Settings (Custom Endpoint)',
                           labelAlign: 'left',
                           hidden: {
                             _code: 'return getSettingValue(data?.dataMode) !== `url`',
@@ -260,8 +261,20 @@ export const getSettings = (data: any) => {
                                     settingsValidationErrors: [],
                                     jsSetting: true,
                                     useRawValues: true,
-                                    width: '100%',
+                                    width: '50%',
                                   },
+                                  {
+                                    id: nanoid(),
+                                    type: 'numberField',
+                                    propertyName: 'maxResultCount',
+                                    label: 'Data Size Limit',
+                                    description: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
+                                    tooltip: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
+                                    parentId: dataSettingsId,
+                                    validate: { required: false },
+                                    min: -1,
+                                    jsSetting: true,
+                                  }
                                 ],
                               })
                               .addSettingsInputRow({
@@ -315,21 +328,9 @@ export const getSettings = (data: any) => {
                                     parentId: dataSettingsId,
                                     defaultValue: false,
                                     validate: { required: true },
-                                    width: '100%',
                                     jsSetting: true,
-                                  }
-                                ]
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: dataSettingsId,
-                                inline: true,
-                                hidden: {
-                                  _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
+                                    width: '50%',
+                                  },
                                   {
                                     id: nanoid(),
                                     propertyName: 'timeSeriesFormat',
@@ -347,10 +348,14 @@ export const getSettings = (data: any) => {
                                     ],
                                     validate: { required: true },
                                     defaultValue: 'month-year',
-                                    width: '100%',
                                     jsSetting: true,
-                                  },
-                                ],
+                                    hidden: {
+                                      _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  }
+                                ]
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -436,21 +441,9 @@ export const getSettings = (data: any) => {
                                     parentId: dataSettingsId,
                                     defaultValue: false,
                                     validate: { required: true },
-                                    width: '100%',
+                                    width: '50%',
                                     jsSetting: true,
                                   },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: dataSettingsId,
-                                inline: true,
-                                hidden: {
-                                  _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
                                   {
                                     id: nanoid(),
                                     propertyName: 'groupingTimeSeriesFormat',
@@ -468,11 +461,16 @@ export const getSettings = (data: any) => {
                                     ],
                                     validate: { required: true },
                                     defaultValue: 'month-year',
-                                    width: '100%',
                                     jsSetting: true,
-                                  },
+                                    hidden: {
+                                      _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  }
                                 ],
                               })
+                              
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'aggregationMethod',
@@ -514,7 +512,6 @@ export const getSettings = (data: any) => {
                         .addSettingsInputRow({
                           id: nanoid(),
                           parentId: commonTabId,
-                          inline: true,
                           inputs: [
                             {
                               id: nanoid(),
@@ -525,7 +522,7 @@ export const getSettings = (data: any) => {
                               parentId: commonTabId,
                               defaultValue: true,
                               jsSetting: true,
-                              width: '49%',
+                              width: '50%',
                             },
                             {
                               id: nanoid(),
@@ -537,7 +534,6 @@ export const getSettings = (data: any) => {
                               placeholder: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
                               description: 'The title of the chart (if any)',
                               labelAlign: 'right',
-                              width: '50%',
                               jsSetting: true,
                               hidden: {
                                 _code: 'return getSettingValue(data?.showTitle) !== true',
@@ -843,8 +839,20 @@ export const getSettings = (data: any) => {
                             settingsValidationErrors: [],
                             jsSetting: true,
                             useRawValues: true,
-                            width: '100%',
+                            width: '50%'
                           },
+                          {
+                            id: nanoid(),
+                            type: 'numberField',
+                            propertyName: 'maxResultCount',
+                            label: 'Data Size Limit',
+                            description: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
+                            tooltip: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
+                            parentId: dataTabId,
+                            validate: { required: false },
+                            min: -1,
+                            jsSetting: true,
+                          }
                         ],
                       })
                       .addSettingsInputRow({
@@ -882,7 +890,6 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _code: 'return !getSettingValue(data?.axisProperty)',
                           _mode: 'code',
@@ -898,21 +905,9 @@ export const getSettings = (data: any) => {
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: false },
-                            width: '100%',
+                            width: '49%',
                             jsSetting: true,
                           },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        inline: true,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             id: nanoid(),
                             propertyName: 'timeSeriesFormat',
@@ -930,8 +925,13 @@ export const getSettings = (data: any) => {
                             ],
                             validate: { required: true },
                             defaultValue: 'month-year',
-                            width: '100%',
+                            width: '50%',
                             jsSetting: true,
+                            hidden: {
+                              _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                           },
                         ],
                       })
@@ -1019,22 +1019,9 @@ export const getSettings = (data: any) => {
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: false },
-                            width: '100%',
+                            width: '50%',
                             jsSetting: true,
                           },
-                        ],
-                      })
-
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataSettingsId,
-                        inline: true,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             id: nanoid(),
                             propertyName: 'groupingTimeSeriesFormat',
@@ -1054,6 +1041,11 @@ export const getSettings = (data: any) => {
                             defaultValue: 'month-year',
                             width: '100%',
                             jsSetting: true,
+                            hidden: {
+                              _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                           },
                         ],
                       })
