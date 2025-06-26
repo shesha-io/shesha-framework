@@ -1,9 +1,13 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Roles.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
+using Shesha.Utilities;
 using System;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Distribution
@@ -27,15 +31,30 @@ namespace Shesha.DynamicEntities.Distribution
 
         private async Task ImportPermissionsAsync(ShaRole item, ShaRoleRevision revision, DistributedShaRole distributedItem) 
         {
-            // TODO_V1: implement add/remove/update
+            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.RoleRevision == revision).ToListAsync();
+
+            var toDelete = dbPermissions.Where(e => !distributedItem.Permissions.Any(dp => dp.Permission == e.Permission)).ToList();
+            foreach (var permission in toDelete) 
+            {
+                await _rolePermissionRepo.DeleteAsync(permission);
+            }
+
             foreach (var perm in distributedItem.Permissions)
             {
-                await _rolePermissionRepo.InsertAsync(new ShaRolePermission()
+                var dbPermission = dbPermissions.FirstOrDefault(e => e.Permission == perm.Permission);
+                if (dbPermission != null)
                 {
-                    RoleRevision = revision,
-                    Permission = perm.Permission,
-                    IsGranted = perm.IsGranted,
-                });
+                    dbPermission.IsGranted = perm.IsGranted;
+                    await _rolePermissionRepo.UpdateAsync(dbPermission);
+                }
+                else {
+                    await _rolePermissionRepo.InsertAsync(new ShaRolePermission()
+                    {
+                        RoleRevision = revision,
+                        Permission = perm.Permission,
+                        IsGranted = perm.IsGranted,
+                    });
+                }                    
             }
         }
 
@@ -50,10 +69,20 @@ namespace Shesha.DynamicEntities.Distribution
             return await PermissionsAreEqualAsync(revision, distributedItem);
         }
 
-        private Task<bool> PermissionsAreEqualAsync(ShaRoleRevision revision, DistributedShaRole distributedItem)
+        private async Task<bool> PermissionsAreEqualAsync(ShaRoleRevision revision, DistributedShaRole distributedItem)
         {
-            // TODO_V1: implement permissions comparison
-            throw new NotImplementedException();
+            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.RoleRevision == revision && e.IsGranted)
+                .OrderBy(e => e.Permission)
+                .Select(e => e.Permission)                
+                .ToListAsync();
+
+            var distributedPermissions = distributedItem.Permissions
+                .Where(e => e.IsGranted)
+                .OrderBy(e => e.Permission)
+                .Select(e => e.Permission)                
+                .ToList();
+
+            return dbPermissions.Delimited(",") == distributedPermissions.Delimited(",");
         }
 
         protected override async Task MapCustomPropsToItemAsync(ShaRole item, ShaRoleRevision revision, DistributedShaRole distributedItem)
