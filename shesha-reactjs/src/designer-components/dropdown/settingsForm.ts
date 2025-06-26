@@ -535,6 +535,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: nanoid(),
                                                         parentId: nanoid(),
                                                         inline: true,
+                                                        label: 'Width',
                                                         inputs: [
                                                             {
                                                                 type: 'textField',

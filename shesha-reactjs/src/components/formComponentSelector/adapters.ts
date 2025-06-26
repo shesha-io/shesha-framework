@@ -47,7 +47,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
   },
   [DropdownComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
-      ...styleProperties,
       ...allBaseProperties,
       'mode',
       //'referenceListId',

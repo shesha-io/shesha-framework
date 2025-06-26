@@ -104,20 +104,16 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
   useEffect(() => {
-    let isSubscribed = true;
 
     const fetchFormId = async () => {
       if (
-        !formIdentifier &&
         props.formSelectionMode === 'dynamic' &&
         Boolean(entityType) &&
         Boolean(formType)
       ) {
         try {
           const formid = await getEntityFormId(entityType, formType);
-          if (isSubscribed) {
-            setFormIdentifier({ name: formid.name, module: formid.module });
-          }
+          setFormIdentifier({ name: formid.name, module: formid.module });
         } catch (error) {
           console.error('Error fetching form ID:', error);
         }
@@ -125,22 +121,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     fetchFormId();
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [formIdentifier, entityType, formType, props.formSelectionMode, props.entityReferenceType]);
+  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType]);
 
   useEffect(() => {
-    let isSubscribed = true;
-
     const fetchMetadata = async () => {
       if (entityType) {
         try {
           const res = await getMetadata({ modelType: entityType, dataType: null });
-          if (isSubscribed) {
             setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
-          }
         } catch (error) {
           console.error('Error fetching metadata:', error);
         }
@@ -148,10 +136,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     fetchMetadata();
-
-    return () => {
-      isSubscribed = false;
-    };
   }, [entityType]);
 
   useEffect(() => {
@@ -206,7 +190,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         buttons: props.buttons,
         footerButtons: props?.footerButtons,
         additionalProperties:
-          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
+          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some(p => p.key === 'id')
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: addPx(props.modalWidth),
@@ -232,16 +216,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       argumentsEvaluationContext: evaluationContext,
     });
   };
-
+ 
   const displayTextByType = useMemo(() => {
+    const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : displayText;
+
     return props.displayType === 'icon' ? (
       <ShaIcon iconName={props.iconName} style={props.style} />
-    ) : props.displayType === 'textTitle' ? (
-      props.textTitle
-    ) : (
-      displayText
-    );
-  }, [props.displayType, props.iconName, props.textTitle, displayText, props.style]);
+    ) : displayIfNotIcon;
+  }, [props.displayType, props.iconName, props.style, props.textTitle, displayText]);
 
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
