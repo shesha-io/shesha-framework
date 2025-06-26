@@ -67,7 +67,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
           propertyFilter={propertyFilter}
           layoutSettings={{
             labelCol: { span: 8 },
-            wrapperCol: { span: 16 },
+            wrapperCol: { span: 24 },
             layout: 'vertical'
           }}
         />
