@@ -198,7 +198,7 @@ namespace Shesha.Bootstrappers
 
                 await _listRevisionRepo.InsertAsync(revision);
                 await _listRepo.InsertAsync(listInDb);
-                //await _unitOfWorkManager.Current.SaveChangesAsync();                
+                //await _unitOfWorkManager.Current.SaveChangesAsync();
             }
             else
             {

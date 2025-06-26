@@ -16,6 +16,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     public class FormConfigurationImport: ConfigurationItemImportBase<FormConfiguration, DistributedFormConfiguration>, IFormConfigurationImport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
+        private readonly IRepository<FormConfigurationRevision, Guid> _formConfigRevisionRepo;
         private readonly IFormManager _formManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -26,13 +27,15 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         public FormConfigurationImport(IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo, 
             IFormManager formManger, 
-            IRepository<FormConfiguration, Guid> formConfigRepo, 
+            IRepository<FormConfiguration, Guid> formConfigRepo,
+            IRepository<FormConfigurationRevision, Guid> formConfigRevisionRepo,
             IUnitOfWorkManager unitOfWorkManager,
             IPermissionedObjectManager permissionedObjectManager
         ) : base(moduleRepo, frontEndAppRepo)
         {
             _formManger = formManger;
             _formConfigRepo = formConfigRepo;
+            _formConfigRevisionRepo = formConfigRevisionRepo;
             _unitOfWorkManager = unitOfWorkManager;
             _permissionedObjectManager = permissionedObjectManager;
         }
@@ -57,62 +60,54 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             return form;
         }
 
-        private bool FormsAreEqual(FormConfiguration? form, DistributedFormConfiguration item) 
+        private bool FormsAreEqual(FormConfiguration form, DistributedFormConfiguration item) 
         {
-            // TODO: V1 review
-            return false;
-            /*
+            var revision = form.LatestRevision;
+
             return form != null &&
+                revision != null && 
                 (form.Module == null ? string.IsNullOrWhiteSpace(item.ModuleName) : form.Module.Name == item.ModuleName) &&
-                form.Markup == item.Markup &&
                 form.Name == item.Name &&
-                form.Label == item.Label &&
-                form.Description == item.Description &&
-                form.ModelType == item.ModelType &&
                 form.Suppress == item.Suppress &&
-                form.IsTemplate == item.IsTemplate;
-            */
+
+                revision.Markup == item.Markup &&
+                revision.Label == item.Label &&
+                revision.Description == item.Description &&
+                revision.ModelType == item.ModelType &&
+                revision.IsTemplate == item.IsTemplate;
         }
 
         /// inheritedDoc
         protected async Task<ConfigurationItem> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName));
+            var form = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName));
 
-            if (FormsAreEqual(existingForm, item))
-                return existingForm;
+            if (form != null && FormsAreEqual(form, item))
+                return form;
 
-            if (existingForm != null) 
+            if (form == null) 
             {
-                // create new version
-                var newFormVersion = await _formManger.CreateNewVersionAsync(existingForm);
-                MapToForm(item, newFormVersion);
-
-                // TODO: V1 review
-                //newFormVersion.CreatedByImport = context.ImportResult;
-                newFormVersion.Normalize();
-
-                await _formConfigRepo.UpdateAsync(newFormVersion);
-
-                await SetPermissionsAsync(item, newFormVersion);
-
-                return newFormVersion;
-            } else 
-            {
-                var newForm = new FormConfiguration();
-                MapToForm(item, newForm);
-
-                newForm.Module = await GetModuleAsync(item.ModuleName, context);
-
-                newForm.Normalize();
-
-                await _formConfigRepo.InsertAsync(newForm);
-
-                await SetPermissionsAsync(item, newForm);
-
-                return newForm;
+                form = new FormConfiguration 
+                { 
+                    Module = await GetModuleAsync(item.ModuleName, context),
+                    Name = item.Name,
+                };
+                await _formConfigRepo.InsertAsync(form);
             }
+            var revision = form.MakeNewRevision();
+            MapToForm(item, form, revision);
+            revision.CreatedByImport = context.ImportResult;
+            form.Normalize();
+
+            await _formConfigRevisionRepo.InsertAsync(revision);
+            
+            form.LatestImportedRevisionId = revision.Id;
+            await _formConfigRepo.UpdateAsync(form);
+
+            await SetPermissionsAsync(item, form);
+
+            return form;
         }
 
         private async Task SetPermissionsAsync(DistributedFormConfiguration item, FormConfiguration form)
@@ -135,13 +130,12 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
-        private void MapToForm(DistributedFormConfiguration item, FormConfiguration form) 
+        private void MapToForm(DistributedFormConfiguration item, FormConfiguration form, FormConfigurationRevision revision) 
         {
             form.Name = item.Name;
             
             form.Suppress = item.Suppress;
 
-            var revision = form.EnsureLatestRevision();
             revision.Label = item.Label;
             revision.Description = item.Description;
             revision.Markup = item.Markup;

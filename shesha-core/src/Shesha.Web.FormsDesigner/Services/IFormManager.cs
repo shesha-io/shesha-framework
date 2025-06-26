@@ -14,13 +14,6 @@ namespace Shesha.Web.FormsDesigner.Services
     public interface IFormManager: IConfigurationItemManager
     {
         /// <summary>
-        /// Create new version of the form
-        /// </summary>
-        /// <param name="form">Form configuration</param>
-        /// <returns></returns>
-        Task<FormConfiguration> CreateNewVersionAsync(FormConfiguration form);
-
-        /// <summary>
         /// Delete all versions of form with specified <paramref name="id"/>
         /// </summary>
         /// <param name="id"></param>

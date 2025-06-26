@@ -9,6 +9,7 @@ namespace Shesha.ConfigurationStudio.Dtos
     public class AnalyzePackageResult
     {
         public List<PackageModuleDto> Modules { get; set; } = new List<PackageModuleDto>();
+        public List<PackageItemDto> Items { get; set; } = new ();
     }
 
     /// <summary>

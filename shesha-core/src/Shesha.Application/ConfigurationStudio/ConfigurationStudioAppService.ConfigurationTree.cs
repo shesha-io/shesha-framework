@@ -243,33 +243,31 @@ namespace Shesha.ConfigurationStudio
 
         private async Task MoveFolderAsync(ConfigurationItemFolder? newParentFolder, ConfigurationItemFolder folder)
         {
+            if (newParentFolder != null) 
+            {
+                if (folder.Module != newParentFolder.Module)
+                    throw new ArgumentException("Folder can't be moved between modules");
+
+                var fullChain = newParentFolder.GetFullChain(e => e.Parent);
+                if (fullChain.Contains(folder))
+                    throw new ArgumentException("Folder can't be moved to a descendant folder");
+            } 
+
             folder.Parent = newParentFolder;
             
             // TODO: update order index
-
-            // TODO: check for infinite loops
-            // TODO: check module, both parent and child must be in the same module
 
             await FolderRepository.UpdateAsync(folder);
         }
 
         private async Task MoveConfigurationItemAsync(ConfigurationItemFolder? newParentFolder, ConfigurationItem item)
         {
+            if (newParentFolder != null && item.Module != newParentFolder.Module)
+                throw new ArgumentException("Item can't be moved between modules");
+                
             item.Folder = newParentFolder;
             
-            // TODO: check module, both parent and child must be in the same module
-
             await ItemRepo.UpdateAsync(item);
         }
-
-        /*
-         public interface ITreeStructureAppService : IApplicationService
-{
-    Task<TreeNodeDto> CreateFolderAsync(string name, long? parentId);
-    Task<TreeNodeDto> CreateItemAsync(string name, string itemData, long? parentId);
-    Task<TreeNodeDto> MoveNodeAsync(MoveNodeInput input);
-    Task<TreeNodeDto> GetTreeAsync(long? rootNodeId = null);
-}
-         */
     }
 }

@@ -52,12 +52,14 @@ namespace Shesha.Domain
         [MemberNotNull(nameof(LatestRevision))]
         public virtual TRevision MakeNewRevision()
         {
-            var newVersionNo = LatestRevision != null
-                ? LatestRevision.VersionNo + 1
+            var prevRevision = LatestRevision;
+            var newVersionNo = prevRevision != null
+                ? prevRevision.VersionNo + 1
                 : 1;
             LatestRevision = new TRevision() { 
                 ConfigurationItem = this,
                 VersionNo = newVersionNo,
+                ParentRevision = prevRevision,
             };
             return LatestRevision;
         }
