@@ -1,39 +1,19 @@
 import { useGet } from '@/hooks';
-import { useFormData, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
+import { useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
 import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
-import { Alert, Flex, Spin, Tooltip } from 'antd';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Alert, Flex } from 'antd';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from './hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems } from './utils';
+import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
-/**
- * Make sure the properties are valid for the entity type
- * @param metaData - The metadata of the entity type
- * @param axisProperty - The property to use for the axis
- * @param valueProperty - The property to use for the value
- * @returns An array of faulty properties by name e.g. ['axisProperty', 'groupingProperty', 'valueProperty']
- */
-const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null) => {
-  const faultyProperties: string[] = [];
-  
-  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
-    faultyProperties.push('axisProperty');
-  }
-  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
-    faultyProperties.push('valueProperty');
-  }
-  return faultyProperties;
-};
-
-const ChartControl: React.FC<IChartsProps> = (props) => {
+const ChartControl: React.FC<IChartsProps> = React.memo(() => {
   const {
     chartType,
     entityType,
@@ -47,31 +27,80 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     orderDirection,
     isGroupingTimeSeries,
     groupingTimeSeriesFormat,
-  } = props;
+    ...state
+  } = useChartDataStateContext();
+
   const { refetch } = useGet({ path: '', lazy: true });
-  const state = useChartDataStateContext();
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
-  const { setData, setIsLoaded, setControlProps, cleanData } = useChartDataActionsContext();
-  const { data: formData } = useFormData();
-  const [loadingProgress, setLoadingProgress] = useState<{ current: number; total: number } | null>({
-    current: 0,
-    total: -1,
-  });
-  const [showLoader, setShowLoader] = useState(true);
+  const { setData, setIsLoaded } = useChartDataActionsContext();
+
+  // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
-  const [hasInitialData, setHasInitialData] = useState(false);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const { styles, cx } = useStyles();
 
-  useEffect(() => setControlProps(props), [props, formData, setControlProps]);
-
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
+  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: state.filters });
 
-  // Function to process and update chart data
+  // Memoize the description message to prevent unnecessary re-renders
+  const descriptionMessage = useMemo(() => {
+    if (faultyProperties.length > 0) {
+      return `Please make sure that you've configured the following properties correctly: ${faultyProperties.join(', ')}.`;
+    }
+    return '';
+  }, [faultyProperties]);
+
+  // Memoize the missing properties check to prevent unnecessary re-renders
+  const missingPropertiesInfo = useMemo(() => {
+    const missingProperties: string[] = [];
+    if (!entityType) missingProperties.push("'entityType'");
+    if (!chartType) missingProperties.push("'chartType'");
+    if (!valueProperty) missingProperties.push("'valueProperty'");
+    if (!axisProperty) missingProperties.push("'axisProperty'");
+
+    if (faultyProperties?.length > 0) {
+      missingProperties.push(...faultyProperties);
+    }
+
+    return {
+      hasMissingProperties: missingProperties.length > 0,
+      descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`
+    };
+  }, [entityType, chartType, valueProperty, axisProperty, faultyProperties]);
+
+  // Memoize the chart container styles to prevent unnecessary re-renders
+  const chartContainerStyle = useMemo(() => ({
+    ...getResponsiveStyle(state),
+    width: '100%',
+    height: '100%',
+    minHeight: '400px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '16px',
+    margin: 0,
+    boxSizing: 'border-box' as const,
+    overflow: 'hidden'
+  }), [state]);
+  const chartInnerStyle = useMemo(() => ({
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    position: 'relative' as const,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    margin: 0,
+    minHeight: '350px'
+  }), []);
+
+  // Memoize the processAndUpdateData callback with stable dependencies
   const processAndUpdateData = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
     // Process all items efficiently
     let processedItems = processItems(items, refListMap);
@@ -93,27 +122,21 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       return;
     }
 
+    // Clear any previous errors and faulty properties
+    setError(null);
+    setFaultyProperties([]);
     isFetchingRef.current = true;
 
-    const fetchAndProcessData = async () => {
-      setIsLoaded(false);
-      setHasInitialData(false);
-      setFaultyProperties([]);
-      setMetadataProcessed(false);
-      setLoadingProgress({
-        current: 0,
-        total: -1,
-      });
-      setShowLoader(true);
-      cleanData();
-      try {
+    // Create reference list lookup maps - declare outside promise chain for scope
+    const refListMap = new Map<string, Map<any, string>>();
 
-        // Get metadata first to identify reference list properties
-        const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
-
-        const faultyProperties = validateEntityProperties(metaData.properties as IPropertyMetadata[], axisProperty, valueProperty);
-        if (faultyProperties.length > 0) {
-          setFaultyProperties(faultyProperties);
+    // Get metadata first to identify reference list properties
+    getMetadata({ modelType: entityType, dataType: 'entity' })
+      .then((metaData) => {
+        const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty);
+        if (faultyPropertiesInner.length > 0) {
+          setFaultyProperties(faultyPropertiesInner);
+          isFetchingRef.current = false;
           return;
         }
 
@@ -122,8 +145,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase())
         );
 
-        // Create reference list lookup maps in parallel
-        const refListMap = new Map<string, Map<any, string>>();
         const refListPromises = refListProperties.map(async (metaItem: IRefListPropertyMetadata) => {
           const fieldName = toCamelCase(metaItem.path);
           try {
@@ -146,241 +167,136 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         });
 
         // Wait for reference lists to load
-        await Promise.all(refListPromises);
+        return Promise.all(refListPromises).then(() => {
+          // Mark metadata as processed
+          setMetadataProcessed(true);
 
-        // Mark metadata as processed
-        setMetadataProcessed(true);
+          // Fetch all data in a single call
+          const params = getChartDataRefetchParams(
+            entityType,
+            valueProperty,
+            evaluatedFilters,
+            groupingProperty,
+            axisProperty,
+            orderBy,
+            orderDirection,
+            0,
+            -1 // -1 to get all data without pagination
+          );
 
-        // Fetch data with optimized batch size and parallel requests
-        const batchSize = 1000;
-        let allItems: any[] = [];
-        let totalCount = 0;
-
-        // Get first batch to determine total count
-        const firstParams = getChartDataRefetchParams(
-          entityType,
-          valueProperty,
-          evaluatedFilters,
-          groupingProperty,
-          axisProperty,
-          filterProperties,
-          orderBy,
-          orderDirection,
-          0,
-          batchSize
-        );
-
-        const firstResponse = await refetch(firstParams);
-
-        if (!firstResponse?.result) {
+          return refetch(params);
+        });
+      })
+      .then((response) => {
+        if (!response?.result) {
           throw new Error('Invalid response structure');
         }
-
-        totalCount = firstResponse.result.totalCount ?? 0;
-        if (firstResponse.result.items && Array.isArray(firstResponse.result.items)) {
-          allItems = firstResponse.result.items;
-          setLoadingProgress(prev => ({ ...prev, current: allItems.length, total: totalCount }));
-
-          // Process and show initial data immediately
-          processAndUpdateData(allItems, refListMap);
-          setHasInitialData(true);
-          setShowLoader(false);
-        }
-
-        // Calculate remaining batches and fetch them in parallel
-        const remainingBatches = Math.ceil((totalCount - allItems.length) / batchSize);
-        if (remainingBatches > 0) {
-          const batchPromises = [];
-
-          for (let i = 1; i <= remainingBatches; i++) {
-            const skipCount = i * batchSize;
-            const params = getChartDataRefetchParams(
-              entityType,
-              valueProperty,
-              evaluatedFilters,
-              groupingProperty,
-              axisProperty,
-              filterProperties,
-              orderBy,
-              orderDirection,
-              skipCount,
-              batchSize
-            );
-
-            batchPromises.push(refetch(params));
-          }
-
-          // Process each batch one by one for progressive updates
-          for (const element of batchPromises) {
-            const response = await element;
-            if (response?.result?.items && Array.isArray(response.result.items)) {
-              allItems = allItems.concat(response.result.items);
-              setLoadingProgress(prev => ({ ...prev, current: allItems.length, total: totalCount }));
-
-              // Update chart with new data as it comes in
-              processAndUpdateData(allItems, refListMap);
-
-              // Small delay to make progress visible
-              await new Promise(resolve => setTimeout(resolve, 200));
-            }
-          }
-        }
-
+        const items = response.result.items || [];
+        
+        // Process and update data
+        processAndUpdateData(items, refListMap);
         setIsLoaded(true);
-        setLoadingProgress(null);
-      } catch (error) {
+        setMetadataProcessed(true);
+      })
+      .catch((error) => {
         console.error('Error in fetchAndProcessData:', error);
+        const errorMessage = error instanceof Error ? error.message : 'An error occurred while fetching chart data';
+        setError(errorMessage);
         setIsLoaded(true);
-        setShowLoader(false);
         setMetadataProcessed(false);
-        setHasInitialData(false);
-        setLoadingProgress({
-          current: 0,
-          total: -1,
-        });
-      } finally {
+      })
+      .finally(() => {
         isFetchingRef.current = false;
-      }
-    };
-
-    fetchAndProcessData();
-  }, [
-    evaluatedFilters,
-    groupingProperty,
-    isAxisTimeSeries,
-    timeSeriesFormat,
-    filterProperties,
-    orderBy,
-    orderDirection,
-    formData,
-    isGroupingTimeSeries,
-    groupingTimeSeriesFormat,
-    processAndUpdateData,
-    entityType,
-    valueProperty,
-    axisProperty,
-    getMetadata,
-    getReferenceList,
-    refetch,
-    cleanData,
-    setIsLoaded,
-  ]);
+      });
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters]);
 
   const data: IChartData = useProcessedChartData();
 
-  if (faultyProperties.length > 0) {
-    
-    // Dynamically build the description with unique properties from the missingProperties array
-    const descriptionMessage = `Please make sure that you've configured the following properties correctly: ${faultyProperties.join(', ')}.`;
+  // Memoize Alert components to prevent re-renders
+  const faultyPropertiesAlert = useMemo(() => {
+    if (faultyProperties.length === 0) return null;
+
+    return (
+      <Alert
+        showIcon
+        message="Chart control properties not set correctly, some properties not matching the entity type!"
+        description={descriptionMessage}
+        type="warning"
+      />
+    );
+  }, [faultyProperties.length, descriptionMessage]);
+
+  const missingPropertiesAlert = useMemo(() => {
+    if (entityType && chartType && valueProperty && axisProperty && !faultyProperties?.length) return null;
 
     return (
       <Alert
         showIcon
         message="Chart control properties not set correctly!"
-        description={descriptionMessage}
+        description={missingPropertiesInfo.descriptionMessage}
         type="warning"
       />
     );
-  }
+  }, [entityType, chartType, valueProperty, axisProperty, faultyProperties?.length, missingPropertiesInfo.descriptionMessage]);
 
-  if (!entityType || !chartType || !valueProperty || !axisProperty) {
-    // Collect the missing properties in an array
-    const missingProperties: string[] = [];
-    if (!entityType) missingProperties.push("'entityType'");
-    if (!chartType) missingProperties.push("'chartType'");
-    if (!valueProperty) missingProperties.push("'valueProperty'");
-    if (!axisProperty) missingProperties.push("'axisProperty'");
-
-    if (faultyProperties.length > 0) {
-      missingProperties.push(...faultyProperties);
-    }
-
-    // Dynamically build the description with unique properties from the missingProperties array
-    const descriptionMessage = `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`;
+  const errorAlert = useMemo(() => {
+    if (!error) return null;
 
     return (
       <Alert
         showIcon
-        message="Chart control properties not set correctly!"
-        description={descriptionMessage}
-        type="warning"
+        message="Error loading chart data"
+        description={error}
+        type="error"
       />
     );
-  }
+  }, [error]);
 
-  // Show loader only if we don't have any data yet
-  if (!hasInitialData && loadingProgress?.current !== loadingProgress?.total) {
-    return (
-      <>
-        {loadingProgress && (!state.isLoaded || !metadataProcessed) && showLoader && (
-          <Flex
-            align="center"
-            justify="center"
-            vertical
-            gap={16}
-            className={cx(
-              styles.responsiveChartContainer,
-              props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
-            )}
-            style={getResponsiveStyle(props)}
-          >
-            <ChartLoader chartType={chartType} />
-            <div className={cx(styles.loadingText)}>Fetching data...</div>
-          </Flex>
-        )}
-      </>
-    );
-  }
-
-  return (
-    <div
-      className={cx(
-        styles.responsiveChartContainer,
-        props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
-      )}
-      style={{
-        ...getResponsiveStyle(props),
-        width: '100%',
-        height: '100%',
-        minHeight: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-    >
-      <div style={{
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        minHeight: '350px',
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        {renderChart(chartType, data)}
-      </div>
-      {/* Show progress indicator if still loading more data */}
-      {loadingProgress && hasInitialData && (loadingProgress.current !== loadingProgress.total) && (
+  // Memoize the loader component
+  const loaderComponent = useMemo(() => {
+    if (!state.isLoaded || !metadataProcessed) {
+      return (
         <Flex
-          key={`progress-${loadingProgress.current}`}
           align="center"
           justify="center"
           vertical
-          gap={4}
-          style={{ margin: 16, flexShrink: 0 }}>
-          <Spin size="small" />
-          <div className={cx(styles.loadingText)}>
-            <Tooltip title={`${loadingProgress.current} / ${loadingProgress.total} items fetched so far`}>
-              <InfoCircleOutlined />
-              <span> Fetching more data...</span>
-            </Tooltip>
-          </div>
+          gap={16}
+        >
+          <ChartLoader chartType={chartType} />
+          <div className={cx(styles.loadingText)}>Fetching data...</div>
         </Flex>
-      )}
+      );
+    }
+    return null;
+  }, [state.isLoaded, metadataProcessed, chartType, cx, styles.loadingText]);
+
+  // Early returns with memoized components
+  if (error) {
+    return errorAlert;
+  }
+
+  if (faultyProperties.length > 0) {
+    return faultyPropertiesAlert;
+  }
+
+  if (!entityType || !chartType || !valueProperty || !axisProperty || faultyProperties?.length > 0) {
+    return missingPropertiesAlert;
+  }
+
+  // Show loader only if we don't have any data yet
+  if (!state.isLoaded || !metadataProcessed) {
+    return loaderComponent;
+  }
+
+  return (
+    <div style={chartContainerStyle}>
+      <div style={chartInnerStyle}>
+        {renderChart(chartType, data)}
+      </div>
     </div>
   );
-};
+});
+
+ChartControl.displayName = 'ChartControl';
 
 export default ChartControl;

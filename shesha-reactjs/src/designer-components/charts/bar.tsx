@@ -1,14 +1,15 @@
+import React from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { BarChartOutlined } from '@ant-design/icons';
-import React from 'react';
-import ChartDataProvider from '../../providers/chartData';
-import ChartControl from './chartControl';
-import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
 import { defaultConfigFiller, filterNonNull } from './utils';
+import { removeUndefinedProps } from '@/utils/object';
+import ChartControlURL from './chartControlURL';
+import ChartDataProvider from '@/providers/chartData';
+import ChartControl from './chartControl';
 
 const BarChartComponent: IToolboxComponent<IChartProps> = {
   type: 'barChart',
@@ -17,14 +18,41 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <BarChartOutlined />,
   Factory: ({ model }) => {
-    if (model.hidden) return null;
+    const {
+      dimensionsStyles,
+      borderStyles,
+      backgroundStyles,
+      shadowStyles,
+      stylingBoxAsCSS,
+    } = model.allStyles;
+
+    const wrapperStyles = removeUndefinedProps({
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...stylingBoxAsCSS
+    });
     
+    if (model.hidden) return null;
+
+    
+
     return (
       <ConfigurableFormItem model={model}>
         {() => {
-          return (
-            <ChartDataProvider>
-              {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl {...model} chartType='bar' />}
+          return (            
+            <ChartDataProvider model={model}>
+              <div style={{
+                ...wrapperStyles,
+                minHeight: '400px',
+                padding: '16px',
+                boxSizing: 'border-box',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' />}
+              </div>
             </ChartDataProvider>
           );
         }}

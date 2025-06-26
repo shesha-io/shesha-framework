@@ -58,12 +58,15 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
-    animation: {
-      duration: isSmallScreen ? 800 : 1000, // Faster animations on mobile
-      easing: 'easeInOutQuart',
-      delay: (context) => context.dataIndex * (isSmallScreen ? 30 : 50),
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
     },
     transitions: {
       active: {

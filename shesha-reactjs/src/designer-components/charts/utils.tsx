@@ -5,9 +5,28 @@ import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
+import { IPropertyMetadata } from "@/interfaces";
 
 export const MAX_TITLE_LINE_LENGTH = 14;
 
+/**
+ * Make sure the properties are valid for the entity type
+ * @param metaData - The metadata of the entity type
+ * @param axisProperty - The property to use for the axis
+ * @param valueProperty - The property to use for the value
+ * @returns An array of faulty properties by name e.g. ['axisProperty', 'groupingProperty', 'valueProperty']
+ */
+export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null) => {
+  const faultyProperties: string[] = [];
+  
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push('axisProperty');
+  }
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push('valueProperty');
+  }
+  return faultyProperties;
+};
 
 // Optimized data processing function
 export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>) => {
@@ -253,15 +272,14 @@ function convertNestedPropertiesToObjectFormat(array?: string[]) {
  * @param filters filters to apply to the data before returning
  * @param groupingProperty legend property to use for the chart
  * @param axisProperty axis property to use for the chart
- * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string,  orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
+      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty])).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       skipCount: skipCount ?? 0,

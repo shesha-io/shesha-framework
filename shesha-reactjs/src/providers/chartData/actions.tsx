@@ -10,7 +10,7 @@ export enum ChartDataActionsEnum {
     CleanData = "CLEAN_DATA",
 }
 
-export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: IChartData[]) => ({ data, items: data }));
+export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: object[]) => ({ data, items: data }));
 
 export const SetIsLoadedAction = createAction(ChartDataActionsEnum.SetIsLoaded, (isLoaded: boolean) => ({ isLoaded }));
 

@@ -1,7 +1,7 @@
-import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TLegendPosition, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
-export interface IChartDataContext {
+export interface IChartDataContext extends IChartsProps {
   height?: number;
   width?: number;
   orderBy?: string;
@@ -13,7 +13,7 @@ export interface IChartDataContext {
   showTitle?: boolean;
   title?: string;
   showLegend?: boolean;
-  legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+  legendPosition?: TLegendPosition;
   entityType?: string;
   filters?: {
     and?: [];
@@ -50,7 +50,6 @@ export interface IChartDataContext {
 
   axisPropertyLabel?: string;
   valuePropertyLabel?: string;
-  groupingPropertyLabel?: string;
 }
 
 export interface IChartDataAtionsContext {
@@ -75,7 +74,6 @@ export const INITIAL_STATE: IChartDataContext = {
   showLegend: true,
   legendPosition: 'top',
   entityType: 'entity',
-  filters: {},
   valueProperty: '',
   axisProperty: '',
   isAxisTimeSeries: false,
@@ -93,6 +91,7 @@ export const INITIAL_STATE: IChartDataContext = {
   aggregationMethod: 'count',
   tension: 0,
   strokeWidth: 0,
+  filters: {},
 
   data: [],
   items: [],

@@ -1,5 +1,8 @@
 import { IConfigurableFormComponent } from "@/providers";
 import { FilterExpression } from "@/providers/dataTable/interfaces";
+import { IBackgroundValue } from "../_settings/utils/background/interfaces";
+import { IShadowValue } from "../_settings/utils/shadow/interfaces";
+import { IBorderValue } from "../_settings/utils/border/interfaces";
 
 /**
  * Chart data that will go into the actual chart component from ChartJS
@@ -14,7 +17,6 @@ export interface IChartData {
 export interface IChartsProps {
     width?: number;
     height?: number;
-    showBorder?: boolean;
     orderBy?: string;
     orderDirection?: TOrderDirection;
     dataMode?: TDataMode;
@@ -57,7 +59,6 @@ export interface IChartsProps {
 
     axisPropertyLabel?: string;
     valuePropertyLabel?: string;
-    groupingPropertyLabel?: string;
 }
 
 /**
@@ -65,6 +66,10 @@ export interface IChartsProps {
  */
 export interface IChartProps extends IConfigurableFormComponent, IChartsProps {
     hidden?: boolean;
+        
+    border?: IBorderValue;
+    shadow?: IShadowValue;
+    background?: IBackgroundValue;
  }
 
 export interface IChartDataProps extends IChartsProps {

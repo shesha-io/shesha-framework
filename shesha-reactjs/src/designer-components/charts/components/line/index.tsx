@@ -86,12 +86,15 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
 
   const options: any = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
-    animation: {
-      duration: isSmallScreen ? 1000 : 1200, // Faster animations on mobile
-      easing: 'easeInOutCubic',
-      delay: (context) => context.dataIndex * (isSmallScreen ? 20 : 30),
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
     },
     transitions: {
       active: {
