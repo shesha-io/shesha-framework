@@ -48,7 +48,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
                 display: 'flex',
                 flexDirection: 'column'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='pie' />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='pie' filters={model.filters} />}
               </div>
             </ChartDataProvider>
           );

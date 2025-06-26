@@ -48,7 +48,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const { styles, cx } = useStyles();
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = (useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters }));
+  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
 
   // Memoize the description message to prevent unnecessary re-renders
   const descriptionMessage = useMemo(() => {

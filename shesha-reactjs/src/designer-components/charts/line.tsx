@@ -49,7 +49,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
                 display: 'flex',
                 flexDirection: 'column'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' filters={model.filters} />}
               </div>
             </ChartDataProvider>
           );
