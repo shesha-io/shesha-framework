@@ -12,6 +12,7 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
+import { useTheme } from '@/providers/theme';
 
 const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const {
@@ -38,25 +39,17 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
-
+  const { theme } = useTheme();
   // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const { styles, cx } = useStyles();
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
-
-  // Memoize the description message to prevent unnecessary re-renders
-  const descriptionMessage = useMemo(() => {
-    if (faultyProperties.length > 0) {
-      return `Please make sure that you've configured the following properties correctly: ${faultyProperties.join(', ')}.`;
-    }
-    return '';
-  }, [faultyProperties]);
 
   // Memoize the missing properties check to prevent unnecessary re-renders
   const missingPropertiesInfo = useMemo(() => {
@@ -123,7 +116,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     }
 
     // Clear any previous errors and faulty properties
-    setError(null);
+    setError(undefined);
     setFaultyProperties([]);
     isFetchingRef.current = true;
 
@@ -134,13 +127,12 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     getMetadata({ modelType: entityType, dataType: 'entity' })
       .then((metaData) => {
         const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
+        
+        // Instead of blocking the chart, just warn about invalid properties
         if (faultyPropertiesInner.length > 0) {
+          console.warn('Chart properties do not match entity type:', faultyPropertiesInner);
           setFaultyProperties(faultyPropertiesInner);
-          isFetchingRef.current = false;
-          // Exit the promise chain without throwing an error to prevent the error from being logged
-          return {
-            skipFetch: true
-          };
+          // Continue with the chart rendering instead of blocking it
         }
 
         setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
@@ -195,10 +187,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       })
       .then((response) => {
         if (!response?.result) {
-          if (response?.skipFetch) {
-            return;
-          }
-          throw new Error(response?.error?.details ?? 'Invalid response structure');
+          throw new Error(response?.error ?? 'Invalid response structure, please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
         }
         const items = response.result.items ?? [];
         
@@ -209,7 +198,12 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       })
       .catch((error) => {
         console.error('Error in fetchAndProcessData:', error);
-        const errorMessage = error as string ?? 'An error occurred while fetching chart data';
+        // Ensure error is always a string to prevent React rendering issues
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : typeof error === 'string' 
+            ? error 
+            : 'An error occurred while fetching chart data';
         setError(errorMessage);
         setIsLoaded(true);
         setMetadataProcessed(false);
@@ -232,15 +226,16 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     return (
       <Alert
         showIcon
-        message="Chart control properties not set correctly, some properties not matching the entity type!"
-        description={descriptionMessage}
+        message="Some chart properties don't match the current entity type"
+        description={`The following properties may not work as expected: ${faultyProperties.join(', ')}. The chart will attempt to use available data properties instead.`}
         type="warning"
+        closable
       />
     );
-  }, [faultyProperties.length, descriptionMessage]);
+  }, [faultyProperties]);
 
   const missingPropertiesAlert = useMemo(() => {
-    if (entityType && chartType && valueProperty && axisProperty && !faultyProperties?.length) return null;
+    if (entityType && chartType && valueProperty && axisProperty) return null;
 
     return (
       <Alert
@@ -250,7 +245,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         type="warning"
       />
     );
-  }, [entityType, chartType, valueProperty, axisProperty, faultyProperties?.length, missingPropertiesInfo.descriptionMessage]);
+  }, [entityType, chartType, valueProperty, axisProperty, missingPropertiesInfo.descriptionMessage]);
 
   const errorAlert = useMemo(() => {
     if (!error) return null;
@@ -262,7 +257,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         description={error}
         type="error"
         action={
-          <Button type="primary" onClick={() => {
+          <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
             fetchData();
           }}>
             Retry
@@ -274,29 +269,24 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
 
   // Memoize the loader component
   const loaderComponent = useMemo(() => {
-    if (!state.isLoaded || !metadataProcessed) {
-      return (
-        <Flex
-          align="center"
-          justify="center"
-          vertical
-          gap={16}
-        >
-          <ChartLoader chartType={chartType} />
-          <div className={cx(styles.loadingText)}>Fetching data...</div>
-        </Flex>
-      );
-    }
-    return null;
+    if (state.isLoaded && metadataProcessed) return null;
+
+    return (
+      <Flex
+        align="center"
+        justify="center"
+        vertical
+        gap={16}
+      >
+        <ChartLoader chartType={chartType} />
+        <div className={cx(styles.loadingText)}>Fetching data...</div>
+      </Flex>
+    );
   }, [state.isLoaded, metadataProcessed, chartType, cx, styles.loadingText]);
 
   // Early returns with memoized components
   if (error) {
     return errorAlert;
-  }
-
-  if (faultyProperties.length > 0) {
-    return faultyPropertiesAlert;
   }
 
   if (!entityType || !chartType || !valueProperty || !axisProperty) {
@@ -310,6 +300,12 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
 
   return (
     <div style={chartContainerStyle}>
+      {/* Show warning about invalid properties but don't block the chart */}
+      {faultyPropertiesAlert && (
+        <div style={{ marginBottom: '16px' }}>
+          {faultyPropertiesAlert}
+        </div>
+      )}
       <div style={chartInnerStyle}>
         {renderChart(chartType, data)}
       </div>

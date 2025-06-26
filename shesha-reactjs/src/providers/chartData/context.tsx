@@ -1,4 +1,5 @@
 import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TLegendPosition, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { FilterExpression } from "@/publicJsApis/dataTableContextApi";
 import { createContext } from "react";
 
 export interface IChartDataContext extends IChartsProps {
@@ -15,9 +16,6 @@ export interface IChartDataContext extends IChartsProps {
   showLegend?: boolean;
   legendPosition?: TLegendPosition;
   entityType?: string;
-  filters?: {
-    and?: [];
-  };
   valueProperty?: string;
   axisProperty?: string;
   isAxisTimeSeries?: boolean;
@@ -50,6 +48,7 @@ export interface IChartDataContext extends IChartsProps {
 
   axisPropertyLabel?: string;
   valuePropertyLabel?: string;
+  filters?: FilterExpression;
 }
 
 export interface IChartDataAtionsContext {
@@ -93,7 +92,9 @@ export const INITIAL_STATE: IChartDataContext = {
   aggregationMethod: 'count',
   tension: 0,
   strokeWidth: 0,
-  filters: {},
+  filters: {
+    and: [],
+  },
 
   data: [],
   items: [],

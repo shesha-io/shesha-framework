@@ -7,13 +7,14 @@ import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getURLChartDataRefetchParams, renderChart } from './utils';
 import ChartLoader from './components/chartLoader';
+import { useTheme } from '@/providers/theme';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { setIsLoaded, setUrlTypeData } = useChartDataActionsContext();
-
+  const { theme } = useTheme();
   // Add error handling state similar to chartControl.tsx
   const [error, setError] = useState<string | null>(null);
   const isFetchingRef = useRef(false);
@@ -39,7 +40,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     refetch(getURLChartDataRefetchParams(transformedUrl))
       .then((data) => {
         if (!data?.result) {
-          throw new Error(data?.error?.details ?? 'Invalid response structure');
+          throw new Error(data?.error?.details ?? 'Invalid response structure, please check the URL and try again.');
         }
         setUrlTypeData(data.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
@@ -97,7 +98,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         description={error}
         type="error"
         action={
-          <Button type="primary" onClick={() => {
+          <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
             fetchData();
           }}>
             Retry

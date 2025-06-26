@@ -9,13 +9,11 @@ interface IChartDataProviderProps {
 }
 
 const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ children, model }) => {
-    const { filters, ...propsWithoutFilters } = model;
-  // Destructure filters from props to exclude it from the initial state
-  const [state, dispatch] = useReducer(chartDataReducer, { ...INITIAL_STATE, ...propsWithoutFilters });
+  const [state, dispatch] = useReducer(chartDataReducer, { ...INITIAL_STATE, ...model });
 
-  function setControlProps(controlProps: IChartProps) {
+  const setControlProps = (controlProps: IChartProps) => {
     dispatch(SetControlPropsAction(controlProps));
-  }
+  };
 
   useEffect(() => {
     dispatch(SetControlPropsAction(model));
