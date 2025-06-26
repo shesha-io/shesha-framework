@@ -1,4 +1,4 @@
-const getHeaderStyles = () => (
+export const getHeaderStyles = () => (
     {
         font: {
             color: "darkslategray",
@@ -41,7 +41,7 @@ const getHeaderStyles = () => (
     }
 );
 
-const getBodyStyles = () => ({
+export const getBodyStyles = () => ({
     border: {
         radiusType: "all",
         borderType: "all",

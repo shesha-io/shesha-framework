@@ -30,7 +30,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
         <Select>
           <Select.Option key='Form' value='Form'>Form</Select.Option>
           <Select.Option key='Entity' value='Entity'>Entity</Select.Option>
-          <Select.Option key='Url' value='Url'>Url</Select.Option>
+          <Select.Option key='Url' value='Url'>URL</Select.Option>
         </Select>
       </SettingsFormItem>
       {(state.sourceType === 'Entity') &&

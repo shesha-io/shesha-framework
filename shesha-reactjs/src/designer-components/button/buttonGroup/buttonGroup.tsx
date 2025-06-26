@@ -51,9 +51,19 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
 
     const { size, buttonType } = props;
     const model = props;
-    const styles = useFormComponentStyles(model).fullStyle;
+
+    const { backgroundStyles, fontStyles, borderStyles, shadowStyles, dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(model);
+
+    const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType);
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...styles,
+        ...fontStyles,
+        ...dimensionsStyles,
+        ...stylingBoxAsCSS,
+        ...(isPrimaryOrDefault && borderStyles),
+        ...(isPrimaryOrDefault && shadowStyles),
+        ...(buttonType === 'default' && backgroundStyles),
+        ...jsStyle,
         justifyContent: model?.font?.align,
     });
 
@@ -67,6 +77,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
             key={uuid}
             {...props}
             size={size}
+            danger={props.danger}
             style={removeNullUndefined({ ...finalStyles })}
             readOnly={props.readOnly}
             buttonType={buttonType}
@@ -172,7 +183,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     });
     const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
 
-    const { size, gap = 'middle', isInline, readOnly: disabled, form } = props;
+    const { size = props.size, gap = props.spaceSize ?? 'middle', isInline, readOnly: disabled, form } = props;
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
