@@ -194,7 +194,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo(() => {
       })
       .then((response) => {
         if (!response?.result) {
-          throw new Error('Invalid response structure');
+          throw new Error(response?.error?.details ?? 'Invalid response structure');
         }
         const items = response.result.items ?? [];
         

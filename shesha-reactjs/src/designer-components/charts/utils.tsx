@@ -7,7 +7,7 @@ import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
 import { IPropertyMetadata } from "@/interfaces";
 
-export const MAX_TITLE_LINE_LENGTH = 14;
+export const MAX_TITLE_LINE_LENGTH = 12;
 
 /**
  * Make sure the properties are valid for the entity type

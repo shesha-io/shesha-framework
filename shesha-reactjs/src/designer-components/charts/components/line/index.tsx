@@ -137,7 +137,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       x: {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
-          text: splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
+          text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',
@@ -166,7 +166,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       y: {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
-          text: splitTitleIntoLines(dataMode === 'url' ? valuePropertyLabel : yTitle, 10, 1),
+          text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',
