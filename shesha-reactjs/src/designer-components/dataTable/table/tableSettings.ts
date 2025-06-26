@@ -415,6 +415,15 @@ export const getSettings = (data: ITableComponentProps) => {
                                     hideLabel: true,
                                     jsSetting: true,
                                 })
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: 'onRowDeleteSuccessAction',
+                                    label: 'On Row Delete Success',
+                                    parentId: crudTabId,
+                                    description: 'Custom business logic to be executed after successfull deletion of a row.',
+                                    hideLabel: true,
+                                    jsSetting: true,
+                                })
                                 .toJson()
                         ]
                     },
