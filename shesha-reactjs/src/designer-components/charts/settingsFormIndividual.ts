@@ -525,7 +525,7 @@ export const getSettings = (data: any) => {
                               parentId: commonTabId,
                               defaultValue: true,
                               jsSetting: true,
-                              width: '50%',
+                              width: '49%',
                             },
                             {
                               id: nanoid(),

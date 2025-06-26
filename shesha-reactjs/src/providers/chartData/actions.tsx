@@ -1,4 +1,3 @@
-import { IChartData } from "@/designer-components/charts/model";
 import { createAction } from "redux-actions";
 
 export enum ChartDataActionsEnum {
