@@ -85,7 +85,7 @@
     <None Remove="ConfigMigrations\package20230324_1835.shaconfig" />
     <None Remove="ConfigMigrations\package20230411_1238.shaconfig" />
     <None Remove="ConfigMigrations\package20231105_1942.shaconfig" />
-    <None Remove="ConfigMigrations\package20250622_1405.shaconfig" />
+
 
 
   </ItemGroup>
