@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Permissions;
@@ -13,12 +12,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration import
     /// </summary>
-    public class FormConfigurationImport: ConfigurationItemImportBase<FormConfiguration, DistributedFormConfiguration>, IFormConfigurationImport, ITransientDependency
+    public class FormConfigurationImport : ConfigurationItemImportBase<FormConfiguration, FormConfigurationRevision, DistributedFormConfiguration>, IFormConfigurationImport, ITransientDependency
     {
-        private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
-        private readonly IRepository<FormConfigurationRevision, Guid> _formConfigRevisionRepo;
-        private readonly IFormManager _formManger;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         /// <summary>
@@ -26,17 +21,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// </summary>
         public FormConfigurationImport(IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo, 
-            IFormManager formManger, 
-            IRepository<FormConfiguration, Guid> formConfigRepo,
-            IRepository<FormConfigurationRevision, Guid> formConfigRevisionRepo,
-            IUnitOfWorkManager unitOfWorkManager,
+            IRepository<FormConfiguration, Guid> repository,
+            IRepository<FormConfigurationRevision, Guid> revisionRepository,
             IPermissionedObjectManager permissionedObjectManager
-        ) : base(moduleRepo, frontEndAppRepo)
+        ) : base(repository, revisionRepository, moduleRepo, frontEndAppRepo)
         {
-            _formManger = formManger;
-            _formConfigRepo = formConfigRepo;
-            _formConfigRevisionRepo = formConfigRevisionRepo;
-            _unitOfWorkManager = unitOfWorkManager;
             _permissionedObjectManager = permissionedObjectManager;
         }
 
@@ -45,69 +34,9 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// </summary>
         public string ItemType => FormConfiguration.ItemTypeName;
 
-        /// inheritedDoc
-        public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context) 
+        protected override Task AfterImportAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration distributedItem, IConfigurationItemsImportContext context)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
-            if (!(item is DistributedFormConfiguration formItem))
-                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(DistributedFormConfiguration)}. Actual type is {item.GetType().FullName}");
-
-            var form = await ImportFormAsync(formItem, context);
-            await _unitOfWorkManager.Current.SaveChangesAsync();
-
-            return form;
-        }
-
-        private bool FormsAreEqual(FormConfiguration form, DistributedFormConfiguration item) 
-        {
-            var revision = form.LatestRevision;
-
-            return form != null &&
-                revision != null && 
-                (form.Module == null ? string.IsNullOrWhiteSpace(item.ModuleName) : form.Module.Name == item.ModuleName) &&
-                form.Name == item.Name &&
-                form.Suppress == item.Suppress &&
-
-                revision.Markup == item.Markup &&
-                revision.Label == item.Label &&
-                revision.Description == item.Description &&
-                revision.ModelType == item.ModelType &&
-                revision.IsTemplate == item.IsTemplate;
-        }
-
-        /// inheritedDoc
-        protected async Task<ConfigurationItem> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
-        {
-            // check if form exists
-            var form = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName));
-
-            if (form != null && FormsAreEqual(form, item))
-                return form;
-
-            if (form == null) 
-            {
-                form = new FormConfiguration 
-                { 
-                    Module = await GetModuleAsync(item.ModuleName, context),
-                    Name = item.Name,
-                };
-                await _formConfigRepo.InsertAsync(form);
-            }
-            var revision = form.MakeNewRevision();
-            MapToForm(item, form, revision);
-            revision.CreatedByImport = context.ImportResult;
-            form.Normalize();
-
-            await _formConfigRevisionRepo.InsertAsync(revision);
-            
-            form.LatestImportedRevisionId = revision.Id;
-            await _formConfigRepo.UpdateAsync(form);
-
-            await SetPermissionsAsync(item, form);
-
-            return form;
+            return SetPermissionsAsync(distributedItem, item);
         }
 
         private async Task SetPermissionsAsync(DistributedFormConfiguration item, FormConfiguration form)
@@ -130,17 +59,22 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
-        private void MapToForm(DistributedFormConfiguration item, FormConfiguration form, FormConfigurationRevision revision) 
+        protected override Task<bool> CustomPropsAreEqualAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration distributedItem)
         {
-            form.Name = item.Name;
-            
-            form.Suppress = item.Suppress;
+            var equals = revision.Markup == distributedItem.Markup &&
+                revision.ModelType == distributedItem.ModelType &&
+                revision.IsTemplate == distributedItem.IsTemplate;
 
-            revision.Label = item.Label;
-            revision.Description = item.Description;
-            revision.Markup = item.Markup;
-            revision.ModelType = item.ModelType;
-            revision.IsTemplate = item.IsTemplate;
+            return Task.FromResult(equals);
+        }
+
+        protected override Task MapCustomPropsToItemAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration distributedItem)
+        {
+            revision.Markup = distributedItem.Markup;
+            revision.ModelType = distributedItem.ModelType;
+            revision.IsTemplate = distributedItem.IsTemplate;
+
+            return Task.CompletedTask;
         }
     }
 }
