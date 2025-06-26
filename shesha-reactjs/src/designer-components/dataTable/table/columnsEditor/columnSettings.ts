@@ -269,7 +269,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "propertyName": "allowSorting",
                                     "label": "Allow Sorting",
 
-                                },]
+                                }]
                         },
                         {
                             "id": "isVisible-anchored-row",
