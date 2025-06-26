@@ -427,11 +427,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        // hidden: {
-                                        //     _code: 'return !getSettingValue(data.entityType);',
-                                        //     _mode: 'code',
-                                        //     _value: false
-                                        // },
                                         inputs: [
                                             {
                                                 id: nanoid(),
@@ -449,9 +444,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 settingsValidationErrors: [],
                                                 type: 'propertyAutocomplete',
                                                 size: 'small',
-                                                validate: {
-                                                    required: true,
-                                                }
                                             }
                                         ],
                                     })
@@ -550,6 +542,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                             id: nanoid(),
                                                             propertyName: 'quickviewDisplayPropertyName',
                                                             label: 'Display Property',
+                                                            tooltip: 'Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.',
                                                             parentId: dataTabId,
                                                             modelType: {
                                                                 _code: 'return getSettingValue(data?.entityType);',
@@ -561,9 +554,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                             settingsValidationErrors: [],
                                                             type: 'propertyAutocomplete',
                                                             size: 'small',
-                                                            validate: {
-                                                                required: true,
-                                                            }
                                                         },
                                                     ],
                                                 })
@@ -614,7 +604,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         } as any,
                                         fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                                     },
-
                                 ],
                             })
                             .addSettingsInputRow({
