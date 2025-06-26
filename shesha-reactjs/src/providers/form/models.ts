@@ -1,12 +1,18 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
-
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
+import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
+import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -60,6 +66,52 @@ export interface IComponentValidationRules {
 }
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type PositionType = 'relative' | 'fixed';
+export interface IStyleType {
+  border?: IBorderValue;
+  background?: IBackgroundValue;
+  font?: IFontValue;
+  shadow?: IShadowValue;
+  dimensions?: IDimensionsValue;
+  size?: SizeType;
+  style?: string;
+  stylingBox?: string;
+  primaryTextColor?: ColorValueType;
+  primaryBgColor?: ColorValueType;
+  secondaryBgColor?: ColorValueType;
+  secondaryTextColor?: ColorValueType;
+  overflow?: boolean;
+  hideScrollBar?: boolean;
+}
+
+export interface IInputStyles extends IStyleType {
+  borderSize?: string | number;
+  borderRadius?: string | number;
+  borderType?: string;
+  borderStyle?: string;
+  borderWidth?: string | number;
+  borderColor?: string;
+  fontColor?: string;
+  color?: string;
+  fontWeight?: string | number;
+  fontSize?: string | number;
+  stylingBox?: string;
+  height?: string | number;
+  width?: string | number;
+  hideBorder?: boolean;
+  backgroundColor?: string;
+  backgroundPosition?: string;
+  backgroundCover?: 'contain' | 'cover';
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
+  className?: string;
+  wrapperStyle?: string;
+  backgroundType?: 'image' | 'color';
+  backgroundDataSource?: 'storedFileId' | 'base64' | 'url';
+  backgroundUrl?: string;
+  backgroundBase64?: string;
+  backgroundStoredFileId?: string;
+  style?: string;
+};
 
 export type ConfigurableFormComponentTypes =
   | 'alert'
@@ -100,6 +152,9 @@ export interface IComponentRuntimeProps {
   /** Custom onChange handler */
   onChangeCustom?: string;
 
+  /** Custom onClick handler */
+  onClickCustom?: string;
+
   /** Custom onFocus handler */
   onFocusCustom?: string;
 }
@@ -133,6 +188,22 @@ export interface IComponentMetadata {
   injectedDefaultValue?: any;
 }
 
+export interface IFormComponentStyles {
+  stylingBoxAsCSS: CSSProperties;
+  dimensionsStyles: CSSProperties;
+  borderStyles: CSSProperties;
+  fontStyles: CSSProperties;
+  backgroundStyles: CSSProperties;
+  shadowStyles: CSSProperties;
+  overflowStyles: CSSProperties;
+  /** Styles calculated from js style setting */
+  jsStyle: CSSProperties;
+  /** Styles assempled from stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles*/
+  appearanceStyle: CSSProperties;
+  /** Styles assempled from {...appearanceStyle, ...jsStyle} */
+  fullStyle: CSSProperties;
+}
+
 /**
  * Base model of the configurable component
  */
@@ -146,6 +217,9 @@ export interface IConfigurableFormComponent
   IComponentMetadata {
   /** Type of the component */
   type: string;
+
+  /** Options added using the dialog*/
+  queryParams?: any;
 
   /** Description of the field, is used for tooltips */
   description?: string;
@@ -191,23 +265,19 @@ export interface IConfigurableFormComponent
 
   permissions?: string[];
 
-}
+  _formFields?: string[];
 
-export interface IInputStyles {
-  size?: SizeType;
-  borderSize?: string | number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  fontColor?: string;
-  fontWeight?: string | number;
-  fontSize?: string | number;
-  stylingBox?: string;
-  height?: string | number;
-  width?: string | number;
-  backgroundColor?: string;
-  hideBorder?: boolean;
-  style?: string;
+  layout?: FormLayout;
+
+  inputStyles?: IStyleType;
+
+  desktop?: any;
+
+  tablet?: any;
+
+  mobile?: any;
+
+  allStyles?: IFormComponentStyles;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
@@ -309,16 +379,12 @@ export interface FormMarkupWithSettings {
 export type FormRawMarkup = IConfigurableFormComponent[];
 export type FormMarkup =
   | FormRawMarkup
-  | FormMarkupWithSettings
-  | ((data: any) => FormRawMarkup | FormMarkupWithSettings);
+  | FormMarkupWithSettings | ((data: any) => FormRawMarkup
+    | FormMarkupWithSettings);
 
-export interface FormFullName {
-  readonly name: string;
-  readonly module?: string | null;
-  readonly version?: number;
-}
-export type FormUid = string;
-export type FormIdentifier = FormFullName | FormUid;
+export type FormFullName = ConfigurableItemFullName;
+export type FormUid = ConfigurableItemUid;
+export type FormIdentifier = ConfigurableItemIdentifier;
 
 export interface IPersistedFormProps {
   id?: string;
@@ -426,6 +492,7 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
 
 export interface IFormValidationRulesOptions {
   formData?: any;
+  getFormData?: () => any;
 }
 
 /** Default form settings */

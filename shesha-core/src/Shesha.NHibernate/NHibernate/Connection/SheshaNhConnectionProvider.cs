@@ -1,5 +1,5 @@
-﻿using Abp.Dependency;
-using NHibernate.Connection;
+﻿using NHibernate.Connection;
+using Shesha.Services;
 using System;
 using System.Data.Common;
 
@@ -7,17 +7,12 @@ namespace Shesha.NHibernate.Connection
 {
     public class SheshaNhConnectionProvider: DriverConnectionProvider
     {
-        private readonly IIocManager _iocManager;
-        private readonly IDbConnectionFactory _connectionFactory;
-        public SheshaNhConnectionProvider(IIocManager iocManager)
+        private readonly IDbConnectionFactory? _connectionFactory;
+        public SheshaNhConnectionProvider()
         {
-            _iocManager = iocManager;
-            _connectionFactory = iocManager.IsRegistered<IDbConnectionFactory>()
-                ? iocManager.Resolve<IDbConnectionFactory>() 
+            _connectionFactory = StaticContext.IocManager.IsRegistered<IDbConnectionFactory>()
+                ? StaticContext.IocManager.Resolve<IDbConnectionFactory>() 
                 : null;
-        }
-        public SheshaNhConnectionProvider(): this(IocManager.Instance) 
-        {
         }
 
         public override DbConnection GetConnection(string connectionString)

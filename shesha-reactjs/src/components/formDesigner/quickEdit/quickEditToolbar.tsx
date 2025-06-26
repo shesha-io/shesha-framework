@@ -1,5 +1,5 @@
 import { FormConfigurationDto } from '@/providers/form/api';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { App } from 'antd';
 import React, { FC } from 'react';
 import { CreateNewVersionButton } from '../toolbar/createNewVersionButton';
@@ -19,7 +19,7 @@ export interface IQuickEditToolbarProps {
 }
 
 export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewVersionCreated, renderSource }) => {
-    const { readOnly } = useFormDesignerState();
+    const readOnly = useFormDesignerStateSelector(x => x.readOnly);
     const { message } = App.useApp();
 
     // TODO: reload current dialog

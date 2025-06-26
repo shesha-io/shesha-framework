@@ -1,27 +1,22 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Flex, Form, App, Modal } from 'antd';
+import { ConfigurableForm, DataTypes, pickStyleFromModel, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
+import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
+import { App, Flex, Form, Modal } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import KanbanPlaceholder from './components/kanbanPlaceholder';
+import KanbanColumn from './components/renderColumn';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
-import KanbanPlaceholder from './components/kanbanPlaceholder';
-import {
-  ConfigurableForm,
-  DataTypes,
-  useFormState,
-  useGet,
-  useMetadataDispatcher,
-} from '@/index';
-import KanbanColumn from './components/renderColumn';
-import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
-import { addPx } from '../keyInformationBar/utils';
+import { addPx } from '@/utils/style';
+import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
+  const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);
-  const { refetch } = useGet({ path: '', lazy: true });
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
   const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
@@ -34,19 +29,26 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
+  const styling = JSON.parse(props.columnStyles.stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(styling);
+
   useEffect(() => {
-    if (!isInDesigner && entityType.id && groupingProperty) {
-      getMetadata({ modelType: entityType.id, dataType: DataTypes.entityReference }).then((resp: any) => {
-        const endpoints = resp?.apiEndpoints;
-        setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-        refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=${maxResultCount || 100}` })
-          .then((resp) => {
-            setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
-          })
-          .catch((err) => console.error('Error fetching tasks:', err));
+    if (!isInDesigner && modelType && groupingProperty) {
+      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp: any) => {
+        if (resp?.apiEndpoints) {
+          const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
+          setUrls({
+            updateUrl: update?.url,
+            deleteUrl: deleteEndpoint?.url,
+            postUrl: create?.url,
+          });
+        }
       });
+
+      const filteredTasks = tableData.filter((item: any) => item?.[groupingProperty]);
+      setTasks(filteredTasks);
     }
-  }, [groupingProperty, entityType.id]);
+  }, [isInDesigner, modelType, groupingProperty, tableData]);
 
   useEffect(() => {
     setColumns(items);
@@ -90,7 +92,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     setSelectedItem(null);
     setSelectedColumn(null);
   };
-
 
   const handleEditClick = (item: any) => {
     setSelectedItem(item);
@@ -147,20 +148,22 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   };
 
   const memoizedFilteredTasks = useMemo(() => {
-    return columns.map((column) => ({
+    return columns?.map((column) => ({
       column,
       tasks: tasks.filter((task) => parseFloat(task[groupingProperty]) === column.itemValue),
       isCollapsed: settings[column.itemValue] || false, // Default to false if not set
     }));
   }, [columns, tasks, groupingProperty, settings]);
 
+  const overflowStyle = getOverflowStyle(true,false);
+  
   return (
     <>
-      {items.length === 0 ? (
+      {!columns || columns.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
-          {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
+        <Flex style={{...stylingBoxAsCSS, ...overflowStyle , overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
+          {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
               setTasks={setTasks}

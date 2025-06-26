@@ -1,13 +1,12 @@
 import { CalendarOutlined } from '@ant-design/icons';
-import React, { Fragment } from 'react';
+import React, { Fragment} from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
-import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IInputStyles } from '@/providers/form/models';
+import {useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDateFieldProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import {
   DATE_TIME_FORMATS,
 } from './utils';
@@ -15,8 +14,9 @@ import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DatePickerWrapper } from './datePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from '../textField/utils';
 
 const DateField: IToolboxComponent<IDateFieldProps> = {
   type: 'dateField',
@@ -46,8 +46,8 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       </Fragment>
     );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model) => {
     const customModel: IDateFieldProps = {
       ...model,
@@ -75,8 +75,25 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
         style: prev.style
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
+    .add<IDateFieldProps>(6, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        fontColor: prev.fontColor,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox,
+      };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
+    .add<IDateFieldProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
 

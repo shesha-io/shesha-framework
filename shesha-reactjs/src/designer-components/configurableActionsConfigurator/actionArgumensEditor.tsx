@@ -10,6 +10,7 @@ import { FormMarkup } from '@/providers/form/models';
 import GenericArgumentsEditor from './genericArgumentsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
+import { useStyles } from '../_settings/styles/styles';
 
 export interface IActionArgumentsEditorProps {
   action: IConfigurableActionDescriptor;
@@ -21,11 +22,18 @@ export interface IActionArgumentsEditorProps {
 }
 
 const getDefaultFactory = (
-  markup: FormMarkup | FormMarkupFactory,
+  action: IConfigurableActionDescriptor,
   readOnly: boolean
 ): IConfigurableActionArgumentsFormFactory => {
+  const { argumentsFormMarkup: markup } = action;
   return ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
-    const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
+
+    const markupFactory = typeof markup === 'function'
+      ? (markup as FormMarkupFactory)
+      : () => markup as FormMarkup;
+    const cacheKey = typeof markup !== 'function'
+      ? `${action.ownerUid}-${action.name}-args`
+      : undefined;
 
     const formMarkup = markupFactory({ exposedVariables, availableConstants });
     return (
@@ -36,6 +44,7 @@ const getDefaultFactory = (
         markup={formMarkup}
         onValuesChange={onValuesChange}
         readOnly={readOnly}
+        cacheKey={cacheKey}
       />
     );
   };
@@ -49,11 +58,13 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   exposedVariables,
   availableConstants,
 }) => {
+  const { styles } = useStyles();
+
   const argumentsEditor = useMemo(() => {
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
-        ? getDefaultFactory(action.argumentsFormMarkup, readOnly)
+        ? getDefaultFactory(action, readOnly)
         : null;
 
     const onCancel = () => {
@@ -89,9 +100,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     <Collapse
       defaultActiveKey={['1']}
       key={action.name}
-      items={[{ key: "1", label: "Arguments", children: argumentsEditor }]}
+      items={[{ key: "1", label: <div className={styles.label}>Arguments</div>, children: argumentsEditor }]}
     />
   );
 };
-
-export default ActionArgumentsEditor;

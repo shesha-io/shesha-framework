@@ -15,6 +15,7 @@ import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
 export type NavigationType = 'url' | 'form';
 
+const SCRIPT_ACTION_NAME = 'Execute Script';
 const NAVIGATE_ACTION_NAME = 'Navigate';
 const LOGGED_IN_DYNAMIC_PAGE = 'dynamic';
 const ANONYMOUS_DYNAMIC_PAGE = 'no-auth';
@@ -36,6 +37,10 @@ export interface INavigateActoinArguments {
   url?: string;
   formId?: FormIdentifier;
   queryParameters?: IKeyValue[];
+}
+
+export interface IScriptActionArguments {
+  expression: string;
 }
 
 interface ShaRoutingProviderProps {
@@ -163,5 +168,8 @@ const useShaRouting = (require: boolean = true): ShaRouting => {
 const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
   return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;
 };
+const isScriptActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<IScriptActionArguments> => {
+  return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === SCRIPT_ACTION_NAME;
+};
 
-export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration, type IRouter };
+export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration, isScriptActionConfiguration, type IRouter };

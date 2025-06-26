@@ -5,6 +5,7 @@ using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Sms;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,13 @@ using Xunit;
 
 namespace Shesha.Tests.Otp
 {
-    public class OtpManager_Tests: SheshaNhTestBase
+    [Collection(SqlServerCollection.Name)]
+    public class OtpManager_Tests : SheshaNhTestBase
     {
+        public OtpManager_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task SuccessOtp_TestAsync()
         {
@@ -43,7 +49,7 @@ namespace Shesha.Tests.Otp
             response.ErrorMessage.ShouldBeNullOrEmpty();
         }
 
-        private async Task<IVerifyPinResponse> CheckOtpCommonAsync(Action<VerifyPinInput> transformAction)
+        private async Task<IVerifyPinResponse> CheckOtpCommonAsync(Action<VerifyPinInput>? transformAction)
         {
             // todo: implement settings and register using normal way
             /*
@@ -63,7 +69,7 @@ namespace Shesha.Tests.Otp
                 storage.Add(dto.OperationId, dto.Pin);
                 return Task.CompletedTask;
             });
-            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult(new OtpDto
+            otpStorage.Setup(s => s.GetOrNullAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult<OtpDto?>(new OtpDto
             {
                 Pin = storage[id],
                 OperationId = id,
@@ -95,7 +101,7 @@ namespace Shesha.Tests.Otp
             return await otp.VerifyPinAsync(verificationInput);
         }
     
-        private async Task<IVerifyPinResponse> CheckEmailLinkAsync(Action<VerifyPinInput> action)
+        private async Task<IVerifyPinResponse> CheckEmailLinkAsync(Action<VerifyPinInput>? action)
         {
             var settings = LocalIocManager.Resolve<IOtpSettings>();
 
@@ -110,7 +116,7 @@ namespace Shesha.Tests.Otp
                 return Task.CompletedTask;
             });
 
-            otpStorage.Setup(s => s.GetAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult(new OtpDto
+            otpStorage.Setup(s => s.GetOrNullAsync(It.IsAny<Guid>())).Returns<Guid>(id => Task.FromResult<OtpDto?>(new OtpDto
             {
                 Pin = storage[id],
                 OperationId = id,

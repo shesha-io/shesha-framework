@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.TestBase;
 using Moq;
 using NHibernate;
 using Shesha.Domain;
@@ -7,6 +6,7 @@ using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.NHibernate.Repositories;
 using Shesha.Specifications;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,13 @@ using Xunit;
 
 namespace Shesha.Tests.Specifications
 {
-    public class Specifications_Tests: AbpIntegratedTestBase<SheshaTestModule>
+    [Collection(SqlServerCollection.Name)]
+    public class Specifications_Tests : SheshaNhTestBase
     {
+        public Specifications_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task Test_NestedContexts_Async()
         {
@@ -85,7 +90,7 @@ namespace Shesha.Tests.Specifications
 
             await Task.Delay(1);
 
-            var allPersonsCount = await repository.CountAsync();
+            var allPersonsCount = await repository.GetAll().CountAsync();
             allPersonsCount.ShouldBe(expectedAllPersonsCount);
 
             using (specAccessor.Use<Age18PlusSpecification, Person>())
@@ -103,7 +108,7 @@ namespace Shesha.Tests.Specifications
 
                     specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification), typeof(HasNoAccountSpecification) }, ignoreOrder: true);
                     
-                    var persons18PlusWithoutAccount = repository.GetAll().ToList();
+                    var persons18PlusWithoutAccount = await repository.GetAll().ToListAsync();
                     persons18PlusWithoutAccount.ShouldBe(expectedPersons18PlusWithoutAccount, ignoreOrder: true);
                 }
 
@@ -111,7 +116,7 @@ namespace Shesha.Tests.Specifications
 
                 specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification) }, ignoreOrder: true);
 
-                var persons18Plus2 = repository.GetAll().ToList();
+                var persons18Plus2 = await repository.GetAll().ToListAsync();
                 persons18Plus2.ShouldBe(expectedPersons18Plus, ignoreOrder: true);
             }
 
@@ -119,11 +124,11 @@ namespace Shesha.Tests.Specifications
 
             specAccessor.SpecificationTypes.ShouldBeEmpty();
             
-            var allPersonsCount2 = repository.GetAll().Count();
+            var allPersonsCount2 = await repository.GetAll().CountAsync();
             allPersonsCount2.ShouldBe(expectedAllPersonsCount);
         }
 
-        private Person TestPerson(string firstName, string lastName, DateTime? dob, string username)
+        private Person TestPerson(string firstName, string lastName, DateTime? dob, string? username)
         {
             return new Person {
                 Id = Guid.NewGuid(),

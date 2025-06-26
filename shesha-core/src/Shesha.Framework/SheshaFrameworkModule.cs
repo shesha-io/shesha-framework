@@ -150,6 +150,7 @@ namespace Shesha
             IocManager.RegisterSettingAccessor<IFrontendSettings>(s => {
                 s.Theme.WithDefaultValue(ThemeSettings.Default);
                 s.MainMenu.WithDefaultValue(MainMenuSettings.Default);
+                s.PublicUrl.WithDefaultValue("http://localhost:3000");
             });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
@@ -165,7 +166,6 @@ namespace Shesha
         public override void PostInitialize()
         {
             IocManager.Resolve<ShaPermissionManager>().Initialize();
-            //IocManager.Resolve<SheshaSettingDefinitionManager>().Initialize();
 
             var def = IocManager.Resolve<IPermissionDefinitionContext>();
 

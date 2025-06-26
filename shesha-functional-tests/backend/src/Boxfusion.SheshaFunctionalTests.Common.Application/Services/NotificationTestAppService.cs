@@ -1,11 +1,12 @@
 ﻿using Abp.Domain.Repositories;
 using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
+using NHibernate.Linq;
 using Shesha;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Notifications;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
-using Shesha.Services;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
@@ -15,15 +16,21 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<NotificationTypeConfig, Guid> _notificationTypeRepository;
-        private readonly IStoredFileService _storedFileService;
+        private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         
-        public NotificationTestAppService(INotificationSender notificationService, IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, IRepository<Person, Guid> personRepository, IRepository<NotificationTypeConfig, Guid> notificationTypeRepository, IStoredFileService storedFileService)
+        public NotificationTestAppService(INotificationSender notificationService, 
+            IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
+            IRepository<Person, Guid> personRepository,
+            IRepository<NotificationTypeConfig, Guid> notificationTypeRepository, 
+            IRepository<StoredFile, Guid> storedFileService
+
+            )
         {
             _notificationService = notificationService;
             _notificationChannelRepository = notificationChannelRepository;
             _personRepository = personRepository;
             _notificationTypeRepository = notificationTypeRepository;
-            _storedFileService = storedFileService;
+            _storedFileRepository = storedFileService;
         }
 
         public async Task TestNotificationAsync(NotificationDto notification)
@@ -46,15 +53,12 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = recipientPerson?.FullName ?? "Unknown Recipient",
                 Subject = type.Name,
-                Body = type.Description
+                Body = type.Description ?? string.Empty
             };
 
-            // Get attachments only if recipient is provided
-            var files = recipientPerson != null
-                ? await _storedFileService.GetAttachmentsAsync(recipientPerson)
-                : null;
+            var files = await _storedFileRepository.GetAllIncluding().Where(x => x.Owner.Id == notification.SchoolId).ToListAsync();
 
-            var attachments = files?.Select(x => new NotificationAttachmentDto()
+            var attachments = files.Select(x => new NotificationAttachmentDto()
             {
                 FileName = x.FileName,
                 StoredFileId = x.Id,
@@ -71,13 +75,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                     ? new RawAddressMessageParticipant(notification.RecipientText)
                     : throw new ArgumentException($"{nameof(notification.RecipientText)} must not be null");
 
-            await _notificationService.SendNotification(
+            await _notificationService.SendNotificationAsync(
                 type,
                 sender,
                 recipient,                
                 data,
                 notification.Priority,
                 attachments,
+                notification.Cc,
                 null,
                 channel
             );
@@ -97,6 +102,15 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = "Test Name",
             };
+
+            var files = await _storedFileRepository.GetAllIncluding().Where(x => x.Owner.Id == notification.SchoolId).ToListAsync();
+
+            var attachments = files.Select(x => new NotificationAttachmentDto()
+            {
+                FileName = x.FileName,
+                StoredFileId = x.Id,
+            }).ToList();
+
             // Get the current person
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
@@ -109,12 +123,13 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 foreach (var recipient in notification.RecipientTexts)
                 {
                     var receiver = new RawAddressMessageParticipant(recipient);
-                    await _notificationService.SendNotification(
+                    await _notificationService.SendNotificationAsync(
                         type,
                         sender,
                         receiver,
                         data,
                         notification.Priority,
+                        attachments,
                         null,
                         null,
                         channel
@@ -129,12 +144,13 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 {
                     var receiver = await _personRepository.GetAsync(recipient.Id);
 
-                    await _notificationService.SendNotification(
+                    await _notificationService.SendNotificationAsync(
                         type,
                         senderPerson,
                         receiver,
                         data,
                         notification.Priority,
+                        attachments,
                         null,
                         null,
                         channel

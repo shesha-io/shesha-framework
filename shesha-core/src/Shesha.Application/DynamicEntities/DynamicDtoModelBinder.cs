@@ -12,9 +12,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
-using Shesha.Reflection;
-using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,8 +31,9 @@ namespace Shesha.DynamicEntities
         private readonly IList<IInputFormatter> _formatters;
         private readonly Func<Stream, Encoding, TextReader> _readerFactory;
         private readonly ILogger _logger;
-        private readonly MvcOptions _options;
+        private readonly MvcOptions? _options;
         private readonly IDynamicDtoTypeBuilder _dtoBuilder;
+        private IDynamicMappingSettings _defaultSettings = new DynamicMappingSettings();
 
         /// <summary>
         /// Creates a new <see cref="DynamicDtoModelBinder"/>.
@@ -57,6 +55,16 @@ namespace Shesha.DynamicEntities
         }
 
         /// <summary>
+        /// Set default binding settings. 
+        /// Note: is used for unit tests only
+        /// </summary>
+        /// <param name="defaultSettings"></param>
+        public void SetDefaultSettings(IDynamicMappingSettings defaultSettings)
+        {
+            _defaultSettings = defaultSettings;
+        }        
+
+        /// <summary>
         /// Creates a new <see cref="DynamicDtoModelBinder"/>.
         /// </summary>
         /// <param name="formatters">The list of <see cref="IInputFormatter"/>.</param>
@@ -71,7 +79,7 @@ namespace Shesha.DynamicEntities
             IList<IInputFormatter> formatters,
             IHttpRequestStreamReaderFactory readerFactory,
             ILoggerFactory loggerFactory,
-            MvcOptions options,
+            MvcOptions? options,
             IDynamicDtoTypeBuilder dynamicDtoTypeBuilder)
         {
             if (formatters == null)
@@ -107,7 +115,7 @@ namespace Shesha.DynamicEntities
             var bindingSettings = (defaultMetadata != null
                 ? defaultMetadata.Attributes.ParameterAttributes?.OfType<IDynamicMappingSettings>().FirstOrDefault()
                 : null)
-                ?? new DynamicMappingSettings();
+                ?? _defaultSettings;
 
             // Special logic for body, treat the model name as string.Empty for the top level
             // object, but allow an override via BinderModelName. The purpose of this is to try
@@ -159,7 +167,7 @@ namespace Shesha.DynamicEntities
                 _readerFactory,
                 AllowEmptyBody);
 
-            var formatter = (IInputFormatter)null;
+            IInputFormatter? formatter = null;
             for (var i = 0; i < _formatters.Count; i++)
             {
                 if (_formatters[i].CanRead(formatterContext))
@@ -229,26 +237,16 @@ namespace Shesha.DynamicEntities
                             AddFormFieldsProperty = true,
                         };
                         var effectiveModelType = await _dtoBuilder.BuildDtoProxyTypeAsync(buildContext);
-                        var mapper = GetMapper(result.Model.GetType(), effectiveModelType, fullDtoBuildContext.Classes);
-                        model = mapper.Map(result.Model, result.Model.GetType(), effectiveModelType);
+                        var mapper = GetMapper(modelWithFormFields.GetType(), effectiveModelType, fullDtoBuildContext.Classes);
+                        model = mapper.Map(result.Model, modelWithFormFields.GetType(), effectiveModelType);
                     }
 
                     if (model is IHasJObjectField modelDynamicDto)
                     {
                         // Add JObject only if not a DtoProxy
-                        modelDynamicDto._jObject = !bindingSettings.UseDynamicDtoProxy
-                            ? Newtonsoft.Json.Linq.JObject.Parse(body)
+                        modelDynamicDto._jObject = !bindingSettings.UseDynamicDtoProxy && !string.IsNullOrWhiteSpace(body)
+                            ? JObject.Parse(body)
                             : null;
-
-                        // Attempt to proxy DTo to determine changed properties
-                        /*if (!modelType.IsGenericType)
-                        {
-                            var interceptor = new DynamicDtoInterceptor();
-                            MakeProxy(model, interceptor);
-                            model = new ProxyGenerator().CreateClassProxyWithTarget(
-                                modelDynamicDto.GetType(), new[] { typeof(IDynamicDtoInputProxy) }, modelDynamicDto, interceptor);
-                            (model as IDynamicDtoInputProxy).ResetState();
-                        }*/
                     }
 
                     bindingContext.Result = ModelBindingResult.Success(model);
@@ -342,7 +340,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private void FillPropertyNamesRecursive(JObject jsonObject, List<string> propertyNames, string prefix = "")
+        private void FillPropertyNamesRecursive(JObject? jsonObject, List<string> propertyNames, string prefix = "")
         {
             if (jsonObject == null)
                 return;
@@ -359,7 +357,9 @@ namespace Shesha.DynamicEntities
         {
             var propertyNames = new List<string>();
 
-            var jsonObject = JObject.Parse(body);
+            var jsonObject = !string.IsNullOrWhiteSpace(body)
+                ? JObject.Parse(body)
+                : null;
             FillPropertyNamesRecursive(jsonObject, propertyNames);
 
             return propertyNames;
@@ -393,9 +393,9 @@ namespace Shesha.DynamicEntities
             return modelConfigMapperConfig.CreateMapper();
         }
 
-        private PropertyInfo FindProperty(Type type, string path)
+        private PropertyInfo? FindProperty(Type type, string path)
         {
-            PropertyInfo currentProperty = null;
+            PropertyInfo? currentProperty = null;
             var currentType = type;
 
             var pathParts = path.Split('.');

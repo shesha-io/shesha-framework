@@ -1,6 +1,4 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Abp.Runtime.Caching;
 using Moq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
@@ -9,8 +7,9 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
-using Shesha.NHibernate.UoW;
+using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -20,14 +19,16 @@ using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
+    [Collection(SqlServerCollection.Name)]
     public class DynamicPropertyManager_Tests : SheshaNhTestBase
     {
+        private readonly IRepository<EntityPropertyValue, Guid> _propertyValueRepo;
+        private readonly IRepository<EntityProperty, Guid> _propertyRepo;
 
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
-
-        public DynamicPropertyManager_Tests()
+        public DynamicPropertyManager_Tests(SqlServerFixture fixture) : base(fixture)
         {
-            _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
+            _propertyValueRepo = Resolve<IRepository<EntityPropertyValue, Guid>>();
+            _propertyRepo = Resolve<IRepository<EntityProperty, Guid>>();
         }
 
         [Fact]
@@ -82,43 +83,45 @@ namespace Shesha.Tests.DynamicEntities
                     {
                         result.Add(prop.Key);
                     }
-                    return Task.FromResult(result);
+                    return Task.FromResult<List<EntityPropertyDto>?>(result);
                 });
 
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var entityConfigStore = Resolve<IEntityConfigurationStore>();
+            var fullProxyCacheHolder = Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = Resolve<IDynamicTypeCacheHolder>();
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
             var context = new DynamicDtoTypeBuildingContext() { ModelType = baseDtoType };
             var dtoType = await builder.BuildDtoFullProxyTypeAsync(baseDtoType, context);
             var dto = Activator.CreateInstance(dtoType) as DynamicDto<Person, Guid>;
+            dto.ShouldNotBeNull();
 
-            var properties = dto?.GetType().GetProperties();
+            var properties = dto.GetType().GetProperties();
 
             var serializationManager = Resolve<ISerializationManager>();
 
             // Update DTO properties values with test data
             foreach (var prop in props)
             {
-                var p = properties?.FirstOrDefault(x => prop.Key.Name.ToLower() == x.Name.ToLower());
+                var p = properties.Single(x => prop.Key.Name.ToLower() == x.Name.ToLower());
                 var val = prop.Value;
                 if (prop.Key.DataType == DataTypes.Object)
                 {
-                    val = serializationManager.DeserializeProperty(p?.PropertyType, serializationManager.SerializeProperty(prop.Key, val));
+                    val = serializationManager.DeserializeProperty(p.PropertyType, serializationManager.SerializeProperty(prop.Key, val));
                 }
-                p?.SetValue(dto, val);
+                p.SetValue(dto, val);
             }
 
-            using (var uow = _unitOfWorkManager.Begin())
+            using (var uow = NewNhUnitOfWork())
             {
-                var nhuow = uow as NhUnitOfWork;
-                var session = nhuow?.GetSession();
+#pragma warning disable IDISP001 // Dispose created
+                var session = uow.GetSession();
+#pragma warning restore IDISP001 // Dispose created
 
                 // Create temporary Entity Properties configs
                 var entityConfigRepo = Resolve<IRepository<EntityConfig, Guid>>();
                 var entityPropRepo = Resolve<IRepository<EntityProperty, Guid>>();
-                var config = entityConfigRepo.GetAll().FirstOrDefault(x =>
-                    x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
+                var config = entityConfigRepo.GetAll().First(x => x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
                 foreach (var prop in props)
                 {
                     var propConf = new EntityProperty()
@@ -135,15 +138,15 @@ namespace Shesha.Tests.DynamicEntities
                         {
                             ParentProperty = propConf,
                             EntityConfig = config,
-                            Name = prop.Key.Name,
-                            DataType = prop.Key.DataType,
+                            Name = childProp.Name,
+                            DataType = childProp.DataType,
                             Source = MetadataSourceType.UserDefined
                         };
                         childProp.Id = (await entityPropRepo.InsertAsync(childPropConf)).Id;
                     }
                 }
 
-                session?.Flush();
+                session.Flush();
 
                 try
                 {
@@ -164,17 +167,17 @@ namespace Shesha.Tests.DynamicEntities
                         // Save dynamic properties to DB
                         await dynamicPropertyManager.MapDtoToEntityAsync<DynamicDto<Person, Guid>, Person, Guid>(dto,
                             entity);
-                        session?.Flush();
+                        session.Flush();
 
-                        session?.Clear();
+                        session.Clear();
 
                         // Get entity from DB
                         var newEntity = await personRepo.GetAsync(id);
 
                         // Create new DTO and map values from entity to DTO
                         var newDto = Activator.CreateInstance(dtoType) as DynamicDto<Person, Guid>;
-                        await dynamicPropertyManager.MapEntityToDtoAsync<DynamicDto<Person, Guid>, Person, Guid>(newEntity,
-                            newDto);
+                        newDto.ShouldNotBeNull();
+                        await dynamicPropertyManager.MapEntityToDtoAsync<DynamicDto<Person, Guid>, Person, Guid>(newEntity, newDto);
 
                         // Check values. Values from the DB should be the same as from the test list
                         var newProperties = newDto?.GetType().GetProperties();
@@ -184,12 +187,12 @@ namespace Shesha.Tests.DynamicEntities
                             var dtoValue = p?.GetValue(newDto);
                             if (prop.Key.DataType == DataTypes.Object)
                             {
-                                var childProperties = dtoValue.GetType().GetProperties();
+                                var childProperties = dtoValue.NotNull().GetType().GetProperties();
                                 foreach (var childProp in prop.Key.Properties)
                                 {
-                                    var childP = childProperties.FirstOrDefault(x => childProp.Name.ToLower() == x.Name.ToLower());
+                                    var childP = childProperties.First(x => childProp.Name.ToLower() == x.Name.ToLower());
                                     var dtoChildValue = childP.GetValue(dtoValue);
-                                    dtoChildValue.ShouldBe(prop.Value.GetType().GetProperty(childProp.Name).GetValue(prop.Value));
+                                    dtoChildValue.ShouldBe(prop.Value.NotNull().GetType().GetRequiredProperty(childProp.Name).GetValue(prop.Value));
                                 }
                             }
                             else
@@ -206,21 +209,26 @@ namespace Shesha.Tests.DynamicEntities
                 }
                 finally
                 {
+                    var propertyRepo = Resolve<IRepository<EntityPropertyValue, Guid>>();
                     // delete temporary values and properties configs
                     foreach (var prop in props)
                     {
-                        session.CreateSQLQuery($"delete from Frwk_EntityPropertyValues where EntityPropertyId = '{prop.Key.Id}'").ExecuteUpdate();
-                        if (prop.Key.DataType == DataTypes.Object)
-                        {
-                            foreach (var childProp in prop.Key.Properties)
-                            {
-                                session.CreateSQLQuery($"delete from Frwk_EntityProperties where Id = '{childProp.Id}'").ExecuteUpdate();
-                            }
-                        }
-                        session.CreateSQLQuery($"delete from Frwk_EntityProperties where Id = '{prop.Key.Id}'").ExecuteUpdate();
+                        await DeletePropertyAsync(prop.Key);
                     }
                 }
             }
+        }
+
+        private async Task DeletePropertyAsync(EntityPropertyDto dto) 
+        {
+            await _propertyValueRepo.HardDeleteAsync(e => e.EntityProperty != null && e.EntityProperty.Id == dto.Id);
+            if (dto.DataType == DataTypes.Object)
+            {
+                foreach (var childProp in dto.Properties)
+                    await DeletePropertyAsync(childProp);
+            }
+
+            await _propertyRepo.HardDeleteAsync(e => e.Id == dto.Id);
         }
     }
 }

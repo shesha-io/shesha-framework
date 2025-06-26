@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Auditing;
+﻿using Abp.Auditing;
 using Abp.Localization;
 using Abp.Timing;
 using JetBrains.Annotations;
@@ -11,7 +7,10 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.EntityHistory;
-using Shesha.Extensions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -26,58 +25,58 @@ namespace Shesha.Domain
 
         [StringLength(13)]
         [Display(Name = "Identity Number")]
-        public virtual string IdentityNumber { get; set; }
+        public virtual string? IdentityNumber { get; set; }
 
         public virtual RefListPersonTitle? Title { get; set; }
 
         [StringLength(50)]
         [Display(Name = "First Name")]
         [Audited]
-        public virtual string FirstName { get; set; }
+        public virtual string? FirstName { get; set; }
 
         [StringLength(50)]
         [Display(Name = "Last Name")]
         [Audited]
-        public virtual string LastName { get; set; }
+        public virtual string? LastName { get; set; }
 
 		[Display(Name = "Middle Name")]
 		[StringLength(50)]
 		[Audited]
-		public virtual string MiddleName { get; set; }
+		public virtual string? MiddleName { get; set; }
 
 		/// <summary>
 		/// Initials override. If empty, the first letter of FirstName is taken.
 		/// </summary>
 		[StringLength(10), Display(Name = "Initials")]
-        public virtual string Initials { get; set; }
+        public virtual string? Initials { get; set; }
 
         /// <summary>
         /// Custom short name (overrides calculated short name)
         /// </summary>
         [StringLength(60)]
         [Display(Name = "Custom Short Name")]
-        public virtual string CustomShortName { get; set; }
+        public virtual string? CustomShortName { get; set; }
 
         [StringLength(20)]
-        public virtual string HomeNumber { get; set; }
+        public virtual string? HomeNumber { get; set; }
 
         [StringLength(20)]
         [Display(Name = "Mobile Number")]
         [Audited]
-        public virtual string MobileNumber1 { get; set; }
+        public virtual string? MobileNumber1 { get; set; }
 
         [StringLength(20)]
         [Display(Name = "Alternate Mobile Number")]
-        public virtual string MobileNumber2 { get; set; }
+        public virtual string? MobileNumber2 { get; set; }
 
         [StringLength(100), EmailAddress]
         [Display(Name = "Email Address")]
         [Audited]
-        public virtual string EmailAddress1 { get; set; }
+        public virtual string? EmailAddress1 { get; set; }
 
         [StringLength(100), EmailAddress]
         [Display(Name = "Alternative Email Address")]
-        public virtual string EmailAddress2 { get; set; }
+        public virtual string? EmailAddress2 { get; set; }
 
         [Past]
         [Audited]
@@ -96,7 +95,7 @@ namespace Shesha.Domain
         /// </summary>
         [EntityDisplayName]
         [ReadonlyProperty]
-        public virtual string FullName { get; protected set; }
+        public virtual string? FullName { get; protected set; }
 
 		/// <summary>
 		/// 
@@ -115,9 +114,9 @@ namespace Shesha.Domain
         /// </summary>
         [CanBeNull]
         [CascadeUpdateRules(false, true)]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return FullName;
         }

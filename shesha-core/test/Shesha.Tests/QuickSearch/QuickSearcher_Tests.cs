@@ -9,7 +9,9 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.QuickSearch;
+using Shesha.QuickSearch.Cache;
 using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +23,14 @@ namespace Shesha.Tests.QuickSearch
     /// <summary>
     /// Tests for <see cref="QuickSearcher"/>
     /// </summary>
+    [Collection(SqlServerCollection.Name)]
     public class QuickSearcher_Tests : SheshaNhTestBase
     {
+        public QuickSearcher_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+            
+        }
+
         [Fact]
         public void SearchPerson_TextFields_Convert_Test()
         {
@@ -132,7 +140,9 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestOrganisation.ContactMethods)
             });
 
-            Assert.Equal(@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entContactMethods => ((((entContactMethods.ReferenceList.Configuration.Module.Name == ""Shesha"") AndAlso (entContactMethods.ReferenceList.Configuration.Name == ""Shesha.Core.PreferredContactMethod"")) AndAlso ((Convert(ent.ContactMethods, Nullable`1) & Convert(entContactMethods.ItemValue, Nullable`1)) > Convert(0, Nullable`1))) AndAlso entContactMethods.Item.Contains(""email"")))", expression.ToString());
+            var refListId = GetReflistId(new ReferenceListIdentifier("Shesha", "Shesha.Core", "PreferredContactMethod"));
+
+            Assert.Equal($@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entContactMethods => (((entContactMethods.ReferenceList.Id == {refListId}) AndAlso ((Convert(ent.ContactMethods, Nullable`1) & Convert(entContactMethods.ItemValue, Nullable`1)) > Convert(0, Nullable`1))) AndAlso entContactMethods.Item.Contains(""email"")))", expression.ToString());
         }
 
         [Fact]
@@ -177,7 +187,8 @@ namespace Shesha.Tests.QuickSearch
                 return refList;
             });
 
-            var quickSearcher = new QuickSearcher(Resolve<IEntityConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object);
+            var quickSearchPropertiesCacheHolder = Resolve<IQuickSearchPropertiesCacheHolder>();
+            var quickSearcher = new QuickSearcher(Resolve<IEntityConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object, quickSearchPropertiesCacheHolder);
 
             var expression = quickSearcher.GetQuickSearchExpression<TestOrganisation>("Email", new List<string> {
                 nameof(TestOrganisation.ContactMethods)
@@ -197,25 +208,22 @@ namespace Shesha.Tests.QuickSearch
 
         #region private methods
 
-        private async Task<List<T>> TryFetchDataAsync<T, TId>(Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T : class, IEntity<TId>
+        private async Task<List<T>> TryFetchDataAsync<T, TId>(Func<IQueryable<T>, IQueryable<T>>? prepareQueryable = null, Action<List<T>>? assertions = null) where T : class, IEntity<TId>
         {
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
-            List<T> data = null;
-
-            await WithUnitOfWorkAsync(async () => {
+            return await WithUnitOfWorkAsync(async () => {
                 var query = repository.GetAll();
 
                 if (prepareQueryable != null)
                     query = prepareQueryable.Invoke(query);
 
-                data = await asyncExecuter.ToListAsync(query);
+                var data = await asyncExecuter.ToListAsync(query);
 
                 assertions?.Invoke(data);
+                return data;
             });
-
-            return data;
         }
 
         #endregion

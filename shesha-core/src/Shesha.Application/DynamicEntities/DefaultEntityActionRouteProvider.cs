@@ -16,7 +16,7 @@ namespace Shesha.DynamicEntities
             return routeTemplate;
         }
 
-        private string GetConfigurableModuleName(Type entityType)
+        private string? GetConfigurableModuleName(Type entityType)
         {
             return entityType.GetConfigurableModuleName();
         }

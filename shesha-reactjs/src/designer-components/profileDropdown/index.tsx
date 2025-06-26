@@ -1,4 +1,6 @@
 import {
+  ConfigurableForm,
+  FormIdentifier,
   IButtonGroup,
   IConfigurableFormComponent,
   IToolboxComponent,
@@ -10,8 +12,8 @@ import {
 } from '@/index';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Dropdown } from 'antd';
-import React, { useMemo, useState } from 'react';
+import { Avatar, Dropdown, Popover } from 'antd';
+import React, { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { getAccountMenuItems, getMenuItem } from './utils';
@@ -22,13 +24,21 @@ import {
   IResolvedDynamicItem,
 } from '@/providers/dynamicActions/evaluator/utils';
 import { SingleDynamicItemEvaluator } from '@/providers/dynamicActions/evaluator/singleDynamicItemEvaluator';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
   items?: IButtonGroup[];
   subText?: string;
   subTextColor?: string;
   subTextFontSize?: string;
+  subTextFontWeight?: string;
+  subTextFontFamily?: string;
+  subTextTextAlign?: CSSProperties['textAlign'];
   subTextStyle?: string;
+  showUserInfo?: boolean;
+  popOverTitle?: string;
+  popOverFormId?: FormIdentifier;
+  popOverContentStyle?: string;
 }
 
 const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
@@ -40,7 +50,19 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
   Factory: ({ model }) => {
     const [numResolved, setNumResolved] = useState(0);
 
-    const { subText, subTextColor, subTextFontSize, subTextStyle } = model;
+    const {
+      subText,
+      subTextColor,
+      subTextFontSize,
+      subTextFontWeight,
+      subTextFontFamily,
+      subTextTextAlign,
+      subTextStyle,
+      showUserInfo,
+      popOverTitle,
+      popOverFormId,
+      popOverContentStyle,
+    } = model;
 
     const { styles } = useStyles({
       subText,
@@ -56,6 +78,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const subTextStyling = {
       color: subTextColor,
       fontSize: subTextFontSize,
+      fontWeight: subTextFontWeight,
+      fontFamily: subTextFontFamily,
+      textAlign: subTextTextAlign,
       ...getStyle(subTextStyle, formData, globalState),
     };
 
@@ -84,6 +109,14 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     if (model.hidden) return null;
 
+    const popoverContent = popOverFormId ? (
+      <div style={getStyle(popOverContentStyle, formData, globalState)}>
+        <ConfigurableForm formId={popOverFormId} mode="readonly" />
+      </div>
+    ) : (
+      <div>Select Popover Form</div>
+    );
+
     return (
       <div className={styles.shaProfileDropdownWrapper}>
         {subText && <div style={subTextStyling}>{subText}</div>}
@@ -93,17 +126,38 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         ))}
 
         <div className={styles.shaProfileDropdown}>
-          <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-              {loginInfo?.fullName} <DownOutlined />
-            </a>
-          </Dropdown>
+          <ConditionalWrap
+            condition={showUserInfo}
+            wrap={(children) => {
+              return (
+                <Popover title={popOverTitle} content={popoverContent} placement="bottomRight">
+                  {children}
+                </Popover>
+              );
+            }}
+          >
+            <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
+              <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+                {loginInfo?.fullName} <DownOutlined />
+              </a>
+            </Dropdown>
+          </ConditionalWrap>
           <Avatar icon={<UserOutlined />} />
         </div>
       </div>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
+  migrator: (m) => m
+    .add<IProfileDropdown>(1, (prev) => (
+      {
+        ...prev, subTextFontWeight: 'normal',
+        subTextFontFamily: 'Arial',
+        subTextTextAlign: 'left',
+        subTextColor: '#000000',
+        subTextFontSize: '12px',
+      }
+    )),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 

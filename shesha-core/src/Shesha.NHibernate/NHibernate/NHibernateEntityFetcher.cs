@@ -2,6 +2,7 @@
 using Abp.Linq;
 using NHibernate.Linq;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace Shesha.NHibernate
 
         public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, List<string> properties)
         {
-            IQueryable<T> fetcher = null;
+            IQueryable<T>? fetcher = null;
 
             foreach (var propName in properties)
             {
@@ -51,9 +52,9 @@ namespace Shesha.NHibernate
             var property = ReflectionHelper.GetProperty(typeof(T), firstPart, useCamelCase: true);
             if (property != null && property.PropertyType.IsEntityType())
             {
-                var method = typeof(NHibernateEntityFetcher).GetMethod(nameof(MakeFetch), BindingFlags.Static | BindingFlags.Public);
+                var method = typeof(NHibernateEntityFetcher).GetRequiredMethod(nameof(MakeFetch), BindingFlags.Static | BindingFlags.Public);
                 var invoker = method.MakeGenericMethod(typeof(T), property.PropertyType);
-                var fetcher = invoker.Invoke(null, new object[] { queryable, firstPart }) as IQueryable<T>;
+                var fetcher = invoker.Invoke(null, [queryable, firstPart]).ForceCastAs<IQueryable<T>>();
 
                 var nestedParts = parts.Skip(1).ToArray();
                 if (nestedParts.Any())
@@ -64,9 +65,9 @@ namespace Shesha.NHibernate
                         var nestedProperty = ReflectionHelper.GetProperty(currentType, nestedPart, useCamelCase: true);
                         if (nestedProperty != null && nestedProperty.PropertyType.IsEntityType())
                         {
-                            var nestMethod = typeof(NHibernateEntityFetcher).GetMethod(nameof(MakeFetchNested), BindingFlags.Static | BindingFlags.Public);
+                            var nestMethod = typeof(NHibernateEntityFetcher).GetRequiredMethod(nameof(MakeFetchNested), BindingFlags.Static | BindingFlags.Public);
                             var nestInvoker = nestMethod.MakeGenericMethod(typeof(T), currentType, nestedProperty.PropertyType);
-                            fetcher = nestInvoker.Invoke(null, new object[] { fetcher, nestedPart }) as IQueryable<T>;
+                            fetcher = nestInvoker.Invoke(null, [fetcher, nestedPart]).ForceCastAs<IQueryable<T>>();
 
                             currentType = nestedProperty.PropertyType;
                         }

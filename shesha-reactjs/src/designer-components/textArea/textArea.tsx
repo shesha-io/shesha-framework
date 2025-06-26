@@ -1,22 +1,15 @@
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
-import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
-import {
-  evaluateString,
-  getStyle,
-  pickStyleFromModel,
-  useAvailableConstantsData,
-  validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { getEventHandlers } from '@/components/formDesigner/components/utils';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -26,8 +19,10 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
+import { useStyles } from './styles';
 
 interface IJsonTextAreaProps {
   value?: any;
@@ -41,7 +36,12 @@ const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
   );
 };
 
-const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
+interface ITextFieldComponentCalulatedValues {
+  defaultValue?: string;
+  eventHandlers?: IEventHandlers;
+}
+
+const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldComponentCalulatedValues> = {
   type: 'textArea',
   name: 'Text Area',
   isInput: true,
@@ -50,11 +50,20 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+  calculateModel: (model, allData) => ({
+      defaultValue: model.initialValue
+        ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
+        : undefined,
+      eventHandlers: getAllEventHandlers(model, allData)
+  }),
+  Factory: ({ model, calculatedModel }) => {
+    const { styles } = useStyles({
+      fontWeight: model.font?.weight,
+      fontFamily: model.font?.type,
+      textAlign: model.allStyles.fullStyle?.textAlign,
+      color: model.allStyles.fullStyle?.color,
+      fontSize: model.allStyles.fullStyle?.fontSize,
+    });
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
@@ -67,61 +76,49 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       color: model.fontColor,
       fontWeight: model.fontWeight,
       fontSize: model.fontSize,
-      ...stylingBoxAsCSS,
+      ...model.allStyles.appearanceStyle,
     });
-    const jsStyle = getStyle(model.style, allData.data);
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, ...model.allStyles.jsStyle });
 
     const textAreaProps: TextAreaProps = {
-      className: 'sha-text-area',
+      className: `sha-text-area ${styles.textArea}`,
       placeholder: model.placeholder,
       autoSize: model.autoSize ? { minRows: 2 } : false,
       showCount: model.showCount,
       maxLength: model.validate?.maxLength,
       allowClear: model.allowClear,
-      variant: model.hideBorder ? 'borderless' : undefined,
+      variant: model?.border?.hideBorder ? 'borderless' : undefined,
       size: model?.size,
-      style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
+      style: {
+        ...finalStyle,
+        ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
+          ? { marginBottom: model?.showCount ? '16px' : '0px' }
+          : {})
+      },
       spellCheck: model.spellCheck,
     };
 
     return (
       <ConfigurableFormItem
         model={model}
-        initialValue={
-          (model?.passEmptyStringByDefault && '') ||
-          (model.initialValue
-            ? evaluateString(model?.initialValue, {
-              formData: allData.data,
-              formMode: allData.form.formMode,
-              globalState: allData.globalState,
-            })
-            : undefined)
-        }
+        initialValue={calculatedModel.defaultValue}
       >
         {(value, onChange) => {
           const showAsJson = Boolean(value) && typeof value === 'object';
 
-          const customEvents = getEventHandlers(model, allData);
+          const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange(args[0]);
+            customEvents.onChange({value: args[0].currentTarget.value}, args[0]);
             if (typeof onChange === 'function') onChange(...args);
           };
 
-          return showAsJson ? (
-            <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
-          ) : model.readOnly ? (
-            <ReadOnlyDisplayFormItem value={value} />
-          ) : (
-            <Input.TextArea
-              rows={2}
-              {...textAreaProps}
-              disabled={model.readOnly}
-              {...customEvents}
-              value={value}
-              onChange={onChangeInternal}
-            />
-          );
+          return showAsJson 
+            ? <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
+            : model.readOnly 
+              ? <ReadOnlyDisplayFormItem value={value} />
+              : <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal}/>
+          ;
         }}
       </ConfigurableFormItem>
     );
@@ -159,9 +156,16 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           style: prev.style,
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      }),
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+      })
+      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+  ,
+  linkToModelMetadata: (model, _): ITextAreaComponentProps => {
+    return {
+      ...model,
+    };
+  },
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default TextAreaComponent;

@@ -1,14 +1,15 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Runtime.Validation;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services.ReferenceLists.Dto;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -47,8 +48,7 @@ namespace Shesha.Services.ReferenceLists
                         : $"Reference List with name `{input.Name}` already exists"
                     )
                 );
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var refList = new ReferenceList();
             refList.Name = input.Name;
@@ -105,8 +105,7 @@ namespace Shesha.Services.ReferenceLists
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
 
             var allVersions = await Repository.GetAll().Where(v => v.Name == refList.Name && v.Module == refList.Module).ToListAsync();
@@ -128,15 +127,13 @@ namespace Shesha.Services.ReferenceLists
 
         public override async Task<ReferenceList> CopyAsync(ReferenceList item, CopyItemInput input)
         {
-            var srcList = item as ReferenceList;
-
             // todo: validate input
             var module = await ModuleRepository.FirstOrDefaultAsync(input.ModuleId);
 
             var validationResults = new List<ValidationResult>();
 
             // todo: review validation messages, add localization support
-            if (srcList == null)
+            if (item == null)
                 validationResults.Add(new ValidationResult("Please select a referencelist to copy", new List<string> { nameof(input.ItemId) }));
             if (module == null)
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
@@ -155,8 +152,9 @@ namespace Shesha.Services.ReferenceLists
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            var srcList = item.ForceCastAs<ReferenceList>();
 
             var listCopy = new ReferenceList();
             listCopy.Name = input.Name;
@@ -185,7 +183,7 @@ namespace Shesha.Services.ReferenceLists
             await CopyItemsAsync(srcItems, null, null, destination);
         }
 
-        private async Task CopyItemsAsync(List<ReferenceListItem> sourceItems, ReferenceListItem sourceParent, ReferenceListItem destinationParent, ReferenceList destination)
+        private async Task CopyItemsAsync(List<ReferenceListItem> sourceItems, ReferenceListItem? sourceParent, ReferenceListItem? destinationParent, ReferenceList destination)
         {
             var levelItems = sourceItems.Where(i => i.Parent == sourceParent).ToList();
             foreach (var srcItem in levelItems) 

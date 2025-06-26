@@ -46,7 +46,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Tests
         public SheshaFunctionalTestsCommonDomainTestModule(SheshaNHibernateModule nhModule)
         {
             var appConfig = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
-            ConnectionString = appConfig.GetConnectionString("TestDB");
+            ConnectionString = appConfig.GetRequiredConnectionString("TestDB");
 
             var nhConfig = Configuration.Modules.ShaNHibernate();
             nhConfig.UseMsSql(ConnectionString);
@@ -121,8 +121,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Tests
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
             IocManager.IocContainer.AddFacility<LoggingFacility>(f => f.UseAbpLog4Net().WithConfig("log4netTest.config"));
-
-            StaticContext.SetIocManager(IocManager);
 
             ServiceCollectionRegistrar.Register(IocManager);
         }

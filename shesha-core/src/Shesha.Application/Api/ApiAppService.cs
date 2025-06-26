@@ -16,7 +16,7 @@ namespace Shesha.Api
     /// <summary>
     /// API application service
     /// </summary>
-    public class ApiAppService: SheshaAppServiceBase//, IApiAppService
+    public class ApiAppService : SheshaAppServiceBase//, IApiAppService
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -31,7 +31,7 @@ namespace Shesha.Api
         }
 
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> EndpointsAsync(string term, string verb, int maxResultCount = 10)
+        public async Task<List<AutocompleteItemDto>> EndpointsAsync(string? term, string? verb, int maxResultCount = 10)
         {
             var actionDescriptors = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(gi => gi.ActionDescriptor)).ToList();
 
@@ -42,19 +42,20 @@ namespace Shesha.Api
                 if (await _permissionedObjectManager.IsActionDescriptorEnabledAsync(actionDescriptor))
                     permissioned.Add(actionDescriptor);
 
-            var allEndpoints = permissioned.SelectMany(desc => {
+            var allEndpoints = permissioned.SelectMany(desc =>
+            {
                 var verbs = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SelectMany(c => c.HttpMethods).Distinct().ToList() ?? new List<string> { "" };
 
-                var actionDescriptor = desc as ControllerActionDescriptor;
+                return desc is ControllerActionDescriptor actionDescriptor
+                    ? verbs.Select(v => new ApiEndpointInfo
+                        {
+                            HttpVerb = v.ToLower(),
+                            Url = "/" + desc.AttributeRouteInfo?.Template?.TrimStart('/'),
 
-                return verbs.Select(v => new ApiEndpointInfo
-                {
-                    HttpVerb = v.ToLower(),
-                    Url = "/" + desc.AttributeRouteInfo?.Template.TrimStart('/'),
-
-                    ActionName = actionDescriptor?.ActionName,
-                    ControllerName = actionDescriptor?.ControllerName,
-                });
+                            ActionName = actionDescriptor.ActionName,
+                            ControllerName = actionDescriptor.ControllerName,
+                        })
+                    : new List<ApiEndpointInfo>();
             })
                 .Where(i => !string.IsNullOrWhiteSpace(i.Url))
                 .ToList();

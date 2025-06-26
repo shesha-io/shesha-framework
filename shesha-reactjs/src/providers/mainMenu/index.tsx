@@ -2,7 +2,7 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef
 import { setItemsAction, setLoadedMenuAction } from './actions';
 import { IConfigurableMainMenu, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { uiReducer } from './reducer';
-import { FormFullName, isNavigationActionConfiguration, useSettingValue, useSheshaApplication } from '..';
+import { FormFullName, isNavigationActionConfiguration, useSettingValue, useSheshaApplication, useAuth } from '..';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { mainMenuMigration } from './migrations/migration';
 import { getActualModel, useAvailableConstantsData } from '../form/utils';
@@ -20,6 +20,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   const [state, dispatch] = useReducer(uiReducer, {...MAIN_MENU_CONTEXT_INITIAL_STATE});
 
   const { loadingState, value: fetchedMainMenu } = useSettingValue({module: 'Shesha', name: 'Shesha.MainMenuSettings'});
+  const auth = useAuth(false);
 
   const { applicationKey, anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
@@ -119,14 +120,13 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
 
   useDeepCompareEffect(() => {
     dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
-  }, [{...allData}]); // use spread to get the values of the ObservableProxy fields
-
+  }, [allData]);
 
   useEffect(() => {
     if (loadingState === 'ready') {
       updateMainMenu(fetchedMainMenu);
     }
-  }, [loadingState]);
+  }, [loadingState, auth?.isLoggedIn]);
 
   const changeMainMenu = (value: IConfigurableMainMenu) => {
     updateMainMenu(value);

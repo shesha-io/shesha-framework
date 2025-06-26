@@ -1,16 +1,13 @@
 ﻿using Abp.Dependency;
 using Shesha.Attributes;
-using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Modules;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
 using Shesha.Utilities;
-using System;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Shesha.Settings
 {
@@ -36,7 +33,7 @@ namespace Shesha.Settings
             {
                 var accessorType = accessor.GetType();
 
-                var interfaceType = accessorType.GetInterfaces().Where(t => t != typeof(ISettingAccessors) && typeof(ISettingAccessors).IsAssignableFrom(t)).FirstOrDefault();
+                var interfaceType = accessorType.GetInterfaces().Where(t => t != typeof(ISettingAccessors) && typeof(ISettingAccessors).IsAssignableFrom(t)).First();
 
                 var moduleInfo = interfaceType.GetConfigurableModuleInfo();
                 if (moduleInfo == null)
@@ -58,7 +55,7 @@ namespace Shesha.Settings
             }
         }
 
-        private SettingDefinition GetSettingDefinition(ISettingAccessor propertyInstance, PropertyInfo property, SheshaModuleInfo moduleInfo)
+        private SettingDefinition? GetSettingDefinition(ISettingAccessor propertyInstance, PropertyInfo property, SheshaModuleInfo moduleInfo)
         {
             var valueType = property.PropertyType.IsGenericType
                 ? property.PropertyType.GenericTypeArguments[0]
@@ -68,7 +65,7 @@ namespace Shesha.Settings
 
             var definitionType = typeof(SettingDefinition<>).MakeGenericType(valueType);
 
-            var settingAttribute = property.GetAttribute<SettingAttribute>();
+            var settingAttribute = property.GetAttributeOrNull<SettingAttribute>();
             if (settingAttribute == null)
                 return null;
 
@@ -79,7 +76,7 @@ namespace Shesha.Settings
 
             var defaultValue = propertyInstance.GetDefaultValue();
 
-            var definition = Activator.CreateInstance(definitionType, name, defaultValue, displayName) as SettingDefinition;
+            var definition = ActivatorHelper.CreateNotNullObject(definitionType, name, defaultValue, displayName).ForceCastAs<SettingDefinition>();
 
             definition.Accessor = property.GetPropertyAccessor();
 
@@ -95,8 +92,8 @@ namespace Shesha.Settings
                 ? new SettingConfigurationIdentifier(definition.ModuleName, settingAttribute.EditorFormName)
                 : null;            
 
-            definition.Category = property.GetCategory() ?? property.DeclaringType.GetCategory();
-            definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.Name), property.DeclaringType.GetAttribute<AliasAttribute>()?.Alias);
+            definition.Category = property.GetCategory() ?? property.DeclaringType?.GetCategory();
+            definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.NotNull().Name), property.DeclaringType?.GetAttributeOrNull<AliasAttribute>()?.Alias);
 
             return definition;
         }

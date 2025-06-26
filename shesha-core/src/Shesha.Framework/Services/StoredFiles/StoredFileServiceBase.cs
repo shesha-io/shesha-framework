@@ -5,6 +5,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,7 +44,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the specified entity with the specified <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string? fileCategory)
         {
             return await GetAttachmentsInternalAsync(owner.Id, owner.GetTypeShortAlias(), f => f.Category == fileCategory);
         }
@@ -51,7 +52,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the entity with the specified <paramref name="id"/>, <paramref name="typeShortAlias"/> and <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory)
         {
             return await GetAttachmentsInternalAsync(id, typeShortAlias, f => f.Category == fileCategory);
         }
@@ -72,17 +73,17 @@ namespace Shesha.Services.StoredFiles
             return await GetAttachmentsInternalAsync(id, typeShortAlias);
         }
 
-        private async Task<IList<StoredFile>> GetAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
+        private async Task<IList<StoredFile>> GetAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>>? filterPredicate = null)
         {
             return await GetAttachmentsQuery(id, typeShortAlias, filterPredicate).OrderBy(e => e.SortOrder).ToListAsync();
         }
 
-        private async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>> filterPredicate = null)
+        private async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>>? filterPredicate = null)
         {
             return await GetAttachmentsLastVersionsQuery(id, typeShortAlias, filterPredicate).OrderBy(e => e.File.SortOrder).ToListAsync();
         }
 
-        public async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string fileCategory)
+        public async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string? fileCategory)
         {
             return await GetLastVersionsOfAttachmentsInternalAsync(id, typeShortAlias, f => f.File.Category == fileCategory);
         }
@@ -95,12 +96,12 @@ namespace Shesha.Services.StoredFiles
 
         #region HasAttachments
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string? fileCategory)
         {
             return await HasAttachmentsOfCategoryAsync(owner.Id, owner.GetTypeShortAlias(), fileCategory);
         }
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory)
         {
             return await GetAttachmentsQuery(id, typeShortAlias, f => f.Category == fileCategory).AnyAsync();
         }
@@ -125,7 +126,7 @@ namespace Shesha.Services.StoredFiles
 
         public Stream GetStream(StoredFile file)
         {
-            var lastVersion = GetLastVersion(file);
+            var lastVersion = GetLastVersion(file) ?? throw new EntityNotFoundException($"Failed to find last version of stored file '{file.Id}'");
             return GetStream(lastVersion);
         }
 
@@ -140,7 +141,7 @@ namespace Shesha.Services.StoredFiles
         {
             // todo: move to the base class and reuse in the AzureFileService
 
-            var newFile = new StoredFile(EntityConfigurationStore)
+            var newFile = new StoredFile
             {
                 Description = file.Description,
                 FileName = file.FileName,
@@ -205,16 +206,17 @@ namespace Shesha.Services.StoredFiles
 
         #endregion
 
-        private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
+        private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>>? filterPredicate = null)
         {
-            IQueryable<StoredFile> query = null;
+            IQueryable<StoredFile>? query = null;
             var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
+            var stringId = id?.ToString().NotNullOrWhiteSpace();
             if (config != null)
             {
                 var className = config.EntityType.FullName;
 
-                query = FileRepository.GetAll().Where(e => e.Owner.Id == id.ToString());
+                query = FileRepository.GetAll().Where(e => e.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
                     ? query.Where(e => e.Owner._className == className || e.Owner._className == config.TypeShortAlias)
                     : query.Where(e => e.Owner._className == className);
@@ -224,7 +226,7 @@ namespace Shesha.Services.StoredFiles
             }
             else
             {
-                query = FileRepository.GetAll().Where(e => e.Owner.Id == id.ToString() && e.Owner._className == typeShortAlias);
+                query = FileRepository.GetAll().Where(e => e.Owner.Id == stringId && e.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
@@ -232,17 +234,19 @@ namespace Shesha.Services.StoredFiles
             return query;
         }
 
-        private IQueryable<StoredFileVersion> GetAttachmentsLastVersionsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>> filterPredicate = null)
+        private IQueryable<StoredFileVersion> GetAttachmentsLastVersionsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>>? filterPredicate = null)
         {
             IQueryable<StoredFileVersion> query = VersionRepository.GetAll().Where(e => e.IsLast);
 
             var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
+            var stringId = id?.ToString().NotNullOrWhiteSpace();
+
             if (config != null)
             {
                 var className = config.EntityType.FullName;
 
-                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == id.ToString());
+                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
                     ? query.Where(e => e.File.Owner._className == className || e.File.Owner._className == config.TypeShortAlias)
                     : query.Where(e => e.File.Owner._className == className);
@@ -252,7 +256,7 @@ namespace Shesha.Services.StoredFiles
             }
             else
             {
-                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == id.ToString() && e.File.Owner._className == typeShortAlias);
+                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
@@ -275,8 +279,8 @@ namespace Shesha.Services.StoredFiles
         /// <returns></returns>
         public async Task<IList<string>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner)
         {
-            return await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct()
-                .ToListAsync();
+            var categories = await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct().ToListAsync();
+            return categories.WhereNotNullOrWhiteSpace().ToList();
         }
 
         /// <summary>
@@ -352,7 +356,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="fileId">File Id</param>
         /// <returns></returns>
-        protected StoredFileVersion GetLastVersion(Guid fileId)
+        protected StoredFileVersion? GetLastVersion(Guid fileId)
         {
             return QueryLastVersion(fileId).FirstOrDefault();
         }
@@ -372,7 +376,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public StoredFileVersion GetLastVersion(StoredFile file)
+        public StoredFileVersion? GetLastVersion(StoredFile file)
         {
             return GetLastVersion(file.Id);
         }
@@ -463,7 +467,7 @@ namespace Shesha.Services.StoredFiles
         public abstract Task UpdateVersionContentAsync(StoredFileVersion version, Stream stream);
 
         /// inheritedDoc
-        public async Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null) 
+        public async Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null) 
         {
             if (stream == null)
                 throw new Exception($"{nameof(stream)} must not be null");
@@ -471,7 +475,7 @@ namespace Shesha.Services.StoredFiles
                 throw new Exception($"{nameof(fileName)} must not be null or empty");
 
             // create new file
-            var storedFile = new StoredFile(EntityConfigurationStore)
+            var storedFile = new StoredFile
             {
                 FileName = Path.GetFileName(fileName),
                 FileType = Path.GetExtension(fileName),
@@ -495,7 +499,7 @@ namespace Shesha.Services.StoredFiles
         }
 
         /// inheritedDoc
-        public async Task<StoredFile> SaveFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null)
+        public async Task<StoredFile> SaveFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null)
         {
             var fileVersion = await CreateFileAsync(stream, fileName, prepareFileAction);
 

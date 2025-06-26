@@ -1,11 +1,13 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Auditing;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Newtonsoft.Json.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
-using Shesha.NHibernate.UoW;
+using Shesha.Reflection;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,13 +18,14 @@ using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
+    [Collection(SqlServerCollection.Name)]
     public class EntityModelBinder_Tests : SheshaNhTestBase
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IEntityModelBinder _entityModelBinder;
         private readonly IRepository<Person, Guid> _personRepo;
 
-        public EntityModelBinder_Tests()
+        public EntityModelBinder_Tests(SqlServerFixture fixture) : base(fixture)
         {
             _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
@@ -34,10 +37,9 @@ namespace Shesha.Tests.DynamicEntities
         {
             LoginAsHostAdmin();
 
-            using (var uow = _unitOfWorkManager.Begin())
+            using (var uow = NewNhUnitOfWork())
             {
-                var nhuow = uow as NhUnitOfWork;
-                Person testPerson = null;
+                Person? testPerson = null;
 
                 try
                 {
@@ -60,10 +62,9 @@ namespace Shesha.Tests.DynamicEntities
         {
             LoginAsHostAdmin();
 
-            using (var uow = _unitOfWorkManager.Begin())
+            using (var uow = NewNhUnitOfWork())
             {
-                var nhuow = uow as NhUnitOfWork;
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
 
                 try
                 {
@@ -95,11 +96,10 @@ namespace Shesha.Tests.DynamicEntities
             var repoOrg = Resolve<IRepository<Organisation, Guid>>();
             var testOrgRepo = Resolve<IRepository<TestOrganisationAllowContactUpdate, Guid>>();
 
-            using (var uow = _unitOfWorkManager.Begin())
+            using (var uow = NewNhUnitOfWork())
             {
-                var nhuow = uow as NhUnitOfWork;
-                Person newTestPerson1 = null;
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
+                Person? newTestPerson1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
 
                 try
                 {
@@ -112,8 +112,10 @@ namespace Shesha.Tests.DynamicEntities
                     var testResult1 = await _entityModelBinder.BindPropertiesAsync(jObject1, newTestOrg1, new EntityModelBindingContext());
                     Assert.True(testResult1);
                     await testOrgRepo.InsertAsync(newTestOrg1);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestOrg1 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation");
+                    Assert.True(newTestOrg1 != null);
+
                     newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson");
                     Assert.True(newTestPerson1 != null);
                     Assert.True(string.IsNullOrEmpty(newTestOrg1.Description));
@@ -123,7 +125,7 @@ namespace Shesha.Tests.DynamicEntities
                 {
                     if (newTestOrg1 != null) testOrgRepo.HardDelete(newTestOrg1);
                     if (newTestPerson1 != null) _personRepo.HardDelete(newTestPerson1);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                 }
             }
         }
@@ -132,14 +134,12 @@ namespace Shesha.Tests.DynamicEntities
         public async Task CascadeRuleEntityFinder_TestAsync()
         {
             LoginAsHostAdmin();
-            using (var uow = _unitOfWorkManager.Begin())
+            using (var uow = NewNhUnitOfWork())
             {
-                var nhuow = uow as NhUnitOfWork;
-
                 var ent = new Person() { FirstName = "TestPerson", LastName = "TestPerson", DateOfBirth = new DateTime(1978, 09, 24, 13, 24, 17) };
 
                 await _personRepo.InsertAsync(ent);
-                await nhuow.SaveChangesAsync();
+                await uow.SaveChangesAsync();
 
                 var checkEnt = new Person() { FirstName = "TestPerson", LastName = "TestPerson", DateOfBirth = new DateTime(1978, 09, 24) };
 
@@ -152,7 +152,7 @@ namespace Shesha.Tests.DynamicEntities
                 Assert.Null(newEnt);
 
                 _personRepo.HardDelete(ent);
-                await nhuow.SaveChangesAsync();
+                await uow.SaveChangesAsync();
             }
         }
 
@@ -164,25 +164,24 @@ namespace Shesha.Tests.DynamicEntities
             var repoOrg = Resolve<IRepository<Organisation, Guid>>();
             var testOrgRepo = Resolve<IRepository<TestOrganisationAllowContactUpdate, Guid>>();
 
-            using (var uow = _unitOfWorkManager.Begin())
+            using (var uow = NewNhUnitOfWork())
             {
-                var nhuow = uow as NhUnitOfWork;
-                Person newTestPerson1 = null;
-                Person newTestPerson2 = null;
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
-                TestOrganisationAllowContactUpdate newTestOrg2 = null;
-                TestOrganisationAllowContactUpdate newTestOrg3 = null;
-                TestOrganisationAllowContactUpdate newTestOrg4 = null;
-                TestOrganisationAllowContactUpdate newTestOrg5 = null;
-                TestOrganisationAllowContactUpdate newTestOrg6 = null;
-                TestOrganisationAllowContactUpdate newTestOrg7 = null;
-                TestOrganisationAllowContactUpdate newTestOrg8 = null;
+                Person? newTestPerson1 = null;
+                Person? newTestPerson2 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg2 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg3 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg4 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg5 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg6 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg7 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg8 = null;
 
                 try
                 {
                     // Child creation is not allowed
                     var errors = new List<ValidationResult>();
-                    var newOrg = new Organisation();
+                    var newOrg = new TestOrganisationDisallowContactUpdate();
                     var json1 = @"{ 'name': 'TestOrganisation', 'primaryContact': { 'firstName': 'TestPerson' } }";
                     var jObject1 = JObject.Parse(json1);
                     var result = await _entityModelBinder.BindPropertiesAsync(jObject1, newOrg, new EntityModelBindingContext());
@@ -194,8 +193,9 @@ namespace Shesha.Tests.DynamicEntities
                     var testResult1 = await _entityModelBinder.BindPropertiesAsync(jObject1, newTestOrg1, new EntityModelBindingContext());
                     Assert.True(testResult1);
                     await testOrgRepo.InsertAsync(newTestOrg1);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestOrg1 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation");
+                    Assert.NotNull(newTestOrg1);
                     newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson");
                     Assert.True(newTestPerson1 != null);
                     // Check for prepared value
@@ -217,7 +217,7 @@ namespace Shesha.Tests.DynamicEntities
                     var testResult3 = await _entityModelBinder.BindPropertiesAsync(jObject3, newTestOrg3, new EntityModelBindingContext());
                     Assert.True(testResult3);
                     await testOrgRepo.InsertAsync(newTestOrg3);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     Assert.True(newTestOrg3.PrimaryContact.Id == newTestPerson1?.Id);
 
                     // Child creation is allowed and choosing by FirstName with updating child LastName
@@ -229,8 +229,9 @@ namespace Shesha.Tests.DynamicEntities
                     var testResult4 = await _entityModelBinder.BindPropertiesAsync(jObject4, newTestOrg4, new EntityModelBindingContext());
                     Assert.True(testResult4);
                     await testOrgRepo.InsertAsync(newTestOrg4);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestOrg4 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation4");
+                    Assert.NotNull(newTestOrg4);
                     Assert.True(newTestOrg4.PrimaryContact.Id == newTestPerson1?.Id);
                     Assert.True(newTestOrg4.PrimaryContact.LastName == "TestLastName");
                     Assert.True(newTestOrg4.PrimaryContact.LastName != lastName);
@@ -240,8 +241,9 @@ namespace Shesha.Tests.DynamicEntities
                     // Create test person 2
                     newTestPerson2 = new Person() { FirstName = "TestPerson2" };
                     await _personRepo.InsertAsync(newTestPerson2);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestPerson2 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson2");
+                    Assert.NotNull(newTestPerson2);
 
                     // Change child by Id and check if TestPerson1 is not deleted by DeleteUnreferenced because is referenced to TestOrganisation3 and TestOrganisation4
                     var testErrors5 = new List<ValidationResult>();
@@ -250,7 +252,7 @@ namespace Shesha.Tests.DynamicEntities
                     newTestOrg5 = await testOrgRepo.GetAsync(newTestOrg1.Id);
                     var testResult5 = await _entityModelBinder.BindPropertiesAsync(jObject5, newTestOrg5, new EntityModelBindingContext());
                     Assert.True(testResult5);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestOrg5 = await testOrgRepo.GetAsync(newTestOrg1.Id);
                     newTestPerson1 = await _personRepo.GetAsync(newTestPerson1.Id);
                     Assert.True(newTestOrg5.Name == "TestOrganisation1");
@@ -265,7 +267,7 @@ namespace Shesha.Tests.DynamicEntities
                     newTestOrg6 = await testOrgRepo.GetAsync(newTestOrg1.Id);
                     var testResult6 = await _entityModelBinder.BindPropertiesAsync(jObject6, newTestOrg6, new EntityModelBindingContext());
                     Assert.True(testResult6);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestOrg6 = await testOrgRepo.GetAsync(newTestOrg1.Id);
                     newTestPerson2 = await _personRepo.GetAsync(newTestPerson2.Id);
                     Assert.True(newTestOrg6.Name == "TestOrganisation1");
@@ -278,7 +280,7 @@ namespace Shesha.Tests.DynamicEntities
                     newTestOrg7 = await testOrgRepo.GetAsync(newTestOrg3.Id);
                     var testResult7 = await _entityModelBinder.BindPropertiesAsync(jObject7, newTestOrg7, new EntityModelBindingContext());
                     Assert.True(testResult7);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestOrg7 = await testOrgRepo.GetAsync(newTestOrg3.Id);
                     Assert.True(newTestOrg7.Name == "TestOrganisation3");
                     Assert.True(newTestOrg7.PrimaryContact?.Id == newTestPerson2.Id);
@@ -291,10 +293,11 @@ namespace Shesha.Tests.DynamicEntities
                     Assert.True(newTestOrg8.PrimaryContact?.Id == newTestPerson1.Id);
                     var testResult8 = await _entityModelBinder.BindPropertiesAsync(jObject8, newTestOrg8, new EntityModelBindingContext());
                     Assert.True(testResult8);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                     newTestOrg8 = await testOrgRepo.GetAsync(newTestOrg4.Id);
                     newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson1");
                     newTestPerson2 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson22");
+                    Assert.NotNull(newTestPerson2);
                     Assert.True(newTestPerson1 == null);
                     Assert.True(newTestOrg8.Name == "TestOrganisation4");
                     Assert.True(newTestOrg8.PrimaryContact?.Id == newTestPerson2.Id && newTestPerson2.FirstName == "TestPerson22" && newTestPerson2.LastName == "TestLastName22");
@@ -311,7 +314,7 @@ namespace Shesha.Tests.DynamicEntities
                     if (newTestOrg8 != null) testOrgRepo.HardDelete(newTestOrg8);
                     if (newTestPerson1 != null) _personRepo.HardDelete(newTestPerson1);
                     if (newTestPerson2 != null) _personRepo.HardDelete(newTestPerson2);
-                    await nhuow.SaveChangesAsync();
+                    await uow.SaveChangesAsync();
                 }
             }
         }
@@ -319,7 +322,7 @@ namespace Shesha.Tests.DynamicEntities
 
     public class Finder : CascadeEntityCreatorBase<Person, Guid>
     {
-        public override Person FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
+        public override Person? FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
         {
             var p = info.NewObject;
 
@@ -328,7 +331,7 @@ namespace Shesha.Tests.DynamicEntities
             if (p.DateOfBirth == null) throw new Exception($"`{nameof(Person.DateOfBirth)}` is mandatory");
             var sd = p.DateOfBirth?.Date;
             var ed = sd?.AddDays(1);
-            return info.Repository.GetAll().FirstOrDefault(x => x.FirstName == p.FirstName && x.LastName == p.LastName && x.DateOfBirth > sd && x.DateOfBirth < ed);
+            return info.Repository.NotNull().GetAll().FirstOrDefault(x => x.FirstName == p.FirstName && x.LastName == p.LastName && x.DateOfBirth > sd && x.DateOfBirth < ed);
         }
     }
 
@@ -346,9 +349,9 @@ namespace Shesha.Tests.DynamicEntities
             return info.NewObject;
         }
 
-        public override Person FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
+        public override Person? FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
         {
-            return info.Repository.GetAll().FirstOrDefault(x => x.FirstName == info.NewObject.FirstName);
+            return info.Repository.NotNull().GetAll().FirstOrDefault(x => x.FirstName == info.NewObject.FirstName);
         }
     }
 
@@ -356,6 +359,13 @@ namespace Shesha.Tests.DynamicEntities
     public class TestOrganisationAllowContactUpdate : Organisation
     {
         [CascadeUpdateRules(true, true, true, typeof(SimplyFinder))]
+        public override Person PrimaryContact { get; set; }
+    }
+
+    [DiscriminatorValue("Test.Organisaion")]
+    public class TestOrganisationDisallowContactUpdate : Organisation
+    {
+        [CascadeUpdateRules(false, false)]
         public override Person PrimaryContact { get; set; }
     }
 

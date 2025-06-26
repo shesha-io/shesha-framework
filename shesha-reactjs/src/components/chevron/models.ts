@@ -1,3 +1,4 @@
+import { IFontValue } from "@/designer-components/_settings/utils/font/interfaces";
 import { IButtonGroupItem, IButtonItem, IConfigurableFormComponent } from "@/providers";
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
@@ -16,18 +17,17 @@ export interface IRefListItemGroup extends IRefListGroupItemBase {
 
 export interface IChevronProps extends IConfigurableFormComponent {
   items?: IChevronButton[];
-  description: string;
+  description?: string;
   image?: string;
   imageStyle?: boolean;
   imageSize?: number;
   referenceList?: any;
   activeColor?: string;
-  fontColor?: string;
   showIcons?: boolean;
   colorSource?: 'primary' | 'custom' | 'reflist';
   width?: number;
   height?: number;
-  fontSize?: number;
+  font?: IFontValue;
 }
 
 export interface IChevronControlProps extends IChevronProps {

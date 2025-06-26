@@ -1,4 +1,3 @@
-import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import React, { CSSProperties, FC } from 'react';
 import RefTag from './tag';
 import { Alert, Skeleton } from 'antd';
@@ -23,9 +22,20 @@ const Icon = ({ type, ...rest }) => {
 };
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
-  const { styles } = useStyles();
-  const { value, referenceListId, showIcon, solidBackground, showReflistName, style } = props;
 
+  const {
+    value,
+    referenceListId,
+    showIcon,
+    solidBackground,
+    showReflistName,
+    style = {},
+  } = props;
+  const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
+  const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
+  const { fontSize, fontWeight, textAlign, color, backgroundColor, backgroundImage, ...rest } = style;
+  const fontStyles = { fontSize, fontWeight, textAlign };
+  const { styles } = useStyles({ dimensionsStyles, fontStyles });
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
 
   if (listItem?.error && !listItem?.loading) {
@@ -41,13 +51,9 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   const itemData = listItem?.data;
 
-  const memoizedColor = solidBackground
-    ? convertCssColorNameToHex(itemData?.color ?? '')
-    : itemData?.color?.toLowerCase();
-
   const canShowIcon = showIcon && itemData?.icon;
 
-  if (typeof itemData?.itemValue === 'undefined'  && !listItem?.loading) return null;
+  if (typeof itemData?.itemValue === 'undefined' && !listItem?.loading) return null;
 
   return listItem?.loading ? (
     <Skeleton.Button />
@@ -55,12 +61,14 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
     <div className={styles.shaStatusTagContainer}>
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
-
-
-        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={style}>
+        <RefTag
+          color={solidBackground && itemData?.color}
+          icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}
+          style={!solidBackground || !itemData?.color ? style : { ...rest }}
+          styles={styles}
+        >
           {showReflistName && itemData?.item}
         </RefTag>
-
       </DescriptionTooltip>
     </div>
   );

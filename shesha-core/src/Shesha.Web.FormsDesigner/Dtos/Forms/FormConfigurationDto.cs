@@ -25,32 +25,32 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Form name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Markup in JSON format
         /// </summary>
-        public string Markup { get; set; }
+        public string? Markup { get; set; }
 
         /// <summary>
         /// Type of the form model
         /// </summary>
-        public string ModelType { get; set; }
+        public string? ModelType { get; set; }
 
         /// <summary>
         /// Version number
@@ -71,11 +71,11 @@ namespace Shesha.Web.FormsDesigner.Dtos
 
         public RefListPermissionedAccess? Access { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
 
         /// <summary>
         /// Cache MD5, is used for client-side caching
         /// </summary>
-        public string CacheMd5 { get; set; }
+        public string? CacheMd5 { get; set; }
     }
 }

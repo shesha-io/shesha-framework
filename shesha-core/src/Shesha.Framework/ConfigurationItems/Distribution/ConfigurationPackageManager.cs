@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems.Distribution
@@ -28,7 +29,7 @@ namespace Shesha.ConfigurationItems.Distribution
         private readonly IRepository<ConfigurationItemBase, Guid> _itemsRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         public ConfigurationPackageManager(IRepository<ConfigurationItemBase, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
         {
@@ -85,10 +86,9 @@ namespace Shesha.ConfigurationItems.Distribution
                         ModuleName = parts[0],
                         ItemType = parts[1],
                         StreamGetter = () => entry.Open(),
-                    };
-
-                    item.FileName = containsAppKey ? parts[3] : parts[2];
-                    item.ApplicationKey = containsAppKey ? parts[2] : null;
+                        FileName = containsAppKey ? parts[3] : parts[2],
+                        ApplicationKey = containsAppKey ? parts[2] : null,
+                    };                    
 
                     var importer = context.GetImporter(item.ItemType);
                     if (importer == null)
@@ -133,8 +133,10 @@ namespace Shesha.ConfigurationItems.Distribution
                     var dependencies = await depsProvider.GetReferencedItemsAsync(item);
                     foreach (var dependency in dependencies)
                     {
-                        var dependencyItem = await _itemsRepository.GetItemByFullNameAsync(dependency.Module, dependency.Name, context.VersionSelectionMode);
-                            
+                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItemBase>();                        
+
+                        var dependencyItem = await query.GetItemByIdAsync(dependency, context.VersionSelectionMode);
+
                         // todo: write log and include all missing items
                         if (dependencyItem != null)
                             await ProcessItemExportAsync(dependencyItem, exportResult, context);
@@ -160,7 +162,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return _dependencyProviders[requestedType] = SearchClosestDependenciesProviders(requestedType) ?? new List<IDependenciesProvider>();
         }
 
-        private List<IDependenciesProvider> SearchClosestDependenciesProviders(Type itemType) 
+        private List<IDependenciesProvider>? SearchClosestDependenciesProviders(Type itemType) 
         {
             var type = itemType;
             while (type != null)
@@ -217,7 +219,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 foreach (var group in groups)
                 {
-                    var importer = group.FirstOrDefault().Importer;
+                    var importer = group.First().Importer.NotNull();
                     var items = new List<DistributedConfigurableItemBase>();
                     foreach (var item in group)
                     {

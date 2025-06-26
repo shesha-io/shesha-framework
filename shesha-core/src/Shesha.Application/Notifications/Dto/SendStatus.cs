@@ -1,11 +1,9 @@
-﻿using Hangfire.Storage.Monitoring;
-
-namespace Shesha.Notifications.Dto
+﻿namespace Shesha.Notifications.Dto
 {
     public class SendStatus
     {
         public bool IsSuccess { get; set; }
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
         public static SendStatus Failed(string message) 
         { 
@@ -15,7 +13,7 @@ namespace Shesha.Notifications.Dto
             };
         }
 
-        public static SendStatus Success(string message = null)
+        public static SendStatus Success(string? message = null)
         {
             return new SendStatus
             {

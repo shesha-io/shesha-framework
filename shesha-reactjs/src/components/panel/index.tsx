@@ -1,20 +1,17 @@
 import React, { FC } from 'react';
-import { Collapse, Skeleton, theme } from 'antd';
+import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
-import styled from 'styled-components';
+import { IStyleType } from '@/index';
 import { useStyles } from './styles/styles';
-
-const { useToken } = theme;
 
 export type headerType = 'parent' | 'child' | 'default';
 
-export interface ICollapsiblePanelProps extends CollapseProps {
+export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleType, 'style'> {
   isActive?: boolean;
   header?: React.ReactNode;
   className?: string;
   extraClassName?: string;
-  style?: React.CSSProperties;
   showArrow?: boolean;
   forceRender?: boolean;
   extra?: React.ReactNode;
@@ -30,8 +27,28 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   primaryColor?: string;
   dynamicBorderRadius?: number;
   panelHeadType?: headerType;
+  headerStyles?: IStyleType;
+  bodyStyle?: React.CSSProperties;
+  headerStyle?: React.CSSProperties;
+  accentStyle?: boolean;
+  overflowStyle?: React.CSSProperties;
 }
 
+const defaultHeaderStyle: React.CSSProperties = {
+  backgroundColor: 'transparent',
+  paddingLeft: '16px',
+  paddingRight: '16px',
+  paddingBottom: '8px',
+  paddingTop: '8px'
+};
+
+const defaultBodyStyle: React.CSSProperties = {
+  paddingLeft: '16px',
+  paddingBottom: '16px',
+  paddingTop: '16px',
+  paddingRight: '16px',
+  marginBottom: '5px',
+};
 /**
  * There was an error 
  * TS4023: Exported variable 'xxx' has or is using name 'zzz' from external module "yyy" but cannot be named.
@@ -41,70 +58,41 @@ export interface ICollapsiblePanelProps extends CollapseProps {
  * 
  */
 
-const StyledCollapse: any = styled(Collapse) <
-  Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
->`
-  .ant-collapse-header {
-    visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
-    border-top: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'parent' ? `3px solid  ${primaryColor}` : 'none')};
-    border-left: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'child' ? `3px solid  ${primaryColor}` : 'none')};
-    font-size: ${({ panelHeadType }) => (panelHeadType === 'parent' ? '13px' : '16px')};
-    font-weight: 'bold';
-    background-color: ${({ headerColor }) => headerColor} !important;
-    
-  }
-  .ant-collapse-content {
-    .ant-collapse-content-box > .sha-components-container {
-      background-color: ${({ bodyColor }) => bodyColor};
-    }
-  }
-`;
-
 export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'radiusRight'>> = ({
   expandIconPosition = 'end',
   onChange,
   header,
   extra,
   children,
-  noContentPadding,
   loading,
   className,
   extraClassName,
-  style,
   collapsedByDefault = false,
   showArrow,
   collapsible,
   ghost,
-  bodyColor = 'unset',
-  headerColor = 'unset',
+  bodyStyle = defaultBodyStyle,
+  headerStyle = defaultHeaderStyle,
   isSimpleDesign,
+  noContentPadding,
+  hideWhenEmpty,
   hideCollapseContent,
-  hideWhenEmpty = false,
-  panelHeadType = 'default',
-  dynamicBorderRadius,
-
+  accentStyle,
+  overflowStyle
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
-  const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
-  const { token } = useToken();
 
-
-  const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
+  const { styles } = useStyles({ bodyStyle, headerStyle, ghost, isSimpleDesign, noContentPadding, hideWhenEmpty, hideCollapseContent, accentStyle, overflow: overflowStyle });
+  const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
 
   return (
-    <StyledCollapse
+    <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
       onChange={onChange}
       expandIconPosition={expandIconPosition}
-      className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
-      style={{ ...style, borderTopLeftRadius: dynamicBorderRadius, borderTopRightRadius: dynamicBorderRadius }}
+      className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
-      bodyColor={bodyColor}
-      headerColor={headerColor}
-      hideCollapseContent={hideCollapseContent}
-      primaryColor={token.colorPrimary}
-      panelHeadType={panelHeadType}
       items={[
         {
           key: "1",

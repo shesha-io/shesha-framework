@@ -9,7 +9,7 @@ import {
   Modal,
   Row,
   Tabs
-  } from 'antd';
+} from 'antd';
 import { BorderlessTableOutlined } from '@ant-design/icons';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ILabelValueEditorPropsBase } from './interfaces';
@@ -47,7 +47,7 @@ interface InputPropertyEditorProps<TItem> {
   placeholder?: string;
   propertyName: string;
 }
-const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>) => {
+export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>) => {
   const { item, propertyName, itemOnChange, placeholder } = props;
   return (
     <Input

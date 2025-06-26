@@ -3,7 +3,6 @@ using System.Data;
 
 namespace Shesha.FluentMigrator
 {
-#nullable enable
     /// <summary>
     /// DB helper base
     /// </summary>
@@ -114,5 +113,4 @@ namespace Shesha.FluentMigrator
                 : value ? 1 : 0;
         }
     }
-#nullable restore
 }

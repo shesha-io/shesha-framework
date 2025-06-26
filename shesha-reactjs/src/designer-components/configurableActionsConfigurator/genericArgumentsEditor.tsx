@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
@@ -11,6 +11,7 @@ export interface IProps<TModel extends IConfigurableActionArguments> {
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   readOnly?: boolean;
+  cacheKey?: string;
 }
 
 function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
@@ -19,21 +20,20 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   markup,
   onValuesChange,
   readOnly = false,
+  cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
 
-  useEffect(() => {
-    formRef.current?.resetFields();
-  });
-
   return (
     <ConfigurableForm
+      layout='vertical'
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
       shaFormRef={formRef}
       onFinish={onSave}
       markup={markup}
+      cacheKey={cacheKey}
       initialValues={model}
       onValuesChange={onValuesChange}
     />

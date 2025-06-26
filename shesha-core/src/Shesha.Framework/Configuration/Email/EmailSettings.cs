@@ -13,6 +13,6 @@
         /// <summary>
         /// If not null or empty the all outgoing emails will be sent to this email address, is used for testing only
         /// </summary>
-        public string RedirectAllMessagesTo { get; set; }
+        public string? RedirectAllMessagesTo { get; set; }
     }
 }

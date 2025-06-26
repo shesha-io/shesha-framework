@@ -1,22 +1,24 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
-import { Button } from 'antd';
 import { useStyles } from './styles/styles';
-import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
+import { Button } from 'antd';
+import { CodeOutlined, CodeFilled } from '@ant-design/icons';
 
-export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
+export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement | ReactNode;
 
 export interface ISettingsControlProps<Value = any> {
   propertyName: string;
   readOnly?: boolean;
   value?: IPropertySetting<Value>;
+  setHasCode?: (hasCode: boolean) => void;
+  hasCode?: boolean;
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting<Value>) => void;
   readonly children?: SettingsControlChildrenType;
@@ -25,7 +27,7 @@ export interface ISettingsControlProps<Value = any> {
   useAsyncEvaluation?: boolean;
 }
 
-const defaultExposedVariables: ICodeExposedVariable[] = [
+export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "data", description: "Selected form values", type: "object" },
   { name: "pageContext", description: "Contexts data of current page", type: "object" },
   { name: "contexts", description: "Contexts data", type: "object" },
@@ -41,13 +43,13 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
 
 export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
 
-  const { styles } = useStyles();
-  
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
+
+  const { styles } = useStyles();
 
   const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
     const newSetting = { ...value, _mode: (m ?? mode) };
@@ -56,22 +58,25 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       props.onChange(newValue);
   };
 
+  useEffect(() => {
+    onInternalChange({ ...setting, _mode: mode }, mode);
+  }, [mode]);
+
   const codeOnChange = (val: any) => {
     const newValue = { ...setting, _code: val };
     onInternalChange(newValue);
   };
 
   const valueOnChange = (val: any) => {
-    if (!isEqual(setting?._value, val)) {
-      const newValue = { ...setting, _value: val };
-      onInternalChange(newValue);
-    }
+    const newValue = { ...setting, _value: val };
+    onInternalChange(newValue);
   };
 
   const onSwitchMode = () => {
     const newMode = mode === 'code' ? 'value' : 'code';
     onInternalChange(setting, newMode);
   };
+
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
@@ -85,35 +90,38 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     propertyName: props.propertyName + 'Code',
     fileName: props.propertyName,
     wrapInTemplate: true,
-    templateSettings: { 
+    templateSettings: {
       functionName: functionName,
       useAsyncDeclaration: props.useAsyncEvaluation,
     },
-    exposedVariables: defaultExposedVariables
+    type: 'text',
+    label: ' ',
+    ghost: true,
+    exposedVariables: defaultExposedVariables,
+    hidden: !setting._code && props.readOnly,
   };
 
   const editor = constantsEvaluator
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType}/>
-    : <CodeEditorWithStandardConstants {...codeEditorProps}  resultType={resultType}/>;
+
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         hidden={props.readOnly}
-        shape="round"
-        className={styles.jsSwitch}
-        type='primary'
+        className={`${styles.jsSwitch} inlineJS`}
+        type='text'
         danger={mode === 'value' && !!code}
-        ghost
         size='small'
+        icon={mode === 'code' && !!code ? <CodeFilled /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        color='lightslategrey'
         onClick={onSwitchMode}
-      >
-        {mode === 'code' ? 'Value' : 'JS'}
-      </Button>
-      <div className={styles.jsContent}>
-        {mode === 'code' && editor}
-        {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
-      </div>
+      />
+      {mode === 'code' && editor}
+      {mode === 'value' && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
+        {props.children(setting?._value, valueOnChange, propertyName)}
+      </div>}
     </div>
   );
 };

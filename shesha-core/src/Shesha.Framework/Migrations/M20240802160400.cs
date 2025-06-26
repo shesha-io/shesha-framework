@@ -1,7 +1,6 @@
 ﻿using FluentMigrator;
 using Shesha.Configuration;
 using Shesha.FluentMigrator;
-using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.Migrations
 {
@@ -12,7 +11,7 @@ namespace Shesha.Migrations
         {
             this.Shesha().SettingCreate(SheshaSettingNames.ThemeSettings, "Theme settings")
                 .IsClientSpecific()
-                .AsComplexObject(typeof(ThemeSettings).FullName)
+                .AsComplexObject("Shesha.Configuration.ThemeSettings")
                 .WithEditForm("Shesha", "theme-settings")
                 .WithCategory("Frontend");
 

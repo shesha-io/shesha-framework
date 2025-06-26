@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Shesha.Tests</AssemblyName>
@@ -22,13 +21,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="DynamicEntities\Resources\entityReference_DtoMode.json" />
-    <None Remove="DynamicEntities\Resources\entityReference_DtoMode.metadata.json" />
     <None Remove="DynamicEntities\Resources\flatModel.json" />
-    <None Remove="DynamicEntities\Resources\flatModel.metadata.json" />
     <None Remove="DynamicEntities\Resources\nested2Levels.json" />
-    <None Remove="DynamicEntities\Resources\nested2Levels.metadata.json" />
     <None Remove="DynamicEntities\Resources\nested3Levels.json" />
-    <None Remove="DynamicEntities\Resources\nested3Levels.metadata.json" />
     <None Remove="log4net.config" />
   </ItemGroup>
   <ItemGroup>
@@ -40,11 +35,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DynamicEntities\Resources\flatModel.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\flatModel.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\flatModel-metadata.json" />
     <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode.metadata.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels.metadata.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode-metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels-metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels-metadata.json" />
     <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels.json" />
     <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels.json" />
   </ItemGroup>
@@ -58,10 +53,18 @@
   <ItemGroup>
     <PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
     <PackageReference Include="Abp.MemoryDb" Version="9.0.0" />
+    <PackageReference Include="AsyncFixer" Version="1.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="GraphQL" Version="5.3.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -69,9 +72,12 @@
     <PackageReference Include="NSubstitute" Version="5.1.0" />
     <PackageReference Include="Shouldly" Version="4.2.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
-    <PackageReference Include="xunit" Version="2.8.1" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.8.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1">
+    <PackageReference Include="Testcontainers" Version="4.4.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.4.0" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.4.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -82,11 +88,14 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="test-data\package-import.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 </Project>

@@ -27,12 +27,13 @@ export interface IChartsProps {
     showLegend?: boolean;
     legendPosition?: TLegendPosition;
     entityType?: string;
-    filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
     isAxisTimeSeries?: boolean;
     timeSeriesFormat?: TTimeSeriesFormat;
-    legendProperty?: string;
+    groupingProperty?: string;
+    isGroupingTimeSeries?: boolean;
+    groupingTimeSeriesFormat?: TTimeSeriesFormat;
     allowFilter?: boolean;
     filterProperties?: string[];
     xProperty?: string;
@@ -55,7 +56,9 @@ export interface IChartsProps {
 /**
  * Chart props, used in the Shesha tool box
  */
-export interface IChartProps extends IConfigurableFormComponent, IChartsProps { }
+export interface IChartProps extends IConfigurableFormComponent, IChartsProps {
+    hidden?: boolean;
+ }
 
 export interface IChartDataProps extends IChartsProps {
     labels?: string[];
@@ -93,9 +96,3 @@ export type TOperator =
     'ends_with' |
     'is' |
     'is_not';
-
-export interface IFilter {
-    property: string;
-    operator: TOperator;
-    value: string | number;
-}

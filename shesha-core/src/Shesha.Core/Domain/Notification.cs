@@ -21,11 +21,11 @@ namespace Shesha.Domain
         /// <summary>
         /// 
         /// </summary>
-        public virtual Person ToPerson { get; set; }
+        public virtual Person? ToPerson { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public virtual Person FromPerson { get; set; }
+        public virtual Person? FromPerson { get; set; }
         /// <summary>
         /// Serialized Json of the notification data
         /// </summary>
@@ -38,10 +38,15 @@ namespace Shesha.Domain
         /// <summary>
         /// The entity that the notification pertains to
         /// </summary>
-        public virtual GenericEntityReference TriggeringEntity { get; set; }
+        public virtual GenericEntityReference? TriggeringEntity { get; set; }
         /// <summary>
         /// 
         /// </summary>
         public virtual NotificationTopic NotificationTopic { get; set; }
+
+        /// <summary>
+        /// Notification category (any string reference that can be used for analysys)
+        /// </summary>
+        public string Category { get; set; } = string.Empty;
     }
 }

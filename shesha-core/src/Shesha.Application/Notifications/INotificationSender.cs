@@ -11,22 +11,26 @@ namespace Shesha.Notifications
 {
     public interface INotificationSender
     {
-        Task SendNotification<TData>(NotificationTypeConfig type, 
-            IMessageSender sender, 
+        Task SendNotificationAsync<TData>(NotificationTypeConfig type, 
+            IMessageSender? sender, 
             IMessageReceiver receiver, 
             TData data, 
             RefListNotificationPriority priority, 
-            List<NotificationAttachmentDto> attachments = null, 
-            GenericEntityReference triggeringEntity = null, 
-            NotificationChannelConfig channel = null) where TData : NotificationData;
+            List<NotificationAttachmentDto>? attachments = null,
+            string? cc = null,
+            GenericEntityReference? triggeringEntity = null, 
+            NotificationChannelConfig? channel = null,
+            string? category = null) where TData : NotificationData;
 
-        Task SendNotification<TData>(NotificationTypeConfig type,
-            Person sender,
+        Task SendNotificationAsync<TData>(NotificationTypeConfig type,
+            Person? sender,
             Person receiver,
             TData data,
             RefListNotificationPriority priority,
-            List<NotificationAttachmentDto> attachments = null,
-            GenericEntityReference triggeringEntity = null,
-            NotificationChannelConfig channel = null) where TData : NotificationData;
+            List<NotificationAttachmentDto>? attachments = null,
+            string? cc = null,
+            GenericEntityReference? triggeringEntity = null,
+            NotificationChannelConfig? channel = null,
+            string? category = null) where TData : NotificationData;
     }
 }

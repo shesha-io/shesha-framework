@@ -29,15 +29,15 @@ namespace Shesha.Otp
         }
 
         /// inheritedDoc
-        public async Task<IOtpDto> GetAsync(Guid operationId)
+        public async Task<IOtpDto?> GetOrNullAsync(Guid operationId)
         {
-            return await _otpStorage.GetAsync(operationId);
+            return await _otpStorage.GetOrNullAsync(operationId);
         }
 
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            var otp = await _otpStorage.GetAsync(input.OperationId);
+            var otp = await _otpStorage.GetOrNullAsync(input.OperationId);
             if (otp == null)
                 throw new UserFriendlyException("OTP not found, try to request a new one");
 
@@ -50,7 +50,7 @@ namespace Shesha.Otp
             var sendTime = DateTime.Now;
             try
             {
-                await SendInternal(otp);
+                await SendInternalAsync(otp);
             }
             catch (Exception e)
             {
@@ -130,7 +130,7 @@ namespace Shesha.Otp
                 {
                     otp.SentOn = DateTime.Now;
 
-                    await SendInternal(otp);
+                    await SendInternalAsync(otp);
 
                     otp.SendStatus = OtpSendStatus.Sent;
                 }
@@ -164,10 +164,12 @@ namespace Shesha.Otp
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (!settings.IgnoreOtpValidation)
             {
-                var pinDto = await _otpStorage.GetAsync(input.OperationId);
+                var pinDto = await _otpStorage.GetOrNullAsync(input.OperationId);
                 if (pinDto == null || pinDto.Pin != input.Pin)
                 {
-                    var message = pinDto.SendType == OtpSendType.EmailLink ? "Invalid email link" : "Wrong one time pin";
+                    var message = pinDto?.SendType == OtpSendType.EmailLink 
+                        ? "Invalid email link" 
+                        : "Wrong one time pin";
                     return VerifyPinResponse.Failed(message);
                 }
 
@@ -181,7 +183,7 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
-        private async Task SendInternal(OtpDto otp)
+        private async Task SendInternalAsync(OtpDto otp)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             switch (otp.SendType)

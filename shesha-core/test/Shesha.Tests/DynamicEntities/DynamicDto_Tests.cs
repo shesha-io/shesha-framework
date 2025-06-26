@@ -1,6 +1,4 @@
-﻿using Abp.Runtime.Caching;
-using Abp.TestBase;
-using Moq;
+﻿using Moq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
@@ -8,6 +6,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
 using Shesha.Tests.DynamicEntities.Dtos;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -17,8 +16,13 @@ using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
-    public class DynamicDto_Tests : AbpIntegratedTestBase<SheshaTestModule>//SheshaNhTestBase
+    [Collection(SqlServerCollection.Name)]
+    public class DynamicDto_Tests : SheshaNhTestBase
     {
+        public DynamicDto_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task BuildFullDynamicDto_TestAsync()
         {
@@ -32,12 +36,14 @@ namespace Shesha.Tests.DynamicEntities
                     
 
                     var r = result as List<EntityPropertyDto>;
-                    return Task.FromResult(r);
+                    return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
+
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
 
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
 
@@ -65,12 +71,14 @@ namespace Shesha.Tests.DynamicEntities
                 .Returns(() => {
                     var result = new EntityPropertyDtoList();
                     var r = result as List<EntityPropertyDto>;
-                    return Task.FromResult(r);
+                    return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
+
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
 
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
 
@@ -117,12 +125,14 @@ namespace Shesha.Tests.DynamicEntities
 
 
                     var r = result as List<EntityPropertyDto>;
-                    return Task.FromResult(r);
+                    return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
+
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
 
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
 

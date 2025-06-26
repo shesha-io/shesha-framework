@@ -1,12 +1,18 @@
 ﻿using Shesha.Domain;
+using Shesha.JsonLogic;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Shesha.Tests.JsonLogic
 {
-    public class JsonLogic2LinqConverter_FieldTests: JsonLogic2LinqConverterBaseTests
+    [Collection(SqlServerCollection.Name)]
+    public class JsonLogic2LinqConverter_FieldTests : JsonLogic2LinqConverterBaseTests
     {
+        public JsonLogic2LinqConverter_FieldTests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
         #region string
 
         private static class StringExpressions
@@ -64,7 +70,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -220,7 +226,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -387,7 +393,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -452,7 +458,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -510,7 +516,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -569,7 +575,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]

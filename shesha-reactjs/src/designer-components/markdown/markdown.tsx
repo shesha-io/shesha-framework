@@ -2,8 +2,8 @@ import { Alert, Skeleton } from 'antd';
 import React, { FC, lazy } from 'react';
 import { useFormData, useGlobalState, useSubForm } from '@/providers';
 import { useForm } from '@/providers/form';
-import { evaluateString, getStyle } from '@/providers/form/utils';
-import { IMarkdownProps } from './interfaces';
+import { evaluateString } from '@/providers/form/utils';
+import { IMarkdownComponentProps } from './interfaces';
 import './styles.module.scss'; // This manually loads github-markdown-css, as per https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css
 
 let SyntaxHighlighter;
@@ -11,22 +11,22 @@ let dark;
 let remarkGfm;
 
 const ReactMarkdown = lazy(async () => {
-  import('remark-gfm').then(module => {
+  import('remark-gfm').then((module) => {
     remarkGfm = module?.default;
   });
 
-  import('react-syntax-highlighter').then(module => {
+  import('react-syntax-highlighter').then((module) => {
     SyntaxHighlighter = module?.Prism;
   });
 
-  import('react-syntax-highlighter/dist/esm/styles/prism').then(module => {
+  import('react-syntax-highlighter/dist/esm/styles/prism').then((module) => {
     dark = module?.dark;
   });
 
   return import('react-markdown');
 });
 
-const Markdown: FC<IMarkdownProps> = model => {
+const Markdown: FC<IMarkdownComponentProps> = (model) => {
   const { formMode } = useForm();
   // NOTE: to be replaced with a generic context implementation
   const { value: subFormData } = useSubForm(false) ?? {};
@@ -47,10 +47,11 @@ const Markdown: FC<IMarkdownProps> = model => {
     <Skeleton loading={true} />
   ) : (
     <React.Suspense fallback={<div>Loading editor...</div>}>
-      <div className="markdown-body" style={getStyle(model?.style, { data, globalState })}>
+      <div className="markdown-body" style={model.style}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]?.filter(Boolean)}
           components={{
+            style: model.style as any,
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match && SyntaxHighlighter ? (

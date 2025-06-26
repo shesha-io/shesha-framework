@@ -122,6 +122,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 customDeleteUrl={props.customDeleteUrl}
                 onRowSave={props.onRowSave}
                 onRowSaveSuccessAction={props.onRowSaveSuccessAction}
+                onDblClick={props.dblClickActionConfiguration}
                 inlineSaveMode={props.inlineSaveMode}
                 inlineEditMode={props.inlineEditMode}
                 minHeight={props.minHeight}
@@ -129,7 +130,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 noDataText={props.noDataText}
                 noDataSecondaryText={props.noDataSecondaryText}
                 noDataIcon={props.noDataIcon}
-                showExpandedView={props.showExpandedView}
+                showExpandedView={true}
             />
         </SidebarContainer>
     );

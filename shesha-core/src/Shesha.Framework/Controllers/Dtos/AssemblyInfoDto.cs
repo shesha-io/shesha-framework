@@ -2,10 +2,10 @@
 {
     public class AssemblyInfoDto
     {
-        public string Location { get; set; }
-        public string FullName { get; set; }
-        public string Version { get; set; }
-        public string Architecture { get; set; }
-        public string Description { get; set; }
+        public required string Location { get; set; }
+        public string? FullName { get; set; }
+        public required string Version { get; set; }
+        public required string Architecture { get; set; }
+        public string? Description { get; set; }
     }
 }

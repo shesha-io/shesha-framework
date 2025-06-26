@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Abp.AspNetCore;
+﻿using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
@@ -7,8 +6,8 @@ using Abp.Reflection.Extensions;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
 using Shesha.Modules;
-using Shesha.Startup;
 using Shesha.Web.FormsDesigner;
+using System.Reflection;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
 [assembly: IntentTemplate("Boxfusion.Modules.Application.Services.AppService", Version = "1.0")]
@@ -46,28 +45,19 @@ namespace Boxfusion.SheshaFunctionalTests.Common
         {
             base.PreInitialize();
 
-            Configuration.Modules.ShaApplication().CreateAppServicesForEntities(typeof(SheshaCoreModule).Assembly, "Core");
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
                      typeof(SheshaCoreModule).GetAssembly()
                  );
 
-            Configuration.Modules.ShaApplication().CreateAppServicesForEntities(typeof(SheshaApplicationModule).Assembly, "App");
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
                      typeof(SheshaApplicationModule).GetAssembly()
                  );
 
-            Configuration.Modules.ShaApplication().CreateAppServicesForEntities(typeof(SheshaFormsDesignerModule).Assembly, "App");
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
                      typeof(SheshaFormsDesignerModule).GetAssembly()
-                 );
-
-            Configuration.Modules.ShaApplication().CreateAppServicesForEntities(typeof(SheshaFrameworkModule).Assembly, "Shesha");
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaFrameworkModule).GetAssembly()
                  );
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
@@ -75,18 +65,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common
                moduleName: "SheshaFunctionalTestsCommon",
                 useConventionalHttpVerbs: true);
 
-            Configuration.Modules.ShaApplication().CreateAppServicesForEntities(
-                typeof(SheshaFunctionalTestsCommonModule).Assembly,
-                moduleName: "SheshaFunctionalTestsCommon");
-
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(
                      typeof(SheshaFunctionalTestsCommonModule).GetAssembly()
                  );
-
-            Configuration.Modules.ShaApplication().CreateAppServicesForEntities(
-                assembly: typeof(SheshaFunctionalTestsCommonApplicationModule).Assembly,
-                moduleName: "SheshaFunctionalTestsCommon");
 
             Configuration.Modules.AbpAspNetCore()
                  .CreateControllersForAppServices(

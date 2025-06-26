@@ -1,17 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Abp.EntityHistory;
+using System.Collections.Generic;
 using System.Reflection;
-using Abp.EntityHistory;
-using Shesha.Domain;
 
 namespace Shesha.NHibernate.EntityHistory
 {
     public interface IEntityHistoryHelper
     {
-        /// <summary>
-        /// Set of entity changes
-        /// </summary>
-        EntityChangeSet EntityChangeSet { get; set; }
-
         /// <summary>
         /// List of entity changes
         /// </summary>
@@ -32,20 +26,20 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="propInfo">Changed collection property</param>
         /// <param name="oldValue">Old collection</param>
         /// <param name="newValue">New collection</param>
-        bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object oldValue, object newValue);
+        bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object? oldValue, object? newValue);
 
         /// <summary>
         /// Create EntityChange item for the Entity
         /// </summary>
         /// <param name="entity">Entity</param>
         /// <returns>EntityChange object</returns>
-        EntityChange CreateEntityChange(object entity);
+        EntityChange? CreateEntityChange(object entity);
 
         /// <summary>
         /// Create entity changes set
         /// </summary>
         /// <returns></returns>
-        EntityChangeSet CreateEntityChangeSet();
+        EntityChangeSet? CreateEntityChangeSet();
 
         //Task SaveAsync(DbContext context, EntityChangeSet changeSet);
 

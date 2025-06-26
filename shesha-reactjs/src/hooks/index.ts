@@ -15,3 +15,4 @@ export { useWebStorage } from './useWebStorage';
 export { useFormExpression } from './useFormExpression';
 export { useNextRouter } from './useNextRouter';
 export { useUi } from './useUi';
+export { useActualContextData, useActualContextExecution, useActualContextExecutionExecutor, useCalculatedModel } from './formComponentHooks';

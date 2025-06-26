@@ -1,12 +1,13 @@
-import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { getSettings } from './settingsForm';
-import { AdvancedFilterButton } from './advancedFilterButton';
+import { migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IButtonComponentProps } from '@/designer-components/button/interfaces';
-import { Show } from '@/components';
-import { Tooltip } from 'antd';
+import { IToolboxComponent } from '@/interfaces';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { FilterOutlined } from '@ant-design/icons';
+import React from 'react';
+import { AdvancedFilterButton } from './advancedFilterButton';
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
@@ -15,14 +16,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
   icon: <FilterOutlined />,
   Factory: ({ model }) =>
     model.hidden ? null : (
-      <div>
-        <AdvancedFilterButton {...model} />
-        <Show when={Boolean(model.tooltip?.trim())}>
-          <Tooltip title={model.tooltip}>
-            <QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />
-          </Tooltip>
-        </Show>
-      </div>
+      <AdvancedFilterButton {...model} styles={model.allStyles.fullStyle} />
     ),
   initModel: (model) => {
     return {
@@ -31,8 +25,12 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       label: '',
     };
   },
-  settingsFormMarkup: (context) => getSettings(context),
+  settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: m =>
+    m
+      .add<IButtonComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
+      .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default AdvancedFilterButtonComponent;

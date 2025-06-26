@@ -1,10 +1,12 @@
+
 import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
+import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
-export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom';
+export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom' | '';
 export type ContentDisplay = 'content' | 'name';
 
 export const FONT_SIZES = {
@@ -82,4 +84,6 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   strong?: boolean;
   value?: any;
   textAlign?: string;
+  styles?: CSSProperties;
+  shadow?: IShadowValue;
 }

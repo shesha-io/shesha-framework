@@ -7,6 +7,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { ButtonGroupItemProps } from '@/index';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 interface IWrappedEntityPickerProps {
   entityType?: string;
@@ -42,7 +43,7 @@ export interface IEntityPickerState {
 
 export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onDblClick'> {
   formId?: FormIdentifier;
-
+  hideBorder?: boolean;
   onChange?: (value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[], data: IAnyObject) => void;
   onSelect?: (data: IAnyObject) => void;
   value?: string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
@@ -65,4 +66,5 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   placeholder: string;
   incomeValueFunc: IncomeValueFunc;
   outcomeValueFunc: OutcomeValueFunc;
+  dividerStyle?: IBorderValue['border']['middle'];
 }

@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import React, { FC } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
@@ -34,8 +34,10 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={model}
           onValuesChange={onValuesChange}
+          componentName={model.componentName}
+          propertyName={model.propertyName}
+          contextName={model.context}
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>
@@ -87,7 +89,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
   </SettingsFormItem>*/}
 
         <SettingsFormItem name="formId" label="Form Path" jsSetting>
-          <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+          <FormAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="labelFormat" label="Label Format" required>

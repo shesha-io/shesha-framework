@@ -1,5 +1,5 @@
 import { headerType } from './../../components/panel/index';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 
@@ -8,13 +8,14 @@ export interface ICollapsiblePanelContent {
   components?: IConfigurableFormComponent[];
 }
 
-export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent {
+export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleType {
   collapsedByDefault?: boolean;
   expandIconPosition?: ExpandIconPosition | 'hide';
   header?: ICollapsiblePanelContent;
   content?: ICollapsiblePanelContent;
   collapsible?: CollapsibleType;
   ghost?: boolean;
+  accentStyle?: boolean;
   hideWhenEmpty?: boolean;
   className?: string;
   marginBottom?: string;
@@ -24,10 +25,15 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
   borderRadius?: number;
+  noMargin?: boolean;
   hasCustomHeader?: boolean;
   customHeader?: ICollapsiblePanelContent;
   panelHeadType?: headerType;
-}
+  headerStyles?: IStyleType;
+  desktop?: any;
+  mobile?: any;
+  tablet?: any;
+};
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
   collapsedByDefault?: boolean;

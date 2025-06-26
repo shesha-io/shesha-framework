@@ -22,7 +22,7 @@ import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import { getColumnAnchored, getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { useDataTableStore } from '@/providers/index';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstance } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
@@ -94,6 +94,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   const { styles: mainStyles } = useMainStyles();
 
   const { setDragState } = useDataTableStore();
+
+  const shaForm = useShaFormInstance();
 
   const { allColumns, allRows } = componentState;
 
@@ -328,12 +330,33 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [state?.columnResizing]);
 
-  const handleDoubleClickRow = (row: Row<object>, index: number) => {
-    if (onRowDoubleClick) {
+  const { executeAction } = useConfigurableActionDispatcher();
+  const performOnRowDoubleClick = useMemo(() => {
+    if (!onRowDoubleClick)
+      return () => {
+        /*nop*/
+      };
+
+    return (data,) => {
+      const evaluationContext = {
+        data,
+      };
+
+      executeAction({
+        actionConfiguration: onRowDoubleClick as IConfigurableActionConfiguration,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    };
+  }, [onRowDoubleClick]);
+
+  const handleDoubleClickRow = (row, index) => {
+    if (typeof onRowDoubleClick === 'object'){
+      performOnRowDoubleClick(row);
+    } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
     }
   };
-
+  
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
   const renderNewRowEditor = () => (
@@ -343,11 +366,12 @@ export const ReactTable: FC<IReactTableProps> = ({
       headerGroups={headerGroups}
       onInitData={newRowInitData}
       components={inlineCreatorComponents}
+      parentFormId={shaForm?.formId}
     />
   );
 
   const containerStyleFinal = useMemo<CSSProperties>(() => {
-    const result = containerStyle ?? {};
+    const result = { ...containerStyle };
     if (minHeight) result.minHeight = `${minHeight}px`;
     if (maxHeight) result.maxHeight = `${maxHeight}px`;
 
@@ -411,7 +435,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         key={id ?? rowIndex}
         prepareRow={prepareRow}
         onClick={handleSelectRow}
-        onDoubleClick={handleDoubleClickRow}
+        onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
         row={row}
         showExpandedView={showExpandedView}
         index={rowIndex}

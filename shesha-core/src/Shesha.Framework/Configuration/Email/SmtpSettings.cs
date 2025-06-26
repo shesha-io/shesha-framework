@@ -8,7 +8,7 @@
         /// <summary>
         /// SMTP Host name/IP.
         /// </summary>
-        public string Host { get; set; }
+        public string? Host { get; set; }
 
         /// <summary>
         /// SMTP Port.
@@ -18,22 +18,17 @@
         /// <summary>
         /// User name to login to SMTP server.
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         /// <summary>
         /// Password to login to SMTP server.
         /// </summary>
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Domain name to login to SMTP server.
         /// </summary>
-        public string Domain { get; set; }
-
-        /// <summary>
-        /// Domain name to login to Incoming server.
-        /// </summary>
-        public string IncomingServer { get; set; }
+        public string? Domain { get; set; }
 
         /// <summary>
         /// Is SSL enabled?
@@ -43,12 +38,12 @@
         /// <summary>
         /// Default from address.
         /// </summary>
-        public string DefaultFromAddress { get; set; }
+        public string? DefaultFromAddress { get; set; }
 
         /// <summary>
         /// Default display name.
         /// </summary>
-        public string DefaultFromDisplayName { get; set; }
+        public string? DefaultFromDisplayName { get; set; }
 
         /// <summary>
         /// Use SMTP relay

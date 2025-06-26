@@ -25,6 +25,38 @@ export interface IListEditorWithPropertiesPanelProps<TItem extends ListItemWithI
     noSelectionProperties?: string | React.ReactElement;
 }
 
+/**
+ * Helper function to recursively find and update an item in nested groups
+ */
+const findAndUpdateItemRecursively = <TItem extends ListItemWithId>(
+    items: TItem[], 
+    targetId: string, 
+    newValues: TItem
+): { updated: boolean; newItems: TItem[] } => {
+    const newItems = [...items];
+    
+    for (let i = 0; i < newItems.length; i++) {
+        const item = newItems[i];
+        
+        // Check if this is the item we're looking for
+        if (item.id === targetId) {
+            newItems[i] = { ...item, ...newValues };
+            return { updated: true, newItems };
+        }
+        
+        // If this is a group with childItems, search recursively
+        if (item.itemType === 'group' && item.childItems) {
+            const result = findAndUpdateItemRecursively(item.childItems, targetId, newValues);
+            if (result.updated) {
+                newItems[i] = { ...item, childItems: result.newItems };
+                return { updated: true, newItems };
+            }
+        }
+    }
+    
+    return { updated: false, newItems };
+};
+
 export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ value, onChange, readOnly, header, groupHeader, initNewItem, children, itemProperties, noSelectionProperties, addItemText }: IListEditorWithPropertiesPanelProps<TItem>) => {
     const [selectedItem, setSelectedItem] = useState<TItem>();
     const [isPending, startTransition] = useTransition();
@@ -38,8 +70,12 @@ export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ va
     const onItemUpdate = (newValues: TItem) => {
         if (!selectedItem || selectedItem.id !== newValues.id) return;
 
-        Object.assign(selectedItem, newValues);
-        onChange([...value]);
+        const result = findAndUpdateItemRecursively(value, newValues.id, newValues);
+        if (result.updated) {
+            onChange(result.newItems);
+        } else {
+            console.warn('item not found');
+        }
     };
 
     return (

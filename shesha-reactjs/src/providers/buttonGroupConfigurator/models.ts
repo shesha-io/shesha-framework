@@ -2,7 +2,9 @@ import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
-import { EditMode } from '@/index';
+import { EditMode, IStyleType } from '@/index';
+import React from 'react';
+import { ListItemWithId } from '@/components/listEditor/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -22,44 +24,47 @@ export type ButtonActionType =
   | 'cancelFormEdit'
   | 'dispatchAnEvent';
 
-export interface IButtonGroupItemBase {
+export interface IButtonGroupItemBase extends IStyleType {
   id: string;
-  name: string;
+  name?: string;
   block?: boolean;
   label?: string | React.ReactNode;
   tooltip?: string;
-  sortOrder: number;
+  sortOrder?: number;
   danger?: boolean;
   hidden?: boolean;
   isDynamic?: boolean;
-  itemType: ButtonGroupItemType;
+  itemType?: ButtonGroupItemType;
   icon?: string | React.ReactNode;
   iconPosition?: 'start' | 'end';
   downIcon?: string;
   buttonType?: ButtonType;
   ghost?: boolean;
   permissions?: string[];
-  style?: string;
   size?: SizeType;
   editMode?: EditMode;
   readOnly?: boolean;
   width?: string;
   height?: string;
   backgroundColor?: string;
-  fontSize?: string;
+  fontSize?: number;
   color?: string;
   fontWeight?: string;
   borderWidth?: string;
   borderColor?: string;
   borderStyle?: 'dotted' | 'solid' | 'dashed';
-  borderRadius?: string;
+  borderRadius?: number;
+  styles?: React.CSSProperties;
 }
 
-export interface IButtonGroupItem extends IButtonGroupItemBase {
-  itemSubType: ToolbarItemSubType;
+export interface IButtonGroupItem extends IButtonGroupItemBase, ListItemWithId {
+  itemSubType?: ToolbarItemSubType;
+  styles?: React.CSSProperties;
+  dividerWidth?: string;
+  dividerColor?: string;
 }
 
-export interface IButtonItem extends IButtonGroupItem {
+export interface IButtonItem extends Omit<IButtonGroupItem, 'type'> {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 

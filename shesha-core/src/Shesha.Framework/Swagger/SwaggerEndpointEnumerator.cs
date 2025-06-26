@@ -1,15 +1,13 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Uow;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Abp.Domain.Uow;
 using Shesha.Application.Services;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Permissions;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +23,9 @@ namespace Shesha.Swagger
 
         public IEnumerator<UrlDescriptor> GetEnumerator()
         {
-            var entityConfigs = IocManager.Instance.Resolve<IModelConfigurationManager>();
-            var pmo = IocManager.Instance.Resolve<IPermissionedObjectManager>();
-            var _uowManager = IocManager.Instance.Resolve<IUnitOfWorkManager>();
+            var entityConfigs = StaticContext.IocManager.Resolve<IModelConfigurationManager>();
+            var pmo = StaticContext.IocManager.Resolve<IPermissionedObjectManager>();
+            var _uowManager = StaticContext.IocManager.Resolve<IUnitOfWorkManager>();
 
             var types = SwaggerHelper.ServiceTypesFunc();
 
@@ -39,19 +37,23 @@ namespace Shesha.Swagger
                     if (service.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
                     {
                         // entity service
-                        var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
-                        var entityType = genericInterface.GenericTypeArguments.FirstOrDefault();
+                        var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
+                        var entityType = genericInterface.GenericTypeArguments.First();
                         var model = AsyncHelper.RunSync(() => entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
-                        var entityAttribute = entityType.GetAttribute<EntityAttribute>();
+                        model.NotNull();
+                        var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
+                        var crudAttribute = entityType.GetAttributeOrNull<CrudAccessAttribute>();
+                        var permission = pmo.Get($"{entityType.FullName}", ShaPermissionedObjectsTypes.Entity);
                         if (entityAttribute?.GenerateApplicationService == GenerateApplicationServiceState.DisableGenerateApplicationService
+                            || (permission != null && permission.ActualAccess == RefListPermissionedAccess.Disable)
+                            || crudAttribute?.All == RefListPermissionedAccess.Disable
                             || !model.GenerateAppService)
                             continue;
                     }
                     else
                     {
                         // api service
-                        var obj = $"{service.FullName}";
-                        var permission = pmo.Get(obj, ShaPermissionedObjectsTypes.WebApi);
+                        var permission = pmo.Get($"{service.FullName}", ShaPermissionedObjectsTypes.WebApi);
                         if (permission != null && permission.ActualAccess == RefListPermissionedAccess.Disable)
                             continue;
                     }

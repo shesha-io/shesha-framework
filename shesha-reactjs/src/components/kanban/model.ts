@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { IButtonGroupItem, IButtonItem } from '@/providers';
+import { IButtonGroupItem, IButtonItem, IStyleType } from '@/providers';
 import { CSSProperties } from 'styled-components';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
@@ -20,17 +20,13 @@ export interface IKanbanButton extends IButtonGroupItem {
   itemValue: number;
   item: string;
 }
-export interface IKanbanProps extends IConfigurableFormComponent {
+export interface IKanbanProps extends IConfigurableFormComponent, IStyleType {
   items?: IKanbanButton[];
   referenceList?: any;
   fontColor?: string;
   showIcons?: boolean;
-  width?: number;
-  height?: number;
-  minHeight?: number;
-  maxHeight?: number;
   fontSize?: number;
-  entityType?: { id: string; name: string };
+  entityType?: string;
   allowNewRecord?: boolean;
   readonly?: boolean;
   collapsible?: boolean;
@@ -40,14 +36,11 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   groupingProperty?: string;
   modalFormId?: string;
   createFormId?: string;
-  headerBackgroundColor: string;
-  actionConfiguration: any;
-  kanbanReadonly: boolean;
-  componentName: string;
-  editFormId: string;
-  allowEdit: boolean;
-  allowDelete: boolean;
-  maxResultCount: number;
-  maxWidth: number;
-  minWidth: number;
+  actionConfiguration?: any;
+  kanbanReadonly?: boolean;
+  componentName?: string;
+  editFormId?: string;
+  allowEdit?: boolean;
+  allowDelete?: boolean;
+  columnStyles?: IStyleType;
 }

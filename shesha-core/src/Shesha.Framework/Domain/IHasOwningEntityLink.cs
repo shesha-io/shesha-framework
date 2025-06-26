@@ -13,24 +13,18 @@ namespace Shesha.Domain
         /// <summary>
         /// Owning entity ID
         /// </summary>
-        string OwnerId { get; }
+        string? OwnerId { get; }
 
         /// <summary>
         /// Owning entity type alias
         /// </summary>
-        string OwnerType { get; }
-
-        /*/// <summary>
-        /// Gets the owning entity object
-        /// </summary>
-        IEntity<TId> GetOwner<TId>();
-        */
+        string? OwnerType { get; }
 
         /// <summary>
         /// Sets the owners of the entity.
         /// </summary>
         /// <param name="owner">The entity which owns the entity implementing this interface.</param>
-        void SetOwner<TId>(IEntity<TId> owner);
+        void SetOwner<TId>(IEntity<TId> owner) where TId : notnull;
 
         /// <summary>
         /// Sets the owners of the entity.

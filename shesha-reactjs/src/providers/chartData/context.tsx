@@ -1,4 +1,4 @@
-import { IChartsProps, IFilter, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
@@ -22,7 +22,9 @@ export interface IChartDataContext {
   axisProperty?: string;
   isAxisTimeSeries?: boolean;
   timeSeriesFormat?: TTimeSeriesFormat;
-  legendProperty?: string;
+  groupingProperty?: string;
+  isGroupingTimeSeries?: boolean;
+  groupingTimeSeriesFormat?: TTimeSeriesFormat;
   filterProperties?: string[];
   xProperty?: string;
   yProperty?: string;
@@ -46,16 +48,13 @@ export interface IChartDataContext {
 
   isLoaded?: boolean;
 
-  chartFilters?: IFilter[];
   filteredData?: object[];
-  isFilterVisible?: boolean;
 }
 
 export interface IChartDataAtionsContext {
   setControlProps?: (controlProps: IChartsProps) => void;
   setData?: (data: object[]) => void;
   setFilterdData?: (data: object[]) => void;
-  setChartFilters?: (filters: IFilter[]) => void;
   onFilter?: () => void;
   /** Sets the data that will be retrieved directly from the backend */
   setUrlTypeData?: (data: object) => void;
@@ -75,11 +74,13 @@ export const INITIAL_STATE: IChartDataContext = {
   legendPosition: 'top',
   entityType: 'entity',
   filters: {},
-  valueProperty: 'value',
-  axisProperty: 'axis',
+  valueProperty: '',
+  axisProperty: '',
   isAxisTimeSeries: false,
-  timeSeriesFormat: 'day-month-year',
-  legendProperty: 'legend',
+  timeSeriesFormat: 'month-year',
+  groupingProperty: '',
+  isGroupingTimeSeries: false,
+  groupingTimeSeriesFormat: 'month-year',
   xProperty: 'x',
   yProperty: 'y',
   simpleOrPivot: 'simple',
@@ -97,9 +98,7 @@ export const INITIAL_STATE: IChartDataContext = {
 
   isLoaded: false,
 
-  chartFilters: [],
   filteredData: [],
-  isFilterVisible: false,
 };
 
 export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);

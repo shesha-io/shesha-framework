@@ -1,3 +1,4 @@
+import { IConfigurableActionConfiguration } from '@/providers';
 import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
@@ -156,7 +157,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   /**
    * A callback for double-clicking the rows
    */
-  onRowDoubleClick?: (rowData: any, index?: number) => void;
+  onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
 
   /**
    * A callback for when ids are selected. Required if useMultiSelect is true

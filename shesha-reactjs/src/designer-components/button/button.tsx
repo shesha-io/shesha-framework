@@ -1,9 +1,8 @@
 import ConfigurableButton from './configurableButton';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IButtonComponentProps } from './interfaces';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IToolboxComponent } from '@/interfaces';
@@ -12,10 +11,9 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useForm, useFormData, useSheshaApplication } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { addPx } from './util';
-import { removeNullUndefined } from '@/providers/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './util';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -26,46 +24,26 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   icon: <BorderOutlined />,
   Factory: ({ model, form }) => {
     const { style, ...restProps } = model;
-    const { formMode } = useForm();
-    const { data } = useFormData();
 
-    const { anyOfPermissionsGranted } = useSheshaApplication();
-
-    const fieldModel = {
-      ...restProps,
-      label: null,
-      tooltip: null,
+    const finalStyle = {
+      ...model.allStyles.dimensionsStyles,
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.borderStyles),
+      ...model.allStyles.fontStyles,
+      ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles.backgroundStyles),
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
+      ...model.allStyles.stylingBoxAsCSS,
+      ...model.allStyles.jsStyle,
+      justifyContent: model.font?.align
     };
-
-    const grantedPermission = anyOfPermissionsGranted(restProps?.permissions || []);
-
-    if (!grantedPermission && formMode !== 'designer') {
-      return null;
-    }
-
-    const newStyles = {
-      width: addPx(model.width),
-      height: addPx(model.height),
-      backgroundColor: model.backgroundColor,
-      fontSize: addPx(model.fontSize),
-      color: model.color,
-      fontWeight: model.fontWeight,
-      borderWidth: addPx(model.borderWidth),
-      borderColor: model.borderColor,
-      borderStyle: model.borderStyle,
-      borderRadius: addPx(model.borderRadius)
-    };
-
+    
     return (
-      <ConfigurableFormItem model={fieldModel}>
-        <ConfigurableButton
-          {...restProps}
-          readOnly={model.readOnly}
-          block={restProps?.block}
-          style={{ ...getStyle(style, data), ...removeNullUndefined(newStyles) }}
-          form={form}
-        />
-      </ConfigurableFormItem>
+      <ConfigurableButton
+        {...restProps}
+        readOnly={model.readOnly}
+        block={restProps?.block}
+        style={finalStyle}
+        form={form}
+      />
     );
   },
   settingsFormMarkup: data => getSettings(data),
@@ -84,7 +62,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonGroupItemBaseV0>(0, prev => {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
-          hidden: prev.hidden as boolean,
+          hidden: prev.hidden,
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
@@ -99,8 +77,13 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-
-  ,
+      .add<IButtonComponentProps>(8, (prev) => ({
+        ...prev,
+        desktop: { ...prev.desktop, buttonType: prev.buttonType || 'default' },
+        mobile: { ...prev.mobile, buttonType: prev.buttonType || 'default' },
+        tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' }
+      }))
+      .add<IButtonComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default ButtonComponent;

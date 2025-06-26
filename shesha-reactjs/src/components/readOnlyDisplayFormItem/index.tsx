@@ -1,32 +1,45 @@
-import { Switch, Tag } from 'antd';
+import { Space, Switch } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { getMoment } from '@/utils/date';
-import { IDtoType, ISelectOption } from '@/components/autocomplete';
+import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
+import ReflistTag from '../refListDropDown/reflistTag';
 
-type AutocompleteType = ISelectOption<IDtoType>;
+type AutocompleteType = ISelectOption;
 
-export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
-  value,
-  type = 'string',
-  dateFormat = 'DD-MM-YYYY',
-  timeFormat = 'hh:mm',
-  dropdownDisplayMode = 'raw',
-  render,
-  checked,
-  defaultChecked,
-  quickviewEnabled,
-  quickviewFormPath,
-  quickviewDisplayPropertyName,
-  quickviewGetEntityUrl,
-  quickviewWidth,
-}) => {
+export const Icon = ({ type, ...rest }) => {
+  const icons = require(`@ant-design/icons`);
+  const Component = icons[type];
+  return <Component {...rest} />;
+};
+
+export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
+  const {
+    value,
+    type = 'string',
+    dateFormat = 'DD-MM-YYYY',
+    timeFormat = 'hh:mm',
+    dropdownDisplayMode = 'raw',
+    render,
+    checked,
+    defaultChecked,
+    quickviewEnabled,
+    quickviewFormPath,
+    quickviewDisplayPropertyName,
+    quickviewGetEntityUrl,
+    quickviewWidth,
+    style,
+    showIcon,
+    solidColor,
+    showItemName
+  } = props;
+
   const { styles } = useStyles();
-  const renderValue = () => {
+  const renderValue = useMemo(() => {
     if (render) {
       return typeof render === 'function' ? render() : render;
     }
@@ -39,14 +52,13 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
       return '';
     }
 
-    const entityId = value?.id ?? value?.data?.id ?? value?.data;
+    const entityId = typeof value === 'object' ? value?.id ?? value?.data?.id ?? value?.data : value;
     const className = value?._className ?? value?.data?._className;
-    const displayName = value?._displayName ?? value?.data?._displayName;
+    const displayName = value?.label || value?._displayName || value?.data?._displayName;
 
     switch (type) {
       case 'dropdown':
         if (!Array.isArray(value)) {
-          const displayLabel = (value as AutocompleteType)?.label;
           if (quickviewEnabled && quickviewFormPath) {
             return quickviewFormPath && quickviewGetEntityUrl ? (
               <QuickView
@@ -66,11 +78,22 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
               />
             );
           } else {
-            return displayLabel;
+            return dropdownDisplayMode === 'tags' ?
+              <ReflistTag
+                value={value}
+                color={value?.color}
+                icon={value?.icon}
+                showIcon={showIcon}
+                tagStyle={style}
+                tooltip={value?.description}
+                solidColor={solidColor}
+                showItemName={showItemName}
+                label={displayName}
+              /> : displayName ?? value;
           }
         }
 
-        throw new Error(`Invalid data type passed. Expected IGuidNullableEntityReferenceDto but found ${typeof value}`);
+        return null;
 
       case 'dropdownMultiple': {
         if (Array.isArray(value)) {
@@ -78,7 +101,22 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
 
           return dropdownDisplayMode === 'raw'
             ? values?.join(', ')
-            : values?.map((itemValue, index) => <Tag key={index}>{itemValue}</Tag>);
+            : <Space size={8}>
+              {value?.map(({ label, color, icon, value, description }) => {
+                return <ReflistTag
+                  key={value}
+                  value={value}
+                  color={color}
+                  icon={icon}
+                  tooltip={description}
+                  showIcon={showIcon}
+                  tagStyle={style}
+                  solidColor={solidColor}
+                  showItemName={showItemName}
+                  label={label}
+                />;
+              })}
+            </Space>;
         }
 
         throw new Error(
@@ -86,7 +124,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
         );
       }
       case 'time': {
-        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }}/>;
+        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />;
       }
       case 'datetime': {
         return getMoment(value, dateFormat)?.format(dateFormat) || '';
@@ -102,12 +140,24 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
         break;
     }
     return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
-  };
-
+  }, [value,
+    type,
+    dateFormat,
+    timeFormat,
+    dropdownDisplayMode,
+    render,
+    checked,
+    defaultChecked,
+    quickviewEnabled,
+    quickviewFormPath,
+    quickviewDisplayPropertyName,
+    quickviewGetEntityUrl,
+    quickviewWidth
+  ]);
 
   return (
     <span className={styles.readOnlyDisplayFormItem}>
-      {renderValue()}
+      {renderValue}
     </span>
   );
 };

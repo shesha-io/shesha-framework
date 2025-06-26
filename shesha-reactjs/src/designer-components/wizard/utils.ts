@@ -2,6 +2,7 @@ import { findLastIndex } from 'lodash';
 import { nanoid } from '@/utils/uuid';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IWizardSequence, IWizardStepProps } from './models';
+import { IStyleType } from '@/index';
 
 export const EXPOSED_VARIABLES = [
   { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
@@ -82,21 +83,21 @@ export const getWizardButtonStyle =
   };
 
 
-  export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next' | 'reset') => {
-    switch (type) {
-      case 'reset':
-        return 0;
-  
-      case 'next':
-        return steps.findIndex((_, index) => index > current);
-  
-      case 'back':
-        return findLastIndex(steps, (_, index) => index < current);
-  
-      default:
-        return steps.findIndex((_, index) => index > current);
-    }
-  };
+export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next' | 'reset') => {
+  switch (type) {
+    case 'reset':
+      return 0;
+
+    case 'next':
+      return steps.findIndex((_, index) => index > current);
+
+    case 'back':
+      return findLastIndex(steps, (_, index) => index < current);
+
+    default:
+      return steps.findIndex((_, index) => index > current);
+  }
+};
 
 export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
   if (!args)
@@ -107,4 +108,44 @@ export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
   return fields?.length > 0
     ? fields.some((key) => !args[key])
     : true;
+};
+
+export const onAddNewItem = (items: IWizardStepProps[]) => {
+  const count = (items ?? []).length;
+  const id = nanoid();
+  const buttonProps: IWizardStepProps = {
+    id: id,
+    name: `step${count + 1}`,
+    key: id,
+    title: `Step ${count + 1}`,
+    subTitle: `Sub title ${count + 1}`,
+    description: `Description ${count + 1}`,
+    nextButtonText: 'Next',
+    backButtonText: 'Back',
+    components: [],
+    status: undefined,
+  };
+  return buttonProps;
+};
+
+
+export const defaultStyles = (): IStyleType => {
+  return {
+    background: { type: 'color', color: '' },
+    font: { weight: '400', size: 16, color: '#000', type: 'Segoe UI' },
+    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    border: {
+      radiusType: 'all',
+      borderType: 'all',
+      border: {
+        all: {
+          width: '1px',
+          style: 'none',
+          color: '#d9d9d9'
+        }
+      },
+      radius: { all: 8 }
+    },
+    stylingBox: "{\"marginBottom\":\"5\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingLeft\":\"16\",\"paddingRight\":\"16\"}",
+  };
 };

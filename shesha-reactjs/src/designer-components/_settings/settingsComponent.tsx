@@ -6,14 +6,13 @@ import { IConfigurableFormComponent, ShaForm } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { SettingComponentContainer } from './settingContainer/settingComponentContainer';
-import { useActualContextData } from '@/hooks/useActualContextData';
+import { useActualContextData } from '@/hooks';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
+  exposedVariables?: ICodeExposedVariable[];
   components?: IConfigurableFormComponent[];
-  availableConstantsExpression?: string;
-  resultTypeExpression?: string;
-  useAsyncEvaluation?: boolean;
 }
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
@@ -37,28 +36,26 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     }, [model.hidden, model?.readOnly, model?.id, actualSourceComponent]);
 
     if (model.hidden) return null;
-    
+
     return (
-        <ConfigurableFormItem model={model} className='sha-js-label' >
-            {(value, onChange) => (
-                <SettingsControl
-                    readOnly={model.readOnly}
-                    propertyName={model.propertyName}
-                    mode={'value'}
-                    onChange={onChange}
-                    value={value}
-                    availableConstantsExpression={model.availableConstantsExpression}
-                    resultTypeExpression={model.resultTypeExpression}
-                    useAsyncEvaluation={model.useAsyncEvaluation}
-                >
-                    {(_valueValue, _onChangeValue, propertyName) => {
-                      return (
-                          <SettingComponentContainer containerId={model.id} propertyName={propertyName} component={component} />
-                      );
-                    }}
-                </SettingsControl>
-            )}
-        </ConfigurableFormItem>
+      <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
+        {(value, onChange) => (
+          <SettingsControl
+            readOnly={model.readOnly}
+            propertyName={model.propertyName}
+            mode={'value'}
+            onChange={onChange}
+            value={value}
+          // exposedVariables={model.exposedVariables}
+          >
+            {(_valueValue, _onChangeValue, propertyName) => {
+              return (
+                <SettingComponentContainer containerId={model.id} propertyName={propertyName} component={component} />
+              );
+            }}
+          </SettingsControl>
+        )}
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: getSettings(),

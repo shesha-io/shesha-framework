@@ -1,7 +1,8 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Runtime.Validation;
+using Abp.Events.Bus.Entities;
+using Abp.Events.Bus.Handlers;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
@@ -9,8 +10,11 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
+using Shesha.Services.Settings.Cache;
 using Shesha.Services.Settings.Dto;
 using Shesha.Settings;
+using Shesha.Utilities;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,31 +25,39 @@ using System.Threading.Tasks;
 namespace Shesha.Services.Settings
 {
     /// inheritedDoc
-    public class SettingStore : ConfigurationItemManager<SettingConfiguration>, ISettingStore, ITransientDependency
+    public class SettingStore : ConfigurationItemManager<SettingConfiguration>, ISettingStore, ITransientDependency,
+        IAsyncEventHandler<EntityChangedEventData<SettingDefinition>>,
+        IAsyncEventHandler<EntityChangingEventData<SettingValue>>
     {
-        private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
         private readonly IRepository<SettingValue, Guid> _settingValueRepository;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
+        private readonly ISettingCacheHolder _cacheHolder;
         
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public SettingStore(
             IRepository<SettingConfiguration, Guid> repository, 
             IRepository<ConfigurationItem, Guid> configurationItemRepository, 
             IRepository<Module, Guid> moduleRepository, 
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<SettingValue, Guid> settingValueRepository,
-            IRepository<SettingConfiguration, Guid> settingConfigurationRepository,
-            IConfigurationFrameworkRuntime cfRuntime) : base(repository, moduleRepository, unitOfWorkManager)
+            IConfigurationFrameworkRuntime cfRuntime,
+            ISettingCacheHolder cacheHolder) : base(repository, moduleRepository, unitOfWorkManager)
         {
             _settingValueRepository = settingValueRepository;
-            _settingConfigurationRepository = settingConfigurationRepository;
             _cfRuntime = cfRuntime;
+            _cacheHolder = cacheHolder;
         }
 
+        /// inheritedDoc
         public override Task<SettingConfiguration> CopyAsync(SettingConfiguration item, CopyItemInput input)
         {
             throw new System.NotImplementedException();
         }
 
+        /// inheritedDoc
         public async Task<SettingConfiguration> CreateSettingConfigurationAsync(CreateSettingDefinitionDto input)
         {
             var module = input.ModuleId.HasValue
@@ -62,8 +74,7 @@ namespace Shesha.Services.Settings
                         : $"Setting Definition with name `{input.Name}` already exists"
                     )
                 );
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var definition = new SettingConfiguration();
             definition.Name = input.Name;
@@ -94,6 +105,7 @@ namespace Shesha.Services.Settings
             return definition;
         }
 
+        /// inheritedDoc
         public override async Task<SettingConfiguration> CreateNewVersionAsync(SettingConfiguration item)
         {
             var newVersion = new SettingConfiguration();
@@ -125,23 +137,26 @@ namespace Shesha.Services.Settings
             return newVersion;
         }
 
-        public async Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
+        /// inheritedDoc
+        public Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
         {
-            return await Repository.GetAll()
+            return Repository.GetAll()
                 .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
                 .Where(s => s.IsLast && s.VersionStatus == ConfigurationItemVersionStatus.Live)
                 .FirstOrDefaultAsync();
         }
 
+        /// inheritedDoc
         public override Task<IConfigurationItemDto> MapToDtoAsync(SettingConfiguration item)
         {
             var dto = ObjectMapper.Map<SettingDefinitionDto>(item);
             return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
-        public async Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
+        /// inheritedDoc
+        public Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
-            return await WithUnitOfWorkAsync(async () => {
+            return WithUnitOfWorkAsync(async () => {
                 var settingConfiguration = await GetSettingConfigurationAsync(setting);
                 var query = _settingValueRepository.GetAll()
                     .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
@@ -161,9 +176,9 @@ namespace Shesha.Services.Settings
             });
         }
 
-        private async Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
+        private Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
         {
-            return await GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
+            return GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
         }
 
         private async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action)
@@ -177,6 +192,81 @@ namespace Shesha.Services.Settings
                 await uow.CompleteAsync();
                 
                 return result;
+            }
+        }
+
+        private string GetCacheKey(CacheKeyArgs args)
+        {
+            var parts = new List<string?> {
+                !string.IsNullOrWhiteSpace(args.Module) ? $"{args.Module}/{args.Name}" : args.Name,
+                args.IsClientSpecific ? args.AppKey ?? string.Empty : null,
+                args.IsUserSpecific ? args.UserId?.ToString() ?? string.Empty : null,
+            }.WhereNotNull();
+
+            return parts.Delimited("|");
+        }       
+
+        /// inheritedDoc
+        public async Task<string?> GetValueAsync(SettingDefinition setting, SettingManagementContext context)
+        {
+            var cacheKey = GetCacheKey(new CacheKeyArgs(setting, context));
+
+            var result = await _cacheHolder.Cache.GetAsync(cacheKey, async(key) => {
+                var value = await GetSettingValueAsync(setting, context);
+                return new CachedSettingValue(value?.Value);
+            });
+
+            return result.Value;
+        }
+
+        /// <summary>
+        /// SettingDefinition changing handler
+        /// </summary>
+        public Task HandleEventAsync(EntityChangedEventData<SettingDefinition> eventData)
+        {
+            // TODO: clear cache partially on configuration update (maybe using tags which are under development currently)
+            return _cacheHolder.Cache.ClearAsync();
+        }
+
+        /// <summary>
+        /// SettingValue changing handler
+        /// </summary>
+        public async Task HandleEventAsync(EntityChangingEventData<SettingValue> eventData)
+        {
+            if (eventData.Entity == null)
+                return;
+
+            var cacheKey = GetCacheKey(new CacheKeyArgs(eventData.Entity));
+            await _cacheHolder.Cache.RemoveAsync(cacheKey);
+        }
+        private class CacheKeyArgs
+        {
+            public string? Module { get; private set; }
+            public string Name { get; private set; }
+            public bool IsClientSpecific { get; private set; }
+            public string? AppKey { get; private set; }
+            public bool IsUserSpecific { get; private set; }
+            public Int64? UserId { get; private set; }
+
+            public CacheKeyArgs(SettingDefinition setting, SettingManagementContext context)
+            {
+                Module = setting.ModuleName;
+                Name = setting.Name;
+                IsClientSpecific = setting.IsClientSpecific;
+                IsUserSpecific = setting.IsUserSpecific;
+                AppKey = context.AppKey;
+                UserId = context.UserId;
+            }
+            public CacheKeyArgs(SettingValue settingValue)
+            {
+                var config = settingValue.SettingConfiguration;
+
+                Module = config.Module?.Name;
+                Name = config.Name;
+                IsClientSpecific = config.IsClientSpecific;
+                IsUserSpecific = config.IsUserSpecific;
+                AppKey = settingValue.Application?.AppKey;
+                UserId = settingValue.User?.Id;
             }
         }
     }

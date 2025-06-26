@@ -1,18 +1,15 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Framework.Note")]
     public class Note : FullPowerChildEntity
     {
-        [ReferenceList("Shesha", "NoteType")]
-        public virtual int? Category { get; set; }
+        [StringLength(50)]
+        public virtual string? Category { get; set; }
 
         public virtual Note Parent { get; set; }
 

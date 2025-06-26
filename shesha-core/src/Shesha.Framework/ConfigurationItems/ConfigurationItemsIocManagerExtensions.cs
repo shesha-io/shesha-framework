@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
-using Abp.Reflection;
 using Castle.MicroKernel.Registration;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Reflection;
 using System;
-using System.Linq;
 
 namespace Shesha.ConfigurationItems
 {
@@ -24,7 +22,7 @@ namespace Shesha.ConfigurationItems
             where TImplementation : IConfigurationItemManager<TItem>
         {
             iocManager.IocContainer.Register(
-                Component.For<IConfigurationItemManager<TItem>>().Forward<TInterface>().ImplementedBy<TImplementation>().LifestyleTransient()
+                Component.For<IConfigurationItemManager<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
             return iocManager;
         }
@@ -32,7 +30,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get manager for the specified type of the <see cref="ConfigurationItem"/>
         /// </summary>
-        public static IConfigurationItemManager GetItemManager(this IIocManager iocManager, Type itemType)
+        public static IConfigurationItemManager? GetItemManager(this IIocManager iocManager, Type itemType)
         {
             itemType = itemType.StripCastleProxyType();
             var managerType = typeof(ConfigurationItemBase).IsAssignableFrom(itemType)
@@ -49,7 +47,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get manager for the specified <paramref name="item"/>
         /// </summary>
-        public static IConfigurationItemManager GetItemManager(this IIocManager iocManager, ConfigurationItemBase item) 
+        public static IConfigurationItemManager? GetItemManager(this IIocManager iocManager, ConfigurationItemBase item) 
         {
             return iocManager.GetItemManager(item.GetType());
         }
@@ -64,7 +62,7 @@ namespace Shesha.ConfigurationItems
             where TImplementation : IConfigurableItemExport<TItem>
         {
             iocManager.IocContainer.Register(
-                Component.For<IConfigurableItemExport>().Forward<IConfigurableItemExport<TItem>>().Forward<TInterface>().ImplementedBy<TImplementation>().LifestyleTransient()
+                Component.For<IConfigurableItemExport>().Forward<IConfigurableItemExport<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
             return iocManager;
         }
@@ -75,7 +73,7 @@ namespace Shesha.ConfigurationItems
         /// <param name="iocManager">IocManager instance</param>
         /// <param name="itemType">Type of the <see cref="ConfigurationItemBase"/></param>
         /// <returns></returns>
-        public static IConfigurableItemExport GetItemExporter(this IIocManager iocManager, Type itemType)
+        public static IConfigurableItemExport? GetItemExporter(this IIocManager iocManager, Type itemType)
         {
             var exporterType = typeof(IConfigurableItemExport<>).MakeGenericType(itemType);
 
@@ -95,12 +93,12 @@ namespace Shesha.ConfigurationItems
             where TImplementation : IConfigurableItemImport<TItem>
         {
             iocManager.IocContainer.Register(
-                Component.For<IConfigurableItemImport>().Forward<IConfigurableItemImport<TItem>>().Forward<TInterface>().ImplementedBy<TImplementation>().LifestyleTransient()
+                Component.For<IConfigurableItemImport>().Forward<IConfigurableItemImport<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
             return iocManager;
         }
 
-        public static IConfigurableItemImport GetItemImporter(this IIocManager iocManager, Type itemType)
+        public static IConfigurableItemImport? GetItemImporter(this IIocManager iocManager, Type itemType)
         {
             var importerType = typeof(IConfigurableItemImport<>).MakeGenericType(itemType);
 

@@ -3,7 +3,7 @@ import React, {
     FC,
     ReactElement,
     useEffect
-    } from 'react';
+} from 'react';
 import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
 import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
 import { Form, FormItemProps } from 'antd';
@@ -12,7 +12,7 @@ import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getFieldNameFromExpression } from '@/index';
 
-interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
+export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
     label?: string;
     jsSetting?: boolean;
@@ -22,6 +22,9 @@ interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model
     required?: boolean;
     tooltip?: string;
     hidden?: boolean;
+    layout?: 'horizontal' | 'vertical';
+    hideLabel?: boolean;
+    type?: string;
 }
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
@@ -32,35 +35,46 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
 
     const { _mode: mode } = getPropertySettingsFromData(model, props.name?.toString());
 
+    const formProps: FormItemProps = {
+        name: getFieldNameFromExpression(props.name),
+        label: props.label,
+        style: props.style,
+        required: props.required,
+        tooltip: props.tooltip,
+        hidden: props.hidden,
+        valuePropName: props.valuePropName,
+    };
+
     if (typeof props.children === 'function') {
-      const children = props.children as SettingsControlChildrenType;
-      if (!props.jsSetting) {
-        return <ConfigurableFormItem
-          model={{
-            propertyName: props.name,
-            label: props.label,
-            type: '',
-            id: '',
-            description: props.tooltip,
-            validate: { required: props.required },
-            hidden: props.hidden
-          }}
-          className='sha-js-label'
-        >
-          {children}
-        </ConfigurableFormItem>;
-      }
-      return (
-        <Form.Item {...{...props, name: getFieldNameFromExpression(props.name)}} label={props.label} >
-          <SettingsControl propertyName={props.name} mode={mode}>
-            {(value, onChange, propertyName) => children(value, onChange, propertyName)}
-          </SettingsControl>
-        </Form.Item>
-      );
+        const children = props.children as SettingsControlChildrenType;
+        if (!props.jsSetting) {
+            return <ConfigurableFormItem
+                model={{
+                    propertyName: props.name,
+                    label: props.label,
+                    type: '',
+                    id: '',
+                    description: props.tooltip,
+                    validate: { required: props.required },
+                    hidden: props.hidden
+                }}
+                className='sha-js-label'
+            >
+                {children}
+            </ConfigurableFormItem>;
+        }
+
+        return (
+            <Form.Item {...formProps} label={props.label} >
+                <SettingsControl propertyName={props.name} mode={mode}>
+                    {(value, onChange, propertyName) => children(value, onChange, propertyName)}
+                </SettingsControl>
+            </Form.Item>
+        );
     }
 
     if (!props.jsSetting) {
-        return <Form.Item {...props as FormItemProps<any>}>{props.children}</Form.Item>;
+        return <Form.Item {...formProps}>{props.children}</Form.Item>;
     }
 
     const valuePropName = props.valuePropName ?? 'value';

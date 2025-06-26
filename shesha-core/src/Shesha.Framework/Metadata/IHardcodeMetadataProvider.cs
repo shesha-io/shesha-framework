@@ -1,11 +1,8 @@
 ﻿using JetBrains.Annotations;
-using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
@@ -28,7 +25,7 @@ namespace Shesha.Metadata
         /// <param name="type">Type</param>
         /// <param name="context">Metadata context</param>
         /// <returns></returns>
-        List<PropertyMetadataDto> GetProperties(Type type, MetadataContext context = null);
+        List<PropertyMetadataDto> GetProperties(Type type, MetadataContext? context = null);
 
         /// <summary>
         /// Get data type of the specified property
@@ -42,7 +39,7 @@ namespace Shesha.Metadata
         /// <param name="propType"></param>
         /// <param name="propInfo"></param>
         /// <returns></returns>
-        DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo propInfo);
+        DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo);
 
         /// <summary>
         /// Returns true if the property is a framework related one

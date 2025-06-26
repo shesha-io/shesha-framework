@@ -1,28 +1,29 @@
 ﻿using Abp;
 using Abp.Authorization.Users;
+using Abp.Dependency;
+using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
-using Abp.TestBase;
 using NHibernate;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.MultiTenancy;
-using Shesha.Services;
+using Shesha.NHibernate.UoW;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Tests
 {
-    public abstract class SheshaNhTestBase<TStartupModule> : AbpIntegratedTestBase<TStartupModule> where TStartupModule : AbpModule
+    public abstract class SheshaNhTestBase<TStartupModule> : ShaIntegratedTestBase<TStartupModule> where TStartupModule : AbpModule
     {
-        protected SheshaNhTestBase(): base()
+        protected SheshaNhTestBase(IDatabaseFixture fixture) : base(fixture)
         {
             LoginAsHostAdmin();
 
-            StaticContext.SetIocManager(LocalIocManager);
             EntityHelper.RefreshStore(LocalIocManager);
         }
 
@@ -188,10 +189,45 @@ namespace Shesha.Tests
             var tenantId = AbpSession.GetTenantId();
             return await UsingDbSession(session => session.Query<Tenant>().SingleAsync(t => t.Id == tenantId));
         }
+
+        protected void UsingNhSession(Action<ISession> action)
+        {
+            using (var uow = NewNhUnitOfWork())
+            {
+#pragma warning disable IDISP001 // Dispose created
+                var session = uow.GetSession();
+#pragma warning restore IDISP001 // Dispose created
+                action.Invoke(session);
+                uow.Complete();
+            }
+        }
+
+        protected NhUnitOfWork NewNhUnitOfWork() 
+        {
+            var unitOfWorkManager = Resolve<IUnitOfWorkManager>();
+            return unitOfWorkManager.Begin() is NhUnitOfWork nhuow
+                ? nhuow
+                : throw new Exception($"Unexpected type of UnitOfWork. Expected '{nameof(NhUnitOfWork)}'");
+        }
+
+        protected virtual async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action, UnitOfWorkOptions? options = null)
+        {
+            using (var uowManager = LocalIocManager.ResolveAsDisposable<IUnitOfWorkManager>())
+            {
+                using (var uow = uowManager.Object.Begin(options ?? new UnitOfWorkOptions()))
+                {
+                    var result = await action();
+                    await uow.CompleteAsync();
+                    return result;
+                }
+            }
+        }
     }
 
     public abstract class SheshaNhTestBase : SheshaNhTestBase<SheshaTestModule>
     {
-
+        protected SheshaNhTestBase(IDatabaseFixture fixture) : base(fixture)
+        {
+        }
     }
 }

@@ -12,18 +12,14 @@ using Abp.TestBase;
 using Abp.Zero.Configuration;
 using Castle.Facilities.Logging;
 using Castle.MicroKernel.Registration;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
-using Shesha.Tests.DynamicEntities;
-using Shesha.Tests.Interceptors;
+using Shesha.Tests.Fixtures;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Collections.Generic;
@@ -53,11 +49,20 @@ namespace Shesha.Tests
         {
             IocManager.MockWebHostEnvirtonment();
 
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var connectionString = config.GetConnectionString("TestDB");
-
             var nhConfig = Configuration.Modules.ShaNHibernate();
-            nhConfig.UseMsSql(connectionString);
+
+            var dbFixture = IocManager.IsRegistered<IDatabaseFixture>()
+                ? IocManager.Resolve<IDatabaseFixture>()
+                : null;
+            if (dbFixture != null /*&& false*/)
+            {
+                nhConfig.UseDbms(c => dbFixture.DbmsType, c => dbFixture.ConnectionString);
+            }
+            else
+            {
+                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                nhConfig.UseDbms(c => config.GetDbmsType(), c => config.GetRequiredConnectionString("TestDB"));
+            }
 
             Configuration.UnitOfWork.Timeout = TimeSpan.FromMinutes(30);
             Configuration.UnitOfWork.IsTransactional = false;
@@ -70,7 +75,7 @@ namespace Shesha.Tests
             // mock IWebHostEnvironment
             //var hostingEnvironment = Mock.Of<IWebHostEnvironment>(e => e.ApplicationName == "test");
 
-            var inMemorySettings = new Dictionary<string, string> {
+            var inMemorySettings = new Dictionary<string, string?> {
                 /* in memory settings:
                 {"TopLevelKey", "TopLevelValue"},
                 {"SectionName:SomeKey", "SectionValue"},
@@ -104,21 +109,14 @@ namespace Shesha.Tests
 
             Configuration.ReplaceService<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(DependencyLifeStyle.Singleton);
 
-            Configuration.Settings.Providers.Add<TestSettingsProvider>();
-
             Configuration.EntityHistory.Selectors.Add("Settings", typeof(Setting));
 
             if (!IocManager.IsRegistered<ApplicationPartManager>())
                 IocManager.IocContainer.Register(Component.For<ApplicationPartManager>().ImplementedBy<ApplicationPartManager>());
-
-            StaticContext.SetIocManager(IocManager);
         }
 
         public override void Initialize()
         {
-            IocManager.Register(typeof(AbpAsyncDeterminationInterceptor<ShurikInterceptor>), DependencyLifeStyle.Transient);
-            IocManager.IocContainer.Kernel.ComponentRegistered += ShurikInterceptor.Configure;
-
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 

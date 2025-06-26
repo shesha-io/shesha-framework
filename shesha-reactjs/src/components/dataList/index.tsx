@@ -1,16 +1,16 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
 import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
-import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
+import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
-import { useAvailableConstantsData, executeScriptSync, getStyle } from '@/providers/form/utils';
+import { useAvailableConstantsData, executeScriptSync, getStyle, isFormFullName } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
@@ -21,7 +21,9 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
-import {EmptyState} from "..";
+import { EmptyState } from "..";
+import AttributeDecorator from '../attributeDecorator';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 interface EntityForm {
   entityType: string;
@@ -51,9 +53,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   entityType,
   selectedIds,
   changeSelectedIds,
-  orientation,
-  listItemWidth,
-  customListItemWidth,
+  orientation = 'horizontal',
   grouping,
   groupingMetadata,
   collapsible,
@@ -72,22 +72,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   noDataSecondaryText,
   noDataText,
   cardHeight,
-  cardMaxWidth = '350px',
-  cardMinWidth = '350px',
   showBorder,
   cardSpacing,
+  style,
+  gap,
   ...props
 }) => {
 
   const { styles } = useStyles();
-  //const refreshRef = useRef(0);
 
   let skipCache = false;
-  /*const now = new Date().valueOf();
-  if ((now - refreshRef.current) > 5000) {
-    skipCache = true;
-    refreshRef.current = now;
-  }*/
 
   interface IFormIdDictionary {
     [key: string]: Promise<FormFullName>;
@@ -103,6 +97,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const [content, setContent] = useState<React.JSX.Element[]>(null);
   const rows = useRef<React.JSX.Element[]>(null);
+
+  const shaForm = useShaFormInstance();
 
   useDeepCompareEffect(() => {
     entityForms.current = [];
@@ -146,8 +142,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     changeSelectedIds(
       val
         ? records?.map((item: any) => {
-            return item?.id;
-          })
+          return item?.id;
+        })
         : []
     );
     onMultiSelectRows(
@@ -174,7 +170,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
 
-    return executeScriptSync(formIdExpression, {...allData, item});
+    return executeScriptSync(formIdExpression, { ...allData, item });
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();
@@ -183,42 +179,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const persistedCreateFormProps = createFormInfo.current?.formConfiguration;
 
-  const [measuredRef, measured] = useMeasure();
-  const [itemWidthCalc, setItemWidth] = useState({});
+  const [measuredRef] = useMeasure();
 
-  // TODO: Horisontal orientation works incorrect under Container with Display = `grid`
-
-  //The below forces the card to use max-width, therefore avoiding the issue of having cards
-  //with varying sizes. This is only a problem when selection mode is not "none"
-
-  if(orientation === "wrap" && selectionMode !== "none"){
-    cardMinWidth = cardMaxWidth;
-  }  
-
-
-  useEffect(() => {
-    if (measured?.width === 0) return;
-     let res = null;
-    if(orientation === "horizontal" && listItemWidth !== 'custom'){
-      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
-
-    }else if (orientation === "horizontal" && listItemWidth === "custom") {
-      res = ({width: `${customListItemWidth}px`} as React.CSSProperties);
-
-    }else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
-      res =
-        selectionMode === 'none'
-          ? ({ width: '100%' } as React.CSSProperties)
-          : ({ width: 'calc(100% - 0px)' } as React.CSSProperties);
-    } else {
-      res =
-        listItemWidth === 'custom'
-          ? ({ width: `${customListItemWidth}px` } as React.CSSProperties)
-          : { width: `${(measured?.width - 40) * listItemWidth - (selectionMode === 'none' ? 0 : 28)}px` };
-    }
-
-    setItemWidth(res);
-  }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
+  const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
   const isReady = (forms: EntityForm[]) => {
     if (!(!forms || forms.length === 0 || forms.find(x => !x.formConfiguration))) {
@@ -239,11 +202,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       entityForms.current.push(entityForm);
       if (!entityFormInfo?.current)
         entityFormInfo.current = entityForm;
-    } else 
+    } else
       return !!entityForm.formConfiguration;
 
     if (!!entityForm.formId) {
-      getForm({formId: entityForm.formId, configurationItemMode, skipCache})
+      getForm({ formId: entityForm.formId, configurationItemMode, skipCache })
         .then(response => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
@@ -253,13 +216,13 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       const f = loadedFormId.current[`${entityForm.entityType}_${fType}`]
         ?? getEntityFormId(entityForm.entityType, fType);
 
-      f.then((e) => 
-        getForm({formId: e, configurationItemMode, skipCache})
-        .then(response => {
-          entityForm.formId = e;
-          entityForm.formConfiguration = response;
-          isReady(entityForms.current);
-        })
+      f.then((e) =>
+        getForm({ formId: e, configurationItemMode, skipCache })
+          .then(response => {
+            entityForm.formId = e;
+            entityForm.formConfiguration = response;
+            isReady(entityForms.current);
+          })
       );
 
       loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
@@ -268,7 +231,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   useDeepCompareEffect(() => {
-    let  isReady = true;
+    let isReady = true;
 
     let fId = createFormId;
     let className = '$createFormName$';
@@ -305,7 +268,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -320,7 +283,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup) 
+    if (!entityForm?.formConfiguration?.markup)
       return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
 
     const dblClick = () => {
@@ -338,28 +301,39 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       } else console.error('Action is not configured');
       return false;
     };
-  
+
+    const attributes = {
+      'data-sha-datalist-item-type': 'subForm',
+      'data-sha-parent-form-id': `${shaForm?.form?.id}`,
+      'data-sha-parent-form-name': `${shaForm?.form?.module}/${shaForm?.form?.name}`,
+      'data-sha-form-id': `${entityForm?.formConfiguration?.id}`,
+    };
+
+    if (isFormFullName(entityForm?.formId))
+      attributes['data-sha-form-name'] = `${entityForm?.formId.module}/${entityForm?.formId.name}`;
+
     return (
-      <div onDoubleClick={dblClick}>
-        <DataListItemRenderer
-          isNewObject={false}
-          markup={entityForm?.formConfiguration?.markup}
-          formSettings={entityForm?.formConfiguration?.settings}
-          data={item}
-          listId={id}
-          listName='Data List'
-          itemIndex={index}
-          itemId={item['id']}
-          allowEdit={canEditInline}
-          allowDelete={canDeleteInline}
-          updater={(rowData) => updateAction(index, rowData)}
-          deleter={() => deleteAction(index, item)}        
-          allowChangeEditMode={inlineEditMode === 'one-by-one'}
-          editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
-          autoSave={inlineSaveMode === 'auto'}
+      <AttributeDecorator attributes={attributes}>
+        <div onDoubleClick={dblClick}>
+          <DataListItemRenderer
+            isNewObject={false}
+            markup={entityForm?.formConfiguration?.markup}
+            formSettings={entityForm?.formConfiguration?.settings}
+            data={item}
+            listId={id}
+            listName='Data List'
+            itemIndex={index}
+            itemId={item['id']}
+            allowEdit={canEditInline}
+            allowDelete={canDeleteInline}
+            updater={(rowData) => updateAction(index, rowData)}
+            deleter={() => deleteAction(index, item)}
+            allowChangeEditMode={inlineEditMode === 'one-by-one'}
+            editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
+            autoSave={inlineSaveMode === 'auto'}
           />
-         
-      </div>
+        </div>
+      </AttributeDecorator>
     );
   };
 
@@ -398,7 +372,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           }
           parent = g.currentGroup.$childs;
         });
-        parent.push({index: rowIndex, row} as Row);
+        parent.push({ index: rowIndex, row } as Row);
       });
       return result;
     }
@@ -440,12 +414,33 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
-  
+    const stylesAsCSS = style as CSSProperties;
+
+    const hasBorder = () => {
+      const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
+      return borderProps.some(prop => {
+        const value = stylesAsCSS?.[prop];
+        return value && value !== 'none' && value !== '0' && value !== '0px';
+      }) || showBorder;
+    };
+
     const selected =
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
+
+    const itemStyles: CSSProperties = {
+      ...(stylesAsCSS || {}),
+      ...(orientation === 'horizontal' && { flexShrink: 0 }),
+      ...(orientation === 'wrap' && showBorder && {
+        border: '1px solid #d3d3d3',
+        borderRadius: '8px'
+      }),
+      ...(cardHeight && { height: cardHeight }),
+      overflow: 'auto'
+    };
+
     return (
-      <div>
+      <div key={`row-${index}`}>
         <ConditionalWrap
           condition={selectionMode !== 'none'}
           wrap={(children) => (
@@ -454,25 +449,30 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               checked={selected}
               onChange={() => {
                 onSelectRowLocal(index, item);
-              }}
-            >
+              }}>
               {children}
             </Checkbox>
           )}
         >
-
           <div
-            className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
+            className={classNames(
+              orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem,
+              { selected }
+            )}
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`,
-            ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
+            style={itemStyles}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
-        </ConditionalWrap>{' '}
-        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
+        </ConditionalWrap>
+        {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
+          <Divider
+            style={{ margin: '0' }}
+            className={classNames(styles.shaDatalistComponentDivider, { selected })}
+          />
+        ))}
       </div>
     );
   };
@@ -497,26 +497,76 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         : {}
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
-  
 
   const updateRows = () => {
     rows.current = records?.map((item: any, index) => renderSubForm(item, index));
   };
 
   const updateContent = () => {
-    setContent(groups 
+    setContent(groups
       ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
-      : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index))
+      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index))
     );
+  };
+
+
+  const getContainerStyles = (): CSSProperties => {
+    const containerStyles: CSSProperties = {
+      gap: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
+      ...fcContainerStyles.jsStyle,
+      ...fcContainerStyles.stylingBoxAsCSS,
+      ...fcContainerStyles.dimensionsStyles
+
+    };
+
+
+    const rawItemWidth =
+      (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
+    const itemWidth =
+      rawItemWidth !== undefined
+        ? typeof rawItemWidth === 'number'
+          ? `${rawItemWidth}px`
+          : rawItemWidth
+        : '300px';
+
+    switch (orientation) {
+      case 'horizontal':
+        return {
+          ...containerStyles,
+          display: 'flex',
+          gridAutoFlow: 'row',
+          gridAutoColumns: 'max-content',
+          alignItems: 'start',
+          overflowX: 'auto',
+          width: '100%'
+        };
+
+      case 'wrap':
+        return {
+          ...containerStyles,
+          display: 'grid',
+          gridTemplateColumns: `repeat(auto-fill, ${itemWidth})`,
+          alignItems: 'start'
+        };
+
+      case 'vertical':
+      default:
+        return {
+          ...containerStyles,
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          alignItems: 'stretch'
+        };
+    }
   };
 
   return (
     <>
       {createModalOpen && createFormInfo?.current?.formConfiguration &&
-        <DataListItemCreateModal 
+        <DataListItemCreateModal
           id={id}
           formInfo={persistedCreateFormProps}
-          markup={createFormInfo?.current?.formConfiguration.markup} 
+          markup={createFormInfo?.current?.formConfiguration.markup}
           formSettings={createFormInfo?.current?.formConfiguration.settings}
           creater={createAction}
           onToggle={(isOpen) => setCreateModalOpen(isOpen)}
@@ -537,62 +587,42 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </Checkbox>
           <Divider />
         </Show>
-        {// Use Configurable Action
-        /*<Show when={canAddInline}>
-          <Button 
-            type='link' 
-            shape="round" 
-            title='Add new item' 
-            icon={<PlusCircleOutlined />} 
-            className="sha-link"
-            onClick={onCreateClick}
-          >
-            Add new item...
-          </Button>
-        </Show>*/}
       </div>
-      <FormInfo visible={formInfoBlockVisible} formProps={{...(persistedFormProps as IPersistedFormProps)}}>
-      <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
-        <div
-          key="spin_key"
-          ref={measuredRef}
-          className={classNames(styles.shaDatalistComponentBody, {
-            loading: isFetchingTableData && records?.length === 0,
-            horizontal: orientation === 'horizontal',
-          })}
-        >
+      <FormInfo visible={formInfoBlockVisible} formProps={{ ...(persistedFormProps as IPersistedFormProps) }}>
+        <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
+          <div
+            key="spin_key"
+            ref={measuredRef}
+            style={getContainerStyles()}
+            className={classNames(styles.shaDatalistComponentBody, {
+              loading: isFetchingTableData && records?.length === 0,
+              horizontal: orientation === 'horizontal',
+              wrap: orientation === 'wrap',
+              vertical: orientation === 'vertical'
+            })}
+          >
+            <Show when={records?.length === 0}>
+              <EmptyState
+                noDataIcon={noDataIcon}
+                noDataSecondaryText={noDataSecondaryText}
+                noDataText={noDataText}
+              />
+            </Show>
 
-          <Show when={records?.length === 0}>
-              <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
-          </Show>
-
-          <Show when={records?.length > 0}>
-            {orientation === "wrap" &&
-              <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
-                {content}
-              </div>
-            }
-
-
-            {orientation === "horizontal" && 
-              <div className={styles.shaDatalistHorizontal}>
-              {React.Children.map(content, child => {
-              return React.cloneElement(child, { style: itemWidthCalc });
+            <Show when={records?.length > 0}>
+              {React.Children.map(content, (child, index) => {
+                return React.cloneElement(child, {
+                  key: child.key || index,
+                  style: {
+                    ...child.props.style,
+                    overflow: 'visible',
+                    flex: '0 0 100%'
+                  }
+                });
               })}
-              </div>
-            }
-
-            {orientation === "vertical" && 
-              <div style={itemWidthCalc}>
-              {React.Children.map(content, child => {
-              return React.cloneElement(child, { style: itemWidthCalc });
-              })}
-              </div>
-            }
-
-          </Show>
-        </div>
-      </ShaSpin>
+            </Show>
+          </div>
+        </ShaSpin>
       </FormInfo>
     </>
   );

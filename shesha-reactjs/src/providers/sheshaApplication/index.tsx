@@ -22,10 +22,7 @@ import {
   DynamicModalProvider,
   CanvasProvider,
 } from '@/providers';
-import {
-  DEFAULT_ACCESS_TOKEN_NAME,
-  ISheshaRoutes,
-} from './contexts';
+import { DEFAULT_ACCESS_TOKEN_NAME, IHttpHeadersDictionary, ISheshaRoutes } from './contexts';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
@@ -38,12 +35,17 @@ import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/pr
 import { FormDataLoadersProvider } from '../form/loaders/formDataLoadersProvider';
 import { FormDataSubmittersProvider } from '../form/submitters/formDataSubmittersProvider';
 import { MainMenuProvider } from '../mainMenu';
-import { ISheshaApplicationInstance, SheshaApplicationInstanceContext, useSheshaApplicationInstance } from './application';
+import {
+  ISheshaApplicationInstance,
+  SheshaApplicationInstanceContext,
+  useSheshaApplicationInstance,
+} from './application';
 import SheshaLoader from '@/components/sheshaLoader';
 import { Result } from 'antd';
 import { EntityActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
-
+import { WebStorageContextProvider } from '../dataContextProvider/contexts/webStorageContext';
+import { ProgressBar } from './progressBar';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -63,18 +65,11 @@ export interface IShaApplicationProviderProps {
 
   noAuth?: boolean;
   unauthorizedRedirectUrl?: string;
+  buildHttpRequestHeaders?: () => IHttpHeadersDictionary;
 }
 
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
-  const {
-    children,
-    accessTokenName,
-    homePageUrl,
-    router,
-    unauthorizedRedirectUrl,
-    themeProps,
-    getFormUrlFunc,
-  } = props;
+  const { children, accessTokenName, homePageUrl, router, unauthorizedRedirectUrl, themeProps, getFormUrlFunc } = props;
 
   const authRef = useRef<IAuthProviderRefProps>();
   const application = useSheshaApplicationInstance({ ...props, authorizer: authRef });
@@ -82,7 +77,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     application.init();
   }, []);
 
-  const { initializationState: { status, hint, error } } = application;
+  const {
+    initializationState: { status, hint, error },
+  } = application;
 
   return (
     <SheshaApplicationInstanceContext.Provider value={application}>
@@ -112,7 +109,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                     >
                       <ConfigurationItemsLoaderProvider>
                         <FormManager>
-
                           <GlobalSheshaStyles />
                           <ShaFormStyles />
                           <GlobalPageStyles />
@@ -123,41 +119,45 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                 <MetadataDispatcherProvider>
                                   <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
                                     <ApplicationContextsProvider>
-                                      <DataContextProvider
-                                        id={SheshaCommonContexts.AppContext}
-                                        name={SheshaCommonContexts.AppContext}
-                                        description={'Application data store context'}
-                                        type={'root'}
-                                      >
-                                        <FormDataLoadersProvider>
-                                          <FormDataSubmittersProvider>
-                                            <CanvasProvider>
-                                              <DataSourcesProvider>
-                                                <DynamicModalProvider>
-                                                  {(status === 'inprogress' || status === 'waiting') && <SheshaLoader message={hint || "Initializing..."} />}
-                                                  {status === 'ready' &&
-                                                    <DebugPanel>
-                                                      <ApplicationActionsProcessor>
-                                                        <MainMenuProvider>
-                                                          {children}
-                                                        </MainMenuProvider>
-                                                      </ApplicationActionsProcessor>
-                                                    </DebugPanel>
-                                                  }
-                                                  {status === 'failed' &&
-                                                    <Result
-                                                      status="500"
-                                                      title="500"
-                                                      subTitle={error?.message || "Sorry, something went wrong."}
-                                                    //extra={<Button type="primary">Back Home</Button>}
-                                                    />
-                                                  }
-                                                </DynamicModalProvider>
-                                              </DataSourcesProvider>
-                                            </CanvasProvider>
-                                          </FormDataSubmittersProvider>
-                                        </FormDataLoadersProvider>
-                                      </DataContextProvider>
+                                      <WebStorageContextProvider>
+                                        <DataContextProvider
+                                          id={SheshaCommonContexts.AppContext}
+                                          name={SheshaCommonContexts.AppContext}
+                                          description={'Application data store context'}
+                                          type={'app'}
+                                        >
+                                          <FormDataLoadersProvider>
+                                            <FormDataSubmittersProvider>
+                                              <CanvasProvider>
+                                                <DataSourcesProvider>
+                                                  <DynamicModalProvider>
+                                                    {(status === 'inprogress' || status === 'waiting') && (
+                                                      <SheshaLoader message={hint || 'Initializing...'} />
+                                                    )}
+                                                    {status === 'ready' && (
+                                                      <DebugPanel>
+                                                        <ApplicationActionsProcessor>
+                                                          <MainMenuProvider>
+                                                            <ProgressBar>{children}</ProgressBar>
+                                                          </MainMenuProvider>
+                                                        </ApplicationActionsProcessor>
+                                                      </DebugPanel>
+                                                    )}
+                                                    {status === 'failed' && (
+                                                      <Result
+                                                        status="500"
+                                                        title="500"
+                                                        subTitle={error?.message || 'Sorry, something went wrong.'}
+                                                        //extra={<Button type="primary">Back Home</Button>}
+                                                      />
+                                                    )}
+                                                  </DynamicModalProvider>
+                                                </DataSourcesProvider>
+                                              </CanvasProvider>
+                                            </FormDataSubmittersProvider>
+                                          </FormDataLoadersProvider>
+                                        </DataContextProvider>
+                                      </WebStorageContextProvider>
                                     </ApplicationContextsProvider>
                                   </DataContextManager>
                                 </MetadataDispatcherProvider>
@@ -193,4 +193,10 @@ const useSheshaApplication = (require: boolean = true): ISheshaApplicationInstan
  */
 const useSheshaApplicationState = useSheshaApplication;
 
-export { ShaApplicationProvider, useSheshaApplication, useSheshaApplicationState, useApplicationPlugin, usePublicApplicationApi };
+export {
+  ShaApplicationProvider,
+  useSheshaApplication,
+  useSheshaApplicationState,
+  useApplicationPlugin,
+  usePublicApplicationApi,
+};

@@ -4,7 +4,7 @@ namespace Shesha.Authentication.External
 {
     public interface IExternalAuthProviderApi
     {
-        ExternalLoginProviderInfo ProviderInfo { get; }
+        ExternalLoginProviderInfo? ProviderInfo { get; }
 
         Task<bool> IsValidUserAsync(string userId, string accessCode);
 

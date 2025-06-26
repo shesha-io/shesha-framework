@@ -11,7 +11,6 @@ import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
 import DataList from '@/designer-components/dataList/dataListComponent';
 import DataSource from '@/designer-components/dataSource/dataSourceComponent';
-import Divider from '@/designer-components/_legacyComponents/divider';
 import Drawer from '@/designer-components/drawer';
 import DynamicView from '@/designer-components/dynamicView';
 import EditableTagGroup from '@/designer-components/editableTagGroup';
@@ -103,10 +102,19 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
+import LabelConfigurator from '@/designer-components/styleLabel';
+import SearchableTabs from '@/designer-components/propertiesTabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
+import SettingsInput from '@/designer-components/settingsInput';
+import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
-import ChartComponent from '@/designer-components/charts';
+import BarChartComponent from '@/designer-components/charts/bar';
+import LineChartComponent from '@/designer-components/charts/line';
+import PieChartComponent from '@/designer-components/charts/pie';
+import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
+import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
+import DividerComponent from '@/designer-components/_legacyComponents/divider';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -136,7 +144,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
     },
     {
       name: 'Advanced',
@@ -144,10 +152,8 @@ export const getToolboxComponents = (
       components: [
         Address,
         Autocomplete,
-        AutocompleteTagGroup,
         ColorPickerComponent,
         IconPicker,
-        EditableTagGroup,
         HtmlRender,
         Image,
         ImageAnnotationComponent,
@@ -171,14 +177,12 @@ export const getToolboxComponents = (
         AttachmentsEditor,
         Notes,
         ChildEntitiesTagGroup,
-        DynamicView,
       ],
     },
     {
       name: 'Tables and Lists',
       visible: true,
       components: [
-        TableTemplate,
         TableContext,
         DataTable,
         DataList,
@@ -192,7 +196,7 @@ export const getToolboxComponents = (
     },
     {
       name: 'Data Access',
-      visible: true,
+      visible: false,
       components: [DataSource, DataContextComponent],
     },
     {
@@ -203,7 +207,6 @@ export const getToolboxComponents = (
         CollapsiblePanel,
         Columns,
         ContainerComponent,
-        Divider,
         Drawer,
         KeyInformationBarComponent,
         SectionSeprator,
@@ -217,7 +220,20 @@ export const getToolboxComponents = (
     {
       visible: false,
       name: 'Legacy',
-      components: [Paragraph, Title, Toolbar, List],
+      components: [
+        Paragraph,
+        Title,
+        Toolbar,
+        List,
+        EditableTagGroup,
+        FormAutocompleteComponent,
+        ReferenceListAutocompleteComponent,
+        NotificationAutocompleteComponent,
+        TableTemplate,
+        DividerComponent,
+        DynamicView,
+        AutocompleteTagGroup,
+      ],
     },
     {
       visible: devMode,
@@ -228,7 +244,6 @@ export const getToolboxComponents = (
         MainMenuEditorComponent,
         PermissionAutocompleteComponent,
         ColumnsEditorComponent, // Hidden
-        ReferenceListAutocompleteComponent,
         PropertyAutocompleteComponent,
         SortingEditorComponent,
         EditModeSelectorComponent,
@@ -244,12 +259,15 @@ export const getToolboxComponents = (
         Buttons,
         Section,
         StyleBox,
+        LabelConfigurator,
+        SearchableTabs,
+        SettingsInput,
+        SettingsInputRow,
         CodeEditor,
         ImagePickerComponent,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
-        FormAutocompleteComponent,
-        NotificationAutocompleteComponent,
+        ConfigurableItemAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,
