@@ -417,7 +417,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     id: nanoid(),
                                     propertyName: 'onRowDeleteSuccessAction',
                                     label: 'On Row Delete Success',
-                                    parentId: crudTabId,
                                     description: 'Custom business logic to be executed after successfull deletion of a row.',
                                     hideLabel: true,
                                 })
