@@ -132,7 +132,7 @@
                             {
                                 "id": "eX3ZelYUEIbGAcxXAsqW0ZI3u6t9Iy",
                                 "propertyName": "footerButtons",
-                                "label": "Buttons Type",
+                                "label": "Action Buttons",
                                 "dropdownOptions": [
                                     {
                                         "label": "Default",

@@ -105,6 +105,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   noDataIcon,
   onRowSaveSuccessAction: onRowSaveSuccess,
   showExpandedView,
+  onRowDeleteSuccessAction,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -458,6 +459,31 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     });
   };
 
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /*nop*/
+      };
+    return (data, formApi, globalState, setGlobalState) => {
+      const evaluationContext = {
+        data,
+        formApi,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, httpClient]);
+
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
@@ -468,6 +494,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
+      performOnRowDeleteSuccessAction(rowData, formApi, globalState, setGlobalState);
       store.refreshTable();
     });
   };
