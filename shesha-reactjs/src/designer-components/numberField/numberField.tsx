@@ -71,7 +71,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       ...calculatedModel.eventHandlers,
       defaultValue: calculatedModel.defaultValue,
       changeOnWheel: false,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={suffixStyle} />}</>,
+      prefix: <>{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={suffixStyle} />}{model.prefix}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={suffixStyle} />}</>,
     };
 
@@ -84,8 +84,8 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
             customEvents.onChange(newValue);
             onChange(newValue);
           };
-          return model.readOnly 
-            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} /> 
+          return model.readOnly
+            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} />
             : <InputNumber
               type='number'
               value={value ?? model?.defaultValue}
