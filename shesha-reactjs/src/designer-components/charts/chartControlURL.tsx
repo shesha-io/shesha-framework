@@ -22,8 +22,10 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { styles, cx } = useStyles();
   const transformedUrl = useMemo(() => {
     if (!url) return null;
-    const queryString = props.additionalProperties 
-      ? '?' + props.additionalProperties.map(({ key, value }) => key + '=' + value).join('&')
+    const queryString = props.additionalProperties
+      ? '?' + props.additionalProperties.map(({ key, value }) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      ).join('&')
       : '';
     return url + queryString;
   }, [url, props.additionalProperties]);
@@ -109,8 +111,8 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }, [error, fetchData]);
 
   const noDataAlert = useMemo(() => {
-    if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 && 
-        memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0) {
+    if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
+      memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0) {
       return null;
     }
 
@@ -167,6 +169,11 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     margin: 0
   }), []);
 
+  const hasValidData = useMemo(() => {
+    return state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
+      memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0;
+  }, [state.urlTypeData, memoUrlTypeData]);
+
   // Early returns with memoized components
   if (error) {
     return errorAlert;
@@ -180,8 +187,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     return loaderComponent;
   }
 
-  if (!state.urlTypeData || state.urlTypeData?.labels?.length === 0 || state.urlTypeData?.datasets?.length === 0 || 
-      memoUrlTypeData.datasets.length === 0 || memoUrlTypeData.labels.length === 0) {
+  if (!hasValidData) {
     return noDataAlert;
   }
 
