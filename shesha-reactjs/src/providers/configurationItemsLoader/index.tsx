@@ -134,19 +134,18 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     };
 
     if (result.settings) {
--      const access = (result.settings.access ?? dto?.access) as any; // there can be string for some old forms
--      result.settings.access = ((access && typeof(access) === 'string') ? parseInt(access, 10) : access) ?? 3;
-+      const rawAccess = result.settings.access ?? dto?.access; // string | number | undefined
-+      let normalizedAccess: number;
-+      if (typeof rawAccess === 'string') {
-+        const parsed = parseInt(rawAccess, 10);
-+        normalizedAccess = Number.isNaN(parsed) ? 3 : parsed;
-+      } else if (typeof rawAccess === 'number') {
-+        normalizedAccess = rawAccess;
-+      } else {
-+        normalizedAccess = 3;
-+      }
-+      result.settings.access = normalizedAccess;
+      // there can be string for some old forms
+      const rawAccess = result.settings.access ?? dto?.access; // string | number | undefined
+      let normalizedAccess: number;
+      if (typeof rawAccess === 'string') {
+        const parsed = parseInt(rawAccess, 10);
+        normalizedAccess = Number.isNaN(parsed) ? 3 : parsed;
+      } else if (typeof rawAccess === 'number') {
+        normalizedAccess = rawAccess;
+      } else {
+        normalizedAccess = 3;
+      }
+      result.settings.access = normalizedAccess;
       result.settings.permissions = result.settings.permissions ?? dto?.permissions ?? [];
     }
 
