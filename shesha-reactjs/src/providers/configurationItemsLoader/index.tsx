@@ -133,9 +133,11 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       settings: markupWithSettings?.formSettings,
     };
 
-    const access = (result.settings.access ?? dto.access) as any; // there can be string for some old forms
-    result.settings.access = ((access && typeof(access) === 'string') ? parseInt(access, 10) : access) ?? 3;
-    result.settings.permissions = result.settings.permissions ?? dto.permissions ?? [];
+    if (result.settings) {
+      const access = (result.settings.access ?? dto?.access) as any; // there can be string for some old forms
+      result.settings.access = ((access && typeof(access) === 'string') ? parseInt(access, 10) : access) ?? 3;
+      result.settings.permissions = result.settings.permissions ?? dto?.permissions ?? [];
+    }
 
     return result;
   };
