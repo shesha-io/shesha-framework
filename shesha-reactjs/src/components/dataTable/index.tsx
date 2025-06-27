@@ -29,6 +29,7 @@ import {
   RowDataInitializer,
   RowRenderer,
 } from '../reactTable/interfaces';
+import { IConfigurableActionConfiguration } from '@/providers';
 import { getCellRenderer } from './cell';
 import {
   BackendRepositoryType,
@@ -71,6 +72,11 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  onRowClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+  onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+  onRowHover?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+  onRowSelect?: (index: number, row: any) => void;
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -82,6 +88,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   selectedRowIndex,
   onSelectRow,
   onDblClick,
+  onRowClick,
+  onRowDoubleClick,
+  onRowHover,
+  onRowSelect,
+  onSelectionChange,
   onMultiRowSelect,
   tableRef,
   onRowsChanged,
@@ -145,7 +156,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
-    if (onSelectRow) {
+    if (onRowSelect) {
+      onRowSelect(index, row);
+    } else if (onSelectRow) {
       onSelectRow(index, row);
     }
 
@@ -160,8 +173,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const previousIds = usePrevious(selectedIds);
 
   useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
-      onSelectedIdsChanged(selectedIds);
+    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && (onSelectedIdsChanged || onSelectionChange)) {
+      if (onSelectionChange) onSelectionChange(selectedIds);
+      else if (onSelectedIdsChanged) onSelectedIdsChanged(selectedIds);
     }
   }, [selectedIds]);
 
@@ -183,9 +197,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     }
   }, [exportToExcelError]);
 
-  const handleSelectRow = onSelectRow || onSelectRowDeprecated;
+  const handleSelectRow = onRowSelect || onSelectRow || onSelectRowDeprecated;
 
-  const dblClickHandler = onDblClick || onDblClickDeprecated;
+  const dblClickHandler = onRowDoubleClick || onDblClick || onDblClickDeprecated;
 
   useEffect(() => {
     if (Boolean(handleSelectRow)) handleSelectRow(null, null);
@@ -688,9 +702,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     defaultSorting: defaultSorting,
     useMultiSelect,
     freezeHeaders,
-    onSelectRow: onSelectRowLocal,
+    onRowClick,
     onRowDoubleClick: dblClickHandler,
-    onSelectedIdsChanged: changeSelectedIds,
+    onRowHover,
+    onRowSelect: onSelectRowLocal,
+    onSelectionChange: changeSelectedIds,
     onMultiRowSelect,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,

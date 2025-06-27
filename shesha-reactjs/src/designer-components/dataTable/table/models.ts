@@ -17,6 +17,11 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   noDataSecondaryText?: string;
   noDataIcon?: string;
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
+  rowClickActionConfiguration?: IConfigurableActionConfiguration;
+  rowDoubleClickActionConfiguration?: IConfigurableActionConfiguration;
+  rowHoverActionConfiguration?: IConfigurableActionConfiguration;
+  rowSelectActionConfiguration?: IConfigurableActionConfiguration;
+  selectionChangeActionConfiguration?: IConfigurableActionConfiguration;
 }
 
 /** Table component props */

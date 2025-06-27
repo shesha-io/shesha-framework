@@ -13,8 +13,10 @@ export type RowEditMode = 'read' | 'edit';
 
 export interface ISortableRowProps {
   prepareRow: (row: Row<any>) => void;
-  onClick: (row: Row<any>) => void;
-  onDoubleClick: (row: Row<any>, index: number) => void;
+  onSelect: (row: Row<any>) => void;
+  onRowClick?: (row: Row<any>, index: number) => void;
+  onRowDoubleClick?: (row: Row<any>, index: number) => void;
+  onRowHover?: (row: Row<any>, index: number) => void;
   row: Row<any>;
   index: number;
   selectedRowIndex?: number;
@@ -51,8 +53,10 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const {
     row,
     prepareRow,
-    onClick,
-    onDoubleClick,
+    onSelect,
+    onRowClick,
+    onRowDoubleClick,
+    onRowHover,
     index,
     selectedRowIndex,
     updater,
@@ -70,12 +74,20 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const { dragState, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
 
+  const clickTimeout = useRef<NodeJS.Timeout>();
+
   const handleRowClick = () => {
-    onClick(row);
+    if (clickTimeout.current) clearTimeout(clickTimeout.current);
+    clickTimeout.current = setTimeout(() => {
+      onRowClick?.(row, index);
+      onSelect(row);
+    }, 200);
   };
 
   const handleRowDoubleClick = () => {
-    onDoubleClick(row, index);
+    if (clickTimeout.current) clearTimeout(clickTimeout.current);
+    onRowDoubleClick?.(row, index);
+    onSelect(row);
   };
 
   prepareRow(row);
@@ -100,6 +112,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         onMouseEnter={() => {
           if (dragState === 'finished')
             setDragState(null);
+          onRowHover?.(row, index);
         }}
         ref={tableRef}
         onClick={handleRowClick}
