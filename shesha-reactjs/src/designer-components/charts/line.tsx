@@ -90,6 +90,8 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       showYAxisLabel: true,
       strokeColor: '#000000',
       strokeWidth: 1,
+      maxResultCount: 10000,
+      requestTimeout: 10000,
     }))
 };
 

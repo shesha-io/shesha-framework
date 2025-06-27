@@ -268,8 +268,10 @@ export const getSettings = (data: any) => {
                                     type: 'numberField',
                                     propertyName: 'maxResultCount',
                                     label: 'Data Size Limit',
-                                    description: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
-                                    tooltip: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
+                                    description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
+                                    "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                                    tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
+                                    "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                                     parentId: dataSettingsId,
                                     validate: { required: false },
                                     min: -1,
@@ -743,9 +745,10 @@ export const getSettings = (data: any) => {
                       propertyName: 'requestTimeout',
                       parentId: dataTabId,
                       label: 'Request Timeout',
-                      description: 'The timeout for the request to the data source.',
+                      description: 'The timeout for the request (in milliseconds) to the data source. 10000 is the default timeout.',
+                      tooltip: 'The timeout for the request (in milliseconds) to the data source. 10000 is the default timeout.',
                       validate: { required: false },
-                      defaultValue: 5000,
+                      defaultValue: 10000,
                       min: 0,
                       jsSetting: true,
                     }
@@ -866,8 +869,10 @@ export const getSettings = (data: any) => {
                             type: 'numberField',
                             propertyName: 'maxResultCount',
                             label: 'Data Size Limit',
-                            description: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit. -1 means no limit.',
-                            tooltip: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit. -1 means no limit.',
+                            description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
+                            "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                            tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
+                            "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                             parentId: dataTabId,
                             validate: { required: false },
                             min: -1,
