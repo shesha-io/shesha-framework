@@ -106,6 +106,10 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         ...prev,
         noDataText: prev.noDataText ?? 'No Data',
         noDataSecondaryText: prev.noDataSecondaryText ?? 'No data is available for this table',
+      }))
+      .add<ITableComponentProps>(12, prev => ({
+        ...prev,
+        selectionMode: prev['useMultiselect'] ? 'multiple' : 'single'
       })),
   actualModelPropertyFilter: (name) => name !== 'items',
 };

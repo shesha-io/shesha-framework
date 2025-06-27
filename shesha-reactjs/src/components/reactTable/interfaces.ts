@@ -78,6 +78,7 @@ export interface IReactTableProps extends ITableRowDragProps {
    * Whether the table should allow multi-select
    */
   useMultiSelect?: boolean;
+  selectionMode?: 'none' | 'single' | 'multiple';
 
     /**
      * Whether the table's headers should be frozen and you scroll under them
