@@ -62,8 +62,8 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
     const inputProps: InputNumberProps = {
       disabled: model.readOnly,
       variant: model.hideBorder ? 'borderless' : undefined,
-      min: model.min ?? 0,
-      max: model.max ?? Number.MAX_SAFE_INTEGER,
+      min: model.min !== undefined ? model.max : null,
+      max: model.max !== undefined ? model.max : Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
       style: model.style ? model.allStyles.jsStyle : { width: '100%' },
