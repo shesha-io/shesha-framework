@@ -37,6 +37,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   columns = [],
   data = [],
   useMultiSelect = false,
+  selectionMode,
   loading = false,
   defaultSorting = [],
   defaultCanSort = false,
@@ -85,6 +86,8 @@ export const ReactTable: FC<IReactTableProps> = ({
     allRows: data,
     allColumns: columns,
   });
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
   const { styles } = useStyles();
   const { styles: mainStyles } = useMainStyles();
 
@@ -124,7 +127,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
 
-    if (useMultiSelect) {
+    if (multiSelect) {
       localColumns.unshift({
         id: 'selection',
         //isVisible: true,
@@ -175,7 +178,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       return 0;
     });
-  }, [allColumns, allowReordering, useMultiSelect]);
+  }, [allColumns, allowReordering, multiSelect]);
 
   const getColumnAccessor = (cid) => {
     const column = columns.find((c) => c.id === cid);
@@ -237,7 +240,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     useRowSelect,
     // useBlockLayout,
     ({ useInstanceBeforeDimensions }) => {
-      if (useMultiSelect) {
+      if (multiSelect) {
         useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
             // fix the parent group of the selection button to not be resizable
@@ -262,7 +265,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [sortBy]);
 
   useEffect(() => {
-    if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
+    if (multiSelect && selectedRowIds && typeof onSelectedIdsChanged === 'function') {
       const arrays: string[] = allRows
         ?.map(({ id }, index) => {
           if (selectedRowIds[index]) {
@@ -275,7 +278,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       onSelectedIdsChanged(arrays);
     }
-  }, [selectedRowIds]);
+  }, [selectedRowIds, multiSelect]);
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
     if (!onRowsReordered) {
@@ -314,6 +317,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
 
   const handleSelectRow = (row: Row<object>) => {
+    if (mode === 'none') return;
     if (!omitClick && !(canEditInline || canDeleteInline)) {
       onSelectRow(row?.index, row?.original);
     }

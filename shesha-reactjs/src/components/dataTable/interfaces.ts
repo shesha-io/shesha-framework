@@ -73,6 +73,7 @@ export interface IShaDataTableInlineEditableProps {
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
   useMultiselect?: boolean;
+  selectionMode?: 'none' | 'single' | 'multiple';
   freezeHeaders?: boolean;
   disableCustomFilters?: boolean;
   /**

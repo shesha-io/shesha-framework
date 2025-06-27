@@ -30,7 +30,7 @@ const NotConfiguredWarning: FC = () => {
 
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-    const { id, items, useMultiselect, tableStyle, containerStyle } = props;
+    const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
 
     const { formMode } = useForm();
     const { data: formData } = useFormData();
@@ -56,6 +56,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     requireColumns(); // our component requires columns loading. it's safe to call on each render
 
     const repository = getRepository();
+    const mode = selectionMode ?? (useMultiselect ? 'multiple' : 'single');
 
     useDeepCompareEffect(() => {
         // register columns
@@ -106,6 +107,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}
                 useMultiselect={useMultiselect}
+                selectionMode={mode}
                 freezeHeaders={props.freezeHeaders}
                 allowReordering={allowReordering}
                 tableStyle={getStyle(tableStyle, formData, globalState)}

@@ -8,6 +8,7 @@ export type RowDroppedMode = 'executeScript' | 'showDialog';
 export interface ITableComponentBaseProps extends IShaDataTableInlineEditableProps {
   items: IConfigurableColumnsProps[];
   useMultiselect?: boolean;
+  selectionMode?: 'none' | 'single' | 'multiple';
   freezeHeaders?: boolean;
   containerStyle?: string;
   tableStyle?: string;

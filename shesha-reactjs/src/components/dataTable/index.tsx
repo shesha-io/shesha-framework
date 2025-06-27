@@ -64,6 +64,7 @@ export interface IIndexTableOptions {
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   tableRef?: MutableRefObject<Partial<DataTableFullInstance> | null>;
   options?: IIndexTableOptions;
+  selectionMode?: 'none' | 'single' | 'multiple';
   containerStyle?: CSSProperties;
   tableStyle?: CSSProperties;
   minHeight?: number;
@@ -79,6 +80,7 @@ export interface IExtendedModalProps extends ModalProps {
 
 export const DataTable: FC<Partial<IIndexTableProps>> = ({
   useMultiselect: useMultiSelect,
+  selectionMode,
   selectedRowIndex,
   onSelectRow,
   onDblClick,
@@ -107,6 +109,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   ...props
 }) => {
   const store = useDataTableStore();
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
   const form = useForm(false);
   const formApi = getFormApi(form ?? { formMode: 'readonly', formData: {} } as ConfigurableFormInstance);
   const { formMode, data: formData } = formApi;
@@ -145,6 +149,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
+    if (mode === 'none') return;
+
     if (onSelectRow) {
       onSelectRow(index, row);
     }
@@ -160,7 +166,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const previousIds = usePrevious(selectedIds);
 
   useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
+    if (
+      mode === 'multiple' &&
+      !(previousIds?.length === 0 && selectedIds?.length === 0) &&
+      typeof onSelectedIdsChanged === 'function'
+    ) {
       onSelectedIdsChanged(selectedIds);
     }
   }, [selectedIds]);
@@ -686,12 +696,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect,
+    useMultiSelect: multiSelect,
+    selectionMode: mode,
     freezeHeaders,
     onSelectRow: onSelectRowLocal,
     onRowDoubleClick: dblClickHandler,
-    onSelectedIdsChanged: changeSelectedIds,
-    onMultiRowSelect,
+    onSelectedIdsChanged: mode === 'multiple' ? changeSelectedIds : undefined,
+    onMultiRowSelect: mode === 'multiple' ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
     selectedRowIndex,
