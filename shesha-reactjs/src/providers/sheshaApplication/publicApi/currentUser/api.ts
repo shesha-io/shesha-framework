@@ -85,7 +85,11 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
         ) as GrantedPermissionDto[];
         return permissionedEntity
           ? permissions.some(
-              (p) => p.permission === permissionName && p.permissionedEntity.includes(permissionedEntity)
+              (p) =>
+                p.permission === permissionName &&
+                p.permissionedEntity?.some(
+                  (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className
+                )
             )
           : permissions.some((p) => p.permission === permissionName);
       }
