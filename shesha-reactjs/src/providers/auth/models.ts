@@ -1,26 +1,25 @@
-import { IEntityReferenceDto, IErrorInfo, ILoginForm } from "@/interfaces";
-import { GetCurrentLoginInfoOutput, UserLoginInfoDto } from "@/apis/session";
+import { IEntityReferenceDto, IErrorInfo, ILoginForm } from '@/interfaces';
+import { GetCurrentLoginInfoOutput, UserLoginInfoDto } from '@/apis/session';
 
 export type AuthenticationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
 export interface AuthenticationState {
-    status: AuthenticationStatus;
-    hint?: string;
-    error?: IErrorInfo;
+  status: AuthenticationStatus;
+  hint?: string;
+  error?: IErrorInfo;
 }
 
 export interface LoginUserResponse {
-    userProfile: GetCurrentLoginInfoOutput;
-    url: string;
+  userProfile: GetCurrentLoginInfoOutput;
+  url: string;
 }
-
 
 export const ASPNET_CORE_CULTURE = '.AspNetCore.Culture';
 export const DEFAULT_HOME_PAGE = '/';
 
 export const URLS = {
-    LOGIN: '/api/TokenAuth/Authenticate',
-    LOGOFF: '/api/TokenAuth/SignOff',
-    GET_CURRENT_LOGIN_INFO: '/api/services/app/Session/GetCurrentLoginInfo',
+  LOGIN: '/api/TokenAuth/Authenticate',
+  LOGOFF: '/api/TokenAuth/SignOff',
+  GET_CURRENT_LOGIN_INFO: '/api/services/app/Session/GetCurrentLoginInfo',
 };
 
 export const ERROR_MESSAGES = {
