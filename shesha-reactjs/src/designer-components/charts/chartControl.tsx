@@ -14,6 +14,19 @@ import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems
 import ChartLoader from './components/chartLoader';
 import { useTheme } from '@/providers/theme';
 
+const chartInnerStyle = {
+  flex: 1,
+  width: '100%',
+  height: '100%',
+  position: 'relative' as const,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 0,
+  margin: 0,
+  minHeight: '350px'
+};
+
 const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const {
     chartType,
@@ -32,6 +45,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     valuePropertyLabel,
     filters,
     maxResultCount,
+    requestTimeout = 5000, // Default 5 seconds
     ...state
   } = useChartDataStateContext();
 
@@ -45,8 +59,8 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
   const [error, setError] = useState<string | undefined>(undefined);
-
   const { styles, cx } = useStyles();
+  const currentControllerRef = useRef<AbortController | null>(null);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
@@ -80,18 +94,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     boxSizing: 'border-box' as const,
     overflow: 'hidden'
   }), [state]);
-  const chartInnerStyle = useMemo(() => ({
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    position: 'relative' as const,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 0,
-    margin: 0,
-    minHeight: '350px'
-  }), []);
 
   // Memoize the processAndUpdateData callback with stable dependencies
   const processAndUpdateData = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
@@ -114,6 +116,21 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     if (isFetchingRef.current || !entityType || !valueProperty || !axisProperty) {
       return;
     }
+
+    const newController = new AbortController();
+    currentControllerRef.current = newController;
+
+    // Set up timeout (configurable, default 5 seconds)
+    const timeoutId = setTimeout(() => {
+      if (currentControllerRef.current) {
+        isFetchingRef.current = false;
+        setError(`Request timed out after ${requestTimeout / 1000} seconds`);
+        setIsLoaded(true);
+        setMetadataProcessed(false);
+        currentControllerRef.current.abort(`Request timed out after ${requestTimeout / 1000} seconds`);
+        currentControllerRef.current = null;
+      }
+    }, requestTimeout);
 
     // Clear any previous errors and faulty properties
     setError(undefined);
@@ -182,7 +199,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
             maxResultCount ?? -1
           );
 
-          return refetch(params);
+          return refetch({ ...params, signal: newController.signal });
         });
       })
       .then((response) => {
@@ -195,27 +212,61 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         processAndUpdateData(items, refListMap);
         setIsLoaded(true);
         setMetadataProcessed(true);
+        newController.abort(`Request completed successfully`);
       })
       .catch((error) => {
         console.error('Error in fetchAndProcessData:', error);
+        // Check if it's a timeout error
+        const isTimeoutError = error?.name === 'AbortError' && error?.message?.includes('timeout');
+        
         // Ensure error is always a string to prevent React rendering issues
-        const errorMessage = error instanceof Error 
+        const strError = typeof error === 'string' 
+          ? error 
+          : 'An error occurred while fetching chart data';
+        const altErrorMessage = error instanceof Error 
           ? error.message 
-          : typeof error === 'string' 
-            ? error 
-            : 'An error occurred while fetching chart data';
+          : strError;
+        const errorMessage = isTimeoutError 
+          ? `Request timed out after ${requestTimeout / 1000} seconds`
+          : altErrorMessage;
         setError(errorMessage);
         setIsLoaded(true);
         setMetadataProcessed(false);
+        newController.abort(errorMessage);
       })
       .finally(() => {
         isFetchingRef.current = false;
+        newController.abort("Requst aborted gracefully");
+        currentControllerRef.current = null;
+        clearTimeout(timeoutId);
       });
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount]);
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout]);
 
   useEffect(() => {
+    // Reset loading state when chart properties change
+    setIsLoaded(false);
+    setMetadataProcessed(false);
+    setError(undefined);
+    setFaultyProperties([]);
+    
+    // Abort any ongoing request
+    if (currentControllerRef.current) {
+      currentControllerRef.current.abort('Restarting chart');
+      currentControllerRef.current = null;
+    }
+    isFetchingRef.current = false;
+    
     fetchData();
   }, [fetchData]);
+
+  // Cleanup effect to abort requests on unmount
+  useEffect(() => {
+    return () => {
+      if (currentControllerRef.current) {
+        currentControllerRef.current.abort('Unmounting chart');
+      }
+    };
+  }, []);
 
   const data: IChartData = useProcessedChartData();
 
@@ -246,26 +297,47 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       />
     );
   }, [entityType, chartType, valueProperty, axisProperty, missingPropertiesInfo.descriptionMessage]);
+  
+  const retryFetch = useCallback(() => {
+    // Reset loading state for retry
+    setIsLoaded(false);
+    setMetadataProcessed(false);
+    setError(undefined);
+    setFaultyProperties([]);
+    
+    // Abort any ongoing request
+    if (currentControllerRef.current) {
+      currentControllerRef.current.abort('Retry fetch');
+      currentControllerRef.current = null;
+    }
+    isFetchingRef.current = false;
+    
+    // Start new fetch with timeout
+    fetchData();
+  }, [fetchData, setIsLoaded, setMetadataProcessed, setError, setFaultyProperties]);
 
   const errorAlert = useMemo(() => {
     if (!error) return null;
 
+    const isUserCancelled = error === 'Request cancelled by user';
+    const isTimeoutError = error.includes('Request timed out after');
+
     return (
       <Alert
         showIcon
-        message="Error loading chart data"
+        message={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data"}
         description={error}
-        type="error"
+        type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
         action={
-          <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
-            fetchData();
-          }}>
-            Retry
-          </Button>
+          !isUserCancelled && !isTimeoutError && (
+            <Button color={theme.application.errorColor ?? 'red'} onClick={retryFetch}>
+              Retry
+            </Button>
+          )
         }
       />
     );
-  }, [error, fetchData]);
+  }, [error, retryFetch]);
 
   // Memoize the loader component
   const loaderComponent = useMemo(() => {
@@ -280,9 +352,24 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       >
         <ChartLoader chartType={chartType} />
         <div className={cx(styles.loadingText)}>Fetching data...</div>
+        <Button 
+          type="default" 
+          size="small"
+          onClick={() => {
+            if (isFetchingRef.current && currentControllerRef.current) {
+              isFetchingRef.current = false;
+              setError('Request cancelled by user');
+              setIsLoaded(true);
+              setMetadataProcessed(false);
+              currentControllerRef.current.abort('Cancel button clicked');
+            }
+          }}
+        >
+          Cancel
+        </Button>
       </Flex>
     );
-  }, [state.isLoaded, metadataProcessed, chartType, cx, styles.loadingText]);
+  }, [state.isLoaded, metadataProcessed, chartType, cx, styles.loadingText, setIsLoaded, setMetadataProcessed]);
 
   // Early returns with memoized components
   if (error) {

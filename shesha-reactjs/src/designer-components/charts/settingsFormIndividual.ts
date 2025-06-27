@@ -713,23 +713,43 @@ export const getSettings = (data: any) => {
             id: dataTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'dataMode',
-                  parentId: 'root',
-                  label: 'Data Source Type',
-                  description:
-                    'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
-                  inputType: 'dropdown',
-                  allowClear: true,
-                  dropdownOptions: [
-                    { label: 'Custom Endpoint', value: 'url' },
-                    { label: 'Entity Type', value: 'entityType' },
-                  ],
-                  validate: { required: true },
-                  defaultValue: 'entityType',
-                  hidden: false,
-                  jsSetting: true
+                  parentId: dataTabId,
+                  inline: true,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'dataMode',
+                      parentId: 'root',
+                      label: 'Data Source Type',
+                      description:
+                        'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                      type: 'dropdown',
+                      allowClear: true,
+                      dropdownOptions: [
+                        { label: 'Custom Endpoint', value: 'url' },
+                        { label: 'Entity Type', value: 'entityType' },
+                      ],
+                      validate: { required: true },
+                      defaultValue: 'entityType',
+                      hidden: false,
+                      jsSetting: true,
+                      width: '50%',
+                    },
+                    {
+                      id: nanoid(),
+                      type: 'numberField',
+                      propertyName: 'requestTimeout',
+                      parentId: dataTabId,
+                      label: 'Request Timeout',
+                      description: 'The timeout for the request to the data source.',
+                      validate: { required: false },
+                      defaultValue: 5000,
+                      min: 0,
+                      jsSetting: true,
+                    }
+                  ]
                 })
                 .addContainer({
                   id: dataSettingsForUrlId,
@@ -846,8 +866,8 @@ export const getSettings = (data: any) => {
                             type: 'numberField',
                             propertyName: 'maxResultCount',
                             label: 'Data Size Limit',
-                            description: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
-                            tooltip: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit.',
+                            description: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit. -1 means no limit.',
+                            tooltip: 'The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit. -1 means no limit.',
                             parentId: dataTabId,
                             validate: { required: false },
                             min: -1,

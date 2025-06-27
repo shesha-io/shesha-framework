@@ -60,6 +60,7 @@ export interface IChartsProps {
     axisPropertyLabel?: string;
     valuePropertyLabel?: string;
     maxResultCount?: number;
+    requestTimeout?: number; // Timeout in milliseconds (default: 5000)
 }
 
 /**

@@ -10,14 +10,14 @@ import ChartLoader from './components/chartLoader';
 import { useTheme } from '@/providers/theme';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
-  const { url, chartType } = props;
+  const { url, chartType, requestTimeout = 5000 } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { setIsLoaded, setUrlTypeData } = useChartDataActionsContext();
   const { theme } = useTheme();
-  // Add error handling state similar to chartControl.tsx
   const [error, setError] = useState<string | null>(null);
   const isFetchingRef = useRef(false);
+  const currentControllerRef = useRef<AbortController | null>(null);
 
   const { styles, cx } = useStyles();
   const transformedUrl = useMemo(() => {
@@ -35,32 +35,75 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       return;
     }
 
+    const newController = new AbortController();
+    currentControllerRef.current = newController;
+    
+    // Set up timeout (configurable, default 5 seconds)
+    const timeoutId = setTimeout(() => {
+      if (currentControllerRef.current) {
+        currentControllerRef.current.abort();
+        isFetchingRef.current = false;
+        setError(`Request timed out after ${requestTimeout / 1000} seconds`);
+        setIsLoaded(true);
+        currentControllerRef.current = null;
+      }
+    }, requestTimeout);
+
     // Clear any previous errors
     setError(null);
     isFetchingRef.current = true;
 
-    refetch(getURLChartDataRefetchParams(transformedUrl))
+    refetch({ ...getURLChartDataRefetchParams(transformedUrl), signal: newController.signal })
       .then((data) => {
         if (!data?.result) {
           throw new Error(data?.error?.details ?? 'Invalid response structure, please check the URL and try again.');
         }
         setUrlTypeData(data.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
+        clearTimeout(timeoutId);
       })
       .catch((err: any) => {
         console.error('Error fetching URL chart data:', err);
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching chart data from URL';
+        // Check if it's a timeout error
+        const isTimeoutError = err?.name === 'AbortError' && err?.message?.includes('timeout');
+        
+        const errorMessage = isTimeoutError 
+          ? `Request timed out after ${requestTimeout / 1000} seconds`
+          : err instanceof Error ? err.message : 'An error occurred while fetching chart data from URL';
         setError(errorMessage);
         setIsLoaded(true);
       })
       .finally(() => {
         isFetchingRef.current = false;
+        newController?.abort();
+        currentControllerRef.current = null;
+        clearTimeout(timeoutId);
       });
-  }, [transformedUrl]);
+  }, [transformedUrl, requestTimeout]);
 
   useEffect(() => {
+    // Reset loading state when chart properties change
+    setIsLoaded(false);
+    setError(null);
+    
+    // Abort any ongoing request
+    if (currentControllerRef.current) {
+      currentControllerRef.current.abort();
+      currentControllerRef.current = null;
+    }
+    isFetchingRef.current = false;
+    
     fetchData();
   }, [fetchData]);
+
+  // Cleanup effect to abort requests on unmount
+  useEffect(() => {
+    return () => {
+      if (currentControllerRef.current) {
+        currentControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const memoUrlTypeData = useChartURLData();
 
@@ -93,18 +136,23 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const errorAlert = useMemo(() => {
     if (!error) return null;
 
+    const isUserCancelled = error === 'Request cancelled by user';
+    const isTimeoutError = error.includes('Request timed out after');
+
     return (
       <Alert
         showIcon
-        message="Error loading chart data from URL"
+        message={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data from URL"}
         description={error}
-        type="error"
+        type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
         action={
-          <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
-            fetchData();
-          }}>
-            Retry
-          </Button>
+          !isUserCancelled && !isTimeoutError && (
+            <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
+              fetchData();
+            }}>
+              Retry
+            </Button>
+          )
         }
       />
     );
@@ -138,11 +186,25 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         >
           <ChartLoader chartType={chartType} />
           <div className={cx(styles.loadingText)}>Loading data...</div>
+          <Button 
+            type="default" 
+            size="small"
+            onClick={() => {
+              if (isFetchingRef.current && currentControllerRef.current) {
+                currentControllerRef.current.abort();
+                isFetchingRef.current = false;
+                setError('Request cancelled by user');
+                setIsLoaded(true);
+              }
+            }}
+          >
+            Cancel
+          </Button>
         </Flex>
       );
     }
     return null;
-  }, [state.isLoaded, chartType, cx, styles.loadingText]);
+  }, [state.isLoaded, chartType, cx, styles.loadingText, setIsLoaded]);
 
   // Memoize chart container styles to prevent unnecessary re-renders
   const chartContainerStyle = useMemo(() => ({
