@@ -41,11 +41,10 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     // Set up timeout (configurable, default 5 seconds)
     const timeoutId = setTimeout(() => {
       if (currentControllerRef.current) {
-        currentControllerRef.current.abort();
+        currentControllerRef.current.abort("Request timed out");
         isFetchingRef.current = false;
         setError(`Request timed out after ${requestTimeout / 1000} seconds`);
         setIsLoaded(true);
-        currentControllerRef.current = null;
       }
     }, requestTimeout);
 
@@ -60,23 +59,23 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         }
         setUrlTypeData(data.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
-        clearTimeout(timeoutId);
+        newController?.abort("Request completed successfully");
       })
       .catch((err: any) => {
         console.error('Error fetching URL chart data:', err);
         // Check if it's a timeout error
         const isTimeoutError = err?.name === 'AbortError' && err?.message?.includes('timeout');
         
+        const altErrorMessage = err instanceof Error ? err.message : 'An error occurred while fetching chart data from URL';
         const errorMessage = isTimeoutError 
           ? `Request timed out after ${requestTimeout / 1000} seconds`
-          : err instanceof Error ? err.message : 'An error occurred while fetching chart data from URL';
+          : altErrorMessage;
         setError(errorMessage);
         setIsLoaded(true);
+        newController?.abort(errorMessage);
       })
       .finally(() => {
         isFetchingRef.current = false;
-        newController?.abort();
-        currentControllerRef.current = null;
         clearTimeout(timeoutId);
       });
   }, [transformedUrl, requestTimeout]);
@@ -88,19 +87,18 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     
     // Abort any ongoing request
     if (currentControllerRef.current) {
-      currentControllerRef.current.abort();
-      currentControllerRef.current = null;
+      currentControllerRef.current.abort("Resetting chart");
     }
     isFetchingRef.current = false;
     
     fetchData();
-  }, [fetchData]);
+  }, [transformedUrl, requestTimeout, fetchData]);
 
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
     return () => {
       if (currentControllerRef.current) {
-        currentControllerRef.current.abort();
+        currentControllerRef.current.abort("Unmounting chart");
       }
     };
   }, []);
@@ -146,17 +144,15 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         description={error}
         type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
         action={
-          !isUserCancelled && !isTimeoutError && (
-            <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
-              fetchData();
-            }}>
-              Retry
-            </Button>
-          )
+          <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
+            fetchData();
+          }}>
+            Retry
+          </Button>
         }
       />
     );
-  }, [error, fetchData]);
+  }, [error, fetchData, theme.application.errorColor]);
 
   const noDataAlert = useMemo(() => {
     if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
@@ -191,7 +187,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
             size="small"
             onClick={() => {
               if (isFetchingRef.current && currentControllerRef.current) {
-                currentControllerRef.current.abort();
+                currentControllerRef.current.abort("Cancel button clicked");
                 isFetchingRef.current = false;
                 setError('Request cancelled by user');
                 setIsLoaded(true);

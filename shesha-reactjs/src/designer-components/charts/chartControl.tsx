@@ -127,8 +127,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         setError(`Request timed out after ${requestTimeout / 1000} seconds`);
         setIsLoaded(true);
         setMetadataProcessed(false);
-        currentControllerRef.current.abort(`Request timed out after ${requestTimeout / 1000} seconds`);
-        currentControllerRef.current = null;
       }
     }, requestTimeout);
 
@@ -140,74 +138,116 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     // Create reference list lookup maps - declare outside promise chain for scope
     const refListMap = new Map<string, Map<any, string>>();
 
-    // Get metadata first to identify reference list properties
-    getMetadata({ modelType: entityType, dataType: 'entity' })
-      .then((metaData) => {
-        const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
-        
-        // Instead of blocking the chart, just warn about invalid properties
-        if (faultyPropertiesInner.length > 0) {
-          console.warn('Chart properties do not match entity type:', faultyPropertiesInner);
-          setFaultyProperties(faultyPropertiesInner);
-          // Continue with the chart rendering instead of blocking it
+    // Function to perform reconnaissance fetch to get total count
+    const performReconnaissanceFetch = async (): Promise<number> => {
+      const reconParams = getChartDataRefetchParams(
+        entityType,
+        valueProperty,
+        evaluatedFilters,
+        groupingProperty,
+        axisProperty,
+        orderBy,
+        orderDirection,
+        0,
+        1 // Only fetch 1 record to get total count
+      );
+
+      const reconResponse = await refetch({ ...reconParams, signal: newController.signal });
+
+      if (!reconResponse?.result) {
+        throw new Error('Failed to make total count request. Please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
+      }
+
+      return reconResponse.result.totalCount || 0;
+    };
+
+    // Function to validate and fetch data
+    const validateAndFetchData = async () => {
+      // Check if maxResultCount is explicitly set and validate it
+      if (maxResultCount !== undefined && maxResultCount !== -1) {
+        if (maxResultCount > 10000) {
+          throw new Error(`Requested result count (${maxResultCount}) exceeds the maximum allowed limit of 10,000. Please reduce the result count or add filters to limit the data.`);
         }
+      } else {
+        // Perform reconnaissance fetch to get total count
+        const totalCount = await performReconnaissanceFetch();
 
-        setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
-        setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
+        if (totalCount > 10000) {
+          throw new Error(`Total available records (${totalCount}) exceeds the maximum allowed limit of 10,000. Please add filters to limit the data or specify a smaller maxResultCount.`);
+        }
+      }
 
-        // Pre-filter reference list properties and create lookup maps
-        const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
-          (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase())
-        );
+      // Get metadata first to identify reference list properties
+      const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
 
-        const refListPromises = refListProperties.map(async (metaItem: IRefListPropertyMetadata) => {
-          const fieldName = toCamelCase(metaItem.path);
-          try {
-            const refListItem = await getReferenceList({
-              refListId: {
-                module: metaItem.referenceListModule,
-                name: metaItem.referenceListName,
-              },
-            }).promise;
+      const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
 
-            const valueMap = new Map();
-            refListItem.items.forEach((x) => {
-              valueMap.set(x.itemValue, x.item?.trim() || `${x.itemValue}`);
-            });
+      // Instead of blocking the chart, just warn about invalid properties
+      if (faultyPropertiesInner.length > 0) {
+        console.warn('Chart properties do not match entity type:', faultyPropertiesInner);
+        setFaultyProperties(faultyPropertiesInner);
+        // Continue with the chart rendering instead of blocking it
+      }
 
-            refListMap.set(fieldName, valueMap);
-          } catch (err) {
-            console.error('getReferenceList error:', err);
-          }
-        });
+      setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
+      setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
 
-        // Wait for reference lists to load
-        return Promise.all(refListPromises).then(() => {
-          // Mark metadata as processed
-          setMetadataProcessed(true);
+      // Pre-filter reference list properties and create lookup maps
+      const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
+        (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase())
+      );
 
-          // Fetch all data in a single call
-          const params = getChartDataRefetchParams(
-            entityType,
-            valueProperty,
-            evaluatedFilters,
-            groupingProperty,
-            axisProperty,
-            orderBy,
-            orderDirection,
-            0,
-            maxResultCount ?? -1
-          );
+      const refListPromises = refListProperties.map(async (metaItem: IRefListPropertyMetadata) => {
+        const fieldName = toCamelCase(metaItem.path);
+        try {
+          const refListItem = await getReferenceList({
+            refListId: {
+              module: metaItem.referenceListModule,
+              name: metaItem.referenceListName,
+            },
+          }).promise;
 
-          return refetch({ ...params, signal: newController.signal });
-        });
-      })
+          const valueMap = new Map();
+          refListItem.items.forEach((x) => {
+            valueMap.set(x.itemValue, x.item?.trim() || `${x.itemValue}`);
+          });
+
+          refListMap.set(fieldName, valueMap);
+        } catch (err) {
+          console.error('getReferenceList error:', err);
+        }
+      });
+
+      // Wait for reference lists to load
+      await Promise.all(refListPromises);
+
+      // Mark metadata as processed
+      setMetadataProcessed(true);
+
+      // Fetch all data in a single call
+      const params = getChartDataRefetchParams(
+        entityType,
+        valueProperty,
+        evaluatedFilters,
+        groupingProperty,
+        axisProperty,
+        orderBy,
+        orderDirection,
+        0,
+        maxResultCount ?? -1
+      );
+
+      return refetch({ ...params, signal: newController.signal });
+    };
+
+    // Execute the validation and fetch process
+    validateAndFetchData()
       .then((response) => {
         if (!response?.result) {
           throw new Error(response?.error ?? 'Invalid response structure, please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
         }
         const items = response.result.items ?? [];
-        
+
         // Process and update data
         processAndUpdateData(items, refListMap);
         setIsLoaded(true);
@@ -218,15 +258,15 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         console.error('Error in fetchAndProcessData:', error);
         // Check if it's a timeout error
         const isTimeoutError = error?.name === 'AbortError' && error?.message?.includes('timeout');
-        
+
         // Ensure error is always a string to prevent React rendering issues
-        const strError = typeof error === 'string' 
-          ? error 
+        const strError = typeof error === 'string'
+          ? error
           : 'An error occurred while fetching chart data';
-        const altErrorMessage = error instanceof Error 
-          ? error.message 
+        const altErrorMessage = error instanceof Error
+          ? error.message
           : strError;
-        const errorMessage = isTimeoutError 
+        const errorMessage = isTimeoutError
           ? `Request timed out after ${requestTimeout / 1000} seconds`
           : altErrorMessage;
         setError(errorMessage);
@@ -236,8 +276,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       })
       .finally(() => {
         isFetchingRef.current = false;
-        newController.abort("Requst aborted gracefully");
-        currentControllerRef.current = null;
         clearTimeout(timeoutId);
       });
   }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout]);
@@ -248,14 +286,13 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     setMetadataProcessed(false);
     setError(undefined);
     setFaultyProperties([]);
-    
+
     // Abort any ongoing request
     if (currentControllerRef.current) {
       currentControllerRef.current.abort('Restarting chart');
-      currentControllerRef.current = null;
     }
     isFetchingRef.current = false;
-    
+
     fetchData();
   }, [fetchData]);
 
@@ -297,21 +334,20 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       />
     );
   }, [entityType, chartType, valueProperty, axisProperty, missingPropertiesInfo.descriptionMessage]);
-  
+
   const retryFetch = useCallback(() => {
     // Reset loading state for retry
     setIsLoaded(false);
     setMetadataProcessed(false);
     setError(undefined);
     setFaultyProperties([]);
-    
+
     // Abort any ongoing request
     if (currentControllerRef.current) {
       currentControllerRef.current.abort('Retry fetch');
-      currentControllerRef.current = null;
     }
     isFetchingRef.current = false;
-    
+
     // Start new fetch with timeout
     fetchData();
   }, [fetchData, setIsLoaded, setMetadataProcessed, setError, setFaultyProperties]);
@@ -321,19 +357,17 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
 
     const isUserCancelled = error === 'Request cancelled by user';
     const isTimeoutError = error.includes('Request timed out after');
-
+    const altMessage = isTimeoutError ? "Request timed out" : "Error loading chart data";
     return (
       <Alert
         showIcon
-        message={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data"}
+        message={isUserCancelled ? "Request cancelled" : altMessage}
         description={error}
-        type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
+        type={"error"}
         action={
-          !isUserCancelled && !isTimeoutError && (
-            <Button color={theme.application.errorColor ?? 'red'} onClick={retryFetch}>
-              Retry
-            </Button>
-          )
+          <Button color={theme.application.errorColor ?? 'red'} size="small" onClick={retryFetch}>
+            Retry
+          </Button>
         }
       />
     );
@@ -352,8 +386,8 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       >
         <ChartLoader chartType={chartType} />
         <div className={cx(styles.loadingText)}>Fetching data...</div>
-        <Button 
-          type="default" 
+        <Button
+          color={theme.application.errorColor ?? 'red'}
           size="small"
           onClick={() => {
             if (isFetchingRef.current && currentControllerRef.current) {
