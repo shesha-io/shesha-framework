@@ -42,6 +42,7 @@ export interface INotesActionsContext
   deleteNotes: (selectedCommentId: string) => void;
   refreshNotes: () => void;
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
+  updateNotes: (payload: ICreateNotePayload) => void;
 }
 
 export const COMMENTS_CONTEXT_INITIAL_STATE: INotesStateContext = {

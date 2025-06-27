@@ -7,12 +7,18 @@ import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers
 import { evaluateValue, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import NotesProvider from '@/providers/notes';
-import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migrateCustomFunctions,
+  migrateFunctionToProp,
+  migratePropertyName,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getFormApi } from '@/providers/form/formApi';
 import { App } from 'antd';
 import moment from 'moment';
+import { INote } from '@/providers/notes/contexts';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -22,8 +28,16 @@ export interface INotesProps extends IConfigurableFormComponent {
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
-  onCreated?: string; 
+  onCreated?: string;
   category?: string;
+  //new props
+  showCharCount?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  onDeleteAction?: string;
+  onCreateAction?: string;
+  allowEdit?: boolean;
+  onUpdateAction?: string;
 }
 
 const NotesComponent: IToolboxComponent<INotesProps> = {
@@ -43,8 +57,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
     const onCreated = (createdNotes: Array<any>) => {
-      if (!model.onCreated)
-        return;
+      if (!model.onCreated) return;
 
       executeScript<void>(model?.onCreated, {
         createdNotes,
@@ -54,7 +67,49 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         http: httpClient,
         message,
         moment,
-        setGlobalState
+        setGlobalState,
+      });
+    };
+    const handleDeleteAction = (noteId: string) => {
+      if (!model.onDeleteAction) return;
+
+      executeScript<void>(model.onDeleteAction, {
+        noteId,
+        data,
+        form: getFormApi(form),
+        globalState,
+        http: httpClient,
+        message,
+        moment,
+        setGlobalState,
+      });
+    };
+    const handleCreateAction = (note: INote) => {
+      if (!model.onCreateAction) return;
+
+      executeScript<void>(model.onCreateAction, {
+        note,
+        data,
+        form: getFormApi(form),
+        globalState,
+        http: httpClient,
+        message,
+        moment,
+        setGlobalState,
+      });
+    };
+    const handleUpdateAction = (note: INote) => {
+      if (!model.onUpdateAction) return;
+
+      executeScript<void>(model.onUpdateAction, {
+        note,
+        data,
+        form: getFormApi(form),
+        globalState,
+        http: httpClient,
+        message,
+        moment,
+        setGlobalState,
       });
     };
 
@@ -66,6 +121,13 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
           autoSize={model?.autoSize}
           allowDelete={model.allowDelete}
           onCreated={onCreated}
+          showCharCount={model.showCharCount}
+          minLength={model.minLength}
+          maxLength={model.maxLength}
+          onDeleteAction={handleDeleteAction}
+          onCreateAction={handleCreateAction}
+          allowEdit={model.allowEdit}
+          onUpdateAction={handleUpdateAction}
         />
       </NotesProvider>
     );
@@ -81,18 +143,28 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     return customModel;
   },
   settingsFormMarkup: (data) => getSettings(data),
-  migrator: (m) => m
-    .add<INotesProps>(0, (prev) =>
-      migratePropertyName(
-        migrateCustomFunctions(
-          migrateFunctionToProp(
-            migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression')
-            , 'ownerType', 'ownerTypeExpression')
-        )) as INotesProps)
-    .add<INotesProps>(1, (prev) => migrateVisibility(prev))
-    .add<INotesProps>(2, (prev) => migrateReadOnly(prev))
-    .add<INotesProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+  migrator: (m) =>
+    m
+      .add<INotesProps>(
+        0,
+        (prev) =>
+          migratePropertyName(
+            migrateCustomFunctions(
+              migrateFunctionToProp(
+                migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression'),
+                'ownerType',
+                'ownerTypeExpression'
+              )
+            )
+          ) as INotesProps
+      )
+      .add<INotesProps>(1, (prev) => migrateVisibility(prev))
+      .add<INotesProps>(2, (prev) => migrateReadOnly(prev))
+      .add<INotesProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<INotesProps>(4, (prev) => ({
+        ...prev,
+        allowEdit: prev.allowEdit ?? false,
+      })),
 };
 
 export default NotesComponent;
