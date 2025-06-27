@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useRef, useState, useCallback } from 'react';
+import React, { FC, ReactNode, useRef, useCallback } from 'react';
 import { Cell, CellPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
 import { useStyles } from './styles/styles';
 import { isStyledColumn } from '../dataTable/interfaces';
@@ -35,7 +35,6 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   const { key, style, ...restProps } = cell.getCellProps(cellProps);
   const cellRef = useRef(null);
   const cellParentRef = useRef(null);
-  const [cellParentRefWidth, setcellParentRefWidth] = useState<number>();
 
   let cellStyle: React.CSSProperties = useActualContextExecutionExecutor(
     (context) => {
@@ -63,11 +62,6 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     return false;
   }, []);
 
-  useEffect(() => {
-    const cellParentRefRect = cellParentRef.current.getBoundingClientRect();
-    setcellParentRefWidth(cellParentRefRect.width);
-  }, [cellParentRef]);
-
   return (
     <div
       key={key}
@@ -80,16 +74,21 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
       })}
     >
       {preContent}
-      <div
-        ref={cellRef}
-        className={showExpandedView && styles.shaCellParent}
-        onMouseOver={() => {
-          void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
-        }}
-        style={{ maxWidth: cellParentRefWidth + "px" }}>
-        {cell.render('Cell')}
+      {
+        (cell.column as unknown as { columnType: string }).columnType === 'data' ?
+          <div
+            ref={cellRef}
+            className={showExpandedView && styles.shaCellParent}
+            onMouseOver={() => {
+              void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
+            }}
+          >
+            {cell.render('Cell')}
+          </div>
+          :
+          cell.render('Cell')
+      }
 
-      </div>
     </div>
   );
 };
