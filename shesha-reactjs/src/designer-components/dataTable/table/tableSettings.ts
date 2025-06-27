@@ -148,11 +148,16 @@ export const getSettings = (data: ITableComponentProps) => {
                                         },
                                         {
                                             id: nanoid(),
-                                            propertyName: 'useMultiselect',
-                                            label: 'Use Multi-Select',
-                                            type: 'switch',
+                                            propertyName: 'selectionMode',
+                                            label: 'Selection Mode',
+                                            type: 'dropdown',
                                             jsSetting: true,
                                             parentId: commonTabId,
+                                            dropdownOptions: [
+                                                { value: 'none', label: 'None' },
+                                                { value: 'single', label: 'Single' },
+                                                { value: 'multiple', label: 'Multiple' },
+                                            ],
                                         }
                                     ]
                                 })
