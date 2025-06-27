@@ -34,17 +34,6 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
         return result;
     });
 
-    const updatePlaceholder = (newValue: string) => {
-        const newPlaceholder = getPlaceholder(newValue);
-        if (fullConfig.placeholder !== newPlaceholder){
-            setFullConfig({ ...fullConfig, placeholder: newPlaceholder });
-        }
-    };
-
-    useEffect(() => {
-        updatePlaceholder(value);
-    }, [value]);
-
     const updateConfig = (newConfig: any) => {
       setFullConfig({ ...defaultOptions, ...newConfig, placeholder: fullConfig.placeholder });
   };

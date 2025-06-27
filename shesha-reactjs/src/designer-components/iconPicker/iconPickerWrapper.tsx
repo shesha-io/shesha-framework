@@ -1,5 +1,5 @@
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, ReactNode, } from 'react';
+import React, { CSSProperties, FC, ReactNode, useState , useRef, useEffect} from 'react';
 import { IApplicationContext} from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
@@ -38,43 +38,57 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     textAlign,
     selectBtnSize,
     fullStyles,
-    iconSize
+    iconSize,
+    value
   } = props;
+
+    const [finalValue, setFinalValue] = useState(null);
+  const hasSaved = useRef(false);
 
 
   const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
     if (onChange) onChange(iconName);
   };
 
-
   const fontSize = parseFloat(String(fullStyles?.fontSize).replace('px', ''));
 
   const style: CSSProperties = {
     fontSize: fullStyles?.fontSize || 24,
     color: fullStyles?.color,
-    marginLeft: defaultValue ? '12px' : 'none',
   };
 
 
+  useEffect(() => {
+    if (value && !hasSaved.current) {
+      setFinalValue(value);
+      hasSaved.current = true;
+    }
+  }, [value]);
+
+  const iconValue = finalValue ?? defaultValue;
+
   return (
-    <div style={defaultValue ? { display: 'grid', placeItems: textAlign } : {}}>
+    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
       <Tooltip title={props?.description}>
         <div
           style={{
-            marginLeft: props.value === undefined && props.defaultValue === undefined ? '38px' : '',
             ...fullStyles,
+            fontSize: 20,
+            background: 'transparent', //icon should not have background and take the background of the parent like container
+            borderWidth: '0px',
+            borderColor: 'transparent',
           }}
         >
           <IconPicker
-            value={defaultValue as ShaIconTypes}
-            defaultValue={defaultValue as ShaIconTypes}
+            value={iconValue as ShaIconTypes}
+            defaultValue={iconValue as ShaIconTypes}
             onIconChange={onIconChange}
             selectBtnSize={selectBtnSize}
             iconSize={
               iconSize ?? fontSize
             }
             readOnly={readOnly}
-            style={style}
+            style={{...style,   background: 'transparent'}}
             color={props.color}
             twoToneColor={color}
           />

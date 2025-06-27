@@ -1,17 +1,13 @@
 import { useGet } from '@/hooks';
 import { useFormData } from '@/index';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Flex, Result, Spin } from 'antd';
+import { Alert, Flex, Result } from 'antd';
 import React, { useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import BarChart from './components/bar';
-import LineChart from './components/line';
-import PieChart from './components/pie';
-import PolarAreaChart from './components/polarArea';
 import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
-import { getURLChartDataRefetchParams } from './utils';
+import { getResponsiveStyle, getURLChartDataRefetchParams, renderChart } from './utils';
+import ChartLoader from './components/chartLoader';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType } = props;
@@ -22,33 +18,14 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
   const { styles, cx } = useStyles();
 
+  useEffect(() => setControlProps(props), [props, formData]);
   useEffect(() => {
-    setControlProps({
-      ...props
-    });
-  }, [props, formData]);
-
-  useEffect(() => {
-    if (!url) {
+    if (!url || url === '') {
       return;
     }
     refetch(getURLChartDataRefetchParams(url))
       .then((data) => {
-        if (!data.result) {
-          setIsLoaded(true);
-          throw new Error('No data returned from the server. Please check the URL and try again.');
-        }
-        if (!data.result.datasets || !data.result.labels) {
-          var errors: string[] = [];
-          if (!data.result.datasets) {
-            errors.push('No datasets returned from the server. Please check the URL and try again.');
-          }
-          if (!data.result.labels) {
-            errors.push('No labels returned from the server. Please check the URL and try again.');
-          }
-          throw new Error(errors.join(' '));
-        }
-        setUrlTypeData(data.result);
+        setUrlTypeData(data?.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
       })
       .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err))
@@ -63,7 +40,6 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     if (!chartType) missingProperties.push("'chartType'");
 
     const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
-
     return (
       <Alert
         showIcon
@@ -76,45 +52,57 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
   if (!state.isLoaded) {
     return (
-      <Flex align="center" justify='center'>
-        <Spin indicator={<LoadingOutlined className={cx(styles.chartControlSpinFontSize)} spin />} />
+      <Flex
+        align="center"
+        justify="center"
+        className={cx(
+          styles.responsiveChartContainer,
+          props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+        )}
+        style={getResponsiveStyle(props)}
+      >
+        <ChartLoader chartType={chartType} />
+        <div className={cx(styles.loadingText)}>Loading data...</div>
       </Flex>
     );
   }
 
   if (!state.urlTypeData) {
     return (
-      <Result
-        status="404"
-        title="404"
-        subTitle="Sorry, no data to display. Please check the URL and try again."
-      />
+      <Result status="404" title="404" subTitle="Sorry, no data to display. Please check the URL and try again." />
     );
   }
 
   return (
-    <Flex align='center' justify='center' className={cx(styles.chartControlContainer)} style={{
-      height: props?.height > 200 ? props.height : 'auto',
-      width: props?.width > 300 ? props.width : 'auto',
-      border: props?.showBorder ? '1px solid #ddd' : 'none'
-    }}>
-      {
-        (() => {
-          switch (chartType) {
-            case 'line':
-              return <LineChart data={memoUrlTypeData as any} />;
-            case 'bar':
-              return <BarChart data={memoUrlTypeData as any} />;
-            case 'pie':
-              return <PieChart data={memoUrlTypeData as any} />;
-            case 'polarArea':
-              return <PolarAreaChart data={memoUrlTypeData as any} />;
-            default:
-              return <Result status="404" title="404" subTitle="Sorry, please select a valid chart type." />;
-          }
-        })()
-      }
-    </Flex>
+    <div
+      className={cx(
+        styles.responsiveChartContainer,
+        props?.showBorder ? styles.chartContainerWithBorder : styles.chartContainerNoBorder
+      )}
+      style={{
+        ...getResponsiveStyle(props),
+        width: '100%',
+        height: '100%',
+        minHeight: '400px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <div style={{ 
+        flex: 1, 
+        width: '100%', 
+        height: '100%', 
+        minHeight: '350px', 
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {renderChart(chartType, memoUrlTypeData)}
+      </div>
+    </div>
   );
 };
 

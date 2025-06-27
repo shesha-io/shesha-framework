@@ -26,7 +26,15 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
         allowInherited={customSettings.allowInherited}
         value={value}
         onChange={onChange}
-        style={{ minWidth: '150px' }}
+        style={{
+          minWidth: '150px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          border: '1px solid #d9d9d9',
+          paddingRight: '20px',
+          borderRadius: '4px'
+        }}
         size="small"
         outcomeValueFunc={(value: any) => getValueByPropertyName(value, 'id') ?? value}
       />

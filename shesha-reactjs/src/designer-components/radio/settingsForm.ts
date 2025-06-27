@@ -97,14 +97,6 @@ export const getSettings = (data: any) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  inputType: 'textField',
-                  id: nanoid(),
-                  propertyName: 'defaultValue',
-                  label: 'Default Value',
-                  jsSetting: true,
-                  parentId: dataTabId,
-                })
-                .addSettingsInput({
                   id: nanoid(),
                   inputType: 'dropdown',
                   propertyName: 'dataSourceType',

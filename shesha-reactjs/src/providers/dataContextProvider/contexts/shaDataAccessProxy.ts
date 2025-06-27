@@ -18,9 +18,16 @@ export const CreateDataAccessor = (getData: () => any, setData: (data: any) => v
   return new Proxy(property, {
       get(target, name) {
           const propertyName = name.toString();
+          
+          if (typeof name === 'symbol') {
+              const accessorData = target.getAccessorValue();
+              const objSymbol = accessorData[name];
+              if (objSymbol && typeof objSymbol === 'function')
+                  return objSymbol.bind(accessorData);
+          }
 
           if (propertyName.includes(GHOST_PAYLOAD_KEY))
-          return undefined;
+              return undefined;
 
           if (propertyName === 'hasOwnProperty')
               return (prop: string | Symbol) => prop ? propertyName in target.accessor : false;
@@ -106,7 +113,7 @@ export class ShaDataAccessor implements IShaDataAccessor {
         return null;
 
     if (typeof propValue === 'function')
-        return propValue.bind(this.getData());
+        return propValue.bind(this.getAccessorValue());
 
     if (typeof propValue === 'object' && propValue) {
         return CreateDataAccessor(this.getData, this.setData, this._setFieldValue, propName);// new ShaDataAccessor(this.getData, this.setData, this._setFieldValue, propName);

@@ -8,7 +8,6 @@ import { GenericSettingsEditor } from './genericSettingsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
 import { CollapsiblePanel } from '@/components';
-
 export interface IProviderSettingsEditorProps {
   provider: IDynamicActionsContext;
   value?: any;
@@ -86,7 +85,25 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
 
   return (
     <CollapsiblePanel
-      ghost={true}
+      ghost={false}
+      headerStyle={{
+        backgroundColor: "#fff",
+        borderBottomColor: "var(--primary-color)",
+        borderBottomStyle: "solid",
+        borderBottomWidth: "2px",
+        borderTopLeftRadius: "0px",
+        borderTopRightRadius: "0px",
+        color: "darkslategray",
+        fontFamily: "Segoe UI",
+        fontSize: "14px",
+        fontWeight: "500",
+      }}
+      bodyStyle={{
+        borderStyle: "none",
+        borderWidth: "0px",
+        fontWeight: 400,
+        marginBottom: "5px",
+      }}
       header="Settings"
     >
       {settingsEditor}

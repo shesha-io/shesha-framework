@@ -123,6 +123,11 @@ export interface IApplicationContext<Value = any> {
    * Parent form values. Is used for backward compatibility only
    */
   parentFormValues: any;
+
+  /**
+   * Function for testing
+   */
+  test?: any;
 }
 
 export type GetAvailableConstantsDataArgs = {
@@ -140,6 +145,7 @@ export type AvailableConstantsContext = {
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
   httpClient: HttpClientApi;
+  test: any;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -220,6 +226,15 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
     setGlobalState,
     httpClient,
     message,
+    // for testing purposes
+    test: {
+      getArguments: (args) => {
+        var fArgs = args.length === 1 ? args[0] : args;
+        return fArgs._propAccessors !== undefined
+          ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({n, v: v() && v()['getData'] ? v().getData() : v() }))
+          : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v ));
+      }
+    }
   };
   return result;
 };
@@ -239,7 +254,8 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     globalState,
     setGlobalState,
     httpClient,
-    message
+    message,
+    test
   } = fullContext;
   const shaFormInstance = shaForm?.getPublicFormApi() ?? closestShaForm;
 
@@ -268,23 +284,12 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => httpClient,
     message: () => message,
     fileSaver: () => FileSaver,
-    data: () => {
-      return !shaFormInstance
-        ? EMPTY_DATA 
-        : GetShaFormDataAccessor(shaFormInstance);
-    },
-    form: () => {
-      return shaFormInstance;
-    },
-    query: () => {
-      return queryStringGetter?.() ?? {};
-    },
-    initialValues: () => {
-      return shaFormInstance?.initialValues;
-    },
-    parentFormValues: () => {
-      return shaFormInstance?.parentFormValues;
-    },
+    data: () => !shaFormInstance ? EMPTY_DATA  : GetShaFormDataAccessor(shaFormInstance),
+    form: () => shaFormInstance,
+    query: () => queryStringGetter?.() ?? {},
+    initialValues: () => shaFormInstance?.initialValues,
+    parentFormValues: () => shaFormInstance?.parentFormValues,
+    test: () => test,
   };
   return accessors;
 };

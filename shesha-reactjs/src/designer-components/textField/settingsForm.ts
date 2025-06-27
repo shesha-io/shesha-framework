@@ -116,14 +116,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                             },
                                         ],
                                     },
-                                    {
-                                        type: 'textField',
-                                        id: nanoid(),
-                                        propertyName: 'initialValue',
-                                        label: 'Default Value',
-                                        tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                                        jsSetting: true,
-                                    },
                                 ],
                             })
                             .addSettingsInputRow({
