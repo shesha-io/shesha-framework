@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
 
-export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize }) => {
+export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize, hasSuffix }) => {
   const numberField = cx(
     'sha-ant-input-number-input',
     css`
@@ -19,10 +19,16 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         text-align: ${textAlign};
       }
 
+      .ant-input-number-handler-wrap {
+        background-color: transparent;
+        border: 
+      }
+
       .ant-input-number-suffix {
         position: relative;
+        ${!hasSuffix && 'display: none;'}
       }
-    `
+`
   );
   return {
     numberField,

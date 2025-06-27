@@ -54,6 +54,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       textAlign: model?.font?.align,
       color: model?.font?.color,
       fontSize: model?.font?.size,
+      hasSuffix: model?.suffix,
     });
 
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
