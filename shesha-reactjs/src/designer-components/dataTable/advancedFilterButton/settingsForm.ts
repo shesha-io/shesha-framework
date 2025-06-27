@@ -93,16 +93,6 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'configurableActionConfigurator',
-                  propertyName: 'actionConfiguration',
-                  label: 'Action Configuration',
-                  hideLabel: true,
-                  parentId: commonTabId,
-                  validate: {},
-                  settingsValidationErrors: [],
-                })
                 .toJson(),
             ],
           },
