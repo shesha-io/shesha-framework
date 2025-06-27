@@ -79,6 +79,11 @@ export interface IReactTableProps extends ITableRowDragProps {
    */
   useMultiSelect?: boolean;
 
+  /**
+   * Selection mode for the table
+   */
+  selectionMode?: 'none' | 'single' | 'multiple';
+
     /**
      * Whether the table's headers should be frozen and you scroll under them
      */
@@ -158,6 +163,18 @@ export interface IReactTableProps extends ITableRowDragProps {
    * A callback for double-clicking the rows
    */
   onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+
+  /** A callback for clicking the rows */
+  onRowClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+
+  /** A callback when mouse enters a row */
+  onRowHover?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+
+  /** A callback for selecting the row */
+  onRowSelect?: (index: number, row: any) => void;
+
+  /** A callback when selection changes */
+  onSelectionChange?: (ids: string[]) => void;
 
   /**
    * A callback for when ids are selected. Required if useMultiSelect is true

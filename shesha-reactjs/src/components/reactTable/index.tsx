@@ -47,13 +47,18 @@ export const ReactTable: FC<IReactTableProps> = ({
   pageCount,
   onFetchData,
   onSelectRow,
+  onRowClick,
   onRowDoubleClick,
+  onRowHover,
+  onRowSelect,
+  onSelectionChange,
   onResizedChange,
   onSelectedIdsChanged,
   onMultiRowSelect,
   onSort,
   scrollBodyHorizontally = false,
   height = 250,
+  selectionMode = 'single',
   allowReordering = false,
   selectedRowIndex,
   containerStyle,
@@ -262,7 +267,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [sortBy]);
 
   useEffect(() => {
-    if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
+    if (selectedRowIds && (onSelectedIdsChanged || onSelectionChange)) {
       const arrays: string[] = allRows
         ?.map(({ id }, index) => {
           if (selectedRowIds[index]) {
@@ -273,7 +278,8 @@ export const ReactTable: FC<IReactTableProps> = ({
         })
         ?.filter(Boolean);
 
-      onSelectedIdsChanged(arrays);
+      if (onSelectionChange) onSelectionChange(arrays);
+      else if (onSelectedIdsChanged) onSelectedIdsChanged(arrays);
     }
   }, [selectedRowIds]);
 
@@ -314,8 +320,11 @@ export const ReactTable: FC<IReactTableProps> = ({
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
 
   const handleSelectRow = (row: Row<object>) => {
+    if (selectionMode === 'none') return;
+
     if (!omitClick && !(canEditInline || canDeleteInline)) {
-      onSelectRow(row?.index, row?.original);
+      if (onRowSelect) onRowSelect(row?.index, row?.original);
+      else if (onSelectRow) onSelectRow(row?.index, row?.original);
     }
   };
 
@@ -326,6 +335,43 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [state?.columnResizing]);
 
   const { executeAction } = useConfigurableActionDispatcher();
+
+  const performOnRowClick = useMemo(() => {
+    if (!onRowClick)
+      return () => {
+        /*nop*/
+      };
+
+    return (data,) => {
+      const evaluationContext = {
+        data,
+      };
+
+      executeAction({
+        actionConfiguration: onRowClick as IConfigurableActionConfiguration,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    };
+  }, [onRowClick]);
+
+  const performOnRowHover = useMemo(() => {
+    if (!onRowHover)
+      return () => {
+        /*nop*/
+      };
+
+    return (data,) => {
+      const evaluationContext = {
+        data,
+      };
+
+      executeAction({
+        actionConfiguration: onRowHover as IConfigurableActionConfiguration,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    };
+  }, [onRowHover]);
+
   const performOnRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick)
       return () => {
@@ -349,6 +395,22 @@ export const ReactTable: FC<IReactTableProps> = ({
       performOnRowDoubleClick(row);
     } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
+    }
+  };
+
+  const handleClickRow = (row, index) => {
+    if (typeof onRowClick === 'object') {
+      performOnRowClick(row);
+    } else if (typeof onRowClick === 'function') {
+      onRowClick(row?.original, index);
+    }
+  };
+
+  const handleHoverRow = (row, index) => {
+    if (typeof onRowHover === 'object') {
+      performOnRowHover(row);
+    } else if (typeof onRowHover === 'function') {
+      onRowHover(row?.original, index);
     }
   };
   
@@ -384,8 +446,10 @@ export const ReactTable: FC<IReactTableProps> = ({
       <Row
         key={id ?? rowIndex}
         prepareRow={prepareRow}
-        onClick={handleSelectRow}
-        onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
+        onSelect={handleSelectRow}
+        onRowClick={() => handleClickRow(row, rowIndex)}
+        onRowDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
+        onRowHover={() => handleHoverRow(row, rowIndex)}
         row={row}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}

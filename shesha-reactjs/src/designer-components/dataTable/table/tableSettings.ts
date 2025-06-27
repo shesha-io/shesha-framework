@@ -158,6 +158,19 @@ export const getSettings = (data: ITableComponentProps) => {
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
+                                    inputType: 'dropdown',
+                                    propertyName: 'selectionMode',
+                                    parentId: commonTabId,
+                                    label: 'Selection Mode',
+                                    jsSetting: true,
+                                    dropdownOptions: [
+                                        { label: 'None', value: 'none' },
+                                        { label: 'Single', value: 'single' },
+                                        { label: 'Multiple', value: 'multiple' },
+                                    ],
+                                })
+                                .addSettingsInput({
+                                    id: nanoid(),
                                     propertyName: 'canEditInline',
                                     label: 'Can Edit Inline',
                                     inputType: 'dropdown',
@@ -389,8 +402,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
-
-
                                 .toJson()
                         ]
                     },
@@ -400,6 +411,24 @@ export const getSettings = (data: ITableComponentProps) => {
                         id: eventsTabId,
                         components: [
                             ...new DesignerToolbarSettings()
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: 'rowClickActionConfiguration',
+                                    parentId: 'root',
+                                    label: 'On Row Click',
+                                })
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: 'rowDoubleClickActionConfiguration',
+                                    parentId: 'root',
+                                    label: 'On Row Double-Click',
+                                })
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: 'rowHoverActionConfiguration',
+                                    parentId: 'root',
+                                    label: 'On Row Hover',
+                                })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: "dblClickActionConfiguration",
