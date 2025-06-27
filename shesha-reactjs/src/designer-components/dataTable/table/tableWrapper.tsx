@@ -30,7 +30,7 @@ const NotConfiguredWarning: FC = () => {
 
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-    const { id, items, useMultiselect, tableStyle, containerStyle } = props;
+    const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
 
     const { formMode } = useForm();
     const { data: formData } = useFormData();
@@ -128,6 +128,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 onRowHover={props.rowHoverActionConfiguration}
                 onRowSelect={props.rowSelectActionConfiguration}
                 onSelectionChange={props.selectionChangeActionConfiguration}
+                selectionMode={selectionMode}
                 inlineSaveMode={props.inlineSaveMode}
                 inlineEditMode={props.inlineEditMode}
                 minHeight={props.minHeight}

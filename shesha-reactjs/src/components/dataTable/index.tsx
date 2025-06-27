@@ -93,6 +93,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onRowHover,
   onRowSelect,
   onSelectionChange,
+  selectionMode = 'single',
   onMultiRowSelect,
   tableRef,
   onRowsChanged,
@@ -701,6 +702,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
     useMultiSelect,
+    selectionMode,
     freezeHeaders,
     onRowClick,
     onRowDoubleClick: dblClickHandler,
