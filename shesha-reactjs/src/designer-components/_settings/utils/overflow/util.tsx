@@ -2,15 +2,7 @@ export const getOverflowStyle = (overflow: boolean, hideScrollBar: boolean): Rea
     if (!overflow) return {};
     return {
         overflow: 'auto',
-        scrollbarWidth: 'thin',
-        '::-webkit-scrollbar': {
-            width: '8px',
-            backgroundColor: 'transparent'
-        },
-        ...(hideScrollBar && {
-            '::-webkit-scrollbar': { display: 'none' },
-            'msOverflowStyle': 'none',
-            'scrollbarWidth': 'none',
-        })
+        scrollbarWidth: hideScrollBar ? 'none' : 'thin',
+        scrollbarColor: hideScrollBar ? undefined : '#8B8B8B transparent',
     };
 };

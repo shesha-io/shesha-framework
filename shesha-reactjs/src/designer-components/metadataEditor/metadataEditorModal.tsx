@@ -6,6 +6,7 @@ import { Item } from '@/components/modelConfigurator/propertiesEditor/renderer-n
 import { ModelItemProperties } from '@/components/modelConfigurator/propertiesEditor/renderer-new/modelItemProperties';
 import { IMetadataEditorProps } from './interfaces';
 import { ListEditorRenderer } from '@/components/listEditorRenderer';
+import { ListItem } from '@/components/listEditor/models';
 
 type ItemType = IModelItem;
 
@@ -41,7 +42,7 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
                 content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
             }}
         >
-            <ListEditor<ItemType>
+            <ListEditor<ItemType & ListItem>
                 value={value}
                 onChange={onChange}
                 initNewItem={makeNewItem}

@@ -14,7 +14,7 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { useDeepCompareMemoKeepReference } from '@/hooks';
-import { useFormData } from '@/providers';
+import { useForm, useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
@@ -36,6 +36,9 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     const { allStyles } = model;
     const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
 
+        const { formMode } = useForm();
+    
+
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {
         toolbar: model?.toolbar,
@@ -45,7 +48,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         theme: typeof model?.theme === 'string' ? model?.theme : 'default',
         iframe: model?.iframe,
         direction: model?.direction,
-        disablePlugins: model?.disablePlugins?.join(',') || '',
+        disablePlugins: [...(model?.disablePlugins || []), 'spellcheck'].join(','),
         ...(!model.autoHeight && { height, minHeight, maxHeight }),
         ...(!model.autoWidth && { width, minWidth, maxWidth }),
         placeholder: model?.placeholder ?? '',
@@ -60,14 +63,17 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         allowResizeY: model?.allowResizeY && !model?.autoHeight,
         askBeforePasteHTML: model?.askBeforePasteHTML,
         askBeforePasteFromWord: model?.askBeforePasteFromWord,
-        autofocus: model?.autofocus,
+        autofocus: formMode === 'designer' ? false : model?.autofocus,
         showCharsCounter: model?.showCharsCounter,
         showWordsCounter: model?.showWordsCounter,
       };
       return typedConfig;
     }, [model, model.readOnly]);
+
+    const rerenderKey = `${model?.placeholder || ''}-${model?.placeholder || false}`;
+
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} key={rerenderKey}>
         {(value, onChange) => <RichTextEditor config={config} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );

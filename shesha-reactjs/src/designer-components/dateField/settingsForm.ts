@@ -77,6 +77,53 @@ export const getSettings = (data: IDateFieldProps) => {
                                 id: nanoid(),
                                 parentId: commonTabId,
                                 inputs: [
+
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'range',
+                                        label: 'Range',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'switch',
+                                        propertyName: 'hidden',
+                                        label: 'Hide',
+                                        jsSetting: true,
+                                        layout: 'horizontal',
+                                    },
+                                ],
+                            })
+
+
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: commonTabId,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'editModeSelector',
+                                        propertyName: 'editMode',
+                                        defaultValue: 'inherited',
+                                        label: 'Edit Mode',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                ],
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '2',
+                        title: 'Data',
+                        id: dataTabId,
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataTabId,
+                                inputs: [
                                     {
                                         id: nanoid(),
                                         propertyName: 'picker',
@@ -108,57 +155,21 @@ export const getSettings = (data: IDateFieldProps) => {
                                         ]
                                     },
                                     {
-                                        id: nanoid(),
-                                        type: 'switch',
-                                        propertyName: 'range',
-                                        label: 'Range',
-                                        jsSetting: true,
-                                    },
-                                ],
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                parentId: commonTabId,
-                                inputType: 'switch',
-                                propertyName: 'resolveToUTC',
-                                label: 'Resolve to UTC',
-                                jsSetting: true,
-                            })
 
-                            .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: commonTabId,
-                                inputs: [
-                                    {
-                                        id: nanoid(),
-                                        type: 'editModeSelector',
-                                        propertyName: 'editMode',
-                                        defaultValue: 'inherited',
-                                        label: 'Edit Mode',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
                                         id: nanoid(),
                                         type: 'switch',
-                                        propertyName: 'hidden',
-                                        label: 'Hide',
+                                        propertyName: 'resolveToUTC',
+                                        label: 'Resolve to UTC',
                                         jsSetting: true,
-                                        layout: 'horizontal',
+
                                     },
-                                ],
+
+                                ]
                             })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '2',
-                        title: 'Data',
-                        id: dataTabId,
-                        components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,
+                                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -180,34 +191,43 @@ export const getSettings = (data: IDateFieldProps) => {
                                     },
                                 ]
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                inputType: 'switch',
-                                propertyName: 'showNow',
-                                label: 'Show Today/Now',
-                                size: 'small',
-                                layout: 'horizontal',
-                                jsSetting: true,
-                                parentId: dataTabId
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'dropdown',
-                                propertyName: 'disabledDateMode',
-                                label: 'Disabled Date Mode',
                                 parentId: dataTabId,
-                                defaultValue: 'none',
-                                dropdownOptions: [
-                                    { value: 'none', label: 'None' },
-                                    { value: 'functionTemplate', label: 'Function template' },
-                                    { value: 'customFunction', label: 'Custom function' },
-                                ]
-                            })
+                                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                                inputs:
+                                    [
+                                        {
+                                            id: nanoid(),
+                                            type: 'switch',
+                                            propertyName: 'showNow',
+                                            label: 'Show Today/Now',
+                                            size: 'small',
+                                            layout: 'horizontal',
+                                            jsSetting: true,
+                                            parentId: dataTabId,
 
+                                        }
+                                    ]
+
+                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,
                                 inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'dropdown',
+                                        propertyName: 'disabledDateMode',
+                                        label: 'Disabled Date Mode',
+                                        parentId: dataTabId,
+                                        defaultValue: 'none',
+                                        dropdownOptions: [
+                                            { value: 'none', label: 'None' },
+                                            { value: 'functionTemplate', label: 'Function template' },
+                                            { value: 'customFunction', label: 'Custom function' },
+                                        ]
+                                    },
                                     {
                                         id: nanoid(),
                                         type: 'dropdown',
@@ -223,7 +243,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                     {
                                         id: nanoid(),
                                         type: 'codeEditor',
-                                        propertyName: 'isDateDisabled',
+                                        propertyName: 'disabledDateFunc',
                                         label: 'Disabled Date Func',
                                         description: "Enter disabled date code. You must return true to hide the date. Two objects are exposed to work with, namely 'current' and 'moment'. Use these variables to write the code that will hide the dates you want.",
                                         hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'customFunction'", _mode: 'code', _value: false } as any,
@@ -255,7 +275,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                         id: nanoid(),
                                         type: 'dropdown',
                                         propertyName: 'disabledTimeTemplate',
-                                        label: 'Disabled time templates',
+                                        label: 'Disabled Time Templates',
                                         hidden: {
                                             _code: "return  getSettingValue(data.disabledTimeMode) !== 'timeFunctionTemplate';",
                                             _mode: 'code',
@@ -266,68 +286,106 @@ export const getSettings = (data: IDateFieldProps) => {
                                             { value: "disabledFutureTime", label: 'Disable future times' }
                                         ]
                                     },
+                                    {
+                                        id: nanoid(),
+                                        type: 'codeEditor',
+                                        propertyName: 'disabledTimeFunc',
+                                        label: 'Disabled Time Func',
+                                        hidden: { _code: "return  getSettingValue(data.disabledTimeMode) !== 'customTimeFunction';", _mode: 'code', _value: false } as any,
+                                    }
                                 ]
                             })
-                            .addSettingsInput({
+
+
+
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'dateFormat',
-                                label: 'Date Format',
-                                size: 'small',
-                                jsSetting: true,
-                                inputType: "textField",
-                                defaultValue: "DD/MM/YYYY",
-                                parentId: dataTabId
+                                parentId: dataTabId,
+                                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'dateFormat',
+                                        label: 'Date Format',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        type: "textField",
+                                        defaultValue: "DD/MM/YYYY",
+                                        parentId: dataTabId,
+                                    }, {
+                                        id: nanoid(),
+                                        propertyName: 'timeFormat',
+                                        label: 'Time Format',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        type: "textField",
+                                        defaultValue: "HH:mm:ss",
+                                        parentId: dataTabId,
+                                    },
+                                ]
+
                             })
-                            .addSettingsInput({
+
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'timeFormat',
-                                label: 'Time Format',
-                                size: 'small',
-                                jsSetting: true,
-                                inputType: "textField",
-                                defaultValue: "HH:mm:ss",
-                                parentId: dataTabId
+                                parentId: dataTabId,
+                                inputs: [
+                                    {
+
+                                        id: nanoid(),
+                                        propertyName: 'yearFormat',
+                                        label: 'Year Format',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        type: "textField",
+                                        defaultValue: "YYYY",
+                                        parentId: dataTabId,
+                                        hidden: { _code: 'return getSettingValue(data?.picker) !== "year"', _mode: 'code', _value: false } as any,
+
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'quarterFormat',
+                                        label: 'Quarter Format',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        type: "textField",
+                                        defaultValue: "YYYY-\\QQ",
+                                        parentId: dataTabId,
+                                        hidden: { _code: 'return getSettingValue(data?.picker) !== "quarter"', _mode: 'code', _value: false } as any,
+
+                                    },
+                                    {
+
+                                        id: nanoid(),
+                                        propertyName: 'monthFormat',
+                                        label: 'Month Format',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        type: "textField",
+                                        defaultValue: "YYYY-MM",
+                                        parentId: dataTabId,
+                                        hidden: { _code: 'return getSettingValue(data?.picker) !== "month"', _mode: 'code', _value: false } as any,
+
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'weekFormat',
+                                        label: 'Week Format',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        type: "textField",
+                                        defaultValue: "YYYY-wo",
+                                        parentId: dataTabId,
+                                        hidden: { _code: 'return getSettingValue(data?.picker) !== "week"', _mode: 'code', _value: false } as any,
+
+                                    }
+
+                                ]
+
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'yearFormat',
-                                label: 'Year Format',
-                                size: 'small',
-                                jsSetting: true,
-                                inputType: "textField",
-                                defaultValue: "YYYY",
-                                parentId: dataTabId
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'quarterFormat',
-                                label: 'Quarter Format',
-                                size: 'small',
-                                jsSetting: true,
-                                inputType: "textField",
-                                defaultValue: "YYYY-\\QQ",
-                                parentId: dataTabId
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'monthFormat',
-                                label: 'Month Format',
-                                size: 'small',
-                                jsSetting: true,
-                                inputType: "textField",
-                                defaultValue: "YYYY-MM",
-                                parentId: dataTabId
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'weekFormat',
-                                label: 'Week Format',
-                                size: 'small',
-                                jsSetting: true,
-                                inputType: "textField",
-                                defaultValue: "YYYY-wo",
-                                parentId: dataTabId
-                            })
+
+
                             .toJson()
                         ]
                     },

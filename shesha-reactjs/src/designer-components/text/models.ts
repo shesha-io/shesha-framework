@@ -6,7 +6,7 @@ import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
-export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom';
+export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom' | '';
 export type ContentDisplay = 'content' | 'name';
 
 export const FONT_SIZES = {

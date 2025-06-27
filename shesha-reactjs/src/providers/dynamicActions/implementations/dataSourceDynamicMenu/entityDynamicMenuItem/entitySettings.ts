@@ -1,13 +1,12 @@
-import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
-    const parentId = nanoid();
+    const containerId = nanoid();
     return {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
-                id: parentId,
+                id: nanoid(),
                 inputs: [
                     {
                         id: nanoid(),
@@ -34,23 +33,22 @@ export const getSettings = () => {
                 ]
             })
             .addContainer({
-                id: nanoid(),
-                parentId: parentId,
+                id: containerId,
                 hidden: {
                     _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
                     _mode: 'code',
                     _value: false
-                },
+                } as any,
                 components: [...new DesignerToolbarSettings()
                     .addSettingsInputRow({
                         id: nanoid(),
+                        parentId: containerId,
                         inputs: [{
                             id: nanoid(),
                             type: 'queryBuilder',
                             propertyName: 'filter',
                             label: 'Entity Filter',
                             labelAlign: 'right',
-                            parentId: parentId,
                             isDynamic: false,
                             validate: {},
                             settingsValidationErrors: [],
@@ -59,15 +57,9 @@ export const getSettings = () => {
                                 _mode: 'code',
                                 _value: false
                             } as any,
-                            hidden: {
-                                _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
-                                _mode: 'code',
-                                _value: false
-                            } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                         }]
                     })
-
                     .addSettingsInputRow({
                         id: nanoid(),
                         inputs: [
@@ -77,8 +69,6 @@ export const getSettings = () => {
                                 propertyName: 'labelProperty',
                                 label: 'Label Property',
                                 labelAlign: 'right',
-                                parentId: parentId,
-
                                 isDynamic: false,
                                 placeholder: '',
                                 description: 'Name of the property that should be used for the label of the button.',
@@ -98,7 +88,6 @@ export const getSettings = () => {
                                 propertyName: 'tooltipProperty',
                                 label: 'Tooltip Property',
                                 labelAlign: 'right',
-                                parentId: parentId,
                                 isDynamic: false,
                                 placeholder: '',
                                 description: 'Name of the property that should be used for the tooltip of the button.',
@@ -116,21 +105,7 @@ export const getSettings = () => {
             })
             .addSettingsInputRow({
                 id: nanoid(),
-                parentId: parentId,
                 inputs: [
-                    {
-                        id: nanoid(),
-                        type: 'dropdown',
-                        propertyName: 'buttonType',
-                        label: 'Button Type',
-                        labelAlign: 'right',
-                        hidden: false,
-                        validate: {
-                            required: true
-                        },
-                        dropdownOptions: buttonTypes,
-                        jsSetting: false
-                    },
                     {
                         id: nanoid(),
                         type: 'configurableActionConfigurator',

@@ -34,7 +34,7 @@ export const defaultStyles = (): IStyleType => {
 
 export const defaultTagStyles = (): IStyleType => {
     return {
-        background: { type: 'color', color: '#fff' },
+        background: { type: 'color', color: '#9d9d9d' },
         font: {
             weight: '400',
             size: 14,
@@ -60,7 +60,8 @@ export const defaultTagStyles = (): IStyleType => {
             maxHeight: 'auto',
             minWidth: '0px',
             maxWidth: 'auto'
-        }
+        },
+        
     };
 };
 
@@ -68,10 +69,6 @@ export const presetColors = [
     {
         value: 'success',
         label: 'Success'
-    },
-    {
-        value: 'processing',
-        label: 'Processing'
     },
     {
         value: 'warning',
@@ -88,10 +85,6 @@ export const presetColors = [
     {
         value: 'red',
         label: 'Red'
-    },
-    {
-        value: 'volcano',
-        label: 'Volcano'
     },
     {
         value: 'orange',

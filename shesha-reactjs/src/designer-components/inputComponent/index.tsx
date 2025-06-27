@@ -101,10 +101,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'dataSortingEditor':
             return <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
         case 'colorPicker':
-            return <ColorPicker size={size} style={{ width: props.width ?? "100%" }} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
+            return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
         case 'dropdown': {
             const options = dropdownOptions as IDropdownOption[];
-
             return <Select
                 size={size}
                 mode={dropdownMode}
@@ -302,7 +301,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 }
             />;
         case 'configurableActionConfigurator':
-            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} />;
+            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
         case 'typeAutoComplete':
             return <Autocomplete
                 dataSourceType="url"

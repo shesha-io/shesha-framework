@@ -7,7 +7,7 @@ import { referenceListGetByName } from '@/apis/referenceList';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IDictionary } from '@/interfaces';
 import { IReferenceList, IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { FormIdentifier, useSheshaApplication } from '@/providers';
+import { FormIdentifier, useFormDesignerComponents, useSheshaApplication } from '@/providers';
 import { MakePromiseWithState, PromisedValue } from '@/utils/promises';
 import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormMarkupWithSettings, IFormDto } from '../form/models';
@@ -48,6 +48,8 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
   const initial: IConfigurationItemsLoaderStateContext = {
     ...CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE,
   };
+
+  const designerComponents = useFormDesignerComponents();
 
   const storages = useRef<StoragesDictionary>({});
   const getStorage = (name: string): LocalForage => {
@@ -128,12 +130,24 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       isLastVersion: dto.isLastVersion,
 
       markup: markupWithSettings?.components,
-      settings: {
-        ...markupWithSettings?.formSettings,
-       access: dto.access,
-       permissions: dto.permissions,
-      }
+      settings: markupWithSettings?.formSettings,
     };
+
+    if (result.settings) {
+      // there can be string for some old forms
+      const rawAccess = result.settings.access ?? dto?.access; // string | number | undefined
+      let normalizedAccess: number;
+      if (typeof rawAccess === 'string') {
+        const parsed = parseInt(rawAccess, 10);
+        normalizedAccess = Number.isNaN(parsed) ? 3 : parsed;
+      } else if (typeof rawAccess === 'number') {
+        normalizedAccess = rawAccess;
+      } else {
+        normalizedAccess = 3;
+      }
+      result.settings.access = normalizedAccess;
+      result.settings.permissions = result.settings.permissions ?? dto?.permissions ?? [];
+    }
 
     return result;
   };
@@ -280,7 +294,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
               const responseData = response.result;
               if (!responseData) throw 'Failed to fetch form. Response is empty';
 
-              const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(responseData));
+              const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(responseData), designerComponents);
               addToCache(ItemTypes.Form, cacheKey, responseData);
 
               resolve(dto);
@@ -288,7 +302,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
               const rawResponse = response as Response;
               if (rawResponse && rawResponse.status === 304) {
                 // code 304 indicates that the content ws not modified - use cached value
-                const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto));
+                const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto), designerComponents);
                 resolve(dto);
               } else {
                 const httpResponse = response as Response;

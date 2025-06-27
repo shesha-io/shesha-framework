@@ -4,6 +4,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
 import { EditMode, IStyleType } from '@/index';
 import React from 'react';
+import { ListItemWithId } from '@/components/listEditor/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -56,9 +57,11 @@ export interface IButtonGroupItemBase extends IStyleType {
   styles?: React.CSSProperties;
 }
 
-export interface IButtonGroupItem extends IButtonGroupItemBase {
+export interface IButtonGroupItem extends IButtonGroupItemBase, ListItemWithId {
   itemSubType?: ToolbarItemSubType;
   styles?: React.CSSProperties;
+  dividerWidth?: string;
+  dividerColor?: string;
 }
 
 export interface IButtonItem extends Omit<IButtonGroupItem, 'type'> {
