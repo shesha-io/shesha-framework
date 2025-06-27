@@ -402,8 +402,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
-
-
                                 .toJson()
                         ]
                     },
@@ -430,18 +428,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     propertyName: 'rowHoverActionConfiguration',
                                     parentId: 'root',
                                     label: 'On Row Hover',
-                                })
-                                .addConfigurableActionConfigurator({
-                                    id: nanoid(),
-                                    propertyName: 'rowSelectActionConfiguration',
-                                    parentId: 'root',
-                                    label: 'On Row Select',
-                                })
-                                .addConfigurableActionConfigurator({
-                                    id: nanoid(),
-                                    propertyName: 'selectionChangeActionConfiguration',
-                                    parentId: 'root',
-                                    label: 'On Selection Change',
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),

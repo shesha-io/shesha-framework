@@ -126,8 +126,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 onRowClick={props.rowClickActionConfiguration}
                 onRowDoubleClick={props.rowDoubleClickActionConfiguration ?? props.dblClickActionConfiguration}
                 onRowHover={props.rowHoverActionConfiguration}
-                onRowSelect={props.rowSelectActionConfiguration}
-                onSelectionChange={props.selectionChangeActionConfiguration}
                 selectionMode={selectionMode}
                 inlineSaveMode={props.inlineSaveMode}
                 inlineEditMode={props.inlineEditMode}

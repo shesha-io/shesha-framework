@@ -75,8 +75,6 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   onRowClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
   onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
   onRowHover?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
-  onRowSelect?: (index: number, row: any) => void;
-  onSelectionChange?: (ids: string[]) => void;
 }
 
 export interface IExtendedModalProps extends ModalProps {
