@@ -20,8 +20,9 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       }
 
       .ant-input-number-handler-wrap {
+        --ant-color-text-description: ${color} !important;
         background-color: transparent;
-        border: 
+
       }
 
       .ant-input-number-suffix {
