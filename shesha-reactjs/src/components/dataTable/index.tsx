@@ -300,7 +300,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const localPreparedColumns = columns
       .map((column) => {
         if (column.columnType === 'crud-operations') {
-          console.log(column);
           const { maxWidth, minWidth } = adjustWidth(
             {
               canDelete: props.canDeleteInline,
