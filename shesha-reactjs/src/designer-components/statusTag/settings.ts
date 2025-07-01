@@ -122,6 +122,7 @@ export const getSettings = () =>
             parentId: 'root',
             hidden: false,
             validate: {},
+            jsSetting: true,
           }).toJson()
         ]
       }

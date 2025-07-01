@@ -60,6 +60,7 @@ export const getSettings = (data: DynamicViewComponentProps) => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
+                                jsSetting: true,
                                 parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
                             })
                             .toJson()
