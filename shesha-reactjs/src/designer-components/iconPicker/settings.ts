@@ -202,6 +202,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           parentId: 'root',
           hidden: false,
           validate: {},
+          jsSetting: true,
         }).toJson()
       ]
     }
