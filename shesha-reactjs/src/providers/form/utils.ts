@@ -1048,13 +1048,14 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
         message: validate?.message || 'This field is required',
       });
 
-    if (validate.minValue)
+
+    if (validate.minValue !== undefined)
       rules.push({
         min: validate.minValue,
         type: 'number',
       });
 
-    if (validate.maxValue)
+    if (validate.maxValue !== undefined)
       rules.push({
         max: validate.maxValue,
         type: 'number',
