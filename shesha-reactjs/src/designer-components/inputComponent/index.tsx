@@ -119,14 +119,14 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 onChange={onChange}
                 placeholder={placeholder}
-                options={[...(options || [])].map(option => ({ ...option, label: <Icon icon={option.label} hint={tooltip} styles={styles} /> }))}
+                options={[...(options || [])].map(option => ({ ...option, label: <Icon icon={option.label} size={option.value} styles={styles} hint={tooltip} /> }))}
             />;
         }
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value || defaultValue} onChange={onChange} size={size} disabled={readOnly}>
                 {
                     buttonGroupOptions.map(({ value, icon, title }) => {
-                        return <Radio.Button key={value} value={value}><Icon icon={icon} hint={title} styles={styles} />{title}</Radio.Button>;
+                        return <Radio.Button key={value} value={value}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
                     })}
             </Radio.Group>;
         case 'switch':
