@@ -11,9 +11,7 @@ import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entitie
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
 
-export interface IApplicationDataProviderProps {
-
-}
+export interface IApplicationDataProviderProps {}
 
 export interface ApplicationPluginRegistration {
   name: string;
@@ -26,8 +24,14 @@ export interface IApplicationActionsContext {
   unregisterPlugin: (pluginName: string) => void;
   getPlugin: (pluginName: string) => ApplicationPluginRegistration;
 }
-export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(undefined, "ApplicationActionsContext");
-export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(undefined, "ApplicationPublicApiContext");
+export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(
+  undefined,
+  'ApplicationActionsContext'
+);
+export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(
+  undefined,
+  'ApplicationPublicApiContext'
+);
 
 export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
   const [plugins, setPlugins] = useState<ApplicationPluginRegistration[]>([]);
@@ -37,37 +41,46 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
   const shaRouter = useShaRouting();
 
   // inject fields from plugins
-  const [contextData] = useState<IApplicationApi>(() => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter));
+  const [contextData] = useState<IApplicationApi>(
+    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter)
+  );
 
   const { loginInfo } = useAuth(false) ?? {};
   useEffect(() => {
     const profile: IUserProfileInfo = loginInfo
       ? {
-        id: loginInfo.id?.toString(),
-        userName: loginInfo.userName,
-        firstName: loginInfo.firstName,
-        lastName: loginInfo.lastName,
-        personId: loginInfo.personId
-      }
+          id: loginInfo.id?.toString(),
+          userName: loginInfo.userName,
+          firstName: loginInfo.firstName,
+          lastName: loginInfo.lastName,
+          personId: loginInfo.personId,
+        }
       : undefined;
 
     contextData.user.setProfileInfo(profile);
+    contextData.user.setGrantedPermissions(loginInfo?.grantedPermissions ?? []);
   }, [loginInfo, contextData.user]);
 
-  const registerPlugin = useCallback((plugin: ApplicationPluginRegistration) => {
-    setPlugins(p => [...p, plugin]);
-    // register property
-    contextData.addPlugin({ name: plugin.name, data: plugin.data });
-  }, [setPlugins]);
+  const registerPlugin = useCallback(
+    (plugin: ApplicationPluginRegistration) => {
+      setPlugins((p) => [...p, plugin]);
+      // register property
+      contextData.addPlugin({ name: plugin.name, data: plugin.data });
+    },
+    [setPlugins]
+  );
 
-  const unregisterPlugin = useCallback((pluginName: string) => {
-    setPlugins(p => p.filter(p => p.name !== pluginName));
-  }, [setPlugins]);
+  const unregisterPlugin = useCallback(
+    (pluginName: string) => {
+      setPlugins((p) => p.filter((p) => p.name !== pluginName));
+    },
+    [setPlugins]
+  );
 
   const contextMetadata = useApplicationContextMetadata({ plugins }); // inject meta from plugins
 
   const getPlugin = (name: string) => {
-    return plugins.find(p => p.name === name);
+    return plugins.find((p) => p.name === name);
   };
 
   return (
@@ -78,7 +91,6 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
           name={SheshaCommonContexts.ApplicationContext}
           description={'Application context'}
           type={'root'}
-
           metadata={contextMetadata}
           data={contextData}
         >
