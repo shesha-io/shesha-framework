@@ -131,6 +131,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 noDataText={props.noDataText}
                 noDataSecondaryText={props.noDataSecondaryText}
                 noDataIcon={props.noDataIcon}
+                showExpandedView={props.showExpandedView}
             />
         </SidebarContainer>
     );
