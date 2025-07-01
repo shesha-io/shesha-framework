@@ -90,6 +90,7 @@ export const getSettings = (data: ITableComponentProps) => {
     const crudTabId = nanoid();
     const layoutTabId = nanoid();
     const emptyTableTabId = nanoid();
+    const eventsTabId = nanoid();
     const securityTabId = nanoid();
 
     return {
@@ -126,13 +127,26 @@ export const getSettings = (data: ITableComponentProps) => {
                         id: crudTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'items',
-                                    label: data.readOnly ? 'View Columns' : 'Customize Columns',
-                                    inputType: 'columnsConfig',
-                                    jsSetting: true,
-                                    parentId: commonTabId,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'items',
+                                            label: data.readOnly ? 'View Columns' : 'Customize Columns',
+                                            type: 'columnsConfig',
+                                            jsSetting: true,
+                                            parentId: commonTabId,
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'showExpandedView',
+                                            label: 'Show Expanded View',
+                                            type: 'switch',
+                                            jsSetting: true,
+                                            parentId: commonTabId,
+                                        }
+                                    ]
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
@@ -148,7 +162,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         {
                                             id: nanoid(),
                                             propertyName: 'useMultiselect',
-                                            label: 'Use Multi-select',
+                                            label: 'Use Multi-Select',
                                             type: 'switch',
                                             jsSetting: true,
                                             parentId: commonTabId,
@@ -160,6 +174,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     propertyName: 'canEditInline',
                                     label: 'Can Edit Inline',
                                     inputType: 'dropdown',
+                                    jsSetting: true,
                                     parentId: crudTabId,
                                     dropdownOptions: [
                                         { value: 'yes', label: 'Yes' },
@@ -170,7 +185,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
-
                                     hidden: { _code: 'return getSettingValue(data?.canEditInline) !== "js";', _mode: 'code', _value: false } as any,
                                     inputs: [
                                         {
@@ -227,7 +241,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'customUpdateUrl',
                                             label: 'Custom Update URL',
-                                            type: 'textField',
+                                            type: 'endpointsAutocomplete',
                                             parentId: crudTabId,
                                         }
                                     ]
@@ -241,6 +255,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             propertyName: 'canAddInline',
                                             label: 'Can Add Inline',
                                             type: 'dropdown',
+                                            jsSetting: true,
                                             parentId: crudTabId,
                                             dropdownOptions: [
                                                 { value: 'yes', label: 'Yes' },
@@ -309,7 +324,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'customCreateUrl',
                                             label: 'Custom Create URL',
-                                            type: 'textField',
+                                            type: 'endpointsAutocomplete',
                                             parentId: crudTabId,
                                         }
                                     ]
@@ -348,6 +363,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     label: 'Can Delete Inline',
                                     inputType: 'dropdown',
                                     parentId: crudTabId,
+                                    jsSetting: true,
                                     dropdownOptions: [
                                         { value: 'yes', label: 'Yes' },
                                         { value: 'no', label: 'No' },
@@ -380,7 +396,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'customDeleteUrl',
                                             label: 'Custom Delete URL',
-                                            type: 'textField',
+                                            type: 'endpointsAutocomplete',
                                             parentId: crudTabId,
                                         }
                                     ]
@@ -393,29 +409,34 @@ export const getSettings = (data: ITableComponentProps) => {
                     {
                         key: 'events',
                         title: 'Events',
-                        id: securityTabId,
+                        id: eventsTabId,
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: "dblClickActionConfiguration",
                                     parentId: 'root',
-                                    label: "On Double Click",
-                                    jsSetting: false,
+                                    label: "On Double-Click",
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowSaveSuccessAction',
                                     label: 'On Row Save Success',
-                                    parentId: crudTabId,
                                     description: 'Custom business logic to be executed after successfull saving of new/updated row.',
                                     hideLabel: true,
-                                    jsSetting: true,
+                                })
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: 'onRowDeleteSuccessAction',
+                                    label: 'On Row Delete Success',
+                                    description: 'Custom business logic to be executed after successfull deletion of a row.',
+                                    hideLabel: true,
                                 })
                                 .toJson()
                         ]
                     },
                     {
+
                         key: 'appearance',
                         title: 'Appearance',
                         id: layoutTabId,
@@ -454,23 +475,28 @@ export const getSettings = (data: ITableComponentProps) => {
                                 content: {
                                     id: 'tableStylesCollapsible',
                                     components: [...new DesignerToolbarSettings()
-                                        .addSettingsInput({
+                                        .addSettingsInputRow({
                                             id: nanoid(),
-                                            propertyName: 'containerStyle',
-                                            label: 'Table container style',
-                                            inputType: 'codeEditor',
-                                            parentId: layoutTabId,
-                                            description: 'The style that will be applied to the table container/wrapper',
-                                            exposedVariables: [],
-                                        })
-                                        .addSettingsInput({
-                                            id: nanoid(),
-                                            propertyName: 'tableStyle',
-                                            label: 'Table style',
-                                            inputType: 'codeEditor',
-                                            parentId: layoutTabId,
-                                            description: 'The style that will be applied to the table',
-                                            exposedVariables: [],
+                                            inputs: [
+                                                {
+                                                    id: nanoid(),
+                                                    propertyName: 'tableStyle',
+                                                    label: 'Table Style',
+                                                    type: 'codeEditor',
+                                                    parentId: layoutTabId,
+                                                    description: 'The style that will be applied to the table',
+                                                    exposedVariables: [],
+                                                },
+                                                {
+                                                    id: nanoid(),
+                                                    propertyName: 'containerStyle',
+                                                    label: 'Table Container style',
+                                                    type: 'codeEditor',
+                                                    parentId: layoutTabId,
+                                                    description: 'The style that will be applied to the table container/wrapper',
+                                                    exposedVariables: [],
+                                                }
+                                            ]
                                         })
                                         .toJson()
                                     ]

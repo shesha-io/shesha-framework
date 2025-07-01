@@ -5,6 +5,7 @@ import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSett
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
+import { sheshaStyles } from '@/styles';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -17,6 +18,7 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
+  isInModal?: boolean;
 }
 
 function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
@@ -29,6 +31,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   formRef,
   propertyFilter,
   layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
+  isInModal
 }: IProps<TModel>) {
   const [form] = Form.useForm();
 
@@ -63,11 +66,11 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   return (
     <ConfigurableForm
-      formName='componentSettings'
+      formName={isInModal ? 'modalSettings' : 'componentSettings'}
       labelCol={layoutSettings?.labelCol}
       wrapperCol={layoutSettings?.wrapperCol}
       layout={layoutSettings?.layout}
-
+      className={sheshaStyles.verticalSettingsClass}
       mode={readOnly ? "readonly" : "edit"}
       form={form}
       onFinish={onSave}

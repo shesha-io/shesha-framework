@@ -13,7 +13,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
@@ -58,12 +58,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={{ ...model.allStyles.fullStyle }}
+            style={{ ...model.allStyles.fullStyle, overflow: 'hidden' }}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
-            tagStyle={{ ...tagStyle, margin: 0, alignContent: 'center' }}
+            tagStyle={{ ...tagStyle }}
             onChange={onChangeInternal}
           />;
         }}
@@ -125,22 +125,20 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     })
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDropdownComponentProps>(10, (prev) => {
-      const newModel = migratePrevStyles(prev, defaultStyles());
-      const initTagStyle = { ...defaultTagStyles() };
+      const initTagStyle = migrateStyles({}, defaultTagStyles());
 
       return {
-        ...newModel,
+        ...prev,
         tag: { ...initTagStyle },
         showItemName: prev.showItemName ?? true,
         showIcon: prev.showIcon ?? true,
         solidColor: prev.solidColor ?? true,
         displayStyle: prev.displayStyle ?? 'text',
-        desktop: { ...newModel.desktop, tag: { ...initTagStyle } },
-        tablet: { ...newModel.tablet, tag: { ...initTagStyle } },
-        mobile: { ...newModel.mobile, tag: { ...initTagStyle } }
+        desktop: { ...prev.desktop, tag: { ...initTagStyle } },
+        tablet: { ...prev.tablet, tag: { ...initTagStyle } },
+        mobile: { ...prev.mobile, tag: { ...initTagStyle } }
       };
-    })
-  ,
+    }),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
     const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';

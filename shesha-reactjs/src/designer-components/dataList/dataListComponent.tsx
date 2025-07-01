@@ -10,6 +10,8 @@ import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -53,6 +55,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       onNewListItemInitialize: migrateFormApi.full(prev.onNewListItemInitialize),
       onListItemSave: migrateFormApi.full(prev.onListItemSave)
     }))
+    .add<IDataListComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    
 ,
 settingsFormMarkup: (data) => getSettings(data),
 };

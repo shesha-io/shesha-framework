@@ -102,6 +102,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             <GlobalTableStyles />
             {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
             <DataTable
+                onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}
                 useMultiselect={useMultiselect}
@@ -130,6 +131,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 noDataText={props.noDataText}
                 noDataSecondaryText={props.noDataSecondaryText}
                 noDataIcon={props.noDataIcon}
+                showExpandedView={props.showExpandedView}
             />
         </SidebarContainer>
     );

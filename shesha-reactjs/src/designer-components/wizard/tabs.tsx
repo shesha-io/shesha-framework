@@ -49,18 +49,17 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     const { styles } = useStyles({
         styles: { ...model.allStyles.fullStyle, overflow: '', ...rest },
         colors, activeStepStyle: activeStepStyle.fullStyle, stepWidth: addPx(stepWidth),
-        vertical: direction === 'vertical', overflow
+        overflow
     });
 
     const steps = useMemo(() => {
-        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style, ...rest }, index) => {
+        return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style }, index) => {
             const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
             const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
             const stepStyle = getStyle(style, visibleSteps[index]);
 
             return {
-                ...rest,
                 id,
                 title,
                 subTitle,

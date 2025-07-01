@@ -1,13 +1,15 @@
+import React from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { BarChartOutlined } from '@ant-design/icons';
-import React from 'react';
-import ChartDataProvider from '../../providers/chartData';
-import ChartControl from './chartControl';
-import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
+import { defaultConfigFiller, filterNonNull } from './utils';
+import { removeUndefinedProps } from '@/utils/object';
+import ChartControlURL from './chartControlURL';
+import ChartDataProvider from '@/providers/chartData';
+import ChartControl from './chartControl';
 
 const BarChartComponent: IToolboxComponent<IChartProps> = {
   type: 'barChart',
@@ -16,14 +18,39 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <BarChartOutlined />,
   Factory: ({ model }) => {
-    if (model.hidden) return null;
+    const {
+      dimensionsStyles,
+      borderStyles,
+      backgroundStyles,
+      shadowStyles,
+      stylingBoxAsCSS,
+    } = model.allStyles;
+
+    const wrapperStyles = removeUndefinedProps({
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...stylingBoxAsCSS
+    });
     
+    if (model.hidden) return null;    
+
     return (
       <ConfigurableFormItem model={model}>
         {() => {
-          return (
-            <ChartDataProvider>
-              {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl {...model} chartType='bar' />}
+          return (            
+            <ChartDataProvider model={model}>
+              <div style={{
+                ...wrapperStyles,
+                minHeight: '400px',
+                padding: '16px',
+                boxSizing: 'border-box',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' filters={model.filters} />}
+              </div>
             </ChartDataProvider>
           );
         }}
@@ -45,6 +72,28 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
     .add<IChartProps>(4, prev => ({ ...prev, showLegend: false, showTitle: true }))
+    .add<IChartProps>(5, prev => ({ 
+      ...defaultConfigFiller,
+      stacked: false,
+      ...filterNonNull(prev),
+      type: prev.type,
+      id: prev.id
+    }))
+    .add<IChartProps>(6, prev => ({ 
+      ...prev,
+      isAxisTimeSeries: false,
+      isGroupingTimeSeries: false,
+      showXAxisScale: true,
+      showYAxisScale: true,
+      showXAxisTitle: true,
+      showYAxisTitle: true,
+      showXAxisLabel: true,
+      showYAxisLabel: true,
+      strokeColor: '#000000',
+      strokeWidth: 1,
+      maxResultCount: 10000,
+      requestTimeout: 10000,
+    }))
 };
 
 export default BarChartComponent;

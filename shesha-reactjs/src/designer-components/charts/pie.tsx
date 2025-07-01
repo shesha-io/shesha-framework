@@ -8,6 +8,8 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
+import { defaultConfigFiller, filterNonNull } from './utils';
+import { removeUndefinedProps } from '@/utils/object';
 
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
@@ -16,14 +18,38 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <PieChartOutlined />,
   Factory: ({ model }) => {
+    const {
+      dimensionsStyles,
+      borderStyles,
+      backgroundStyles,
+      shadowStyles,
+      stylingBoxAsCSS,
+    } = model.allStyles;
+
+    const wrapperStyles = removeUndefinedProps({
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...stylingBoxAsCSS
+    });
     if (model.hidden) return null;
     
     return (
       <ConfigurableFormItem model={model}>
         {() => {
           return (
-            <ChartDataProvider>
-              {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl {...model} chartType='pie' />}
+            <ChartDataProvider model={model}>
+              <div style={{
+                ...wrapperStyles,
+                minHeight: '400px',
+                padding: '16px',
+                boxSizing: 'border-box',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='pie' filters={model.filters} />}
+              </div>
             </ChartDataProvider>
           );
         }}
@@ -45,6 +71,21 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
     .add<IChartProps>(4, prev => ({ ...prev, showTitle: true }))
+    .add<IChartProps>(5, prev => ({
+      ...defaultConfigFiller,
+      ...filterNonNull(prev),
+      type: prev.type,
+      id: prev.id
+    }))
+    .add<IChartProps>(6, prev => ({ 
+      ...prev,
+      isAxisTimeSeries: false,
+      isGroupingTimeSeries: false,
+      strokeColor: '#000000',
+      strokeWidth: 1,
+      maxResultCount: 10000,
+      requestTimeout: 10000,
+    }))
 };
 
 export default PieChartComponent;

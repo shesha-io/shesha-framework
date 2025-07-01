@@ -68,28 +68,8 @@ export const getSettings = (data: any) => {
                   propertyName: 'icon',
                   label: 'Icon',
                   labelAlign: 'right',
+                  defaultValue: 'FilterOutlined',
                   parentId: commonTabId,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'danger',
-                      label: 'Danger',
-                      labelAlign: 'right',
-                      parentId: commonTabId,
-                      hidden: false,
-                    },
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'block',
-                      label: 'Block',
-                    },
-                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -112,16 +92,6 @@ export const getSettings = (data: any) => {
                       labelAlign: 'right',
                     },
                   ],
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'configurableActionConfigurator',
-                  propertyName: 'actionConfiguration',
-                  label: 'Action Configuration',
-                  hideLabel: true,
-                  parentId: commonTabId,
-                  validate: {},
-                  settingsValidationErrors: [],
                 })
                 .toJson(),
             ],
@@ -252,12 +222,6 @@ export const getSettings = (data: any) => {
                                     width: 85,
                                     propertyName: 'dimensions.width',
                                     icon: 'widthIcon',
-                                    hidden: {
-                                      _code:
-                                        'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType) === "link";',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                   {
@@ -665,14 +629,13 @@ export const getSettings = (data: any) => {
             id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addPermissionAutocomplete({
-                  id: nanoid(),
+                .addSettingsInput({
+                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                  inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
-                  labelAlign: 'right',
-                  parentId: securityTabId,
-                  hidden: false,
-                  validate: {},
+                  size: 'small',
+                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
                 })
                 .toJson(),
             ],
