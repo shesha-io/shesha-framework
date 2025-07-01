@@ -176,7 +176,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
 
     // ToDo: AS - review optimization
-    const preparedItems = props.items?.map((item) => {
+    const preparedItems = props.buttonItems?.map((item) => {
         // add editMode property if not exists
         const preparedItem = { ...item, editMode: typeof item['editMode'] === 'undefined' ? undefined : item['editMode'] };
         return getActualModel(preparedItem, allData, props.readOnly);
@@ -278,13 +278,13 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    const items = useActualContextData(props.items.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })), props.readOnly, null, standartActualModelPropertyFilter);
+    const items = useActualContextData(props.buttonItems.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })), props.readOnly, null, standartActualModelPropertyFilter);
 
     const memoizedItems = useDeepCompareMemo(() => items, [items]);
 
     return (
         <DynamicActionsEvaluator items={memoizedItems}>
-            {(items) => (<ButtonGroupInner {...props} items={items} />)}
+            {(items) => (<ButtonGroupInner {...props} buttonItems={items} />)}
         </DynamicActionsEvaluator>
     );
 };

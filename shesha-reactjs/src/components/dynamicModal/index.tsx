@@ -101,10 +101,10 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const onOk = () => {
     if (showDefaultSubmitButtons) {
       form?.submit();
-        form?.validateFields().then(() => {
-          form?.submit();
-          setIsSubmitted(true);
-        });
+      form?.validateFields().then(() => {
+        form?.submit();
+        setIsSubmitted(true);
+      });
     } else {
       closeModal();
     }
@@ -144,7 +144,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
           >
             <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
+                <ButtonGroup buttonItems={buttons || []} id={''} size="middle" isInline noStyles form={form} />
               </div>
             </Show>
           </ConditionalWrap>

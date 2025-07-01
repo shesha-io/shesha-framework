@@ -100,6 +100,11 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
       newModel.items = newModel.items.map(updateItems);
       return newModel;
+    })
+    .add<IButtonGroupComponentProps>(13, (prev) => {
+      const newModel = { ...prev };
+      newModel.buttonItems = prev.items;
+      return newModel;
     }),
   settingsFormMarkup: (props) => getSettings(props),
 };

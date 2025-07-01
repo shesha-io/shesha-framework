@@ -1,6 +1,7 @@
 import { EditMode } from '@/interfaces';
-import { Select } from 'antd';
+import { Radio } from 'antd';
 import React, { FC } from 'react';
+import Icon from '../icon/Icon';
 
 export interface IReadOnlyModeSelectorProps {
   value?: boolean | EditMode;
@@ -18,11 +19,11 @@ const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
       : props.value;
 
   return (
-    <Select disabled={props.readOnly} value={val} onChange={props.onChange} size={props.size}>
-      <Select.Option key='editable' value="editable">Editable</Select.Option>
-      <Select.Option key='readOnly' value="readOnly">Read only</Select.Option>
-      <Select.Option key='inherited' value="inherited">Inherited</Select.Option>
-    </Select>
+    <Radio.Group buttonStyle='solid' value={val} onChange={(e) => props.onChange(e.target.value)} size={props.size} disabled={props.readOnly}>
+      <Radio.Button key='editable' value="editable"><Icon icon='editIcon' hint='Editable' /></Radio.Button>
+      <Radio.Button key='readOnly' value="readOnly"><Icon icon='readonlyIcon' hint='Read only' /></Radio.Button>
+      <Radio.Button key='inherited' value="inherited"><Icon icon='inheritIcon' hint='Inherited' /></Radio.Button>
+    </Radio.Group>
   );
 };
 

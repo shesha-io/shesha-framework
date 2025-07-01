@@ -30,7 +30,9 @@ import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
-import { CustomLabelValueEditorInputs, editModes, getEditor, iconElement } from './utils';
+import { CustomLabelValueEditorInputs, getEditor } from './utils';
+import EditModeSelector from '@/components/editModeSelector';
+import Icon from '@/components/icon/Icon';
 
 const { Password } = Input;
 
@@ -97,7 +99,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
     switch (type) {
         case 'tooltip':
-            return iconElement(icon, null, tooltip, {}, styles);
+            return <Icon icon={icon} hint={tooltip} styles={styles} />;
         case 'dataSortingEditor':
             return <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
         case 'colorPicker':
@@ -117,14 +119,14 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 onChange={onChange}
                 placeholder={placeholder}
-                options={[...(options || [])].map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))}
+                options={[...(options || [])].map(option => ({ ...option, label: <Icon icon={option.label} hint={tooltip} styles={styles} /> }))}
             />;
         }
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value || defaultValue} onChange={onChange} size={size} disabled={readOnly}>
                 {
                     buttonGroupOptions.map(({ value, icon, title }) => {
-                        return <Radio.Button key={value} value={value}>{iconElement(icon, null, title, {}, styles) || title}</Radio.Button>;
+                        return <Radio.Button key={value} value={value}><Icon icon={icon} hint={title} styles={styles} />{title}</Radio.Button>;
                     })}
             </Radio.Group>;
         case 'switch':
@@ -142,13 +144,13 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 style={{ width: "100%" }}
                 min={props.min}
                 onChange={onChange}
-                addonAfter={iconElement(icon, null, tooltip || label, {}, styles)}
+                addonAfter={<Icon icon={icon} hint={tooltip || label} styles={styles} />}
             />;
         case 'customDropdown': {
             const options = dropdownOptions as IDropdownOption[];
 
             return <CustomDropdown value={value || defaultValue} placeholder={placeholder}
-                defaultValue={defaultValue} options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
+                defaultValue={defaultValue} options={options.map(option => ({ ...option, label: <Icon icon={option.label} hint={tooltip} styles={styles} /> }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
         }
         case 'customLabelValueEditor': {
             return <CustomLabelValueEditorInputs {...props} exposedVariables={null} />;
@@ -173,17 +175,13 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'button':
             return <Button style={{ maxWidth: "100%" }} disabled={readOnly} defaultValue={defaultValue}
                 type={value === true ? 'primary' : 'default'} size={size}
-                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt || icon, null, tooltipAlt || tooltip, {}, styles)} onClick={() => onChange(!value)} />;
+                icon={!value ? <Icon icon={icon} hint={tooltip} styles={styles} /> : <Icon icon={iconAlt || icon} hint={tooltipAlt || tooltip} styles={styles} />} onClick={() => onChange(!value)} />;
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
-            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value || defaultValue} onChange={onChange} size={size} disabled={readOnly}>
-                {editModes.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>;
-                })}
-            </Radio.Group>;
+            return <EditModeSelector readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'dynamicItemsConfigurator':
             return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'autocomplete':
@@ -343,7 +341,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 variant={variant}
                 placeholder={placeholder}
                 style={{ width: props.width ?? "100%" }}
-                suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip, {}, styles)}</span>}
+                suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip} styles={styles} /></span>}
                 value={value}
                 type={textType}
             />;
