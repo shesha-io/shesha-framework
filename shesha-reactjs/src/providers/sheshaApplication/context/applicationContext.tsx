@@ -1,7 +1,6 @@
 import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { SheshaCommonContexts } from '../../dataContextManager/models';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
-import jseu from 'js-encoding-utils';
 import { ApplicationApi, IApplicationApi } from '../publicApi/applicationApi';
 import { useApplicationContextMetadata } from '../publicApi/metadata';
 import { useHttpClient } from '../publicApi/http/hooks';
@@ -11,7 +10,6 @@ import { useCacheProvider } from '@/hooks/useCache';
 import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
-import { PERMISSIONS_CACHE } from '../publicApi/currentUser/metadata';
 
 export interface IApplicationDataProviderProps {}
 
@@ -59,24 +57,8 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
         }
       : undefined;
 
-    if (loginInfo && loginInfo.grantedPermissions) {
-      const miscCache = cacheProvider.getCache(PERMISSIONS_CACHE.MISC);
-      miscCache
-        .getItem(PERMISSIONS_CACHE.PERMISSIONS)
-        .then((cachedPermissions: string) => {
-          if (!cachedPermissions) {
-            const encodedPermissions = jseu.encoder.encodeBase64(JSON.stringify(loginInfo.grantedPermissions));
-            miscCache.setItem(PERMISSIONS_CACHE.PERMISSIONS, encodedPermissions).catch((err) => {
-              console.error('Failed to cache permissions', err);
-            });
-          }
-        })
-        .catch((err) => {
-          console.error('Failed to get permissions from cache', err);
-        });
-    }
-
     contextData.user.setProfileInfo(profile);
+    contextData.user.setGrantedPermissions(loginInfo?.grantedPermissions ?? []);
   }, [loginInfo, contextData.user]);
 
   const registerPlugin = useCallback(

@@ -42,7 +42,7 @@ export class ApplicationApi implements IApplicationApi {
     this.#plugins = new Map<string, IApplicationPlugin>();
 
     this.#httpClient = httpClient;
-    this.user = new CurrentUserApi(this.#httpClient, cacheProvider);
+    this.user = new CurrentUserApi(this.#httpClient);
     this.settings = new SettingsApi(this.#httpClient);
     this.entities = new EntitiesApi(this.#httpClient, cacheProvider, metadataFetcher);
     this.forms = new FormsApi(this.#httpClient);

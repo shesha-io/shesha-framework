@@ -1,7 +1,6 @@
 import { TypeDefinition, TypeDefinitionLoader } from '@/interfaces/metadata';
 import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { userApiSourceCode } from '@/publicJsApis';
-import jseu from 'js-encoding-utils';
 
 const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
   return Promise.resolve({
@@ -24,8 +23,3 @@ export const getUserApiProperties = (builder: IObjectMetadataBuilder): IObjectMe
     .addString('lastName', 'Last Name')
     .addString('personId', 'Person Id')
     .setTypeDefinition(getUserApiTypeDefinition);
-
-export const PERMISSIONS_CACHE = {
-  MISC: 'misc',
-  PERMISSIONS: jseu.encoder.encodeBase64('permissions'),
-};

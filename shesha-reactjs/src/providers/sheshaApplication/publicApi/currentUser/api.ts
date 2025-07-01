@@ -1,10 +1,7 @@
 import qs from 'qs';
-import jseu from 'js-encoding-utils';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { IAjaxResponse, IEntityReferenceDto } from '@/interfaces';
-import { ICacheProvider } from '@/providers/metadataDispatcher/entities/models';
 import { GrantedPermissionDto } from '@/apis/session';
-import { PERMISSIONS_CACHE } from './metadata';
 
 const URLS = {
   IS_PERMISSION_GRANTED: '/api/services/app/Permission/IsPermissionGranted',
@@ -36,12 +33,13 @@ export interface ICurrentUserApi {
 
 export interface IInternalCurrentUserApi extends ICurrentUserApi {
   setProfileInfo(profileInfo: IUserProfileInfo): void;
+  setGrantedPermissions(permissions: GrantedPermissionDto[]): void;
 }
 
 export class CurrentUserApi implements IInternalCurrentUserApi {
   readonly #httpClient: HttpClientApi;
   #profileInfo: IUserProfileInfo;
-  readonly #cacheProvider: ICacheProvider;
+  #grantedPermissions: GrantedPermissionDto[];
 
   //#region profile data
   get isLoggedIn() {
@@ -64,35 +62,31 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
   }
   //#endregion
 
-  constructor(httpClient: HttpClientApi, cacheProvider?: ICacheProvider) {
+  constructor(httpClient: HttpClientApi) {
     this.#httpClient = httpClient;
-    this.#cacheProvider = cacheProvider;
   }
 
   setProfileInfo(profileInfo: IUserProfileInfo) {
     this.#profileInfo = profileInfo;
   }
 
+  setGrantedPermissions(permissions: GrantedPermissionDto[]): void {
+    this.#grantedPermissions = permissions;
+  }
+
   async hasPermissionAsync(permissionName: string, permissionedEntity?: IEntityReferenceDto): Promise<boolean> {
     if (!this.isLoggedIn) return Promise.resolve(false);
 
-    if (this.#cacheProvider) {
-      const miscCache = this.#cacheProvider.getCache(PERMISSIONS_CACHE.MISC);
-      const cachedPermissions = await miscCache.getItem(PERMISSIONS_CACHE.PERMISSIONS);
-      if (cachedPermissions) {
-        const permissions = JSON.parse(
-          jseu.encoder.decodeBase64(cachedPermissions as string) as string
-        ) as GrantedPermissionDto[];
-        return permissionedEntity
-          ? permissions.some(
-              (p) =>
-                p.permission === permissionName &&
-                p.permissionedEntity?.some(
-                  (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className
-                )
-            )
-          : permissions.some((p) => p.permission === permissionName);
-      }
+    if (this.#grantedPermissions) {
+      return permissionedEntity
+        ? this.#grantedPermissions.some(
+            (p) =>
+              p.permission === permissionName &&
+              p.permissionedEntity?.some(
+                (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className
+              )
+          )
+        : this.#grantedPermissions.some((p) => p.permission === permissionName);
     }
 
     const requestParams = {
