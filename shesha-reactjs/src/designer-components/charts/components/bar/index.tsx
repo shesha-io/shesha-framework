@@ -26,6 +26,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
   const {
     axisProperty: xProperty,
     valueProperty: yProperty,
+    axisPropertyLabel,
+    valuePropertyLabel,
     aggregationMethod,
     showLegend,
     showTitle,
@@ -37,9 +39,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     stacked,
     dataMode,
     strokeColor,
-    strokeWidth,
+    strokeWidth
   } = useChartDataStateContext();
-
   const chartTitle: string = useGeneratedTitle();
   const isSmallScreen = useIsSmallScreen();
 
@@ -52,14 +53,19 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     }));
   }
 
+  const yTitle = (valuePropertyLabel?.trim().length > 0) ? `${valuePropertyLabel}` : `${yProperty} (${aggregationMethod})`;
+
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
-    animation: {
-      duration: isSmallScreen ? 800 : 1000, // Faster animations on mobile
-      easing: 'easeInOutQuart',
-      delay: (context) => context.dataIndex * (isSmallScreen ? 30 : 50),
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
     },
     transitions: {
       active: {
@@ -102,7 +108,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       x: {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
-          text: xProperty?.trim() ?? '',
+          text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',
@@ -133,9 +139,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       y: {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
-          text: dataMode === 'url' || !aggregationMethod
-            ? yProperty?.trim() ?? ''
-            : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
+          text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',

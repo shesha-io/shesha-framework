@@ -12,7 +12,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
       align-items: center;
 
       min-height: ${shaPageHeadingHeight};
-      max-height: ${shaPageHeadingHeight};
       background: white;
 
       &.fixed-heading {

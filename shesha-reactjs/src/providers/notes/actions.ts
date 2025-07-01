@@ -15,6 +15,10 @@ export enum NotesActionEnums {
   OnNoteRemoved = 'ON_NOTE_REMOVED',
   SetSettings = 'SET_SETTINGS',
   /* NEW_ACTION_TYPE_GOES_HERE */
+  UpdateNotesRequest = 'UPDATE_NOTES_REQUEST',
+  UpdateNotesSuccess = 'UPDATE_NOTES_SUCCESS',
+  UpdateNotesError = 'UPDATE_NOTES_ERROR',
+  OnNoteUpdated = 'ON_NOTE_UPDATED',
 }
 
 //#region Fetch notes
@@ -68,6 +72,10 @@ export const onNoteAddedAction = createAction<INotesStateContext, INote>(NotesAc
   newNotes,
 }));
 
+export const onNoteUpdatedAction = createAction<INotesStateContext, INote>(NotesActionEnums.OnNoteUpdated, (newNotes) => ({
+  newNotes,
+}));
+
 export const onNoteRemovedAction = createAction<INotesStateContext, string>(
   NotesActionEnums.OnNoteRemoved,
   (commentIdToBeDeleted) => ({ commentIdToBeDeleted })
@@ -79,3 +87,20 @@ export const setSettingsAction = createAction<INotesStateContext, INoteSettings>
   (settings) => ({ settings })
 );
 /* NEW_ACTION_GOES_HERE */
+
+//#region update notes
+export const updateNotesRequestAction = createAction<INotesStateContext, ICreateNotePayload>(
+  NotesActionEnums.UpdateNotesRequest,
+  (newNotes) => ({ newNotes })
+);
+export const updateNotesSuccessAction = createAction<INotesStateContext, ICreateNotePayload | INote>(
+  NotesActionEnums.UpdateNotesSuccess,
+  (newNotes) => ({ newNotes })
+);
+export const updateNotesErrorAction = createAction<INotesStateContext, any>(
+  NotesActionEnums.UpdateNotesError,
+  (errorInfo) => ({
+    errorInfo,
+  })
+);
+//#endregion

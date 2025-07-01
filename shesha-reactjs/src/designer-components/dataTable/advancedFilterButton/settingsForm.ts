@@ -68,28 +68,8 @@ export const getSettings = (data: any) => {
                   propertyName: 'icon',
                   label: 'Icon',
                   labelAlign: 'right',
+                  defaultValue: 'FilterOutlined',
                   parentId: commonTabId,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'danger',
-                      label: 'Danger',
-                      labelAlign: 'right',
-                      parentId: commonTabId,
-                      hidden: false,
-                    },
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'block',
-                      label: 'Block',
-                    },
-                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -112,16 +92,6 @@ export const getSettings = (data: any) => {
                       labelAlign: 'right',
                     },
                   ],
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'configurableActionConfigurator',
-                  propertyName: 'actionConfiguration',
-                  label: 'Action Configuration',
-                  hideLabel: true,
-                  parentId: commonTabId,
-                  validate: {},
-                  settingsValidationErrors: [],
                 })
                 .toJson(),
             ],

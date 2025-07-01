@@ -58,12 +58,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={{ ...model.allStyles.fullStyle }}
+            style={{ ...model.allStyles.fullStyle, overflow: 'hidden' }}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
-            tagStyle={{ ...tagStyle, margin: 0, alignContent: 'center' }}
+            tagStyle={{ ...tagStyle }}
             onChange={onChangeInternal}
           />;
         }}

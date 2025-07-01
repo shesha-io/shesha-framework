@@ -33,7 +33,7 @@ export const defaultStyles = (prev): IStyleType => {
 
   return {
     background: { type: 'color', color: prev.backgroundColor, },
-    font: { color: prev.buttonType === 'primary' ? '#fff' : prev.fontColor ?? '#000', weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev.fontFamily ?? 'Segoe UI', align: 'center' },
+    font: { color: prev.buttonType === 'primary' ? '#fff' : prev.fontColor ?? '', weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev.fontFamily ?? 'Segoe UI', align: 'center' },
     border: {
       borderType: 'all',
       radiusType: 'all',
@@ -59,7 +59,7 @@ export const defaultStyles = (prev): IStyleType => {
   };
 };
 
-export const defaultContainerStyles = (prev): IStyleType => {
+export const defaultContainerStyles = (): IStyleType => {
   return {
     background: { type: 'color' },
     border: {
@@ -69,6 +69,6 @@ export const defaultContainerStyles = (prev): IStyleType => {
       borderType: 'all',
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
-    dimensions: { width: prev.block ? '100%' : 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
   };
 };
