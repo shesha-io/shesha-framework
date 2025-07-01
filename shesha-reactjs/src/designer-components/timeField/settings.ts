@@ -443,6 +443,7 @@ export const getSettings = (data: any) => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 parentId: securityTabId,
+                                jsSetting: true,
                             })
                             .toJson()
                         ]

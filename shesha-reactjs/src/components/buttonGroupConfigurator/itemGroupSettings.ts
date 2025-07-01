@@ -135,7 +135,8 @@ export const getGroupSettings = (data) => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
+                                jsSetting: true,
                             })
                             .toJson()
                         ]
