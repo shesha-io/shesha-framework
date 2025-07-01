@@ -37,11 +37,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       const fromActionToData = ['action', 'crud-operations'].includes(prevColumnType) && !['action', 'crud-operations'].includes(columnType);
 
       if (fromDataToAction) {
-        if (columnType === 'crud-operations') {
-          form.setFieldsValue({ minWidth: 65, maxWidth: 65 });
-        } else if (columnType === 'action') {
-          form.setFieldsValue({ minWidth: 35, maxWidth: 35 });
-        }
+        form.setFieldsValue({ minWidth: 35, maxWidth: 35 });
       } else if (fromActionToData) {
         form.setFieldsValue({ minWidth: 100, maxWidth: 0 });
       }
