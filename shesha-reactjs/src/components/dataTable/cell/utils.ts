@@ -1,12 +1,20 @@
 import { IComponentMetadata } from "@/index";
 import { IComponentWrapperProps } from "./interfaces";
+import { YesNoInheritJs } from "../interfaces";
 
-export const adjustWidth = (crudOptions) => {
+interface ICrudOptions {
+  canEdit?: YesNoInheritJs;
+  canAdd?: YesNoInheritJs;
+  canDelete?: YesNoInheritJs;
+  inlineEditMode?: 'all-at-once' | 'one-by-one';
+}
+
+export const adjustWidth = (crudOptions: ICrudOptions) => {
   const { canEdit, canAdd, canDelete, inlineEditMode } = crudOptions;
   
-  const isEditEnabled = canEdit === "yes" || canEdit === true;
-  const isAddEnabled = canAdd === "yes" || canAdd === true;
-  const isDeleteEnabled = canDelete === "yes" || canDelete === true;
+  const isEditEnabled = canEdit === "yes";
+  const isAddEnabled = canAdd === "yes";
+  const isDeleteEnabled = canDelete === "yes";
 
   if (inlineEditMode === 'all-at-once' &&  isDeleteEnabled) {
     return { minWidth: 100, maxWidth: 100 };
