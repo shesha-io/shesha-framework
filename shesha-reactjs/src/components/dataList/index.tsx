@@ -53,7 +53,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   entityType,
   selectedIds,
   changeSelectedIds,
-  orientation,
+  orientation = 'horizontal',
   grouping,
   groupingMetadata,
   collapsible,
@@ -268,7 +268,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;

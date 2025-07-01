@@ -143,15 +143,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 inputs: [
                                     {
                                         id: nanoid(),
-                                        propertyName: 'defaultValue',
-                                        label: 'Default Value',
-                                        size: 'small',
-                                        jsSetting: true,
-                                        type: "numberField",
-                                    },
-                                    {
-                                        id: nanoid(),
-                                        parentId: dataTabId,
                                         label: "Mode",
                                         propertyName: "mode",
                                         type: "dropdown",
@@ -168,27 +159,26 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                 label: "Multiple"
                                             }
                                         ]
-                                    }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                parentId: dataTabId,
-                                label: "Data Source Type",
-                                propertyName: "dataSourceType",
-                                inputType: "dropdown",
-                                size: "small",
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    {
-                                        value: "values",
-                                        label: "Values"
                                     },
                                     {
-                                        value: "referenceList",
-                                        label: "Reference list"
+                                        id: nanoid(),
+                                        label: "Data Source Type",
+                                        propertyName: "dataSourceType",
+                                        type: "dropdown",
+                                        size: "small",
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            {
+                                                value: "values",
+                                                label: "Values"
+                                            },
+                                            {
+                                                value: "referenceList",
+                                                label: "Reference list"
+                                            }
+                                        ],
                                     }
-                                ],
+                                ]
                             })
                             .addContainer({
                                 id: dataContainerId,
@@ -547,6 +537,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: nanoid(),
                                                         parentId: nanoid(),
                                                         inline: true,
+                                                        label: 'Width',
                                                         inputs: [
                                                             {
                                                                 type: 'textField',

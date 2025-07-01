@@ -78,69 +78,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     },
                   ],
                 })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'displayType',
-                      label: 'Display Type',
-                      type: 'dropdown',
-                      allowClear: true,
-                      size: 'small',
-                      jsSetting: true,
-                      dropdownOptions: [
-                        { value: 'displayProperty', label: 'Display property' },
-                        { value: 'icon', label: 'Icon' },
-                        { value: 'textTitle', label: 'Text title' },
-                      ],
-                      readOnly: {
-                        _code: 'return getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                      parentId: commonTabId,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'iconName',
-                      label: 'Icon',
-                      parentId: commonTabId,
-                      type: 'iconPicker',
-                      jsSetting: true,
-                      allowClear: true,
-                      readOnly: {
-                        _code: 'return getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.displayType) !== "icon";',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'textTitle',
-                      label: 'Text Title',
-                      parentId: commonTabId,
-                      type: 'textField',
-                      jsSetting: true,
-                      readOnly: {
-                        _code: 'return getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                  ],
-                })
                 .addSettingsInput({
                   inputType: 'switch',
                   id: hiddenId,
@@ -187,11 +124,86 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   parentId: dataTabId,
                   hidden: false,
                   dataSourceType: 'url',
-                  validate: { required: true },
+                  validate: {
+                    required: {
+                      _code: 'return !getSettingValue(data?.entityType);',
+                      _mode: 'code',
+                      _value: true,
+                    } as any,
+                  },
                   dataSourceUrl: '/api/services/app/Api/Endpoints',
                   settingsValidationErrors: [],
                   useRawValues: true,
                   width: '100%',
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'displayType',
+                      label: 'Display Type',
+                      type: 'dropdown',
+                      allowClear: true,
+                      size: 'small',
+                      jsSetting: true,
+                      dropdownOptions: [
+                        { value: 'displayProperty', label: 'Display property' },
+                        { value: 'icon', label: 'Icon' },
+                        { value: 'textTitle', label: 'Text title' },
+                      ],
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      parentId: dataTabId,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'iconName',
+                      label: 'Icon',
+                      parentId: dataTabId,
+                      type: 'iconPicker',
+                      jsSetting: true,
+                      allowClear: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.displayType) !== "icon";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'textTitle',
+                      label: 'Text Title',
+                      parentId: dataTabId,
+                      type: 'textField',
+                      jsSetting: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -436,52 +448,18 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           {
                             id: nanoid(),
                             propertyName: 'modalWidth',
-                            label: 'Dialog Width (%)',
+                            label: 'Dialog Width',
                             parentId: dataTabId,
-                            type: 'dropdown',
+                            type: 'customDropdown',
+                            customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                            customDropdownMode: 'single',
                             allowClear: true,
                             jsSetting: true,
                             dropdownOptions: [
                               { value: '40%', label: 'Small' },
                               { value: '60%', label: 'Medium' },
                               { value: '80%', label: 'Large' },
-                              { value: 'custom', label: 'Custom' },
                             ],
-                            width: '100%',
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'widthUnits',
-                            label: 'Width Units',
-                            parentId: dataTabId,
-                            type: 'dropdown',
-                            allowClear: true,
-                            jsSetting: true,
-                            dropdownOptions: [
-                              { value: '%', label: 'Percentage (%)' },
-                              { value: 'px', label: 'Pixels (px)' },
-                            ],
-                            width: '100%',
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'customWidth',
-                            label: 'Custom Width',
-                            parentId: dataTabId,
-                            type: 'textField',
-                            jsSetting: true,
-                            min: 0,
                             width: '100%',
                           },
                         ],
@@ -599,10 +577,12 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         id: nanoid(),
                         propertyName: 'quickviewWidth',
                         label: 'Quickview Width',
+                        description: 'You can use any unit (%, px, em, etc). px by default if without unit.',
                         parentId: dataTabId,
-                        inputType: 'numberField',
+                        inputType: 'textField',
                         jsSetting: true,
-                        defaultValue: 600,
+                        icon: 'widthIcon',
+                        width: '100px',
                       })
                       .toJson(),
                   ],

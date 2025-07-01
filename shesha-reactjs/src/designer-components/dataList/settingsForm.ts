@@ -894,6 +894,7 @@ export const getSettings = (data: any) => {
                             parentId: containerStylePnlId,
                             label: "Orientation",
                             jsSetting: true,
+                            defaultValue: 'horizontal',
                             dropdownOptions: [
                               { label: 'Vertical', value: 'vertical' },
                               { label: 'Horizontal', value: 'horizontal' },
@@ -903,7 +904,6 @@ export const getSettings = (data: any) => {
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: containerStylePnlId,
-                            //hidden: { _code: 'return getSettingValue(data?.orientation) !== "wrap";', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
                                 id: nanoid(),
@@ -930,7 +930,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                                  // hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -939,7 +939,8 @@ export const getSettings = (data: any) => {
                                       width: 85,
                                       propertyName: "container.dimensions.width",
                                       icon: "widthIcon",
-                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -949,6 +950,7 @@ export const getSettings = (data: any) => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.minWidth",
                                       icon: "minWidthIcon",
+                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -958,6 +960,7 @@ export const getSettings = (data: any) => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.maxWidth",
                                       icon: "maxWidthIcon",
+                                      defaultValue: 'auto',
                                     }
                                   ]
                                 })
@@ -965,7 +968,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "horizontal";', _mode: 'code', _value: false } as any,
+                                  // hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) === "horizontal";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -974,7 +977,8 @@ export const getSettings = (data: any) => {
                                       width: 85,
                                       propertyName: "container.dimensions.height",
                                       icon: "heightIcon",
-                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -984,6 +988,7 @@ export const getSettings = (data: any) => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.minHeight",
                                       icon: "minHeightIcon",
+                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -993,6 +998,7 @@ export const getSettings = (data: any) => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.maxHeight",
                                       icon: "maxHeightIcon",
+                                      defaultValue: 'auto',
                                     }
                                   ]
                                 })

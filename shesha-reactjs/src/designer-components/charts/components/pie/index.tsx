@@ -1,5 +1,6 @@
 import {
-  ArcElement, CategoryScale,
+  ArcElement,
+  CategoryScale,
   Chart as ChartJS,
   ChartOptions,
   Decimation,
@@ -7,17 +8,20 @@ import {
   Filler,
   Legend,
   LinearScale,
-  LineController, LineElement,
+  LineController,
+  LineElement,
   PieController,
   PointElement,
   RadialLinearScale,
-  Title, Tooltip,
+  Title,
+  Tooltip,
 } from 'chart.js';
 import React from 'react';
 import { Pie, Doughnut } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
-import { useGeneratedTitle } from "../../hooks";
+import { useGeneratedTitle } from '../../hooks';
+import { splitTitleIntoLines } from '../../utils';
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
@@ -41,55 +45,74 @@ ChartJS.register(
   LineElement,
   PointElement,
   LinearScale,
-  Legend,
+  Legend
 );
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, dataMode, strokeWidth } = useChartDataStateContext(); 
+  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, strokeWidth, dataMode } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data || !data.datasets || !data.labels) {
-    if (!data)
-      throw new Error('PieChart: No data to display. Please check the data source');
-
-    if (!data.datasets || !data.labels)
-      throw new Error('PieChart: No datasets or labels to display. Please check the data source');
-  }
-
   data.datasets.forEach((dataset: { data: any[] }) => {
-    dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
+    dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
   });
 
   if (dataMode === 'url') {
     data?.datasets?.map((dataset: any) => {
       dataset.borderColor = strokeColor || 'black';
-      dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+      dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
       dataset.strokeColor = strokeColor || 'black';
       return dataset;
     });
-  } 
+  }
 
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    maintainAspectRatio: false, // Allow the chart to fill available space
     aspectRatio: 1, // Square aspect ratio for pie charts
-    plugins: {
-      legend: {
-        display: showLegend ? true : false,
-        position: legendPosition ?? 'top',
-      },
-      title: {
-        display: showTitle && chartTitle.length > 0,
-        text: chartTitle,
-      },
-    },
     layout: {
       padding: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 400, // Quick animation for hover effects
+        },
+      },
+      resize: {
+        animation: {
+          duration: 800, // Smooth resize animation
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: !!showLegend,
+        position: legendPosition ?? 'top',
+        align: 'center',
+        fullSize: false, // This ensures legend doesn't consume chart space
+        labels: {
+          boxWidth: 20,
+          padding: 10,
+          font: {
+            size: 12,
+          },
+        },
+      },
+      title: {
+        display: !!(showTitle && chartTitle?.length > 0),
+        text: splitTitleIntoLines(chartTitle),
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
+        align: 'center',
+        fullSize: false, // This ensures title doesn't consume chart space
       },
     },
   };

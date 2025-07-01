@@ -19,7 +19,7 @@ import { getSettings } from './entitySettings';
 const settingsMarkup = getSettings() as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter } = settings ?? {};
+  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType: buttonTypeSetting } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getEntityTemplateState } = useEntityTemplates(settings);
   const { data: FormData } = useFormData();
@@ -53,7 +53,6 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
 
-    const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
     const result = data?.map((p) => ({
       id: p.id,
       name: p.name,
@@ -63,13 +62,16 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType: buttonType,
-      background,
-      border,
-      shadow,
-      font,
-      dimensions,
-      stylingBox,
+      permissions: p.permissions ?? item.permissions ?? [],
+      buttonType: p.buttonType ?? buttonTypeSetting ?? item.buttonType,
+      size: item.size,
+      background: p.background ?? item.background,
+      border: p.border ?? item.border,
+      shadow: p.shadow ?? item.shadow,
+      font: p.font ?? item.font,
+      stylingBox: p.stylingBox ?? item.stylingBox,
+      style: p.style ?? item.style,
+      dimensions: p.dimensions ?? item.dimensions,
       actionConfiguration: actionConfiguration,
     }));
 

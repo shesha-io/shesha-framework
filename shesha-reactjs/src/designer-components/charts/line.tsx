@@ -9,6 +9,7 @@ import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
 import { defaultConfigFiller, filterNonNull } from './utils';
+import { removeUndefinedProps } from '@/utils/object';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
@@ -17,14 +18,39 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <LineChartOutlined />,
   Factory: ({ model }) => {
+    const {
+      dimensionsStyles,
+      borderStyles,
+      backgroundStyles,
+      shadowStyles,
+      stylingBoxAsCSS,
+    } = model.allStyles;
+
+    const wrapperStyles = removeUndefinedProps({
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...stylingBoxAsCSS
+    });
+
     if (model.hidden) return null;
     
     return (
       <ConfigurableFormItem model={model}>
         {() => {
           return (
-            <ChartDataProvider>
-              {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl {...model} chartType='line' />}
+            <ChartDataProvider model={model}>
+              <div style={{
+                ...wrapperStyles,
+                minHeight: '400px',
+                padding: '16px',
+                boxSizing: 'border-box',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' filters={model.filters} />}
+              </div>
             </ChartDataProvider>
           );
         }}
@@ -51,6 +77,21 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       ...filterNonNull(prev),
       type: prev.type,
       id: prev.id
+    }))
+    .add<IChartProps>(6, prev => ({ 
+      ...prev,
+      isAxisTimeSeries: false,
+      isGroupingTimeSeries: false,
+      showXAxisScale: true,
+      showYAxisScale: true,
+      showXAxisTitle: true,
+      showYAxisTitle: true,
+      showXAxisLabel: true,
+      showYAxisLabel: true,
+      strokeColor: '#000000',
+      strokeWidth: 1,
+      maxResultCount: 10000,
+      requestTimeout: 10000,
     }))
 };
 

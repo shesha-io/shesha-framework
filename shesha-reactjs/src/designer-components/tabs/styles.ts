@@ -103,15 +103,16 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-repeat: ${backgroundRepeat} !important;
 
                 .ant-tabs-content {
-                overflow: auto;
-                scrollbar-width: thin;
-                ::-webkit-scrollbar { 
-                    width: 8px;
-                    background-color: transparent;
+                    overflow: auto;
+                    scrollbar-width: thin;
+                    ::-webkit-scrollbar { 
+                        width: 8px;
+                        background-color: transparent;
+                    }
+                        
+                    height: 100%;
+                    width: 100%;
                 }
-                    
-                height: 100%;
-                width: 100%;
             }
 
             .ant-tabs-tab {

@@ -19,9 +19,7 @@ import { ConfigurableButton } from '../configurableButton';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import {
     getActualModel,
-    getStyle,
     IApplicationContext,
-    pickStyleFromModel,
     useAvailableConstantsData
 } from '@/providers/form/utils';
 import { getButtonGroupMenuItem } from './utils';
@@ -33,17 +31,11 @@ import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { removeNullUndefined } from '@/providers/utils';
-import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
-import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
-import ValidationErrors from '@/components/validationErrors';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import { addPx } from '@/utils/style';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -55,52 +47,29 @@ type MenuButton = ButtonGroupItemProps & {
     dividerColor?: string;
 };
 
-const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: IApplicationContext; form?: FormInstance<any> }> = ({ props, uuid, appContext, form }) => {
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const [imageUrl, setImageUrl] = useState<string>('');
-    const { size, buttonType, background } = props;
+const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormInstance<any> }> = ({ props, uuid, form }) => {
+
+    const { size, buttonType } = props;
     const model = props;
 
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const jsStyle = getStyle(model.style, appContext.data);
+    const { backgroundStyles, fontStyles, borderStyles, shadowStyles, dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(model);
 
-    const dimensionsStyles = getDimensionsStyle(dimensions);
-    const borderStyles = getBorderStyle(border, jsStyle);
-    const fontStyles = getFontStyle(font);
-    const shadowStyles = getShadowStyle(shadow);
-
-    useEffect(() => {
-        const fetchImage = async () => {
-            const url = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-            setImageUrl(url);
-        };
-        fetchImage();
-    }, [background, backendUrl, httpHeaders]);
+    const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...dimensionsStyles,
         ...fontStyles,
-        ...(['primary', 'default'].includes(buttonType) && borderStyles),
-        ...(['primary', 'default'].includes(buttonType) && shadowStyles),
-        ...(['dashed', 'default'].includes(buttonType) && getBackgroundStyle(background, jsStyle, imageUrl)),
+        ...dimensionsStyles,
+        ...stylingBoxAsCSS,
+        ...(isPrimaryOrDefault && borderStyles),
+        ...(isPrimaryOrDefault && shadowStyles),
+        ...(buttonType === 'default' && backgroundStyles),
         ...jsStyle,
-        justifyContent: font?.align,
+        justifyContent: model?.font?.align,
     });
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
-
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
-        return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
 
     const finalStyles = removeUndefinedProps({
-        ...finalStyle, ...stylingBoxAsCSS, '--ant-button-padding-block-lg': '0px'
+        ...additionalStyles, '--ant-button-padding-block-lg': '0px'
     });
 
     return (
@@ -108,6 +77,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: 
             key={uuid}
             {...props}
             size={size}
+            danger={props.danger}
             style={removeNullUndefined({ ...finalStyles })}
             readOnly={props.readOnly}
             buttonType={buttonType}
@@ -133,7 +103,7 @@ const createMenuItem = (
     return isDivider
         ? { type: 'divider', style: { height: addPx(props.dividerWidth), backgroundColor: props.dividerColor } }
         : getButtonGroupMenuItem(
-            <RenderButton props={props} uuid={props.id} appContext={appContext} form={form} />,
+            <RenderButton props={props} uuid={props.id} form={form} />,
             props.id,
             props.readOnly,
             childItems
@@ -186,7 +156,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
         switch (item.itemSubType) {
             case 'button':
-                return <RenderButton props={{ ...item }} uuid={item.id} appContext={appContext} form={form} />;
+                return <RenderButton props={{ ...item }} uuid={item.id} form={form} />;
             case 'separator':
             case 'line':
                 return <Divider type='vertical' key={uuid} style={{ width: addPx(item.dividerWidth), backgroundColor: item.dividerColor }} />;
@@ -213,7 +183,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     });
     const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
 
-    const { size, spaceSize = 'middle', isInline, readOnly: disabled, form } = props;
+    const { size = props.size, gap = props.spaceSize ?? 'middle', isInline, readOnly: disabled, form } = props;
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
@@ -284,7 +254,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     if (isInline) {
         return (
             <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }}>
-                <Space size={spaceSize}>
+                <Space size={gap}>
                     {filteredItems?.map((item) =>
                         (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
                     )}
@@ -299,7 +269,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                 <Menu
                     mode="horizontal"
                     items={menuItems}
-                    className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${spaceSize}`)}
+                    className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${gap}`)}
                     style={{ ...props.styles, width: '30px', height: '30px' }}
                 />
             </div>
@@ -308,7 +278,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter);
+    const items = useActualContextData(props.items.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })), props.readOnly, null, standartActualModelPropertyFilter);
 
     const memoizedItems = useDeepCompareMemo(() => items, [items]);
 

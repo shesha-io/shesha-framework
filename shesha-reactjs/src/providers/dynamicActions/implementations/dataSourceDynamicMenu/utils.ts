@@ -58,3 +58,4 @@ export const useEntityTemplates = (settings: IDataSourceArguments) => {
 
   return { getEntityTemplateState };
 };
+
