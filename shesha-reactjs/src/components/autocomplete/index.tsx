@@ -228,11 +228,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       return null;
     const readonlyValue = props.mode === 'multiple'
       ? selected.current?.map((x) => ({ label: displayValueFunc(x, allData), value: keyValueFunc(outcomeValueFunc(x, allData), allData) }))
-      : {
-        id: keyValueFunc(outcomeValueFunc(selected.current[0], allData), allData),
-        _displayName: displayValueFunc(selected.current[0], allData),
-        _className: selected.current[0]?._className
-      };
+      : props.value;
     return (
       <ReadOnlyDisplayFormItem
         value={readonlyValue}
