@@ -44,7 +44,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   Factory: ({ model, calculatedModel }) => {
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
-    const tagStyle = useFormComponentStyles({ ...model.tag, font: model.font }).fullStyle;
+    const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -63,7 +63,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
-            tagStyle={{ ...tagStyle }}
+            tagStyle={{ ...tagStyle, justifyContent: tagStyle?.textAlign }}
             onChange={onChangeInternal}
           />;
         }}
