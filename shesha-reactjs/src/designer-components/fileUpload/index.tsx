@@ -21,7 +21,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { removeUndefinedProps } from '@/utils/object';
+import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -105,7 +105,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       };
     }, [background, backendUrl, httpHeaders]);
 
-    const styling = JSON.parse(model.stylingBox || '{}');
+    const styling = jsonSafeParse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
