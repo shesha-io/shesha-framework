@@ -713,6 +713,7 @@ export const getItemSettings = () => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
+                                jsSetting: true,
                                 parentId: securityTabId
                             })
                             .toJson()
