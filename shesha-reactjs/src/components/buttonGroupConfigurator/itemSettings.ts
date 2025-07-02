@@ -6,7 +6,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 
-export const getItemSettings = (data) => {
+export const getItemSettings = () => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
     const appearanceTabId = nanoid();
@@ -20,8 +20,10 @@ export const getItemSettings = (data) => {
     const stylePnlId = nanoid();
     const customStylePnlId = nanoid();
 
+    const entityOrUrl = 'getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url"';
+
     return {
-        components: new DesignerToolbarSettings(data)
+        components: new DesignerToolbarSettings()
             .addSearchableTabs({
                 id: searchableTabsId,
                 propertyName: 'settingsTabs',
@@ -90,8 +92,12 @@ export const getItemSettings = (data) => {
                                         .addSettingsInputRow({
                                             id: nanoid(),
                                             parentId: commonButtonSettingsContainerId,
-                                            hidden: data?.itemSubType !== 'button',
-                                            inputs: [
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any,
+                                             inputs: [
                                                 {
                                                     id: nanoid(),
                                                     type: "textField",
@@ -334,7 +340,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) == "separator";',
+                                        _code: `return  getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`,
                                         _mode: 'code',
                                         _value: false
                                     } as any,
@@ -420,7 +426,7 @@ export const getItemSettings = (data) => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
@@ -448,7 +454,7 @@ export const getItemSettings = (data) => {
                                     ghost: true,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
-                                    hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     content: {
                                         id: backgroundStylePnlId,
                                         components: [
@@ -579,7 +585,7 @@ export const getItemSettings = (data) => {
                                     label: 'Shadow',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
@@ -650,7 +656,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     parentId: appearanceTabId,
-                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     collapsible: 'header',
                                     content: {
                                         id: stylePnlId,
@@ -671,7 +677,11 @@ export const getItemSettings = (data) => {
                                     label: 'Custom Styles',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    hidden: {
+                                        _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`,
+                                        _mode: 'code',
+                                        _value: false
+                                    } as any,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
