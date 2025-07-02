@@ -22,7 +22,7 @@ import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
 import { getShadowStyle } from "@/designer-components/_settings/utils/shadow/utils";
 import { useDeepCompareEffect } from "./useDeepCompareEffect";
 import { getBackgroundStyle } from "@/designer-components/_settings/utils/background/utils";
-import { removeUndefinedProps } from "@/utils/object";
+import { jsonSafeParse, removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
 
@@ -191,7 +191,7 @@ export const useFormComponentStyles = <TModel,>(
       : getBackgroundStyle(background, jsStyle)
   );
 
-  const styligBox = JSON.parse(stylingBox || '{}');
+  const styligBox = jsonSafeParse(stylingBox || '{}');
 
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);

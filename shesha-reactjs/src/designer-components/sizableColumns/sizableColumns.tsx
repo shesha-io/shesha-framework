@@ -15,7 +15,7 @@ import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { ValidationErrors } from '@/components';
-import { removeUndefinedProps } from '@/utils/object';
+import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
@@ -69,7 +69,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    const styling = JSON.parse(model.stylingBox || '{}');
+    const styling = jsonSafeParse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...style,
