@@ -68,7 +68,7 @@ const PieChart = ({ data }: IPieChartProps) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    maintainAspectRatio: false, // Allow the chart to fill available space
     aspectRatio: 1, // Square aspect ratio for pie charts
     layout: {
       padding: {
@@ -77,11 +77,6 @@ const PieChart = ({ data }: IPieChartProps) => {
         left: 10,
         right: 10
       }
-    },
-    animation: {
-      duration: 1500, // Animation duration in milliseconds
-      easing: 'easeInOutQuart', // Smooth easing function for pie slices
-      delay: (context) => context.dataIndex * 100, // Staggered animation for pie slices
     },
     transitions: {
       active: {

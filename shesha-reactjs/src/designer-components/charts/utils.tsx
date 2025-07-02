@@ -5,11 +5,33 @@ import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
+import { IPropertyMetadata } from "@/interfaces";
 
-export const MAX_TITLE_LINE_LENGTH = 14;
+export const MAX_TITLE_LINE_LENGTH = 12;
 
+/**
+ * Make sure the properties are valid for the entity type
+ * @param metaData - The metadata of the entity type
+ * @param axisProperty - The property to use for the axis
+ * @param valueProperty - The property to use for the value
+ * @returns An array of faulty properties by name e.g. ['axisProperty', 'groupingProperty', 'valueProperty']
+ */
+export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null, groupingProperty: string | null) => {
+  const faultyProperties: string[] = [];
+  
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push(`'axisProperty'`);
+  }
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push(`'valueProperty'`);
+  }
+  if (groupingProperty && !metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === groupingProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push(`'groupingProperty'`);
+  }
+  return faultyProperties;
+};
 
-  // Optimized data processing function
+// Optimized data processing function
 export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>) => {
     const processedItems = new Array(items.length);
 
@@ -68,20 +90,20 @@ export const sortItems = (items: any[], isTimeSeries: boolean, property: string)
  * @param title the title to manage
  * @returns the managed title
  */
-export const splitTitleIntoLines = (title: string): string | string[] => {
-  const words = title.split(' ');
+export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_TITLE_LINE_LENGTH, lineCount: number = 5): string | string[] => {
+  const words = title?.split(' ') ?? [];
   const lines = [];
   let currentLine = '';
 
-  if (title.split(' ').length < MAX_TITLE_LINE_LENGTH) {
+  if (words?.length < lineWordLength) {
     return title;
   }
 
   for (const word of words) {
-    if (currentLine.split(' ').length < MAX_TITLE_LINE_LENGTH) {
+    if (currentLine?.split(' ').length < lineWordLength) {
       currentLine += (currentLine ? ' ' : '') + word;
     } else {
-      if (lines.length === 5) {
+      if (lines.length === lineCount) {
         lines.push("...");
         return lines;
       }
@@ -253,19 +275,19 @@ function convertNestedPropertiesToObjectFormat(array?: string[]) {
  * @param filters filters to apply to the data before returning
  * @param groupingProperty legend property to use for the chart
  * @param axisProperty axis property to use for the chart
- * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string,  orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
+      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty])).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       skipCount: skipCount ?? 0,
       maxResultCount: maxResultCount ?? 100,
+      orderBy: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
     },
   };
 };

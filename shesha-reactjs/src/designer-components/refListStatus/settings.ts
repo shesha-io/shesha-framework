@@ -584,7 +584,8 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
-                                parentId: securityTabId
+                                parentId: securityTabId,
+                                jsSetting: true,
                             })
                             .toJson()
                         ]

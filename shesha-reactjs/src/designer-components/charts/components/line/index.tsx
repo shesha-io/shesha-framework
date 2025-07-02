@@ -26,6 +26,8 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
   const {
     axisProperty: xProperty,
     valueProperty: yProperty,
+    axisPropertyLabel,
+    valuePropertyLabel,
     aggregationMethod,
     showLegend,
     showTitle,
@@ -80,14 +82,19 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     }
   }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension, isSmallScreen]);
 
+  const yTitle = (valuePropertyLabel?.trim().length > 0) ? `${valuePropertyLabel}` : `${yProperty} (${aggregationMethod})`;
+
   const options: any = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     aspectRatio: isSmallScreen ? 1.5 : 2, // Smaller aspect ratio on mobile
-    animation: {
-      duration: isSmallScreen ? 1000 : 1200, // Faster animations on mobile
-      easing: 'easeInOutCubic',
-      delay: (context) => context.dataIndex * (isSmallScreen ? 20 : 30),
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
     },
     transitions: {
       active: {
@@ -130,7 +137,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       x: {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
-          text: xProperty?.trim() ?? '',
+          text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',
@@ -159,9 +166,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
       y: {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
-          text: dataMode === 'url' || !aggregationMethod
-            ? yProperty?.trim() ?? ''
-            : `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
+          text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
           font: {
             size: isSmallScreen ? 10 : 12,
             weight: 'bold',
