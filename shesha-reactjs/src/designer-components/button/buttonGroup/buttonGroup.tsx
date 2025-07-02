@@ -175,14 +175,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
 
-    // ToDo: AS - review optimization
-    const preparedItems = props.items?.map((item) => {
-        // add editMode property if not exists
-        const preparedItem = { ...item, editMode: typeof item['editMode'] === 'undefined' ? undefined : item['editMode'] };
-        return getActualModel(preparedItem, allData, props.readOnly);
-    });
-    const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
-
     const { size = props.size, gap = props.spaceSize ?? 'middle', isInline, readOnly: disabled, form } = props;
 
     const isDesignMode = allData.form?.formMode === 'designer';
@@ -228,10 +220,10 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     }, [allData]);
 
     const actualItems = useDeepCompareMemo(() => {
-        return Promise.all(items?.map(async (item) => {
+        return Promise.all(props.items?.map(async (item) => {
             return prepareItem({ ...item }, disabled);
         }) || []);
-    }, [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
+    }, [props.items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
     const [resolvedItems, setResolvedItems] = useState<ButtonGroupItemProps[]>([]);
 
