@@ -6,7 +6,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 
-export const getItemSettings = (data) => {
+export const getItemSettings = () => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
     const appearanceTabId = nanoid();
@@ -23,7 +23,7 @@ export const getItemSettings = (data) => {
     const entityOrUrl = 'getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url"';
 
     return {
-        components: new DesignerToolbarSettings(data)
+        components: new DesignerToolbarSettings()
             .addSearchableTabs({
                 id: searchableTabsId,
                 propertyName: 'settingsTabs',
@@ -92,8 +92,12 @@ export const getItemSettings = (data) => {
                                         .addSettingsInputRow({
                                             id: nanoid(),
                                             parentId: commonButtonSettingsContainerId,
-                                            hidden: data?.itemSubType !== 'button',
-                                            inputs: [
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any,
+                                             inputs: [
                                                 {
                                                     id: nanoid(),
                                                     type: "textField",

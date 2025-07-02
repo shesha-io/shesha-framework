@@ -70,7 +70,7 @@ export const getSettings = (data: IButtonGroupComponentProps) => {
                                         id: nanoid(),
                                         parentId: commonTabId,
                                         type: 'buttonGroupConfigurator',
-                                        propertyName: 'buttonItems',
+                                        propertyName: 'items',
                                         label: 'Configure Buttons'
                                     },
                                     {

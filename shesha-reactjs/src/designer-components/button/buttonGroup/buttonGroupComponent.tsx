@@ -103,7 +103,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     })
     .add<IButtonGroupComponentProps>(13, (prev) => {
       const newModel = { ...prev };
-      newModel.buttonItems = prev.items;
+      newModel.items = prev.items;
       return newModel;
     }),
   settingsFormMarkup: (props) => getSettings(props),

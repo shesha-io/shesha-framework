@@ -15,7 +15,6 @@ export interface IButtonGroupProps extends IBaseButtonGroupProps, IStyleType {
 
 export interface IBaseButtonGroupProps {
   items?: ButtonGroupItemProps[];
-  buttonItems?: ButtonGroupItemProps[];
   size?: SizeType;
   spaceSize?: SizeType;
   isInline?: boolean;
