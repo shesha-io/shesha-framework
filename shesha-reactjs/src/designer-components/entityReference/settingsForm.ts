@@ -1155,6 +1155,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityId,
                 })

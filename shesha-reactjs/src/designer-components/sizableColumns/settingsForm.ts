@@ -494,6 +494,7 @@ export const getSettings = (data: any) => {
                 label: 'Permissions',
                 size: 'small',
                 parentId: securityId,
+                jsSetting: true,
                 permissions: data.permissions,
                 tooltip: "Enter a list of permissions that should be associated with this component"
               })
