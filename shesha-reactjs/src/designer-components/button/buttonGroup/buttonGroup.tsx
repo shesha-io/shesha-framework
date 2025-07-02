@@ -18,7 +18,6 @@ import {
 import { ConfigurableButton } from '../configurableButton';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import {
-  getActualModel,
     getStyle,
     IApplicationContext,
     useAvailableConstantsData
@@ -33,6 +32,8 @@ import classNames from 'classnames';
 import { addPx } from '../util';
 import { removeNullUndefined } from '@/providers/utils';
 import { useDeepCompareMemo } from '@/hooks';
+import { useActualContextData } from '@/hooks/useActualContextData';
+import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -149,17 +150,10 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
 type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
-export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items: modelItems, size, spaceSize = 'middle', isInline, form, readOnly }) => {
+export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, form }) => {
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
-
-    const preparedItems = modelItems?.map((item) => {
-        // add editMode property if not exists
-        const preparedItem = { ...item, editMode: typeof item['editMode'] === 'undefined' ? undefined : item['editMode'] };
-        return getActualModel(preparedItem, allData, readOnly);
-    });
-    const items = useDeepCompareMemo(() => preparedItems, [preparedItems]);
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
@@ -233,8 +227,12 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items: modelItems, siz
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+    const items = useActualContextData(props.items.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })), props.readOnly, null, standartActualModelPropertyFilter);
+
+    const memoizedItems = useDeepCompareMemo(() => items, [items]);
+
     return (
-        <DynamicActionsEvaluator items={props.items}>
+        <DynamicActionsEvaluator items={memoizedItems}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}
         </DynamicActionsEvaluator>
     );
