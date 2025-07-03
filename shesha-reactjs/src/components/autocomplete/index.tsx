@@ -270,60 +270,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     }
   };
 
-  const { width, ...restOfDropdownStyles } = style ?? {};
-
-  const content = useMemo(() => {
-    const shouldShowLoading = keys.length > 0 && loadingDisplayValues && selected.current.length === 0;
-
-    if (shouldShowLoading) {
-
-      return (
-        <div className={styles.loadingSpinner}>
-          <Spin size="small" />
-          <span className={styles.loadingText}>Loading...</span>
-        </div>
-      );
-    }
-
-    return (
-      <Select
-        title={title}
-        onDropdownVisibleChange={onDropdownVisibleChange}
-        value={keys}
-        className={styles.autocomplete}
-        dropdownStyle={restOfDropdownStyles}
-        showSearch={!props.disableSearch}
-        notFoundContent={props.notFoundContent}
-        defaultActiveFirstOption={false}
-        filterOption={false}
-        onSearch={handleSearch}
-        onChange={handleChange}
-        allowClear={allowClear}
-        loading={source?.isInProgress?.fetchTableData}
-        placeholder={props.placeholder}
-        disabled={props.readOnly}
-        onSelect={handleSelect}
-        style={style}
-        size={props.size}
-        ref={selectRef}
-        variant={style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth") ? 'borderless' : undefined}
-        mode={props.value && props.mode === 'multiple' ? props.mode : undefined}
-      >
-        {freeTextValuesList}
-        {list}
-        {!open && selectedValuesList}
-      </Select>
-    );
-  }, [
-    keys,
-    loadingDisplayValues,
-    selected.current,
-    open,
-    source?.isInProgress?.fetchTableData,
-    source?.tableData,
-    source?.totalRows,
-  ]);
-
   if (props.readOnly) {
     if (!selected.current)
       return null;
@@ -348,8 +294,49 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
+
+  const { width, ...restOfDropdownStyles } = style ?? {};
+
+  const shouldShowLoading = keys.length > 0 && loadingDisplayValues && selected.current.length === 0;
+
+  if (shouldShowLoading) {
+
+    return (
+      <div className={styles.loadingSpinner}>
+        <Spin size="small" />
+        <span className={styles.loadingText}>Loading...</span>
+      </div>
+    );
+  }
+
   return (
-    <>{content}</>
+    <Select
+      title={title}
+      onDropdownVisibleChange={onDropdownVisibleChange}
+      value={keys}
+      className={styles.autocomplete}
+      dropdownStyle={restOfDropdownStyles}
+      showSearch={!props.disableSearch}
+      notFoundContent={props.notFoundContent}
+      defaultActiveFirstOption={false}
+      filterOption={false}
+      onSearch={handleSearch}
+      onChange={handleChange}
+      allowClear={allowClear}
+      loading={source?.isInProgress?.fetchTableData}
+      placeholder={props.placeholder}
+      disabled={props.readOnly}
+      onSelect={handleSelect}
+      style={style}
+      size={props.size}
+      ref={selectRef}
+      variant={style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth") ? 'borderless' : undefined}
+      mode={props.value && props.mode === 'multiple' ? props.mode : undefined}
+    >
+      {freeTextValuesList}
+      {list}
+      {!open && selectedValuesList}
+    </Select>
   );
 };
 
