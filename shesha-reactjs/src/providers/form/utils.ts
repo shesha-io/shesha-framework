@@ -81,7 +81,7 @@ import { useShaFormInstance, useShaFormUpdateDate } from './providers/shaFormPro
 import { QueryStringParams } from '@/utils/url';
 import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
-import { unproxyValue } from '@/utils/object';
+import { jsonSafeParse, unproxyValue } from '@/utils/object';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -231,8 +231,8 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
       getArguments: (args) => {
         var fArgs = args.length === 1 ? args[0] : args;
         return fArgs._propAccessors !== undefined
-          ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({n, v: v() && v()['getData'] ? v().getData() : v() }))
-          : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v ));
+          ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({ n, v: v() && v()['getData'] ? v().getData() : v() }))
+          : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v));
       }
     }
   };
@@ -284,7 +284,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => httpClient,
     message: () => message,
     fileSaver: () => FileSaver,
-    data: () => !shaFormInstance ? EMPTY_DATA  : GetShaFormDataAccessor(shaFormInstance),
+    data: () => !shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor(shaFormInstance),
     form: () => shaFormInstance,
     query: () => queryStringGetter?.() ?? {},
     initialValues: () => shaFormInstance?.initialValues,
@@ -323,8 +323,8 @@ export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = 
 
   const fullContext = useAvailableConstantsContexts();
   // override DataContextManager to be responsive to changes in contexts
-  fullContext.dcm = useDataContextManager(); 
-  
+  fullContext.dcm = useDataContextManager();
+
   const accessors = wrapConstantsData({ fullContext, ...args, topContextId: 'all' });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
@@ -1084,13 +1084,13 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
         message: validate?.message || 'This field is required',
       });
 
-    if (validate.minValue)
+    if (validate.minValue !== undefined)
       rules.push({
         min: validate.minValue,
         type: 'number',
       });
 
-    if (validate.maxValue)
+    if (validate.maxValue !== undefined)
       rules.push({
         max: validate.maxValue,
         type: 'number',
@@ -1267,7 +1267,7 @@ export const validateForm = (rules: Rules, values: ValidateSource): Promise<void
 
 export const getFormValidationRules = (markup: FormMarkup): Rules => {
   const components = getComponentsFromMarkup(markup);
-  
+
   const rules: Rules = {};
   components?.forEach((component) => {
     rules[component.propertyName] = getValidationRules(component) as [];
@@ -1571,7 +1571,7 @@ export const getStyle = (
 };
 
 export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }) => {
-  const styling = JSON.parse(model?.stylingBox || '{}');
+  const styling = jsonSafeParse(model?.stylingBox || '{}');
   let style = pickStyleFromModel(styling);
 
   try {

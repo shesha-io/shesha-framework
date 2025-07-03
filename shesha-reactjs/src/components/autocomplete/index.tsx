@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { DataTableProvider, evaluateString, getUrlKeyParam, useActualContextData, useDataTableStore, useDeepCompareMemo, useShaFormInstance } from '@/index';
+import { DataTableProvider, evaluateString, getUrlKeyParam, useActualContextData, useDataTableStore, useDeepCompareMemo, useNestedPropertyMetadatAccessor, useShaFormInstance } from '@/index';
 import { Select, Typography } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
@@ -12,6 +12,7 @@ import { ValueRenderer } from '../valueRenderer';
 import { isEqual, uniqWith } from 'lodash';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './style';
+import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
@@ -224,7 +225,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   };
 
   if (props.readOnly) {
-    if (!props.value)
+    if (!selected.current)
       return null;
     const readonlyValue = props.mode === 'multiple'
       ? selected.current?.map((x) => ({ label: displayValueFunc(x, allData), value: keyValueFunc(outcomeValueFunc(x, allData), allData) }))
@@ -289,6 +290,9 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
   const disableRefresh = useRef<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();
+
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  const permanentFilter = useFormEvaluatedFilter({ filter: props.filter, metadataAccessor: propertyMetadataAccessor });
 
   const fields = [...(props.fields ?? [])];
   if (props.displayPropName && fields.findIndex((x) => x === props.displayPropName) === -1)
@@ -360,7 +364,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       sortMode='standard'
       standardSorting={props.sorting}
       allowReordering={false}
-      permanentFilter={props.filter}
+      permanentFilter={permanentFilter}
       disableRefresh={disableRefresh.current}
     >
       <AutocompleteInner

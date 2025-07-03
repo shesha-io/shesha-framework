@@ -17,6 +17,7 @@ namespace Shesha.ShaRoles.Dto
         public string? Description { get; set; }
 
         public Guid? Module { get; set; }
+        public Guid? RoleAppointmentType { get; set; }
 
         public bool? CanAssignToMultiple { get; set; }
         public bool? CanAssignToPerson { get; set; }

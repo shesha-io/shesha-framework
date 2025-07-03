@@ -63,7 +63,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       sortOrder: 0,
       dynamicItem: p,
       permissions: p.permissions ?? item.permissions ?? [],
-      buttonType: p.buttonType ?? buttonTypeSetting ?? item.buttonType,
+      buttonType: p.buttonType ?? item.buttonType ?? buttonTypeSetting,
       size: item.size,
       background: p.background ?? item.background,
       border: p.border ?? item.border,

@@ -35,8 +35,8 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       ...model.allStyles.jsStyle,
       justifyContent: model.font?.align
     };
-    
-    return (
+
+    return model.hidden ? null : (
       <ConfigurableButton
         {...restProps}
         readOnly={model.readOnly}

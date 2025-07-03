@@ -651,6 +651,7 @@ export const getSettings = (data: any) => {
                   label: 'Permissions',
                   size: 'small',
                   parentId: securityTabId,
+                  jsSetting: true,
                 })
                 .toJson(),
             ],

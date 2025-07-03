@@ -7,7 +7,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { IFormComponentContainer, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
-import { removeUndefinedProps } from '@/utils/object';
+import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
@@ -69,7 +69,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    const styling = JSON.parse(model.stylingBox || '{}');
+    const styling = jsonSafeParse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,

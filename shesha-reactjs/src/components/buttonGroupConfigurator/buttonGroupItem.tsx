@@ -16,6 +16,7 @@ import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { useActualContextData } from '@/hooks';
+import { jsonSafeParse } from '@/utils/object';
 
 const { Text } = Typography;
 
@@ -70,7 +71,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   const font = prevStyles?.font;
   const shadow = prevStyles?.shadow;
   const background = prevStyles?.background;
-  const styling = JSON.parse(model.stylingBox || '{}');
+  const styling = jsonSafeParse(model.stylingBox || '{}');
 
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
   const jsStyle = useMemo(() => getStyle(model.style), [model.style]);

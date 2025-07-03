@@ -51,6 +51,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       textAlign: model?.font?.align,
       color: model?.font?.color,
       fontSize: model?.font?.size,
+      hasSuffix: model?.suffix,
     });
 
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
@@ -59,8 +60,8 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
     const inputProps: InputNumberProps = {
       disabled: model.readOnly,
       variant: model.hideBorder ? 'borderless' : undefined,
-      min: model.min ?? 0,
-      max: model.max ?? Number.MAX_SAFE_INTEGER,
+      min: model.min !== undefined ? model.min : null,
+      max: model.max !== undefined ? model.max : Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
       style: model.style ? model.allStyles.jsStyle : { width: '100%' },
@@ -68,7 +69,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       ...calculatedModel.eventHandlers,
       defaultValue: calculatedModel.defaultValue,
       changeOnWheel: false,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={suffixStyle} />}</>,
+      prefix: <>{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={suffixStyle} />}{model.prefix}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={suffixStyle} />}</>,
     };
 

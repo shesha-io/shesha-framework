@@ -56,6 +56,7 @@ export const defaultStyles = (prev): IStyleType => {
       maxWidth: 'auto'
     },
     stylingBox: '{"paddingLeft":"15","paddingBottom":"4","paddingTop":"4","paddingRight":"15"}',
+    style: prev.style ?? '',
   };
 };
 
@@ -69,6 +70,6 @@ export const defaultContainerStyles = (): IStyleType => {
       borderType: 'all',
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
-    dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
   };
 };

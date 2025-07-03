@@ -1114,6 +1114,7 @@ export const getSettings = (data: IKanbanProps) => {
                   propertyName: 'permissions',
                   label: 'Permissions',
                   size: 'small',
+                  jsSetting: true,
                   parentId: securityTabId,
                   tooltip: 'Enter a list of permissions that should be associated with this component',
                 })
