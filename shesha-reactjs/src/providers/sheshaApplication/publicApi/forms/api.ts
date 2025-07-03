@@ -65,11 +65,8 @@ export class FormsApi implements IFormsApi {
         };
 
          try {
-          console.log(`Preparing template ${template.name} with model type ${template.modelType || 'unknown'}`);
-          
           // Determine the correct generation logic for this template
           const generationLogic = this._generationLogicFactory.getGenerationLogic(template);
-          console.log(`Using generation logic: ${generationLogic.constructor.name}`);
 
           // Process the template using the appropriate generation logic
           const preparedMarkup = await generationLogic.processTemplate(
