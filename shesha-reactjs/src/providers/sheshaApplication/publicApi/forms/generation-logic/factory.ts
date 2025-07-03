@@ -2,6 +2,8 @@ import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
 import { GenerationLogic } from "./interface";
 import { DetailsViewGenerationLogic } from "./detailsViewGenerationLogic";
+import { BlankViewGenerationLogic } from "./blankViewGenerationLogic";
+import { TableViewGenerationLogic } from "./tableViewGenerationLogic";
 
 /**
  * Factory for creating appropriate GenerationLogic implementations
@@ -10,6 +12,8 @@ export class GenerationLogicFactory {
   private _implementations: GenerationLogic[] = [];  
   private _logicConstructors: (new () => GenerationLogic)[] = [
     DetailsViewGenerationLogic,
+    BlankViewGenerationLogic,
+    TableViewGenerationLogic,
   ];
   
   constructor() {
@@ -35,7 +39,8 @@ export class GenerationLogicFactory {
       this._implementations.push(new logicConstructor());
     }
   }
-    /**
+    
+  /**
    * Get the appropriate generation logic for a template
    * @param template The form template requiring generation logic
    * @returns An appropriate GenerationLogic implementation

@@ -198,7 +198,7 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addKeyInformationBar(props: KeyInformationBarType | ((data: T) => KeyInformationBarType)) {
-    return this.addProperty(props, 'KeyInformationBar');
+    return this.addProperty(props, 'keyInformationBar');
   }
 
   public addDropdown(props: DropdownType | ((data: T) => DropdownType)) {

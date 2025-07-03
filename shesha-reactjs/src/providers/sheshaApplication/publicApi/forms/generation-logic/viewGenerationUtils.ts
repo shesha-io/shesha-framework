@@ -4,33 +4,40 @@ import { evaluateString } from "@/providers/form/utils";
 
 export function findContainersWithPlaceholder(markup: any, placeholder: string): any[] {
   const containers: any[] = [];
-  findContainersWithPlaceholderRecursive(markup, placeholder, containers);
+  const visited = new WeakSet();
+  findContainersWithPlaceholderRecursive(markup, placeholder, containers, visited);
   return containers;
 }
-
-export function findContainersWithPlaceholderRecursive(token: any, className: string, results: any[]): void {
+export function findContainersWithPlaceholderRecursive(
+  token: any,
+  placeholder: string,
+  results: any[],
+  visited: WeakSet<any>
+): void {
   if (!token) return;
   if (typeof token === 'object' && token !== null) {
-    if (token.componentName === className || token.propertyName === className) {
+    if (visited.has(token)) return;
+    visited.add(token);
+    if (token.componentName === placeholder || token.propertyName === placeholder) {
       results.push(token);
     }
     if (Array.isArray(token)) {
-      token.forEach(item => findContainersWithPlaceholderRecursive(item, className, results));
+      token.forEach(item =>
+        findContainersWithPlaceholderRecursive(item, placeholder, results, visited)
+      );
     } else {
       for (const key in token) {
-        findContainersWithPlaceholderRecursive(token[key], className, results);
+        findContainersWithPlaceholderRecursive(token[key], placeholder, results, visited);
       }
     }
   }
 }
 
-export function deserializeExtensionJson<T>(data: object): T {
-  try {
-    return data as T;
-  } catch (error) {
-    console.error("Unable to deserialize extension JSON:", error);
-    throw new Error(`Unable to deserialize extension JSON: ${data}`);
-  }
+export function castToExtensionType<T>(data: unknown): T {
+    if (!data || typeof data !== 'object') {
+        throw new Error(`Invalid extension data: expected object, got ${typeof data}`);
+    }
+        return data as T;
 }
 
 export function humanizeModelType(modelType: string): string {

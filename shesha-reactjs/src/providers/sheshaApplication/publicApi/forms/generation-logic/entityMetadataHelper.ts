@@ -36,24 +36,6 @@ export class EntityMetadataHelper {
       throw new Error(`Unable to fetch metadata for model type: ${modelType}`);
     });
   };
-
-  /**
-   * Convert camelCase or PascalCase model type to a human-readable form
-   * @param modelType The model type to humanize
-   * @returns The humanized model type string
-   */
-  public humanizeModelType(modelType: string): string {
-    if (!modelType) return '';
-    
-    // Add spaces before capital letters and ensure first letter is capitalized
-    return modelType
-      // Add space before uppercase letters
-      .replace(/([A-Z])/g, ' $1')
-      // Remove spaces at the beginning
-      .replace(/^\s+/, '')
-      // Ensure first letter is uppercase
-      .replace(/^./, (str) => str.toUpperCase());
-  }
   
   public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings<{}>, isReadOnly: boolean = false): void {
     const commonProps = {

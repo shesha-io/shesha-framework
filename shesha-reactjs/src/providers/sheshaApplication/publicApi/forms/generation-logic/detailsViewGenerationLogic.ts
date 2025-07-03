@@ -8,7 +8,7 @@ import { nanoid } from "nanoid";
 import { toCamelCase } from "@/utils/string";
 import { EntityMetadataHelper } from "./entityMetadataHelper";
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { findContainersWithPlaceholder, deserializeExtensionJson, humanizeModelType, processBaseMarkup } from "./viewGenerationUtils";
+import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, processBaseMarkup } from "./viewGenerationUtils";
 
 /**
  * Interface for the extension JSON configuration for Details View
@@ -40,7 +40,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
 
       const markupObj = JSON.parse(processedMarkup);
 
-      const extensionJson = deserializeExtensionJson<DetailsViewExtensionJson>(replacements);
+      const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
       if (extensionJson?.modelType) {
         const entity = await metadataHelper.fetchEntityMetadata(extensionJson.modelType);
 
@@ -187,8 +187,8 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       throw new Error("No details panel container found in the markup.");
     }
 
-    var column1 = [];
-    var column2 = [];
+    const column1 = [];
+    const column2 = [];
     if (metadata.length > 5) {
 
       metadata.forEach((prop, index) => {
@@ -255,13 +255,11 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       throw new Error("No child table container found in the markup.");
     }
 
-    var entities: EntityMetadataDto[] = []; 
-
-    const fetchPromises = extensionJson.childTablesList.map(async (childTable: string) => {
-      return await metadataHelper.fetchEntityMetadata(childTable);
-    });
-    
-    entities = await Promise.all(fetchPromises);
+    const entities: EntityMetadataDto[] = await Promise.all(
+      extensionJson.childTablesList.map(async (childTable: string) => {
+        return await metadataHelper.fetchEntityMetadata(childTable);
+      })
+    );
     
     if (entities.length > 0) {
       builder.addTabs({
@@ -354,7 +352,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
                 {
                   "==": [
                     {
-                      "var": "address"
+                      "var": childTable.properties.find(p => p.entityType === extensionJson.modelType)?.path,
                     },
                     {
                       "evaluate": [

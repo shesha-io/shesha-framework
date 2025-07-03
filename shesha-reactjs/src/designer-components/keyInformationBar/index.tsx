@@ -15,7 +15,7 @@ import { defaultStyles } from './utils';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
-  type: 'KeyInformationBar',
+  type: 'keyInformationBar',
   isInput: false,
   name: 'Key Information Bar',
   icon: <BorderLeftOutlined />,
