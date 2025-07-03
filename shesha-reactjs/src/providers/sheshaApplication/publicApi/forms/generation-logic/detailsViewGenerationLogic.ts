@@ -4,7 +4,7 @@ import { GenerationLogic } from "./interface";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { EntityMetadataDto } from "../models/entityMetadata";
 import { DesignerToolbarSettings, EditMode } from "@/index";
-import { nanoid } from "nanoid";
+import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { EntityMetadataHelper } from "./entityMetadataHelper";
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
