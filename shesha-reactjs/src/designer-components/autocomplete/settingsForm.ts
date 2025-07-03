@@ -1147,6 +1147,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
+                                jsSetting: true,
                                 size: 'small',
                                 parentId: securityTabId
                             })

@@ -501,6 +501,7 @@ export const getSettings = (data: IButtonGroupComponentProps) => {
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
+                                jsSetting: true,
                                 size: 'small',
                                 parentId: securityTabId
                             })

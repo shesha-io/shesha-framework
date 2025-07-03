@@ -717,6 +717,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
+                                jsSetting: true,
                                 parentId: securityTabId
                             })
                             .toJson()

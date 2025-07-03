@@ -81,7 +81,7 @@ import { useShaFormInstance, useShaFormUpdateDate } from './providers/shaFormPro
 import { QueryStringParams } from '@/utils/url';
 import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
-import { unproxyValue } from '@/utils/object';
+import { jsonSafeParse, unproxyValue } from '@/utils/object';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -1571,7 +1571,7 @@ export const getStyle = (
 };
 
 export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }) => {
-  const styling = JSON.parse(model?.stylingBox || '{}');
+  const styling = jsonSafeParse(model?.stylingBox || '{}');
   let style = pickStyleFromModel(styling);
 
   try {

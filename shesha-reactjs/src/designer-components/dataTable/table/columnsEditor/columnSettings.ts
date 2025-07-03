@@ -415,7 +415,8 @@ export const getColumnSettings = (data?: any) => ({
                             "type": "settingsInput",
                             "inputType": "permissions",
                             "propertyName": "permissions",
-                            "label": "Permissions"
+                            "label": "Permissions",
+                            "jsSetting": true,
                         }
                     ]
                 }

@@ -2,10 +2,10 @@ import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getGroupSettings = (data) => {
+export const getGroupSettings = () => {
 
     return {
-        components: new DesignerToolbarSettings(data)
+        components: new DesignerToolbarSettings()
             .addSearchableTabs({
                 id: 'W_m7doMyCpCYwAYDfRh6I',
                 propertyName: 'settingsTabs',

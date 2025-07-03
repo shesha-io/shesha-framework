@@ -10,6 +10,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { jsonSafeParse } from '@/utils/object';
 
 export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
   mappings?: string;
@@ -60,7 +61,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
 
     const getParsedMappings = () => {
       try {
-        return JSON.parse(model?.mappings);
+        return jsonSafeParse(model?.mappings);
       } catch {
         return null;
       }
