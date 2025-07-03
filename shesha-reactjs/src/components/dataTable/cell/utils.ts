@@ -31,6 +31,10 @@ export const adjustWidth = (crudOptions: ICrudOptions) => {
   if (isEditEnabled && isDeleteEnabled) {
     return { minWidth: 70, maxWidth: 70 };
   }
+
+    if (isEditEnabled && !isDeleteEnabled) {
+    return { minWidth: 70, maxWidth: 70 };
+  }
   
   if (isEditEnabled || isDeleteEnabled) {
     return { minWidth: 35, maxWidth: 35 };
