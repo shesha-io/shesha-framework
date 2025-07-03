@@ -60,7 +60,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const [loadingDisplayValues, setLoadingDisplayValues] = useState<boolean>(false);
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-   useEffect(() => {
+  // prevents component from loading forever when dataSource fails, or when it doesn't exist
+  useEffect(() => {
     return () => {
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current);
@@ -97,7 +98,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
             clearTimeout(loadingTimeoutRef.current);
             loadingTimeoutRef.current = null;
           }
-          
+
           const values = Array.isArray(props.value) ? props.value : [props.value];
           selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
           return;
@@ -111,30 +112,30 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           // request full details for values
           setLoadingValues(true);
           setLoadingDisplayValues(true);
-          
+
           if (loadingTimeoutRef.current) {
             clearTimeout(loadingTimeoutRef.current);
           }
-          
+
           loadingTimeoutRef.current = setTimeout(() => {
             setLoadingValues(false);
             setLoadingDisplayValues(false);
             loadingTimeoutRef.current = null;
           }, 10000);
-          
+
           const selectedFilter = filterKeysFunc(props.value);
-          source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
+          source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
         }
         if (loadingValues && source?.tableData?.length) {
           // update local store with full details
           setLoadingValues(false);
           setLoadingDisplayValues(false);
-          
+
           if (loadingTimeoutRef.current) {
             clearTimeout(loadingTimeoutRef.current);
             loadingTimeoutRef.current = null;
           }
-          
+
           selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
       } else {
@@ -271,7 +272,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   const { width, ...restOfDropdownStyles } = style ?? {};
 
-const content = useMemo(() => {
+  const content = useMemo(() => {
     const shouldShowLoading = keys.length > 0 && loadingDisplayValues && selected.current.length === 0;
 
     if (shouldShowLoading) {
@@ -317,27 +318,10 @@ const content = useMemo(() => {
     keys,
     loadingDisplayValues,
     selected.current,
-    style,
-    title,
-    onDropdownVisibleChange,
-    styles.autocomplete,
-    restOfDropdownStyles,
-    props.disableSearch,
-    props.notFoundContent,
-    handleSearch,
-    handleChange,
-    allowClear,
-    source?.isInProgress?.fetchTableData,
-    props.placeholder,
-    props.readOnly,
-    handleSelect,
-    props.size,
-    props.value,
-    props.mode,
-    freeTextValuesList,
-    list,
     open,
-    selectedValuesList,
+    source?.isInProgress?.fetchTableData,
+    source?.tableData,
+    source?.totalRows,
   ]);
 
   if (props.readOnly) {
