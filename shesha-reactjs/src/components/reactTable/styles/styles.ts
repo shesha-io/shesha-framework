@@ -25,6 +25,7 @@ const tableClassNames = {
   shaDragging: 'sha-dragging',
   shaTooltipIcon: 'sha-tooltip-icon',
   shaCellParent: 'sha-cell-parent',
+  shaCellParentFW: 'sha-cell-parent-fw', // Full width cell parent, used for cells that should take full width of the row
 };
 const tableStyles = {
   styles: tableClassNames,
@@ -60,6 +61,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaDragging,
     shaTooltipIcon,
     shaCellParent,
+    shaCellParentFW,
   } = tableClassNames;
 
   // var(--ant-primary-3)
@@ -257,11 +259,32 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           .${shaCellParent} {
+              min-width: 100%;
               overflow: hidden;
               white-space: nowrap;
               text-overflow: ellipsis;
               cursor: pointer;
+
+              & .ant-form-item-control-input {
+                overflow: visible;
+                position: relative;
+                z-index: 999;
+                width: calc(135% - 2px) !important;
+                transition: all 3s ease-in-out;
+              }
           }
+
+          .${shaCellParentFW} {
+              min-width: 100%;
+              & .ant-form-item-control-input {
+                overflow: visible;
+                position: relative;
+                z-index: 999;
+                width: calc(135% - 2px) !important;
+                transition: all 3s ease-in-out;
+              }
+          }
+
         }
         .${shaTooltipIcon} {
           color: darkgray !important;
