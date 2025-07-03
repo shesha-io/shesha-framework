@@ -58,8 +58,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
 
-  // prevents component from loading forever when dataSource fails, or when it doesn't exist
-
   const keys = useMemo(() => {
     const res = props.value
       ? Array.isArray(props.value)
