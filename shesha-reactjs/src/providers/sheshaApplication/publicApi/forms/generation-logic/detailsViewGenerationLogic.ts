@@ -55,7 +55,8 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       return evaluateString(markup, replacements, true);
     }
   }
-    /**
+  
+  /**
    * Check if this generation logic implementation supports the given template
    * @param template The form template to check
    * @returns True if this implementation supports the template
@@ -199,8 +200,8 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
           column1.push(...columnBuilder.toJson());
         } else {
           column2.push(...columnBuilder.toJson());
-        }
-      })
+        };
+      });
 
       builder.addColumns({
         id: nanoid(),
@@ -228,7 +229,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
             pull: 0,
             components: column2
           }]
-      })
+      });
     } else {
       metadata.forEach(prop => {
         metadataHelper.getConfigFields(prop, builder);
@@ -301,7 +302,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
             alignItems: 'flex-end',
             justifyContent: 'right',
             components: childTableAccessoriesBuilder.toJson()
-          })
+          });
 
           var columns: IConfigurableColumnsProps[] = nonFrameworkProperties.map((prop, idx) => {
                 return {
@@ -313,7 +314,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
                   description: prop.description,
                   sortOrder: idx,
                   itemType: 'item'
-                }
+                };
               });
 
           childTableBuilder.addDatatable({
@@ -384,7 +385,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
             components: childTableContextBuilder.toJson()
           };
         })      
-    })
+    });
       
       if (childTableContainer[0].components && Array.isArray(childTableContainer[0].components)) {
         childTableContainer[0].components.push(...builder.toJson());

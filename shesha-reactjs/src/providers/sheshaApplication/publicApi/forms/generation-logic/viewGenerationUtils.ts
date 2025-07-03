@@ -2,12 +2,6 @@
 
 import { evaluateString } from "@/providers/form/utils";
 
-export function findContainersWithPlaceholder(markup: any, placeholder: string): any[] {
-  const containers: any[] = [];
-  const visited = new WeakSet();
-  findContainersWithPlaceholderRecursive(markup, placeholder, containers, visited);
-  return containers;
-}
 export function findContainersWithPlaceholderRecursive(
   token: any,
   placeholder: string,
@@ -27,10 +21,19 @@ export function findContainersWithPlaceholderRecursive(
       );
     } else {
       for (const key in token) {
-        findContainersWithPlaceholderRecursive(token[key], placeholder, results, visited);
+        if (Object.prototype.hasOwnProperty.call(token, key)) {
+          findContainersWithPlaceholderRecursive(token[key], placeholder, results, visited);
+        }
       }
     }
   }
+}
+
+export function findContainersWithPlaceholder(markup: any, placeholder: string): any[] {
+  const containers: any[] = [];
+  const visited = new WeakSet();
+  findContainersWithPlaceholderRecursive(markup, placeholder, containers, visited);
+  return containers;
 }
 
 export function castToExtensionType<T>(data: unknown): T {
