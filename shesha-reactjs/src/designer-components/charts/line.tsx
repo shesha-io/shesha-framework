@@ -8,8 +8,9 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
-import { defaultConfigFiller, filterNonNull } from './utils';
+import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
@@ -24,6 +25,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
+      jsStyle
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -31,7 +33,8 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
-      ...stylingBoxAsCSS
+      ...stylingBoxAsCSS,
+      ...jsStyle
     });
 
     if (model.hidden) return null;
@@ -92,6 +95,12 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       strokeWidth: 1,
       maxResultCount: 10000,
       requestTimeout: 10000,
+    }))
+    .add<IChartProps>(7, prev => ({ 
+      ...prev,
+      timeSeriesFormat: 'month-year',
+      groupingTimeSeriesFormat: 'month-year',
+      ...migratePrevStyles(prev, defaultStyles())
     }))
 };
 
