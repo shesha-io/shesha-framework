@@ -32,7 +32,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    maintainAspectRatio: false, // Allow the chart to fill available space
     aspectRatio: 1, // Square aspect ratio for polar area charts
     layout: {
       padding: {
@@ -41,11 +41,6 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         left: 10,
         right: 10
       }
-    },
-    animation: {
-      duration: 1400, // Animation duration in milliseconds
-      easing: 'easeInOutCubic', // Smooth easing function for polar areas
-      delay: (context) => context.dataIndex * 80, // Staggered animation for polar areas
     },
     transitions: {
       active: {

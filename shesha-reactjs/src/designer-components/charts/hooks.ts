@@ -69,7 +69,7 @@ export const useGeneratedTitle = (): string => {
  */
 export const useProcessedChartData = (): IChartData => {
   const {
-    filteredData: data,
+    data,
     axisProperty,
     groupingProperty,
     valueProperty,
@@ -137,10 +137,10 @@ export const useProcessedChartData = (): IChartData => {
           return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
         }),
         fill: false,
-        borderColor: (simpleOrPivot === 'pivot' ? getPredictableColor(strLegend) : strokeColor) || '#fff',
+        borderColor: (simpleOrPivot === 'pivot' && chartType === 'line') ? getPredictableColor(strLegend) : strokeColor ?? '#000000',
         backgroundColor: colors,
         pointRadius: 5,
-        borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
+        borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 1,
         tension: typeof tension === 'number' ? tension : 0.0,
       };
     });

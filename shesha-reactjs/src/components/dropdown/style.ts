@@ -15,6 +15,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
             flex-wrap: wrap;
             width: 100%;
             height: 100%;
+            justify-content: ${style.textAlign};
         }
 
         scrollbar-width: thin;
@@ -34,6 +35,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
       display: inline-flex;
       align-items: center;
       overflow: hidden;
+      justify-content: ${style.textAlign};
     }
   
     .ant-select-selection-item {
@@ -45,6 +47,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
       height: 100%;
       display: flex;
       align-items: center;
+      justify-content: ${style.textAlign};
 
       .ant-select-selection-item-content {
         display: flex;

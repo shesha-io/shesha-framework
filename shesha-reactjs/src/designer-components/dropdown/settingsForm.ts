@@ -893,6 +893,70 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                     ...new DesignerToolbarSettings()
                                                         .addCollapsiblePanel({
                                                             id: nanoid(),
+                                                            propertyName: 'tagFontStyle',
+                                                            label: 'Font',
+                                                            labelAlign: 'right',
+                                                            ghost: true,
+                                                            collapsible: 'header',
+                                                            parentId: DefaultTagStyleId,
+                                                            content: {
+                                                                id: nanoid(),
+                                                                components: [...new DesignerToolbarSettings()
+                                                                    .addSettingsInputRow({
+                                                                        id: nanoid(),
+                                                                        parentId: nanoid(),
+                                                                        inline: true,
+                                                                        inputs: [
+                                                                            {
+                                                                                type: 'dropdown',
+                                                                                id: nanoid(),
+                                                                                label: 'Family',
+                                                                                propertyName: 'tag.font.type',
+                                                                                hideLabel: true,
+                                                                                dropdownOptions: fontTypes,
+                                                                            },
+                                                                            {
+                                                                                type: 'numberField',
+                                                                                id: nanoid(),
+                                                                                label: 'Size',
+                                                                                propertyName: 'tag.font.size',
+                                                                                hideLabel: true,
+                                                                                width: 50,
+                                                                            },
+                                                                            {
+                                                                                type: 'dropdown',
+                                                                                id: nanoid(),
+                                                                                label: 'Weight',
+                                                                                propertyName: 'tag.font.weight',
+                                                                                hideLabel: true,
+                                                                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                                                                dropdownOptions: fontWeights,
+                                                                                width: 100,
+                                                                            },
+                                                                            {
+                                                                                type: 'colorPicker',
+                                                                                id: nanoid(),
+                                                                                label: 'Color',
+                                                                                hideLabel: true,
+                                                                                propertyName: 'tag.font.color',
+                                                                            },
+                                                                            {
+                                                                                type: 'dropdown',
+                                                                                id: nanoid(),
+                                                                                label: 'Align',
+                                                                                propertyName: 'tag.font.align',
+                                                                                hideLabel: true,
+                                                                                width: 60,
+                                                                                dropdownOptions: textAlign,
+                                                                            },
+                                                                        ],
+                                                                    })
+                                                                    .toJson()
+                                                                ]
+                                                            }
+                                                        })
+                                                        .addCollapsiblePanel({
+                                                            id: nanoid(),
                                                             propertyName: 'tagDimensionStyle',
                                                             label: 'Dimension',
                                                             labelAlign: 'right',
@@ -1247,6 +1311,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
+                                jsSetting: true,
                                 size: 'small',
                                 parentId: securityTabId
                             })

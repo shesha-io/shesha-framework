@@ -51,49 +51,61 @@ export const getSettings = (data: any) => {
                     }
                   ]
                 })
-                    .addSettingsInputRow({
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+
+                  inputs: [
+                    {
+                      type: 'switch',
                       id: nanoid(),
+                      propertyName: 'autoSize',
+                      label: 'Auto Size',
+                      jsSetting: true
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'editModeSelector',
+                      propertyName: 'editMode',
+                      label: 'Edit Mode',
                       parentId: commonTabId,
-  
-                      inputs: [
-                        {
-                          type: 'switch',
-                          id: nanoid(),
-                          propertyName: 'autoSize',
-                          label: 'Auto Size',
-                          jsSetting: true
-                        },
-                        {
-                          type: 'switch',
-                          id: nanoid(),
-                          propertyName: 'allowDelete',
-                          label: 'Allow Delete',
-                          jsSetting: true
-                        }
-                      ]
-                    })
-                    .addSettingsInputRow({
+                      defaultValue: 'inherited',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
                       id: nanoid(),
-                      parentId: commonTabId, 
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          type: 'editModeSelector',
-                          propertyName: 'editMode',
-                          label: 'Edit Mode',
-                          parentId: commonTabId,
-                          defaultValue: 'inherited',
-                          jsSetting: true,
-                        },
-                        {
-                          type: 'switch',
-                          id: nanoid(),
-                          propertyName: 'hidden',
-                          label: 'Hide',
-                          jsSetting: true
-                        }
-                      ]
-                    })
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      jsSetting: true
+                    }
+                  ]
+                }).addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'allowEdit',
+                      label: 'Allow Edit',
+                      jsSetting: true
+                    },
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'allowDelete',
+                      label: 'Allow Delete',
+                      jsSetting: true
+                    }
+                  ]
+                })
                 .toJson()
             ]
           },
@@ -131,7 +143,7 @@ export const getSettings = (data: any) => {
                       validate: {
                         required: true
                       }
-                    } 
+                    }
                   ]
                 })
                 .toJson()
@@ -154,9 +166,19 @@ export const getSettings = (data: any) => {
                       label: 'On Created',
                       labelAlign: 'right',
                       parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',  
+                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
                       exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
+                    }, {
+                      id: nanoid(),
+                      type: 'codeEditor',
+                      propertyName: 'onUpdateAction',
+                      label: 'On Update',
+                      labelAlign: 'right',
+                      parentId: eventsTabId,
+                      tooltip: 'Triggered after successfully updating a note',
+                      exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
                     }
+
                   ]
                 })
                 .toJson()
@@ -184,6 +206,40 @@ export const getSettings = (data: any) => {
                         { value: 'left', label: 'Left' },
                         { value: 'right', label: 'Right' }
                       ]
+                    }
+                  ]
+                }).addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: appearanceTabId,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'showCharCount',
+                      label: 'Show Character Counter',
+                      jsSetting: true
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: appearanceTabId,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'minLength',
+                      label: 'Minimum Length',
+                      min: 0,
+                      jsSetting: true
+                    },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'maxLength',
+                      label: 'Maximum Length',
+                      min: 0,
+                      jsSetting: true
                     }
                   ]
                 })

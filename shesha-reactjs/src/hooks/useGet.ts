@@ -60,7 +60,7 @@ export interface UseGetReturn<TData, TError, TQueryParams = {}, TPathParams = un
   /**
    * Refetch
    */
-  refetch: (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams>) => Promise<TData | null>;
+  refetch: (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }) => Promise<TData | null>;
 }
 
 export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
@@ -76,7 +76,7 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
   });
 
   const refetch = useDeepCompareCallback(
-    (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams>): Promise<TData | null> => {
+    (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }): Promise<TData | null> => {
       setState((prev) => ({ ...prev, loading: true }));
 
       const finalOptions = { ...props, ...options, httpHeaders: httpHeaders };
@@ -89,7 +89,7 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
       return RestfulShesha.get<TData, TError, TQueryParams, TPathParams>(path, finalOptions.queryParams, {
         base: props?.base ?? backendUrl,
         headers: finalHeaders,
-      })
+      }, options?.signal)
         .then((data) => {
           setState((prev) => ({ ...prev, loading: false, error: null, data: data }));
           return data;

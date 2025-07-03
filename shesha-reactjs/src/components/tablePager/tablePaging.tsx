@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Pagination } from 'antd';
+import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';
 
@@ -73,21 +73,34 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   if (!isWider) return null;
 
   return (
-    <Pagination
-      className={styles.pager}
-      style={style}
-      size="small"
-      total={totalRows}
-      pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
-      current={currentPage}
-      pageSize={selectedPageSize}
-      showSizeChanger={showSizeChanger}
-      onChange={onPageNumberChange}
-      onShowSizeChange={onShowSizeChange}
-      showLessItems
-      disabled={disabled}
-      showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
-    />
+    <div className={styles.pagerContainer}>
+      <Pagination
+        className={styles.pager}
+        style={style}
+        size="small"
+        total={totalRows}
+        pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
+        current={currentPage}
+        pageSize={selectedPageSize}
+        showSizeChanger={false}
+        onChange={onPageNumberChange}
+        onShowSizeChange={onShowSizeChange}
+        showLessItems
+        disabled={disabled}
+        showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
+      />
+      {showSizeChanger && (
+        <Select
+          size="small"
+          className={styles.dropdown}
+          style={{ width: 100 }}
+          popupClassName={styles.popup}
+          options={pageSizeOptions.map((s) => ({ label: `${s} / page`, value: s }))}
+          value={selectedPageSize}
+          onChange={(value) => onShowSizeChange(currentPage, value)}
+        />
+      )}
+    </div>
   );
 };
 
