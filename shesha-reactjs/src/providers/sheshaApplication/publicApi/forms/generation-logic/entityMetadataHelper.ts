@@ -5,7 +5,7 @@ import { AxiosResponse } from "axios";
 import { IAbpWrappedGetEntityResponse } from "@/interfaces/gql";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DataTypes, DesignerToolbarSettings, EditMode } from "@/index";
-import { nanoid } from "nanoid";
+import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 
 /**
