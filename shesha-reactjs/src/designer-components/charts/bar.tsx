@@ -5,11 +5,12 @@ import { IToolboxComponent } from '@/interfaces';
 import { BarChartOutlined } from '@ant-design/icons';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
-import { defaultConfigFiller, filterNonNull } from './utils';
+import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
 import ChartControlURL from './chartControlURL';
 import ChartDataProvider from '@/providers/chartData';
 import ChartControl from './chartControl';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const BarChartComponent: IToolboxComponent<IChartProps> = {
   type: 'barChart',
@@ -99,8 +100,9 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(7, prev => ({ 
       ...prev,
       timeSeriesFormat: 'month-year',
-      groupingTimeSeriesFormat: 'month-year',
+      groupingTimeSeriesFormat: 'month-year'
     }))
+    .add<IChartProps>(8, prev => ({ ...migratePrevStyles(prev, defaultStyles()) }))
 };
 
 export default BarChartComponent;

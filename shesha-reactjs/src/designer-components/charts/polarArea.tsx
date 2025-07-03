@@ -8,8 +8,9 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
-import { defaultConfigFiller, filterNonNull } from './utils';
+import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   type: 'polarAreaChart',
@@ -91,8 +92,9 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(7, prev => ({ 
       ...prev,
       timeSeriesFormat: 'month-year',
-      groupingTimeSeriesFormat: 'month-year',
+      groupingTimeSeriesFormat: 'month-year'
     }))
+    .add<IChartProps>(8, prev => ({ ...migratePrevStyles(prev, defaultStyles()) }))
 };
 
 export default PolarAreaChartComponent;
