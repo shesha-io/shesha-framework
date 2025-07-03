@@ -1,7 +1,6 @@
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { EntityMetadataDto } from "../models/entityMetadata";
 import qs from "qs";
-import { AxiosResponse } from "axios";
 import { IAbpWrappedGetEntityResponse } from "@/interfaces/gql";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DataTypes, DesignerToolbarSettings, EditMode } from "@/index";
@@ -56,7 +55,7 @@ export class EntityMetadataHelper {
 
     switch (property.dataType) {
       case DataTypes.string:
-        if (property.minLength > 300) {
+        if (property.dataFormat === 'multiline') {
           builder.addTextArea({
             ...commonProps,
           });
