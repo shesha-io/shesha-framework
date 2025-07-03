@@ -118,12 +118,12 @@ export const getSettings = (data: any) => {
                               parentId: commonTabId,
                               label: 'Data Source Type',
                               description:
-                                'The type of data source you want to use for the chart. If you select `Custom Endpoint`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
-                              tooltip: 'The type of data source you want to use for the chart. If you select `Custom Endpoint`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                                'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                              tooltip: 'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
                               type: 'dropdown',
                               allowClear: true,
                               dropdownOptions: [
-                                { label: 'Custom Endpoint', value: 'url' },
+                                { label: 'URL', value: 'url' },
                                 { label: 'Entity Type', value: 'entityType' },
                               ],
                               validate: { required: true },
@@ -156,7 +156,7 @@ export const getSettings = (data: any) => {
                           id: dataSettingsForUrlId,
                           propertyName: 'dataSettingsForUrl',
                           parentId: commonTabId,
-                          label: 'Data Settings (Custom Endpoint)',
+                          label: 'Data Settings (URL)',
                           labelAlign: 'left',
                           hidden: {
                             _code: 'return getSettingValue(data?.dataMode) !== `url`',
@@ -168,7 +168,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'url',
-                                label: 'Custom Endpoint',
+                                label: 'URL',
                                 labelAlign: 'right',
                                 parentId: dataTabId,
                                 inputType: 'endpointsAutocomplete',
@@ -729,7 +729,7 @@ export const getSettings = (data: any) => {
                       type: 'dropdown',
                       allowClear: true,
                       dropdownOptions: [
-                        { label: 'Custom Endpoint', value: 'url' },
+                        { label: 'URL', value: 'url' },
                         { label: 'Entity Type', value: 'entityType' },
                       ],
                       validate: { required: true },
@@ -769,7 +769,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'url',
-                        label: 'Custom Endpoint',
+                        label: 'URL',
                         labelAlign: 'right',
                         parentId: dataTabId,
                         inputType: 'endpointsAutocomplete',
