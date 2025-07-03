@@ -335,7 +335,7 @@ export const getColumnSettings = (data?: any) => ({
                                         inputs: [
                                             {
                                                 "id": "minWidth1",
-                                                "type": "textField",
+                                                "type": "numberField",
                                                 "propertyName": "minWidth",
                                                 "label": "Min Width",
                                                 "labelAlign": "right",
@@ -344,7 +344,7 @@ export const getColumnSettings = (data?: any) => ({
                                             },
                                             {
                                                 "id": "maxWidth1",
-                                                "type": "textField",
+                                                "type": "numberField",
                                                 "propertyName": "maxWidth",
                                                 "label": "Max Width",
                                                 "labelAlign": "right",
