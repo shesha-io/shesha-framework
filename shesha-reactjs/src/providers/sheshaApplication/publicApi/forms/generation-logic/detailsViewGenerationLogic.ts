@@ -352,7 +352,11 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
                 {
                   "==": [
                     {
-                      "var": childTable.properties.find(p => p.entityType === extensionJson.modelType)?.path,
+                      // Fallback to "parentId" if no matching property is found
+                      "var": childTable.properties
+                               .find(p => p.entityType === extensionJson.modelType)
+                               ?.path
+                             || "parentId",
                     },
                     {
                       "evaluate": [
