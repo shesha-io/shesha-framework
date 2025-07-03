@@ -528,12 +528,11 @@ export const getSettings = (data: any) => {
                             },
                             {
                               id: nanoid(),
-                              type: 'textArea',
+                              type: 'textField',
                               propertyName: 'title',
                               parentId: commonTabId,
                               label: 'Title',
                               tooltip: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
-                              placeholder: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
                               description: 'The title of the chart (if any)',
                               labelAlign: 'right',
                               jsSetting: true,
