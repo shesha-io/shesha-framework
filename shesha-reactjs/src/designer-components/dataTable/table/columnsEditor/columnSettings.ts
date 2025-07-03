@@ -30,7 +30,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "value": "action"
                                 },
                                 {
-                                    "label": "CRUD Operations",
+                                    "label": "CRUD operations",
                                     "value": "crud-operations"
                                 },
                                 {
