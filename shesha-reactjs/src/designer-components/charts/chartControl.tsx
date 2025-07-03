@@ -138,42 +138,12 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     // Create reference list lookup maps - declare outside promise chain for scope
     const refListMap = new Map<string, Map<any, string>>();
 
-    // Function to perform reconnaissance fetch to get total count
-    const performReconnaissanceFetch = async (): Promise<number> => {
-      const reconParams = getChartDataRefetchParams(
-        entityType,
-        valueProperty,
-        evaluatedFilters,
-        groupingProperty,
-        axisProperty,
-        orderBy,
-        orderDirection,
-        0,
-        1 // Only fetch 1 record to get total count
-      );
-
-      const reconResponse = await refetch({ ...reconParams, signal: newController.signal });
-
-      if (!reconResponse?.result) {
-        throw new Error('Failed to make total count request. Please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
-      }
-
-      return reconResponse.result.totalCount || 0;
-    };
-
     // Function to validate and fetch data
     const validateAndFetchData = async () => {
       // Check if maxResultCount is explicitly set and validate it
       if (maxResultCount !== undefined && maxResultCount !== -1) {
         if (maxResultCount > 10000) {
           throw new Error(`Requested result count (${maxResultCount}) exceeds the maximum allowed limit of 10,000. Please reduce the result count or add filters to limit the data.`);
-        }
-      } else {
-        // Perform reconnaissance fetch to get total count
-        const totalCount = await performReconnaissanceFetch();
-
-        if (totalCount > 10000) {
-          throw new Error(`Total available records (${totalCount}) exceeds the maximum allowed limit of 10,000. Please add filters to limit the data or specify a smaller maxResultCount.`);
         }
       }
 
@@ -256,19 +226,23 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       })
       .catch((error) => {
         console.error('Error in fetchAndProcessData:', error);
-        // Check if it's a timeout error
-        const isTimeoutError = error?.name === 'AbortError' && error?.message?.includes('timeout');
-
-        // Ensure error is always a string to prevent React rendering issues
-        const strError = typeof error === 'string'
-          ? error
-          : 'An error occurred while fetching chart data';
-        const altErrorMessage = error instanceof Error
-          ? error.message
-          : strError;
-        const errorMessage = isTimeoutError
-          ? `Request timed out after ${requestTimeout / 1000} seconds`
-          : altErrorMessage;
+        
+        // Handle different types of errors
+        let errorMessage: string;
+        
+        if (error?.name === 'AbortError') {
+          // Request was aborted (timeout or user cancellation)
+          errorMessage = error?.message?.includes('timeout') 
+            ? `Request timed out after ${requestTimeout / 1000} seconds`
+            : error?.message || 'Request was cancelled';
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          errorMessage = 'An error occurred while fetching chart data';
+        }
+        
         setError(errorMessage);
         setIsLoaded(true);
         setMetadataProcessed(false);
@@ -355,13 +329,14 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const errorAlert = useMemo(() => {
     if (!error) return null;
 
-    const isUserCancelled = error === 'Request cancelled by user';
-    const isTimeoutError = error.includes('Request timed out after');
-    const altMessage = isTimeoutError ? "Request timed out" : "Error loading chart data";
+    const isUserCancelled = error.includes('cancelled') || error.includes('Cancelled');
+    const isTimeoutError = error.includes('timed out');
+    const message = isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data";
+    
     return (
       <Alert
         showIcon
-        message={isUserCancelled ? "Request cancelled" : altMessage}
+        message={message}
         description={error}
         type={"error"}
         action={
@@ -392,10 +367,10 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
           onClick={() => {
             if (isFetchingRef.current && currentControllerRef.current) {
               isFetchingRef.current = false;
-              setError('Request cancelled by user');
+              setError('Request cancelled');
               setIsLoaded(true);
               setMetadataProcessed(false);
-              currentControllerRef.current.abort('Cancel button clicked');
+              currentControllerRef.current.abort('Request cancelled');
             }
           }}
         >
