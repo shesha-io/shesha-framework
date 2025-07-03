@@ -24,6 +24,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
+      jsStyle
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -31,7 +32,8 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
-      ...stylingBoxAsCSS
+      ...stylingBoxAsCSS,
+      ...jsStyle
     });
 
     if (model.hidden) return null;
