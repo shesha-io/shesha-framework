@@ -311,7 +311,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           column.minWidth = minWidth;
           column.maxWidth = maxWidth;
         }
-        console.log("COLUMN",column)
         return column;
       })
       .filter((column) => {
