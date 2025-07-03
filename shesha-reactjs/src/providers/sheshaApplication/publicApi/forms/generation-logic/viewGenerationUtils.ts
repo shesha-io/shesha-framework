@@ -24,19 +24,6 @@ export function findContainersWithPlaceholderRecursive(token: any, className: st
   }
 }
 
-export async function safeStringify(obj: any, space?: number) {
-  const seen = new WeakSet();
-  return JSON.stringify(obj, function(key, value) {
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
-    }
-    return value;
-  }, space);
-}
-
 export function deserializeExtensionJson<T>(data: object): T {
   try {
     return data as T;

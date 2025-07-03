@@ -8,7 +8,7 @@ import { nanoid } from "nanoid";
 import { toCamelCase } from "@/utils/string";
 import { EntityMetadataHelper } from "./entityMetadataHelper";
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { findContainersWithPlaceholder, safeStringify, deserializeExtensionJson, humanizeModelType, processBaseMarkup } from "./viewGenerationUtils";
+import { findContainersWithPlaceholder, deserializeExtensionJson, humanizeModelType, processBaseMarkup } from "./viewGenerationUtils";
 
 /**
  * Interface for the extension JSON configuration for Details View
@@ -48,7 +48,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
 
         await this.addComponentsToMarkup(markupObj, extensionJson, entity, nonFrameworkProperties, metadataHelper);
       }
-      return safeStringify(markupObj, 2);
+      return JSON.stringify(markupObj);
     } catch (error) {
       console.error("Error processing details view markup:", error);
       // In case of error, return the original markup with basic replacements
