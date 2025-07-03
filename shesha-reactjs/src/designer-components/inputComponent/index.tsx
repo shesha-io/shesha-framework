@@ -109,7 +109,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <Select
                 size={size}
                 mode={dropdownMode}
-                allowClear={allowClear}
+                allowClear={allowClear ?? true}
                 disabled={readOnly}
                 variant={variant}
                 className={className}
