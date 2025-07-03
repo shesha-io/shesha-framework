@@ -57,18 +57,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selected = useRef<Array<any>>([]);
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
-  const [loadingDisplayValues, setLoadingDisplayValues] = useState<boolean>(false);
-  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // prevents component from loading forever when dataSource fails, or when it doesn't exist
-  useEffect(() => {
-    return () => {
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current);
-      }
-    };
-  }, []);
-
 
   const keys = useMemo(() => {
     const res = props.value
@@ -84,21 +74,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     if (props.dataSourceType === 'entitiesList' && props.entityType
       || props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
-
-      // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
       if (keys.length) {
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
         if (props.dataSourceType === 'entitiesList' && !props.displayValueFunc && !props.displayPropName && hasDisplayName) {
           setLoadingValues(false);
-          setLoadingDisplayValues(false);
-
-          if (loadingTimeoutRef.current) {
-            clearTimeout(loadingTimeoutRef.current);
-            loadingTimeoutRef.current = null;
-          }
-
           const values = Array.isArray(props.value) ? props.value : [props.value];
           selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
           return;
@@ -108,43 +89,16 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       if (keys.length) {
         const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         if (!loadingValues && !allExist) {
-
-          // request full details for values
           setLoadingValues(true);
-          setLoadingDisplayValues(true);
-
-          if (loadingTimeoutRef.current) {
-            clearTimeout(loadingTimeoutRef.current);
-          }
-
-          loadingTimeoutRef.current = setTimeout(() => {
-            setLoadingValues(false);
-            setLoadingDisplayValues(false);
-            loadingTimeoutRef.current = null;
-          }, 10000);
-
           const selectedFilter = filterKeysFunc(props.value);
           source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
         }
         if (loadingValues && source?.tableData?.length) {
-          // update local store with full details
           setLoadingValues(false);
-          setLoadingDisplayValues(false);
-
-          if (loadingTimeoutRef.current) {
-            clearTimeout(loadingTimeoutRef.current);
-            loadingTimeoutRef.current = null;
-          }
-
           selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
       } else {
-        setLoadingDisplayValues(false);
-        // Clear timeout when no keys
-        if (loadingTimeoutRef.current) {
-          clearTimeout(loadingTimeoutRef.current);
-          loadingTimeoutRef.current = null;
-        }
+        setLoadingValues(false);
       }
     }
   }, [props.value, source?.tableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
@@ -270,6 +224,17 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     }
   };
 
+  const shouldShowLoading = keys.length > 0 && loadingValues && selected.current.length === 0;
+
+  if (shouldShowLoading) {
+    return (
+      <div className={styles.loadingSpinner}>
+        <Spin size="small" />
+        <span className={styles.loadingText}>Loading...</span>
+      </div>
+    );
+  }
+
   if (props.readOnly) {
     if (!selected.current)
       return null;
@@ -297,18 +262,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   const { width, ...restOfDropdownStyles } = style ?? {};
 
-  const shouldShowLoading = keys.length > 0 && loadingDisplayValues && selected.current.length === 0;
-
-  if (shouldShowLoading) {
-
-    return (
-      <div className={styles.loadingSpinner}>
-        <Spin size="small" />
-        <span className={styles.loadingText}>Loading...</span>
-      </div>
-    );
-  }
-
   return (
     <Select
       title={title}
@@ -323,7 +276,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       onSearch={handleSearch}
       onChange={handleChange}
       allowClear={allowClear}
-      loading={source?.isInProgress?.fetchTableData}
+      loading={source?.isInProgress?.fetchTableData || loadingValues}
       placeholder={props.placeholder}
       disabled={props.readOnly}
       onSelect={handleSelect}
