@@ -67,19 +67,16 @@ export const getSettings = (data: any) => {
                   }
                 ]
               })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'switch',
-                    id: nanoid(),
-                    propertyName: 'hidden',
-                    label: 'Hide',
-                    jsSetting: true,
-                  }
-                ]
-              })
+              .addSettingsInput(
+                {
+                  inputType: 'switch',
+                  id: nanoid(),
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  jsSetting: true,
+                  parentId: commonTabId,
+                }
+              )
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
