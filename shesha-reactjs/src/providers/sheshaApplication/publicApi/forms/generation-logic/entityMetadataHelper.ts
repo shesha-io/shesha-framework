@@ -8,21 +8,26 @@ import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 
 /**
- * Helper class for fetching and working with entity metadata
+ * Helper class for fetching and working with entity metadata.
+ * Provides methods to retrieve entity metadata from the backend and to generate configuration fields for form builders.
  */
 export class EntityMetadataHelper {
   private _httpClient: HttpClientApi;
 
+  /**
+   * Creates an instance of EntityMetadataHelper.
+   * @param httpClient The HTTP client to use for API requests.
+   */
   constructor(httpClient: HttpClientApi) {
     this._httpClient = httpClient;
   }
 
-/**
- * Fetch entity metadata from the backend or an API service
- * @param modelType The type of model to fetch metadata for
- * @param httpClient The HTTP client to use for the API request
- * @returns Entity metadata object
- */
+  /**
+   * Fetches entity metadata from the backend or an API service.
+   * @param modelType The type of model to fetch metadata for.
+   * @returns A promise that resolves to the entity metadata object.
+   * @throws Error if the model type is empty or if the request fails.
+   */
   public async fetchEntityMetadata (modelType: string): Promise<EntityMetadataDto>{
     if (!modelType?.trim()) {
       throw new Error('Model type is required and cannot be empty');
@@ -41,6 +46,15 @@ export class EntityMetadataHelper {
       });
   };
   
+  /**
+   * Adds configuration fields to a form builder for a given property.
+   * Determines the appropriate form field type based on the property metadata and adds it to the builder.
+   *
+   * @param property The property metadata to generate a field for.
+   * @param builder The form builder instance to add the field to.
+   * @param isReadOnly Whether the field should be read-only (default: false).
+   * @throws Error if required metadata is missing for certain property types.
+   */
   public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings<{}>, isReadOnly: boolean = false): void {
     const commonProps = {
       id: nanoid(),

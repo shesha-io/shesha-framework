@@ -11,28 +11,31 @@ import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigura
 import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, processBaseMarkup } from "./viewGenerationUtils";
 
 /**
- * Interface for the extension JSON configuration for Details View
+ * Interface for the extension JSON configuration for Details View.
+ * Defines the structure of the configuration object used to control details view generation.
  */
 export interface DetailsViewExtensionJson {
-  modelType: string;
-  showKeyInformationBar: boolean;
-  keyInformationBarProperties: string[];
-  addChildTables: boolean;
-  childTablesList: string[];
+  modelType: string; // The entity type for which the details view is generated
+  showKeyInformationBar: boolean; // Whether to show the key information bar
+  keyInformationBarProperties: string[]; // List of property names to display in the key information bar
+  addChildTables: boolean; // Whether to add child tables to the view
+  childTablesList: string[]; // List of child entity types to include as tables
 }
 
 /**
- * Implements generation logic for detail views
- * Handles processing template markup for detail views, 
- * including specific header components, key information bars, and child tables
+ * Implements generation logic for detail views.
+ * Handles processing template markup for detail views, including specific header components, key information bars, and child tables.
  */
 export class DetailsViewGenerationLogic implements GenerationLogic {
 
   /**
-   * Process the template markup with replacements and specialized logic for detail views
-   * @param markup The original template markup
-   * @param replacements An object containing values to replace in the template
-   * @returns The processed markup ready for use
+   * Processes the template markup with replacements and specialized logic for detail views.
+   * Parses the template, applies replacements, and injects components based on the extension configuration.
+   *
+   * @param markup The original template markup as a string.
+   * @param replacements An object containing values to replace in the template.
+   * @param metadataHelper Optional helper for fetching entity metadata.
+   * @returns The processed markup as a string, ready for use.
    */
   async processTemplate(markup: string, replacements: object, metadataHelper?: EntityMetadataHelper): Promise<string> {
     try {
@@ -57,9 +60,11 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
   }
   
   /**
-   * Check if this generation logic implementation supports the given template
-   * @param template The form template to check
-   * @returns True if this implementation supports the template
+   * Checks if this generation logic implementation supports the given template.
+   * Determines if the template is intended for a details view by inspecting its attributes.
+   *
+   * @param template The form template to check.
+   * @returns True if this implementation supports the template, otherwise false.
    */
   supportsTemplate(template: FormConfigurationDto): boolean {
     // Check template attributes that indicate this is a details view template
@@ -67,12 +72,16 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
   }
   
   /**
-   * Add components to the markup based on extension configuration
-   * @param markup JSON markup object
-   * @param extensionJson Extension configuration
-   * @param entity Entity metadata
-   * @param nonFrameworkProperties Filtered properties
-   * @param builder Form builder instance
+   * Adds components to the markup based on the extension configuration.
+   * This method adds header, details panel, and child tables to the markup object
+   * according to the provided extension configuration and entity metadata.
+   *
+   * @param markup The JSON markup object to modify.
+   * @param extensionJson The extension configuration for the details view.
+   * @param entity The entity metadata for the main entity.
+   * @param nonFrameworkProperties The filtered list of non-framework properties for the entity.
+   * @param metadataHelper The form builder or metadata helper instance.
+   * @returns The updated markup object with added components.
    */
   private async addComponentsToMarkup(markup: any, extensionJson: DetailsViewExtensionJson, entity: EntityMetadataDto, nonFrameworkProperties: PropertyMetadataDto[], metadataHelper: EntityMetadataHelper): Promise<any> {
     try {
@@ -94,12 +103,14 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
   }
   
   /**
-   * Add header components
-   * @param entity Entity metadata
-   * @param metadata Properties metadata
-   * @param markup JSON markup object
-   * @param extensionJson Extension configuration
-   * @param builder Form builder instance
+   * Adds header components to the markup.
+   * Sets the title and optionally adds a key information bar if configured.
+   *
+   * @param entity The entity metadata.
+   * @param metadata The properties metadata.
+   * @param markup The JSON markup object.
+   * @param extensionJson The extension configuration.
+   * @param metadataHelper The metadata helper instance.
    */
   private addHeader(entity: EntityMetadataDto, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): void {
     const title = `${entity.typeAccessor} Details`;
@@ -174,10 +185,13 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
   }
   
   /**
-   * Add details panel components
-   * @param metadata Properties metadata
-   * @param markup JSON markup object
-   * @param builder Form builder instance
+   * Adds details panel components to the markup.
+   * Organizes properties into columns if there are more than five, otherwise adds them in a single column.
+   *
+   * @param metadata The properties metadata.
+   * @param markup The JSON markup object.
+   * @param _extensionJson The extension configuration (unused).
+   * @param metadataHelper The metadata helper instance.
    */
   private addDetailsPanel(metadata: any[], markup: any, _extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): void {
     const builder = new DesignerToolbarSettings({});
@@ -242,11 +256,13 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
   }
   
   /**
-   * Add child tables
-   * @param markup JSON markup object
-   * @param extensionJson Extension configuration
-   * @param builder Form builder instance
-   */ 
+   * Adds child tables to the markup if configured.
+   * Creates tabs for each child entity and injects datatable components for their properties.
+   *
+   * @param markup The JSON markup object.
+   * @param extensionJson The extension configuration.
+   * @param metadataHelper The metadata helper instance.
+   */
   private async addChildTablesAsync(markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): Promise<void> {
     const builder = new DesignerToolbarSettings({});
     
