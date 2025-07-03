@@ -25,16 +25,21 @@ export class EntityMetadataHelper {
  * @returns Entity metadata object
  */
   public async fetchEntityMetadata (modelType: string): Promise<EntityMetadataDto>{
-  const url = `/api/services/app/Metadata/Get?${qs.stringify({ container: modelType })}`;
-  return this._httpClient
-    .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<EntityMetadataDto>>>(url)
-    .then(async (response) => {
-      const metadata = response.data.result;
-      return metadata as EntityMetadataDto;
-    }).catch((error)=> {
-      console.error(`Error fetching metadata for model type ${modelType}:`, error);
-      throw new Error(`Unable to fetch metadata for model type: ${modelType}`);
-    });
+    if (!modelType?.trim()) {
+      throw new Error('Model type is required and cannot be empty');
+    }
+    
+    const url = `/api/services/app/Metadata/Get?${qs.stringify({ container: modelType })}`;
+    return this._httpClient
+      .get<IAbpWrappedGetEntityResponse<EntityMetadataDto>>(url)
+      .then(async (response) => {
+        const metadata = response.data.result;
+        return metadata as EntityMetadataDto;
+      })
+      .catch((error) => {
+        console.error(`Error fetching metadata for model type ${modelType}:`, error);
+        throw new Error(`Unable to fetch metadata for model type: ${modelType}`);
+      });
   };
   
   public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings<{}>, isReadOnly: boolean = false): void {
