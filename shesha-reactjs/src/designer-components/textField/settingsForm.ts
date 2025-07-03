@@ -163,6 +163,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 id: nanoid(),
                                 label: 'Spell Check',
                                 inputType: 'switch',
+                                jsSetting: true,
                             })
                             .toJson()
                         ]

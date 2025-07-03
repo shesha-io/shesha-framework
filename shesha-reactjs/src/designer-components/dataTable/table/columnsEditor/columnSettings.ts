@@ -194,31 +194,6 @@ export const getColumnSettings = (data?: any) => ({
                             ]
                         },
                         {
-                            "id": "customVisibility1",
-                            "type": "settingsInput",
-                            "inputType": "codeEditor",
-                            "propertyName": "customVisibility",
-                            "label": "Custom Visibility",
-                            "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-                            "exposedVariables": [
-                                {
-                                    "name": "globalState",
-                                    "description": "The global state of the application",
-                                    "type": "object"
-                                },
-                                {
-                                    "name": "data",
-                                    "description": "Selected form values",
-                                    "type": "object"
-                                }
-                            ],
-                            "language": "typescript",
-                            "wrapInTemplate": true,
-                            "templateSettings": {
-                                "functionName": "customVisibility"
-                            }
-                        },
-                        {
                             "id": "formDisplayContainer1",
                             "type": "container",
                             "propertyName": "formDisplayContainer",
@@ -252,35 +227,21 @@ export const getColumnSettings = (data?: any) => ({
                                 }
                             ]
                         },
+
                         {
                             "id": "allowSortingContainer1",
-                            "type": "container",
+                            "type": "settingsInputRow",
                             "propertyName": "allowSortingContainer",
                             "hidden": {
                                 "_code": "return getSettingValue(data?.columnType) !== 'data';",
                                 "_mode": "code",
                                 "_value": false
                             },
-                            "components": [
-                                {
-                                    "id": "allowSorting1",
-                                    "type": "settingsInput",
-                                    "inputType": "switch",
-                                    "propertyName": "allowSorting",
-                                    "label": "Allow Sorting",
-
-                                }]
-                        },
-                        {
-                            "id": "isVisible-anchored-row",
-                            "type": "settingsInputRow",
-                            "propertyName": "isVisibleAnchoredRow",
-                            "label": "Hide & Anchored",
                             "labelAlign": "right",
                             "inputs": [
                                 {
                                     "id": "anchored1",
-                                    "type": "radio",
+                                    "inputType": "radio",
                                     "propertyName": "anchored",
                                     "label": "Anchored",
                                     "jsSetting": true,
@@ -299,11 +260,52 @@ export const getColumnSettings = (data?: any) => ({
                                     "allowClear": true
                                 },
                                 {
+                                    "id": "allowSorting1",
+                                    "type": "settingsInput",
+                                    "inputType": "switch",
+                                    "propertyName": "allowSorting",
+                                    "label": "Allow Sorting",
+                                }
+                            ]
+                        },
+                        {
+                            "id": "isVisible-anchored-row",
+                            "type": "settingsInputRow",
+                            "propertyName": "isVisibleAnchoredRow",
+                            "label": "Hide & Anchored",
+                            "labelAlign": "right",
+                            "inputs": [
+                                {
+                                    "id": "customVisibility1",
+                                    "type": "codeEditor",
+                                    "propertyName": "customVisibility",
+                                    "label": "Custom Visibility",
+                                    "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+                                    "exposedVariables": [
+                                        {
+                                            "name": "globalState",
+                                            "description": "The global state of the application",
+                                            "type": "object"
+                                        },
+                                        {
+                                            "name": "data",
+                                            "description": "Selected form values",
+                                            "type": "object"
+                                        }
+                                    ],
+                                    "language": "typescript",
+                                    "wrapInTemplate": true,
+                                    "templateSettings": {
+                                        "functionName": "customVisibility"
+                                    }
+                                },
+                                {
                                     "id": "isVisible1",
                                     "type": "switch",
                                     "propertyName": "isVisible",
                                     "label": "Hide",
-                                    "labelAlign": "right"
+                                    "labelAlign": "right",
+                                    "jsSetting": true,
                                 }
                             ]
                         },
