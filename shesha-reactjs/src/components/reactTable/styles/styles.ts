@@ -270,7 +270,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 position: relative;
                 z-index: 999;
                 width: calc(135% - 2px) !important;
-                transition: all 3s ease-in-out;
               }
           }
 
@@ -281,7 +280,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 position: relative;
                 z-index: 999;
                 width: calc(135% - 2px) !important;
-                transition: all 3s ease-in-out;
               }
           }
 
