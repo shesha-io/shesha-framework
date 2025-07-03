@@ -86,6 +86,11 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
       maxResultCount: 10000,
       requestTimeout: 10000,
     }))
+    .add<IChartProps>(7, prev => ({ 
+      ...prev,
+      timeSeriesFormat: 'month-year',
+      groupingTimeSeriesFormat: 'month-year',
+    }))
 };
 
 export default PolarAreaChartComponent;
