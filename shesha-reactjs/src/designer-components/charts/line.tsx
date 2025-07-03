@@ -99,9 +99,9 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(7, prev => ({ 
       ...prev,
       timeSeriesFormat: 'month-year',
-      groupingTimeSeriesFormat: 'month-year'
+      groupingTimeSeriesFormat: 'month-year',
+      ...migratePrevStyles(prev, defaultStyles())
     }))
-    .add<IChartProps>(8, prev => ({ ...migratePrevStyles(prev, defaultStyles()) }))
 };
 
 export default LineChartComponent;
