@@ -27,12 +27,12 @@ const EmptyComponent: FC = () => null;
 
 export const getUnknownDocumentDefinition = (itemType: string): DocumentDefinition => {
     const definition: DocumentDefinition = {
-        itemType: itemType,
+        documentType: itemType,
         Provider: EmptyProvider,
         Editor: EditorNotAvailable,
         Toolbar: EmptyComponent,
         documentInstanceFactory: (args) => {
-            return new DocumentInstance(definition, itemType, args.itemId, args.label);
+            return new DocumentInstance(definition, itemType, args.itemId, args.label, args.flags);
         }
     };
     return definition;
@@ -44,7 +44,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
         return getUnknownDocumentDefinition(itemType);
 
     const definition: DocumentDefinition = {
-        itemType: itemType,
+        documentType: itemType,
         Provider: ({ children }: ProviderRendererProps): ReactNode => {
                 const [form] = Form.useForm();
                 const [shaForm] = useShaForm({
@@ -89,7 +89,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
             );
         },
         documentInstanceFactory: (args) => {
-            return new DocumentInstance(definition, itemType, args.itemId, args.label);
+            return new DocumentInstance(definition, itemType, args.itemId, args.label, args.flags);
         }
     };
     return definition;

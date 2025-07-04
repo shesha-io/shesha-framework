@@ -65,7 +65,7 @@ namespace Shesha.Domain
         }
 
         public virtual bool IsCodeBased { get; set; }
-        public virtual bool HasOutstandingCodeGeneration { get; set; }
+        public virtual bool IsCodegenPending { get; set; }
         public virtual Guid? LatestImportedRevisionId { get; set; }
         [ReadonlyProperty]
         public virtual bool IsUpdated { get; protected set; }

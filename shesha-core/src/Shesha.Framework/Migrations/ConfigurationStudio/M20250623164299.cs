@@ -9,7 +9,7 @@ namespace Shesha.Migrations.ConfigurationStudio
         public override void Up()
         {
             Create.Column("is_code_based").OnTable("configuration_items").InSchema("frwk").AsBoolean().NotNullable().SetExistingRowsTo(false);
-            Create.Column("has_outstanding_code_generation").OnTable("configuration_items").InSchema("frwk").AsBoolean().NotNullable().SetExistingRowsTo(false);
+            Create.Column("is_codegen_pending").OnTable("configuration_items").InSchema("frwk").AsBoolean().NotNullable().SetExistingRowsTo(false);
 
             Alter.Table("configuration_items").InSchema("frwk")
                 .AddColumn("latest_imported_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_latest_imported_revision_id", "frwk", "configuration_item_revisions", "id").Indexed();
@@ -100,6 +100,7 @@ with foldersCte as (
 		cast (0 as bit) as is_exposed,
 		cast (0 as bit) as is_code_based,
 		cast (0 as bit) as is_updated,
+		cast (0 as bit) as is_codegen_pending,
 		cast (null as bigint) as last_modifier_user_id
 	from
 		modulesCte tn
@@ -118,7 +119,8 @@ with foldersCte as (
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
-		ci.last_modifier_user_id
+		ci.is_codegen_pending,
+		ci.last_modifier_user_id		
 	from
 		frwk.configuration_items ci
 		inner join finalCte c on ci.module_id = c.id and c.node_type = 1 /*module*/
@@ -140,7 +142,8 @@ with foldersCte as (
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
-		ci.last_modifier_user_id
+		ci.is_codegen_pending,
+		ci.last_modifier_user_id		
 	from
 		frwk.configuration_items ci
 		inner join finalCte c on ci.module_id = c.module_id and ci.folder_id = c.id and c.node_type = 3 /*folder*/
@@ -159,6 +162,7 @@ select
 	is_exposed,
 	is_code_based,
 	is_updated,
+	is_codegen_pending,
 	last_modifier_user_id
 from 
 	finalCte

@@ -17,20 +17,23 @@ type MenuItems = MenuProps["items"];
 export const ConfigurationItemMenu: FC<IConfigurationItemMenuProps> = () => {
     const cs = useConfigurationStudio();
     const activeDoc = useActiveDoc();
-    
+
     //const { selectedItemNode } = useCsTree();
 
     // TODO: add current tree selection to the dependencies list
     const menuItems = useMemo<MenuItems>(() => {
         return activeDoc
-            ? buildConfiguraitonItemMenu({ configurationStudio: cs, node: {
-                id: activeDoc.itemId,
-                key: activeDoc.itemId,
-                nodeType: TreeNodeType.ConfigurationItem,
-                itemType: activeDoc.itemType,
-                name: activeDoc.label,                
-                moduleId: undefined,
-            } })
+            ? buildConfiguraitonItemMenu({
+                configurationStudio: cs, node: {
+                    id: activeDoc.itemId,
+                    key: activeDoc.itemId,
+                    nodeType: TreeNodeType.ConfigurationItem,
+                    itemType: activeDoc.itemType,
+                    name: activeDoc.label,
+                    moduleId: undefined,
+                    flags: activeDoc.flags,
+                }
+            })
             : [];
     }, [cs, activeDoc]);
 

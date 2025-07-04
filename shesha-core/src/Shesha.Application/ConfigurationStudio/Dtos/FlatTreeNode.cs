@@ -7,12 +7,17 @@ namespace Shesha.ConfigurationStudio.Dtos
     /// </summary>
     public class FlatTreeNode
     {
-        public virtual Guid Id { get; set; }
-        public virtual Guid? ParentId { get; set; }
-        public virtual Guid ModuleId { get; set; }
-        public virtual string Name { get; set; }
-        public virtual string Label { get; set; }
-        public virtual int NodeType { get; set; }
-        public virtual string? ItemType { get; set; }
+        public Guid Id { get; set; }
+        public Guid? ParentId { get; set; }
+        public Guid ModuleId { get; set; }
+        public string Name { get; set; }
+        public string Label { get; set; }
+        public int NodeType { get; set; }
+        public string? ItemType { get; set; }
+
+        public bool IsCodeBased { get; set; }
+        public bool IsCodegenPending { get; set; }
+        public bool IsUpdated { get; set; }
+        public bool IsExposed { get; set; }
     }
 }

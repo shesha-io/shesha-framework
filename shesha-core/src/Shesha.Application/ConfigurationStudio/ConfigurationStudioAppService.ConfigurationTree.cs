@@ -33,6 +33,11 @@ namespace Shesha.ConfigurationStudio
                     ItemType = e.ItemType,
                     Name = e.Name,
                     Label = e.Label,
+
+                    IsCodeBased = e.IsCodeBased,
+                    IsCodegenPending = e.IsCodegenPending,
+                    IsUpdated = e.IsUpdated,
+                    IsExposed = e.IsExposed,
                 })
                 .ToListAsync();
             return treeNodes;

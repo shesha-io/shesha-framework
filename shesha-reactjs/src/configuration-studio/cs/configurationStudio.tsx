@@ -143,7 +143,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
     private modalApi: IModalApi;
     private notificationApi: INotificationApi;
     private storage: IAsyncStorage;
-    //private subscriptions: Map<CsSubscriptionType, CsSubscription[]>;
     private subscriptions: Map<CsSubscriptionType, Set<CsSubscription>>;
 
     toolbarRef?: MutableRefObject<any>;
@@ -197,13 +196,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
     registerDocumentDefinition = (definition: DocumentDefinition) => {
         // eslint-disable-next-line no-console
         console.log('LOG: register definition ✅', definition);
-        this._documentDefinitions.set(definition.itemType, definition);
+        this._documentDefinitions.set(definition.documentType, definition);
     };
 
     unregisterDocumentDefinition = (definition: DocumentDefinition) => {
         // eslint-disable-next-line no-console
         console.log('LOG: unregister definition 🟥', definition);
-        this._documentDefinitions.delete(definition.itemType);
+        this._documentDefinitions.delete(definition.documentType);
     };
 
     get treeExpandedKeys(): React.Key[] {
@@ -339,6 +338,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const newDocument = definition.documentInstanceFactory({
             itemId: node.id,
             label: node.name,
+            flags: node.flags,
         });
 
         this.docs = [...this.docs, newDocument];

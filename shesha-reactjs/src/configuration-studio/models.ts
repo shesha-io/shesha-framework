@@ -10,6 +10,13 @@ export enum TreeNodeType {
     Folder = 3,
 }
 
+export type DocumentFlags = {
+    isCodeBased: boolean;
+    isCodegenPending: boolean;
+    isUpdated: boolean;
+    isExposed: boolean;
+};
+
 export type TreeNode = DataNode & {
     id: string;
     parentId?: string;
@@ -20,6 +27,7 @@ export type TreeNode = DataNode & {
 
 export type ConfigItemTreeNode = TreeNode & {
     itemType: string;
+    flags: DocumentFlags;
 };
 
 export type NodeWithChilds = {
@@ -32,7 +40,7 @@ export type ModuleTreeNode = TreeNode & NodeWithChilds & {
 export type FolderTreeNode = TreeNode & NodeWithChilds & {
 };
 
-export type FlatTreeNode = {
+export type FlatTreeNode = DocumentFlags & {
     id: string;
     parentId?: string;
     moduleId: string;
@@ -108,6 +116,7 @@ export type CIDocument = DocumentBase & {
     definition: DocumentDefinition;
     loadingState: LoadingStatus;
     isHistoryVisible: boolean;
+    flags?: DocumentFlags;
 };
 
 export const isCIDocument = (doc: StoredDocumentInfo): doc is CIDocument => {
@@ -135,11 +144,12 @@ export interface IDocumentInstance extends CIDocument {
 export type DocumentInstanceFactoryArgs = {
     itemId: string;
     label: string;
+    flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
 
 export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
-    itemType: string;
+    documentType: string;
     Editor: ItemEditorRenderer<TDoc>;
     Provider: ProviderRenderer<TDoc>;
     Toolbar: ItemEditorRenderer<TDoc>;

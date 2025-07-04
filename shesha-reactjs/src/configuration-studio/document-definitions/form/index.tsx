@@ -8,7 +8,7 @@ import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
 import { useMainStyles } from "@/components/formDesigner/styles/styles";
 
 export const FormDocumentDefinition: DocumentDefinition = {
-    itemType: ITEM_TYPES.FORM,
+    documentType: ITEM_TYPES.FORM,
     Editor: (_props: ItemEditorProps): ReactNode => {
         const { styles } = useMainStyles();
         return (
@@ -30,6 +30,6 @@ export const FormDocumentDefinition: DocumentDefinition = {
         );
     },
     documentInstanceFactory: (args) => {
-        return new DocumentInstance(FormDocumentDefinition, FormDocumentDefinition.itemType, args.itemId, args.label);
+        return new DocumentInstance(FormDocumentDefinition, FormDocumentDefinition.documentType, args.itemId, args.label, args.flags);
     }
 };

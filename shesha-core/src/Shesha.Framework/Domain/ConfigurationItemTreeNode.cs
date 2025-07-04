@@ -38,5 +38,10 @@ namespace Shesha.Domain
         /// Order index, is used for sorting in the tree
         /// </summary>
         public virtual double OrderIndex { get; set; }
+
+        public virtual bool IsCodeBased { get; set; }
+        public virtual bool IsCodegenPending { get; set; }
+        public virtual bool IsUpdated { get; set; }
+        public virtual bool IsExposed { get; set; }
     }
 }

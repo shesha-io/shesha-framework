@@ -69,6 +69,12 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
             const itemNode: ConfigItemTreeNode = {
                 ...baseProps,
                 itemType: node.itemType,
+                flags: {
+                    isCodeBased: node.isCodeBased,
+                    isCodegenPending: node.isCodegenPending,
+                    isUpdated: node.isUpdated,
+                    isExposed: node.isExposed,
+                },
             };
             applyIcon(itemNode);
             return itemNode;
