@@ -203,6 +203,7 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
               parentId: 'root',
               hidden: false,
               validate: {},
+              jsSetting: true,
             }).toJson()
           ]
     }

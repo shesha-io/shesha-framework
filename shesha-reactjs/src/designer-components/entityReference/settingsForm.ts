@@ -451,6 +451,8 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             label: 'Dialog Width',
                             parentId: dataTabId,
                             type: 'customDropdown',
+                            customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                            customDropdownMode: 'single',
                             allowClear: true,
                             jsSetting: true,
                             dropdownOptions: [
@@ -575,7 +577,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         id: nanoid(),
                         propertyName: 'quickviewWidth',
                         label: 'Quickview Width',
-                        description: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                        description: 'You can use any unit (%, px, em, etc). px by default if without unit.',
                         parentId: dataTabId,
                         inputType: 'textField',
                         jsSetting: true,
@@ -1153,6 +1155,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityId,
                 })

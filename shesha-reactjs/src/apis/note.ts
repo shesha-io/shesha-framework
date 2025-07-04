@@ -97,3 +97,4 @@ export const useNoteGetList = (props: UseNoteGetListProps) =>
   );
 
 export const useNoteCreate = () => useMutateForEndpoint({ url: `/api/services/app/Note/Create`, httpVerb: 'POST' });
+export const useNoteUpdate = () => useMutateForEndpoint({ url: `/api/services/app/Note/Update`, httpVerb: 'PUT' });

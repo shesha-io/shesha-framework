@@ -6,13 +6,12 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 
-export const getItemSettings = (data) => {
+export const getItemSettings = () => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
     const appearanceTabId = nanoid();
     const securityTabId = nanoid();
     const commonButtonSettingsContainerId = nanoid();
-    const styleRouterId = nanoid();
     const fontStylePnlId = nanoid();
     const dimensionsStylePnlId = nanoid();
     const borderStylePnlId = nanoid();
@@ -21,8 +20,10 @@ export const getItemSettings = (data) => {
     const stylePnlId = nanoid();
     const customStylePnlId = nanoid();
 
+    const entityOrUrl = 'getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url"';
+
     return {
-        components: new DesignerToolbarSettings(data)
+        components: new DesignerToolbarSettings()
             .addSearchableTabs({
                 id: searchableTabsId,
                 propertyName: 'settingsTabs',
@@ -91,8 +92,12 @@ export const getItemSettings = (data) => {
                                         .addSettingsInputRow({
                                             id: nanoid(),
                                             parentId: commonButtonSettingsContainerId,
-                                            hidden: data?.itemSubType !== 'button',
-                                            inputs: [
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any,
+                                             inputs: [
                                                 {
                                                     id: nanoid(),
                                                     type: "textField",
@@ -217,7 +222,6 @@ export const getItemSettings = (data) => {
                             ...new DesignerToolbarSettings()
                                 .addSettingsInputRow({
                                     id: nanoid(),
-                                    inline: true,
                                     inputs: [
                                         {
                                             id: nanoid(),
@@ -263,7 +267,7 @@ export const getItemSettings = (data) => {
                                     propertyName: 'pnlFontStyle',
                                     label: 'Font',
                                     labelAlign: 'right',
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     ghost: true,
                                     hidden: {
                                         _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
@@ -332,11 +336,11 @@ export const getItemSettings = (data) => {
                                     id: nanoid(),
                                     propertyName: 'pnlDimensions',
                                     label: 'Dimensions',
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) == "separator";',
+                                        _code: `return  getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`,
                                         _mode: 'code',
                                         _value: false
                                     } as any,
@@ -422,8 +426,8 @@ export const getItemSettings = (data) => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
-                                    parentId: styleRouterId,
+                                    hidden: { _code: `return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
                                         id: borderStylePnlId,
@@ -448,9 +452,9 @@ export const getItemSettings = (data) => {
                                     label: 'Background',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    parentId: styleRouterId,
+                                    parentId: appearanceTabId,
                                     collapsible: 'header',
-                                    hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     content: {
                                         id: backgroundStylePnlId,
                                         components: [
@@ -581,8 +585,8 @@ export const getItemSettings = (data) => {
                                     label: 'Shadow',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
-                                    parentId: styleRouterId,
+                                    hidden: { _code: `return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
                                         id: shadowStylePnlId,
@@ -651,8 +655,8 @@ export const getItemSettings = (data) => {
                                     label: 'Margin & Padding',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    parentId: styleRouterId,
-                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
+                                    parentId: appearanceTabId,
+                                    hidden: { _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     collapsible: 'header',
                                     content: {
                                         id: stylePnlId,
@@ -673,8 +677,13 @@ export const getItemSettings = (data) => {
                                     label: 'Custom Styles',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) === "separator";', _mode: 'code', _value: false } as any,
-                                    parentId: styleRouterId, collapsible: 'header',
+                                    hidden: {
+                                        _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`,
+                                        _mode: 'code',
+                                        _value: false
+                                    } as any,
+                                    parentId: appearanceTabId,
+                                    collapsible: 'header',
                                     content: {
                                         id: customStylePnlId,
                                         components: [...new DesignerToolbarSettings()
@@ -704,6 +713,7 @@ export const getItemSettings = (data) => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
+                                jsSetting: true,
                                 parentId: securityTabId
                             })
                             .toJson()

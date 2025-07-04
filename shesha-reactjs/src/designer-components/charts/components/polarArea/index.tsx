@@ -17,11 +17,6 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data) throw new Error('PolarAreaChart: No data to display. Please check the data source.');
-
-  if (!data.datasets || !data.labels)
-    throw new Error('PolarAreaChart: No datasets or labels to display. Please check the data source.');
-
   data.datasets.forEach((dataset: { data: any[] }) => {
     dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
   });
@@ -37,8 +32,28 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    maintainAspectRatio: false, // Allow the chart to fill available space
     aspectRatio: 1, // Square aspect ratio for polar area charts
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 350, // Quick animation for hover effects
+        },
+      },
+      resize: {
+        animation: {
+          duration: 700, // Smooth resize animation
+        },
+      },
+    },
     plugins: {
       scales: {
         r: {
@@ -57,18 +72,25 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       legend: {
         display: !!showLegend,
         position: legendPosition ?? 'top',
+        align: 'center',
+        fullSize: false, // This ensures legend doesn't consume chart space
+        labels: {
+          boxWidth: 20,
+          padding: 10,
+          font: {
+            size: 12,
+          },
+        },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
-      },
-    },
-    layout: {
-      padding: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
+        align: 'center',
+        fullSize: false, // This ensures title doesn't consume chart space
       },
     },
   };

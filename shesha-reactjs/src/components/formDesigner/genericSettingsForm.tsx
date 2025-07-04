@@ -5,6 +5,7 @@ import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSett
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
+import { sheshaStyles } from '@/styles';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -69,7 +70,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       labelCol={layoutSettings?.labelCol}
       wrapperCol={layoutSettings?.wrapperCol}
       layout={layoutSettings?.layout}
-
+      className={sheshaStyles.verticalSettingsClass}
       mode={readOnly ? "readonly" : "edit"}
       form={form}
       onFinish={onSave}

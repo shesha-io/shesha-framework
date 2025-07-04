@@ -1,7 +1,8 @@
-import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TLegendPosition, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { FilterExpression } from "@/publicJsApis/dataTableContextApi";
 import { createContext } from "react";
 
-export interface IChartDataContext {
+export interface IChartDataContext extends IChartsProps {
   height?: number;
   width?: number;
   orderBy?: string;
@@ -13,16 +14,15 @@ export interface IChartDataContext {
   showTitle?: boolean;
   title?: string;
   showLegend?: boolean;
-  legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+  legendPosition?: TLegendPosition;
   entityType?: string;
-  filters?: {
-    and?: [];
-  };
   valueProperty?: string;
   axisProperty?: string;
   isAxisTimeSeries?: boolean;
   timeSeriesFormat?: TTimeSeriesFormat;
-  legendProperty?: string;
+  groupingProperty?: string;
+  isGroupingTimeSeries?: boolean;
+  groupingTimeSeriesFormat?: TTimeSeriesFormat;
   filterProperties?: string[];
   xProperty?: string;
   yProperty?: string;
@@ -46,19 +46,23 @@ export interface IChartDataContext {
 
   isLoaded?: boolean;
 
-  filteredData?: object[];
+  axisPropertyLabel?: string;
+  valuePropertyLabel?: string;
+  filters?: FilterExpression;
 }
 
 export interface IChartDataAtionsContext {
   setControlProps?: (controlProps: IChartsProps) => void;
   setData?: (data: object[]) => void;
-  setFilterdData?: (data: object[]) => void;
   onFilter?: () => void;
   /** Sets the data that will be retrieved directly from the backend */
   setUrlTypeData?: (data: object) => void;
 
   setIsLoaded?: (isLoaded: boolean) => void;
   setIsFilterVisible?: (isFilterVisible: boolean) => void;
+  cleanData?: () => void;
+  setAxisPropertyLabel?: (axisPropertyLabel: string) => void;
+  setValuePropertyLabel?: (valuePropertyLabel: string) => void;
 }
 
 export const INITIAL_STATE: IChartDataContext = {
@@ -71,12 +75,13 @@ export const INITIAL_STATE: IChartDataContext = {
   showLegend: true,
   legendPosition: 'top',
   entityType: 'entity',
-  filters: {},
-  valueProperty: 'value',
-  axisProperty: 'axis',
+  valueProperty: '',
+  axisProperty: '',
   isAxisTimeSeries: false,
-  timeSeriesFormat: 'day-month-year',
-  legendProperty: 'legend',
+  timeSeriesFormat: 'month-year',
+  groupingProperty: '',
+  isGroupingTimeSeries: false,
+  groupingTimeSeriesFormat: 'month-year',
   xProperty: 'x',
   yProperty: 'y',
   simpleOrPivot: 'simple',
@@ -87,6 +92,9 @@ export const INITIAL_STATE: IChartDataContext = {
   aggregationMethod: 'count',
   tension: 0,
   strokeWidth: 0,
+  filters: {
+    and: [],
+  },
 
   data: [],
   items: [],
@@ -94,7 +102,9 @@ export const INITIAL_STATE: IChartDataContext = {
 
   isLoaded: false,
 
-  filteredData: [],
+  axisPropertyLabel: '',
+  valuePropertyLabel: '',
+  maxResultCount: -1,
 };
 
 export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);

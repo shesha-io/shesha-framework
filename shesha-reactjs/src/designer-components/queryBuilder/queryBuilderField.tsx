@@ -86,7 +86,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             children: (
               <CodeEditor
                 readOnly={true}
-                value={props.value ? JSON.stringify(props.value, null, 2) : null}
+                value={props.value ? JSON.stringify(props.value, null, 2) : ""}
                 language="javascript"
                 style={{ marginTop: 8 }}
               />

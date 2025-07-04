@@ -4,7 +4,7 @@ import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'reac
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
-import { useUrlTemplates, defaultStyles } from '../utils';
+import { useUrlTemplates } from '../utils';
 import { getSettings } from './urlSettings';
 
 const settingsMarkup = getSettings() as FormMarkup;
@@ -28,8 +28,6 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
 
   const { configurationItemMode } = useAppConfigurator();
 
-  const styles = defaultStyles(item);
-
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
     const result = data?.map((p) => ({
@@ -41,8 +39,15 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType: item.buttonType ?? buttonTypeSetting,
-      ...styles,
+      buttonType: p.buttonType ?? item.buttonType ?? buttonTypeSetting,
+      size: item.size,
+      background: p.background ?? item.background,
+      border: p.border ?? item.border,
+      shadow: p.shadow ?? item.shadow,
+      font: p.font ?? item.font,
+      stylingBox: p.stylingBox ?? item.stylingBox,
+      style: p.style ?? item.style,
+      dimensions: p.dimensions ?? item.dimensions,
       actionConfiguration: actionConfiguration,
     }));
 
