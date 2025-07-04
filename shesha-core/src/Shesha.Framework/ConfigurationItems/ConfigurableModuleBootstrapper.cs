@@ -217,6 +217,7 @@ namespace Shesha.ConfigurationItems
                 .Select(m => new { BaseModule = m, Level = level++ })
                 .ToList();
 
+            level = 0;
             var baseModules = _moduleHierarchyProvider.GetFullHierarchy(module.Name)
                 .Select(m => new { BaseModule = m, Level = level++ })
                 .ToList();

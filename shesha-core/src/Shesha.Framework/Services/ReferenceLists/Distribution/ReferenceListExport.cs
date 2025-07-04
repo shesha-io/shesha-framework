@@ -15,7 +15,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
     /// <summary>
     /// Reference list export
     /// </summary>
-    public class ReferenceListExport: ConfigurableItemExportBase, IReferenceListExport, ITransientDependency
+    public class ReferenceListExport: ConfigurableItemExportBase<ReferenceList, ReferenceListRevision, DistributedReferenceList>, IReferenceListExport, ITransientDependency
     {
         private readonly IRepository<ReferenceList, Guid> _refListRepo;
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepo;

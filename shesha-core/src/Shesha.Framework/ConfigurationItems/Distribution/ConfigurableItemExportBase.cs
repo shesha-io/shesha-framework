@@ -6,7 +6,10 @@ namespace Shesha.ConfigurationItems.Distribution
     /// <summary>
     /// Base exporter of configurable items
     /// </summary>
-    public abstract class ConfigurableItemExportBase
+    public abstract class ConfigurableItemExportBase<TItem, TRevision, TDistributedItem>
+        where TItem : ConfigurationItem<TRevision>, new()
+        where TRevision : ConfigurationItemRevision, new()
+        where TDistributedItem : DistributedConfigurableItemBase
     {
         /// <summary>
         /// Check is item can be exported

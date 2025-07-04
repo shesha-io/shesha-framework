@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class PermissionDefinitionExport : ConfigurableItemExportBase, IPermissionDefinitionExport, ITransientDependency
+    public class PermissionDefinitionExport : ConfigurableItemExportBase<PermissionDefinition, PermissionDefinitionRevision, DistributedPermissionDefinition>, IPermissionDefinitionExport, ITransientDependency
     {
         private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepo;
 

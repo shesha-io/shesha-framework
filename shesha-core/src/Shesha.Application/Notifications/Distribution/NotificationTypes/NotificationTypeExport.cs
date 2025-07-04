@@ -14,7 +14,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationTypeExport : ConfigurableItemExportBase, INotificationTypeExport, ITransientDependency
+    public class NotificationTypeExport : ConfigurableItemExportBase<NotificationTypeConfig, NotificationTypeConfigRevision, DistributedNotificationType>, INotificationTypeExport, ITransientDependency
     {
         private readonly IRepository<NotificationTypeConfig, Guid> _configurationRepo;
         private readonly IRepository<NotificationTemplate, Guid> _templateRepo;

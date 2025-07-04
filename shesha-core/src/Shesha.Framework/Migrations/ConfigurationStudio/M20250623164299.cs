@@ -9,7 +9,7 @@ namespace Shesha.Migrations.ConfigurationStudio
         public override void Up()
         {
             Create.Column("is_code_based").OnTable("configuration_items").InSchema("frwk").AsBoolean().NotNullable().SetExistingRowsTo(false);
-            Create.Column("has_autstanding_code_generation").OnTable("configuration_items").InSchema("frwk").AsBoolean().NotNullable().SetExistingRowsTo(false);
+            Create.Column("has_outstanding_code_generation").OnTable("configuration_items").InSchema("frwk").AsBoolean().NotNullable().SetExistingRowsTo(false);
 
             Alter.Table("configuration_items").InSchema("frwk")
                 .AddColumn("latest_imported_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_latest_imported_revision_id", "frwk", "configuration_item_revisions", "id").Indexed();
