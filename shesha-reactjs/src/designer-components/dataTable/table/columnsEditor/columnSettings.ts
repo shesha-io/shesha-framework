@@ -108,7 +108,12 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "textArea",
                                     "propertyName": "description",
                                     "label": "Tooltip",
-                                    "labelAlign": "right"
+                                    "labelAlign": "right",
+                                    "hidden": {
+                                        "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                                        "_mode": "code",
+                                        "_value": false
+                                    },
                                 },
                             ]
                         },
@@ -322,7 +327,6 @@ export const getColumnSettings = (data?: any) => ({
                             id: 'dimensionsStyleCollapsiblePanel',
                             propertyName: 'pnlDimensions',
                             label: 'Dimensions',
-                            parentId: 'styleRouter',
                             labelAlign: 'right',
                             ghost: true,
                             collapsible: 'header',
@@ -384,7 +388,6 @@ export const getColumnSettings = (data?: any) => ({
                             label: 'Background',
                             labelAlign: 'right',
                             ghost: true,
-                            parentId: 'styleRouter',
                             collapsible: 'header',
                             hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                             content: {
