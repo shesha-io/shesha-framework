@@ -1,26 +1,20 @@
 import React, { FC } from 'react';
 import {
   CopyOutlined,
-  DownOutlined,
   SaveOutlined
 } from '@ant-design/icons';
 import { componentsFlatStructureToTree } from '@/providers/form/utils';
-import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
 import {
   App,
-  Dropdown,
-  MenuProps,
-  } from 'antd';
+  Button,
+} from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { getFormFullName } from '@/utils/form';
-import { StatusTag } from '@/components';
 import { useStyles } from '../styles/styles';
 
-
-type MenuItem = MenuProps['items'][number];
 
 export interface ISaveMenuProps {
   onSaved?: () => void;
@@ -68,39 +62,25 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
     message.success("Form name copied");
   };
 
-  const saveMenuItems: MenuItem[] = [
-    {
-      label: (
-        <>
-          <SaveOutlined /> Save
-        </>
-      ),
-      key: 'save',
-      onClick: onSaveClick,
-    },
-  ];
-
   return (
     <div
-    className={styles.formNameParent}
+      className={styles.formNameParent}
     >
-      <Dropdown.Button
-        icon={<DownOutlined />}
-        menu={{ items: saveMenuItems }}
+      <Button
+        icon={<SaveOutlined />}
         onClick={onSaveClick}
-        type="primary"
+        type='primary'
       >
-        <SaveOutlined />
-      </Dropdown.Button>
+        Save
+      </Button>
       <p
         className={styles.formName}
         title={fullName}
-        onClick={()=>copyFormName()}
+        onClick={() => copyFormName()}
       >
         <span className={styles.formTitle}> {fullName}
         </span>
-        <CopyOutlined color='#555' size={12} title={fullName}/>
-        <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} />
+        <CopyOutlined color='#555' size={12} title={fullName} />
       </p>
     </div>
 

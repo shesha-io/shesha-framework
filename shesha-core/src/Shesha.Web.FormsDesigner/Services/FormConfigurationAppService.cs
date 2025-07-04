@@ -160,12 +160,6 @@ namespace Shesha.Web.FormsDesigner.Services
             var resolver = IocManager.Resolve<IConfigurationItemResolver>();
             var form = await resolver.GetItemAsync<FormConfiguration>(input.Module, input.Name);
 
-            /*
-            var hierarchyProvider = IocManager.Resolve<IModuleHierarchyProvider>();
-
-            var module = _cfRuntime.CurrentModule;
-            */
-
             if (form == null)
                 throw new FormNotFoundException(input.Module, input.Name);
 

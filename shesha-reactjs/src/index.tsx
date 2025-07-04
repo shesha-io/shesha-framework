@@ -1,4 +1,3 @@
-export { CONFIGURATION_ITEM_STATUS_MAPPING } from './utils/configurationFramework/models';
 export * from './components';
 export * from './formDesignerUtils';
 export * from './hocs';

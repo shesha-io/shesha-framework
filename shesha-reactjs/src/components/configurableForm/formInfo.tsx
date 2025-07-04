@@ -2,9 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useAppConfigurator, useAuth } from '@/providers';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { Button } from 'antd';
-import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
 import { getFormFullName } from '@/utils/form';
-import StatusTag from '@/components/statusTag';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 import { useStyles } from './styles/styles';
@@ -28,7 +26,7 @@ export interface FormInfoProps {
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
   
-  const { id, versionNo, versionStatus, name, module } = formProps;
+  const { id, versionNo, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 
@@ -107,12 +105,6 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', paddingRight: 5 }}>
-              <StatusTag
-                value={versionStatus}
-                mappings={CONFIGURATION_ITEM_STATUS_MAPPING}
-                color={null}
-                style={{ display: 'flex', marginRight: '5px', fontSize: '10px', height: '15px', justifyContent: 'center', alignItems: 'center' }}
-              />
               <CloseOutlined
                 onClick={() => toggleShowInfoBlock(false)}
                 title="Click to hide form info"

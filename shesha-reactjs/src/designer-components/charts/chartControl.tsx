@@ -12,7 +12,6 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
-import { useTheme } from '@/providers/theme';
 
 const chartInnerStyle = {
   flex: 1,
@@ -53,8 +52,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
-  const { theme } = useTheme();
-  // Optimize state initialization with lazy initial state
+    // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
@@ -340,7 +338,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         description={error}
         type={"error"}
         action={
-          <Button color={theme.application.errorColor ?? 'red'} size="small" onClick={retryFetch}>
+          <Button color="danger" size="small" onClick={retryFetch}>
             Retry
           </Button>
         }
@@ -362,7 +360,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         <ChartLoader chartType={chartType} />
         <div className={cx(styles.loadingText)}>Fetching data...</div>
         <Button
-          color={theme.application.errorColor ?? 'red'}
+          color="danger"
           size="small"
           onClick={() => {
             if (isFetchingRef.current && currentControllerRef.current) {

@@ -1,5 +1,3 @@
-import { IStatusMap, IStatusMappings } from '@/components/statusTag';
-
 export enum ConfigurationItemVersionStatus {
   /**
    * Version is still a work in progress
@@ -41,17 +39,4 @@ export const ConfigurationItemVersionStatusMap: VersionStatusMap = {
   [ConfigurationItemVersionStatus.Live]: { text: 'Live', color: '#87d068' },
   [ConfigurationItemVersionStatus.Cancelled]: { text: 'Cancelled', color: '#cd201f' },
   [ConfigurationItemVersionStatus.Retired]: { text: 'Retired', color: '#FF7518' },
-};
-
-export const CONFIGURATION_ITEM_STATUS_MAPPING: IStatusMappings = { 
-    mapping: Object.values(ConfigurationItemVersionStatus)
-        .map<IStatusMap>(v => {
-            const code = Number(v);
-            const item = ConfigurationItemVersionStatusMap[v as ConfigurationItemVersionStatus];
-            return code && item
-                ? { code: code, text: item?.text, color: item?.color }
-                : null;
-        })
-        .filter(v => Boolean(v)), 
-    default: { override: 'NOT RECOGNISED', text: 'NOT RECOGNISED', color: '#f50' } 
 };
