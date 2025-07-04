@@ -52,7 +52,8 @@ export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSPr
     } else if (input?.type === 'url') {
         style.backgroundImage = `url(${input?.url})`;
     } else if (input?.type === 'image') {
-        style.backgroundImage = `url(${input?.uploadFile})`;
+        const uploadFile = input?.uploadFile;
+        style.backgroundImage = `url(${uploadFile?.url || uploadFile})`;
     } else if (input?.type === 'storedFile') {
         style.backgroundImage = `url(${url})`;
     }
