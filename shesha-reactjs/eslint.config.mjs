@@ -1,4 +1,3 @@
-import { fixupConfigRules } from "@eslint/compat";
 import jsdoc from "eslint-plugin-jsdoc";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import stylistic from "@stylistic/eslint-plugin";
@@ -7,16 +6,10 @@ import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
 import hooksPlugin from "eslint-plugin-react-hooks";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
 
 export default [{
     files: [
@@ -31,14 +24,7 @@ export default [{
         "example/**/*",
         "src/apis/*",
         "**/__tests__/**/*",
-        "**/.eslintrc.js",
-        "**/rollup.config.mjs",
-        "**/next.config.js",
-        "**/jest.config.js",
     ],
-}, ...fixupConfigRules(
-    compat.extends("plugin:@next/next/recommended"),
-), {
     plugins: {
         jsdoc,
         "react-hooks": hooksPlugin,
@@ -274,5 +260,16 @@ export default [{
             markers: ["/"],
         }],
     }
-}
+},
+{
+    files: ['**/*.js', '**/*.mjs'],
+    ...js.configs.recommended,
+    languageOptions: {
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+    },
+    rules: {
+        '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
+    }
+},
 ];
