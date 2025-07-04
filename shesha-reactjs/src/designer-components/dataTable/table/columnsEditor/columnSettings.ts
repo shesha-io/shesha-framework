@@ -270,6 +270,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "inputType": "switch",
                                     "propertyName": "allowSorting",
                                     "label": "Allow Sorting",
+                                    "jsSetting": true
                                 }
                             ]
                         },
