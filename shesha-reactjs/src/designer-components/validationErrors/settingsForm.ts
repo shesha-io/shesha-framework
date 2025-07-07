@@ -540,7 +540,8 @@ export const getSettings = (data: any) => {
                 propertyName: 'permissions',
                 label: 'Permissions',
                 size: 'small',
-                parentId: securityId
+                parentId: securityId,
+                jsSetting: true,
               })
               .toJson()
             ]

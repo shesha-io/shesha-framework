@@ -7,6 +7,7 @@ export const getSettings = (data: any) => {
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
   const styleRouterId = nanoid();
+  const securityTabId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -344,6 +345,23 @@ export const getSettings = (data: any) => {
                 })
                 .toJson(),
             ],
+          },
+                    {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityTabId,
+                jsSetting: true,
+              })
+              .toJson()
+            ]
           }
         ],
       })

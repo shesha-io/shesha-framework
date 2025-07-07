@@ -39,7 +39,8 @@ export const defaultTagStyles = (): IStyleType => {
             weight: '400',
             size: 14,
             color: '#000',
-            type: 'Segoe UI'
+            type: 'Segoe UI',
+            align: 'center'
         },
         border: {
             border: {

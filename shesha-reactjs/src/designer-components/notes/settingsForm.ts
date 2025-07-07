@@ -9,6 +9,7 @@ export const getSettings = (data: any) => {
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
+  const validationTabId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -48,6 +49,13 @@ export const getSettings = (data: any) => {
                       type: 'textField',
                       tooltip: 'This is used to group notes into categories',
                       jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'showCharCount',
+                      label: 'Show Chars Count',
+                      jsSetting: true
                     }
                   ]
                 })
@@ -163,7 +171,7 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       type: 'codeEditor',
                       propertyName: 'onCreated',
-                      label: 'On Created',
+                      label: 'On Create',
                       labelAlign: 'right',
                       parentId: eventsTabId,
                       tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
@@ -177,6 +185,16 @@ export const getSettings = (data: any) => {
                       parentId: eventsTabId,
                       tooltip: 'Triggered after successfully updating a note',
                       exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
+                    },
+                    {
+                      id: nanoid(),
+                      type: 'codeEditor',
+                      propertyName: 'onDeleteAction',
+                      label: 'On Delete',
+                      labelAlign: 'right',
+                      parentId: eventsTabId,
+                      tooltip: 'Triggered after successfully deleting a note',
+                      exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`]
                     }
 
                   ]
@@ -208,40 +226,6 @@ export const getSettings = (data: any) => {
                       ]
                     }
                   ]
-                }).addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'showCharCount',
-                      label: 'Show Character Counter',
-                      jsSetting: true
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'minLength',
-                      label: 'Minimum Length',
-                      min: 0,
-                      jsSetting: true
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'maxLength',
-                      label: 'Maximum Length',
-                      min: 0,
-                      jsSetting: true
-                    }
-                  ]
                 })
                 .toJson()
             ]
@@ -263,7 +247,39 @@ export const getSettings = (data: any) => {
                 })
                 .toJson()
             ]
+          },
+          {
+            key: 'validation',
+            title: 'Validation',
+            id: validationTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: validationTabId,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'minLength',
+                      label: 'Min Length',
+                      min: 0,
+                      jsSetting: true
+                    },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'maxLength',
+                      label: 'Max Length',
+                      min: 0,
+                      jsSetting: true
+                    }
+                  ]
+                })
+                .toJson()
+            ]
           }
+
         ]
       })
       .toJson(),

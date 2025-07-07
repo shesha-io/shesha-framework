@@ -57,7 +57,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
 
   const checkOverflow = useCallback(() => {
     if (cellRef.current) {
-      return cellRef.current.scrollWidth > cellRef.current.clientWidth;
+      return  (typeof cell.value === 'string' || typeof cell.value === 'object') && cellRef.current.scrollWidth > cellRef.current.clientWidth;
     }
     return false;
   }, []);
@@ -67,7 +67,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
       key={key}
       ref={cellParentRef}
       {...restProps}
-      style={style || cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight, cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '90%' } : undefined}
+      style={style ?? cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight, cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : undefined}
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
@@ -75,18 +75,15 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     >
       {preContent}
       {
-        (cell.column as unknown as { columnType: string }).columnType === 'data' ?
           <div
             ref={cellRef}
-            className={showExpandedView && styles.shaCellParent}
+            className={showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data' && (typeof cell.value === 'string' || typeof cell.value === 'object')  ? styles.shaCellParent :  styles.shaCellParentFW}
             onMouseOver={() => {
               void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
             }}
           >
             {cell.render('Cell')}
           </div>
-          :
-          cell.render('Cell')
       }
 
     </div>
