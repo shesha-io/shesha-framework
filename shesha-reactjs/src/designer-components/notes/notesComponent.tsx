@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
-import { getSettings } from './settingsForm';
+import settingsFormJson from './settingsForm.json';
 import { NotesRenderer } from '@/components';
 import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { evaluateValue, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -40,6 +40,11 @@ export interface INotesProps extends IConfigurableFormComponent {
   onUpdateAction?: string;
 }
 
+const settingsForm = {
+  formSettings: (settingsFormJson as any).formSettings ?? {},
+  components: (settingsFormJson as any).components ?? settingsFormJson,
+} as FormMarkup;
+
 const NotesComponent: IToolboxComponent<INotesProps> = {
   type: 'notes',
   isInput: false,
@@ -70,6 +75,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
+    
     const handleDeleteAction = (note: INote) => {
       if (!model.onDeleteAction) return;
 
@@ -89,6 +95,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
+    
     const handleCreateAction = (note: INote) => {
       if (!model.onCreateAction) return;
 
@@ -103,6 +110,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
+    
     const handleUpdateAction = (note: INote) => {
       if (!model.onUpdateAction) return;
 
@@ -137,7 +145,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
       </NotesProvider>
     );
   },
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => {
     const customModel: INotesProps = {
       ...model,
@@ -147,7 +155,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     };
     return customModel;
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: settingsForm,
   migrator: (m) =>
     m
       .add<INotesProps>(
