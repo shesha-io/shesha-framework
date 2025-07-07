@@ -23,7 +23,7 @@ import { useFormManager } from "@/providers/formManager";
 import { IFormDataLoadersContext, useFormDataLoaders } from "../loaders/formDataLoadersProvider";
 import { IFormDataSubmittersContext, useFormDataSubmitters } from "../submitters/formDataSubmittersProvider";
 import { FormInfo } from "../api";
-import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContexts, wrapConstantsData } from "../utils";
+import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContextsNoRefresh, wrapConstantsData } from "../utils";
 import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { Form, FormInstance } from "antd";
 import { IFormApi } from "../formApi";
@@ -683,7 +683,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
     const dataLoaders = useFormDataLoaders();
     const dataSubmitters = useFormDataSubmitters();
     const [antdFormInstance] = Form.useForm(antdForm);
-    const fullContext = useAvailableConstantsContexts();
+    const fullContext = useAvailableConstantsContextsNoRefresh();
     const metadataDispatcher = useMetadataDispatcher();
 
     if (!formRef.current) {
