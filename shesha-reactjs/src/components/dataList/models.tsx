@@ -69,7 +69,7 @@ export interface IDataListBaseProps extends IStyleType {
   container?: IStyleType;
 
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
-
+  onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
   collapsible?: boolean;
   collapseByDefault?: boolean;
   groupStyle?: string;

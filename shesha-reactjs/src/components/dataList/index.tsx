@@ -3,7 +3,7 @@ import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useHttpClient, useShaFormInstance } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -24,6 +24,7 @@ import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { OnSaveSuccessHandler } from '../dataTable/interfaces';
 
 interface EntityForm {
   entityType: string;
@@ -76,6 +77,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   cardSpacing,
   style,
   gap,
+  onRowDeleteSuccessAction,
   ...props
 }) => {
 
@@ -99,6 +101,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const rows = useRef<React.JSX.Element[]>(null);
 
   const shaForm = useShaFormInstance();
+  const httpClient = useHttpClient();
 
   useDeepCompareEffect(() => {
     entityForms.current = [];
@@ -269,6 +272,33 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateContent();
     }
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
+
+
+
+   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+      if (!onRowDeleteSuccessAction)
+        return () => {
+          /*nop*/
+        };
+      return (data, formApi, globalState, setGlobalState) => {
+        const evaluationContext = {
+          data,
+          formApi,
+          globalState,
+          setGlobalState,
+          http: httpClient,
+          moment,
+        };
+        try {
+          executeAction({
+            actionConfiguration: onRowDeleteSuccessAction,
+            argumentsEvaluationContext: evaluationContext,
+          });
+        } catch (error) {
+          console.error('Error executing row delete success action:', error);
+        }
+      };
+    }, [onRowDeleteSuccessAction, httpClient]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
