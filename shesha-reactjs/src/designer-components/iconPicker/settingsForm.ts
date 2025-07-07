@@ -61,19 +61,6 @@ export const getSettings = (data: any) => {
                   inputs: [
                     {
                       id: nanoid(),
-                      type: 'iconPicker',
-                      propertyName: 'defaultValue',
-                      label: 'Default Icon',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
                       type: 'editModeSelector',
                       propertyName: 'editMode',
                       label: 'Edit Mode',

@@ -143,15 +143,6 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 inputs: [
                                     {
                                         id: nanoid(),
-                                        propertyName: 'defaultValue',
-                                        label: 'Default Value',
-                                        size: 'small',
-                                        jsSetting: true,
-                                        type: "numberField",
-                                    },
-                                    {
-                                        id: nanoid(),
-                                        parentId: dataTabId,
                                         label: "Mode",
                                         propertyName: "mode",
                                         type: "dropdown",
@@ -168,27 +159,26 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                 label: "Multiple"
                                             }
                                         ]
-                                    }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                parentId: dataTabId,
-                                label: "Data Source Type",
-                                propertyName: "dataSourceType",
-                                inputType: "dropdown",
-                                size: "small",
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    {
-                                        value: "values",
-                                        label: "Values"
                                     },
                                     {
-                                        value: "referenceList",
-                                        label: "Reference list"
+                                        id: nanoid(),
+                                        label: "Data Source Type",
+                                        propertyName: "dataSourceType",
+                                        type: "dropdown",
+                                        size: "small",
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            {
+                                                value: "values",
+                                                label: "Values"
+                                            },
+                                            {
+                                                value: "referenceList",
+                                                label: "Reference list"
+                                            }
+                                        ],
                                     }
-                                ],
+                                ]
                             })
                             .addContainer({
                                 id: dataContainerId,
@@ -473,6 +463,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             parentId: styleRouterId,
                                             ghost: true,
                                             collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: nanoid(),
                                                 components: [...new DesignerToolbarSettings()
@@ -537,6 +528,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             parentId: styleRouterId,
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             collapsible: 'header',
                                             content: {
                                                 id: nanoid(),
@@ -545,6 +537,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                         id: nanoid(),
                                                         parentId: nanoid(),
                                                         inline: true,
+                                                        label: 'Width',
                                                         inputs: [
                                                             {
                                                                 type: 'textField',
@@ -620,6 +613,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Border',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
@@ -645,6 +639,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Background',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
@@ -776,6 +771,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Shadow',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
@@ -845,6 +841,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Margin & Padding',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             collapsible: 'header',
                                             content: {
                                                 id: nanoid(),
@@ -865,6 +862,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                             label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                             parentId: styleRouterId,
                                             collapsible: 'header',
                                             content: {
@@ -893,6 +891,70 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                 id: DefaultTagStyleId,
                                                 components: [
                                                     ...new DesignerToolbarSettings()
+                                                        .addCollapsiblePanel({
+                                                            id: nanoid(),
+                                                            propertyName: 'tagFontStyle',
+                                                            label: 'Font',
+                                                            labelAlign: 'right',
+                                                            ghost: true,
+                                                            collapsible: 'header',
+                                                            parentId: DefaultTagStyleId,
+                                                            content: {
+                                                                id: nanoid(),
+                                                                components: [...new DesignerToolbarSettings()
+                                                                    .addSettingsInputRow({
+                                                                        id: nanoid(),
+                                                                        parentId: nanoid(),
+                                                                        inline: true,
+                                                                        inputs: [
+                                                                            {
+                                                                                type: 'dropdown',
+                                                                                id: nanoid(),
+                                                                                label: 'Family',
+                                                                                propertyName: 'tag.font.type',
+                                                                                hideLabel: true,
+                                                                                dropdownOptions: fontTypes,
+                                                                            },
+                                                                            {
+                                                                                type: 'numberField',
+                                                                                id: nanoid(),
+                                                                                label: 'Size',
+                                                                                propertyName: 'tag.font.size',
+                                                                                hideLabel: true,
+                                                                                width: 50,
+                                                                            },
+                                                                            {
+                                                                                type: 'dropdown',
+                                                                                id: nanoid(),
+                                                                                label: 'Weight',
+                                                                                propertyName: 'tag.font.weight',
+                                                                                hideLabel: true,
+                                                                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                                                                dropdownOptions: fontWeights,
+                                                                                width: 100,
+                                                                            },
+                                                                            {
+                                                                                type: 'colorPicker',
+                                                                                id: nanoid(),
+                                                                                label: 'Color',
+                                                                                hideLabel: true,
+                                                                                propertyName: 'tag.font.color',
+                                                                            },
+                                                                            {
+                                                                                type: 'dropdown',
+                                                                                id: nanoid(),
+                                                                                label: 'Align',
+                                                                                propertyName: 'tag.font.align',
+                                                                                hideLabel: true,
+                                                                                width: 60,
+                                                                                dropdownOptions: textAlign,
+                                                                            },
+                                                                        ],
+                                                                    })
+                                                                    .toJson()
+                                                                ]
+                                                            }
+                                                        })
                                                         .addCollapsiblePanel({
                                                             id: nanoid(),
                                                             propertyName: 'tagDimensionStyle',
@@ -1249,6 +1311,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
+                                jsSetting: true,
                                 size: 'small',
                                 parentId: securityTabId
                             })

@@ -104,20 +104,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   parentId: commonTabId,
                   inputs: [
                     {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'defaultValue',
-                      label: 'Default Value',
-                      tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
                       type: 'textField',
                       id: nanoid(),
                       propertyName: 'prefix',
@@ -794,6 +780,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

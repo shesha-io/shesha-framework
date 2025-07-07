@@ -78,49 +78,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     },
                   ],
                 })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'iconName',
-                      label: 'Icon',
-                      parentId: commonTabId,
-                      type: 'iconPicker',
-                      jsSetting: true,
-                      allowClear: true,
-                      readOnly: {
-                        _code: 'return getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.displayType) !== "icon";',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'textTitle',
-                      label: 'Text Title',
-                      parentId: commonTabId,
-                      type: 'textField',
-                      jsSetting: true,
-                      readOnly: {
-                        _code: 'return getSettingValue(data?.readOnly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                    },
-                  ],
-                })
                 .addSettingsInput({
                   inputType: 'switch',
                   id: hiddenId,
@@ -202,6 +159,49 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         _value: false,
                       } as any,
                       parentId: dataTabId,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'iconName',
+                      label: 'Icon',
+                      parentId: dataTabId,
+                      type: 'iconPicker',
+                      jsSetting: true,
+                      allowClear: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.displayType) !== "icon";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'textTitle',
+                      label: 'Text Title',
+                      parentId: dataTabId,
+                      type: 'textField',
+                      jsSetting: true,
+                      readOnly: {
+                        _code: 'return getSettingValue(data?.readOnly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                   ],
                 })
@@ -307,25 +307,21 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     },
                   ],
                 })
-                .addContainer({
+                .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlDialogSettings',
                   label: 'Dialog Settings',
-                  labelAlign: 'right',
+                  labelAlign: 'left',
                   parentId: dataTabId,
                   hidden: {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  components: [
+                  content: {
+                    id: nanoid(),
+                    components: [
                     ...new DesignerToolbarSettings()
-                      .addSectionSeparator({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        label: 'Dialog Settings',
-                        labelAlign: 'left',
-                      })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -448,9 +444,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           {
                             id: nanoid(),
                             propertyName: 'modalWidth',
-                            label: 'Dialog Width (%)',
+                            label: 'Dialog Width',
                             parentId: dataTabId,
-                            type: 'dropdown',
+                            type: 'customDropdown',
+                            customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                            customDropdownMode: 'single',
                             allowClear: true,
                             jsSetting: true,
                             dropdownOptions: [
@@ -549,41 +547,40 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           ],
                         },
                       })
-                      .toJson(),
-                  ],
+                        .toJson(),
+                    ],
+                  },
                 })
-                .addContainer({
+                .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlQuickviewSettings',
                   label: 'Quickview Settings',
-                  labelAlign: 'right',
+                  labelAlign: 'left',
+                  hideLabel: false,
                   parentId: dataTabId,
                   hidden: {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Quickview";',
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  components: [
+                  content: {
+                    id: nanoid(),
+                    components: [
                     ...new DesignerToolbarSettings()
-                      .addSectionSeparator({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        label: 'Quickview Settings',
-                        labelAlign: 'left',
-                      })
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'quickviewWidth',
                         label: 'Quickview Width',
-                        description: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                        description: 'You can use any unit (%, px, em, etc). px by default if without unit.',
                         parentId: dataTabId,
                         inputType: 'textField',
                         jsSetting: true,
                         icon: 'widthIcon',
-                        width: '30%',
+                        width: '50%',
                       })
                       .toJson(),
-                  ],
+                    ],
+                  },
                 })
                 .toJson(),
             ],
@@ -1153,6 +1150,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityId,
                 })

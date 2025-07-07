@@ -168,7 +168,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     shadowStyle
   } = prev || {};
 
-
   const isBelow = shadowStyle === 'below';
   const isAbove = shadowStyle === 'above';
 
@@ -201,12 +200,12 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0
     },
-    display: prev?.display ?? "block",
+    display: prev?.className === 'sha-index-table-control' || prev?.className === 'index-table-controls-right' ? 'flex' : prev?.display ?? null,
     direction: prev?.direction ?? "horizontal",
-    flexWrap: prev?.flexWrap ?? "wrap",
+    flexWrap: prev?.className === 'sha-index-table-control' || prev?.className === 'index-table-controls-right' ? 'nowrap' : prev?.flexWrap ?? "wrap",
     flexDirection: prev?.flexDirection ?? "row",
     justifyContent: prev?.justifyContent ?? "left",
-    alignItems: prev?.alignItems ?? "normal",
+    alignItems: prev?.className === 'index-table-controls-right' ? 'center' : prev?.alignItems ?? "normal",
     alignSelf: prev?.alignSelf ?? "normal",
     justifyItems: prev?.justifyItems ?? "normal",
     textJustify: prev?.textJustify ?? "auto",

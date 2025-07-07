@@ -131,13 +131,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     content: {
       id: 'pnl24bf6-f76d-4139-a850-cbf06c8b71',
       components: [...new DesignerToolbarSettings()
-        .addIconPicker({
-          id: nanoid(),
-          propertyName: 'defaultValue',
-          label: 'Default Icon',
-          labelAlign: 'left',
-          jsSetting: true
-        })
         .addColorPicker({
           id: nanoid(),
           propertyName: 'color',
@@ -209,6 +202,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           parentId: 'root',
           hidden: false,
           validate: {},
+          jsSetting: true,
         }).toJson()
       ]
     }

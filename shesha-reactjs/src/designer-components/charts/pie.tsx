@@ -8,7 +8,9 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
-import { defaultConfigFiller, filterNonNull } from './utils';
+import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
+import { removeUndefinedProps } from '@/utils/object';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
@@ -17,14 +19,40 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <PieChartOutlined />,
   Factory: ({ model }) => {
+    const {
+      dimensionsStyles,
+      borderStyles,
+      backgroundStyles,
+      shadowStyles,
+      stylingBoxAsCSS,
+      jsStyle
+    } = model.allStyles;
+
+    const wrapperStyles = removeUndefinedProps({
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...stylingBoxAsCSS,
+      ...jsStyle
+    });
     if (model.hidden) return null;
     
     return (
       <ConfigurableFormItem model={model}>
         {() => {
           return (
-            <ChartDataProvider>
-              {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl {...model} chartType='pie' />}
+            <ChartDataProvider model={model}>
+              <div style={{
+                ...wrapperStyles,
+                minHeight: '400px',
+                padding: '16px',
+                boxSizing: 'border-box',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='pie' filters={model.filters} />}
+              </div>
             </ChartDataProvider>
           );
         }}
@@ -51,6 +79,21 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       ...filterNonNull(prev),
       type: prev.type,
       id: prev.id
+    }))
+    .add<IChartProps>(6, prev => ({ 
+      ...prev,
+      isAxisTimeSeries: false,
+      isGroupingTimeSeries: false,
+      strokeColor: '#000000',
+      strokeWidth: 1,
+      maxResultCount: 10000,
+      requestTimeout: 10000,
+    }))
+    .add<IChartProps>(7, prev => ({ 
+      ...prev,
+      timeSeriesFormat: 'month-year',
+      groupingTimeSeriesFormat: 'month-year',
+      ...migratePrevStyles(prev, defaultStyles()) 
     }))
 };
 

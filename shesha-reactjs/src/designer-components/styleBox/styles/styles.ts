@@ -35,7 +35,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           position: absolute;
           text-align: center;
           width: 25px;
-          width: 25px;
         }
       
         .${center} {
@@ -43,26 +42,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           background-color: ${background};
           height: 40px;
           left: 35px;
-          height: 40px;
-          left: 35px;
           overflow: hidden;
           position: relative;
-          top: 30px;
-          width: 90px;
           top: 30px;
           width: 90px;
         }
       
         .${margTop} {
           position: absolute;
-          position: absolute;
           top: 12px;
-          left: 107px;
           left: 107px;
         }
       
         .${margLeft} {
-          position: absolute;
           position: absolute;
           left: 2px;
           top: 79px;
@@ -70,9 +62,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${margBottom} {
           position: absolute;
-          position: absolute;
           bottom: 2px;
-          left: 107px;
           left: 107px;
         }
       
@@ -80,9 +70,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           position: absolute;
           left: 205px;
           top: 79px;
-          position: absolute;
-          left: 205px;
-          top: 69px;
         }
       
         .${margin} {
@@ -94,32 +81,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${paddTop} {
           position: absolute;
-          position: absolute;
           top: 2px;
-          left: 70px;
           left: 70px;
         }
       
         .${paddLeft} {
           position: absolute;
-          position: absolute;
           left: 2px;
-          top: 39px;
           top: 39px;
         }
       
         .${paddBottom} {
           position: absolute;
-          position: absolute;
           bottom: 2px;
-          left: 70px;
           left: 70px;
         }
       
         .${paddRight} {
-          position: absolute;
-          left: 130px;
-          top: 39px;
           position: absolute;
           left: 130px;
           top: 39px;
@@ -130,12 +108,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           background-color: #fff;
           height: 100px;
           left: 38px;
-          height: 100px;
-          left: 38px;
           overflow: hidden;
           position: relative;
-          top: 30px;
-          width: 160px;
           top: 30px;
           width: 160px;
         }

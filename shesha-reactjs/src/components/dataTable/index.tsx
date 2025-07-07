@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
@@ -52,7 +52,7 @@ import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
 import { useStyles } from './styles/styles';
-import { adjustWidth, getCruadActionConditions } from './cell/utils';
+import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { getFormApi } from '@/providers/form/formApi';
@@ -71,6 +71,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  showExpandedView?: boolean;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -103,6 +104,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   noDataSecondaryText,
   noDataIcon,
   onRowSaveSuccessAction: onRowSaveSuccess,
+  showExpandedView,
+  onRowDeleteSuccessAction,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -110,7 +113,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const formApi = getFormApi(form ?? { formMode: 'readonly', formData: {} } as ConfigurableFormInstance);
   const { formMode, data: formData } = formApi;
   const { globalState, setState: setGlobalState } = useGlobalState();
-  const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
 
   if (tableRef) tableRef.current = store;
@@ -267,26 +269,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return false;
   };
 
-  const prevCrudOptions = usePrevious({
-    canDelete: evaluateYesNoInheritJs(
-      props.canDeleteInline,
-      props.canDeleteInlineExpression,
-      formMode,
-      formData,
-      globalState
-    ),
-    canEdit: evaluateYesNoInheritJs(
-      props.canEditInline,
-      props.canEditInlineExpression,
-      formMode,
-      formData,
-      globalState
-    ),
-    inlineEditMode,
-    formMode,
-    canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
-  });
-
   const crudOptions = useMemo(() => {
     const result = {
       canDelete: evaluateYesNoInheritJs(
@@ -314,26 +296,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
 
-  const widthOptions = useMemo(() => {
-    return getCruadActionConditions(crudOptions, prevCrudOptions);
-  }, [crudOptions, prevCrudOptions]);
-
   const preparedColumns = useMemo<Column<any>[]>(() => {
-    setVisibleColumns(columns?.filter((c) => c.show).length);
     const localPreparedColumns = columns
       .map((column) => {
         if (column.columnType === 'crud-operations') {
           const { maxWidth, minWidth } = adjustWidth(
             {
-              maxWidth: column.maxWidth,
-              minWidth: column.minWidth,
-            },
-            {
-              canDivideWidth: widthOptions.canDivideWidth,
-              canDoubleWidth: widthOptions.canDoubleWidth,
-              canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
-              canTripleWidth: widthOptions.canTripleWidth,
-              columnsChanged: visibleColumns !== columns?.filter((c) => c.show).length && !!visibleColumns
+              canDelete: props.canDeleteInline,
+              canEdit: props.canEditInline,
+              canAdd: props.canAddInline,
+              inlineEditMode,
             }
           );
           column.minWidth = minWidth;
@@ -456,6 +428,31 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     });
   };
 
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /*nop*/
+      };
+    return (data, formApi, globalState, setGlobalState) => {
+      const evaluationContext = {
+        data,
+        formApi,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, httpClient]);
+
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
@@ -466,6 +463,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
+      performOnRowDeleteSuccessAction(rowData, formApi, globalState, setGlobalState);
       store.refreshTable();
     });
   };
@@ -706,6 +704,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     onRowsRendering: grouping && grouping.length > 0 && groupingAvailable ? onRowsRenderingWithGrouping : undefined,
     onResizedChange: onResizedChange,
+
+    showExpandedView,
   };
 
   return (

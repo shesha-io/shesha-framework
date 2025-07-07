@@ -156,6 +156,7 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                                 const skipValueUpdate = changeDetails && changeDetails.isReorder && changeDetails.childsLengthDelta < 0;
                                 refresh(!skipValueUpdate);
                             };
+
                             return (
                                 <ListItemWrapper
                                     key={index}
@@ -171,7 +172,7 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                                     }}
                                     readOnly={readOnly}
                                     isLast={index === value.length - 1}
-                                    className={selectedItem && item === selectedItem ? styles.listItemSelected : undefined}
+                                    className={selectedItem && item.id === selectedItem.id ? styles.listItemSelected : undefined}
                                 >
                                     {children({
                                         item,

@@ -14,10 +14,11 @@ export interface IButtonGroupProps extends IBaseButtonGroupProps, IStyleType {
 }
 
 export interface IBaseButtonGroupProps {
-  items: ButtonGroupItemProps[];
+  items?: ButtonGroupItemProps[];
   size?: SizeType;
   spaceSize?: SizeType;
   isInline?: boolean;
   noStyles?: boolean;
   styles?: CSSProperties;
+  gap?: SizeType;
 }

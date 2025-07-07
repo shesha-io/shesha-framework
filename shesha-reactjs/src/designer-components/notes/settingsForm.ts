@@ -9,6 +9,7 @@ export const getSettings = (data: any) => {
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
+  const validationTabId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -48,52 +49,71 @@ export const getSettings = (data: any) => {
                       type: 'textField',
                       tooltip: 'This is used to group notes into categories',
                       jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'showCharCount',
+                      label: 'Show Chars Count',
+                      jsSetting: true
                     }
                   ]
                 })
-                    .addSettingsInputRow({
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+
+                  inputs: [
+                    {
+                      type: 'switch',
                       id: nanoid(),
+                      propertyName: 'autoSize',
+                      label: 'Auto Size',
+                      jsSetting: true
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'editModeSelector',
+                      propertyName: 'editMode',
+                      label: 'Edit Mode',
                       parentId: commonTabId,
-  
-                      inputs: [
-                        {
-                          type: 'switch',
-                          id: nanoid(),
-                          propertyName: 'autoSize',
-                          label: 'Auto Size',
-                          jsSetting: true
-                        },
-                        {
-                          type: 'switch',
-                          id: nanoid(),
-                          propertyName: 'allowDelete',
-                          label: 'Allow Delete',
-                          jsSetting: true
-                        }
-                      ]
-                    })
-                    .addSettingsInputRow({
+                      defaultValue: 'inherited',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
                       id: nanoid(),
-                      parentId: commonTabId, 
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          type: 'editModeSelector',
-                          propertyName: 'editMode',
-                          label: 'Edit Mode',
-                          parentId: commonTabId,
-                          defaultValue: 'inherited',
-                          jsSetting: true,
-                        },
-                        {
-                          type: 'switch',
-                          id: nanoid(),
-                          propertyName: 'hidden',
-                          label: 'Hide',
-                          jsSetting: true
-                        }
-                      ]
-                    })
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      jsSetting: true
+                    }
+                  ]
+                }).addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'allowEdit',
+                      label: 'Allow Edit',
+                      jsSetting: true
+                    },
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'allowDelete',
+                      label: 'Allow Delete',
+                      jsSetting: true
+                    }
+                  ]
+                })
                 .toJson()
             ]
           },
@@ -131,7 +151,7 @@ export const getSettings = (data: any) => {
                       validate: {
                         required: true
                       }
-                    } 
+                    }
                   ]
                 })
                 .toJson()
@@ -151,12 +171,32 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       type: 'codeEditor',
                       propertyName: 'onCreated',
-                      label: 'On Created',
+                      label: 'On Create',
                       labelAlign: 'right',
                       parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',  
+                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
                       exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
+                    }, {
+                      id: nanoid(),
+                      type: 'codeEditor',
+                      propertyName: 'onUpdateAction',
+                      label: 'On Update',
+                      labelAlign: 'right',
+                      parentId: eventsTabId,
+                      tooltip: 'Triggered after successfully updating a note',
+                      exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
+                    },
+                    {
+                      id: nanoid(),
+                      type: 'codeEditor',
+                      propertyName: 'onDeleteAction',
+                      label: 'On Delete',
+                      labelAlign: 'right',
+                      parentId: eventsTabId,
+                      tooltip: 'Triggered after successfully deleting a note',
+                      exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`]
                     }
+
                   ]
                 })
                 .toJson()
@@ -207,7 +247,39 @@ export const getSettings = (data: any) => {
                 })
                 .toJson()
             ]
+          },
+          {
+            key: 'validation',
+            title: 'Validation',
+            id: validationTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: validationTabId,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'minLength',
+                      label: 'Min Length',
+                      min: 0,
+                      jsSetting: true
+                    },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'maxLength',
+                      label: 'Max Length',
+                      min: 0,
+                      jsSetting: true
+                    }
+                  ]
+                })
+                .toJson()
+            ]
           }
+
         ]
       })
       .toJson(),

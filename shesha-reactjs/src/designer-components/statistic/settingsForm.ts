@@ -67,6 +67,16 @@ export const getSettings = (data: any) => {
                   }
                 ]
               })
+              .addSettingsInput(
+                {
+                  inputType: 'switch',
+                  id: nanoid(),
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  jsSetting: true,
+                  parentId: commonTabId,
+                }
+              )
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
@@ -719,6 +729,7 @@ export const getSettings = (data: any) => {
                 propertyName: 'permissions',
                 label: 'Permissions',
                 size: 'small',
+                jsSetting: true,
                 parentId: securityId
               })
               .toJson()

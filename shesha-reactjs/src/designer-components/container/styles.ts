@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 
-export const useStyles = createStyles(({ css, cx }, { radius }) => {
+export const useStyles = createStyles(({ css, cx }) => {
 
     const overflow = getOverflowStyle(true, false);
     const overflowStyles = {
@@ -9,7 +9,6 @@ export const useStyles = createStyles(({ css, cx }, { radius }) => {
     };
 
     const container = cx("sha-container-component", css`
-        ${radius}
         overflow: hidden;
         .sha-components-container-inner {
          ${overflowStyles}

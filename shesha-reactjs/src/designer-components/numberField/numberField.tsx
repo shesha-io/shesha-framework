@@ -5,10 +5,8 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useMetadata } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { INumberFieldComponentProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
@@ -23,7 +21,6 @@ import { useStyles } from './styles';
 import { InputNumber, InputNumberProps } from 'antd';
 import { ShaIcon } from '@/components';
 
-const settingsForm = settingsFormJson as unknown as FormMarkup;
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
 interface INumberFieldComponentCalulatedValues {
@@ -81,7 +78,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (val: React.ChangeEvent<HTMLInputElement>) => {
-            const newValue = !val ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
+            const newValue = val === undefined ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
             customEvents.onChange(newValue);
             onChange(newValue);
           };
@@ -121,7 +118,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       })
       .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,

@@ -28,12 +28,12 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
   const editor = useMemo(() => {
     const emptyEditor = null;
     if (!item) return emptyEditor;
-    
+
     const markup =
       item.itemType === 'item'
-        ? (getItemSettings(item) as FormMarkup)
+        ? (getItemSettings() as FormMarkup)
         : item.itemType === 'group'
-          ? (getGroupSettings(item) as FormMarkup)
+          ? (getGroupSettings() as FormMarkup)
           : [];
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>

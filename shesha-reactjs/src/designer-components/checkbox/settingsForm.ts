@@ -84,13 +84,6 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'defaultValue',
-                  label: 'Default Checked',
-                  jsSetting: true,
-                })
                 .toJson(),
             ],
           },
@@ -212,6 +205,7 @@ export const getSettings = (data: any) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

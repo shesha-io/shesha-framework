@@ -5,28 +5,125 @@ import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
+import { IPropertyMetadata, IStyleType } from "@/interfaces";
 
-export const MAX_TITLE_LINE_LENGTH = 14;
+export const MAX_TITLE_LINE_LENGTH = 12;
+
+export const defaultStyles = (): IStyleType => {
+    return {
+        background: { type: 'color', color: '#fff' },
+        font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+        border: {
+            border: {
+                all: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                top: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                left: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                right: { width: '1px', style: 'solid', color: '#d9d9d9' },
+            },
+            radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
+            borderType: 'all',
+            radiusType: 'all'
+        },
+        dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+    };
+};
+
+/**
+ * Make sure the properties are valid for the entity type
+ * @param metaData - The metadata of the entity type
+ * @param axisProperty - The property to use for the axis
+ * @param valueProperty - The property to use for the value
+ * @returns An array of faulty properties by name e.g. ['axisProperty', 'groupingProperty', 'valueProperty']
+ */
+export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null, groupingProperty: string | null) => {
+  const faultyProperties: string[] = [];
+  
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push(`'axisProperty'`);
+  }
+  if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push(`'valueProperty'`);
+  }
+  if (groupingProperty && !metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === groupingProperty?.split('.')[0]?.toLowerCase())) {
+    faultyProperties.push(`'groupingProperty'`);
+  }
+  return faultyProperties;
+};
+
+// Optimized data processing function
+export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>) => {
+    const processedItems = new Array(items.length);
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const processedItem: any = {};
+
+      // Process all properties in a single pass
+      for (const key in item) {
+        if (Object.hasOwn(item, key)) {
+          let value = item[key];
+
+          // Handle null/undefined values
+          value ??= 'undefined';
+
+          // Apply reference list mapping if available
+          if (refListMap.has(key)) {
+            const refMap = refListMap.get(key);
+            value = refMap.get(value) || value;
+          }
+
+          processedItem[key] = value;
+        }
+      }
+
+      processedItems[i] = processedItem;
+    }
+
+    return processedItems;
+  };
+
+  // Optimized sorting function
+export const sortItems = (items: any[], isTimeSeries: boolean, property: string) => {
+    if (isTimeSeries) {
+      return items.sort((a, b) => {
+        const aTime = new Date(a[property]).getTime();
+        const bTime = new Date(b[property]).getTime();
+        return aTime - bTime;
+      });
+    } else {
+      return items.sort((a, b) => {
+        const aVal = a[property];
+        const bVal = b[property];
+
+        if (typeof aVal === 'number' && typeof bVal === 'number') {
+          return aVal - bVal;
+        }
+
+        return String(aVal).localeCompare(String(bVal));
+      });
+    }
+  };
 
 /**
  * Function to manage the length of the title, ie if the title is too long, we need to split it into multiple lines
  * @param title the title to manage
  * @returns the managed title
  */
-export const splitTitleIntoLines = (title: string): string | string[] => {
-  const words = title.split(' ');
+export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_TITLE_LINE_LENGTH, lineCount: number = 5): string | string[] => {
+  const words = title?.split(' ') ?? [];
   const lines = [];
   let currentLine = '';
 
-  if (title.split(' ').length < MAX_TITLE_LINE_LENGTH) {
+  if (words?.length < lineWordLength) {
     return title;
   }
 
   for (const word of words) {
-    if (currentLine.split(' ').length < MAX_TITLE_LINE_LENGTH) {
+    if (currentLine?.split(' ').length < lineWordLength) {
       currentLine += (currentLine ? ' ' : '') + word;
     } else {
-      if (lines.length === 5) {
+      if (lines.length === lineCount) {
         lines.push("...");
         return lines;
       }
@@ -45,18 +142,28 @@ export const splitTitleIntoLines = (title: string): string | string[] => {
  * @param props.width the width of the chart
  * @returns the responsive style
  */
-export const getResponsiveStyle = (props: IChartsProps) =>
-({
-  // Responsive height with fallbacks
-  height: props?.height 
-    ? `min(${props.height}px, 80vh)` // Use provided height but cap at 80% viewport height
-    : 'clamp(300px, 50vh, 600px)',   // Responsive height between 300px and 600px
+export const getResponsiveStyle = (props: IChartsProps) => {
+  // Check if we're on a small screen (iPhone SE width is 375px)
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
   
-  // Responsive width with fallbacks  
-  width: props?.width 
-    ? `min(${props.width}px, 95vw)`  // Use provided width but cap at 95% viewport width
-    : 'clamp(300px, 90vw, 100%)',   // Responsive width between 300px and 800px
-});
+  return {
+    // Responsive height with better mobile support
+    height: props?.height 
+      ? `${props.height}px`
+      : isSmallScreen 
+        ? 'clamp(300px, 60vh, 600px)'  // Better mobile height utilization
+        : 'clamp(400px, 70vh, 800px)', // Better desktop height utilization
+    
+    // Responsive width - use full available space
+    width: props?.width 
+      ? `${props.width}px`
+      : '100%', // Use full width available
+    
+    // Additional responsive optimizations
+    minHeight: isSmallScreen ? '300px' : '400px',
+    maxHeight: isSmallScreen ? '600px' : '800px'
+  };
+};
 
 /**
  * Filter out null and undefined values from an object
@@ -108,7 +215,7 @@ export const defaultConfigFiller: {
  * @returns array of objects with stringified values
  */
 export const stringifyValues = (data: object[]) => {
-  return data.map(item => {
+  return data?.map(item => {
     const processValue = (value: any): any => {
       if (value === null || value === undefined) {
         return 'undefined';
@@ -157,7 +264,7 @@ function removePropertyDuplicates(str) {
 function convertNestedPropertiesToObjectFormat(array?: string[]) {
   if (!array) return '';
 
-  return array?.filter(path => path && path?.trim() !== '').map(path => {
+  return array?.filter(path => path && path?.trim() !== '')?.map(path => {
     let parts = path.split('.');
     let result = '';
     let indentation = 0;
@@ -186,20 +293,21 @@ function convertNestedPropertiesToObjectFormat(array?: string[]) {
  * @param entityType entity type to get data from
  * @param dataProperty property to get data from
  * @param filters filters to apply to the data before returning
- * @param legendProperty legend property to use for the chart
+ * @param groupingProperty legend property to use for the chart
  * @param axisProperty axis property to use for the chart
- * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string,  orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, legendProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
+      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty])).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
-
+      skipCount: skipCount ?? 0,
+      maxResultCount: maxResultCount ?? 100,
+      orderBy: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
     },
   };
 };

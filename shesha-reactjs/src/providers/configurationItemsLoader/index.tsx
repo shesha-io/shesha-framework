@@ -130,12 +130,24 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       isLastVersion: dto.isLastVersion,
 
       markup: markupWithSettings?.components,
-      settings: {
-        ...markupWithSettings?.formSettings,
-       access: dto.access,
-       permissions: dto.permissions,
-      }
+      settings: markupWithSettings?.formSettings,
     };
+
+    if (result.settings) {
+      // there can be string for some old forms
+      const rawAccess = result.settings.access ?? dto?.access; // string | number | undefined
+      let normalizedAccess: number;
+      if (typeof rawAccess === 'string') {
+        const parsed = parseInt(rawAccess, 10);
+        normalizedAccess = Number.isNaN(parsed) ? 3 : parsed;
+      } else if (typeof rawAccess === 'number') {
+        normalizedAccess = rawAccess;
+      } else {
+        normalizedAccess = 3;
+      }
+      result.settings.access = normalizedAccess;
+      result.settings.permissions = result.settings.permissions ?? dto?.permissions ?? [];
+    }
 
     return result;
   };

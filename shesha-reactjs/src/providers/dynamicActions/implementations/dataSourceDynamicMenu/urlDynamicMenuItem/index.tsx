@@ -1,8 +1,8 @@
 import { useGet } from '@/hooks';
 import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup } from '@/providers';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
 import { useUrlTemplates } from '../utils';
 import { getSettings } from './urlSettings';
@@ -10,7 +10,7 @@ import { getSettings } from './urlSettings';
 const settingsMarkup = getSettings() as FormMarkup;
 
 const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, labelProperty, tooltipProperty } = settings ?? {};
+  const { actionConfiguration, labelProperty, tooltipProperty, buttonType: buttonTypeSetting } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getUrlTemplateState } = useUrlTemplates(settings);
   const [data, setData] = useState(null);
@@ -28,8 +28,6 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
 
   const { configurationItemMode } = useAppConfigurator();
 
-  const { background, border, shadow, font, dimensions, stylingBox, buttonType } = item ?? {};
-
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
     const result = data?.map((p) => ({
@@ -41,13 +39,15 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
-      buttonType,
-      background,
-      border,
-      shadow,
-      font,
-      dimensions,
-      stylingBox,
+      buttonType: p.buttonType ?? item.buttonType ?? buttonTypeSetting,
+      size: item.size,
+      background: p.background ?? item.background,
+      border: p.border ?? item.border,
+      shadow: p.shadow ?? item.shadow,
+      font: p.font ?? item.font,
+      stylingBox: p.stylingBox ?? item.stylingBox,
+      style: p.style ?? item.style,
+      dimensions: p.dimensions ?? item.dimensions,
       actionConfiguration: actionConfiguration,
     }));
 

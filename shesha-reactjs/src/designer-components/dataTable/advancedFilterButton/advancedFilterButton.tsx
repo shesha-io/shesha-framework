@@ -1,11 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Badge, Button, Tooltip } from 'antd';
 import { FilterFilled, FilterOutlined } from '@ant-design/icons';
-import { useDataTableStore, useFormData } from '@/providers';
+import { useDataTableStore } from '@/providers';
 import { useStyles } from './style';
 import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import * as Icons from '@ant-design/icons';
-import { getStyle } from '@/providers/form/utils';
 
 export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
   const {
@@ -15,16 +14,16 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
   } = useDataTableStore();
 
   const [icon, setIcon] = useState(null);
-  const { data: formData } = useFormData();
   const { styles } = useStyles(props.styles?.fontSize);
 
-  const localStyle = getStyle(props.style, formData);
 
   const filterColumns = tableFilter?.map((filter) => filter.columnId);
   const hasFilters = filterColumns?.length > 0 || isFiltering;
 
   const buttonStyle = {
-    ...localStyle,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
     padding: '3px',
     border: props.buttonType === 'link' ? 'none' : hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
