@@ -51,7 +51,15 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       textAlign: model?.font?.align,
       color: model?.font?.color,
       fontSize: model?.font?.size,
-      hasSuffix: model?.suffix,
+      padding: {
+        padding: model?.allStyles?.fullStyle?.padding,
+        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
+        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
+        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
+      },
+      hasSuffix: model?.suffix || model?.suffixIcon,
+      hasPrefix: model?.prefix || model?.prefixIcon,
     });
 
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
@@ -64,7 +72,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       max: model.max !== undefined ? model.max : Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
-      style: model.style ? model.allStyles.jsStyle : { width: '100%' },
       step: model?.highPrecision ? model?.stepString : model?.stepNumeric,
       ...calculatedModel.eventHandlers,
       defaultValue: calculatedModel.defaultValue,
@@ -89,7 +96,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
               value={value ?? model?.defaultValue}
               {...inputProps}
               style={model.allStyles.fullStyle}
-              className={`sha-input sha-number-field ${styles.numberField}`}
+              className={styles.numberField}
               onChange={onChangeInternal}
             />;
         }}
