@@ -77,7 +77,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (val: React.ChangeEvent<HTMLInputElement>) => {
+          const onChangeInternal = (val: number | string | null) => {
             const newValue = val === undefined || val === null ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
             customEvents.onChange(newValue);
             onChange(newValue);
