@@ -78,7 +78,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (val: React.ChangeEvent<HTMLInputElement>) => {
-            const newValue = val === undefined ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
+            const newValue = val === undefined || val === null ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
             customEvents.onChange(newValue);
             onChange(newValue);
           };
