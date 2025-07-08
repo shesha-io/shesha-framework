@@ -124,7 +124,7 @@ export const getSettings = (data: any) => {
                               allowClear: true,
                               dropdownOptions: [
                                 { label: 'URL', value: 'url' },
-                                { label: 'Entity Type', value: 'entityType' },
+                                { label: 'Entity type', value: 'entityType' },
                               ],
                               validate: { required: true },
                               defaultValue: 'entityType',
@@ -730,7 +730,7 @@ export const getSettings = (data: any) => {
                       allowClear: true,
                       dropdownOptions: [
                         { label: 'URL', value: 'url' },
-                        { label: 'Entity Type', value: 'entityType' },
+                        { label: 'Entity type', value: 'entityType' },
                       ],
                       validate: { required: true },
                       defaultValue: 'entityType',
