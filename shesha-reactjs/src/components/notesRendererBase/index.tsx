@@ -30,7 +30,7 @@ export interface INotesRendererBaseProps {
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
-  onDeleteAction?: (noteId: string) => void;
+  onDeleteAction?: (note: INote) => void;
   onCreateAction?: (note: INote) => void;
   allowEdit?: boolean;
   updateNotes?: (payload: ICreateNotePayload) => void;
@@ -59,6 +59,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   allowEdit = true,
   updateNotes,
   onUpdateAction,
+  onDeleteAction,
 }) => {
   const [newComments, setNewComments] = useState('');
   const [charCount, setCharCount] = useState(0);
@@ -87,12 +88,14 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     setNewComments(value);
     setCharCount(value.length);
 
-    // Validate against max length
-    if (maxLength && value.length > maxLength) {
-      setValidationError(`Maximum ${maxLength} characters allowed`);
-    } else {
-      setValidationError('');
+    // Validate min and max length
+    let error = '';
+    if (minLength && value.length < minLength) {
+      error = `Minimum ${minLength} characters required`;
+    } else if (maxLength && value.length > maxLength) {
+      error = `Maximum ${maxLength} characters allowed`;
     }
+    setValidationError(error);
   };
 
   const handleEditTextChange = (value: string) => {
@@ -183,6 +186,18 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     setEditValidationError('');
   };
 
+  const handleDelete = (note: INote) => {
+    deleteNotes(note.id);
+    if (onDeleteAction) {
+      onDeleteAction({
+        ...note,
+        creationTime: note.creationTime || null,
+        priority: note.priority || null,
+        parentId: note.parentId || null,
+      });
+    }
+  };
+
   const renderCharCounter = (count: number, error: string) => {
     if (!showCharCount) return null;
 
@@ -271,17 +286,28 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
               id,
               noteText,
               author,
-              creationTime
+              creationTime,
             }))}
             renderItem={({ postedBy, id, content, postedDate, noteText, author, creationTime }) => (
               <div className={styles.commentItemBody}>
-                {allowDelete && (
+                {allowDelete && editingId !== id && (
                   <Popconfirm
                     title="Delete Note"
                     description="Are you sure you want to delete this note?"
-                    onConfirm={() => deleteNotes(id)}
+                    onConfirm={() =>
+                      handleDelete({
+                        id,
+                        noteText,
+                        author,
+                        creationTime,
+                        ownerId: '', 
+                        ownerType: '',
+                        category: '',
+                      })
+                    }
                     okText="Yes"
                     cancelText="No"
+                    okButtonProps={{ type: 'primary', danger: true }}
                   >
                     <DeleteOutlined className={styles.deleteIcon} />
                   </Popconfirm>

@@ -187,23 +187,19 @@ export const FileUpload: FC<IFileUploadProps> = ({
         {showThumbnailControls && styledfileControls()}
         <a title={file.name}>
           <Space>
-            {isUploading ? (
-              <SyncOutlined spin />
-            ) : (
-              <div className="thumbnail-item-name">
-                {(listType === 'text' || !hideFileName) && (
-                  <a
-                    style={{ marginRight: '5px' }}
-                    onClick={
-                      isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })
-                    }
-                  >
-                    {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file.size)})`}
-                  </a>
-                )}
-                {showTextControls && fileControls(theme.application.primaryColor)}
-              </div>
-            )}
+            <div className="thumbnail-item-name">
+              {(listType === 'text' || !hideFileName) && (
+                <a
+                  style={{ marginRight: '5px' }}
+                  onClick={
+                    isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })
+                  }
+                >
+                  {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file.size)})`}
+                </a>
+              )}
+              {showTextControls && fileControls(theme.application.primaryColor)}
+            </div>
           </Space>
         </a>
       </div>
@@ -277,16 +273,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
     return (
       <div>
-        <Upload {...fileProps} listType={antListType}>
+        {!isUploading && <Upload {...fileProps} listType={antListType}>
           {allowUpload && !fileInfo && uploadButton}
-        </Upload>
+        </Upload>}
       </div>
     );
   };
 
   return (
     <>
-      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
+      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : !isUploading ? renderUploader() : <SyncOutlined spin style={{ color: theme.application.primaryColor }} />}</span>
       {previewOpen && (
         <Image
           wrapperStyle={{ display: 'none' }}
