@@ -95,7 +95,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
               type='number'
               value={value ?? model?.defaultValue}
               {...inputProps}
-              style={model.allStyles.fullStyle}
+              style={{ ...model.allStyles.fullStyle }}
               className={styles.numberField}
               onChange={onChangeInternal}
             />;
@@ -124,7 +124,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
