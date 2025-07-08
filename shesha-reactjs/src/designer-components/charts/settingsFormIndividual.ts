@@ -244,7 +244,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
-                                inline: true,
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -719,7 +718,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
-                  inline: true,
                   inputs: [
                     {
                       id: nanoid(),
@@ -846,7 +844,6 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         inputs: [
                           {
                             id: nanoid(),
@@ -931,7 +928,7 @@ export const getSettings = (data: any) => {
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: false },
-                            width: '49%',
+                            width: '50%',
                             jsSetting: true,
                           },
                           {
@@ -951,7 +948,6 @@ export const getSettings = (data: any) => {
                             ],
                             validate: { required: true },
                             defaultValue: 'month-year',
-                            width: '50%',
                             jsSetting: true,
                             hidden: {
                               _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
@@ -1065,7 +1061,7 @@ export const getSettings = (data: any) => {
                             ],
                             validate: { required: true },
                             defaultValue: 'month-year',
-                            width: '100%',
+                            width: '50%',
                             jsSetting: true,
                             hidden: {
                               _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
@@ -1236,7 +1232,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend 100%."
 
                                 },
                                 {
@@ -1271,7 +1267,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend minimum height of 400px."
                                 },
                                 {
                                   type: 'textField',
