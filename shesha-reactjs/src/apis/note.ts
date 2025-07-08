@@ -20,7 +20,7 @@ export interface NoteDto {
   /**
    * Category of the note. Is used to split notes into groups
    */
-  category?: number | null;
+  category?: string;
   /**
    * Note importance (priority)
    */
@@ -34,10 +34,6 @@ export interface NoteDto {
    */
   noteText: string;
   author?: GuidEntityReferenceDto;
-  /**
-   * Name of the component that created the note
-   */
-  uniqueIdentifier?: string;
 }
 
 export interface CreateNoteDto {
@@ -66,10 +62,6 @@ export interface CreateNoteDto {
    * Text
    */
   noteText: string;
-  /**
-   * Name of the component that created the note
-   */
-  uniqueIdentifier?: string;
 }
 
 export interface NoteGetListQueryParams {
@@ -93,10 +85,6 @@ export interface NoteGetListQueryParams {
    * The requested API version
    */
   'api-version'?: string;
-  /**
-   * Name of the component that created the note
-   */
-  uniqueIdentifier?: string;
 }
 export type NoteDtoListAjaxResponse = IAjaxResponse<NoteDto[] | null>;
 
@@ -109,3 +97,4 @@ export const useNoteGetList = (props: UseNoteGetListProps) =>
   );
 
 export const useNoteCreate = () => useMutateForEndpoint({ url: `/api/services/app/Note/Create`, httpVerb: 'POST' });
+export const useNoteUpdate = () => useMutateForEndpoint({ url: `/api/services/app/Note/Update`, httpVerb: 'PUT' });
