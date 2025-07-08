@@ -106,6 +106,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(8, prev => ({
       ...prev,
       maxResultCount: 250,
+      orderDirection: 'asc',
     }))
 };
 
