@@ -32,7 +32,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       }
 
       .ant-input-number-handler-wrap {
-        ${(hasSuffix || padding.paddingRight) && 'border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);'}
+        ${(hasSuffix || padding?.paddingRight) && 'border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);'}
         border-start-end-radius: 0px !important;
         border-end-end-radius: 0px !important;
 
