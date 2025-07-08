@@ -34,7 +34,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const clickHandler = (event, data) => {
 
     event.preventDefault();
-    (evaluationContext as TypedProxy<any>).refreshAccessors([{selectedRow: () => getRowData(data)}]);
+    (evaluationContext as TypedProxy<any>).addAccessor('selectedRow', () => getRowData(data));
 
     if (actionConfiguration) {
       changeActionedRow(data.row.original);
