@@ -356,6 +356,7 @@ export const getSettings = (data: any) => {
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
+                                    width: '50%',
                                   }
                                 ]
                               })
@@ -469,6 +470,7 @@ export const getSettings = (data: any) => {
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
+                                    width: '50%',
                                   }
                                 ],
                               })
