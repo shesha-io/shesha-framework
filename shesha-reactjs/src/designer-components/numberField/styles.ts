@@ -7,9 +7,11 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
     css`
       padding-inline-start: ${padding?.paddingLeft || '0px'} !important;
       align-items: center;
+      overflow: hidden;
 
       .ant-input-number-input-wrap {
         height: 100% !important;
+        overflow: hidden;
       }
 
       .ant-input-number-input {
@@ -30,7 +32,9 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       }
 
       .ant-input-number-handler-wrap {
-        border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);
+        ${(hasSuffix || padding.paddingRight) && 'border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);'}
+        border-start-end-radius: 0px !important;
+        border-end-end-radius: 0px !important;
 
         .ant-input-number-handler-up {
           border-start-end-radius: 0px !important;
