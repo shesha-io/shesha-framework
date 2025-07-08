@@ -56,7 +56,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
             type: backgroundType,
             color: backgroundColor || defaults?.background?.color,
             repeat: backgroundRepeat || defaults?.background?.repeat || 'no-repeat',
-            size: backgroundCover || defaults?.background?.size || 'cover',
+            size: backgroundCover || defaults?.background?.size || 'auto',
             position: 'center',
             gradient: { direction: 'to right', colors: {} },
             url: backgroundUrl || defaults?.background?.url || '',

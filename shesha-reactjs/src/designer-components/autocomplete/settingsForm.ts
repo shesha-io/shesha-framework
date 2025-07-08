@@ -468,6 +468,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
+                                        hidden: {
+                                            _code: `return  getSettingValue(data.dataSourceType) === 'url';`,
+                                            _mode: 'code',
+                                            _value: false
+                                        },
                                         inputs: [
 
                                             {
@@ -477,7 +482,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 label: 'Use Quickview',
                                                 parentId: dataTabId,
                                                 size: 'small',
-
                                             }
                                         ],
                                     })
@@ -570,6 +574,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                             tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                                             label: 'Width',
                                                             size: 'small',
+                                                            icon: "widthIcon",
                                                             version: 5
                                                         }
                                                     ],
@@ -584,6 +589,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,
+                                hidden: {
+                                    _code: `return  getSettingValue(data.dataSourceType) === 'url';`,
+                                    _mode: 'code',
+                                    _value: false
+                                },
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -609,6 +619,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,
+                                hidden: {
+                                    _code: `return  getSettingValue(data.dataSourceType) === 'url';`,
+                                    _mode: 'code',
+                                    _value: false
+                                },
                                 inputs: [
                                     {
                                         id: nanoid(),
@@ -633,6 +648,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataTabId,
+                                hidden: {
+                                    _code: `return  getSettingValue(data.dataSourceType) === 'url';`,
+                                    _mode: 'code',
+                                    _value: false
+                                },
                                 inputs: [
                                     {
                                         id: nanoid(),

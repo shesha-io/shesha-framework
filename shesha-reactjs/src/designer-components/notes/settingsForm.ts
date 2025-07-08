@@ -9,6 +9,7 @@ export const getSettings = (data: any) => {
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
+  const validationTabId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -54,7 +55,19 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'showCharCount',
+                      label: 'Show Chars Count',
+                      jsSetting: true
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
                   inputs: [
                     {
                       type: 'switch',
@@ -155,30 +168,65 @@ export const getSettings = (data: any) => {
             id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onCreated',
+                  label: 'On Create',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
+                  exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onUpdateAction',
+                  label: 'On Update',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully updating a note',
+                  exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onDeleteAction',
+                  label: 'On Delete',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully deleting a note',
+                  exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`]
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'validation',
+            title: 'Validation',
+            id: validationTabId,
+            components: [
+              ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: eventsTabId,
+                  parentId: validationTabId,
                   inputs: [
                     {
+                      type: 'numberField',
                       id: nanoid(),
-                      type: 'codeEditor',
-                      propertyName: 'onCreated',
-                      label: 'On Created',
-                      labelAlign: 'right',
-                      parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
-                      exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
-                    }, {
+                      propertyName: 'minLength',
+                      label: 'Min Length',
+                      min: 0,
+                      jsSetting: true
+                    },
+                    {
+                      type: 'numberField',
                       id: nanoid(),
-                      type: 'codeEditor',
-                      propertyName: 'onUpdateAction',
-                      label: 'On Update',
-                      labelAlign: 'right',
-                      parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully updating a note',
-                      exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
+                      propertyName: 'maxLength',
+                      label: 'Max Length',
+                      min: 0,
+                      jsSetting: true
                     }
-
                   ]
                 })
                 .toJson()
@@ -206,40 +254,6 @@ export const getSettings = (data: any) => {
                         { value: 'left', label: 'Left' },
                         { value: 'right', label: 'Right' }
                       ]
-                    }
-                  ]
-                }).addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'showCharCount',
-                      label: 'Show Character Counter',
-                      jsSetting: true
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'minLength',
-                      label: 'Minimum Length',
-                      min: 0,
-                      jsSetting: true
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'maxLength',
-                      label: 'Maximum Length',
-                      min: 0,
-                      jsSetting: true
                     }
                   ]
                 })
