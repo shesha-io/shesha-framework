@@ -102,6 +102,10 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       groupingTimeSeriesFormat: 'month-year',
       ...migratePrevStyles(prev, defaultStyles())
     }))
+    .add<IChartProps>(8, prev => ({
+      ...prev,
+      maxResultCount: 250,
+    }))
 };
 
 export default LineChartComponent;

@@ -269,9 +269,9 @@ export const getSettings = (data: any) => {
                                     propertyName: 'maxResultCount',
                                     label: 'Data Size Limit',
                                     description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                                    "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                                    "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                                     tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                                    "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                                    "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                                     parentId: dataSettingsId,
                                     validate: { required: false },
                                     min: -1,
@@ -869,9 +869,9 @@ export const getSettings = (data: any) => {
                             propertyName: 'maxResultCount',
                             label: 'Data Size Limit',
                             description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                            "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                            "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                             tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                            "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                            "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                             parentId: dataTabId,
                             validate: { required: false },
                             min: -1,
