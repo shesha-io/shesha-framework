@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
-import { CreateNoteDto, NoteDto, useNoteCreate, useNoteGetList } from '@/apis/note';
+import { CreateNoteDto, NoteDto, useNoteCreate, useNoteGetList, useNoteUpdate } from '@/apis/note';
 import { useMutate } from '@/hooks';
 import { IShaHttpResponse } from '@/interfaces/shaHttpResponse';
 import { useSignalR } from '@/providers/signalR';
@@ -13,10 +13,14 @@ import {
   fetchNotesSuccessAction,
   onNoteAddedAction,
   onNoteRemovedAction,
+  onNoteUpdatedAction,
   postNotesErrorAction,
   postNotesRequestAction,
   postNotesSuccessAction,
   setSettingsAction,
+  updateNotesErrorAction,
+  updateNotesRequestAction,
+  updateNotesSuccessAction,
 } from './actions';
 import {
   COMMENTS_CONTEXT_INITIAL_STATE,
@@ -27,13 +31,14 @@ import {
   NotesStateContext,
 } from './contexts';
 import { notesReducer } from './reducer';
+import { normalizeOwnerType } from '../utils/notesIndex';
 
 const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
   ownerId,
   ownerType,
   allCategories = false,
-  category
+  category,
 }) => {
   const [state, dispatch] = useReducer(notesReducer, COMMENTS_CONTEXT_INITIAL_STATE);
 
@@ -53,6 +58,10 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
 
       dispatch(onNoteRemovedAction(patient?.id));
     });
+    connection?.on('OnNoteUpdated', (eventData: INote | string) => {
+      const note = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as INote);
+      dispatch(onNoteUpdatedAction(note));
+    });
   }, []);
   //#endregion
 
@@ -67,7 +76,12 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     data,
     error: fetchNotesResError,
   } = useNoteGetList({
-    queryParams: { ownerId, ownerType, category, allCategories: shouldShowAllCategories },
+    queryParams: {
+      ownerId,
+      ownerType: normalizeOwnerType(ownerType),
+      category,
+      allCategories: shouldShowAllCategories,
+    },
     lazy: true,
   });
 
@@ -123,23 +137,14 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     if (newNotes) {
       dispatch(postNotesRequestAction(newNotes));
 
-      const payload = newNotes;
+      const payload: ICreateNotePayload = { ...newNotes };
 
-      if (!newNotes.ownerId) {
-        payload.ownerId = ownerId;
-      }
-
-      if (!newNotes.ownerType) {
-        payload.ownerType = ownerType;
-      }
-
-      if (!newNotes.category) {
-        payload.category = category;
-      }
+      payload.ownerId = payload.ownerId || ownerId;
+      payload.ownerType = normalizeOwnerType(payload.ownerType || ownerType);
+      payload.category = payload.category || category;
 
       saveNotesHttp(payload as CreateNoteDto)
-        .then((response: any) => {
-          // The Api is misleading us in here by saying it returns `NoteDto` when it actually returns IShaHttpResponse<NoteDto[]>
+        .then((response) => {
           const { result, success } = response as IShaHttpResponse<NoteDto>;
           if (success && result) {
             postNotesSuccess(result);
@@ -169,6 +174,50 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
+  //#region updates notes
+  const updateNotesSuccess = (newNotes: ICreateNotePayload) => {
+    dispatch(updateNotesSuccessAction(newNotes));
+  };
+
+  const { mutate: updateNotesHttp, error: updateNotesResError } = useNoteUpdate();
+
+  const updateNotesError = () => {
+    dispatch(updateNotesErrorAction(updateNotesResError?.data));
+  };
+
+  const updateNotesRequest = (newNotes: ICreateNotePayload) => {
+    if (newNotes) {
+      dispatch(updateNotesRequestAction(newNotes));
+
+      const payload = newNotes;
+
+      if (!newNotes.ownerId) {
+        payload.ownerId = ownerId;
+      }
+
+      if (!newNotes.ownerType) {
+        payload.ownerType = ownerType;
+      }
+
+      if (!newNotes.category) {
+        payload.category = category;
+      }
+
+      updateNotesHttp(payload as CreateNoteDto)
+        .then((response: any) => {
+          // The Api is misleading us in here by saying it returns `NoteDto` when it actually returns IShaHttpResponse<NoteDto[]>
+          const { result, success } = response as IShaHttpResponse<NoteDto>;
+          if (success && result) {
+            updateNotesSuccess(result);
+          } else {
+            updateNotesError();
+          }
+        })
+        .catch(() => updateNotesError());
+    }
+  };
+
+  //#endregion
   return (
     <NotesStateContext.Provider value={state}>
       <NotesActionsContext.Provider
@@ -179,6 +228,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
           deleteNotes: deleteNotesRequest,
           refreshNotes,
           /* NEW_ACTION_GOES_HERE */
+          updateNotes: updateNotesRequest,
         }}
       >
         {children}

@@ -21,7 +21,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     ${textHoverEffect}
     position: absolute;
     right: 5px;
-    top: @padding-lg;
+    top: ${sheshaStyles.paddingLG}px;
+    display: none;
+    cursor: pointer;
+    z-index: 1000;
+  `;
+
+  const editIcon = css`
+    ${textHoverEffect}
+    position: absolute;
+    right: 30px;
+    top: ${sheshaStyles.paddingLG}px;
     display: none;
     cursor: pointer;
     z-index: 1000;
@@ -33,15 +43,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
       padding: unset;
     }
   `;
+
   const commentList = cx(css`
-    maxheight: '480px';
+    max-height: 480px;
   `);
 
   const commentItemBody = css`
     position: relative;
 
     &:hover {
-      .anticon-delete {
+      .anticon-delete,
+      .anticon-edit {
         display: inline;
       }
     }
@@ -68,20 +80,54 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     }
   `;
 
+  const charCounter = css`
+    text-align: right;
+    font-size: 12px;
+    color: ${token.colorTextDescription};
+    margin-top: 4px;
+  `;
+
+  const errorText = css`
+    color: ${token.colorError};
+    margin-left: 8px;
+  `;
+
   const notes = css`
-    .ant-divider: { margin: unset },
+    .ant-divider {
+      margin: unset;
+    }
+  `;
+
+  const editControls = css`
+    margin-bottom: ${sheshaStyles.paddingLG}px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background-color: ${token.colorBgContainer};
+    border: 1px solid ${token.colorBorder};
+    border-radius: ${token.borderRadius}px;
+  `;
+
+  const editButtons = css`
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
   `;
 
   return {
     saveBtn,
     deleteIcon,
+    editIcon,
     notesTextarea,
     commentListCard,
     commentList,
     commentItemBody,
     commentItem,
     notes,
+    charCounter,
+    errorText,
+    editControls,
+    editButtons,
   };
 });
-
-export default useStyles;

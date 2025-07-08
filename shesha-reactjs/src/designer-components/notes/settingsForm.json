@@ -4,16 +4,15 @@
       "id": "aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
       "propertyName": "pnlDisplay",
-      "label": "Display",
-      "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-
-      "isDynamic": false,
-      "version": 2,
+      "label": "Display",
+      "labelAlign": "left",
       "expandIconPosition": "start",
-      "collapsible": "header",
       "ghost": true,
+      "version": 2,
+      "collapsible": "header",
+      "isDynamic": false,
+      "hidden": false,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
       "header": {
@@ -29,13 +28,12 @@
             "propertyName": "componentName",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Component name",
-            "jsSetting": false,
             "validate": {
               "required": true
             }
           },
           {
-            "id": "46d07439-4c18-468c-89e1-60c002ce9623",
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
             "type": "textField",
             "propertyName": "category",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
@@ -43,14 +41,14 @@
             "description": "This is used to group notes into categories"
           },
           {
-            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-            "type": "textField",
-            "propertyName": "label",
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "showCharCount",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Label"
+            "label": "Show Chars Count"
           },
           {
-            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c41244c",
             "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
@@ -61,10 +59,19 @@
             "type": "editModeSelector",
             "propertyName": "editMode",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Edit mode"
+            "label": "Edit mode",
+            "defaultValue": "inherited"
           },
           {
-            "id": "cfd7d45e-c7e3-4a27-987b-dc525c41244c",
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412449",
+            "type": "checkbox",
+            "propertyName": "allowEdit",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Allow Edit",
+            "defaultValue": false
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412450",
             "type": "checkbox",
             "propertyName": "allowDelete",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
@@ -76,17 +83,16 @@
     {
       "id": "1aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "propertyName": "pnlStyling",
-      "label": "Styling",
-      "labelAlign": "right",
+      "propertyName": "pnlStyle",
       "parentId": "root",
-      "hidden": false,
-
-      "isDynamic": false,
-      "version": 2,
+      "label": "Style",
+      "labelAlign": "left",
       "expandIconPosition": "start",
-      "collapsible": "header",
       "ghost": true,
+      "collapsible": "header",
+      "version": 2,
+      "isDynamic": false,
+      "hidden": false,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
       "header": {
@@ -102,7 +108,6 @@
             "propertyName": "savePlacement",
             "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Save Placement",
-            "description": "This used to place the save button (Left, Right).",
             "values": [
               {
                 "label": "Left",
@@ -116,7 +121,8 @@
               }
             ],
             "defaultValue": "left",
-            "dataSourceType": "values"
+            "dataSourceType": "values",
+            "description": "This is used to place the save button (Left, Right)."
           },
           {
             "id": "2fb35552-0dcb-42ec-aee5-0e8ca67127d4",
@@ -131,17 +137,16 @@
     {
       "id": "2aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "propertyName": "pnlNotes",
-      "label": "Notes",
-      "labelAlign": "right",
+      "propertyName": "pnlData",
       "parentId": "root",
-      "hidden": false,
-
-      "isDynamic": false,
-      "version": 2,
+      "label": "Data",
+      "labelAlign": "left",
       "expandIconPosition": "start",
-      "collapsible": "header",
       "ghost": true,
+      "collapsible": "header",
+      "version": 2,
+      "isDynamic": false,
+      "hidden": false,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
       "header": {
@@ -153,20 +158,26 @@
         "components": [
           {
             "id": "417ee22e-a49d-44f2-a1c7-fef32ec87503",
-            "type": "textField",
+            "type": "propertyAutocomplete",
             "propertyName": "ownerId",
             "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Owner Id",
+            "defaultValue": "{data.id}",
+            "description": "The unique identifier of the entity that owns these notes",
             "validate": {
               "required": true
             }
           },
           {
             "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
-            "type": "textField",
+            "type": "autocomplete",
             "propertyName": "ownerType",
             "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Owner Type",
+            "dataSourceType": "url",
+            "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+            "mode": "single",
+            "description": "The type of entity that owns these notes",
             "validate": {
               "required": true
             }
@@ -175,15 +186,296 @@
       }
     },
     {
+      "id": "3aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlEvents",
+      "parentId": "root",
+      "label": "Events",
+      "labelAlign": "left",
+      "expandIconPosition": "start",
+      "ghost": true,
+      "collapsible": "header",
+      "version": 2,
+      "isDynamic": false,
+      "hidden": false,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "3FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "3y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "517ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "codeEditor",
+            "propertyName": "onCreated",
+            "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "On Created",
+            "labelAlign": "right",
+            "description": "Triggered after successfully creating a new note. The createdNotes array is available in the execution context.",
+            "mode": "dialog",
+            "exposedVariables": [
+              {
+                "name": "createdNotes",
+                "description": "Array of created notes",
+                "type": "Array<object>"
+              },
+              {
+                "name": "data",
+                "description": "Form data",
+                "type": "object"
+              },
+              {
+                "name": "form",
+                "description": "Form instance",
+                "type": "FormApi"
+              },
+              {
+                "name": "globalState",
+                "description": "Global state",
+                "type": "object"
+              },
+              {
+                "name": "http",
+                "description": "HTTP client",
+                "type": "HttpClient"
+              },
+              {
+                "name": "message",
+                "description": "Message API",
+                "type": "MessageApi"
+              },
+              {
+                "name": "moment",
+                "description": "Moment.js library",
+                "type": "Moment"
+              },
+              {
+                "name": "setGlobalState",
+                "description": "Function to update global state",
+                "type": "Function"
+              }
+            ]
+          },
+          {
+            "id": "617ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "codeEditor",
+            "propertyName": "onUpdateAction",
+            "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "On Update",
+            "labelAlign": "right",
+            "description": "Triggered after successfully updating a note",
+            "mode": "dialog",
+            "exposedVariables": [
+              {
+                "name": "note",
+                "description": "Updated note object",
+                "type": "object"
+              },
+              {
+                "name": "data",
+                "description": "Form data",
+                "type": "object"
+              },
+              {
+                "name": "form",
+                "description": "Form instance",
+                "type": "FormApi"
+              },
+              {
+                "name": "globalState",
+                "description": "Global state",
+                "type": "object"
+              },
+              {
+                "name": "http",
+                "description": "HTTP client",
+                "type": "HttpClient"
+              },
+              {
+                "name": "message",
+                "description": "Message API",
+                "type": "MessageApi"
+              },
+              {
+                "name": "moment",
+                "description": "Moment.js library",
+                "type": "Moment"
+              },
+              {
+                "name": "setGlobalState",
+                "description": "Function to update global state",
+                "type": "Function"
+              }
+            ]
+          },
+          {
+            "id": "717ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "codeEditor",
+            "propertyName": "onDeleteAction",
+            "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "On Delete",
+            "labelAlign": "right",
+            "description": "Triggered after successfully deleting a note",
+            "mode": "dialog",
+            "exposedVariables": [
+              {
+                "name": "note",
+                "description": "Deleted note object",
+                "type": "object"
+              },
+              {
+                "name": "data",
+                "description": "Form data",
+                "type": "object"
+              },
+              {
+                "name": "form",
+                "description": "Form instance",
+                "type": "FormApi"
+              },
+              {
+                "name": "globalState",
+                "description": "Global state",
+                "type": "object"
+              },
+              {
+                "name": "http",
+                "description": "HTTP client",
+                "type": "HttpClient"
+              },
+              {
+                "name": "message",
+                "description": "Message API",
+                "type": "MessageApi"
+              },
+              {
+                "name": "moment",
+                "description": "Moment.js library",
+                "type": "Moment"
+              },
+              {
+                "name": "setGlobalState",
+                "description": "Function to update global state",
+                "type": "Function"
+              }
+            ]
+          },
+          {
+            "id": "817ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "codeEditor",
+            "propertyName": "onCreateAction",
+            "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "On Create Action",
+            "labelAlign": "right",
+            "description": "Custom action triggered when creating a note",
+            "mode": "dialog",
+            "exposedVariables": [
+              {
+                "name": "note",
+                "description": "Note object being created",
+                "type": "object"
+              },
+              {
+                "name": "data",
+                "description": "Form data",
+                "type": "object"
+              },
+              {
+                "name": "form",
+                "description": "Form instance",
+                "type": "FormApi"
+              },
+              {
+                "name": "globalState",
+                "description": "Global state",
+                "type": "object"
+              },
+              {
+                "name": "http",
+                "description": "HTTP client",
+                "type": "HttpClient"
+              },
+              {
+                "name": "message",
+                "description": "Message API",
+                "type": "MessageApi"
+              },
+              {
+                "name": "moment",
+                "description": "Moment.js library",
+                "type": "Moment"
+              },
+              {
+                "name": "setGlobalState",
+                "description": "Function to update global state",
+                "type": "Function"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "4aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "parentId": "root",
+      "label": "Validation",
+      "labelAlign": "left",
+      "expandIconPosition": "start",
+      "ghost": true,
+      "collapsible": "header",
+      "version": 2,
+      "isDynamic": false,
+      "hidden": false,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "4FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "4y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "917ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "numberField",
+            "propertyName": "minLength",
+            "parentId": "4y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Min Length",
+            "min": 0,
+            "description": "Minimum number of characters required for a note"
+          },
+          {
+            "id": "a17ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "numberField",
+            "propertyName": "maxLength",
+            "parentId": "4y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Max Length",
+            "min": 0,
+            "description": "Maximum number of characters allowed for a note"
+          }
+        ]
+      }
+    },
+    {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
       "propertyName": "pnlSecurity",
-      "label": "Security",
-      "labelAlign": "right",
       "parentId": "root",
-      "isDynamic": false,
-      "version": 4,
+      "label": "Security",
+      "labelAlign": "left",
       "expandIconPosition": "start",
+      "ghost": true,
+      "collapsible": "header",
+      "version": 2,
+      "isDynamic": false,
+      "hidden": false,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
       "header": {
         "id": "mbzE03mJnv_89oUvkmjPs",
         "components": []
@@ -197,31 +489,10 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
-            "version": 1
+            "validate": {}
           }
         ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      }
     }
-  ],
-  "formSettings": {
-    "layout": "horizontal",
-    "colon": true,
-    "labelCol": {
-      "span": 8
-    },
-    "wrapperCol": {
-      "span": 16
-    },
-    "displayName": "DEFAULT_FORM_SETTINGS",
-    "__docgenInfo": {
-      "description": "Default form settings",
-      "displayName": "DEFAULT_FORM_SETTINGS",
-      "props": {}
-    }
-  }
+  ]
 }
