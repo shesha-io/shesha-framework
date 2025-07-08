@@ -96,7 +96,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   }), [state]);
 
   // Memoize the processAndUpdateData callback with stable dependencies
-  const processAndUpdateData = useCallback((items: any[], refListMap: Map<string, Map<any, string>>) => {
+  const processAndUpdateData = (items: any[], refListMap: Map<string, Map<any, string>>) => {
     // Process all items efficiently
     let processedItems = processItems(items, refListMap);
 
@@ -110,7 +110,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     }
 
     setData(processedItems);
-  }, [isAxisTimeSeries, axisProperty, timeSeriesFormat, isGroupingTimeSeries, groupingTimeSeriesFormat, groupingProperty, setData]);
+  };
 
   const fetchData = useCallback(() => {
     if (isFetchingRef.current || !entityType || !valueProperty || !axisProperty) {
@@ -252,7 +252,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         isFetchingRef.current = false;
         clearTimeout(timeoutId);
       });
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout]);
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
 
   useEffect(() => {
     // Reset loading state when chart properties change
