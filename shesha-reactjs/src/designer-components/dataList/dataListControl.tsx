@@ -203,7 +203,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
-      performOnRowDeleteSuccessAction(rowData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
+      if (props.onRowDeleteSuccessAction) {
+        performOnRowDeleteSuccessAction(rowData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
+      }
       dataSource.refreshTable();
     });
   };
