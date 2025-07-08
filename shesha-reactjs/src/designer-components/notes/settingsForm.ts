@@ -49,7 +49,13 @@ export const getSettings = (data: any) => {
                       type: 'textField',
                       tooltip: 'This is used to group notes into categories',
                       jsSetting: true,
-                    },
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
                     {
                       type: 'switch',
                       id: nanoid(),
@@ -62,7 +68,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-
                   inputs: [
                     {
                       type: 'switch',
@@ -163,40 +168,65 @@ export const getSettings = (data: any) => {
             id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onCreated',
+                  label: 'On Create',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
+                  exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onUpdateAction',
+                  label: 'On Update',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully updating a note',
+                  exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onDeleteAction',
+                  label: 'On Delete',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully deleting a note',
+                  exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`]
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'validation',
+            title: 'Validation',
+            id: validationTabId,
+            components: [
+              ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: eventsTabId,
+                  parentId: validationTabId,
                   inputs: [
                     {
+                      type: 'numberField',
                       id: nanoid(),
-                      type: 'codeEditor',
-                      propertyName: 'onCreated',
-                      label: 'On Create',
-                      labelAlign: 'right',
-                      parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
-                      exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
-                    }, {
-                      id: nanoid(),
-                      type: 'codeEditor',
-                      propertyName: 'onUpdateAction',
-                      label: 'On Update',
-                      labelAlign: 'right',
-                      parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully updating a note',
-                      exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
+                      propertyName: 'minLength',
+                      label: 'Min Length',
+                      min: 0,
+                      jsSetting: true
                     },
                     {
+                      type: 'numberField',
                       id: nanoid(),
-                      type: 'codeEditor',
-                      propertyName: 'onDeleteAction',
-                      label: 'On Delete',
-                      labelAlign: 'right',
-                      parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully deleting a note',
-                      exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`]
+                      propertyName: 'maxLength',
+                      label: 'Max Length',
+                      min: 0,
+                      jsSetting: true
                     }
-
                   ]
                 })
                 .toJson()
@@ -247,39 +277,7 @@ export const getSettings = (data: any) => {
                 })
                 .toJson()
             ]
-          },
-          {
-            key: 'validation',
-            title: 'Validation',
-            id: validationTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: validationTabId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'minLength',
-                      label: 'Min Length',
-                      min: 0,
-                      jsSetting: true
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'maxLength',
-                      label: 'Max Length',
-                      min: 0,
-                      jsSetting: true
-                    }
-                  ]
-                })
-                .toJson()
-            ]
           }
-
         ]
       })
       .toJson(),
