@@ -127,7 +127,8 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
   } else {
     contextProxyRef.current.refreshAccessors(accessors);
   }
-  contextProxyRef.current.setAdditionalData(additionalData);
+  if (additionalData)
+    contextProxyRef.current.setAdditionalData(additionalData);
 
   contextProxyRef.current.checkChanged();
 
