@@ -1,10 +1,9 @@
 import { useDeepCompareMemoize } from "@/hooks/index";
 import { useAsyncMemo } from "@/hooks/useAsyncMemo";
-import { IMatchData } from "@/providers/form/utils";
+import {  IMatchData, useAvailableConstantsData } from "@/providers/form/utils";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { evaluateDynamicFilters } from "@/utils/index";
 import { FilterExpression, IStoredFilter } from "../interfaces";
-import { useDataContextManagerActions, useFormData, useGlobalState } from "@/providers/index";
 
 interface IMatchDataWithPreparation extends IMatchData {
     prepare?: (data: any) => any;
@@ -51,25 +50,16 @@ export interface UseFormEvaluatedFilterArgs {
     metadataAccessor?: NestedPropertyMetadatAccessor;
 };
 export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs) => {
-    const { data: formData } = useFormData();
-    const { globalState } = useGlobalState();
-    const pageContext = useDataContextManagerActions(false)?.getPageContext();
     
+    // ToDo: AS - need to optimize
+
+    const fullContext = useAvailableConstantsData();
+    const accessors = {...fullContext};
+    var keys = Object.keys(accessors);
+    var mappings = keys.map(key => ({ match: key, data: accessors[key] }));
+
     return useEvaluatedFilter({ 
         ...args, 
-        mappings:  [
-            {
-              match: 'data',
-              data: formData,              
-            },
-            {
-              match: 'globalState',
-              data: globalState,
-            },
-            {
-              match: 'pageContext',
-              data: {...pageContext?.getFull()},
-            },
-          ]
+        mappings
     });
 };
