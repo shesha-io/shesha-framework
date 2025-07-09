@@ -635,12 +635,11 @@ export const getSettings = (data: any) => {
                           inputs: [
                             {
                               id: nanoid(),
-                              type: 'textArea',
+                              type: 'textField',
                               propertyName: 'axisPropertyLabel',
                               label: 'Axis Property Label',
                               description: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
                               tooltip: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
-                              placeholder: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
                               parentId: commonTabId,
                               jsSetting: true,
                             },
@@ -691,12 +690,11 @@ export const getSettings = (data: any) => {
                           inputs: [
                             {
                               id: nanoid(),
-                              type: 'textArea',
+                              type: 'textField',
                               propertyName: 'valuePropertyLabel',
                               label: 'Value Property Label',
                               description: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
                               tooltip: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
-                              placeholder: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
                               parentId: commonTabId,
                               jsSetting: true,
                             }
