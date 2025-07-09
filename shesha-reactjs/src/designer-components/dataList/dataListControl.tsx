@@ -5,7 +5,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
+import { useConfigurableAction, useConfigurableActionDispatcher, useHttpClient } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -43,7 +43,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     noDataText = "No Data",
     noDataSecondaryText = "No data is available for this list",
     noDataIcon,
-    allStyles
+    allStyles,
+    onRowDeleteSuccessAction,
   } = props;
   const {
     tableData,
@@ -58,9 +59,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   } = dataSource;
   const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
-
+  const httpClient = useHttpClient();
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
+  const { executeAction } = useConfigurableActionDispatcher();
 
   const repository = getRepository();
 
@@ -96,6 +98,32 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   }, [isDesignMode, tableData, props.orientation]);
 
   // http, moment, setFormData
+     const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+        if (!onRowDeleteSuccessAction)
+          return () => {
+            /*nop*/
+          };
+        return (data, formApi, globalState, setGlobalState) => {
+          const evaluationContext = {
+            data,
+            formApi,
+            globalState,
+            setGlobalState,
+            http: httpClient,
+            moment,
+          };
+          try {
+            executeAction({
+              actionConfiguration: onRowDeleteSuccessAction,
+              argumentsEvaluationContext: evaluationContext,
+            });
+          } catch (error) {
+            console.error('Error executing row delete success action:', error);
+          }
+        };
+      }, [onRowDeleteSuccessAction, httpClient]);
+
+
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
@@ -106,7 +134,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     };
   }, [onListItemSave]);
 
-  const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)
       return () => {
@@ -176,6 +203,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
+      if (props.onRowDeleteSuccessAction) {
+        performOnRowDeleteSuccessAction(rowData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
+      }
       dataSource.refreshTable();
     });
   };
@@ -218,6 +248,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       <DataList
         {...props}
+         onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
         style={allStyles.fullStyle as string}
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
