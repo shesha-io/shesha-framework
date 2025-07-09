@@ -1,9 +1,11 @@
 import { useDeepCompareMemoize } from "@/hooks/index";
 import { useAsyncMemo } from "@/hooks/useAsyncMemo";
-import {  IMatchData, useAvailableConstantsData } from "@/providers/form/utils";
+import {  IApplicationContext, IMatchData, useAvailableConstantsContexts, wrapConstantsData } from "@/providers/form/utils";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { evaluateDynamicFilters } from "@/utils/index";
 import { FilterExpression, IStoredFilter } from "../interfaces";
+import { useRef } from "react";
+import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
 
 interface IMatchDataWithPreparation extends IMatchData {
     prepare?: (data: any) => any;
@@ -49,17 +51,40 @@ export interface UseFormEvaluatedFilterArgs {
     filter?: FilterExpression;
     metadataAccessor?: NestedPropertyMetadatAccessor;
 };
-export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs) => {
-    
-    // ToDo: AS - need to optimize
+export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: any) => {
 
-    const fullContext = useAvailableConstantsData();
-    const accessors = {...fullContext};
-    var keys = Object.keys(accessors);
-    var mappings = keys.map(key => ({ match: key, data: accessors[key] }));
+    const fullContext = useAvailableConstantsContexts();
+    const accessors = wrapConstantsData({ fullContext });
 
-    return useEvaluatedFilter({ 
-        ...args, 
-        mappings
-    });
+    const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
+    if (!contextProxyRef.current) {
+      contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
+    } else {
+      contextProxyRef.current.refreshAccessors(accessors);
+    }
+    if (additionalData)
+        contextProxyRef.current.setAdditionalData(additionalData);
+
+    contextProxyRef.current.checkChanged();
+
+    const prevChanged = useRef<number>(0);
+    if (contextProxyRef.current.changed )
+        prevChanged.current = Date.now();
+
+    var keys = Object.keys({...contextProxyRef.current});
+    var mappings = keys.map(key => ({ match: key, data: contextProxyRef.current[key] }));
+
+    const evaluatedFilters = useAsyncMemo(async () => {
+        if (!args.filter) return '';
+
+        const response = await evaluateDynamicFilters(
+            [{ expression: args.filter } as IStoredFilter],
+            mappings,
+            args.metadataAccessor
+        );
+
+        return JSON.stringify(response[0]?.expression) || '';
+    }, useDeepCompareMemoize([args.filter, prevChanged.current]));
+
+    return evaluatedFilters;
 };
