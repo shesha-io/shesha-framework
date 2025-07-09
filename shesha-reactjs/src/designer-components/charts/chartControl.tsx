@@ -93,7 +93,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     overflow: 'hidden'
   }), [state]);
 
-  // Memoize the processAndUpdateData callback with stable dependencies
   const processAndUpdateData = (items: any[], refListMap: Map<string, Map<any, string>>) => {
     // Process all items efficiently
     let processedItems = processItems(items, refListMap);

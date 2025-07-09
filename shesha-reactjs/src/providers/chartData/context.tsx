@@ -1,6 +1,6 @@
 import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TLegendPosition, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { FilterExpression } from "@/publicJsApis/dataTableContextApi";
-import { createContext } from "react";
+import { createContext, CSSProperties } from "react";
 
 export interface IChartDataContext extends IChartsProps {
   height?: number;
@@ -49,6 +49,34 @@ export interface IChartDataContext extends IChartsProps {
   axisPropertyLabel?: string;
   valuePropertyLabel?: string;
   filters?: FilterExpression;
+
+  fontStyles?: CSSProperties;
+  
+  // Font configuration properties
+  titleFont?: {
+    family?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+  };
+  axisLabelFont?: {
+    family?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+  };
+  legendFont?: {
+    family?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+  };
+  tickFont?: {
+    family?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+  };
 }
 
 export interface IChartDataAtionsContext {
@@ -105,6 +133,34 @@ export const INITIAL_STATE: IChartDataContext = {
   axisPropertyLabel: '',
   valuePropertyLabel: '',
   maxResultCount: -1,
+
+  fontStyles: {},
+  
+  // Default font configurations
+  titleFont: {
+    family: 'Segoe UI',
+    size: 16,
+    weight: 'bold',
+    color: '#000000'
+  },
+  axisLabelFont: {
+    family: 'Segoe UI',
+    size: 12,
+    weight: 'bold',
+    color: '#000000'
+  },
+  legendFont: {
+    family: 'Segoe UI',
+    size: 12,
+    weight: '400',
+    color: '#000000'
+  },
+  tickFont: {
+    family: 'Segoe UI',
+    size: 12,
+    weight: '400',
+    color: '#000000'
+  },
 };
 
 export const ChartDataStateContext = createContext<IChartDataContext>(INITIAL_STATE);
