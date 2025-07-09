@@ -73,7 +73,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   if (!isWider) return null;
 
   return (
-    <>
+    <div className={styles.pagerContainer}>
       <Pagination
         className={styles.pager}
         style={style}
@@ -100,7 +100,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
           onChange={(value) => onShowSizeChange(currentPage, value)}
         />
       )}
-    </>
+    </div>
   );
 };
 

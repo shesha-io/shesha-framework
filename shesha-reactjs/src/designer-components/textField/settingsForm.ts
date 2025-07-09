@@ -163,6 +163,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 id: nanoid(),
                                 label: 'Spell Check',
                                 inputType: 'switch',
+                                jsSetting: true,
                             })
                             .toJson()
                         ]
@@ -717,6 +718,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
+                                jsSetting: true,
                                 parentId: securityTabId
                             })
                             .toJson()

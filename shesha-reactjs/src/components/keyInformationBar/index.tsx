@@ -4,7 +4,7 @@ import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { useStyles } from './style';
-import { removeUndefinedProps } from '@/utils/object';
+import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
@@ -70,7 +70,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     fetchStyles();
   }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-  const styling = JSON.parse(props.stylingBox || '{}');
+  const styling = jsonSafeParse(props.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -100,7 +100,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
   if (hidden) return null;
 
-  const stylingBoxJSON = JSON.parse(stylingBox || '{}');
+  const stylingBoxJSON = jsonSafeParse(stylingBox || '{}');
   const vertical = orientation === 'vertical';
   const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
   const barStyle = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };

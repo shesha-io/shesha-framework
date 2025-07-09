@@ -87,6 +87,7 @@ namespace Shesha.DynamicEntities.Binder
                 || prop.Name == nameof(IHasClassNameField._className)
                 || prop.Name == nameof(IHasDisplayNameField._displayName)
                 || prop.Name == nameof(IHasDelayedUpdateField._delayedUpdate)
+                || prop.Name.StartsWith("_&@#GH0ST") // for backward compatiblity
             ;
         }
 

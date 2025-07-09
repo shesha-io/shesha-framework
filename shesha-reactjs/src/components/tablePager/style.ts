@@ -55,9 +55,17 @@ export const useStyles = createStyles(({ css, cx }, { style }) => {
         }
     `);
 
+    const pagerContainer = cx("sha-pager-container", css`
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        justify-content: center;
+    `);
+
     return {
         pager,
         dropdown,
         popup,
+        pagerContainer,
     };
 });

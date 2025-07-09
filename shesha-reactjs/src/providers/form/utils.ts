@@ -77,11 +77,11 @@ import { IFormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstance, useShaFormUpdateDate } from './providers/shaFormProvider';
+import { useShaFormInstance, useShaFormDataUpdate } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
 import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
-import { unproxyValue } from '@/utils/object';
+import { jsonSafeParse, unproxyValue } from '@/utils/object';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -201,26 +201,20 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
   }
 }
 
-export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
+const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContext(false)?.id;
-  // get DataContext Manager
-  const dcm = useDataContextManagerActions(false);
   // get selected row if exists
   const selectedRow = useDataTableState(false)?.selectedRow;
 
-  const parent = useParent(false);
-  const form = useShaFormInstance(false);
-
-  const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
-    closestShaFormApi,
+    closestShaFormApi: null,
     selectedRow,
-    dcm,
+    dcm: null,
     closestContextId,
     globalState,
     setGlobalState,
@@ -237,6 +231,33 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
     }
   };
   return result;
+};
+
+export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsContext => {
+  const baseContext = useBaseAvailableConstantsContexts();
+  // get DataContext Manager
+  const dcm = useDataContextManagerActions(false);
+
+  const parent = useParent(false);
+  const form = useShaFormInstance(false);
+  const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
+  baseContext.closestShaFormApi = closestShaFormApi;
+  baseContext.dcm = dcm;
+  return baseContext;
+};
+
+export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
+  const baseContext = useBaseAvailableConstantsContexts();
+  // get DataContext Manager
+  const dcm = useDataContextManager(false);
+  useShaFormDataUpdate();
+
+  const parent = useParent(false);
+  const form = useShaFormInstance(false);
+  const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
+  baseContext.closestShaFormApi = closestShaFormApi;
+  baseContext.dcm = dcm;
+  return baseContext;
 };
 
 export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
@@ -294,13 +315,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
   return accessors;
 };
 
-/**
- * Use this method if you need coonect to Application data without re-rendeting if DataContextx changed
- * @param args arguments
- * @returns Application contexts
- */
-export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
-  const fullContext = useAvailableConstantsContexts();
+const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: any): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
@@ -308,8 +323,21 @@ export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDa
     contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
   else
     contextProxyRef.current.refreshAccessors(accessors);
+  
+  contextProxyRef.current.setAdditionalData(additionalData);
 
   return contextProxyRef.current;
+};
+
+/**
+ * Use this method if you need connect to Application data without re-rendeting if DataContextx changed
+ * @param args arguments
+ * @returns Application contexts
+ */
+export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDataArgs = {}, additionalData?: any): IApplicationContext => {
+  const fullContext = useAvailableConstantsContextsNoRefresh();
+  var result = useWrapAvailableConstantsData(fullContext, args, additionalData);
+  return result;
 };
 
 /**
@@ -317,23 +345,10 @@ export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDa
  * @param args arguments
  * @returns Application contexts
  */
-export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
-  // use ShaFormUpdateDate to be responsive to changes in form data
-  useShaFormUpdateDate();
-
+export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}, additionalData?: any): IApplicationContext => {
   const fullContext = useAvailableConstantsContexts();
-  // override DataContextManager to be responsive to changes in contexts
-  fullContext.dcm = useDataContextManager();
-
-  const accessors = wrapConstantsData({ fullContext, ...args, topContextId: 'all' });
-
-  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
-  if (!contextProxyRef.current)
-    contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
-  else
-    contextProxyRef.current.refreshAccessors(accessors);
-
-  return contextProxyRef.current;
+  var result = useWrapAvailableConstantsData(fullContext, args, additionalData);
+  return result;
 };
 
 export const useApplicationContextData = (): ContextGetData => {
@@ -1571,7 +1586,7 @@ export const getStyle = (
 };
 
 export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }) => {
-  const styling = JSON.parse(model?.stylingBox || '{}');
+  const styling = jsonSafeParse(model?.stylingBox || '{}');
   let style = pickStyleFromModel(styling);
 
   try {

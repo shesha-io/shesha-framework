@@ -1,4 +1,4 @@
-import React, { FC, CSSProperties, useEffect } from 'react';
+import React, { FC, CSSProperties, useEffect, useRef } from 'react';
 import { useNotes } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
 import { useStyles } from './styles/styles';
@@ -16,7 +16,7 @@ export interface INotesRendererProps {
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
-  onDeleteAction?: (noteId: string) => void;
+  onDeleteAction?: (note: INote) => void;
   onCreateAction?: (note: any) => void;
   allowEdit?: boolean;
   onUpdateAction?: (note: INote) => void;
@@ -34,18 +34,22 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
   onDeleteAction,
   onCreateAction,
   allowEdit = true,
-  onUpdateAction
+  onUpdateAction,
 }) => {
   const { notes, deleteNotes, isInProgress, postNotes, updateNotes } = useNotes();
   const { styles } = useStyles();
-
+  const prevNotes = useRef(notes);
   const { fetchNotes: isFetchingNotes, postNotes: isPostingNotes } = isInProgress;
 
   useEffect(() => {
-    if (onCreated) {
-      onCreated(notes);
+    if (prevNotes.current && notes?.length > prevNotes.current.length) {
+      const newNotes = notes.filter((note) => !prevNotes.current.some((prev) => prev.id === note.id));
+      if (onCreated && newNotes.length > 0) {
+        onCreated(newNotes);
+      }
     }
-  }, [isInProgress, notes]);
+    prevNotes.current = notes;
+  }, [notes]);
 
   return (
     <div className={styles.shaNotesRenderer}>

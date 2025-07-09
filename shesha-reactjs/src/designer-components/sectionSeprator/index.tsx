@@ -12,6 +12,7 @@ import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
+import { jsonSafeParse } from '@/utils/object';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
@@ -34,7 +35,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       ...getStyle(model?.titleStyle, formData),
     };
 
-    const containerstyling = JSON.parse(model.containerStylingBox || '{}');
+    const containerstyling = jsonSafeParse(model.containerStylingBox || '{}');
     const containerstylingBoxAsCSS = pickStyleFromModel(containerstyling);
 
     const containerAdditionalStyles = {

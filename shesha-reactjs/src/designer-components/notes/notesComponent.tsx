@@ -70,11 +70,16 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    const handleDeleteAction = (noteId: string) => {
+    const handleDeleteAction = (note: INote) => {
       if (!model.onDeleteAction) return;
 
       executeScript<void>(model.onDeleteAction, {
-        noteId,
+        note: {
+          ...note,
+          creationTime: note.creationTime || null,
+          priority: note.priority || null,
+          parentId: note.parentId || null,
+        },
         data,
         form: getFormApi(form),
         globalState,

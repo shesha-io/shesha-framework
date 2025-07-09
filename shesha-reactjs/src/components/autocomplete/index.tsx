@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { DataTableProvider, evaluateString, getUrlKeyParam, useActualContextData, useDataTableStore, useDeepCompareMemo, useShaFormInstance } from '@/index';
-import { Select, Typography } from 'antd';
+import { DataTableProvider, evaluateString, getUrlKeyParam, useActualContextData, useDataTableStore, useDeepCompareMemo, useNestedPropertyMetadatAccessor, useShaFormInstance } from '@/index';
+import { Select, Spin, Typography } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
 import QueryString from 'qs';
@@ -12,14 +12,14 @@ import { ValueRenderer } from '../valueRenderer';
 import { isEqual, uniqWith } from 'lodash';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './style';
+import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
-  const {allowClear = true } = props;
+  const { allowClear = true } = props;
   const { style = {} } = props;
 
   const { styles } = useStyles({ style });
-
 
   // sources
   const source = useDataTableStore(false);
@@ -72,7 +72,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     if (props.dataSourceType === 'entitiesList' && props.entityType
       || props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
-      // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
       if (keys.length) {
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
@@ -88,16 +87,16 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       if (keys.length) {
         const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         if (!loadingValues && !allExist) {
-          // request full details for values
           setLoadingValues(true);
           const selectedFilter = filterKeysFunc(props.value);
-          source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
+          source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
         }
         if (loadingValues && source?.tableData?.length) {
-          // update local store with full details
           setLoadingValues(false);
           selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
+      } else {
+        setLoadingValues(false);
       }
     }
   }, [props.value, source?.tableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
@@ -171,10 +170,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selectedValuesList = useMemo(() => {
     return selected.current?.map((row, index) => renderOption(row, 10 + index));
   }, [selected.current]);
-  
+
   const freeTextValuesList = useMemo(() => {
     return props.allowFreeText && autocompleteText && source.tableData.findIndex(x => x[displayPropName]?.toLowerCase() === autocompleteText.toLowerCase()) === -1
-      ? renderOption({[keyPropName]: autocompleteText, [displayPropName]: autocompleteText}, 'freeText')
+      ? renderOption({ [keyPropName]: autocompleteText, [displayPropName]: autocompleteText }, 'freeText')
       : null;
   }, [autocompleteText, source.tableData]);
 
@@ -223,8 +222,19 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     }
   };
 
+  const shouldShowLoading = keys.length > 0 && loadingValues && selected.current.length === 0;
+
+  if (shouldShowLoading) {
+    return (
+      <div className={styles.loadingSpinner}>
+        <Spin size="small" />
+        <span className={styles.loadingText}>Loading...</span>
+      </div>
+    );
+  }
+
   if (props.readOnly) {
-    if (!props.value)
+    if (!selected.current)
       return null;
     const readonlyValue = props.mode === 'multiple'
       ? selected.current?.map((x) => ({ label: displayValueFunc(x, allData), value: keyValueFunc(outcomeValueFunc(x, allData), allData) }))
@@ -247,40 +257,37 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
-  
-  const {width, ...restOfDropdownStyles} = style ?? {};
+
+  const { width, ...restOfDropdownStyles } = style ?? {};
 
   return (
-    <>
-      <Select
-        title={title}
-        onDropdownVisibleChange={onDropdownVisibleChange}
-        value={keys}
-        className={styles.autocomplete}
-        dropdownStyle={restOfDropdownStyles}
-        showSearch={!props.disableSearch}
-        notFoundContent={props.notFoundContent}
-        defaultActiveFirstOption={false}
-        filterOption={false}
-        onSearch={handleSearch}
-        //defaultValue={wrapValue(defaultValue, options)}
-        onChange={handleChange}
-        allowClear={allowClear}
-        loading={source?.isInProgress?.fetchTableData}
-        placeholder={props.placeholder}
-        disabled={props.readOnly}
-        onSelect={handleSelect}
-        style={style}
-        size={props.size}
-        ref={selectRef}
-        variant={style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth")  ? 'borderless' : undefined}
-        mode={props.value && props.mode === 'multiple' ? props.mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
-      >
-        {freeTextValuesList /* this is need for showing free text value */}
-        {list}
-        {!open && selectedValuesList /* this is need for showing selected value(s) */}
-      </Select>
-    </>
+    <Select
+      title={title}
+      onDropdownVisibleChange={onDropdownVisibleChange}
+      value={keys}
+      className={styles.autocomplete}
+      dropdownStyle={restOfDropdownStyles}
+      showSearch={!props.disableSearch}
+      notFoundContent={props.notFoundContent}
+      defaultActiveFirstOption={false}
+      filterOption={false}
+      onSearch={handleSearch}
+      onChange={handleChange}
+      allowClear={allowClear}
+      loading={source?.isInProgress?.fetchTableData || loadingValues}
+      placeholder={props.placeholder}
+      disabled={props.readOnly}
+      onSelect={handleSelect}
+      style={style}
+      size={props.size}
+      ref={selectRef}
+      variant={style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth") ? 'borderless' : undefined}
+      mode={props.value && props.mode === 'multiple' ? props.mode : undefined}
+    >
+      {freeTextValuesList}
+      {list}
+      {!open && selectedValuesList}
+    </Select>
   );
 };
 
@@ -289,6 +296,9 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
   const disableRefresh = useRef<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();
+
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  const permanentFilter = useFormEvaluatedFilter({ filter: props.filter, metadataAccessor: propertyMetadataAccessor });
 
   const fields = [...(props.fields ?? [])];
   if (props.displayPropName && fields.findIndex((x) => x === props.displayPropName) === -1)
@@ -360,7 +370,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       sortMode='standard'
       standardSorting={props.sorting}
       allowReordering={false}
-      permanentFilter={props.filter}
+      permanentFilter={permanentFilter}
       disableRefresh={disableRefresh.current}
     >
       <AutocompleteInner

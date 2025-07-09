@@ -1311,6 +1311,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
+                                jsSetting: true,
                                 size: 'small',
                                 parentId: securityTabId
                             })

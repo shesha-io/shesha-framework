@@ -499,6 +499,13 @@ export const getSettings = (data: any) => {
                 description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                 exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
               })
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: 'onRowDeleteSuccessAction',
+                label: 'On Row Delete Success',
+                description: 'Custom business logic to be executed after successfull deletion of a row.',
+                hideLabel: true,
+              })
               .toJson()
             ]
           },
@@ -894,7 +901,7 @@ export const getSettings = (data: any) => {
                             parentId: containerStylePnlId,
                             label: "Orientation",
                             jsSetting: true,
-                            defaultValue: 'horizontal',
+                            defaultValue: 'vertical',
                             dropdownOptions: [
                               { label: 'Vertical', value: 'vertical' },
                               { label: 'Horizontal', value: 'horizontal' },

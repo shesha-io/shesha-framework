@@ -58,7 +58,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.displayValueFunc)
         return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
-      return getValueByPropertyName(value, displayPropName) || 'unknown'; 
+      return getValueByPropertyName(value, displayPropName) || ''; 
     }, [model.displayValueFunc, displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {

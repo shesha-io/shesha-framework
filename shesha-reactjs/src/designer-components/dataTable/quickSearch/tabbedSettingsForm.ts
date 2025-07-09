@@ -26,13 +26,29 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: commonTabId,
             components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
+              .addSettingsInputRow({
                 id: nanoid(),
-                inputType: 'switch',
-                propertyName: 'block',
-                parentId: 'root',
-                label: 'Block',
-                defaultValue: false,
+                parentId: commonTabId,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'hidden',
+                    label: 'Hide',
+                    defaultValue: false,
+                    parentId: 'root',
+                    jsSetting: true,
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'block',
+                    parentId: 'root',
+                    label: 'Block',
+                    defaultValue: false,
+                    jsSetting: true,
+                  },
+                ]
               }).toJson()
             ]
           },
@@ -125,6 +141,7 @@ export const getSettings = (data: any) => {
                 inputType: 'permissions',
                 propertyName: 'permissions',
                 label: 'Permissions',
+                jsSetting: true,
                 size: 'small',
                 parentId: securityId
               })
