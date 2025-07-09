@@ -35,7 +35,6 @@ import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow
 import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import { addPx } from '@/utils/style';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -249,8 +248,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    // react to every change in the form data
-    useShaFormUpdateDate();
     const items = useActualContextData(
         props.items?.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
         props.readOnly,
