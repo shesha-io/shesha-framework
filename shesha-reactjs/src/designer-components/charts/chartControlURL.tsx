@@ -61,7 +61,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         setIsLoaded(true);
         newController?.abort("Request completed successfully");
       })
-      .catch((err: any) => {
+      .catch((err: Error) => {
         console.error('Error fetching URL chart data:', err);
         // Check if it's a timeout error
         const isTimeoutError = err?.name === 'AbortError' && err?.message?.includes('timeout');

@@ -93,7 +93,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     overflow: 'hidden'
   }), [state]);
 
-  const processAndUpdateData = (items: any[], refListMap: Map<string, Map<any, string>>) => {
+  const processAndUpdateData = (items: {}[], refListMap: Map<string, Map<number, string>>) => {
     // Process all items efficiently
     let processedItems = processItems(items, refListMap);
 
@@ -133,7 +133,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     isFetchingRef.current = true;
 
     // Create reference list lookup maps - declare outside promise chain for scope
-    const refListMap = new Map<string, Map<any, string>>();
+    const refListMap = new Map<string, Map<number, string>>();
 
     // Function to validate and fetch data
     const validateAndFetchData = async () => {
@@ -178,7 +178,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
             },
           }).promise;
 
-          const valueMap = new Map();
+          const valueMap = new Map<number, string>();
           refListItem.items.forEach((x) => {
             valueMap.set(x.itemValue, x.item?.trim() || `${x.itemValue}`);
           });
