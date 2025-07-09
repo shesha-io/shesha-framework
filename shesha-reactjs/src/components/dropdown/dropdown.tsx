@@ -30,7 +30,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     style,
     size,
     showIcon,
-    solidColor = true,
+    solidColor,
     showItemName,
     allowClear = true,
     displayStyle,
@@ -79,6 +79,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             color: item?.color,
             icon: item?.icon,
             data: item?.data,
+            description: item?.description,
         };
     }, [incomeValueFunc]);
 
@@ -104,6 +105,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             data: outcomeValueFunc(fetchedItem, args),
             color: fetchedItem?.color,
             icon: fetchedItem?.icon,
+            description: fetchedItem?.description,
         };
     }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
 
@@ -198,7 +200,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 return <ReflistTag
                     key={option?.value}
                     value={option?.value}
-                    tooltip={option?.description}
+                    description={option?.description}
                     color={option?.color}
                     icon={option?.icon}
                     showIcon={showIcon}
@@ -229,7 +231,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                     const option = options.find((o) => o.value === props.value);
                     return <ReflistTag
                         value={option?.value}
-                        tooltip={option?.description}
+                        description={option?.description}
                         color={option?.color}
                         icon={option?.icon}
                         showIcon={showIcon}

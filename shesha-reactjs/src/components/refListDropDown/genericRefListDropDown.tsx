@@ -166,7 +166,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return <ReflistTag
           key={option?.value}
           value={option?.value}
-          tooltip={option?.description}
+          description={option?.description}
           color={option?.color}
           icon={option?.icon}
           showIcon={showIcon}
@@ -197,7 +197,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
           const option = options.find((o) => o.value === props.value);
           return <ReflistTag
             value={option?.value}
-            tooltip={option?.description}
+            description={option?.description}
             color={option?.color}
             icon={option?.icon}
             showIcon={showIcon}
