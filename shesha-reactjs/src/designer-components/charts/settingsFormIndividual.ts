@@ -87,7 +87,7 @@ export const getSettings = (data: any) => {
                       defaultValue: false,
                       hidden: {
                         _code:
-                          'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot`',
+                          'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot` || getSettingValue(data?.dataMode) === `url`',
                         _mode: 'code',
                         _value: false,
                       } as any,
