@@ -20,7 +20,7 @@ export const getItemSettings = () => {
     const stylePnlId = nanoid();
     const customStylePnlId = nanoid();
 
-    const entityOrUrl = 'getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url"';
+    const entityOrUrl = 'getSettingValue(data?.itemSubType) === "dynamic" && (getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url")';
 
     return {
         components: new DesignerToolbarSettings()
@@ -97,7 +97,7 @@ export const getItemSettings = () => {
                                                 _mode: 'code',
                                                 _value: false
                                             } as any,
-                                             inputs: [
+                                            inputs: [
                                                 {
                                                     id: nanoid(),
                                                     type: "textField",
