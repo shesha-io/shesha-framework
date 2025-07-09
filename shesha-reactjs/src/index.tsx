@@ -26,3 +26,4 @@ export { ConfigurableThemePage } from './generic-pages/settings/dynamic-theme';
 export { SettingsControl, type ISettingsControlProps } from './designer-components/_settings/settingsControl';
 export { useConstantsEvaluator } from './designer-components/codeEditor/hooks/useConstantsEvaluator';
 export { useResultTypeEvaluator } from './designer-components/codeEditor/hooks/useResultType';
+export { ConfigurableActionConfigurator } from './designer-components/configurableActionsConfigurator/configurator';
