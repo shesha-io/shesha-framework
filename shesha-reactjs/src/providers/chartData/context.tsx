@@ -1,6 +1,6 @@
 import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TLegendPosition, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { FilterExpression } from "@/publicJsApis/dataTableContextApi";
-import { createContext, CSSProperties } from "react";
+import { createContext } from "react";
 
 export interface IChartDataContext extends IChartsProps {
   height?: number;
@@ -49,8 +49,6 @@ export interface IChartDataContext extends IChartsProps {
   axisPropertyLabel?: string;
   valuePropertyLabel?: string;
   filters?: FilterExpression;
-
-  fontStyles?: CSSProperties;
   
   // Font configuration properties
   titleFont?: {
@@ -133,8 +131,6 @@ export const INITIAL_STATE: IChartDataContext = {
   axisPropertyLabel: '',
   valuePropertyLabel: '',
   maxResultCount: -1,
-
-  fontStyles: {},
   
   // Default font configurations
   titleFont: {

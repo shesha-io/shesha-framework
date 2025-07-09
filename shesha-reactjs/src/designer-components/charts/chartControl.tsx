@@ -227,13 +227,13 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
       })
       .catch((error) => {
         console.error('Error in fetchAndProcessData:', error);
-        
+
         // Handle different types of errors
         let errorMessage: string;
-        
+
         if (error?.name === 'AbortError') {
           // Request was aborted (timeout or user cancellation)
-          errorMessage = error?.message?.includes('timeout') 
+          errorMessage = error?.message?.includes('timeout')
             ? `Request timed out after ${requestTimeout / 1000} seconds`
             : error?.message || 'Request was cancelled';
         } else if (error instanceof Error) {
@@ -243,7 +243,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         } else {
           errorMessage = 'An error occurred while fetching chart data';
         }
-        
+
         setError(errorMessage);
         setIsLoaded(true);
         setMetadataProcessed(false);
@@ -270,6 +270,19 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
 
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
+      if (metaData) {
+        if (!axisPropertyLabel || axisPropertyLabel?.trim().length === 0) {
+          setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
+        }
+        if (!valuePropertyLabel || valuePropertyLabel.trim().length === 0) {
+          setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
+        }
+      } 
+    });
+  }, [axisPropertyLabel, valuePropertyLabel, entityType, valueProperty, axisProperty, getMetadata, setAxisPropertyLabel, setValuePropertyLabel]);
 
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
@@ -333,7 +346,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     const isUserCancelled = error.includes('cancelled') || error.includes('Cancelled');
     const isTimeoutError = error.includes('timed out');
     const message = isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data";
-    
+
     return (
       <Alert
         showIcon
