@@ -22,6 +22,23 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
 
+// Validation function to ensure columns don't exceed 24-column limit
+const validateColumns = (columns: any[]) => {
+  if (!columns || columns.length === 0) return [];
+  
+  const totalFlex = columns.reduce((sum, col) => sum + (col.flex || 0), 0);
+  
+  if (totalFlex > 24) {
+    console.warn(`Columns component: Total flex value (${totalFlex}) exceeds 24. Normalizing columns to prevent overflow.`);
+    return columns.map(col => ({
+      ...col,
+      flex: Math.floor((col.flex || 0) * 24 / totalFlex)
+    }));
+  }
+  
+  return columns;
+};
+
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
   isInput: false,
@@ -81,12 +98,15 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
+    // Validate and normalize columns to prevent overflow
+    const validatedColumns = validateColumns(columns);
+
     return (
-      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
-        <Row gutter={[gutterX || 0, gutterY || 0]}>
+      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle, overflow: 'hidden' }}>
+        <Row gutter={[gutterX || 0, gutterY || 0]} style={{ margin: 0 }}>
           <ParentProvider model={model}>
-            {columns &&
-              columns.map((col, index) => (
+            {validatedColumns &&
+              validatedColumns.map((col, index) => (
                 <Col
                   key={index}
                   md={col.flex}
@@ -94,6 +114,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   pull={col.pull}
                   push={col.push}
                   className="sha-designer-column"
+                  style={{ overflow: 'hidden' }}
                 >
                   <ComponentsContainer
                     containerId={col.id}
