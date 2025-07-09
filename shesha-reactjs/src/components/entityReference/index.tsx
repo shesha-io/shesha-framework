@@ -230,8 +230,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       return (
         <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
           <span style={innerEntityReferenceSpanBoxStyle}>
-            <Spin size="small" style={{ marginRight: 8 }} />
-            Loading...
+            <Spin size="small" style={{ marginRight: 8, display: 'inline-block', verticalAlign: 'middle' }} />
+            <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>Loading...</span>
           </span>
         </Button>
       );
