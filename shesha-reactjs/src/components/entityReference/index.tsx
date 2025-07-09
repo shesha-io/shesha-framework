@@ -229,8 +229,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
         <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-          <Spin size="small" />
-          <span style={innerEntityReferenceSpanBoxStyle}> Loading...</span>
+          <span style={innerEntityReferenceSpanBoxStyle}>
+            <Spin size="small" style={{ marginRight: 8, display: 'inline-block', verticalAlign: 'middle' }} />
+            <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>Loading...</span>
+          </span>
         </Button>
       );
 
