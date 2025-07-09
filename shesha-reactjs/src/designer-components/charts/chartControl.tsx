@@ -156,8 +156,12 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         // Continue with the chart rendering instead of blocking it
       }
 
-      setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
-      setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
+      if (!axisPropertyLabel || axisPropertyLabel?.trim().length === 0) {
+        setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);
+      }
+      if (!valuePropertyLabel || valuePropertyLabel.trim().length === 0) {
+        setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
+      }
 
       // Pre-filter reference list properties and create lookup maps
       const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
