@@ -6,7 +6,7 @@ import { FormMarkup, IConfigurableTheme, useShaFormInstance, useSheshaApplicatio
 import settingsFormJson from './settingsForm.json';
 import { useSettingsEditor } from '@/components/settingsEditor/provider';
 import { FRONTEND_DEFAULT_APP_KEY, ISettingIdentifier } from '@/components/settingsEditor/provider/models';
-import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -18,7 +18,7 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
   isOutput: true,
   Factory: () => {
 
-    useShaFormUpdateDate();
+    useShaFormDataUpdate();
 
     const {applicationKey = null} = useSheshaApplication();
     const {selectedApplication = null, settingSelection, editorMode, setEditor, saveSettingValue} = useSettingsEditor(false) ?? {};

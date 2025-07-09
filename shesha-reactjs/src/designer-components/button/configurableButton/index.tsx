@@ -16,10 +16,10 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { actionConfiguration, dynamicItem } = props;
-  const evaluationContext = useAvailableConstantsData();
   const { getUrlFromNavigationRequest } = useShaRouting();
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
   const dynamicContext = useActionDynamicContext(actionConfiguration);
+  const evaluationContext = useAvailableConstantsData({}, { ...dynamicContext, dynamicItem });
 
   const { theme } = useTheme();
   const { styles } = useStyles();
@@ -36,7 +36,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
         setLoading(true);
         executeAction({
           actionConfiguration: { ...actionConfiguration },
-          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext, dynamicItem }
+          argumentsEvaluationContext: evaluationContext
         })
           .finally(() => {
             setLoading(false);
