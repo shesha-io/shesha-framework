@@ -223,7 +223,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         processAndUpdateData(items, refListMap);
         setIsLoaded(true);
         setMetadataProcessed(true);
-        newController.abort(`Request completed successfully`);
       })
       .catch((error) => {
         console.error('Error in fetchAndProcessData:', error);
@@ -232,10 +231,23 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         let errorMessage: string;
 
         if (error?.name === 'AbortError') {
-          // Request was aborted (timeout or user cancellation)
-          errorMessage = error?.message?.includes('timeout')
+          // Check if this is an intentional abort (restart, retry, or unmount)
+          const abortMessage = error?.message || '';
+          const isIntentionalAbort = abortMessage.includes('Restarting chart') || 
+                                   abortMessage.includes('Retry fetch') || 
+                                   abortMessage.includes('Unmounting chart') ||
+                                   abortMessage.includes('Request cancelled');
+          
+          if (isIntentionalAbort) {
+            // Don't set error for intentional aborts - just clean up
+            isFetchingRef.current = false;
+            return;
+          }
+          
+          // Handle timeout or other unintentional aborts
+          errorMessage = abortMessage.includes('timeout')
             ? `Request timed out after ${requestTimeout / 1000} seconds`
-            : error?.message || 'Request was cancelled';
+            : 'Request was cancelled';
         } else if (error instanceof Error) {
           errorMessage = error.message;
         } else if (typeof error === 'string') {
@@ -247,7 +259,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         setError(errorMessage);
         setIsLoaded(true);
         setMetadataProcessed(false);
-        newController.abort(errorMessage);
       })
       .finally(() => {
         isFetchingRef.current = false;
@@ -262,9 +273,14 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     setError(undefined);
     setFaultyProperties([]);
 
-    // Abort any ongoing request
+    // Abort any ongoing request gracefully
     if (currentControllerRef.current) {
-      currentControllerRef.current.abort('Restarting chart');
+      try {
+        currentControllerRef.current.abort('Restarting chart');
+      } catch {
+        // Ignore abort errors during restart - this is expected behavior
+        // Abort errors are expected when restarting the chart
+      }
     }
     isFetchingRef.current = false;
 
@@ -288,7 +304,11 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   useEffect(() => {
     return () => {
       if (currentControllerRef.current) {
-        currentControllerRef.current.abort('Unmounting chart');
+        try {
+          currentControllerRef.current.abort('Unmounting chart');
+        } catch {
+          // Ignore abort errors during unmount - this is expected behavior
+        }
       }
     };
   }, []);
@@ -330,9 +350,13 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     setError(undefined);
     setFaultyProperties([]);
 
-    // Abort any ongoing request
+    // Abort any ongoing request gracefully
     if (currentControllerRef.current) {
-      currentControllerRef.current.abort('Retry fetch');
+      try {
+        currentControllerRef.current.abort('Retry fetch');
+      } catch {
+        // Ignore abort errors during retry - this is expected behavior
+      }
     }
     isFetchingRef.current = false;
 
@@ -379,7 +403,11 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
               setError('Request cancelled');
               setIsLoaded(true);
               setMetadataProcessed(false);
-              currentControllerRef.current.abort('Request cancelled');
+              try {
+                currentControllerRef.current.abort('Request cancelled');
+              } catch {
+                // Ignore abort errors during user cancellation - this is expected behavior
+              }
             }
           }}
         >
