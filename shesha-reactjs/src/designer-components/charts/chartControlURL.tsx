@@ -1,5 +1,5 @@
 import { useGet } from '@/hooks';
-import { Alert, Button, Flex } from 'antd';
+import { Alert, Button } from 'antd';
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks';
@@ -174,12 +174,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const loaderComponent = useMemo(() => {
     if (!state.isLoaded) {
       return (
-        <Flex
-          align="center"
-          justify="center"
-          vertical
-          gap={16}
-        >
+        <div className={cx(styles.loadingContainer)}>
           <ChartLoader chartType={chartType} />
           <div className={cx(styles.loadingText)}>Loading data...</div>
           <Button 
@@ -196,7 +191,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
           >
             Cancel
           </Button>
-        </Flex>
+        </div>
       );
     }
     return null;
@@ -206,17 +201,16 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const chartContainerStyle = useMemo(() => ({
     width: '100%',
     height: '100%',
-    minHeight: '400px',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 0,
-    margin: 0
+    margin: 0,
+    overflow: 'hidden'
   }), []);
 
   const chartInnerStyle = useMemo(() => ({
-    flex: 1,
     width: '100%',
     height: '100%',
     position: 'relative' as const,
@@ -224,7 +218,8 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 0,
-    margin: 0
+    margin: 0,
+    overflow: 'hidden'
   }), []);
 
   const hasValidData = useMemo(() => {

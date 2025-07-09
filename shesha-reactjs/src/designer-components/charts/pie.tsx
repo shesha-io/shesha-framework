@@ -45,11 +45,11 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
             <ChartDataProvider model={model}>
               <div style={{
                 ...wrapperStyles,
-                minHeight: '400px',
                 padding: '16px',
                 boxSizing: 'border-box',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                overflow: 'hidden'
               }}>
                 {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='pie' filters={model.filters} />}
               </div>

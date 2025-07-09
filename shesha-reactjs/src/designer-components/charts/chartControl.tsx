@@ -4,7 +4,7 @@ import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metada
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
-import { Alert, Button, Flex } from 'antd';
+import { Alert, Button } from 'antd';
 import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from './hooks';
@@ -15,7 +15,6 @@ import ChartLoader from './components/chartLoader';
 import { useTheme } from '@/providers/theme';
 
 const chartInnerStyle = {
-  flex: 1,
   width: '100%',
   height: '100%',
   position: 'relative' as const,
@@ -24,7 +23,7 @@ const chartInnerStyle = {
   justifyContent: 'center',
   padding: 0,
   margin: 0,
-  minHeight: '350px'
+  overflow: 'hidden'
 };
 
 const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
@@ -84,7 +83,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     ...getResponsiveStyle(state),
     width: '100%',
     height: '100%',
-    minHeight: '400px',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
@@ -353,12 +351,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     if (state.isLoaded && metadataProcessed) return null;
 
     return (
-      <Flex
-        align="center"
-        justify="center"
-        vertical
-        gap={16}
-      >
+      <div className={cx(styles.loadingContainer)}>
         <ChartLoader chartType={chartType} />
         <div className={cx(styles.loadingText)}>Fetching data...</div>
         <Button
@@ -376,9 +369,9 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         >
           Cancel
         </Button>
-      </Flex>
+      </div>
     );
-  }, [state.isLoaded, metadataProcessed, chartType, cx, styles.loadingText, setIsLoaded, setMetadataProcessed]);
+  }, [state.isLoaded, metadataProcessed, chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded, setMetadataProcessed]);
 
   // Early returns with memoized components
   if (error) {
