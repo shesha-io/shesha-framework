@@ -34,13 +34,15 @@ export const useStyles = createStyles(({ token, cx, css }, fontSize: string | nu
 
   const button = cx("filter-btn", css`
     .ant-btn-icon{
-     font-size: ${fontSize} !important;
+     svg {
+      font-size: ${fontSize} !important;
+     }
     }
       &.ant-btn-icon-only {
         width: max-content;
         height: max-content;
         padding: 1px 1px;
-      }
+      }    
     `);
 
   const disabledColor = token.colorTextDisabled;

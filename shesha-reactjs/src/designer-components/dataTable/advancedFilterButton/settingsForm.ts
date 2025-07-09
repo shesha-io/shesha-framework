@@ -70,6 +70,7 @@ export const getSettings = (data: any) => {
                   labelAlign: 'right',
                   defaultValue: 'FilterOutlined',
                   parentId: commonTabId,
+                  jsSetting: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -82,6 +83,7 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       labelAlign: 'right',
                       type: 'switch',
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -90,6 +92,7 @@ export const getSettings = (data: any) => {
                       parentId: commonTabId,
                       label: 'Edit Mode',
                       labelAlign: 'right',
+                      jsSetting: true,
                     },
                   ],
                 })
