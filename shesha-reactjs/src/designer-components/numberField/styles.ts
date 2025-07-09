@@ -1,14 +1,18 @@
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
 
-export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize, hasSuffix }) => {
+export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize, hasSuffix, hasPrefix, padding }) => {
   const numberField = cx(
-    'sha-ant-input-number-input',
+    'sha-input-number-input',
     css`
-      display: flex;
-      flex-direction: row;
+      padding-inline-start: ${padding?.paddingLeft || '0px'} !important;
       align-items: center;
-      justify-content: normal;
+      overflow: hidden;
+
+      .ant-input-number-input-wrap {
+        height: 100% !important;
+        overflow: hidden;
+      }
 
       .ant-input-number-input {
         --ant-color-text: ${color} !important;
@@ -17,17 +21,42 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         font-weight: ${fontWeight} !important;
         font-family: ${fontFamily};
         text-align: ${textAlign};
+        padding: 0px 11px !important;
+        padding-right: 11px !important;
+        height: 100%;
+      }
+
+      .ant-input-number {
+        height: 100% !important;
+        align-items: center;
       }
 
       .ant-input-number-handler-wrap {
-        --ant-color-text-description: ${color} !important;
-        background-color: transparent;
+        ${(hasSuffix || padding?.paddingRight) && 'border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);'}
+        border-start-end-radius: 0px !important;
+        border-end-end-radius: 0px !important;
 
+        .ant-input-number-handler-up {
+          border-start-end-radius: 0px !important;
+        }
+
+        .ant-input-number-handler-down {
+          border-end-end-radius: 0px !important;
+        }
       }
 
       .ant-input-number-suffix {
-        position: relative;
         ${!hasSuffix && 'display: none;'}
+        margin-inline-end: unset !important;
+        margin-right: 8px !important;
+        position: relative;
+      }
+
+      .ant-input-number-prefix {
+        ${!hasPrefix && 'display: none;'}   
+        margin-inline-end: unset !important;
+        margin-right: 8px !important ;
+        position: relative !important;
       }
 `
   );
