@@ -212,8 +212,12 @@
             "type": "codeEditor",
             "propertyName": "onCreated",
             "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "On Created",
+            "label": "On Create",
             "labelAlign": "right",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "onCreate"
+            },
             "description": "Triggered after successfully creating a new note. The createdNotes array is available in the execution context.",
             "mode": "dialog",
             "exposedVariables": [
@@ -263,6 +267,10 @@
             "id": "617ee22e-a49d-44f2-a1c7-fef32ec87503",
             "type": "codeEditor",
             "propertyName": "onUpdateAction",
+            "wrapInTemplate": true,
+             "templateSettings": {
+              "functionName": "onUpdate"
+            },
             "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
             "label": "On Update",
             "labelAlign": "right",
@@ -320,62 +328,14 @@
             "labelAlign": "right",
             "description": "Triggered after successfully deleting a note",
             "mode": "dialog",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "onDelete"
+            },
             "exposedVariables": [
               {
                 "name": "note",
                 "description": "Deleted note object",
-                "type": "object"
-              },
-              {
-                "name": "data",
-                "description": "Form data",
-                "type": "object"
-              },
-              {
-                "name": "form",
-                "description": "Form instance",
-                "type": "FormApi"
-              },
-              {
-                "name": "globalState",
-                "description": "Global state",
-                "type": "object"
-              },
-              {
-                "name": "http",
-                "description": "HTTP client",
-                "type": "HttpClient"
-              },
-              {
-                "name": "message",
-                "description": "Message API",
-                "type": "MessageApi"
-              },
-              {
-                "name": "moment",
-                "description": "Moment.js library",
-                "type": "Moment"
-              },
-              {
-                "name": "setGlobalState",
-                "description": "Function to update global state",
-                "type": "Function"
-              }
-            ]
-          },
-          {
-            "id": "817ee22e-a49d-44f2-a1c7-fef32ec87503",
-            "type": "codeEditor",
-            "propertyName": "onCreateAction",
-            "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "On Create Action",
-            "labelAlign": "right",
-            "description": "Custom action triggered when creating a note",
-            "mode": "dialog",
-            "exposedVariables": [
-              {
-                "name": "note",
-                "description": "Note object being created",
                 "type": "object"
               },
               {
