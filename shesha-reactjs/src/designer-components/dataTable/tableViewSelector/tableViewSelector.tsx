@@ -15,6 +15,7 @@ import {
     useSheshaApplication
 } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
     componentRef: MutableRefObject<any>;
@@ -37,6 +38,9 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
         modelType,
     } = useDataTableStore();
 
+    // ToDo: AS - need to optimize
+    useShaFormDataUpdate();
+    
     const application = useSheshaApplication();
     const { globalState } = useGlobalState();
     const { formData, formMode } = useForm();
