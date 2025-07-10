@@ -1,4 +1,4 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManagerActions, useDataTable, useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
+import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManagerActions, useDataTable, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
@@ -9,7 +9,7 @@ import { IModalProps } from '@/providers/dynamicModal/models';
 import { isEmpty } from 'lodash';
 import { hasDynamicFilter } from '@/providers/dataTable/utils';
 import { SheshaError } from '@/utils/errors';
-import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
@@ -57,7 +57,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
   useShaFormDataUpdate();
 
   const { globalState } = useGlobalState();
-  const { formData } = useForm();
+  const { formData } = useShaFormInstance();
   const pageContext = useDataContextManagerActions(false)?.getPageContext();
 
   useEffect(() => {
