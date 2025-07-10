@@ -20,7 +20,7 @@ export const getItemSettings = () => {
     const stylePnlId = nanoid();
     const customStylePnlId = nanoid();
 
-    const entityOrUrl = 'getSettingValue(data?.itemSubType) === "dynamic" && (getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url")';
+    const entityOrUrl = 'getSettingValue(data?.itemSubType) == "separator" || getSettingValue(data?.itemSubType) === "dynamic" && (getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url")';
 
     return {
         components: new DesignerToolbarSettings()
@@ -233,7 +233,7 @@ export const getItemSettings = () => {
                                             type: 'dropdown',
                                             dropdownOptions: buttonTypes,
                                             hidden: {
-                                                _code: `return  getSettingValue(data?.itemSubType) == "separator";`,
+                                                _code: `return ${entityOrUrl};`,
                                                 _mode: 'code',
                                                 _value: false
                                             } as any,

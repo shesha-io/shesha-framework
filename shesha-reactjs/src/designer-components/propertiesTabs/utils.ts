@@ -58,7 +58,7 @@ export const getBodyStyles = () => ({
     }
 });
 
-export const filterDynamicComponents = (components, query) => {
+export const filterDynamicComponents = (components, query, isComponentHidden) => {
     if (!components || !Array.isArray(components)) return [];
 
 
@@ -89,18 +89,18 @@ export const filterDynamicComponents = (components, query) => {
 
         // Handle propertyRouter
         if (c.componentName === 'propertyRouter') {
-            const filteredComponents = filterDynamicComponents(c.components, query);
+            const filteredComponents = filterDynamicComponents(c.components, query, isComponentHidden);
 
             return {
                 ...c,
                 hidden: filteredComponents.length < 1,
-                components: filteredComponents
+                components: filteredComponents.filter(component => isComponentHidden(component))
             };
         }
 
         // Handle collapsiblePanel
         if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components || [], query);
+            const contentComponents = filterDynamicComponents(c.content?.components || [], query, isComponentHidden);
             const hasVisibleChildren = contentComponents.length > 0;
 
             return {
@@ -108,7 +108,7 @@ export const filterDynamicComponents = (components, query) => {
                 collapsible: 'header',
                 content: {
                     ...c.content,
-                    components: contentComponents
+                    components: contentComponents.filter((component) => isComponentHidden(component))
                 },
                 ghost: false,
                 collapsedByDefault: false,
@@ -130,19 +130,19 @@ export const filterDynamicComponents = (components, query) => {
 
             return {
                 ...c,
-                inputs: filteredInputs,
+                inputs: filteredInputs.filter((component) => isComponentHidden(component)),
                 hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
             };
         }
 
         // Handle components with nested components
         if (c.components) {
-            const filteredComponents = filterDynamicComponents(c.components, query);
+            const filteredComponents = filterDynamicComponents(c.components, query, isComponentHidden);
             const hasVisibleChildren = filteredComponents.length > 0;
 
             return {
                 ...c,
-                components: filteredComponents,
+                components: filteredComponents.filter((component) => isComponentHidden(component)),
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }

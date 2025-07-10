@@ -357,7 +357,7 @@ export const useApplicationContextData = (): ContextGetData => {
     ?.getData();
 };
 
-const getSettingValue = (
+export const getSettingValue = (
   propertyName,
   value: any,
   allData: any,
