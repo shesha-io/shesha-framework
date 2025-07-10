@@ -37,10 +37,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
             evaluatedHidden = executeScriptSync(component.hidden._code, context);
         }
         return evaluatedHidden;
-    }
+    };
     const isHiddenUsingHidden = (comp) => {
-        evaluateHidden(comp)
-    }
+        evaluateHidden(comp);
+    };
 
 
     const isComponentHidden = (component) => {
