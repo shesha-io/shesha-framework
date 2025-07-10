@@ -233,7 +233,7 @@ export const getItemSettings = () => {
                                             type: 'dropdown',
                                             dropdownOptions: buttonTypes,
                                             hidden: {
-                                                _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
+                                                _code: `return  getSettingValue(data?.itemSubType) == "separator";`,
                                                 _mode: 'code',
                                                 _value: false
                                             } as any,
@@ -270,7 +270,7 @@ export const getItemSettings = () => {
                                     parentId: appearanceTabId,
                                     ghost: true,
                                     hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
+                                        _code: `return  getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`,
                                         _mode: 'code',
                                         _value: false
                                     } as any,
