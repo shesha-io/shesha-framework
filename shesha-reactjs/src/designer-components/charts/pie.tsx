@@ -98,6 +98,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     .add<IChartProps>(8, prev => ({
       ...prev,
       maxResultCount: 250,
+      requestTimeout: 15000,
       orderDirection: 'asc',
     }))
 };
