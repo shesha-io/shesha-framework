@@ -61,6 +61,32 @@ export interface IChartsProps {
     valuePropertyLabel?: string;
     maxResultCount?: number;
     requestTimeout?: number; // Timeout in milliseconds (default: 5000)
+    
+    // Font configuration properties
+    titleFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
+    axisLabelFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
+    legendFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
+    tickFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
 }
 
 /**

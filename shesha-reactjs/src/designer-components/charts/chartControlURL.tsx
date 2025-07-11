@@ -1,5 +1,5 @@
 import { useGet } from '@/hooks';
-import { Alert, Button, Flex } from 'antd';
+import { Alert, Button } from 'antd';
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks';
@@ -59,10 +59,22 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         }
         setUrlTypeData(data.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
-        newController?.abort("Request completed successfully");
       })
-      .catch((err: any) => {
+      .catch((err: Error) => {
         console.error('Error fetching URL chart data:', err);
+        
+        // Check if this is an intentional abort (reset, unmount, or user cancellation)
+        const abortMessage = err?.message || '';
+        const isIntentionalAbort = abortMessage.includes('Resetting chart') || 
+                                 abortMessage.includes('Unmounting chart') ||
+                                 abortMessage.includes('Cancel button clicked');
+        
+        if (err?.name === 'AbortError' && isIntentionalAbort) {
+          // Don't set error for intentional aborts - just clean up
+          isFetchingRef.current = false;
+          return;
+        }
+        
         // Check if it's a timeout error
         const isTimeoutError = err?.name === 'AbortError' && err?.message?.includes('timeout');
         
@@ -72,33 +84,40 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
           : altErrorMessage;
         setError(errorMessage);
         setIsLoaded(true);
-        newController?.abort(errorMessage);
       })
       .finally(() => {
         isFetchingRef.current = false;
         clearTimeout(timeoutId);
       });
-  }, [transformedUrl, requestTimeout]);
+  }, [transformedUrl, requestTimeout, refetch, setUrlTypeData, setIsLoaded, setError]);
 
   useEffect(() => {
     // Reset loading state when chart properties change
     setIsLoaded(false);
     setError(null);
     
-    // Abort any ongoing request
+    // Abort any ongoing request gracefully
     if (currentControllerRef.current) {
-      currentControllerRef.current.abort("Resetting chart");
+      try {
+        currentControllerRef.current.abort("Resetting chart");
+      } catch {
+        // Ignore abort errors during reset - this is expected behavior
+      }
     }
     isFetchingRef.current = false;
     
     fetchData();
-  }, [transformedUrl, requestTimeout, fetchData]);
+  }, [transformedUrl, requestTimeout]);
 
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
     return () => {
       if (currentControllerRef.current) {
-        currentControllerRef.current.abort("Unmounting chart");
+        try {
+          currentControllerRef.current.abort("Unmounting chart");
+        } catch {
+          // Ignore abort errors during unmount - this is expected behavior
+        }
       }
     };
   }, []);
@@ -152,7 +171,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         }
       />
     );
-  }, [error, fetchData, theme.application.errorColor]);
+  }, [error, theme.application.errorColor]);
 
   const noDataAlert = useMemo(() => {
     if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
@@ -174,12 +193,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const loaderComponent = useMemo(() => {
     if (!state.isLoaded) {
       return (
-        <Flex
-          align="center"
-          justify="center"
-          vertical
-          gap={16}
-        >
+        <div className={cx(styles.loadingContainer)}>
           <ChartLoader chartType={chartType} />
           <div className={cx(styles.loadingText)}>Loading data...</div>
           <Button 
@@ -187,7 +201,11 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
             size="small"
             onClick={() => {
               if (isFetchingRef.current && currentControllerRef.current) {
-                currentControllerRef.current.abort("Cancel button clicked");
+                try {
+                  currentControllerRef.current.abort("Cancel button clicked");
+                } catch {
+                  // Ignore abort errors during user cancellation - this is expected behavior
+                }
                 isFetchingRef.current = false;
                 setError('Request cancelled by user');
                 setIsLoaded(true);
@@ -196,7 +214,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
           >
             Cancel
           </Button>
-        </Flex>
+        </div>
       );
     }
     return null;
@@ -206,17 +224,16 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const chartContainerStyle = useMemo(() => ({
     width: '100%',
     height: '100%',
-    minHeight: '400px',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 0,
-    margin: 0
+    margin: 0,
+    overflow: 'hidden'
   }), []);
 
   const chartInnerStyle = useMemo(() => ({
-    flex: 1,
     width: '100%',
     height: '100%',
     position: 'relative' as const,
@@ -224,7 +241,8 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 0,
-    margin: 0
+    margin: 0,
+    overflow: 'hidden'
   }), []);
 
   const hasValidData = useMemo(() => {

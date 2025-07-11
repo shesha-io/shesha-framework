@@ -21,7 +21,7 @@ import { Pie, Doughnut } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks';
-import { splitTitleIntoLines } from '../../utils';
+import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
@@ -49,7 +49,7 @@ ChartJS.register(
 );
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, strokeWidth, dataMode } = useChartDataStateContext();
+  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, strokeWidth, dataMode, titleFont, legendFont } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
 
@@ -99,18 +99,15 @@ const PieChart = ({ data }: IPieChartProps) => {
         labels: {
           boxWidth: 20,
           padding: 10,
-          font: {
-            size: 12,
-          },
+          font: createFontConfig(legendFont, 12, '400'),
+          color: legendFont?.color || '#000000',
         },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
-        font: {
-          size: 16,
-          weight: 'bold',
-        },
+        font: createFontConfig(titleFont, 16, 'bold'),
+        color: titleFont?.color || '#000000',
         align: 'center',
         fullSize: false, // This ensures title doesn't consume chart space
       },
