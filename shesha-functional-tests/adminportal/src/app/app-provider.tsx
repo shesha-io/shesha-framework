@@ -18,10 +18,10 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
     const nextRouter = useNextRouter();
     const buildHttpHeaders = (): IHttpHeadersDictionary => {
 	const organisationId = 'Testing';
-	return {
-		'Organisation-Id': organisationId || ''
-	};
-}
+        return {
+            'Organisation-Id': organisationId || ''
+        };
+    };
     return (
         <GlobalStateProvider>
             <ShaApplicationProvider
