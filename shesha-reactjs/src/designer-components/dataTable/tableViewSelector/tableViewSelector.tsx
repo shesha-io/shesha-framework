@@ -9,12 +9,12 @@ import { useDataContextManager } from '@/providers/dataContextManager';
 import {
     useDataFetchDependency,
     useDataTableStore,
-    useForm,
     useGlobalState,
     useNestedPropertyMetadatAccessor,
     useSheshaApplication
 } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
     componentRef: MutableRefObject<any>;
@@ -37,9 +37,12 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
         modelType,
     } = useDataTableStore();
 
+    // ToDo: AS - need to optimize
+    useShaFormDataUpdate();
+    
     const application = useSheshaApplication();
     const { globalState } = useGlobalState();
-    const { formData, formMode } = useForm();
+    const { formData, formMode } = useShaFormInstance();
     const dataContextManager = useDataContextManager(false);
     const pageContext = dataContextManager?.getPageContext();
     const dataContext = useDataContext(false);
