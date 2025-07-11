@@ -17,13 +17,13 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { IColumnsComponentProps, IColumnsInputProps } from './interfaces';
+import { IColumnProps, IColumnsComponentProps, IColumnsInputProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
 
 // Validation function to ensure columns don't exceed 24-column limit
-const validateColumns = (columns: any[]) => {
+const validateColumns = (columns: IColumnProps[]) => {
   if (!columns || columns.length === 0) return [];
 
   const totalFlex = columns.reduce((sum, col) => sum + (col.flex || 0), 0);
