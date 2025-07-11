@@ -264,7 +264,31 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         isFetchingRef.current = false;
         clearTimeout(timeoutId);
       });
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
+  }, [
+    entityType,
+    valueProperty,
+    axisProperty,
+    groupingProperty,
+    orderBy,
+    orderDirection,
+    evaluatedFilters,
+    maxResultCount,
+    requestTimeout,
+    groupingTimeSeriesFormat,
+    timeSeriesFormat,
+    isAxisTimeSeries,
+    isGroupingTimeSeries,
+    refetch,
+    getMetadata,
+    getReferenceList,
+    setData,
+    setIsLoaded,
+    setAxisPropertyLabel,
+    setValuePropertyLabel,
+    setMetadataProcessed,
+    setError,
+    setFaultyProperties
+  ]);
 
   useEffect(() => {
     // Reset loading state when chart properties change
@@ -285,7 +309,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     isFetchingRef.current = false;
 
     fetchData();
-  }, [fetchData]);
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
 
   useEffect(() => {
     getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
@@ -362,7 +386,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
 
     // Start new fetch with timeout
     fetchData();
-  }, [fetchData, setIsLoaded, setMetadataProcessed, setError, setFaultyProperties]);
+  }, [setIsLoaded, setMetadataProcessed, setError, setFaultyProperties]);
 
   const errorAlert = useMemo(() => {
     if (!error) return null;

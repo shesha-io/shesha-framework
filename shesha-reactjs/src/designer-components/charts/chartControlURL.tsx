@@ -89,7 +89,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         isFetchingRef.current = false;
         clearTimeout(timeoutId);
       });
-  }, [transformedUrl, requestTimeout]);
+  }, [transformedUrl, requestTimeout, refetch, setUrlTypeData, setIsLoaded, setError]);
 
   useEffect(() => {
     // Reset loading state when chart properties change
@@ -107,7 +107,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     isFetchingRef.current = false;
     
     fetchData();
-  }, [transformedUrl, requestTimeout, fetchData]);
+  }, [transformedUrl, requestTimeout]);
 
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
@@ -171,7 +171,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         }
       />
     );
-  }, [error, fetchData, theme.application.errorColor]);
+  }, [error, theme.application.errorColor]);
 
   const noDataAlert = useMemo(() => {
     if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
