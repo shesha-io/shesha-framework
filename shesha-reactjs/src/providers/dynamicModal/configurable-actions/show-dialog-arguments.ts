@@ -23,6 +23,11 @@ export interface IShowModalActionArguments {
    * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
    */
   submitHttpVerb?: 'POST' | 'PUT';
+  /**
+   * Whether to show the close icon in the modal header
+   * @default true
+   */
+  showCloseIcon?: boolean;
 }
 
 export const showDialogArgumentsForm = showDialogArgumentsJson as FormMarkup;
