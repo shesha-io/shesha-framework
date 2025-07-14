@@ -74,6 +74,11 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   buttons?: ButtonGroupItemProps[];
 
   wrapper?: (props: PropsWithChildren) => React.ReactNode;
+  /**
+   * Whether to show the close icon in the modal header
+   * @default true
+   */
+  showCloseIcon?: boolean;
 }
 
 export interface IModalWithContentProps extends IModalBaseProps {
@@ -116,4 +121,5 @@ export interface IModalProperties {
   additionalProperties?: IKeyValue[];
   modalWidth?: number;
   showModalFooter?: boolean;
+  showCloseIcon?: boolean;
 }
