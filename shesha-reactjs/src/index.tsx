@@ -27,3 +27,4 @@ export { SettingsControl, type ISettingsControlProps } from './designer-componen
 export { useConstantsEvaluator } from './designer-components/codeEditor/hooks/useConstantsEvaluator';
 export { useResultTypeEvaluator } from './designer-components/codeEditor/hooks/useResultType';
 export { ConfigurableActionConfigurator } from './designer-components/configurableActionsConfigurator/configurator';
+export { DatePickerWrapper } from './designer-components/dateField/datePickerWrapper';
