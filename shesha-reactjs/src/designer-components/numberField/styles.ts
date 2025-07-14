@@ -50,13 +50,23 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         margin-inline-end: unset !important;
         margin-right: 8px !important;
         position: relative;
+
+        .anticon {
+          margin-left: 4px !important;
+          color: ${color} !important;
+        }
       }
 
       .ant-input-number-prefix {
         ${!hasPrefix && 'display: none;'}   
         margin-inline-end: unset !important;
-        margin-right: 8px !important ;
+        margin-left: 8px !important ;
         position: relative !important;
+
+        .anticon {
+          margin-right: 4px !important;
+          color: ${color} !important;
+        }
       }
 `
   );
