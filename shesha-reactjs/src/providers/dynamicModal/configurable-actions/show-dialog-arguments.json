@@ -129,7 +129,8 @@
         },
         {
             "id": "show-close-icon-checkbox",
-            "type": "switch",
+            "inputType": "switch",
+            "type": "settingsInput",
             "propertyName": "showCloseIcon",
             "componentName": "showCloseIcon",
             "label": "Show Close Icon",
