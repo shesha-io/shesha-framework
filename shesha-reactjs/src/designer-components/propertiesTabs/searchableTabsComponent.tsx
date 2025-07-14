@@ -7,6 +7,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabsComponentProps } from './models';
 import { useFormState, useFormActions } from '@/providers/form';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 interface SearchableTabsProps {
     model: ITabsComponentProps;
@@ -19,6 +20,9 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
     const formState = useFormState(false);
     const formActions = useFormActions(false);
+
+    useShaFormDataUpdate();
+
 
     const isComponentHidden = (component) => {
         if (formState.name === "modalSettings") {
@@ -68,7 +72,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                             dynamicComponents={visibleComponents} />
                     </ParentProvider>,
                 forceRender: true,
-                hidden: tab.hidden ?? !hasVisibleComponents
+                hidden: tab.hidden || !hasVisibleComponents
             };
         })
         .filter(tab => !tab.hidden);
