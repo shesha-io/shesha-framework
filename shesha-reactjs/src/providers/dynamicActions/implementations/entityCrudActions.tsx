@@ -28,7 +28,6 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 name: `create new`,
                 label: `Create new`,
                 itemType: 'item',
-                buttonType: args.item.buttonType ?? 'default',
                 itemSubType: 'button',
                 sortOrder: 0
             },
@@ -37,7 +36,6 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 name: `view details`,
                 label: `View details`,
                 itemType: 'item',
-                buttonType: args.item.buttonType ?? 'default',
                 itemSubType: 'button',
                 sortOrder: 1
             },
@@ -46,7 +44,6 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 name: `edit`,
                 label: `Edit`,
                 itemType: 'item',
-                buttonType: args.item.buttonType ?? 'default',
                 itemSubType: 'button',
                 sortOrder: 2
             },
@@ -55,7 +52,6 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 name: `delete`,
                 label: `Delete`,
                 itemType: 'item',
-                buttonType: args.item.buttonType ?? 'default',
                 itemSubType: 'button',
                 sortOrder: 3
             },

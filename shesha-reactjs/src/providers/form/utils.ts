@@ -323,7 +323,7 @@ const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, a
     contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
   else
     contextProxyRef.current.refreshAccessors(accessors);
-  
+
   contextProxyRef.current.setAdditionalData(additionalData);
 
   return contextProxyRef.current;
@@ -357,7 +357,7 @@ export const useApplicationContextData = (): ContextGetData => {
     ?.getData();
 };
 
-export const getSettingValue = (
+const getSettingValue = (
   propertyName,
   value: any,
   allData: any,

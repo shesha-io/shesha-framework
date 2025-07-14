@@ -23,10 +23,7 @@ const useStandardApis: DynamicItemsEvaluationHook = (args) => {
         // if (!isEntityMetadata(metadata))
         //     return [];
 
-        return StandardApisItems.map((p) => ({
-            ...p,
-            buttonType: p.buttonType ?? item.buttonType
-        }));
+        return StandardApisItems;
     }, [item, metadata]);
 
     return operations;
