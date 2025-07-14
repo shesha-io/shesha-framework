@@ -7,10 +7,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabsComponentProps } from './models';
 import { useFormState, useFormActions } from '@/providers/form';
-import { useShaFormInstance } from '@/providers';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
-import { isPropertySettings } from '../_settings/utils';
-import { executeScriptSync, getSettingValue } from '@/index';
 
 interface SearchableTabsProps {
     model: ITabsComponentProps;
@@ -24,27 +21,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     const formState = useFormState(false);
     const formActions = useFormActions(false);
 
-        const formData = useShaFormInstance();
     useShaFormDataUpdate();
- 
-    const evaluateHidden = (component) => {
-                let evaluatedHidden = component?.hidden;
-        if (isPropertySettings(component.hidden) && component.hidden._mode === 'code' && component.hidden._code) {
-            const context = {
-                data: formData,
-                getSettingValue: getSettingValue
-            };
-            evaluatedHidden = executeScriptSync(component.hidden._code, context);
-        }
-        return evaluatedHidden;
-    };
-    const isHiddenUsingHidden = (comp) => {
-        evaluateHidden(comp);
-    };
 
 
     const isComponentHidden = (component) => {
-        isHiddenUsingHidden(component);
         if (formState.name === "modalSettings") {
             if (component.inputs) {
 
@@ -70,10 +50,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
     const newFilteredTabs = tabs
         .map((tab: any) => {
-            const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery, isComponentHidden);
+            const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery);
 
             const visibleComponents = Array.isArray(filteredComponents)
-                ? filteredComponents.filter(comp =>  isComponentHidden(comp))
+                ? filteredComponents.filter(comp => isComponentHidden(comp))
                 : filteredComponents;
 
             const hasVisibleComponents = Array.isArray(visibleComponents)
@@ -92,7 +72,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                             dynamicComponents={visibleComponents} />
                     </ParentProvider>,
                 forceRender: true,
-                hidden: tab.hidden ?? !hasVisibleComponents
+                hidden: tab.hidden || !hasVisibleComponents
             };
         })
         .filter(tab => !tab.hidden);

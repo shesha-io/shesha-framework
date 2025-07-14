@@ -1,4 +1,4 @@
-export const getHeaderStyles = () => (
+const getHeaderStyles = () => (
     {
         font: {
             color: "darkslategray",
@@ -41,7 +41,7 @@ export const getHeaderStyles = () => (
     }
 );
 
-export const getBodyStyles = () => ({
+const getBodyStyles = () => ({
     border: {
         radiusType: "all",
         borderType: "all",
@@ -58,7 +58,7 @@ export const getBodyStyles = () => ({
     }
 });
 
-export const filterDynamicComponents = (components, query, isComponentHidden) => {
+export const filterDynamicComponents = (components, query) => {
     if (!components || !Array.isArray(components)) return [];
 
 
@@ -89,18 +89,18 @@ export const filterDynamicComponents = (components, query, isComponentHidden) =>
 
         // Handle propertyRouter
         if (c.componentName === 'propertyRouter') {
-            const filteredComponents = filterDynamicComponents(c.components, query, isComponentHidden);
+            const filteredComponents = filterDynamicComponents(c.components, query);
 
             return {
                 ...c,
                 hidden: filteredComponents.length < 1,
-                components: filteredComponents.filter(component => isComponentHidden(component))
+                components: filteredComponents
             };
         }
 
         // Handle collapsiblePanel
         if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components || [], query, isComponentHidden);
+            const contentComponents = filterDynamicComponents(c.content?.components || [], query);
             const hasVisibleChildren = contentComponents.length > 0;
 
             return {
@@ -108,7 +108,7 @@ export const filterDynamicComponents = (components, query, isComponentHidden) =>
                 collapsible: 'header',
                 content: {
                     ...c.content,
-                    components: contentComponents.filter((component) => isComponentHidden(component))
+                    components: contentComponents
                 },
                 ghost: false,
                 collapsedByDefault: false,
@@ -130,19 +130,19 @@ export const filterDynamicComponents = (components, query, isComponentHidden) =>
 
             return {
                 ...c,
-                inputs: filteredInputs.filter((component) => isComponentHidden(component)),
+                inputs: filteredInputs,
                 hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
             };
         }
 
         // Handle components with nested components
         if (c.components) {
-            const filteredComponents = filterDynamicComponents(c.components, query, isComponentHidden);
+            const filteredComponents = filterDynamicComponents(c.components, query);
             const hasVisibleChildren = filteredComponents.length > 0;
 
             return {
                 ...c,
-                components: filteredComponents.filter((component) => isComponentHidden(component)),
+                components: filteredComponents,
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }

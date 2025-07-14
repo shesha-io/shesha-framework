@@ -218,6 +218,11 @@ export const getItemSettings = () => {
                         key: '2',
                         title: 'Appearance',
                         id: appearanceTabId,
+                        hidden: {
+                            _code: 'return getSettingValue(data?.itemSubType) === "dynamic" && (getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url")',
+                            _mode: 'code',
+                            _value: false
+                        },
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addSettingsInputRow({
