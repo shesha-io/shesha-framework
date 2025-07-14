@@ -25,7 +25,7 @@ export const defaultStyles = (): IStyleType => {
             borderType: 'all',
             radiusType: 'all'
         },
-        dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+        dimensions: { width: '100%', height: '400px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
     };
 };
 
@@ -642,4 +642,23 @@ export function aggregateValues(items: object[], aggregationMethod: TAggregation
     default:
       return 0;
   }
+}
+
+/**
+ * Helper function to create font configuration for Chart.js
+ * @param fontConfig - The font configuration object
+ * @param defaultSize - Default font size if not specified
+ * @param defaultWeight - Default font weight if not specified
+ * @returns Chart.js font configuration object
+ */
+export function createFontConfig(
+  fontConfig?: { family?: string; size?: number; weight?: string; color?: string },
+  defaultSize: number = 12,
+  defaultWeight: string = '400'
+) {
+  return {
+    family: fontConfig?.family || 'Segoe UI',
+    size: fontConfig?.size || defaultSize,
+    weight: fontConfig?.weight || defaultWeight
+  };
 }
