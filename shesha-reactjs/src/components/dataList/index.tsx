@@ -424,7 +424,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return borderProps.some(prop => {
         const value = stylesAsCSS?.[prop];
         return value && value !== 'none' && value !== '0' && value !== '0px';
-      })
+      });
     };
 
     const selected =
