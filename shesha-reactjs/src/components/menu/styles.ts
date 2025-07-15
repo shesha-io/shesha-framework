@@ -99,7 +99,7 @@ export const useStyles = createStyles(
             font-size: ${fontStyles?.fontSize};
             font-weight: ${fontStyles?.fontWeight};
   
-            .${prefixCls}icon {
+            .${prefixCls}-icon {
               font-size: ${fontStyles?.fontSize};
               color: ${colors?.itemColor ?? BLACK_CLR};
 
