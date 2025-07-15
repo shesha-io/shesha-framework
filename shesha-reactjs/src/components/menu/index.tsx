@@ -94,13 +94,6 @@ export const LayoutMenu: FC<IProps> = ({
 
   const initialSelection = useRef<string>(undefined);
 
-  useEffect(() => {
-    checkOverflow();
-
-    window.addEventListener("resize", checkOverflow);
-    return () => window.removeEventListener("resize", checkOverflow);
-  }, [items.length, current?.clientWidth]);
-
   const checkOverflow = () => {
     if (current) {
       setState((s) => ({
@@ -109,6 +102,14 @@ export const LayoutMenu: FC<IProps> = ({
       }));
     }
   };
+  
+  useEffect(() => {
+    checkOverflow();
+
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [items.length, current?.clientWidth]);
+
 
   const scrollRight = useCallback(() => {
     if (menuWrapperRef.current) {

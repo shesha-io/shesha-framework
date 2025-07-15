@@ -47,19 +47,29 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
 
     const context: IConfigurableComponentContext<ISideBarMenuProps> = {
       settings: loadedMenu,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       load: () => {},
       save: (settings: ISideBarMenuProps) =>
         saveMainMenu({ ...loadedMenu, ...settings }).then(() => {
           changeMainMenu({ ...loadedMenu, ...settings });
         }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       setIsInProgressFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       setSucceededFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       setFailedFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       setActionedFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       resetIsInProgressFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       resetSucceededFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       resetFailedFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       resetActionedFlag: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       resetAllFlag: () => {},
     };
 

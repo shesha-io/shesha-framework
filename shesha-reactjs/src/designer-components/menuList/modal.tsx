@@ -1,7 +1,7 @@
+import { ComponentSettingsModal } from "@/components";
+import { ISettingsEditorProps } from "@/components/configurableComponent";
+import { ISideBarMenuProps } from "@/components/configurableSidebarMenu";
 import React, { FC } from "react";
-import { ComponentSettingsModal } from "@shesha-io/reactjs";
-import { ISettingsEditorProps } from "@shesha-io/reactjs/dist/components/configurableComponent";
-import { ISideBarMenuProps } from "@/components/layout";
 
 interface IProps extends ISettingsEditorProps<ISideBarMenuProps> {}
 

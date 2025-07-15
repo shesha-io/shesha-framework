@@ -1,4 +1,4 @@
-import { nanoid } from "nanoid";
+import { nanoid } from "@/utils/uuid";
 import { FormLayout } from 'antd/lib/form/Form';
 import { DesignerToolbarSettings } from "@/index";
 
@@ -122,7 +122,7 @@ export const getSettings = (data: any) => {
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: nanoid(),
+                              parentId: styleRouterId,
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -149,7 +149,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: nanoid(),
+                              parentId: styleRouterId,
                               inputs: [
                                 {
                                   type: 'numberField',
@@ -181,12 +181,12 @@ export const getSettings = (data: any) => {
                           components: [...new DesignerToolbarSettings()
                             .addSectionSeparator({
                               id: nanoid(),
-                              parentId: nanoid(),
-                              title: 'Selected Item'
+                              parentId: styleRouterId,
+                              label: 'Selected Item'
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: nanoid(),
+                              parentId: styleRouterId,
                               inputs: [
                                 {
                                   type: 'colorPicker',
@@ -209,12 +209,12 @@ export const getSettings = (data: any) => {
                             })
                             .addSectionSeparator({
                               id: nanoid(),
-                              parentId: nanoid(),
-                              title: 'Default Item'
+                              parentId: styleRouterId,
+                              label: 'Default Item'
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: nanoid(),
+                              parentId: styleRouterId,
                               inputs: [
                                 {
                                   type: 'colorPicker',
@@ -237,12 +237,12 @@ export const getSettings = (data: any) => {
                             })
                             .addSectionSeparator({
                               id: nanoid(),
-                              parentId: nanoid(),
-                              title: 'Hover Item'
+                              parentId: styleRouterId,
+                              label: 'Hover Item'
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: nanoid(),
+                              parentId: styleRouterId,
                               inputs: [
                                 {
                                   type: 'colorPicker',

@@ -1,3 +1,4 @@
+import { ISidebarGroup, ISidebarMenuItem } from "@/interfaces/sidebar";
 import { CaretDownOutlined, MenuOutlined } from "@ant-design/icons";
 import React, { FC, Fragment, ReactNode } from "react";
 
