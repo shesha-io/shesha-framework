@@ -89,7 +89,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         return argumentsPromise.then(dialogArguments => {
           const parentFormValues = context?.data ?? {};
 
-          const { modalWidth, customWidth, widthUnits } = actionArgs;
+          const { modalWidth, customWidth, widthUnits, showCloseIcon = true } = actionArgs;
 
           return new Promise((resolve, reject) => {
             const modalProps: IModalProps = {
@@ -97,6 +97,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               mode: formMode,
               id: modalId,
               title: actionArgs.modalTitle,
+              showCloseIcon: showCloseIcon,
               width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
               formArguments: dialogArguments,
               parentFormValues: parentFormValues,
