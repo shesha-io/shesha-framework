@@ -1,7 +1,6 @@
 import React, { FC } from "react";
-import Icon, {
-  CustomIconComponentProps,
-} from "@ant-design/icons/lib/components/Icon";
+import Icon from "@ant-design/icons";
+import type { CustomIconComponentProps } from "@ant-design/icons/lib/components/Icon";
 
 const RebaseEditOutlinedSvg = () => (
   <svg
