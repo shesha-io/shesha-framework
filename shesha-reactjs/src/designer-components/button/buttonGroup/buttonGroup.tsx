@@ -248,23 +248,13 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-
-    /* eslint-disable no-console */
-    console.log('buttonGroup-log', props);
-
-    const items = useActualContextData(props.items?.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })), props.readOnly, null, standartActualModelPropertyFilter);
-
-    /* eslint-disable no-console */
-    console.log('buttonGroup-actual-log', items);
-
-    const memoizedItems = useDeepCompareMemo(() => {
-
-      /* eslint-disable no-console */
-      console.log('buttonGroup-memo-log', items);
-
-      return items;
-    }, [items]) ?? [];
-
+    const items = useActualContextData(
+        props.items?.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
+        props.readOnly,
+        null,
+        standartActualModelPropertyFilter
+    );
+    const memoizedItems = useDeepCompareMemo(() => items, [items]) ?? [];
     return (
         <DynamicActionsEvaluator items={memoizedItems}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}

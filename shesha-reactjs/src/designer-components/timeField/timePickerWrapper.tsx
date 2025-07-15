@@ -16,10 +16,9 @@ const getMoment = (value: any, dateFormat: string): Moment => {
   const values = [
     isMoment(value) ? value : null,
     typeof(value) === 'number' ? moment.utc(value * 1000) : null, // time in millis
-    typeof(value) === 'string' ? moment(value as string, dateFormat) : null, 
-    typeof(value) === 'string' ? moment(value as string) : null
+    typeof(value) === 'string' ? moment(value as string) : null, 
+    typeof(value) === 'string' ? moment(value as string, dateFormat) : null,
   ];
-
   const parsed = values.find((i) => isMoment(i) && i.isValid());
 
   return parsed;

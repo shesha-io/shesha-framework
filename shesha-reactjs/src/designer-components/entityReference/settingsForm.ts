@@ -307,25 +307,21 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     },
                   ],
                 })
-                .addContainer({
+                .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlDialogSettings',
                   label: 'Dialog Settings',
-                  labelAlign: 'right',
+                  labelAlign: 'left',
                   parentId: dataTabId,
                   hidden: {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  components: [
+                  content: {
+                    id: nanoid(),
+                    components: [
                     ...new DesignerToolbarSettings()
-                      .addSectionSeparator({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        label: 'Dialog Settings',
-                        labelAlign: 'left',
-                      })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -551,28 +547,26 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           ],
                         },
                       })
-                      .toJson(),
-                  ],
+                        .toJson(),
+                    ],
+                  },
                 })
-                .addContainer({
+                .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlQuickviewSettings',
                   label: 'Quickview Settings',
-                  labelAlign: 'right',
+                  labelAlign: 'left',
+                  hideLabel: false,
                   parentId: dataTabId,
                   hidden: {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Quickview";',
                     _mode: 'code',
                     _value: false,
                   } as any,
-                  components: [
+                  content: {
+                    id: nanoid(),
+                    components: [
                     ...new DesignerToolbarSettings()
-                      .addSectionSeparator({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        label: 'Quickview Settings',
-                        labelAlign: 'left',
-                      })
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'quickviewWidth',
@@ -582,10 +576,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         inputType: 'textField',
                         jsSetting: true,
                         icon: 'widthIcon',
-                        width: '100px',
+                        width: '50%',
                       })
                       .toJson(),
-                  ],
+                    ],
+                  },
                 })
                 .toJson(),
             ],

@@ -53,6 +53,6 @@ const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
 export {
     FormProviderWithDelayedUpdates as ShaFormProvider,
     useShaFormInstance,
-    useShaFormDataUpdate as useShaFormUpdateDate,
+    useShaFormDataUpdate,
     useShaFormRef,
 };

@@ -4,7 +4,7 @@ import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks';
-import { splitTitleIntoLines } from '../../utils';
+import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
 interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
@@ -13,7 +13,7 @@ interface IPolarAreaChartProps extends IChartDataProps {
 ChartJS.register(Title, Tooltip, Legend, ArcElement, RadialLinearScale);
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  const { showTitle, legendPosition, showLegend, strokeColor, dataMode, strokeWidth } = useChartDataStateContext();
+  const { showTitle, legendPosition, showLegend, strokeColor, dataMode, strokeWidth, titleFont, legendFont, tickFont } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
 
@@ -58,10 +58,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       scales: {
         r: {
           ticks: {
-            color: 'green',
-            font: {
-              size: 14, // Make ticks larger for better visibility
-            },
+            color: tickFont?.color || '#000000',
+            font: createFontConfig(tickFont, 14, '400'),
             backdropColor: 'rgba(255, 255, 255, 0)', // Remove the tick's backdrop
           },
           grid: {
@@ -77,18 +75,15 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         labels: {
           boxWidth: 20,
           padding: 10,
-          font: {
-            size: 12,
-          },
+          font: createFontConfig(legendFont, 12, '400'),
+          color: legendFont?.color || '#000000',
         },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
-        font: {
-          size: 16,
-          weight: 'bold',
-        },
+        font: createFontConfig(titleFont, 16, 'bold'),
+        color: titleFont?.color || '#000000',
         align: 'center',
         fullSize: false, // This ensures title doesn't consume chart space
       },

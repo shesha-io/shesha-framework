@@ -109,7 +109,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <Select
                 size={size}
                 mode={dropdownMode}
-                allowClear={allowClear}
+                allowClear={allowClear ?? true}
                 disabled={readOnly}
                 variant={variant}
                 className={className}
@@ -132,7 +132,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'switch':
             /*Handle cases where defaultValue is used in place of defaultChecked*/
             return <Switch disabled={readOnly} size='small'
-                defaultChecked={defaultChecked ?? defaultValue} onChange={onChange} defaultValue={defaultValue} value={value} />;
+                defaultChecked={defaultChecked ?? defaultValue} onChange={onChange} value={value} />;
         case 'numberField':
             return <InputNumber
                 placeholder={placeholder}

@@ -213,12 +213,36 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     &:nth-child(7) { animation-delay: 0.75s; }
     &:nth-child(8) { animation-delay: 0.875s; }
   `);
+
+  const loadingContainer = cx(`${prefixCls}-loading-container`, css`
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    overflow: hidden;
+    
+    /* Float the cancel button above the loader */
+    & button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  `);
   
   return {
     responsiveChartContainer,
     chartContainerWithBorder,
     chartContainerNoBorder,
     loadingText,
+    loadingContainer,
     // Chart Loader Styles
     chartLoaderWrapper,
     loaderCard,
