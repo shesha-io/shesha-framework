@@ -3,6 +3,7 @@ import {
   getStyle,
   IConfigurableFormComponent,
   ISidebarMenuItem,
+  IStyleType,
   IToolboxComponent,
   useFormData,
   useMainMenu,
@@ -18,6 +19,9 @@ import { IConfigurableComponentContext } from "@/providers/configurableComponent
 import { RebaseEditOutlined } from "./icons";
 import LayoutMenu from "@/components/menu";
 import { MenuUnfoldOutlined } from "@ant-design/icons";
+import { useFormComponentStyles } from "@/hooks/formComponentHooks";
+import { migratePrevStyles } from "../_common-migrations/migrateStyles";
+import { defaultStyles } from "./utils";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
@@ -29,7 +33,17 @@ interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   styleOnSelected?: string;
   styleOnSubMenu?: string;
   width?: string;
+  // Add IStyleType properties explicitly to avoid conflicts
+  border?: any;
+  background?: any;
+  font?: any;
+  shadow?: any;
+  dimensions?: any;
+  stylingBox?: string;
 }
+
+// Type for useFormComponentStyles hook
+type MenuListStyleProps = IMenuListProps & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>;
 
 interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -44,6 +58,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { loadedMenu, changeMainMenu, saveMainMenu } = useMainMenu();
+    const allStyles = useFormComponentStyles(model as MenuListStyleProps);
 
     const context: IConfigurableComponentContext<ISideBarMenuProps> = {
       settings: loadedMenu,
@@ -94,7 +109,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`}>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={allStyles.fullStyle}>
               <BlockOverlay>
                 <RebaseEditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>
@@ -128,6 +143,18 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   settingsFormMarkup: model => getSettings(model),
   validateSettings: (model) =>
     validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: (m) => m
+    .add<IMenuListProps>(0, (prev) => ({ ...prev, overflow: 'dropdown' }))
+    .add<IMenuListProps>(1, (prev) => {
+      const { overflow, ...rest } = prev;
+      type localType = Omit<IMenuListProps, 'overflow'>;
+      const migratedStyles = migratePrevStyles(rest as localType, defaultStyles());
+      return {
+        ...prev,
+        overflow: 'dropdown',
+        ...migratedStyles,
+      };
+    }),
 };
 
 export default MenuListComponent;

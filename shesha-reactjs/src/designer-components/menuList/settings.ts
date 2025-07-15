@@ -1,12 +1,14 @@
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from 'antd/lib/form/Form';
 import { DesignerToolbarSettings } from "@/index";
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
   const styleRouterId = nanoid();
 
   return {
@@ -70,21 +72,6 @@ export const getSettings = (data: any) => {
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'textField',
-                    id: nanoid(),
-                    propertyName: 'width',
-                    label: 'Width',
-                    jsSetting: true,
-                    validate: { required: true }
-                  }
-                ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-              })
               .toJson()
             ]
           },
@@ -113,6 +100,289 @@ export const getSettings = (data: any) => {
                         id: nanoid(),
                         propertyName: 'pnlDimensions',
                         label: 'Dimensions',
+                        parentId: styleRouterId,
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              inline: true,
+                              inputs: [
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Width",
+                                  width: 85,
+                                  propertyName: "dimensions.width",
+                                  icon: "widthIcon",
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Min Width",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "dimensions.minWidth",
+                                  icon: "minWidthIcon",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Max Width",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "dimensions.maxWidth",
+                                  icon: "maxWidthIcon",
+                                }
+                              ]
+                            })
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              inline: true,
+                              inputs: [
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Height",
+                                  width: 85,
+                                  propertyName: "dimensions.height",
+                                  icon: "heightIcon",
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Min Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "dimensions.minHeight",
+                                  icon: "minHeightIcon",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Max Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "dimensions.maxHeight",
+                                  icon: "maxHeightIcon",
+                                }
+                              ]
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlBorderStyle',
+                        label: 'Border',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addContainer({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              components: getBorderInputs() as any
+                            })
+                            .addContainer({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              components: getCornerInputs() as any
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlBackgroundStyle',
+                        label: 'Background',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInput({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                label: "Type",
+                                jsSetting: false,
+                                propertyName: "background.type",
+                                inputType: "radio",
+                                tooltip: "Select a type of background",
+                                buttonGroupOptions: backgroundTypeOptions,
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [{
+                                  type: 'colorPicker',
+                                  id: nanoid(),
+                                  label: "Color",
+                                  propertyName: "background.color",
+                                  hideLabel: true,
+                                  jsSetting: false,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [{
+                                  type: 'multiColorPicker',
+                                  id: nanoid(),
+                                  propertyName: "background.gradient.colors",
+                                  label: "Colors",
+                                  jsSetting: false,
+                                }
+                                ],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                hideLabel: true,
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [{
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  propertyName: "background.url",
+                                  jsSetting: false,
+                                  label: "URL",
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [{
+                                  type: 'imageUploader',
+                                  id: nanoid(),
+                                  propertyName: 'background.uploadFile',
+                                  label: "Image",
+                                  jsSetting: false,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                  {
+                                    type: 'textField',
+                                    id: nanoid(),
+                                    jsSetting: false,
+                                    propertyName: "background.storedFile.id",
+                                    label: "File ID"
+                                  }
+                                ]
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inline: true,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                  {
+                                    type: 'customDropdown',
+                                    id: nanoid(),
+                                    label: "Size",
+                                    hideLabel: true,
+                                    propertyName: "background.size",
+                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                    dropdownOptions: sizeOptions,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                  },
+                                  {
+                                    type: 'customDropdown',
+                                    id: nanoid(),
+                                    label: "Position",
+                                    hideLabel: true,
+                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
+                                    propertyName: "background.position",
+                                    dropdownOptions: positionOptions,
+                                  },
+                                ]
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [{
+                                  type: 'radio',
+                                  id: nanoid(),
+                                  label: 'Repeat',
+                                  hideLabel: true,
+                                  propertyName: 'background.repeat',
+                                  inputType: 'radio',
+                                  buttonGroupOptions: repeatOptions,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              })
+                              .toJson()
+                          ],
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'stylingBox',
+                        label: 'Margin & Padding',
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addStyleBox({
+                              id: nanoid(),
+                              label: 'Margin Padding',
+                              hideLabel: true,
+                              propertyName: 'stylingBox',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'customStyle',
+                        label: 'Custom Styles',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              hideLabel: false,
+                              label: 'Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlMenuSpecific',
+                        label: 'Menu Specific',
                         parentId: styleRouterId,
                         labelAlign: 'right',
                         ghost: true,
@@ -322,23 +592,6 @@ export const getSettings = (data: any) => {
                   ]
                 })
                 .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityTabId
-              })
-              .toJson()
             ]
           }
         ]
