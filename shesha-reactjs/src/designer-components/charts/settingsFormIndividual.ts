@@ -1316,7 +1316,7 @@ export const getSettings = (data: any) => {
                     ]
                   },
                   hidden: {
-                    _code: 'return ["polar", "pie"].includes(getSettingValue(data?.chartType));',
+                    _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
                     _mode: 'code',
                     _value: false,
                   } as any,
@@ -1450,7 +1450,7 @@ export const getSettings = (data: any) => {
                     ]
                   },
                   hidden: {
-                    _code: 'return ["polar", "pie"].includes(getSettingValue(data?.chartType));',
+                    _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
                     _mode: 'code',
                     _value: false,
                   } as any,
@@ -1857,6 +1857,7 @@ export const getSettings = (data: any) => {
                       allowClear: true,
                       type: 'colorPicker',
                       jsSetting: true,
+                      tooltip: 'The color of the stroke / border for the elements (bars, lines, etc.) in the chart. Default is #000000',
                     },
                   ],
                 })
