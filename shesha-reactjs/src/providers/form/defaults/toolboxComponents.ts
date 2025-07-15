@@ -216,6 +216,7 @@ export const getToolboxComponents = (
         Tabs,
         Wizard,
         SubForm,
+        MenuListComponent,
       ],
     },
     {
@@ -280,7 +281,7 @@ export const getToolboxComponents = (
         HEADER_CONFIGURATION,
         HEADER_PUB_PORTAL_CONFIGURATION,
       ]),
-      components: [EditModeToggler, ProfileDropdown, MenuListComponent],
+      components: [EditModeToggler, ProfileDropdown],
     },
   ];
 };
