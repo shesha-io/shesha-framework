@@ -88,7 +88,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       resetAllFlag: () => {},
     };
 
-    const { fontSize = "14", gap = "12", height = "6" } = model;
+    const { gap = "12", height = "auto" } = model;
 
     const colors: ILayoutColor = filterObjFromKeys(model, [
       "selectedItemColor",
