@@ -5,12 +5,12 @@ import { GlobalTheme } from "antd-style/lib/factories/createGlobalStyle";
 
 interface IStyleProps {
   colors: ILayoutColor;
-  fontSize?: string;
   isScrolling: boolean;
   padding?: { x: string; y: string };
   styleOnHover?: string;
   styleOnSelected?: string;
   width: string;
+  fontStyles?: React.CSSProperties;
 }
 
 interface IGlobalMenuProps {
@@ -27,12 +27,12 @@ export const useStyles = createStyles(
     { css, cx, prefixCls },
     {
       colors,
-      fontSize,
       isScrolling,
       padding,
       styleOnHover,
       styleOnSelected,
       width,
+      fontStyles
     }: IStyleProps
   ) => {
     const menuContainer = css`
@@ -72,7 +72,9 @@ export const useStyles = createStyles(
         border: none;
         width: ${width};
         background: ${colors?.itemBackground ?? "transparent"};
-        font-size: ${fontSize}px;
+        font-size: ${fontStyles?.fontSize};
+        font-weight: ${fontStyles?.fontWeight};
+        font-family: ${fontStyles?.fontFamily};
 
         .${prefixCls}-menu-item::after,
           .${prefixCls}-menu-item-active::after,
@@ -87,12 +89,27 @@ export const useStyles = createStyles(
           padding: ${padding?.y}px ${padding?.x}px;
           color: ${colors?.itemColor ?? BLACK_CLR};
           background: ${colors?.itemBackground ?? "transparent"};
+          font-family: ${fontStyles?.fontFamily};
+          font-size: ${fontStyles?.fontSize};
+          font-weight: ${fontStyles?.fontWeight};
 
           .${prefixCls}-menu-submenu-title {
             color: ${colors?.itemColor ?? BLACK_CLR};
-
+            font-family: ${fontStyles?.fontFamily};
+            font-size: ${fontStyles?.fontSize};
+            font-weight: ${fontStyles?.fontWeight};
+  
             .${prefixCls}icon {
-              font-size: ${fontSize}px;
+              font-size: ${fontStyles?.fontSize};
+              color: ${colors?.itemColor ?? BLACK_CLR};
+
+              &:hover {
+                ${styleOnHover}
+              }
+            }
+
+            &:hover {
+             ${styleOnHover}
             }
           }
 
@@ -115,6 +132,9 @@ export const useStyles = createStyles(
 
           .${prefixCls}-menu-submenu-title {
             color: ${colors?.hoverItemColor ?? BLACK_CLR};
+            font-family: ${fontStyles?.fontFamily};
+            font-size: ${fontStyles?.fontSize};
+            font-weight: ${fontStyles?.fontWeight};
           }
 
           ${styleOnHover}

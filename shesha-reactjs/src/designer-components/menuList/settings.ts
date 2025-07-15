@@ -1,7 +1,7 @@
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from 'antd/lib/form/Form';
 import { DesignerToolbarSettings } from "@/index";
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
@@ -10,6 +10,7 @@ export const getSettings = (data: any) => {
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
   const styleRouterId = nanoid();
+  const pnlFontStyleId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -96,6 +97,71 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlFontStyle',
+                        label: 'Font',
+                        labelAlign: 'right',
+                        parentId: styleRouterId,
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: pnlFontStyleId,
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: pnlFontStyleId,
+                              inline: true,
+                              propertyName: 'font',
+                              inputs: [
+                                {
+                                  type: 'dropdown',
+                                  id: `fontFamily-${styleRouterId}`,
+                                  label: 'Family',
+                                  propertyName: 'font.type',
+                                  hideLabel: true,
+                                  dropdownOptions: fontTypes,
+                                },
+                                {
+                                  type: 'numberField',
+                                  id: `fontSize-${styleRouterId}`,
+                                  label: 'Size',
+                                  propertyName: 'font.size',
+                                  hideLabel: true,
+                                  width: 50,
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontWeight-${styleRouterId}`,
+                                  label: 'Weight',
+                                  propertyName: 'font.weight',
+                                  hideLabel: true,
+                                  tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                  dropdownOptions: fontWeights,
+                                  width: 100,
+                                },
+                                // {
+                                //   type: 'colorPicker',
+                                //   id: `fontColor-${styleRouterId}`,
+                                //   label: 'Color',
+                                //   hideLabel: true,
+                                //   propertyName: 'font.color',
+                                // },
+                                // {
+                                //   type: 'dropdown',
+                                //   id: `fontAlign-${styleRouterId}`,
+                                //   label: 'Align',
+                                //   propertyName: 'font.align',
+                                //   hideLabel: true,
+                                //   width: 60,
+                                //   dropdownOptions: textAlign,
+                                // },
+                              ],
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlDimensions',
@@ -358,29 +424,6 @@ export const getSettings = (data: any) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              hideLabel: false,
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
                         propertyName: 'pnlMenuSpecific',
                         label: 'Menu Specific',
                         parentId: styleRouterId,
@@ -390,33 +433,6 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: styleRouterId,
-                              inputs: [
-                                {
-                                  type: 'numberField',
-                                  id: nanoid(),
-                                  propertyName: 'fontSize',
-                                  label: 'Font Size',
-                                  jsSetting: true,
-                                  min: 1,
-                                  max: 100,
-                                  defaultValue: 14
-                                },
-                                {
-                                  type: 'numberField',
-                                  id: nanoid(),
-                                  propertyName: 'height',
-                                  label: 'Height',
-                                  jsSetting: true,
-                                  min: 1,
-                                  max: 100,
-                                  defaultValue: 6
-                                }
-                              ],
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -449,89 +465,127 @@ export const getSettings = (data: any) => {
                         content: {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
-                            .addSectionSeparator({
+                            // .addSectionSeparator({
+                            //   id: nanoid(),
+                            //   parentId: styleRouterId,
+                            //   label: 'Selected Item'
+                            // })
+                            .addCollapsiblePanel({
                               id: nanoid(),
+                              propertyName: 'pnlSelectedItem',
+                              label: 'Selected Item',
                               parentId: styleRouterId,
-                              label: 'Selected Item'
+                              labelAlign: 'right',
+                              ghost: true,
+                              collapsible: 'header',
+                              content: {
+                                id: nanoid(),
+                                components: [
+                                  ...new DesignerToolbarSettings()
+                                    .addSettingsInputRow({
+                                      id: nanoid(),
+                                      parentId: styleRouterId,
+                                      inputs: [
+                                        {
+                                          type: 'colorPicker',
+                                          id: nanoid(),
+                                          propertyName: 'selectedItemColor',
+                                          label: 'Selected Item Color',
+                                          jsSetting: true,
+                                          allowClear: true
+                                        },
+                                        {
+                                          type: 'colorPicker',
+                                          id: nanoid(),
+                                          propertyName: 'selectedItemBackground',
+                                          label: 'Selected Item Background',
+                                          jsSetting: true,
+                                          allowClear: true
+                                        }
+                                      ],
+                                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    })
+                                    .toJson()
+                                ]
+                              }
                             })
-                            .addSettingsInputRow({
+                            .addCollapsiblePanel({
                               id: nanoid(),
+                              propertyName: 'pnlDefaultItem',
+                              label: 'Default Item',
                               parentId: styleRouterId,
-                              inputs: [
-                                {
-                                  type: 'colorPicker',
-                                  id: nanoid(),
-                                  propertyName: 'selectedItemColor',
-                                  label: 'Selected Item Color',
-                                  jsSetting: true,
-                                  allowClear: true
-                                },
-                                {
-                                  type: 'colorPicker',
-                                  id: nanoid(),
-                                  propertyName: 'selectedItemBackground',
-                                  label: 'Selected Item Background',
-                                  jsSetting: true,
-                                  allowClear: true
-                                }
-                              ],
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              labelAlign: 'right',
+                              ghost: true,
+                              collapsible: 'header',
+                              content: {
+                                id: nanoid(),
+                                components: [
+                                  ...new DesignerToolbarSettings()
+                                    .addSettingsInputRow({
+                                      id: nanoid(),
+                                      parentId: styleRouterId,
+                                      inputs: [
+                                        {
+                                          type: 'colorPicker',
+                                          id: nanoid(),
+                                          propertyName: 'itemColor',
+                                          label: 'Item Color',
+                                          jsSetting: true,
+                                          allowClear: true
+                                        },
+                                        {
+                                          type: 'colorPicker',
+                                          id: nanoid(),
+                                          propertyName: 'itemBackground',
+                                          label: 'Item Background',
+                                          jsSetting: true,
+                                          allowClear: true
+                                        }
+                                      ],
+                                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    })
+                                    .toJson()
+                                ]
+                              }
                             })
-                            .addSectionSeparator({
+                            .addCollapsiblePanel({
                               id: nanoid(),
+                              propertyName: 'pnlHoverItem',
+                              label: 'Hover Item',
                               parentId: styleRouterId,
-                              label: 'Default Item'
-                            })
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: styleRouterId,
-                              inputs: [
-                                {
-                                  type: 'colorPicker',
-                                  id: nanoid(),
-                                  propertyName: 'itemColor',
-                                  label: 'Item Color',
-                                  jsSetting: true,
-                                  allowClear: true
-                                },
-                                {
-                                  type: 'colorPicker',
-                                  id: nanoid(),
-                                  propertyName: 'itemBackground',
-                                  label: 'Item Background',
-                                  jsSetting: true,
-                                  allowClear: true
-                                }
-                              ],
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSectionSeparator({
-                              id: nanoid(),
-                              parentId: styleRouterId,
-                              label: 'Hover Item'
-                            })
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: styleRouterId,
-                              inputs: [
-                                {
-                                  type: 'colorPicker',
-                                  id: nanoid(),
-                                  propertyName: 'hoverItemColor',
-                                  label: 'Hover Item Color',
-                                  jsSetting: true,
-                                  allowClear: true
-                                },
-                                {
-                                  type: 'colorPicker',
-                                  id: nanoid(),
-                                  propertyName: 'hoverItemBackground',
-                                  label: 'Hover Background Color',
-                                  jsSetting: true,
-                                  allowClear: true
-                                }
-                              ],
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              labelAlign: 'right',
+                              ghost: true,
+                              collapsible: 'header',
+                              content: {
+                                id: nanoid(),
+                                components: [
+                                  ...new DesignerToolbarSettings()
+                                    .addSettingsInputRow({
+                                      id: nanoid(),
+                                      parentId: styleRouterId,
+                                      inputs: [
+                                        {
+                                          type: 'colorPicker',
+                                          id: nanoid(),
+                                          propertyName: 'hoverItemColor',
+                                          label: 'Hover Item Color',
+                                          jsSetting: true,
+                                          allowClear: true
+                                        },
+                                        {
+                                          type: 'colorPicker',
+                                          id: nanoid(),
+                                          propertyName: 'hoverItemBackground',
+                                          label: 'Hover Background Color',
+                                          jsSetting: true,
+                                          allowClear: true
+                                        }
+                                      ],
+                                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    })
+                                    .toJson()
+                                ]
+                              }
                             })
                             .toJson()
                           ]
@@ -540,7 +594,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlCustomStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         parentId: styleRouterId,
                         labelAlign: 'right',
                         ghost: true,

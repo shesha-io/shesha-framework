@@ -115,7 +115,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
               </BlockOverlay>
               <LayoutMenu
                 colors={colors}
-                fontSize={fontSize}
                 padding={{ x: gap, y: height }}
                 style={getStyle(model?.style, data)}
                 styleOnHover={getStyle(model?.styleOnHover, data)}
@@ -123,6 +122,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
                 overflow={model.overflow}
                 width={model?.width}
+                fontStyles={allStyles.fontStyles}
               />
             </div>
           );
@@ -132,7 +132,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   },
   initModel: (model) => ({
     ...model,
-    fontSize: "14",
     gap: "12",
     height: "6",
     overflow: "dropdown",

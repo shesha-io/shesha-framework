@@ -8,6 +8,7 @@ export const defaultStyles = (): IStyleType => {
             size: 14,
             color: '#000',
             type: 'Segoe UI',
+            align: 'left',
         },
         border: {
             border: {

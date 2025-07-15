@@ -41,6 +41,7 @@ interface IProps {
   styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
   width?: string;
+  fontStyles?: React.CSSProperties;
 }
 
 const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
@@ -49,7 +50,6 @@ const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
 
 export const LayoutMenu: FC<IProps> = ({
   colors,
-  fontSize,
   overflow,
   padding,
   style,
@@ -57,16 +57,17 @@ export const LayoutMenu: FC<IProps> = ({
   styleOnSelected,
   styleOnSubMenu,
   width,
+  fontStyles
 }) => {
   const isScrolling = overflow === "scroll";
   const { styles } = useStyles({
     colors,
-    fontSize,
     isScrolling,
     padding,
     styleOnHover: convertJsonToCss(styleOnHover),
     styleOnSelected: convertJsonToCss(styleOnSelected),
     width,
+    fontStyles,
   });
 
   const menuWrapperRef = useRef(null);
