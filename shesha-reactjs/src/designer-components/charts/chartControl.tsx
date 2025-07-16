@@ -481,6 +481,4 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   );
 });
 
-ChartControl.displayName = 'ChartControl';
-
 export default ChartControl;
