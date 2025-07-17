@@ -169,6 +169,8 @@ export interface IDataTableStateContext
 
   allowReordering: boolean;
   dragState?: DragState;
+
+  customReorderEndpoint?: string;
 }
 
 export type DragState = 'started' | 'finished' | null;

@@ -285,9 +285,12 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             });
     };
 
-    const reorder = (payload: RowsReorderPayload) => {
+    const reorder = (payload: RowsReorderPayload, customReorderEndpoint?: string) => {
         const reorderEndpoint = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
-        const reorderUrl = `${backendUrl}${reorderEndpoint}`;
+        let reorderUrl = `${backendUrl}${reorderEndpoint}`;
+        if (customReorderEndpoint) {
+            reorderUrl = customReorderEndpoint;
+        }
 
         const oldRows = payload.getOld();
         const newRows = payload.getNew();
