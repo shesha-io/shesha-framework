@@ -58,8 +58,8 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
         ...dimensionsStyles,
         ...stylingBoxAsCSS,
         ...(isPrimaryOrDefault && borderStyles),
-        ...(isPrimaryOrDefault && shadowStyles),
-        ...(buttonType === 'default' && backgroundStyles),
+        ...((isPrimaryOrDefault || buttonType === 'dashed') && shadowStyles),
+        ...((buttonType === 'default' || buttonType === 'dashed') && backgroundStyles),
         ...jsStyle,
         justifyContent: model?.font?.align,
     });
@@ -77,7 +77,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
             danger={props.danger}
             style={removeNullUndefined({ ...finalStyles })}
             readOnly={props.readOnly}
-            buttonType={buttonType}
+            buttonType={buttonType === 'ghost' as any ? 'text' : buttonType}
             form={form}
         />
     );

@@ -13,6 +13,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { defaultContainerStyles, defaultStyles } from './utils';
+import { ConfigurableFormItem } from '@/components';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -20,7 +21,10 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
-    return model.hidden ? null : <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />;
+    return model.hidden ? null :
+      <ConfigurableFormItem model={model}>
+        <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
+      </ConfigurableFormItem>;
   },
   actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
@@ -105,6 +109,15 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev };
       newModel.items = prev.items;
       return newModel;
+    })
+    .add<IButtonGroupComponentProps>(14, (prev) => {
+      const newButtons = prev.items.map((item) => {
+        if (isItem(item)) {
+          return { ...item, buttonType: item.buttonType === 'ghost' as any ? 'default' : item.buttonType };
+        }
+        return item;
+      });
+      return { ...prev, items: newButtons };
     }),
   settingsFormMarkup: (props) => getSettings(props),
 };

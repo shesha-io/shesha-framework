@@ -247,7 +247,7 @@ export const getItemSettings = () => {
                                             id: nanoid(),
                                             type: 'textField',
                                             propertyName: 'dividerWidth',
-                                            label: "thickness",
+                                            label: "Thickness",
                                             hidden: {
                                                 _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
                                                 _mode: 'code',
@@ -431,7 +431,7 @@ export const getItemSettings = () => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: `return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["dashed","text", "link"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
@@ -459,7 +459,7 @@ export const getItemSettings = () => {
                                     ghost: true,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
-                                    hidden: { _code: `return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     content: {
                                         id: backgroundStylePnlId,
                                         components: [
@@ -590,7 +590,7 @@ export const getItemSettings = () => {
                                     label: 'Shadow',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: `return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
