@@ -1314,7 +1314,12 @@ export const getSettings = (data: any) => {
                       })
                       .toJson()
                     ]
-                  }
+                  },
+                  hidden: {
+                    _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                 })
                 .addCollapsiblePanel({
                   id: nanoid(),
@@ -1325,7 +1330,7 @@ export const getSettings = (data: any) => {
                   ghost: true,
                   collapsible: 'header',
                   hidden: {
-                    _code: 'return getSettingValue(data?.showLegend) !== true',
+                    _code: 'return ["line", "bar"].includes(getSettingValue(data?.chartType)) && getSettingValue(data?.chartType) !== "pivot";',
                     _mode: 'code',
                     _value: false,
                   } as any,
@@ -1386,7 +1391,7 @@ export const getSettings = (data: any) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'pnlTickFont',
-                  label: 'Tick Labels Font',
+                  label: 'Grid Ticks Font',
                   labelAlign: 'right',
                   parentId: appearanceTabId,
                   ghost: true,
@@ -1443,7 +1448,12 @@ export const getSettings = (data: any) => {
                       })
                       .toJson()
                     ]
-                  }
+                  },
+                  hidden: {
+                    _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                 })
                 .addPropertyRouter({
                   id: styleRouterId,
@@ -1460,7 +1470,6 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-
                       .addCollapsiblePanel({
                         id: dimensionsStyleCollapsiblePanelId,
                         propertyName: 'pnlDimensions',
@@ -1848,6 +1857,7 @@ export const getSettings = (data: any) => {
                       allowClear: true,
                       type: 'colorPicker',
                       jsSetting: true,
+                      tooltip: 'The color of the stroke / border for the elements (bars, lines, etc.) in the chart. Default is #000000',
                     },
                   ],
                 })

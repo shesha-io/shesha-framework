@@ -424,7 +424,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return borderProps.some(prop => {
         const value = stylesAsCSS?.[prop];
         return value && value !== 'none' && value !== '0' && value !== '0px';
-      }) || showBorder;
+      });
     };
 
     const selected =
@@ -438,8 +438,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         border: '1px solid #d3d3d3',
         borderRadius: '8px'
       }),
-      ...(cardHeight && { height: cardHeight }),
-      overflow: 'auto'
     };
 
     return (
@@ -472,7 +470,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         </ConditionalWrap>
         {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
           <Divider
-            style={{ margin: '0', width: itemStyles.width }}
+            style={{ margin: '10px', width: itemStyles.width }}
             className={classNames(styles.shaDatalistComponentDivider, { selected })}
           />
         ))}

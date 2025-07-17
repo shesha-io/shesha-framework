@@ -110,6 +110,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   };
 
   const fetchData = useCallback(() => {
+    // Early return if already fetching or missing required properties
     if (isFetchingRef.current || !entityType || !valueProperty || !axisProperty) {
       return;
     }
@@ -231,12 +232,13 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         let errorMessage: string;
 
         if (error?.name === 'AbortError') {
-          // Check if this is an intentional abort (restart, retry, or unmount)
+          // Check if this is an intentional abort (restart, retry, unmount, or component initialization)
           const abortMessage = error?.message || '';
           const isIntentionalAbort = abortMessage.includes('Restarting chart') || 
-                                   abortMessage.includes('Retry fetch') || 
+                                   abortMessage.includes('Retry fetch initiated') || 
                                    abortMessage.includes('Unmounting chart') ||
-                                   abortMessage.includes('Request cancelled');
+                                   abortMessage.includes('Request cancelled by user') ||
+                                   abortMessage.includes('Component initialization');
           
           if (isIntentionalAbort) {
             // Don't set error for intentional aborts - just clean up
@@ -291,27 +293,33 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   ]);
 
   useEffect(() => {
+    // Only fetch data if all required properties are properly configured
+    const hasRequiredProperties = entityType && valueProperty && axisProperty && entityType.trim() !== '' && valueProperty.trim() !== '' && axisProperty.trim() !== '';
+    
+    if (!hasRequiredProperties) {
+      // If missing required properties, just set loaded state without fetching
+      setIsLoaded(true);
+      setMetadataProcessed(false);
+      setError(undefined);
+      setFaultyProperties([]);
+      return;
+    }
+
     // Reset loading state when chart properties change
     setIsLoaded(false);
     setMetadataProcessed(false);
     setError(undefined);
     setFaultyProperties([]);
 
-    // Abort any ongoing request gracefully
-    if (currentControllerRef.current) {
-      try {
-        currentControllerRef.current.abort('Restarting chart');
-      } catch {
-        // Ignore abort errors during restart - this is expected behavior
-        // Abort errors are expected when restarting the chart
-      }
-    }
-    isFetchingRef.current = false;
-
     fetchData();
   }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
 
   useEffect(() => {
+    // Only fetch metadata if entityType is properly configured
+    if (!entityType || entityType.trim() === '') {
+      return;
+    }
+
     getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
       if (metaData) {
         if (!axisPropertyLabel || axisPropertyLabel?.trim().length === 0) {
@@ -321,13 +329,16 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
           setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
         }
       } 
+    }).catch((error) => {
+      // Silently handle metadata fetch errors during component initialization
+      console.warn('Failed to fetch metadata during chart initialization:', error);
     });
   }, [axisPropertyLabel, valuePropertyLabel, entityType, valueProperty, axisProperty, getMetadata, setAxisPropertyLabel, setValuePropertyLabel]);
 
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
     return () => {
-      if (currentControllerRef.current) {
+      if (currentControllerRef.current && isFetchingRef.current) {
         try {
           currentControllerRef.current.abort('Unmounting chart');
         } catch {
@@ -374,10 +385,10 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     setError(undefined);
     setFaultyProperties([]);
 
-    // Abort any ongoing request gracefully
-    if (currentControllerRef.current) {
+    // Only abort if there's an existing request
+    if (currentControllerRef.current && isFetchingRef.current) {
       try {
-        currentControllerRef.current.abort('Retry fetch');
+        currentControllerRef.current.abort('Retry fetch initiated');
       } catch {
         // Ignore abort errors during retry - this is expected behavior
       }
@@ -391,7 +402,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const errorAlert = useMemo(() => {
     if (!error) return null;
 
-    const isUserCancelled = error.includes('cancelled') || error.includes('Cancelled');
+    const isUserCancelled = error.includes('cancelled by user') || error.includes('Cancelled by user');
     const isTimeoutError = error.includes('timed out');
     const message = isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data";
 
@@ -408,7 +419,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         }
       />
     );
-  }, [error, retryFetch]);
+  }, [error, retryFetch, theme.application.errorColor]);
 
   // Memoize the loader component
   const loaderComponent = useMemo(() => {
@@ -424,11 +435,11 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
           onClick={() => {
             if (isFetchingRef.current && currentControllerRef.current) {
               isFetchingRef.current = false;
-              setError('Request cancelled');
+              setError('Request cancelled by user');
               setIsLoaded(true);
               setMetadataProcessed(false);
               try {
-                currentControllerRef.current.abort('Request cancelled');
+                currentControllerRef.current.abort('Request cancelled by user');
               } catch {
                 // Ignore abort errors during user cancellation - this is expected behavior
               }
@@ -469,7 +480,5 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     </div>
   );
 });
-
-ChartControl.displayName = 'ChartControl';
 
 export default ChartControl;

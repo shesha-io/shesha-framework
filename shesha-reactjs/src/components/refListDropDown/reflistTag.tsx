@@ -25,7 +25,7 @@ function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solid
     const labelToRender = typeof label === 'string' ? label.toUpperCase() : label;
 
     return (
-        <Tooltip title={showItemName ? description : (description || labelToRender)} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer', zIndex: 2 }}>
+        <Tooltip trigger={['hover']} title={showItemName ? description : <>{label}<br />{description}</>} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer', zIndex: 2 }}>
             <Tag
                 key={value}
                 color={memoizedColor}

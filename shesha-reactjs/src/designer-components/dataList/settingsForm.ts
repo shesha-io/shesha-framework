@@ -302,6 +302,7 @@ export const getSettings = (data: any) => {
                           allowClear: true,
                           jsSetting: true,
                           customDropdownMode: 'single',
+                          defaultValue: 'Medium',
                           dropdownOptions: [
                             {
                               label: 'Small',
@@ -456,19 +457,6 @@ export const getSettings = (data: any) => {
                       hideLabel: true,
                       description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
                     })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      inputs: [{
-                        id: nanoid(),
-                        type: 'codeEditor',
-                        propertyName: 'onListItemSave',
-                        label: 'On List Item Save',
-                        jsSetting: false,
-                        tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
-                      }
-                      ],
-                      hideLabel: true,
-                    })
                     .toJson()
                   ]
                 }
@@ -481,6 +469,19 @@ export const getSettings = (data: any) => {
             title: 'Events',
             id: eventsTabId,
             components: [...new DesignerToolbarSettings()
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [{
+                  id: nanoid(),
+                  type: 'codeEditor',
+                  propertyName: 'onListItemSave',
+                  label: 'On List Item Save',
+                  jsSetting: false,
+                  tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
+                }
+                ],
+                hideLabel: true,
+              })
               .addConfigurableActionConfigurator({
                 id: nanoid(),
                 propertyName: "dblClickActionConfiguration",
@@ -502,8 +503,8 @@ export const getSettings = (data: any) => {
               .addConfigurableActionConfigurator({
                 id: nanoid(),
                 propertyName: 'onRowDeleteSuccessAction',
-                label: 'On Row Delete Success',
-                description: 'Custom business logic to be executed after successfull deletion of a row.',
+                label: 'On List Item Delete Success',
+                description: 'Custom business logic to be executed after successfull deletion of a list item.',
                 hideLabel: true,
               })
               .toJson()
