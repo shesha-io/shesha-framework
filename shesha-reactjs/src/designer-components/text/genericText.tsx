@@ -2,14 +2,13 @@ import classNames from 'classnames';
 import React, { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
 import { ContentType, ITextTypographyProps, ITypographyProps } from './models';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
-import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import { BaseType } from 'antd/lib/typography/Base';
 import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
 import { IConfigurableTheme, useTheme } from '@/providers';
 
-const { Paragraph, Text, Title } = Typography;
+const { Paragraph, Title } = Typography;
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
