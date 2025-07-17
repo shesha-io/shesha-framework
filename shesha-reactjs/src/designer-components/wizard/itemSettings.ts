@@ -48,7 +48,7 @@ export const getItemSettings = () => {
                   id: nanoid(),
                   type: 'textField',
                   propertyName: 'name',
-                  label: 'Component Name',
+                  label: 'Name',
                   size: 'small',
                   validate: {
                     required: true,
@@ -160,6 +160,7 @@ export const getItemSettings = () => {
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'getSettingValue(data)); return (getSettingValue(data?.sortOrder) === 0);', _mode: 'code', _value: false } as any,
               collapsible: 'header',
               content: {
                 id: nextButtonContentId,
@@ -224,6 +225,7 @@ export const getItemSettings = () => {
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'console.log("Data::",getSettingValue(data)); return (getSettingValue(data?.sortOrder) === 0);', _mode: 'code', _value: false } as any,
               collapsible: 'header',
               content: {
                 id: backButtonContentId,
