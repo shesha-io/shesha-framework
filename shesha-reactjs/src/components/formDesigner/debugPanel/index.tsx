@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Col, Divider } from 'antd';
 import { CollapsiblePanel } from '@/components';
 import { useDataContextManager } from '@/providers/dataContextManager';
-import { useShaFormInstance, useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormInstance, useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 export interface DebugPanelProps {
     formData?: any;
@@ -10,7 +10,7 @@ export interface DebugPanelProps {
 
 export const DebugPanel: FC<DebugPanelProps> = () => {
 
-    useShaFormUpdateDate();
+    useShaFormDataUpdate();
     const formData = useShaFormInstance(false)?.formData;
     const ctxManager = useDataContextManager(false)?.getRoot();
     const contexts = ctxManager.getDataContexts('full');

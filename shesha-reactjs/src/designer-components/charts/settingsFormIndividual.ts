@@ -3,6 +3,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -87,7 +88,7 @@ export const getSettings = (data: any) => {
                       defaultValue: false,
                       hidden: {
                         _code:
-                          'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot`',
+                          'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot` || getSettingValue(data?.dataMode) === `url`',
                         _mode: 'code',
                         _value: false,
                       } as any,
@@ -118,13 +119,13 @@ export const getSettings = (data: any) => {
                               parentId: commonTabId,
                               label: 'Data Source Type',
                               description:
-                                'The type of data source you want to use for the chart. If you select `Custom Endpoint`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
-                              tooltip: 'The type of data source you want to use for the chart. If you select `Custom Endpoint`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                                'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
+                              tooltip: 'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
                               type: 'dropdown',
                               allowClear: true,
                               dropdownOptions: [
-                                { label: 'Custom Endpoint', value: 'url' },
-                                { label: 'Entity Type', value: 'entityType' },
+                                { label: 'URL', value: 'url' },
+                                { label: 'Entity type', value: 'entityType' },
                               ],
                               validate: { required: true },
                               defaultValue: 'entityType',
@@ -156,7 +157,7 @@ export const getSettings = (data: any) => {
                           id: dataSettingsForUrlId,
                           propertyName: 'dataSettingsForUrl',
                           parentId: commonTabId,
-                          label: 'Data Settings (Custom Endpoint)',
+                          label: 'Data Settings (URL)',
                           labelAlign: 'left',
                           hidden: {
                             _code: 'return getSettingValue(data?.dataMode) !== `url`',
@@ -168,7 +169,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'url',
-                                label: 'Custom Endpoint',
+                                label: 'URL',
                                 labelAlign: 'right',
                                 parentId: dataTabId,
                                 inputType: 'endpointsAutocomplete',
@@ -244,7 +245,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
-                                inline: true,
                                 inputs: [
                                   {
                                     id: nanoid(),
@@ -268,10 +268,10 @@ export const getSettings = (data: any) => {
                                     type: 'numberField',
                                     propertyName: 'maxResultCount',
                                     label: 'Data Size Limit',
-                                    description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                                    "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
-                                    tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                                    "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                                    description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
+                                      "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                                    tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
+                                      "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                                     parentId: dataSettingsId,
                                     validate: { required: false },
                                     min: -1,
@@ -356,6 +356,7 @@ export const getSettings = (data: any) => {
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
+                                    width: '50%',
                                   }
                                 ]
                               })
@@ -469,10 +470,11 @@ export const getSettings = (data: any) => {
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
+                                    width: '50%',
                                   }
                                 ],
                               })
-                              
+
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'aggregationMethod',
@@ -528,12 +530,11 @@ export const getSettings = (data: any) => {
                             },
                             {
                               id: nanoid(),
-                              type: 'textArea',
+                              type: 'textField',
                               propertyName: 'title',
                               parentId: commonTabId,
                               label: 'Title',
                               tooltip: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
-                              placeholder: 'The title of the chart (if any), if none then the title will be generated from the entity type.',
                               description: 'The title of the chart (if any)',
                               labelAlign: 'right',
                               jsSetting: true,
@@ -635,12 +636,11 @@ export const getSettings = (data: any) => {
                           inputs: [
                             {
                               id: nanoid(),
-                              type: 'textArea',
+                              type: 'textField',
                               propertyName: 'axisPropertyLabel',
                               label: 'Axis Property Label',
                               description: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
                               tooltip: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
-                              placeholder: 'Custom label of the x-axis. If not provided, the label will be generated from the entity type property.',
                               parentId: commonTabId,
                               jsSetting: true,
                             },
@@ -691,12 +691,11 @@ export const getSettings = (data: any) => {
                           inputs: [
                             {
                               id: nanoid(),
-                              type: 'textArea',
+                              type: 'textField',
                               propertyName: 'valuePropertyLabel',
                               label: 'Value Property Label',
                               description: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
                               tooltip: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
-                              placeholder: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
                               parentId: commonTabId,
                               jsSetting: true,
                             }
@@ -718,7 +717,6 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
-                  inline: true,
                   inputs: [
                     {
                       id: nanoid(),
@@ -730,8 +728,8 @@ export const getSettings = (data: any) => {
                       type: 'dropdown',
                       allowClear: true,
                       dropdownOptions: [
-                        { label: 'Custom Endpoint', value: 'url' },
-                        { label: 'Entity Type', value: 'entityType' },
+                        { label: 'URL', value: 'url' },
+                        { label: 'Entity type', value: 'entityType' },
                       ],
                       validate: { required: true },
                       defaultValue: 'entityType',
@@ -770,7 +768,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'url',
-                        label: 'Custom Endpoint',
+                        label: 'URL',
                         labelAlign: 'right',
                         parentId: dataTabId,
                         inputType: 'endpointsAutocomplete',
@@ -845,7 +843,6 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         inputs: [
                           {
                             id: nanoid(),
@@ -869,10 +866,10 @@ export const getSettings = (data: any) => {
                             type: 'numberField',
                             propertyName: 'maxResultCount',
                             label: 'Data Size Limit',
-                            description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                            "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
-                            tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." + 
-                            "-1 means no limit, 10000 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                            description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
+                              "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
+                            tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
+                              "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
                             parentId: dataTabId,
                             validate: { required: false },
                             min: -1,
@@ -930,7 +927,7 @@ export const getSettings = (data: any) => {
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: false },
-                            width: '49%',
+                            width: '50%',
                             jsSetting: true,
                           },
                           {
@@ -950,7 +947,6 @@ export const getSettings = (data: any) => {
                             ],
                             validate: { required: true },
                             defaultValue: 'month-year',
-                            width: '50%',
                             jsSetting: true,
                             hidden: {
                               _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
@@ -1064,7 +1060,7 @@ export const getSettings = (data: any) => {
                             ],
                             validate: { required: true },
                             defaultValue: 'month-year',
-                            width: '100%',
+                            width: '50%',
                             jsSetting: true,
                             hidden: {
                               _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
@@ -1196,6 +1192,259 @@ export const getSettings = (data: any) => {
             id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'pnlTitleFont',
+                  label: 'Title Font',
+                  labelAlign: 'right',
+                  parentId: appearanceTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: appearanceTabId,
+                        inline: true,
+                        propertyName: 'titleFont',
+                        inputs: [
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Family',
+                            propertyName: 'titleFont.family',
+                            hideLabel: true,
+                            dropdownOptions: fontTypes,
+                            defaultValue: 'Segoe UI',
+                          },
+                          {
+                            type: 'numberField',
+                            id: nanoid(),
+                            label: 'Size',
+                            propertyName: 'titleFont.size',
+                            hideLabel: true,
+                            width: 50,
+                            defaultValue: 16,
+                            min: 8,
+                            max: 32,
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Weight',
+                            propertyName: 'titleFont.weight',
+                            hideLabel: true,
+                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                            dropdownOptions: fontWeights,
+                            width: 100,
+                            defaultValue: '400',
+                          },
+                          {
+                            type: 'colorPicker',
+                            id: nanoid(),
+                            label: 'Color',
+                            hideLabel: true,
+                            propertyName: 'titleFont.color',
+                            defaultValue: '#000000',
+                          },
+                        ],
+                      })
+                      .toJson()
+                    ]
+                  }
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'pnlAxisLabelFont',
+                  label: 'Axis Labels Font',
+                  labelAlign: 'right',
+                  parentId: appearanceTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: appearanceTabId,
+                        inline: true,
+                        propertyName: 'axisLabelFont',
+                        inputs: [
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Family',
+                            propertyName: 'axisLabelFont.family',
+                            hideLabel: true,
+                            dropdownOptions: fontTypes,
+                            defaultValue: 'Segoe UI',
+                          },
+                          {
+                            type: 'numberField',
+                            id: nanoid(),
+                            label: 'Size',
+                            propertyName: 'axisLabelFont.size',
+                            hideLabel: true,
+                            width: 50,
+                            defaultValue: 12,
+                            min: 8,
+                            max: 24,
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Weight',
+                            propertyName: 'axisLabelFont.weight',
+                            hideLabel: true,
+                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                            dropdownOptions: fontWeights,
+                            width: 100,
+                            defaultValue: '400',
+                          },
+                          {
+                            type: 'colorPicker',
+                            id: nanoid(),
+                            label: 'Color',
+                            hideLabel: true,
+                            propertyName: 'axisLabelFont.color',
+                            defaultValue: '#000000',
+                          },
+                        ],
+                      })
+                      .toJson()
+                    ]
+                  }
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'pnlLegendFont',
+                  label: 'Legend Font',
+                  labelAlign: 'right',
+                  parentId: appearanceTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  hidden: {
+                    _code: 'return getSettingValue(data?.showLegend) !== true',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
+                  content: {
+                    id: nanoid(),
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: appearanceTabId,
+                        inline: true,
+                        propertyName: 'legendFont',
+                        inputs: [
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Family',
+                            propertyName: 'legendFont.family',
+                            hideLabel: true,
+                            dropdownOptions: fontTypes,
+                            defaultValue: 'Segoe UI',
+                          },
+                          {
+                            type: 'numberField',
+                            id: nanoid(),
+                            label: 'Size',
+                            propertyName: 'legendFont.size',
+                            hideLabel: true,
+                            width: 50,
+                            defaultValue: 12,
+                            min: 8,
+                            max: 24,
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Weight',
+                            propertyName: 'legendFont.weight',
+                            hideLabel: true,
+                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                            dropdownOptions: fontWeights,
+                            width: 100,
+                            defaultValue: '400',
+                          },
+                          {
+                            type: 'colorPicker',
+                            id: nanoid(),
+                            label: 'Color',
+                            hideLabel: true,
+                            propertyName: 'legendFont.color',
+                            defaultValue: '#000000',
+                          },
+                        ],
+                      })
+                      .toJson()
+                    ]
+                  }
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'pnlTickFont',
+                  label: 'Tick Labels Font',
+                  labelAlign: 'right',
+                  parentId: appearanceTabId,
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: appearanceTabId,
+                        inline: true,
+                        propertyName: 'tickFont',
+                        inputs: [
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Family',
+                            propertyName: 'tickFont.family',
+                            hideLabel: true,
+                            dropdownOptions: fontTypes,
+                            defaultValue: 'Segoe UI',
+                          },
+                          {
+                            type: 'numberField',
+                            id: nanoid(),
+                            label: 'Size',
+                            propertyName: 'tickFont.size',
+                            hideLabel: true,
+                            width: 50,
+                            defaultValue: 12,
+                            min: 8,
+                            max: 24,
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Weight',
+                            propertyName: 'tickFont.weight',
+                            hideLabel: true,
+                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                            dropdownOptions: fontWeights,
+                            width: 100,
+                            defaultValue: '400',
+                          },
+                          {
+                            type: 'colorPicker',
+                            id: nanoid(),
+                            label: 'Color',
+                            hideLabel: true,
+                            propertyName: 'tickFont.color',
+                            defaultValue: '#000000',
+                          },
+                        ],
+                      })
+                      .toJson()
+                    ]
+                  }
+                })
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -1235,7 +1484,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend 100%."
 
                                 },
                                 {
@@ -1270,7 +1519,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend minimum height of 400px."
                                 },
                                 {
                                   type: 'textField',

@@ -27,6 +27,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     getOptionFromFetchedItem,
     incomeValueFunc,
     outcomeValueFunc,
+    filterOption,
     displayStyle,
     tagStyle,
     showIcon,
@@ -148,12 +149,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     allowClear,
     loading: refListLoading,
     disabled,
-    filterOption: (input, option) => {
-      if (typeof option?.children === 'string' && typeof input === 'string') {
-        return option?.children?.toLowerCase().indexOf(input?.toLowerCase()) >= 0;
-      }
-      return false;
-    },
+    filterOption: filterOption,
     ...rest,
     onChange: handleChange,
     value: wrapValue(value, options),
@@ -170,7 +166,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return <ReflistTag
           key={option?.value}
           value={option?.value}
-          tooltip={option?.description}
+          description={option?.description}
           color={option?.color}
           icon={option?.icon}
           showIcon={showIcon}
@@ -201,7 +197,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
           const option = options.find((o) => o.value === props.value);
           return <ReflistTag
             value={option?.value}
-            tooltip={option?.description}
+            description={option?.description}
             color={option?.color}
             icon={option?.icon}
             showIcon={showIcon}

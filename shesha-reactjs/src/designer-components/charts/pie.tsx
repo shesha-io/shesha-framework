@@ -8,8 +8,9 @@ import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
-import { defaultConfigFiller, filterNonNull } from './utils';
+import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
@@ -24,6 +25,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
+      jsStyle
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -31,7 +33,8 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
-      ...stylingBoxAsCSS
+      ...stylingBoxAsCSS,
+      ...jsStyle
     });
     if (model.hidden) return null;
     
@@ -42,11 +45,11 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
             <ChartDataProvider model={model}>
               <div style={{
                 ...wrapperStyles,
-                minHeight: '400px',
                 padding: '16px',
                 boxSizing: 'border-box',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                overflow: 'hidden'
               }}>
                 {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='pie' filters={model.filters} />}
               </div>
@@ -85,6 +88,18 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       strokeWidth: 1,
       maxResultCount: 10000,
       requestTimeout: 10000,
+    }))
+    .add<IChartProps>(7, prev => ({ 
+      ...prev,
+      timeSeriesFormat: 'month-year',
+      groupingTimeSeriesFormat: 'month-year',
+      ...migratePrevStyles(prev, defaultStyles()) 
+    }))
+    .add<IChartProps>(8, prev => ({
+      ...prev,
+      maxResultCount: 250,
+      requestTimeout: 15000,
+      orderDirection: 'asc',
     }))
 };
 

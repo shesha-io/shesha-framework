@@ -6,7 +6,7 @@ import { Icon } from '../readOnlyDisplayFormItem';
 
 interface IReflistTagProps {
     value?: string | number;
-    tooltip?: string;
+    description?: string;
     color?: string;
     icon?: string | React.ReactNode;
     showIcon?: boolean;
@@ -16,7 +16,7 @@ interface IReflistTagProps {
     label?: string | React.ReactNode;
     placement?: TooltipProps['placement'];
 }
-function ReflistTag({ value, tooltip, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps) {
+function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps) {
 
     const memoizedColor = !solidColor
         ? color?.toLowerCase()
@@ -25,7 +25,7 @@ function ReflistTag({ value, tooltip, color, icon, showIcon, tagStyle, solidColo
     const labelToRender = typeof label === 'string' ? label.toUpperCase() : label;
 
     return (
-        <Tooltip title={tooltip} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer' }}>
+        <Tooltip title={showItemName ? description : (description || labelToRender)} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer', zIndex: 2 }}>
             <Tag
                 key={value}
                 color={memoizedColor}

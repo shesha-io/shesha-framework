@@ -7,7 +7,7 @@ import { IModelValidation } from '@/utils/errors';
 import ComponentError from '@/components/componentErrors';
 import { formComponentActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import AttributeDecorator from '@/components/attributeDecorator';
-import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
@@ -15,7 +15,7 @@ export interface IConfigurableFormComponentProps {
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componentModel }) => {
 
-  useShaFormUpdateDate();
+  useShaFormDataUpdate();
 
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();

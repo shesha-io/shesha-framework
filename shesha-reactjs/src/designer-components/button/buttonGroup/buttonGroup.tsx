@@ -248,10 +248,13 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    const items = useActualContextData(props.items?.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })), props.readOnly, null, standartActualModelPropertyFilter);
-
+    const items = useActualContextData(
+        props.items?.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
+        props.readOnly,
+        null,
+        standartActualModelPropertyFilter
+    );
     const memoizedItems = useDeepCompareMemo(() => items, [items]) ?? [];
-
     return (
         <DynamicActionsEvaluator items={memoizedItems}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}

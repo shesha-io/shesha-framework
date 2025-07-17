@@ -14,7 +14,7 @@ import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks';
-import { splitTitleIntoLines, getPredictableColor } from '../../utils';
+import { splitTitleIntoLines, getPredictableColor, createFontConfig } from '../../utils';
 
 interface ILineChartProps extends IChartDataProps {
   data: IChartData;
@@ -40,7 +40,11 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     strokeColor,
     dataMode,
     strokeWidth,
-    simpleOrPivot
+    simpleOrPivot,
+    titleFont,
+    axisLabelFont,
+    legendFont,
+    tickFont
   } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
@@ -115,18 +119,15 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,
           padding: isSmallScreen ? 8 : 10,
-          font: {
-            size: isSmallScreen ? 10 : 12,
-          },
+          font: createFontConfig(legendFont, isSmallScreen ? 10 : 12, '400'),
+          color: legendFont?.color || '#000000',
         },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
-        font: {
-          size: isSmallScreen ? 12 : 16,
-          weight: 'bold',
-        },
+        font: createFontConfig(titleFont, isSmallScreen ? 12 : 16, 'bold'),
+        color: titleFont?.color || '#000000',
         padding: {
           top: isSmallScreen ? 8 : 16,
           bottom: isSmallScreen ? 8 : 16,
@@ -138,10 +139,8 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
-          font: {
-            size: isSmallScreen ? 10 : 12,
-            weight: 'bold',
-          },
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
             bottom: isSmallScreen ? 4 : 8,
@@ -152,9 +151,8 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         ticks: {
           maxRotation: 45, // Allow rotation up to 45 degrees
           minRotation: 0,
-          font: {
-            size: isSmallScreen ? 9 : 12,
-          },
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           autoSkip: false, // Show all labels
           maxTicksLimit: undefined, // Remove tick limit
@@ -167,10 +165,8 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
-          font: {
-            size: isSmallScreen ? 10 : 12,
-            weight: 'bold',
-          },
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
             bottom: isSmallScreen ? 4 : 8,
@@ -179,9 +175,8 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         display: !!showYAxisScale,
         beginAtZero: true,
         ticks: {
-          font: {
-            size: isSmallScreen ? 9 : 12,
-          },
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           callback: function(value) {
             // Format large numbers on mobile

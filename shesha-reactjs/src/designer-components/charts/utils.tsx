@@ -5,9 +5,29 @@ import BarChart from "./components/bar";
 import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
-import { IPropertyMetadata } from "@/interfaces";
+import { IPropertyMetadata, IStyleType } from "@/interfaces";
 
 export const MAX_TITLE_LINE_LENGTH = 12;
+
+export const defaultStyles = (): IStyleType => {
+    return {
+        background: { type: 'color', color: '#fff' },
+        font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+        border: {
+            border: {
+                all: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                top: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                left: { width: '1px', style: 'solid', color: '#d9d9d9' },
+                right: { width: '1px', style: 'solid', color: '#d9d9d9' },
+            },
+            radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
+            borderType: 'all',
+            radiusType: 'all'
+        },
+        dimensions: { width: '100%', height: '400px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+    };
+};
 
 /**
  * Make sure the properties are valid for the entity type
@@ -622,4 +642,23 @@ export function aggregateValues(items: object[], aggregationMethod: TAggregation
     default:
       return 0;
   }
+}
+
+/**
+ * Helper function to create font configuration for Chart.js
+ * @param fontConfig - The font configuration object
+ * @param defaultSize - Default font size if not specified
+ * @param defaultWeight - Default font weight if not specified
+ * @returns Chart.js font configuration object
+ */
+export function createFontConfig(
+  fontConfig?: { family?: string; size?: number; weight?: string; color?: string },
+  defaultSize: number = 12,
+  defaultWeight: string = '400'
+) {
+  return {
+    family: fontConfig?.family || 'Segoe UI',
+    size: fontConfig?.size || defaultSize,
+    weight: fontConfig?.weight || defaultWeight
+  };
 }

@@ -76,6 +76,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   cardSpacing,
   style,
   gap,
+  onRowDeleteSuccessAction,
   ...props
 }) => {
 
@@ -413,6 +414,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
+  
+
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
     const stylesAsCSS = style as CSSProperties;
 
@@ -469,7 +472,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         </ConditionalWrap>
         {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
           <Divider
-            style={{ margin: '0' }}
+            style={{ margin: '0', width: itemStyles.width }}
             className={classNames(styles.shaDatalistComponentDivider, { selected })}
           />
         ))}
