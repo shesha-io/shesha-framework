@@ -31,6 +31,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }, [url, props.additionalProperties]);
 
   const fetchData = useCallback(() => {
+    // Early return if already fetching or missing required URL
     if (isFetchingRef.current || !transformedUrl || transformedUrl === '') {
       return;
     }
@@ -63,11 +64,12 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       .catch((err: Error) => {
         console.error('Error fetching URL chart data:', err);
         
-        // Check if this is an intentional abort (reset, unmount, or user cancellation)
+        // Check if this is an intentional abort (reset, unmount, user cancellation, or component initialization)
         const abortMessage = err?.message || '';
         const isIntentionalAbort = abortMessage.includes('Resetting chart') || 
                                  abortMessage.includes('Unmounting chart') ||
-                                 abortMessage.includes('Cancel button clicked');
+                                 abortMessage.includes('Request cancelled by user') ||
+                                 abortMessage.includes('Component initialization');
         
         if (err?.name === 'AbortError' && isIntentionalAbort) {
           // Don't set error for intentional aborts - just clean up
@@ -92,19 +94,17 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }, [transformedUrl, requestTimeout, refetch, setUrlTypeData, setIsLoaded, setError]);
 
   useEffect(() => {
+    // Only fetch data if URL is properly configured
+    if (!transformedUrl || transformedUrl === '') {
+      // If missing URL, just set loaded state without fetching
+      setIsLoaded(true);
+      setError(null);
+      return;
+    }
+
     // Reset loading state when chart properties change
     setIsLoaded(false);
     setError(null);
-    
-    // Abort any ongoing request gracefully
-    if (currentControllerRef.current) {
-      try {
-        currentControllerRef.current.abort("Resetting chart");
-      } catch {
-        // Ignore abort errors during reset - this is expected behavior
-      }
-    }
-    isFetchingRef.current = false;
     
     fetchData();
   }, [transformedUrl, requestTimeout]);
@@ -112,7 +112,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
     return () => {
-      if (currentControllerRef.current) {
+      if (currentControllerRef.current && isFetchingRef.current) {
         try {
           currentControllerRef.current.abort("Unmounting chart");
         } catch {
@@ -202,7 +202,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
             onClick={() => {
               if (isFetchingRef.current && currentControllerRef.current) {
                 try {
-                  currentControllerRef.current.abort("Cancel button clicked");
+                  currentControllerRef.current.abort("Request cancelled by user");
                 } catch {
                   // Ignore abort errors during user cancellation - this is expected behavior
                 }
@@ -218,7 +218,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       );
     }
     return null;
-  }, [state.isLoaded, chartType, cx, styles.loadingText, setIsLoaded]);
+  }, [state.isLoaded, chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded]);
 
   // Memoize chart container styles to prevent unnecessary re-renders
   const chartContainerStyle = useMemo(() => ({
