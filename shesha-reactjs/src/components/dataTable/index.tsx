@@ -143,6 +143,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     sortMode,
     strictSortBy,
     setColumnWidths,
+    customReorderEndpoint,
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
@@ -640,7 +641,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         propertyName: strictSortBy,
       };
 
-      return repository.reorder(reorderPayload);
+      return repository.reorder(reorderPayload, customReorderEndpoint);
     } else return Promise.reject(typeof supported === 'string' ? supported : 'Reordering is not supported');
   };
 
