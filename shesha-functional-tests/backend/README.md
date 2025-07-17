@@ -36,7 +36,7 @@ shesha-core
 
 ### Run
 
-> dotnet run --project src/Boxfusion.SheshaFunctionalTests.Web.Host --urls "<http://localhost:21021;https://localhost:44362>"
+> dotnet run --project src/Boxfusion.SheshaFunctionalTests.Web.Host --urls "http://localhost:21021;https://localhost:44362"
 
 #### Run using provided scripts  
 
