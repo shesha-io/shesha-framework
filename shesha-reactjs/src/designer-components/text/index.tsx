@@ -76,7 +76,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
-      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: DEFAULT_CONTENT_TYPE })),
+      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: prev.contentType })),
 };
 
 export default TextComponent;

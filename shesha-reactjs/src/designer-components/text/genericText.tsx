@@ -77,11 +77,14 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     italic: model?.italic,
     type: chosenType,
     style: {
+      padding: 0,
+      margin: 0,
+      ...{
       ...style,
       color: getColorByContentType(contentType, style, theme),
       fontSize: textType === 'title' ? undefined : style?.fontSize,
       justifyContent: style?.textAlign,
-    },
+    }},
   };
 
   const textProps: TextProps = {
@@ -105,22 +108,22 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Text key={`text-${updateKey}`} {...textProps} className={className}>
+      <Paragraph key={`text-${updateKey}`} style={{ margin: '0px', height: '20px'}}  {...baseProps} className={className}>
         {children}
-      </Text>
+      </Paragraph>
     );
   }
 
   if (textType === 'paragraph') {
     return (
-      <Paragraph key={`paragraph-${updateKey}`} {...paragraphProps} className={className}>
+      <Paragraph key={`paragraph-${updateKey}`} style={{margin: '0px'}}  {...paragraphProps} className={className}>
         {children}
       </Paragraph>
     );
   }
 
   return (
-    <Title key={`title-${updateKey}`} {...titleProps} className={className}>
+    <Title key={`title-${updateKey}`} style={{margin: '0px'}}  {...titleProps} className={className}>
       {children}
     </Title>
   );
