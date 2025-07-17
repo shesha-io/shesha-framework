@@ -160,7 +160,6 @@ export const getItemSettings = () => {
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
-              hidden: { _code: 'getSettingValue(data)); return (getSettingValue(data?.sortOrder) === 0);', _mode: 'code', _value: false } as any,
               collapsible: 'header',
               content: {
                 id: nextButtonContentId,
