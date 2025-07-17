@@ -225,7 +225,6 @@ export const getItemSettings = () => {
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
-              hidden: { _code: 'console.log("Data::",getSettingValue(data)); return (getSettingValue(data?.sortOrder) === 0);', _mode: 'code', _value: false } as any,
               collapsible: 'header',
               content: {
                 id: backButtonContentId,
