@@ -169,6 +169,29 @@ export const getSettings = (data: any) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'customReorderEndpoint',
+                            label: 'Custom Reorder Endpoint',
+                            labelAlign: 'right',
+                            parentId: dataTabId,
+                            type: 'endpointsAutocomplete',
+                            description: 'The endpoint to use to reorder data (if not provided, the default endpoint will be used).',
+                            dataSourceType: 'url',
+                            dataSourceUrl: '/api/services/app/Api/Endpoints',
+                            settingsValidationErrors: [],
+                            useRawValues: true,
+                            jsSetting: true,
+                            width: '100%',
+                            placeholder: '',
+                          },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
                         inline: false,
                         readOnly: {
                           _code: 'return getSettingValue(data?.readOnly);',
