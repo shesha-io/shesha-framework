@@ -44,7 +44,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       .ant-input-number-suffix {
         ${!hasSuffix && 'display: none;'}
         margin-inline-end: unset !important;
-        margin-inline-start: 4px !important;
+        margin-inline-start: 0px !important;
         margin-right: 8px !important;
         position: relative;
 
