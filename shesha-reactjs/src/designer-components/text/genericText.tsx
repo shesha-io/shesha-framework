@@ -87,10 +87,6 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     }},
   };
 
-  const textProps: TextProps = {
-    ...baseProps,
-    strong: model?.strong,
-  };
   const paragraphProps: ParagraphProps = {
     ...baseProps,
     strong: model?.strong,
@@ -108,7 +104,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Paragraph key={`text-${updateKey}`} style={{ margin: '0px', height: '20px'}}  {...baseProps} className={className}>
+      <Paragraph key={`text-${updateKey}`} {...baseProps} className={className}>
         {children}
       </Paragraph>
     );
