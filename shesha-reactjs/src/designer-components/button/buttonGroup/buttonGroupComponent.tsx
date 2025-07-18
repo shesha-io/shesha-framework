@@ -22,7 +22,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
     return model.hidden ? null :
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
         <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
       </ConfigurableFormItem>;
   },
@@ -113,7 +113,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(14, (prev) => {
       const newButtons = prev.items.map((item) => {
         if (isItem(item)) {
-          return { ...item, buttonType: item.buttonType === 'ghost' as any ? 'default' : item.buttonType };
+          return { ...item, buttonType: item.buttonType === 'ghost' as any ? 'text' : item.buttonType };
         }
         return item;
       });
