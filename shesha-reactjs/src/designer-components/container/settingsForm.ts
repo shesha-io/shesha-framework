@@ -502,6 +502,7 @@ export const getSettings = (data) => {
                                       id: nanoid(),
                                       label: 'Align Self',
                                       propertyName: 'alignSelf',
+                                      tooltip: "The align-self CSS property overrides a grid or flex item's align-items value. In Grid, it aligns the item inside the grid area. In Flexbox, it aligns the item on the cross axis.",
                                       dropdownOptions: ALIGN_SELF
                                     },
                                     {
@@ -523,7 +524,7 @@ export const getSettings = (data) => {
                                   id: nanoid(),
                                   label: 'Justify Self',
                                   propertyName: 'justifySelf',
-                                  tooltip: 'The justify-self CSS property sets the alignment of the selected item inside the flex container. This is used to align the selected item within the flex container.',
+                                  tooltip: "The CSS justify-self property sets the way a box is justified inside its alignment container along the appropriate axis.",
                                   dropdownOptions: JUSTIFY_SELF
                                 })
                                 .toJson()
