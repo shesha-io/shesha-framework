@@ -115,6 +115,7 @@ import PieChartComponent from '@/designer-components/charts/pie';
 import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import DividerComponent from '@/designer-components/_legacyComponents/divider';
+import MenuListComponent from '@/designer-components/menuList';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -215,6 +216,7 @@ export const getToolboxComponents = (
         Tabs,
         Wizard,
         SubForm,
+        MenuListComponent,
       ],
     },
     {
