@@ -523,11 +523,7 @@ export const getSettings = (data) => {
                                   id: nanoid(),
                                   label: 'Justify Self',
                                   propertyName: 'justifySelf',
-                                  hidden: {
-                                    _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
-                                    _mode: 'code',
-                                    _value: false,
-                                  } as any,
+                                  tooltip: 'The justify-self CSS property sets the alignment of the selected item inside the flex container. This is used to align the selected item within the flex container.',
                                   dropdownOptions: JUSTIFY_SELF
                                 })
                                 .toJson()
