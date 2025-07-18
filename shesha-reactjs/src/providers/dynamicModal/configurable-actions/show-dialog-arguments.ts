@@ -7,122 +7,107 @@ import {
 import {
   nanoid
 } from '@/utils/uuid';
+import { filterDynamicComponents } from '@/designer-components/propertiesTabs/utils';
 
 export const getSettings = () => {
   return {
     components: new DesignerToolbarSettings()
-      .addCollapsiblePanel({
+      .addSettingsInputRow({
         id: nanoid(),
-        propertyName: 'pnlDisplay',
         parentId: 'root',
-        label: 'Display',
-        labelAlign: "left",
-        expandIconPosition: "start",
-        ghost: true,
-        collapsible: 'header',
-        content: {
-          id: nanoid(),
-          components: [...new DesignerToolbarSettings()
-            .addSettingsInputRow({
-              id: nanoid(),
-              parentId: 'root',
-              readOnly: {
-                _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
-              } as any,
-              inputs: [
-                {
-                  type: 'textField',
-                  id: nanoid(),
-                  propertyName: 'modalTitle',
-                  label: 'Title',
-                  validate: {
-                    required: true
-                  },
-                  jsSetting: true,
-                },
-                {
-                  type: 'formAutocomplete',
-                  id: nanoid(),
-                  propertyName: 'formId',
-                  label: 'Modal Form',
-                  validate: {
-                    required: true
-                  },
-                  jsSetting: true,
-                }
-              ]
-            })
-            .addSettingsInputRow({
-              id: nanoid(),
-              parentId: 'root',
-              readOnly: {
-                _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
-              } as any,
-              inputs: [
-                {
-                  type: 'radio',
-                  id: nanoid(),
-                  propertyName: 'formMode',
-                  label: 'Form Mode',
-                  buttonGroupOptions: [
-                    {
-                      title: "Edit",
-                      value: "edit",
-                      icon: "editIcon"
-                    },
-                    {
-                      title: "Read only",
-                      value: "readonly",
-                      icon: "readonlyIcon"
-                    }
-                  ],
-                  jsSetting: true,
-                },
-                {
-                  type: 'customDropdown',
-                  id: nanoid(),
-                  propertyName: 'modalWidth',
-                  label: 'Dialog Width',
-                  tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                  allowClear: true,
-                  dropdownOptions: [
-                    {
-                      label: "Small",
-                      value: "40%"
-                    },
-                    {
-                      label: "Medium",
-                      value: "60%"
-                    },
-                    {
-                      label: "Large",
-                      value: "80%"
-                    }
-                  ],
-                  jsSetting: true,
-                }
-              ]
-            })
-            .addSettingsInput({
-              id: nanoid(),
-              inputType: 'codeEditor',
-              propertyName: 'formArguments',
-              label: 'Arguments',
-              parentId: 'root',
-              mode: 'dialog',
-              description: 'Arguments you want to be passed to the modal form',
-              wrapInTemplate: true,
-              templateSettings: {
-                useAsyncDeclaration: true,
-                functionName: 'getArguments'
+        readOnly: {
+          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
+        } as any,
+        inputs: [
+          {
+            type: 'textField',
+            id: nanoid(),
+            propertyName: 'modalTitle',
+            label: 'Title',
+            validate: {
+              required: true
+            },
+            jsSetting: true,
+          },
+          {
+            type: 'formAutocomplete',
+            id: nanoid(),
+            propertyName: 'formId',
+            label: 'Modal Form',
+            validate: {
+              required: true
+            },
+            jsSetting: true,
+          }
+        ]
+      })
+      .addSettingsInputRow({
+        id: nanoid(),
+        parentId: 'root',
+        readOnly: {
+          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
+        } as any,
+        inputs: [
+          {
+            type: 'radio',
+            id: nanoid(),
+            propertyName: 'formMode',
+            label: 'Form Mode',
+            buttonGroupOptions: [
+              {
+                title: "Edit",
+                value: "edit",
+                icon: "editIcon"
               },
-              readOnly: {
-                _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
-              } as any,
-            })
-            .toJson()
-          ]
-        }
+              {
+                title: "Read only",
+                value: "readonly",
+                icon: "readonlyIcon"
+              }
+            ],
+            jsSetting: true,
+          },
+          {
+            type: 'customDropdown',
+            id: nanoid(),
+            propertyName: 'modalWidth',
+            label: 'Dialog Width',
+            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+            allowClear: true,
+            dropdownOptions: [
+              {
+                label: "Small",
+                value: "40%"
+              },
+              {
+                label: "Medium",
+                value: "60%"
+              },
+              {
+                label: "Large",
+                value: "80%"
+              }
+            ],
+            jsSetting: true,
+          }
+        ]
+      })
+      .addSettingsInput({
+        id: nanoid(),
+        inputType: 'codeEditor',
+        propertyName: 'formArguments',
+        label: 'Arguments',
+        parentId: 'root',
+        mode: 'dialog',
+        description: 'Arguments you want to be passed to the modal form',
+        wrapInTemplate: true,
+        templateSettings: {
+          useAsyncDeclaration: true,
+          functionName: 'getArguments'
+        },
+        readOnly: {
+          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
+        } as any,
       })
       .addCollapsiblePanel({
         id: nanoid(),
@@ -181,33 +166,6 @@ export const getSettings = () => {
           ]
         }
       })
-      .addCollapsiblePanel({
-        id: nanoid(),
-        propertyName: 'pnlSecurity',
-        parentId: 'root',
-        label: 'Security',
-        labelAlign: "left",
-        expandIconPosition: "start",
-        ghost: true,
-        collapsible: 'header',
-        content: {
-          id: nanoid(),
-          components: [...new DesignerToolbarSettings()
-            .addSettingsInput({
-              id: nanoid(),
-              inputType: 'permissions',
-              propertyName: 'permissions',
-              label: 'Permissions',
-              parentId: 'root',
-              jsSetting: true,
-              readOnly: {
-                _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
-              } as any,
-            })
-            .toJson()
-          ]
-        }
-      })
       .toJson(),
     formSettings: {
       colon: false,
@@ -221,3 +179,5 @@ export const getSettings = () => {
     }
   };
 };
+
+export const showDialogComponents = filterDynamicComponents(getSettings().components, '');
