@@ -309,7 +309,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         payload.applyOrder(newRows);
 
         return axios({
-            url: reorderUrl,
+            url: `${backendUrl}${reorderUrl}`,
             method: 'PUT',
             data: reorderPayload,
             headers: httpHeaders,
@@ -327,7 +327,6 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
                     // real update
                     payload.applyOrder(orderedRows);
                 }
-                return;
             });
     };
 
