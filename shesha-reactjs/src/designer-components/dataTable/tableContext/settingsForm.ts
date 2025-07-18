@@ -522,7 +522,7 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _value: false,
-                          _code: "return getSettingValue(data?.allowReordering) === 'yes';",
+                          _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
                           _mode: 'code',
                         } as any,
                         inputs: [
