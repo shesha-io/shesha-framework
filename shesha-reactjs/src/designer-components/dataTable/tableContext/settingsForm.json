@@ -139,21 +139,6 @@
       "version": 1
     },
     {
-      "id": "8158BBF-8B45-431B-8E2D-A0651C3942ED",
-      "type": "endpointsAutocomplete",
-      "propertyName": "customReorderEndpoint",
-      "parentId": "root",
-      "label": "Custom Reorder Endpoint",
-      "placeholder": "",
-      "description": "The endpoint to use to reorder data (if not provided, the default endpoint will be used).",
-      "prefix": "",
-      "suffix": "",
-      "initialValue": "",
-      "quickviewWidth": "",
-      "settingsValidationErrors": [],
-      "version": 1
-    },    
-    {
       "id": "8fQ68T0MS9Y29Q2oSe_mS",
       "type": "dropdown",
       "propertyName": "dataFetchingMode",
@@ -462,6 +447,27 @@
       "validate": {},
       "settingsValidationErrors": []
     },
+    
+    {
+      "id": "8158BBF-8B45-431B-8E2D-A0651C3942ED",
+      "type": "endpointsAutocomplete",
+      "propertyName": "customReorderEndpoint",
+      "parentId": "root",
+      "label": "Custom Reorder Endpoint",
+      "placeholder": "",
+      "description": "The endpoint to use to reorder data (if not provided, the default endpoint will be used).",
+      "prefix": "",
+      "suffix": "",
+      "initialValue": "",
+      "quickviewWidth": "",
+      "settingsValidationErrors": [],
+      "version": 1,
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
+        "_mode": "code"
+      }
+    }, 
     {
       "id": "hWKZzsgtRKKXBy8TdBFMy",
       "type": "dataSortingEditor",
