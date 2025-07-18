@@ -314,20 +314,20 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             data: reorderPayload,
             headers: httpHeaders,
         })
-            .then(response => {
-                const dataResponse = response.data as IResult<EntityReorderResponse>;
-                if (dataResponse) {
-                    const responseItems = dataResponse.result.items;
-                    const orderedRows = newRows.map(row => {
-                        const newOrder = responseItems[row['id']];
-                        return newOrder
-                            ? { ...row, [payload.propertyName]: newOrder }
-                            : row;
-                    });
-                    // real update
-                    payload.applyOrder(orderedRows);
-                }
-            });
+        .then(response => {
+            const dataResponse = response.data as IResult<EntityReorderResponse>;
+            if (dataResponse) {
+                const responseItems = dataResponse.result.items;
+                const orderedRows = newRows.map(row => {
+                    const newOrder = responseItems[row['id']];
+                    return newOrder
+                        ? { ...row, [payload.propertyName]: newOrder }
+                        : row;
+                });
+                // real update
+                payload.applyOrder(orderedRows);
+            }
+        });
     };
 
     const supportsReordering = (args: SupportsReorderingArgs) => {
