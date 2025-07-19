@@ -670,9 +670,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const reorderPayload: RowsReorderPayload = {
         ...payload,
         propertyName: strictSortBy,
+        customReorderEndpoint: customReorderEndpoint,
       };
 
-      return repository.reorder(reorderPayload, customReorderEndpoint);
+      return repository.reorder(reorderPayload);
     } else return Promise.reject(typeof supported === 'string' ? supported : 'Reordering is not supported');
   };
 
