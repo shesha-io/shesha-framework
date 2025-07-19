@@ -105,12 +105,13 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   return vertical ? (
     <div
       className={styles.vertical}
-      style={{ ...borderStyle, ...containerStyle, height: addPx(lineHeight || '0.9em') }}
+      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em') }}
     ></div>
   ) : (
     <div
       style={{
         ...containerStyle,
+        height: 'max-content',
         width: addPx(lineWidth),
       }}
       key={id}

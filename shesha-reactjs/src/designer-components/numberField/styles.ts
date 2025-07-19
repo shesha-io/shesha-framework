@@ -6,7 +6,6 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
     'sha-input-number-input',
     css`
       padding-inline-start: ${padding?.paddingLeft || '0px'} !important;
-      align-items: center;
       overflow: hidden;
 
       .ant-input-number-input-wrap {
@@ -21,13 +20,10 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         font-weight: ${fontWeight} !important;
         font-family: ${fontFamily};
         text-align: ${textAlign};
-        padding: 0px 11px !important;
-        padding-right: 11px !important;
-        height: 100%;
+        height: 100% !important;
       }
 
       .ant-input-number {
-        height: 100% !important;
         align-items: center;
       }
 
@@ -48,6 +44,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       .ant-input-number-suffix {
         ${!hasSuffix && 'display: none;'}
         margin-inline-end: unset !important;
+        margin-inline-start: 0px !important;
         margin-right: 8px !important;
         position: relative;
 
@@ -59,7 +56,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
 
       .ant-input-number-prefix {
         ${!hasPrefix && 'display: none;'}   
-        margin-inline-end: unset !important;
+        margin-inline-end: 4px !important;
         margin-left: 8px !important ;
         position: relative !important;
 

@@ -48,7 +48,7 @@ export const getItemSettings = () => {
                   id: nanoid(),
                   type: 'textField',
                   propertyName: 'name',
-                  label: 'Component Name',
+                  label: 'Name',
                   size: 'small',
                   validate: {
                     required: true,
