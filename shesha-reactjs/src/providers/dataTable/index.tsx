@@ -130,6 +130,11 @@ interface IDataTableProviderBaseProps {
    * Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)
    */
   disableRefresh?: boolean;
+
+  /**
+   * Custom reorder endpoint
+   */
+  customReorderEndpoint?: string;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -245,6 +250,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     standardSorting: sortingItems,
     allowReordering = false,
     permanentFilter,
+    customReorderEndpoint,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -260,6 +266,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     allowReordering,
     standardSorting: sortingItems2ColumnSorting(sortingItems),
     permanentFilter,
+    customReorderEndpoint,
   });
 
   const changePageSize = (val: number) => {
