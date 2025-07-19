@@ -124,8 +124,8 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     /* Position cancel button at top right corner */
     & button {
       position: absolute;
-      top: 2px;
-      right: 2px;
+      top: 5px;
+      right: 10px;
       z-index: 30;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
