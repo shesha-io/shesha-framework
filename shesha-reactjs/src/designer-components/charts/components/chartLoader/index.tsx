@@ -1,10 +1,13 @@
 import React from 'react';
 import useStyles from '../../styles';
 import { TChartType } from '../../model';
+import { Button } from 'antd';
+import { useTheme } from '@/providers/theme';
 
-const ChartLoader = ({ chartType }: { chartType: TChartType }) => {
+const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick: () => void }) => {
   const { styles, cx } = useStyles();
-  
+  const { theme } = useTheme();
+
   const colors = [
     '#19B411ff',
     '#007E00ff',
@@ -19,25 +22,6 @@ const ChartLoader = ({ chartType }: { chartType: TChartType }) => {
 
   const renderLoader = () => {
     switch (chartType) {
-      default:
-      case 'bar':
-        return (
-          <div className={cx(styles.loaderCard)}>
-            <div className={cx(styles.barChartContainer)}>
-              {[180, 150, 120, 160, 140, 100, 130, 170].map((height, index) => (
-                <div
-                  key={index}
-                  className={cx(styles.bar)}
-                  style={{
-                    height: `${height}px`,
-                    backgroundColor: colors[index]
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        );
-
       case 'pie':
         return (
           <div className={cx(styles.loaderCard)}>
@@ -51,18 +35,18 @@ const ChartLoader = ({ chartType }: { chartType: TChartType }) => {
         return (
           <div className={cx(styles.loaderCard)}>
             <svg viewBox="0 0 300 150" width="300" height="150">
-              <polyline 
-                className={cx(styles.line)} 
-                points="0,120 37.5,90 75,100 112.5,60 150,80 187.5,40 225,70 262.5,50 300,30" 
+              <polyline
+                className={cx(styles.line)}
+                points="0,120 37.5,90 75,100 112.5,60 150,80 187.5,40 225,70 262.5,50 300,30"
               />
-              {[[0, 120], [37.5, 90], [75, 100], [112.5, 60], [150, 80], 
-                [187.5, 40], [225, 70], [262.5, 50], [300, 30]].map((point, index) => (
-                <circle 
+              {[[0, 120], [37.5, 90], [75, 100], [112.5, 60], [150, 80],
+              [187.5, 40], [225, 70], [262.5, 50], [300, 30]].map((point, index) => (
+                <circle
                   key={index}
-                  className={cx(styles.dot)} 
-                  cx={point[0]} 
-                  cy={point[1]} 
-                  r="4" 
+                  className={cx(styles.dot)}
+                  cx={point[0]}
+                  cy={point[1]}
+                  r="4"
                   fill={colors[index]}
                 />
               ))}
@@ -87,12 +71,38 @@ const ChartLoader = ({ chartType }: { chartType: TChartType }) => {
             </svg>
           </div>
         );
-      }
+
+      default:
+          return (
+            <div className={cx(styles.loaderCard)}>
+              <div className={cx(styles.barChartContainer)}>
+                {[180, 150, 120, 160, 140, 100, 130, 170].map((height, index) => (
+                  <div
+                    key={index}
+                    className={cx(styles.bar)}
+                    style={{
+                      height: `${height}px`,
+                      backgroundColor: colors[index]
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+    }
   };
 
   return (
     <div className={cx(styles.chartLoaderWrapper)}>
       {renderLoader()}
+      
+      <Button
+          color={theme.application.errorColor ?? 'red'}
+          size="small"
+          onClick={handleCancelClick}
+        >
+          Cancel
+        </Button>
     </div>
   );
 };

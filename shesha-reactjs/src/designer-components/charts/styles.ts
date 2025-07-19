@@ -102,10 +102,20 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   // Chart Loader Styles
   const chartLoaderWrapper = cx(`${prefixCls}-chart-loader-wrapper`, css`
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 300px;
+    
+    /* Position cancel button at top right corner */
+    & button {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      z-index: 30;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
   `);
 
   const loaderCard = cx(`${prefixCls}-loader-card`, css`
@@ -226,15 +236,6 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     gap: 16px;
     padding: 20px;
     overflow: hidden;
-    
-    /* Float the cancel button above the loader */
-    & button {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 20;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
   `);
   
   return {
