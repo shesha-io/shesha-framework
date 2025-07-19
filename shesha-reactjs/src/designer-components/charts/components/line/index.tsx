@@ -114,7 +114,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     },
     plugins: {
       legend: {
-        display: !!showLegend,
+        display: !!showLegend && simpleOrPivot === 'pivot',
         position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,

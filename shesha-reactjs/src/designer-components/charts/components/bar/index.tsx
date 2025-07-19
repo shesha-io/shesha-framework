@@ -43,7 +43,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     titleFont,
     axisLabelFont,
     legendFont,
-    tickFont
+    tickFont,
+    simpleOrPivot
   } = useChartDataStateContext();
   const chartTitle: string = useGeneratedTitle();
   const isSmallScreen = useIsSmallScreen();
@@ -85,7 +86,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     },
     plugins: {
       legend: {
-        display: !!showLegend,
+        display: !!showLegend && simpleOrPivot === 'pivot',
         position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,

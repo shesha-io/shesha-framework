@@ -1,7 +1,6 @@
 import { useGet } from '@/hooks';
-import { useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
+import { useMetadataDispatcher } from '@/index';
 import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metadata';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { Alert, Button } from 'antd';
@@ -26,7 +25,7 @@ const chartInnerStyle = {
   overflow: 'hidden'
 };
 
-const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
+const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = React.memo(({ evaluatedFilters }) => {
   const {
     chartType,
     entityType,
@@ -60,9 +59,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const { styles, cx } = useStyles();
   const currentControllerRef = useRef<AbortController | null>(null);
-
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
 
   // Memoize the missing properties check to prevent unnecessary re-renders
   const missingPropertiesInfo = useMemo(() => {
@@ -234,18 +230,18 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         if (error?.name === 'AbortError') {
           // Check if this is an intentional abort (restart, retry, unmount, or component initialization)
           const abortMessage = error?.message || '';
-          const isIntentionalAbort = abortMessage.includes('Restarting chart') || 
-                                   abortMessage.includes('Retry fetch initiated') || 
-                                   abortMessage.includes('Unmounting chart') ||
-                                   abortMessage.includes('Request cancelled by user') ||
-                                   abortMessage.includes('Component initialization');
-          
+          const isIntentionalAbort = abortMessage.includes('Restarting chart') ||
+            abortMessage.includes('Retry fetch initiated') ||
+            abortMessage.includes('Unmounting chart') ||
+            abortMessage.includes('Request cancelled by user') ||
+            abortMessage.includes('Component initialization');
+
           if (isIntentionalAbort) {
             // Don't set error for intentional aborts - just clean up
             isFetchingRef.current = false;
             return;
           }
-          
+
           // Handle timeout or other unintentional aborts
           errorMessage = abortMessage.includes('timeout')
             ? `Request timed out after ${requestTimeout / 1000} seconds`
@@ -274,6 +270,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     orderBy,
     orderDirection,
     evaluatedFilters,
+    filters,
     maxResultCount,
     requestTimeout,
     groupingTimeSeriesFormat,
@@ -295,7 +292,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   useEffect(() => {
     // Only fetch data if all required properties are properly configured
     const hasRequiredProperties = entityType && valueProperty && axisProperty && entityType.trim() !== '' && valueProperty.trim() !== '' && axisProperty.trim() !== '';
-    
+
     if (!hasRequiredProperties) {
       // If missing required properties, just set loaded state without fetching
       setIsLoaded(true);
@@ -312,7 +309,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     setFaultyProperties([]);
 
     fetchData();
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, filters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
 
   useEffect(() => {
     // Only fetch metadata if entityType is properly configured
@@ -328,7 +325,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
         if (!valuePropertyLabel || valuePropertyLabel.trim().length === 0) {
           setValuePropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === valueProperty?.toLowerCase())?.label ?? valueProperty);
         }
-      } 
+      }
     }).catch((error) => {
       // Silently handle metadata fetch errors during component initialization
       console.warn('Failed to fetch metadata during chart initialization:', error);
@@ -427,27 +424,21 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
 
     return (
       <div className={cx(styles.loadingContainer)}>
-        <ChartLoader chartType={chartType} />
-        <div className={cx(styles.loadingText)}>Fetching data...</div>
-        <Button
-          color={theme.application.errorColor ?? 'red'}
-          size="small"
-          onClick={() => {
-            if (isFetchingRef.current && currentControllerRef.current) {
-              isFetchingRef.current = false;
-              setError('Request cancelled by user');
-              setIsLoaded(true);
-              setMetadataProcessed(false);
-              try {
-                currentControllerRef.current.abort('Request cancelled by user');
-              } catch {
-                // Ignore abort errors during user cancellation - this is expected behavior
-              }
+        <ChartLoader chartType={chartType} handleCancelClick={() => {
+          if (isFetchingRef.current && currentControllerRef.current) {
+            isFetchingRef.current = false;
+            setError('Request cancelled by user');
+            setIsLoaded(true);
+            setMetadataProcessed(false);
+            try {
+              currentControllerRef.current.abort('Request cancelled by user');
+            } catch {
+              // Ignore abort errors during user cancellation - this is expected behavior
             }
-          }}
-        >
-          Cancel
-        </Button>
+          }
+        }}
+        />
+        <div className={cx(styles.loadingText)}>Fetching data...</div>
       </div>
     );
   }, [state.isLoaded, metadataProcessed, chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded, setMetadataProcessed]);

@@ -33,7 +33,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
       if (isSidebarGroup(actualItem) && actualItem.childItems && actualItem.childItems.length > 0) {
         actualItem.childItems = getActualItemsModel(actualItem.childItems);
       }
-      if (actualItem.requiredPermissions?.length > 0)
+      if (actualItem?.requiredPermissions?.length > 0)
         if (anyOfPermissionsGranted(actualItem?.requiredPermissions))
           return actualItem;
         else
