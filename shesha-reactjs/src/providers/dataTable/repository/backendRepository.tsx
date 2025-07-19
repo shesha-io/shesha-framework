@@ -287,9 +287,8 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
 
     const reorder = (payload: RowsReorderPayload, customReorderEndpoint?: string) => {
         let reorderUrl = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
-        if (customReorderEndpoint?.trim().length > 0) {
+        if (customReorderEndpoint?.trim().length > 0)
             reorderUrl = customReorderEndpoint;
-        }
 
         const oldRows = payload.getOld();
         const newRows = payload.getNew();
