@@ -1,7 +1,6 @@
 import { useGet } from '@/hooks';
-import { useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
+import { useMetadataDispatcher } from '@/index';
 import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metadata';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { Alert, Button } from 'antd';
@@ -26,7 +25,7 @@ const chartInnerStyle = {
   overflow: 'hidden'
 };
 
-const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
+const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = React.memo(({ evaluatedFilters }) => {
   const {
     chartType,
     entityType,
@@ -60,9 +59,6 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const { styles, cx } = useStyles();
   const currentControllerRef = useRef<AbortController | null>(null);
-
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: props.filters });
 
   // Memoize the missing properties check to prevent unnecessary re-renders
   const missingPropertiesInfo = useMemo(() => {
@@ -313,7 +309,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     setFaultyProperties([]);
 
     fetchData();
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, filters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, filters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
 
   useEffect(() => {
     // Only fetch metadata if entityType is properly configured
