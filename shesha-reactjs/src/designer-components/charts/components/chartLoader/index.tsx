@@ -8,8 +8,10 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
   const { styles, cx } = useStyles();
   const { theme } = useTheme();
   const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight
+-    width: window.innerWidth,
+-    height: window.innerHeight
++    width: typeof window !== 'undefined' ? window.innerWidth : 1024,
++    height: typeof window !== 'undefined' ? window.innerHeight : 768
   });
 
   // Listen for window resize events
