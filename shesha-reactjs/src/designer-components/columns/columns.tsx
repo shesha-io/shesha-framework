@@ -122,8 +122,8 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const validatedColumns = validateColumns(columns);
 
     return (
-      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle, overflow: 'hidden' }}>
-        <Row gutter={[gutterX || 0, gutterY || 0]} style={{ margin: 0 }}>
+      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
+        <Row gutter={[gutterX || 0, gutterY || 0]} style={{ margin: 0, height: 'auto' }}>
           <ParentProvider model={model}>
             {validatedColumns &&
               validatedColumns.map((col, index) => (
@@ -134,7 +134,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   pull={col.pull}
                   push={col.push}
                   className="sha-designer-column"
-                  style={{ overflow: 'hidden' }}
+                  style={{ height: 'auto', minHeight: 'auto' }}
                 >
                   <ComponentsContainer
                     containerId={col.id}

@@ -20,6 +20,6 @@ export const defaultStyles = (): IColumnsInputProps => {
     borderRadius: 0,
     gutterX: 12,
     gutterY: 12,
-    stylingBox: "{\"marginBottom\":\"5\",\"overflow\":\"hidden\"}"
+    stylingBox: "{\"marginBottom\":\"5\"}"
   };
 };
