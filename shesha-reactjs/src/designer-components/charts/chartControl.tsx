@@ -274,6 +274,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     orderBy,
     orderDirection,
     evaluatedFilters,
+    filters,
     maxResultCount,
     requestTimeout,
     groupingTimeSeriesFormat,
@@ -312,7 +313,7 @@ const ChartControl: React.FC<IChartsProps> = React.memo((props) => {
     setFaultyProperties([]);
 
     fetchData();
-  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
+  }, [entityType, valueProperty, axisProperty, groupingProperty, orderBy, orderDirection, evaluatedFilters, filters, maxResultCount, requestTimeout, groupingTimeSeriesFormat, timeSeriesFormat, isAxisTimeSeries, isGroupingTimeSeries]);
 
   useEffect(() => {
     // Only fetch metadata if entityType is properly configured
