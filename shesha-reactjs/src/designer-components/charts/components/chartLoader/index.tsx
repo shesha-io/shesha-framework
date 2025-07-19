@@ -93,7 +93,16 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
             >
               <polyline
                 className={cx(styles.line)}
-                points={`0,${responsiveDimensions.svgHeight * 0.8} ${responsiveDimensions.svgWidth * 0.125},${responsiveDimensions.svgHeight * 0.6} ${responsiveDimensions.svgWidth * 0.25},${responsiveDimensions.svgHeight * 0.67} ${responsiveDimensions.svgWidth * 0.375},${responsiveDimensions.svgHeight * 0.4} ${responsiveDimensions.svgWidth * 0.5},${responsiveDimensions.svgHeight * 0.53} ${responsiveDimensions.svgWidth * 0.625},${responsiveDimensions.svgHeight * 0.27} ${responsiveDimensions.svgWidth * 0.75},${responsiveDimensions.svgHeight * 0.47} ${responsiveDimensions.svgWidth * 0.875},${responsiveDimensions.svgHeight * 0.33} ${responsiveDimensions.svgWidth},${responsiveDimensions.svgHeight * 0.2}`}
+                points={`0,${responsiveDimensions.svgHeight * 0.8} ${responsiveDimensions.svgWidth * 0.125},
+                  ${responsiveDimensions.svgHeight * 0.6} ${responsiveDimensions.svgWidth * 0.25},
+                  ${responsiveDimensions.svgHeight * 0.67} ${responsiveDimensions.svgWidth * 0.375},
+                  ${responsiveDimensions.svgHeight * 0.4} ${responsiveDimensions.svgWidth * 0.5},
+                  ${responsiveDimensions.svgHeight * 0.53} ${responsiveDimensions.svgWidth * 0.625},
+                  ${responsiveDimensions.svgHeight * 0.27} ${responsiveDimensions.svgWidth * 0.75},
+                  ${responsiveDimensions.svgHeight * 0.47} ${responsiveDimensions.svgWidth * 0.875},
+                  ${responsiveDimensions.svgHeight * 0.33} ${responsiveDimensions.svgWidth},
+                  ${responsiveDimensions.svgHeight * 0.2}`
+                }
               />
               {[
                 [0, responsiveDimensions.svgHeight * 0.8],
