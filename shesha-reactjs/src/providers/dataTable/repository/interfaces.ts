@@ -7,6 +7,7 @@ export interface RowsReorderPayload {
     getOld: () => object[];
     getNew: () => object[];
     applyOrder: (orderedItems: object[]) => void;
+    customReorderEndpoint?: string;
 }
 
 export interface IRepository<TCreateOptions = any, TUpdateOptions = any, TDeleteOptions = any> {
@@ -14,7 +15,7 @@ export interface IRepository<TCreateOptions = any, TUpdateOptions = any, TDelete
     prepareColumns: (configurableColumns: IConfigurableColumnsProps[]) => Promise<DataTableColumnDto[]>;
     fetch: (payload: IGetListDataPayload) => Promise<ITableDataInternalResponse>;
     exportToExcel: (payload: IGetListDataPayload) => Promise<void>;
-    reorder: (payload: RowsReorderPayload, customReorderEndpoint?: string) => Promise<void>;
+    reorder: (payload: RowsReorderPayload) => Promise<void>;
     supportsReordering?: (args: SupportsReorderingArgs) => boolean | string;
     supportsGrouping?: (args: SupportsGroupingArgs) => boolean;
     performCreate: (rowIndex: number, data: any, options: TCreateOptions) => Promise<any>;
