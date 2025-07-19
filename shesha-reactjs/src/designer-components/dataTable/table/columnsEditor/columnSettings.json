@@ -597,14 +597,69 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "name": "globalState",
-          "description": "The global state of the application",
+          "name": "application",
+          "description": "Application context and utilities",
+          "type": "object"
+        },
+        {
+          "name": "contexts",
+          "description": "Contexts data",
           "type": "object"
         },
         {
           "name": "data",
           "description": "Selected form values",
           "type": "object"
+        },
+        {
+          "name": "fileSaver",
+          "description": "File saving utilities",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "Form instance",
+          "type": "object"
+        },
+        {
+          "name": "formMode",
+          "description": "Form mode",
+          "type": "'designer' | 'edit' | 'readonly'"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "HTTP client for API calls.",
+          "type": "object"
+        },
+        {
+          "name": "message",
+          "description": "API for displaying toast messages",
+          "type": "object"
+        },
+        {
+          "name": "moment",
+          "description": "momentjs library for Date/time manipulation",
+          "type": "object"
+        },
+        {
+          "name": "pageContext",
+          "description": "Contexts data of current page",
+          "type": "object"
+        },
+        {
+          "name": "selectedRow",
+          "description": "Selected row of nearest table (null if not available)",
+          "type": "object"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Function to set globalState",
+          "type": "function"
         }
       ],
       "version": 4,
@@ -612,7 +667,6 @@
       "placeholder": "",
       "wrapInTemplate": true,
       "templateSettings": { "functionName": "customVisibility" },
-      "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();",
       "jsSetting": false,
       "environment": "front-end"
     },
