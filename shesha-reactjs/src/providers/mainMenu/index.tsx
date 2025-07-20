@@ -16,6 +16,42 @@ export interface MainMenuProviderProps {
   mainMenuConfigKey?: string;
 }
 
+// Deep clone items to prevent mutations
+const deepCloneItems = (items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
+  return items.map(item => {
+    const clonedItem = { ...item };
+    if (isSidebarGroup(clonedItem) && clonedItem.childItems) {
+      clonedItem.childItems = deepCloneItems(clonedItem.childItems);
+    }
+    return clonedItem;
+  });
+};
+
+const getItemsWithFormNavigation = (items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
+  const itemsToCheck: ISidebarMenuItem[] = [];
+
+  const collectItems = (itemList: ISidebarMenuItem[]) => {
+    itemList?.forEach((item) => {
+      if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
+        collectItems(item.childItems);
+        return;
+      }
+
+      if (
+        isNavigationActionConfiguration(item.actionConfiguration)
+        && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
+        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
+      ) {
+        itemsToCheck.push(item);
+      }
+    });
+  };
+
+  collectItems(items);
+  return itemsToCheck;
+};
+
 const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(uiReducer, { ...MAIN_MENU_CONTEXT_INITIAL_STATE });
 
@@ -28,17 +64,6 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
   // Use ref to track the current operation to prevent race conditions
   const currentOperationId = useRef<number>(0);
   const formPermissionedItems = useRef<ISidebarMenuItem[]>([]);
-
-  // Deep clone items to prevent mutations
-  const deepCloneItems = useCallback((items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
-    return items.map(item => {
-      const clonedItem = { ...item };
-      if (isSidebarGroup(clonedItem) && clonedItem.childItems) {
-        clonedItem.childItems = deepCloneItems(clonedItem.childItems);
-      }
-      return clonedItem;
-    });
-  }, []);
 
   const getActualItemsModel = useCallback((items: ISidebarMenuItem[]) => {
     const actualItems = items.map((item) => {
@@ -90,31 +115,6 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
 
     return items.map(updateItem);
   }, [anyOfPermissionsGranted]);
-
-  const getItemsWithFormNavigation = useCallback((items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
-    const itemsToCheck: ISidebarMenuItem[] = [];
-
-    const collectItems = (itemList: ISidebarMenuItem[]) => {
-      itemList?.forEach((item) => {
-        if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
-          collectItems(item.childItems);
-          return;
-        }
-
-        if (
-          isNavigationActionConfiguration(item.actionConfiguration)
-          && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-          && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
-          && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
-        ) {
-          itemsToCheck.push(item);
-        }
-      });
-    };
-
-    collectItems(items);
-    return itemsToCheck;
-  }, []);
 
   const processMenuItems = useCallback(async (items: ISidebarMenuItem[], operationId: number) => {
     // Create a deep clone to prevent mutations during async operations
