@@ -109,15 +109,6 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev };
       newModel.items = prev.items;
       return newModel;
-    })
-    .add<IButtonGroupComponentProps>(14, (prev) => {
-      const newButtons = prev.items.map((item) => {
-        if (isItem(item)) {
-          return { ...item, buttonType: item.buttonType === 'ghost' as any ? 'text' : item.buttonType };
-        }
-        return item;
-      });
-      return { ...prev, items: newButtons };
     }),
   settingsFormMarkup: (props) => getSettings(props),
 };

@@ -72,7 +72,7 @@ export const getSettings = () => {
             id: nanoid(),
             propertyName: 'modalWidth',
             label: 'Dialog Width',
-            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+            customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
             allowClear: true,
             dropdownOptions: [
               {
