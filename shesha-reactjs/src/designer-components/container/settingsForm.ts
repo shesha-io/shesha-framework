@@ -101,6 +101,7 @@ export const getSettings = (data) => {
                 label: 'No Default Styling',
                 parentId: commonTabId,
                 size: 'small',
+                tooltip: 'If checked, the default styles and classes of the container will not be applied.',
                 jsSetting: true,
               })
               .toJson()
@@ -363,6 +364,7 @@ export const getSettings = (data) => {
                                             id: nanoid(),
                                             label: 'Show Advanced',
                                             hideLabel: true,
+                                            tooltip: 'Show advanced settings',
                                             propertyName: 'showAdvanced',
                                             icon: 'tuneIcon'
                                           }
