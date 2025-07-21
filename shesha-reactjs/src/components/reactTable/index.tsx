@@ -23,6 +23,7 @@ import { getColumnAnchored, getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstance } from '@/providers/index';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
@@ -331,6 +332,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [state?.columnResizing]);
 
   const { executeAction } = useConfigurableActionDispatcher();
+  const allData = useAvailableConstantsData();
   const performOnRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick)
       return () => {
@@ -339,7 +341,9 @@ export const ReactTable: FC<IReactTableProps> = ({
 
     return (data,) => {
       const evaluationContext = {
+        ...allData,
         data,
+        selectedRow: data?.original,
       };
 
       executeAction({
@@ -347,7 +351,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowDoubleClick]);
+  }, [onRowDoubleClick, allData]);
 
   const handleDoubleClickRow = (row, index) => {
     if (typeof onRowDoubleClick === 'object'){
