@@ -19,6 +19,7 @@ export interface IShowModalActionArguments {
   buttons?: ButtonGroupItemProps[];
   footerButtons?: ModalFooterButtons;
   showModalFooter?: boolean;
+  showCloseIcon?: boolean;
   /**
    * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
    */
