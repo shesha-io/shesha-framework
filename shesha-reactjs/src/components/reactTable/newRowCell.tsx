@@ -100,7 +100,9 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
       })}
     >
       {columnConfig && columnConfig.columnType === 'data' && (
-        <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
+        <div className={styles.shaCellParentFW}>
+          <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
+        </div>
       )}
       {columnConfig && columnConfig.columnType === 'form' && (
         <CreateFormCell columnConfig={columnConfig} {...parentFormProps} />
