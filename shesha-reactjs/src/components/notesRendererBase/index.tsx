@@ -126,18 +126,28 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
       // Assuming they are available as props
 
       // 🔥 FIX IS HERE: ensure ownerType is a string
-      if ((postNotes as any).ownerId) {
-        payload.ownerId = (postNotes as any).ownerId;
-      }
-
-      if ((postNotes as any).ownerType) {
-        const ot = (postNotes as any).ownerType;
-        payload.ownerType = typeof ot === 'string' ? ot : ot.id;
-      }
-
-      if ((postNotes as any).category) {
-        payload.category = (postNotes as any).category;
-      }
+-     if ((postNotes as any).ownerId) {
+-       payload.ownerId = (postNotes as any).ownerId;
+-     }
+-
+-     if ((postNotes as any).ownerType) {
+-       const ot = (postNotes as any).ownerType;
+-       payload.ownerType = typeof ot === 'string' ? ot : ot.id;
+-     }
+-
+-     if ((postNotes as any).category) {
+-       payload.category = (postNotes as any).category;
+-     }
++     // These values should come from props or context
++     if (props.ownerId) {
++       payload.ownerId = props.ownerId;
++     }
++     if (props.ownerType) {
++       payload.ownerType = normalizeOwnerType(props.ownerType);
++     }
++     if (props.category) {
++       payload.category = props.category;
++     }
       if (onCreateAction) {
         // This would be called after the note is actually created in the success handler
       }
