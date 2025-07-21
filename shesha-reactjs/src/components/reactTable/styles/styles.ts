@@ -271,6 +271,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 z-index: 999;
                 width: calc(135% - 2px) !important;
               }
+              
+              /* Override vertical alignment for form controls in table cells */
+              & .ant-select,
+              & .ant-input,
+              & .ant-input-number,
+              & .ant-picker {
+                vertical-align: middle !important;
+              }
           }
 
           .${shaCellParentFW} {
@@ -280,6 +288,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 position: relative;
                 z-index: 999;
                 width: calc(135% - 2px) !important;
+              }
+              
+              /* Override vertical alignment for form controls in table cells */
+              & .ant-select,
+              & .ant-input,
+              & .ant-input-number,
+              & .ant-picker {
+                vertical-align: middle !important;
               }
           }
 
