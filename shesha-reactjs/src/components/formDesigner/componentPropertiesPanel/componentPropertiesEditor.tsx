@@ -5,6 +5,7 @@ import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
 import { IConfigurableFormComponent } from '@/providers';
 import { useFormDesignerActions } from '@/providers/formDesigner';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponent;
@@ -22,7 +23,7 @@ const getDefaultFactory = (markup: FormMarkup, isInModal?: boolean): ISettingsFo
   const evaluatedMarkup = typeof markup === 'function'
     ? markup({})
     : markup;
-  return ({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
+  return wrapDisplayName(({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
       <GenericSettingsForm
         readOnly={readOnly}
@@ -35,10 +36,10 @@ const getDefaultFactory = (markup: FormMarkup, isInModal?: boolean): ISettingsFo
         formRef={formRef}
         propertyFilter={propertyFilter}
         layoutSettings={layoutSettings}
-        isInModal={isInModal} 
+        isInModal={isInModal}
       />
     );
-  };
+  }, "ComponentDefaultSettings");
 };
 
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {

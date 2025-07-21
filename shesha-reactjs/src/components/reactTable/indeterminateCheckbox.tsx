@@ -11,3 +11,5 @@ export const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }: any
 
   return <input type="checkbox" ref={resolvedRef} {...rest} />;
 });
+
+IndeterminateCheckbox.displayName = "IndeterminateCheckbox";

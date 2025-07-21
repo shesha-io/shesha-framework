@@ -82,6 +82,6 @@ namespace Shesha.Domain
         public virtual bool Hidden { get; set; }
 
         [MaxLength(40)]
-        public virtual string Md5 { get; set; }
+        public virtual string Md5 { get; set; } = string.Empty;
     }
 }

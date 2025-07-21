@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
-    public class NotificationManager : ConfigurationItemManager<NotificationTypeConfig>, INotificationManager, ITransientDependency
+    public class NotificationManager : ConfigurationItemManager<NotificationTypeConfig, NotificationTypeConfigRevision>, INotificationManager, ITransientDependency
     {
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreference;
@@ -221,22 +221,24 @@ namespace Shesha.Notifications
                 validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
             validationResults.ThrowValidationExceptionIfAny(L);
 
-            var form = new NotificationTypeConfig
+            var notification = new NotificationTypeConfig
             {
                 Name = input.Name,
                 Module = input.Module,
                 Folder = input.Folder,
                 OrderIndex = input.OrderIndex,
             };
-            form.Origin = form;
+            notification.Origin = notification;
 
-            var revision = form.EnsureLatestRevision();
+            await Repository.InsertAsync(notification);
+
+            var revision = notification.MakeNewRevision();
             revision.Description = input.Description;
             revision.Label = input.Label;
 
-            await Repository.InsertAsync(form);
+            await RevisionRepository.InsertAsync(revision);
 
-            return form;
+            return notification;
         }
 
         public override Task<NotificationTypeConfig> DuplicateAsync(NotificationTypeConfig item)

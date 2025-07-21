@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -21,7 +22,7 @@ namespace Shesha.Web.FormsDesigner.Services
     /// <summary>
     /// Form manager
     /// </summary>
-    public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
+    public class FormManager : ConfigurationItemManager<FormConfiguration, FormConfigurationRevision>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IModuleManager _moduleManager;
@@ -300,14 +301,16 @@ namespace Shesha.Web.FormsDesigner.Services
             };
             form.Origin = form;
 
-            var revision = form.EnsureLatestRevision();
+            await Repository.InsertAsync(form);
+
+            var revision = form.MakeNewRevision();
             revision.Description = input.Description;
             revision.Label = input.Label;
             revision.Markup = string.Empty;
             revision.IsTemplate = false;
             form.Normalize();
 
-            await Repository.InsertAsync(form);
+            await RevisionRepository.InsertAsync(revision);
 
             return form;
         }

@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Shesha.Services.Settings
 {
     /// inheritedDoc
-    public class SettingStore : ConfigurationItemManager<SettingConfiguration>, ISettingStore, ITransientDependency,
+    public class SettingStore : ConfigurationItemManager<SettingConfiguration, SettingConfigurationRevision>, ISettingStore, ITransientDependency,
         IAsyncEventHandler<EntityChangedEventData<SettingDefinition>>,
         IAsyncEventHandler<EntityChangingEventData<SettingValue>>
     {

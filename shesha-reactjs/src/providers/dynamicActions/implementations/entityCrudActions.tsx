@@ -5,6 +5,7 @@ import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dyn
 import React, { PropsWithChildren, useMemo } from 'react';
 import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IEntityCrudActionsProps {
 
@@ -83,13 +84,13 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
 };
 
 const entityActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
-    return props => {
+    return wrapDisplayName(props => {
         const testItems = useMemo<ButtonGroupItemProps[]>(() => {
             return EntityTestItems;
         }, []);
 
         return (<WrappedComponent {...props} items={testItems} />);
-    };
+    }, "entityActionsHoc");
 };
 
 export const EntityCrudActions: FC<PropsWithChildren<IEntityCrudActionsProps>> = ({ children }) => {

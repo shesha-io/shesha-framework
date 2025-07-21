@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Shesha.Services.ReferenceLists
 {
     /// inheritedDoc
-    public class ReferenceListManager : ConfigurationItemManager<ReferenceList>, IReferenceListManager, ITransientDependency
+    public class ReferenceListManager : ConfigurationItemManager<ReferenceList, ReferenceListRevision>, IReferenceListManager, ITransientDependency
     {
         private readonly IRepository<ReferenceListItem, Guid> _listItemsRepository;
 
@@ -261,13 +261,15 @@ namespace Shesha.Services.ReferenceLists
             };
             refList.Origin = refList;
 
-            var revision = refList.EnsureLatestRevision();
+            await Repository.InsertAsync(refList);
+
+            var revision = refList.MakeNewRevision();
 
             revision.Description = input.Description;
             revision.Label = input.Label;
             refList.Normalize();
 
-            await Repository.InsertAsync(refList);
+            await RevisionRepository.InsertAsync(revision);
 
             return refList;
         }

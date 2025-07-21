@@ -413,7 +413,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <SettingsFormItem name="widthUnits" label="Units">
             <Select disabled={readOnly} allowClear>
               <Select.Option key={1} value='%'>Percentage (%)</Select.Option>
-              <Select.Option key={2} value='px'>'Pixels (px)</Select.Option>
+              <Select.Option key={2} value='px'>Pixels (px)</Select.Option>
             </Select>
           </SettingsFormItem>
         }

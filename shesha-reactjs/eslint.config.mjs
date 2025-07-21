@@ -6,6 +6,7 @@ import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
+import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,7 @@ export default [{
     ],
     plugins: {
         jsdoc,
+        "react": reactPlugin,
         "react-hooks": hooksPlugin,
         "@typescript-eslint": typescriptEslint,
         "@stylistic": stylistic,
@@ -99,6 +101,8 @@ export default [{
 
     rules: {
         ...hooksPlugin.configs.recommended.rules,
+        ...reactPlugin.configs.recommended.rules,
+        "react/prop-types": ["off"],
         "no-restricted-imports": ["error", {
             paths: ["@/utils/publicUtils",
                 {

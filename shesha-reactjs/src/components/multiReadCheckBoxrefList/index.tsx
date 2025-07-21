@@ -53,8 +53,8 @@ export const MultiReadCheckBoxRefList: FC<IMultiReadCheckBoxRefListProps> = ({
 
   return (
     <ShaSpin spinning={refListLoading}>
-      {result?.map(({ item, checked }) => (
-        <DisplayFormItem label={item}>{displayText(checked)}</DisplayFormItem>
+      {result?.map(({ item, checked, id }) => (
+        <DisplayFormItem label={item} key={id}>{displayText(checked)}</DisplayFormItem>
       ))}
     </ShaSpin>
   );

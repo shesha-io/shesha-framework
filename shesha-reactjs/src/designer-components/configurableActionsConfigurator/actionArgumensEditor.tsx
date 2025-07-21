@@ -11,6 +11,7 @@ import GenericArgumentsEditor from './genericArgumentsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
 import { useStyles } from '../_settings/styles/styles';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IActionArgumentsEditorProps {
   action: IConfigurableActionDescriptor;
@@ -26,7 +27,7 @@ const getDefaultFactory = (
   readOnly: boolean
 ): IConfigurableActionArgumentsFormFactory => {
   const { argumentsFormMarkup: markup } = action;
-  return ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
+  return wrapDisplayName(({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
 
     const markupFactory = typeof markup === 'function'
       ? (markup as FormMarkupFactory)
@@ -47,7 +48,7 @@ const getDefaultFactory = (
         cacheKey={cacheKey}
       />
     );
-  };
+  }, "defaultArguments");
 };
 
 export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({

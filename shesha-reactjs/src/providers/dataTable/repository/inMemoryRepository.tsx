@@ -4,6 +4,7 @@ import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
 import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
 import { IHasFormDataSourceConfig } from "@/providers";
+import { wrapDisplayName } from "@/utils/react";
 
 export interface IWithInMemoryRepositoryArgs {
     valueAccessor: () => object[];
@@ -130,11 +131,11 @@ export const useInMemoryRepository = (args: IWithInMemoryRepositoryArgs): IRepos
 export function withInMemoryRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithInMemoryRepositoryArgs): FC<WrappedProps> {
     const { valueAccessor, onChange } = args;
 
-    return props => {
+    return wrapDisplayName(props => {
         const repository = useInMemoryRepository({ valueAccessor, onChange });
 
         return (<WrappedComponent {...props} repository={repository} modelType={null} />);
-    };
+    }, "withInMemoryRepository");
 };
 
 
@@ -144,9 +145,9 @@ export interface IWithFormFieldRepositoryArgs {
     onChange?: (...args: any[]) => void;
 }
 export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>): FC<WrappedProps> {
-    return props => {
+    return wrapDisplayName(props => {
         const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
-        
+
         const valueAccessor = useCallback(() => getFieldValue(propertyName), [propertyName]);
         const onChangeAccessor = useCallback((newValue: object[]) => {
             if (onChange)
@@ -156,5 +157,5 @@ export function withFormFieldRepository<WrappedProps>(WrappedComponent: Componen
         const repository = useInMemoryRepository({ valueAccessor, onChange: onChangeAccessor });
 
         return (<WrappedComponent {...props} repository={repository} modelType={null} />);
-    };
+    }, "withFormFieldRepository");
 };

@@ -19,7 +19,9 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Base class of the Configuration Item Manager
     /// </summary>
-    public abstract class ConfigurationItemManager<TItem> : AbpServiceBase, IConfigurationItemManager<TItem> where TItem : ConfigurationItem, new()
+    public abstract class ConfigurationItemManager<TItem, TRevision> : AbpServiceBase, IConfigurationItemManager<TItem> 
+        where TItem : ConfigurationItem, new()
+        where TRevision: ConfigurationItemRevision
     {
         /// <summary>
         /// Configurable Item type supported by the current manager
@@ -29,6 +31,7 @@ namespace Shesha.ConfigurationItems
         private string? _discriminator;
         public string Discriminator => _discriminator ?? (_discriminator = ConfigurationItemHelper.GetDiscriminator(ItemType));
         public IRepository<TItem, Guid> Repository { get; set; }
+        public IRepository<TRevision, Guid> RevisionRepository { get; set; }
         public IRepository<Module, Guid> ModuleRepository { get; set; }
         public IConfigurationItemHelper ConfigurationItemHelper { get; set; }
         public IConfigurationFrameworkRuntime CfRuntime { get; set; }

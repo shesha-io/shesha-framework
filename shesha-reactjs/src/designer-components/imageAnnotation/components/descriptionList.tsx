@@ -17,7 +17,7 @@ const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
         ?.map(mrk => {
           const [index, comment] = mrk.comment?.split('.') || [];
           return (
-            <div className={styles.listItem}>
+            <div className={styles.listItem} key={mrk.id}>
               <span className={styles.numbering}>{`${index}.`}</span>
               <DisplayFormItem> {comment}</DisplayFormItem>
             </div>

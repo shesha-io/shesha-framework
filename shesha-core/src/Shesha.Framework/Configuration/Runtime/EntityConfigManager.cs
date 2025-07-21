@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Shesha.Configuration.Runtime
 {
     /// inheritedDoc
-    public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
+    public class EntityConfigManager : ConfigurationItemManager<EntityConfig, EntityConfigRevision>, IEntityConfigManager, ITransientDependency
     {
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
 

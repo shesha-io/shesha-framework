@@ -4,13 +4,13 @@ import { useActiveDoc } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { useItemRevisionHistory } from './hooks';
 import { HistoryItem } from './historyItem';
+import { IDocumentInstance } from '@/configuration-studio/models';
 
-export interface IRevisionHistoryProps {
-
+export interface IRevisionHistoryDrawerInnerProps {
+    doc: IDocumentInstance;
 }
 
-export const RevisionHistoryDrawer: FC<IRevisionHistoryProps> = () => {
-    const doc = useActiveDoc();
+const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc }) => {
     const cs = useConfigurationStudio();
     const { data, isLoading } = useItemRevisionHistory(doc.itemId);
 
@@ -44,4 +44,12 @@ export const RevisionHistoryDrawer: FC<IRevisionHistoryProps> = () => {
             </Spin>
         </Drawer>
     );
+};
+
+export const RevisionHistoryDrawer: FC = () => {
+
+    const doc = useActiveDoc();
+    return doc
+        ? <RevisionHistoryDrawerInner doc={doc} />
+        : undefined;
 };
