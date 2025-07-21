@@ -189,7 +189,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     if (newNotes) {
       dispatch(updateNotesRequestAction(newNotes));
 
-      const payload = newNotes;
+      const payload = { ...newNotes };
 
       if (!newNotes.ownerId) {
         payload.ownerId = ownerId;
