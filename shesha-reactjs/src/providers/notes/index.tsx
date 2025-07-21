@@ -204,7 +204,8 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
       }
 
       updateNotesHttp(payload as CreateNoteDto)
-        .then((response: any) => {
+      updateNotesHttp(payload as CreateNoteDto)
+        .then((response) => {
           // The Api is misleading us in here by saying it returns `NoteDto` when it actually returns IShaHttpResponse<NoteDto[]>
           const { result, success } = response as IShaHttpResponse<NoteDto>;
           if (success && result) {
