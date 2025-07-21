@@ -141,14 +141,14 @@ export const ReactTable: FC<IReactTableProps> = ({
         // The header can use the table's getToggleAllRowsSelectedProps method
         // to render a checkbox
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span>
+          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
         // The cell can use the individual row's getToggleRowSelectedProps method
         // to the render a checkbox
         Cell: ({ row }) => (
-          <span>
+          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
               onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}

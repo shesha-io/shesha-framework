@@ -111,7 +111,9 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
       <FormItemProvider namePrefix=''> 
-        <FormComponentMemo componentModel={componentModel} componentRef={componentRef} />
+        <div style={{ display: 'flex', alignItems: 'center', minHeight: '100%' }}>
+          <FormComponentMemo componentModel={componentModel} componentRef={componentRef} />
+        </div>
       </FormItemProvider>
     </CustomErrorBoundary>
   );
