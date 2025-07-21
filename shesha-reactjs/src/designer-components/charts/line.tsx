@@ -11,6 +11,8 @@ import { getSettings } from './settingsFormIndividual';
 import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
+import { useNestedPropertyMetadatAccessor } from '@/index';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
@@ -19,6 +21,9 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <LineChartOutlined />,
   Factory: ({ model }) => {
+    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.entityType);
+    const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: model.filters });
+
     const {
       dimensionsStyles,
       borderStyles,
@@ -52,7 +57,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
                 flexDirection: 'column',
                 overflow: 'hidden'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' filters={model.filters} />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' evaluatedFilters={evaluatedFilters} />}
               </div>
             </ChartDataProvider>
           );
