@@ -18,7 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getFormApi } from '@/providers/form/formApi';
 import { App } from 'antd';
 import moment from 'moment';
-import { INote } from '@/providers/notes/contexts';
+import { ICreateNotePayload, INote } from '@/providers/notes/contexts';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -65,7 +65,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
       if (!model.onCreated) return;
 
       executeScript<void>(model?.onCreated, {
-        createdNotes,
+        event: { ...event, notes:createdNotes },
         data,
         form: getFormApi(form),
         globalState,
@@ -75,16 +75,19 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    
+
     const handleDeleteAction = (note: INote) => {
       if (!model.onDeleteAction) return;
 
       executeScript<void>(model.onDeleteAction, {
-        note: {
-          ...note,
-          creationTime: note.creationTime || null,
-          priority: note.priority || null,
-          parentId: note.parentId || null,
+        event: {
+          ...event,
+          note: {
+            ...note,
+            creationTime: note.creationTime || null,
+            priority: note.priority || null,
+            parentId: note.parentId || null,
+          },
         },
         data,
         form: getFormApi(form),
@@ -95,12 +98,12 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    
-    const handleCreateAction = (note: INote) => {
+
+    const handleCreateAction = (note: ICreateNotePayload) => {
       if (!model.onCreateAction) return;
 
       executeScript<void>(model.onCreateAction, {
-        note,
+        event: { ...event, note },
         data,
         form: getFormApi(form),
         globalState,
@@ -110,12 +113,12 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    
+
     const handleUpdateAction = (note: INote) => {
       if (!model.onUpdateAction) return;
 
       executeScript<void>(model.onUpdateAction, {
-        note,
+        event: { ...event, note },
         data,
         form: getFormApi(form),
         globalState,

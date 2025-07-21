@@ -2,7 +2,7 @@ import React, { FC, CSSProperties, useEffect, useRef } from 'react';
 import { useNotes } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
 import { useStyles } from './styles/styles';
-import { INote } from '@/providers/notes/contexts';
+import { ICreateNotePayload, INote } from '@/providers/notes/contexts';
 
 export interface INotesRendererProps {
   showCommentBox?: boolean;
@@ -17,7 +17,7 @@ export interface INotesRendererProps {
   minLength?: number;
   maxLength?: number;
   onDeleteAction?: (note: INote) => void;
-  onCreateAction?: (note: any) => void;
+  onCreateAction?: (note: ICreateNotePayload) => void;
   allowEdit?: boolean;
   onUpdateAction?: (note: INote) => void;
 }

@@ -189,23 +189,15 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     if (newNotes) {
       dispatch(updateNotesRequestAction(newNotes));
 
-      const payload = newNotes;
-
-      if (!newNotes.ownerId) {
-        payload.ownerId = ownerId;
-      }
-
-      if (!newNotes.ownerType) {
-        payload.ownerType = ownerType;
-      }
-
-      if (!newNotes.category) {
-        payload.category = category;
-      }
+      const payload: ICreateNotePayload = {
+        ...newNotes,
+        ownerId: newNotes.ownerId || ownerId,
+        ownerType: normalizeOwnerType(newNotes.ownerType || ownerType),
+        category: newNotes.category || category,
+      };
 
       updateNotesHttp(payload as CreateNoteDto)
-        .then((response: any) => {
-          // The Api is misleading us in here by saying it returns `NoteDto` when it actually returns IShaHttpResponse<NoteDto[]>
+        .then((response) => {
           const { result, success } = response as IShaHttpResponse<NoteDto>;
           if (success && result) {
             updateNotesSuccess(result);

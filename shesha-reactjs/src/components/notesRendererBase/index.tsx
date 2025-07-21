@@ -31,10 +31,13 @@ export interface INotesRendererBaseProps {
   minLength?: number;
   maxLength?: number;
   onDeleteAction?: (note: INote) => void;
-  onCreateAction?: (note: INote) => void;
+  onCreateAction?: (note: ICreateNotePayload) => void;
   allowEdit?: boolean;
   updateNotes?: (payload: ICreateNotePayload) => void;
   onUpdateAction?: (note: ICreateNotePayload) => void;
+  ownerId?: string;
+  ownerType?: string | { id: string };
+  category?: string;
 }
 
 export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
@@ -60,6 +63,9 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   updateNotes,
   onUpdateAction,
   onDeleteAction,
+  ownerId,
+  ownerType,
+  category,
 }) => {
   const [newComments, setNewComments] = useState('');
   const [charCount, setCharCount] = useState(0);
@@ -121,26 +127,11 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
         noteText: newComments,
       };
 
-      // Normalize ownerId and ownerType (which should come from props or context)
-      // NOTE: If you're passing them into this component, grab them here too
-      // Assuming they are available as props
+      if (ownerId) payload.ownerId = ownerId;
+      if (ownerType) payload.ownerType = typeof ownerType === 'string' ? ownerType : ownerType.id;
+      if (category) payload.category = category;
 
-      // 🔥 FIX IS HERE: ensure ownerType is a string
-      if ((postNotes as any).ownerId) {
-        payload.ownerId = (postNotes as any).ownerId;
-      }
-
-      if ((postNotes as any).ownerType) {
-        const ot = (postNotes as any).ownerType;
-        payload.ownerType = typeof ot === 'string' ? ot : ot.id;
-      }
-
-      if ((postNotes as any).category) {
-        payload.category = (postNotes as any).category;
-      }
-      if (onCreateAction) {
-        // This would be called after the note is actually created in the success handler
-      }
+      onCreateAction(payload);
       postNotes(payload);
     } else {
       notification.info({
@@ -176,7 +167,6 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
         };
         updateNotes(payload);
 
-        // Call onUpdateAction if provided
         if (onUpdateAction) {
           onUpdateAction(payload);
         }

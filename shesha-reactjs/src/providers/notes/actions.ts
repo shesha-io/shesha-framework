@@ -72,8 +72,8 @@ export const onNoteAddedAction = createAction<INotesStateContext, INote>(NotesAc
   newNotes,
 }));
 
-export const onNoteUpdatedAction = createAction<INotesStateContext, INote>(NotesActionEnums.OnNoteUpdated, (newNotes) => ({
-  newNotes,
+export const onNoteUpdatedAction = createAction<INotesStateContext, INote>(NotesActionEnums.OnNoteUpdated, (updatedNotes) => ({
+  newNotes: updatedNotes,
 }));
 
 export const onNoteRemovedAction = createAction<INotesStateContext, string>(
@@ -91,11 +91,11 @@ export const setSettingsAction = createAction<INotesStateContext, INoteSettings>
 //#region update notes
 export const updateNotesRequestAction = createAction<INotesStateContext, ICreateNotePayload>(
   NotesActionEnums.UpdateNotesRequest,
-  (newNotes) => ({ newNotes })
+  (updateNote) => ({ newNotes: updateNote })
 );
 export const updateNotesSuccessAction = createAction<INotesStateContext, ICreateNotePayload | INote>(
   NotesActionEnums.UpdateNotesSuccess,
-  (newNotes) => ({ newNotes })
+  (updateNote) => ({ newNotes:updateNote })
 );
 export const updateNotesErrorAction = createAction<INotesStateContext, any>(
   NotesActionEnums.UpdateNotesError,
