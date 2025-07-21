@@ -132,13 +132,13 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;
       }
       case 'switch': {
-        return <Switch checked={checked} defaultChecked={defaultChecked} disabled />;
+        return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...style }} />;
       }
 
       default:
         break;
     }
-    return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+    return <div style={style}>{Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}</div>;
   }, [value,
     type,
     dateFormat,
