@@ -191,17 +191,9 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
 
       const payload = { ...newNotes };
 
-      if (!newNotes.ownerId) {
-        payload.ownerId = ownerId;
-      }
-
-      if (!newNotes.ownerType) {
-        payload.ownerType = ownerType;
-      }
-
-      if (!newNotes.category) {
-        payload.category = category;
-      }
+      payload.ownerId = payload.ownerId || ownerId;
+      payload.ownerType = normalizeOwnerType(payload.ownerType || ownerType);
+      payload.category = payload.category || category;
 
       updateNotesHttp(payload as CreateNoteDto)
       updateNotesHttp(payload as CreateNoteDto)
