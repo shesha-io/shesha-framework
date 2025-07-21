@@ -49,14 +49,20 @@ export function notesReducer(
       };
     }
     case NotesActionEnums.OnNoteUpdated:
-    case NotesActionEnums.UpdateNotesSuccess:{
+    case NotesActionEnums.UpdateNotesSuccess: {
       const { notes } = state;
       const { newNotes } = payload;
       const updatedNote = newNotes as INote;
       
+      if (!notes || !updatedNote?.id) {
+        return state;
+      }
+
       return {
         ...state,
-        notes: notes.map(note => note.id === updatedNote.id ? updatedNote : note),
+        notes: notes.map(note =>
+          note.id === updatedNote.id ? updatedNote : note
+        ),
       };
     }
     case NotesActionEnums.OnNoteRemoved:
