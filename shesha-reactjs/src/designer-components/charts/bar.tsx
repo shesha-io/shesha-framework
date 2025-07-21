@@ -46,11 +46,11 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
             <ChartDataProvider model={model}>
               <div style={{
                 ...wrapperStyles,
-                minHeight: '400px',
                 padding: '16px',
                 boxSizing: 'border-box',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                overflow: 'hidden'
               }}>
                 {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' filters={model.filters} />}
               </div>
@@ -102,6 +102,12 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       timeSeriesFormat: 'month-year',
       groupingTimeSeriesFormat: 'month-year',
       ...migratePrevStyles(prev, defaultStyles()) 
+    }))
+    .add<IChartProps>(8, prev => ({
+      ...prev,
+      maxResultCount: 250,
+      requestTimeout: 15000,
+      orderDirection: 'asc',
     }))
 };
 

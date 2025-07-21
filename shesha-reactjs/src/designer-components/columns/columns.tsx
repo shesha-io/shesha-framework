@@ -17,10 +17,47 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { IColumnsComponentProps, IColumnsInputProps } from './interfaces';
+import { IColumnProps, IColumnsComponentProps, IColumnsInputProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
+
+// Validation function to ensure columns don't exceed 24-column limit
+const validateColumns = (columns: IColumnProps[]) => {
+  if (!columns || columns.length === 0) return [];
+
+  const totalFlex = columns.reduce((sum, col) => sum + (col.flex || 0), 0);
+
+  if (totalFlex > 24) {
+    console.warn(`Columns component: Total flex value (${totalFlex}) exceeds 24. Normalizing columns to prevent overflow.`);
+
+    // Calculate normalized values
+    const normalizedColumns = columns.map(col => ({
+      ...col,
+      flex: Math.floor((col.flex || 0) * 24 / totalFlex)
+    }));
+
+    // Distribute remaining flex to avoid underfill
+    const normalizedTotal = normalizedColumns.reduce((sum, col) => sum + col.flex, 0);
+    const remainder = 24 - normalizedTotal;
+
+    // Add remainder to columns with the highest original flex values
+    if (remainder > 0) {
+      const sortedIndices = columns
+        .map((col, index) => ({ index, flex: col.flex || 0 }))
+        .sort((a, b) => b.flex - a.flex)
+        .slice(0, remainder);
+
+      sortedIndices.forEach(({ index }) => {
+        normalizedColumns[index].flex += 1;
+      });
+    }
+
+    return normalizedColumns;
+  }
+
+  return columns;
+};
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
@@ -81,12 +118,15 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
+    // Validate and normalize columns to prevent overflow
+    const validatedColumns = validateColumns(columns);
+
     return (
-      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
-        <Row gutter={[gutterX || 0, gutterY || 0]}>
+      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle, overflow: 'hidden' }}>
+        <Row gutter={[gutterX || 0, gutterY || 0]} style={{ margin: 0 }}>
           <ParentProvider model={model}>
-            {columns &&
-              columns.map((col, index) => (
+            {validatedColumns &&
+              validatedColumns.map((col, index) => (
                 <Col
                   key={index}
                   md={col.flex}
@@ -94,6 +134,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   pull={col.pull}
                   push={col.push}
                   className="sha-designer-column"
+                  style={{ overflow: 'hidden' }}
                 >
                   <ComponentsContainer
                     containerId={col.id}

@@ -27,6 +27,11 @@ trigger:
     include:
     - releases/*
     - main
+
+pr:
+  branches:
+    exclude:
+      - "*"
     
 pool: 
   name: Azure Pipelines

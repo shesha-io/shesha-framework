@@ -5,8 +5,32 @@ import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { Cell } from 'react-table';
 import { IPersistedFormProps } from '@/providers';
 import { CSSProperties } from 'react';
+import { ISidebarGroup } from '@/interfaces/sidebar';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 
 export type NumberOrString = number | string;
+
+export const getDynamicPath = (formId: IReferenceListIdentifier) =>
+  `/dynamic/${formId?.module}/${formId?.name}`;
+
+export const getSelectedKeys = (path: string, menuItems: ISidebarGroup[]) => {
+  const keys = menuItems.find((item) =>
+    [
+      item?.actionConfiguration?.actionArguments?.url,
+      getDynamicPath(item?.actionConfiguration?.actionArguments?.formId),
+    ].includes(path)
+  );
+  return keys ? [keys?.id] : [];
+};
+
+export const filterObjFromKeys = <T = any>(value: T, keys: Array<keyof T>) =>
+  keys.length > 0
+    ? Object.entries(value || {})
+        .filter(([key]) => keys.includes(key as any))
+        .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {})
+    : value;
+
+
 /**
  * Returns the parameter value, from the url, by name
  *

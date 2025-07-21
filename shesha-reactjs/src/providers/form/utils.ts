@@ -74,7 +74,7 @@ import { IParentProviderProps, useParent } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { toCamelCase } from '@/utils/string';
 import { IFormApi } from './formApi';
-import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { makeObservableProxy, ObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
 import { useShaFormInstance, useShaFormDataUpdate } from './providers/shaFormProvider';
@@ -777,9 +777,14 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
     if (!template || typeof template !== 'string')
       return template;
 
-    const localData: IAnyObject = data ? { ...data } : undefined;
+    const localData: IAnyObject = ! data ? undefined 
+      : data instanceof ObservableProxy
+        ? {...data} // unpropsy the observable
+        : data;
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
+      var dateFormat = data?.dateFormat;
+
       if (localData) {
         //adding a function to the data object that will format datetime
 
@@ -796,6 +801,7 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
 
       const view = localData ?? {};
 
+      let result = undefined;
       if (skipUnknownTags) {
         template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
@@ -817,9 +823,18 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
             : value;
         };
 
-        return Mustache.render(template, view, undefined, { escape });
+        result = Mustache.render(template, view, undefined, { escape });
       } else
-        return Mustache.render(template, view);
+        result = Mustache.render(template, view);
+
+      if (Boolean(dateFormat))
+        localData.dateFormat = dateFormat;
+      else {
+        localData.dateFormat = undefined; // for proxy objects
+        delete localData.dateFormat;
+      }
+
+      return result;
     } catch (error) {
       console.warn('evaluateString ', error);
       return template;

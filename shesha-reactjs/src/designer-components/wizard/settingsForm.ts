@@ -56,7 +56,6 @@ export const getSettings = () => {
                                 label: 'Component Name',
                                 parentId: 'root',
                                 size: 'small',
-                                hidden: { _code: 'return  getSettingValue(data?.hidden);', _mode: 'code', _value: false } as any,
                                 validate: {
                                     required: true,
                                 },

@@ -11,7 +11,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { DEFAULT_CONTENT_TYPE, defaultStyles } from './utils';
+import { defaultStyles } from './utils';
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -76,7 +76,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
-      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: DEFAULT_CONTENT_TYPE })),
+      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: prev.contentType })),
 };
 
 export default TextComponent;
