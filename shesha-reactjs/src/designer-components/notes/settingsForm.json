@@ -158,7 +158,7 @@
         "components": [
           {
             "id": "417ee22e-a49d-44f2-a1c7-fef32ec87503",
-            "type": "propertyAutocomplete",
+            "type": "textField",
             "propertyName": "ownerId",
             "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Owner Id",

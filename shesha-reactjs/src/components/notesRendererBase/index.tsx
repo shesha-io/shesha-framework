@@ -108,7 +108,6 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     setEditedText(value);
     setEditCharCount(value.length);
 
-    // Validate against max length
     if (maxLength && value.length > maxLength) {
       setEditValidationError(`Maximum ${maxLength} characters allowed`);
     } else {
