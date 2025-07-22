@@ -42,7 +42,10 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     useEffect(() => {
       getMetadata({ modelType: model.entityType, dataType: 'entity' })
         .then(setMetaData)
-        .catch(console.error);
+        .catch(error => {
+          console.error('Error getting entity metadata:', error);
+          setFilterError('Error getting entity metadata');
+        });
     }, [model.entityType]);
 
     // Memoize the data context values to prevent unnecessary re-renders
