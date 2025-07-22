@@ -21,6 +21,8 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         font-family: ${fontFamily};
         text-align: ${textAlign};
         height: 100% !important;
+        ${!hasPrefix && 'padding-left: 8px !important;'}
+        ${!hasSuffix && 'padding-right: 8px !important;'}
       }
 
       .ant-input-number {
