@@ -21,6 +21,7 @@ import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
 import MultiEntityCell from './default/multiEntityCell';
 import FormComponentMemo from '@/components/formDesigner/formComponent';
+import { useStyles } from '../styles/styles';
 
 export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
   const { columnConfig } = props;
@@ -62,6 +63,7 @@ export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props:
 
 const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const { columnConfig, propertyMeta, customComponent } = props;
+  const { styles } = useStyles();
 
   const toolboxComponents = useFormDesignerComponents();
   const allData = useAvailableConstantsData();
@@ -111,7 +113,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
       <FormItemProvider namePrefix=''> 
-        <div style={{ display: 'flex', alignItems: 'center', minHeight: '100%' }}>
+        <div className={styles.shaDataCell} style={{ display: 'flex', alignItems: 'center', minHeight: '100%' }}>
           <FormComponentMemo componentModel={componentModel} componentRef={componentRef} />
         </div>
       </FormItemProvider>
