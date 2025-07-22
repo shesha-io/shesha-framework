@@ -10,10 +10,6 @@ export const buttonTypes = [
         value: 'primary',
     },
     {
-        label: 'Ghost',
-        value: 'ghost',
-    },
-    {
         label: 'Dashed',
         value: 'dashed',
     },
@@ -24,6 +20,10 @@ export const buttonTypes = [
     {
         label: 'Text',
         value: 'text',
+    },
+    {
+        label: 'Ghost',
+        value: 'ghost',
     }
 ];
 
