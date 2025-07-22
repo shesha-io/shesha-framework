@@ -67,10 +67,6 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
 
   const toolboxComponents = useFormDesignerComponents();
   const allData = useAvailableConstantsData();
-  
-  // Get the current mode to determine if we should center vertically
-  const { mode } = useCrud(false) || { mode: 'read' };
-  const isEditMode = mode === 'create' || mode === 'update';
 
   const component = toolboxComponents[customComponent.type];
   const injectables = getInjectables(props);
@@ -117,7 +113,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
       <FormItemProvider namePrefix=''> 
-        <div className={cx(styles.shaDataCell, isEditMode ? styles.shaSpanCenterVertically : null)}>
+        <div className={cx(styles.shaDataCell, styles.shaSpanCenterVertically)}>
           <FormComponentMemo componentModel={componentModel} componentRef={componentRef} />
         </div>
       </FormItemProvider>
