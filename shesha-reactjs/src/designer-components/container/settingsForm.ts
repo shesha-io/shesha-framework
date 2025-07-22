@@ -365,8 +365,10 @@ export const getSettings = (data) => {
                                             label: 'Show Advanced',
                                             hideLabel: true,
                                             tooltip: 'Show advanced settings',
+                                            tooltipAlt: 'Hide advanced settings',
                                             propertyName: 'showAdvanced',
-                                            icon: 'tuneIcon'
+                                            icon: 'tuneIcon',
+                                            iconAlt: 'tuneIcon'
                                           }
                                         ]
                                       })
