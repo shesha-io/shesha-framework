@@ -12,10 +12,16 @@ export const useStyles = createStyles(({ css, cx }) => {
                 text-overflow: ellipsis;
                 white-space: nowrap;
         }
-       
+
     }
     `);
+
+    const disabled = css`
+        opacity: 0.6;
+        cursor: not-allowed;
+    `;
     return {
         configurableButton,
+        disabled
     };
 });

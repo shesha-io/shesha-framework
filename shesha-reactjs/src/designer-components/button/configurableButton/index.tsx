@@ -26,8 +26,19 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
+  const { buttonLoading, buttonDisabled } = {
+    buttonLoading: loading && !isModal,
+    buttonDisabled: props?.readOnly || (loading && isModal)
+  };
+
   const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.preventDefault();
+
+    // Prevent action if button is disabled
+    if (buttonDisabled) {
+      return;
+    }
+
     try {
       if (actionConfiguration) {
         if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration?.actionName)) {
@@ -46,11 +57,6 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       setLoading(false);
       console.error('Validation failed:', error);
     }
-  };
-
-  const { buttonLoading, buttonDisabled } = {
-    buttonLoading: loading && !isModal,
-    buttonDisabled: props?.readOnly || (loading && isModal)
   };
 
 
@@ -74,10 +80,12 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       iconPosition={props.iconPosition}
-      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
+      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton, buttonDisabled && styles.disabled)}
       size={props?.size}
-      disabled={buttonDisabled}
-      style={{ ...props?.style, ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }) }}
+      style={{
+        ...props?.style,
+        ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default })
+      }}
     >
       {props.label}
     </Button>
