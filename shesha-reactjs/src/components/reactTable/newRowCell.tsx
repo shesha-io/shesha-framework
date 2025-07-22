@@ -13,7 +13,7 @@ import { useStyles } from './styles/styles';
 import { CreateFormCell, ICreateFormCellProps } from '../dataTable/cell/formCell/formCell';
 import { isFormFullName } from '@/index';
 
-const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
+const getStyles = (props: Partial<TableHeaderProps | TableCellProps>) => [
   props,
   {
     style: {
@@ -25,7 +25,7 @@ const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'l
   },
 ];
 
-const cellProps: HeaderPropGetter<object> = (props, { column }) => getStyles(props, column.align);
+const cellProps: HeaderPropGetter<object> = (props) => getStyles(props);
 
 export interface INewRowCellProps {
   column: ColumnInstance;
