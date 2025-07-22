@@ -88,7 +88,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   };
 
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} />;
+    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} style={style} />;
   }
 
   if (range) {

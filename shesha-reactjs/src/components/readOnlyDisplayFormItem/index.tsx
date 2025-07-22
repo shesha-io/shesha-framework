@@ -126,13 +126,13 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />;
+        return <InputField style={style} value={<ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />} />;
       }
       case 'datetime': {
         return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
       }
       case 'checkbox': {
-        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;
+        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled style={style} />;
       }
       case 'switch': {
         return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...style }} />;

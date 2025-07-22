@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStyles } from './styles/styles';
 
-function InputField({ value, style }: { value: string; style?: React.CSSProperties }) {
+function InputField({ value, style, children }: { value: string | number | React.ReactNode; style?: React.CSSProperties; children?: React.ReactNode }) {
 
     const { styles } = useStyles();
 
@@ -9,7 +9,7 @@ function InputField({ value, style }: { value: string; style?: React.CSSProperti
 
     return (
         <div style={{ ...style, display: 'flex', alignItems: 'center' }} >
-            <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, textAlign }}>{value}</div>
+            <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, textAlign }}>{value || children}</div>
         </div>
     );
 }
