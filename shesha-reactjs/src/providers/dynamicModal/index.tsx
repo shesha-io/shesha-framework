@@ -8,7 +8,7 @@ import {
   IShowConfirmationArguments,
   showConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
-import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm, showDialogArgumentsForm } from './configurable-actions/show-dialog-arguments';
+import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm, showDialogArgumentsForm } from './configurable-actions/dialog-arguments';
 import {
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   DynamicModalActionsContext,
