@@ -17,6 +17,7 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   icon: <FilterOutlined />,
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   //dataTypes: [DataTypes.string],
   Factory: ({ model }) => {
     return <QueryBuilder {...model} readOnly={model.readOnly}></QueryBuilder>;

@@ -94,7 +94,11 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
   }, [value]);
 
   const getFetchedItems = (): AutocompleteItemDto[] => {
-    return urlFetcher.data?.result;
+    return Array.isArray(urlFetcher.data?.result)
+      ? urlFetcher.data?.result
+      : Array.isArray(urlFetcher.data?.result?.items) 
+        ? urlFetcher.data?.result?.items
+        : [];
   };
 
   // Refetch when clear because at this stage, only 1 item (which is the previsously selected item) is in the list of options
