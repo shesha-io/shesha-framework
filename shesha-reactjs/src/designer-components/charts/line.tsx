@@ -1,8 +1,8 @@
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { LineChartOutlined } from '@ant-design/icons';
-import React from 'react';
 import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
@@ -11,8 +11,11 @@ import { getSettings } from './settingsFormIndividual';
 import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
-import { useNestedPropertyMetadatAccessor } from '@/index';
+import { evaluateDynamicFiltersSync } from '@/utils';
+import { useAvailableConstantsData, useDataContextManager, useMetadataDispatcher, IModelMetadata } from '@/index';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import useStyles from './styles';
+import ChartLoader from './components/chartLoader';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
@@ -21,8 +24,71 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <LineChartOutlined />,
   Factory: ({ model }) => {
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.entityType);
-    const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: model.filters });
+    useShaFormDataUpdate();
+    const allAvailableData = useAvailableConstantsData();
+    const dataContextManager = useDataContextManager();
+    const { getMetadata } = useMetadataDispatcher();
+    const [stateEvaluatedFilters, setStateEvaluatedFilters] = useState<string>('');
+    const [metaData, setMetaData] = useState<IModelMetadata>(undefined);
+    const [filtersReady, setFiltersReady] = useState<boolean>(false);
+    const { cx, styles } = useStyles();
+
+    // Use refs to track current filter state and prevent race conditions
+    const filtersRef = useRef<string>('');
+    const filtersReadyRef = useRef<boolean>(false);
+
+    useEffect(() => {
+      getMetadata({ modelType: model.entityType, dataType: 'entity' }).then(setMetaData);
+    }, [model.entityType]);
+
+    // Memoize the data context values to prevent unnecessary re-renders
+    const pageContext = useMemo(() => dataContextManager?.getPageContext(), [dataContextManager]);
+    const contextsData = useMemo(() => dataContextManager?.getDataContextsData(), [dataContextManager]);
+
+    useEffect(() => {
+      if (!model.filters) {
+        filtersRef.current = '';
+        filtersReadyRef.current = true;
+        setStateEvaluatedFilters('');
+        setFiltersReady(true);
+        return;
+      }
+
+      // Check if we have all required data for filter evaluation
+      if (!metaData?.properties) {
+        console.warn('Waiting for metadata to evaluate filters');
+        return;
+      }
+
+      const match = [
+        { match: 'data', data: allAvailableData.form?.data },
+        { match: 'globalState', data: allAvailableData.globalState },
+        { match: 'pageContext', data: pageContext },
+        contextsData ? { match: 'contexts', data: contextsData } : null
+      ].filter(Boolean);
+
+      try {
+        const response = evaluateDynamicFiltersSync(
+          [{ expression: model.filters } as any],
+          match,
+          metaData?.properties
+        );
+
+        const strFilters = JSON.stringify(response[0]?.expression || '');
+
+        // Update both ref and state atomically
+        filtersRef.current = strFilters;
+        filtersReadyRef.current = true;
+        setStateEvaluatedFilters(strFilters);
+        setFiltersReady(true);
+      } catch (error) {
+        console.error('Error evaluating filters:', error);
+        filtersRef.current = '';
+        filtersReadyRef.current = true;
+        setStateEvaluatedFilters('');
+        setFiltersReady(true);
+      }
+    }, [metaData?.properties, model.filters, allAvailableData.form?.data, allAvailableData.globalState, pageContext, contextsData]);
 
     const {
       dimensionsStyles,
@@ -43,6 +109,18 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
     });
 
     if (model.hidden) return null;
+
+    // Don't render chart until filters are ready to prevent race conditions
+    if (!filtersReady) {
+      return (
+        <ConfigurableFormItem model={model}>
+          <div className={cx(styles.loadingContainer)}>
+            <ChartLoader chartType={model.chartType} /> 
+            <div className={cx(styles.loadingText)}>Fetching data...</div>
+          </div>
+        </ConfigurableFormItem>
+      );
+    }
     
     return (
       <ConfigurableFormItem model={model}>
@@ -57,7 +135,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
                 flexDirection: 'column',
                 overflow: 'hidden'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' evaluatedFilters={evaluatedFilters} />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' evaluatedFilters={stateEvaluatedFilters} />}
               </div>
             </ChartDataProvider>
           );

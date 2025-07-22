@@ -4,7 +4,7 @@ import { TChartType } from '../../model';
 import { Button } from 'antd';
 import { useTheme } from '@/providers/theme';
 
-const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick: () => void }) => {
+const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick?: () => void }) => {
   const { styles, cx } = useStyles();
   const { theme } = useTheme();
   const [windowSize, setWindowSize] = useState({
@@ -173,7 +173,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
   return (
     <div className={cx(styles.chartLoaderWrapper)}>
       {renderLoader()}
-      
+      {handleCancelClick && (
       <Button
           color={theme.application.errorColor ?? 'red'}
           size="small"
@@ -181,6 +181,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
         >
           Cancel
         </Button>
+      )}
     </div>
   );
 };
