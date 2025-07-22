@@ -38,7 +38,9 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     const filtersReadyRef = useRef<boolean>(false);
 
     useEffect(() => {
-      getMetadata({ modelType: model.entityType, dataType: 'entity' }).then(setMetaData);
+      getMetadata({ modelType: model.entityType, dataType: 'entity' })
+        .then(setMetaData)
+        .catch(console.error);
     }, [model.entityType]);
 
     // Memoize the data context values to prevent unnecessary re-renders
@@ -84,9 +86,9 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       } catch (error) {
         console.error('Error evaluating filters:', error);
         filtersRef.current = '';
-        filtersReadyRef.current = true;
+        filtersReadyRef.current = false;
         setStateEvaluatedFilters('');
-        setFiltersReady(true);
+        setFiltersReady(false);
       }
     }, [metaData?.properties, model.filters, allAvailableData.form?.data, allAvailableData.globalState, pageContext, contextsData]);
 
