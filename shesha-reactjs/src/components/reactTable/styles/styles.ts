@@ -288,7 +288,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 overflow: visible;
                 position: relative;
                 z-index: 999;
-                width: calc(100% - 2px) !important;
+                width: 100% !important;
               }
               
               /* Override vertical alignment for form controls in table cells */
@@ -306,7 +306,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 overflow: visible;
                 position: relative;
                 z-index: 999;
-                width: calc(100% - 2px) !important;
+                width: 100% !important;
               }
               
               /* Override vertical alignment for form controls in table cells */
