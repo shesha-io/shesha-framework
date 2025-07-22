@@ -50,9 +50,9 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
     useEffect(() => {
       if (!model.filters) {
         filtersRef.current = '';
-        filtersReadyRef.current = false;
+        filtersReadyRef.current = true;
         setStateEvaluatedFilters('');
-        setFiltersReady(false);
+        setFiltersReady(true);
         return;
       }
 
