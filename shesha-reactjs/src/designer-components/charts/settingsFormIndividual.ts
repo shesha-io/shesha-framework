@@ -3,7 +3,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -1236,7 +1236,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'titleFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1298,7 +1298,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'axisLabelFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1370,7 +1370,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'legendFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1432,7 +1432,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'tickFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },

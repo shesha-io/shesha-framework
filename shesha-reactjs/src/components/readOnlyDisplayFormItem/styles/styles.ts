@@ -22,6 +22,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const inputField = css`
     padding: 0px 8px;
     margin: 0;
+    margin-right: 8px;
     height: 100%;
     display: flex;
     align-items: center;

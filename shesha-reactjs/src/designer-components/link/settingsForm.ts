@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
 
@@ -230,7 +230,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {

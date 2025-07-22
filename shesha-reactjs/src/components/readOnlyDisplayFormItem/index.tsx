@@ -41,6 +41,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
   } = props;
 
   const { styles } = useStyles();
+
   const renderValue = useMemo(() => {
     if (render) {
       return typeof render === 'function' ? render() : render;
@@ -90,7 +91,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                 showItemName={showItemName}
                 label={displayName}
               />
-              : displayName ?? (typeof value === 'object' ? null : value);
+              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
           }
         }
 
@@ -101,7 +102,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           const values = (value as AutocompleteType[])?.map(({ label }) => label);
 
           return dropdownDisplayMode === 'raw'
-            ? values?.join(', ')
+            ? <InputField style={style} value={values?.join(', ')} />
             : <Space size={8}>
               {value?.map(({ label, color, icon, value, description }) => {
                 return <ReflistTag
@@ -128,7 +129,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />;
       }
       case 'datetime': {
-        return getMoment(value, dateFormat)?.format(dateFormat) || '';
+        return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
       }
       case 'checkbox': {
         return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;

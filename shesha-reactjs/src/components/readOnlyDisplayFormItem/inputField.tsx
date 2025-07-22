@@ -8,7 +8,7 @@ function InputField({ value, style }: { value: string; style?: React.CSSProperti
     const { fontSize, fontWeight, color, fontFamily, textAlign } = style || {};
 
     return (
-        <div style={style} >
+        <div style={{ ...style, display: 'flex', alignItems: 'center' }} >
             <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, textAlign }}>{value}</div>
         </div>
     );
