@@ -175,6 +175,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
+          height: 100%; 
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
           }
@@ -183,7 +184,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: flex;
             width: 100%;
             min-height: 22px;
+            height: 100%;
             justify-content: center;
+            align-items: center; 
 
             .sha-link {
               border: none;
@@ -206,6 +209,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${shaNewRow} {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            border: 0.5px solid rgb(232, 232, 232) !important;
+            
             .${shaCrudCell} {
               height: 100%;
 

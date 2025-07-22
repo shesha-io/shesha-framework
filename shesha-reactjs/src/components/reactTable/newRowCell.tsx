@@ -75,8 +75,9 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
 
   const fixedStyled: React.CSSProperties = {
     [direction]: anchored?.direction && shiftedBy,
-    backgroundColor: 'white',
-    borderBottom: '1px solid #f0f0f0',
+    // backgroundColor: 'white',
+    // borderBottom: '1px solid #f0f0f0',
+    height: '100%',
   };
 
   const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;

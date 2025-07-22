@@ -63,7 +63,7 @@ export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props:
 
 const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const { columnConfig, propertyMeta, customComponent } = props;
-  const { styles } = useStyles();
+  const { styles, cx } = useStyles();
 
   const toolboxComponents = useFormDesignerComponents();
   const allData = useAvailableConstantsData();
@@ -113,7 +113,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
       <FormItemProvider namePrefix=''> 
-        <div className={styles.shaDataCell} style={{ display: 'flex', alignItems: 'center', minHeight: '100%' }}>
+        <div className={cx(styles.shaDataCell, styles.shaSpanCenterVertically)}>
           <FormComponentMemo componentModel={componentModel} componentRef={componentRef} />
         </div>
       </FormItemProvider>
