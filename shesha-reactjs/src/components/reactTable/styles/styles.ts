@@ -25,7 +25,8 @@ const tableClassNames = {
   shaDragging: 'sha-dragging',
   shaTooltipIcon: 'sha-tooltip-icon',
   shaCellParent: 'sha-cell-parent',
-  shaCellParentFW: 'sha-cell-parent-fw', // Full width cell parent, used for cells that should take full width of the row
+  shaCellParentFW: 'sha-cell-parent-fw', // Full width cell parent, used for cells that should take full width of the row,
+  shaSpanCenterVertically: 'sha-span-center-vertically',
 };
 const tableStyles = {
   styles: tableClassNames,
@@ -62,6 +63,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaTooltipIcon,
     shaCellParent,
     shaCellParentFW,
+    shaSpanCenterVertically,
   } = tableClassNames;
 
   // var(--ant-primary-3)
@@ -102,6 +104,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
       overflow: auto;
+
+      .${shaSpanCenterVertically} {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
 
       .${shaTable} {
         border-spacing: 0;
@@ -387,6 +396,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
       }
     `
+
+    
   );
   return {
     shaReactTable,

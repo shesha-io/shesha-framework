@@ -142,14 +142,14 @@ export const ReactTable: FC<IReactTableProps> = ({
         // The header can use the table's getToggleAllRowsSelectedProps method
         // to render a checkbox
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <span className={styles.shaSpanCenterVertically}>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
         // The cell can use the individual row's getToggleRowSelectedProps method
         // to the render a checkbox
         Cell: ({ row }) => (
-          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <span className={styles.shaSpanCenterVertically}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
               onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
@@ -354,13 +354,13 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [onRowDoubleClick, allData]);
 
   const handleDoubleClickRow = (row, index) => {
-    if (typeof onRowDoubleClick === 'object'){
+    if (typeof onRowDoubleClick === 'object') {
       performOnRowDoubleClick(row);
     } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
     }
   };
-  
+
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
   const renderNewRowEditor = () => (
@@ -404,7 +404,7 @@ export const ReactTable: FC<IReactTableProps> = ({
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           opacity: allowExpandedView && isCellContentOverflowing ? 1 : 0,
           transform: allowExpandedView && isCellContentOverflowing ? 'scale(1)' : 'scale(0.95)',
-          visibility: allowExpandedView && isCellContentOverflowing  ? 'visible' : 'hidden',
+          visibility: allowExpandedView && isCellContentOverflowing ? 'visible' : 'hidden',
           position: 'fixed',
           minWidth: 80,
           width: cellRect?.width,
@@ -421,12 +421,12 @@ export const ReactTable: FC<IReactTableProps> = ({
         }}
       >
         <p style={{
-           whiteSpace: 'normal',
-           overflow: 'visible',
-           wordBreak: 'break-word',
-           margin: 0,        
+          whiteSpace: 'normal',
+          overflow: 'visible',
+          wordBreak: 'break-word',
+          margin: 0,
         }}>
-        {cellRef?.current?.innerText}
+          {cellRef?.current?.innerText}
         </p>
       </div>
     );
@@ -439,7 +439,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         key={id ?? rowIndex}
         prepareRow={prepareRow}
         onClick={handleSelectRow}
-        onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
+        onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
         row={row}
         showExpandedView={showExpandedView}
         index={rowIndex}
@@ -454,8 +454,8 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
         onMouseOver={(activeCell, isContentOverflowing) => {
-setActiveCell(activeCell); setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText); 
-}}
+          setActiveCell(activeCell); setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);
+        }}
       />
     );
   };
@@ -591,11 +591,11 @@ setActiveCell(activeCell); setIsCellContentOverflowing(isContentOverflowing && a
             }}
             {...getTableBodyProps()}
             onMouseEnter={() => {
- setAllowExpandedView(true); 
-}}
+              setAllowExpandedView(true);
+            }}
             onMouseLeave={() => {
- setAllowExpandedView(false); 
-}}
+              setAllowExpandedView(false);
+            }}
           >
             {rows?.length === 0 && !loading && (
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
