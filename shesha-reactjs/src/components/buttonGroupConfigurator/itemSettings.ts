@@ -711,6 +711,11 @@ export const getItemSettings = () => {
                         key: '3',
                         title: 'Security',
                         id: securityTabId,
+                        hidden: {
+                            _code: `return !${entityOrUrl};`,
+                            _mode: 'code',
+                            _value: false
+                        } as any,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 id: nanoid(),
