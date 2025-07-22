@@ -25,7 +25,8 @@ const tableClassNames = {
   shaDragging: 'sha-dragging',
   shaTooltipIcon: 'sha-tooltip-icon',
   shaCellParent: 'sha-cell-parent',
-  shaCellParentFW: 'sha-cell-parent-fw', // Full width cell parent, used for cells that should take full width of the row
+  shaCellParentFW: 'sha-cell-parent-fw', // Full width cell parent, used for cells that should take full width of the row,
+  shaSpanCenterVertically: 'sha-span-center-vertically',
 };
 const tableStyles = {
   styles: tableClassNames,
@@ -62,6 +63,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaTooltipIcon,
     shaCellParent,
     shaCellParentFW,
+    shaSpanCenterVertically,
   } = tableClassNames;
 
   // var(--ant-primary-3)
@@ -102,6 +104,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
       overflow: auto;
+
+      .${shaSpanCenterVertically} {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
 
       .${shaTable} {
         border-spacing: 0;
@@ -166,6 +175,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
+          height: 100%; 
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
           }
@@ -174,7 +184,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: flex;
             width: 100%;
             min-height: 22px;
+            height: 100%;
             justify-content: center;
+            align-items: center; 
 
             .sha-link {
               border: none;
@@ -197,8 +209,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${shaNewRow} {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: -webkit-fill-available !important;
+            border-top: 0.5px solid rgb(220, 220, 220) !important;
+            border-bottom: 0.5px solid rgb(218, 218, 218) !important;
+            
             .${shaCrudCell} {
-              height: 100%;
+              height: -webkit-fill-available !important;
 
               .sha-link {
                 .${iconPrefixCls} {
@@ -271,6 +290,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 z-index: 999;
                 width: calc(135% - 2px) !important;
               }
+              
+              /* Override vertical alignment for form controls in table cells */
+              & .ant-select,
+              & .ant-input,
+              & .ant-input-number,
+              & .ant-picker {
+                vertical-align: middle !important;
+              }
           }
 
           .${shaCellParentFW} {
@@ -280,6 +307,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 position: relative;
                 z-index: 999;
                 width: calc(135% - 2px) !important;
+              }
+              
+              /* Override vertical alignment for form controls in table cells */
+              & .ant-select,
+              & .ant-input,
+              & .ant-input-number,
+              & .ant-picker {
+                vertical-align: middle !important;
               }
           }
 
@@ -371,6 +406,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
       }
     `
+
+    
   );
   return {
     shaReactTable,
