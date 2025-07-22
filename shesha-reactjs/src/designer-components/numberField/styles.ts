@@ -21,14 +21,13 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         font-family: ${fontFamily};
         text-align: ${textAlign};
         height: 100% !important;
-        ${!hasPrefix && 'padding-left: 8px !important;'}
-        ${!hasSuffix && 'padding-right: 8px !important;'}
+        padding-left: ${hasPrefix ? '4px' : '8px'} !important;
         padding-right: 4px !important;
-        padding-left: 4px !important;
         padding-bottom: 6px !important;
 
         &:hover {
-          padding-right: 30px !important;
+          padding-right: ${hasSuffix ? '4px' : '30px'} !important;
+          transition: padding-right 0.2s ease;
         }
       }
 
