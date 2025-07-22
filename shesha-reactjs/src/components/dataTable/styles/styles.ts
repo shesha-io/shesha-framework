@@ -9,7 +9,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       width: 100%;
 
       .ant-form-item-control {
-        flex-direction: unset;
+        flex-direction: column;
         display: flex;
       }
 
@@ -17,6 +17,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         width: 100%;
         min-height: --ant-control-height;
       }
+
     `);
 
     const tableErrorContainer = cx("sha-table-error-container", css`
