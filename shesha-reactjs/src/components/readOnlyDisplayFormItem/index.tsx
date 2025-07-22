@@ -8,6 +8,7 @@ import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
 import ReflistTag from '../refListDropDown/reflistTag';
+import InputField from './inputField';
 
 type AutocompleteType = ISelectOption;
 
@@ -89,7 +90,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                 showItemName={showItemName}
                 label={displayName}
               />
-              : <div style={{ ...style }}>{displayName ?? (typeof value === 'object' ? null : value)}</div>;
+              : displayName ?? (typeof value === 'object' ? null : value);
           }
         }
 
@@ -139,7 +140,8 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       default:
         break;
     }
-    return <div style={style}>{Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}</div>;
+    return <InputField style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value
+    } />;
   }, [value,
     type,
     dateFormat,
