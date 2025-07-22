@@ -3,6 +3,7 @@ import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { BarChartOutlined } from '@ant-design/icons';
+import { Alert } from 'antd';
 import { IChartProps } from './model';
 import { getSettings } from './settingsFormIndividual';
 import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
@@ -31,6 +32,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     const [stateEvaluatedFilters, setStateEvaluatedFilters] = useState<string>('');
     const [metaData, setMetaData] = useState<IModelMetadata>(undefined);
     const [filtersReady, setFiltersReady] = useState<boolean>(false);
+    const [filterError, setFilterError] = useState<string | undefined>(undefined);
     const { cx, styles } = useStyles();
 
     // Use refs to track current filter state and prevent race conditions
@@ -53,6 +55,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
         filtersReadyRef.current = true;
         setStateEvaluatedFilters('');
         setFiltersReady(true);
+        setFilterError(undefined);
         return;
       }
 
@@ -83,12 +86,14 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
         filtersReadyRef.current = true;
         setStateEvaluatedFilters(strFilters);
         setFiltersReady(true);
+        setFilterError(undefined);
       } catch (error) {
         console.error('Error evaluating filters:', error);
         filtersRef.current = '';
         filtersReadyRef.current = false;
         setStateEvaluatedFilters('');
         setFiltersReady(false);
+        setFilterError(error instanceof Error ? error.message : 'Error evaluating filters');
       }
     }, [metaData?.properties, model.filters, allAvailableData.form?.data, allAvailableData.globalState, pageContext, contextsData]);
 
@@ -111,6 +116,21 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     });
 
     if (model.hidden) return null;
+
+    // Show error alert if there was an error evaluating filters
+    if (filterError) {
+      return (
+        <ConfigurableFormItem model={model}>
+          <Alert
+            showIcon
+            message="Error evaluating filters"
+            description={filterError}
+            type="error"
+            style={{ margin: '16px' }}
+          />
+        </ConfigurableFormItem>
+      );
+    }
 
     // Don't render chart until filters are ready to prevent race conditions
     if (!filtersReady) {
