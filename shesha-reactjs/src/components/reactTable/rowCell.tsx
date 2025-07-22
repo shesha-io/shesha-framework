@@ -6,19 +6,21 @@ import classNames from 'classnames';
 import { getColumnAnchored } from '@/utils';
 import { getAnchoredCellStyleAccessor } from '../dataTable/utils';
 import { useActualContextExecutionExecutor } from '@/hooks';
+import { useCrud } from '@/providers/crudContext';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
   {
     style: {
       justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-      alignItems: 'center',
       display: 'flex',
     },
   },
 ];
 
-const cellProps: CellPropGetter<object> = (props, { cell }) => getStyles(props, cell.column.align);
+const cellProps: CellPropGetter<object> = (props, { cell }) => {
+  return getStyles(props, cell.column.align);
+};
 
 export interface IRowCellProps {
   cell: Cell<any, any>;
@@ -35,6 +37,10 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   const { key, style, ...restProps } = cell.getCellProps(cellProps);
   const cellRef = useRef(null);
   const cellParentRef = useRef(null);
+  
+  // Get the current mode from the crud context
+  const { mode } = useCrud(false) || { mode: 'read' };
+  const isEditMode = mode === 'create' || mode === 'update';
 
   let cellStyle: React.CSSProperties = useActualContextExecutionExecutor(
     (context) => {
@@ -67,7 +73,16 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
       key={key}
       ref={cellParentRef}
       {...restProps}
-      style={style ?? cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight, cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : undefined}
+      style={{
+        ...anchoredCellStyle,
+        ...style,
+        ...cellStyle,
+        height: cellHeight,
+        cursor: 'auto',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        alignItems: isEditMode ? 'center' : 'flex-start',
+      }}
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
