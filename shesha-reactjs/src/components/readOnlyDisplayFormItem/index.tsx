@@ -33,6 +33,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewGetEntityUrl,
     quickviewWidth,
     style,
+    tagStyle,
     showIcon,
     solidColor,
     showItemName
@@ -60,7 +61,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       case 'dropdown':
         if (!Array.isArray(value)) {
           if (quickviewEnabled && quickviewFormPath) {
-            return quickviewFormPath && quickviewGetEntityUrl 
+            return quickviewFormPath && quickviewGetEntityUrl
               ? <QuickView
                 entityId={entityId}
                 formIdentifier={quickviewFormPath}
@@ -76,19 +77,19 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                 width={quickviewWidth}
               />;
           } else {
-            return dropdownDisplayMode === 'tags' 
+            return dropdownDisplayMode === 'tags'
               ? <ReflistTag
                 value={value}
                 color={value?.color}
                 icon={value?.icon}
                 showIcon={showIcon}
-                tagStyle={style}
+                tagStyle={tagStyle}
                 description={value?.description}
                 solidColor={solidColor}
                 showItemName={showItemName}
                 label={displayName}
-              /> 
-              : displayName ?? (typeof value === 'object' ? null : value);
+              />
+              : <div style={{ ...style }}>{displayName ?? (typeof value === 'object' ? null : value)}</div>;
           }
         }
 
@@ -109,7 +110,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                   icon={icon}
                   description={description}
                   showIcon={showIcon}
-                  tagStyle={style}
+                  tagStyle={tagStyle}
                   solidColor={solidColor}
                   showItemName={showItemName}
                   label={label}
