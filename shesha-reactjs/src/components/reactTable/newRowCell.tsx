@@ -17,8 +17,6 @@ const getStyles = (props: Partial<TableHeaderProps | TableCellProps>) => [
   props,
   {
     style: {
-      // justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-      // alignItems: 'flex-start',
       display: 'flex',
       height: '-webkit-fill-available !important'
     },
@@ -76,8 +74,6 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
 
   const fixedStyled: React.CSSProperties = {
     [direction]: anchored?.direction && shiftedBy,
-    // backgroundColor: 'white',
-    // borderBottom: '1px solid #f0f0f0',
     height: '100%',
   };
 
