@@ -17,9 +17,10 @@ const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'l
   props,
   {
     style: {
-      justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-      alignItems: 'flex-start',
+      // justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
+      // alignItems: 'flex-start',
       display: 'flex',
+      height: '-webkit-fill-available !important'
     },
   },
 ];
@@ -98,7 +99,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
         [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
-      })}
+      }, styles.shaCrudCell)}
     >
       {columnConfig && columnConfig.columnType === 'data' && (
         <div className={styles.shaCellParentFW}>
