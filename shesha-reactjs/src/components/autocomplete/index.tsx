@@ -70,7 +70,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   // reset loading state on error
   useEffect(() => {
     setLoadingValues(false);
-  }, [source.error])
+  }, [source.error]);
 
   // update local store of values details
   useEffect(() => {

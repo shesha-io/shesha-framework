@@ -92,7 +92,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     filter?: any;
     displayPropName?: string;
     keyPropName?: string;
-    fields?: string[],
+    fields?: string[];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
     entityType?: string;

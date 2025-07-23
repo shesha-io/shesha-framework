@@ -42,7 +42,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
       title: 'Properties',
       content: <ToolbarItemProperties />,
       width: rightWidth
-    }
+    };
   }, [rightWidth]);
 
   return (

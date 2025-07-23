@@ -1,5 +1,5 @@
 import { ConfigurableForm,  FormMarkup, useModelConfigurator } from '@/index';
-import { Modal, message } from 'antd';
+import { Modal, App } from 'antd';
 import React, { FC } from 'react';
 
 import markup from './createModelModal.json';
@@ -13,6 +13,7 @@ export const CreateModelModal: FC<ICreateModelModalProps> = () => {
   //const [modal, contextHolder] = Modal.useModal();
   const { isCreateNew, save, cancel } = useModelConfigurator();
   const formRef = useShaFormRef();
+  const { message } = App.useApp();
 
   const handleOk = () => {
     formRef.current?.submit();
@@ -25,8 +26,6 @@ export const CreateModelModal: FC<ICreateModelModalProps> = () => {
       })
       .catch((error) => {
         if (!error?.errorFields) message.error('Failed to save configuration');
-      })
-      .finally(() => {
       });
   };
 

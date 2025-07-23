@@ -1,3 +1,43 @@
+export const ArrayFormats = {
+  /** Simple values (stored as Json) */
+  simple: 'simple',
+  /** Referencing entities */
+  entityReference: 'entity',
+  /** Many to many Entities */
+  manyToManyEntities: 'many-entity',
+  /** Child Entities (regular Entity but used only as part of parent Entity) */
+  childEntities: 'child-entity',
+  /** Child objects (any Json object) */
+  childObjects: 'object',
+  /**  Multi value Reference list item */
+  multivalueReferenceList: 'multivalue-reference-list',
+};
+
+export const ObjectFormats = {
+  object: 'object',
+  interface: 'interface',
+};
+
+export const StringFormats = {
+  singleline: 'singleline',
+  multiline: 'multiline',
+  html: 'html',
+  json: 'json',
+  javascript: 'javascript',
+  password: 'password',
+  emailAddress: 'email',
+  phoneNumber: 'phone',
+  url: 'url',
+};
+
+export const NumberFormats = {
+    float: 'float',
+    double: 'double',
+    int32: 'int32',
+    int64: 'int64',
+    decimal: 'decimal',
+};
+
 export const DataTypes = {
   guid: 'guid',
   string: 'string',
@@ -96,44 +136,4 @@ export const DataTypes = {
     }
     return [];
   }`
-};
-
-export const ArrayFormats = {
-  /** Simple values (stored as Json) */
-  simple: 'simple',
-  /** Referencing entities */
-  entityReference: 'entity',
-  /** Many to many Entities */
-  manyToManyEntities: 'many-entity',
-  /** Child Entities (regular Entity but used only as part of parent Entity) */
-  childEntities: 'child-entity',
-  /** Child objects (any Json object) */
-  childObjects: 'object',
-  /**  Multi value Reference list item */
-  multivalueReferenceList: 'multivalue-reference-list',
-};
-
-export const ObjectFormats = {
-  object: 'object',
-  interface: 'interface',
-};
-
-export const StringFormats = {
-  singleline: 'singleline',
-  multiline: 'multiline',
-  html: 'html',
-  json: 'json',
-  javascript: 'javascript',
-  password: 'password',
-  emailAddress: 'email',
-  phoneNumber: 'phone',
-  url: 'url',
-};
-
-export const NumberFormats = {
-    float: 'float',
-    double: 'double',
-    int32: 'int32',
-    int64: 'int64',
-    decimal: 'decimal',
 };

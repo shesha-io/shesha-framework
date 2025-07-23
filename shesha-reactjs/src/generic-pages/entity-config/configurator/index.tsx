@@ -59,7 +59,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
         entityConfigTreeRef.current.update(configurator.modelConfiguration);*
       }*/
     }
-  }, [configurator.modelConfiguration?.id])
+  }, [configurator.modelConfiguration?.id]);
 
   const handleOk = () => {
     const del =
