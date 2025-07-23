@@ -12,7 +12,7 @@ const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'l
   {
     style: {
       justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       display: 'flex',
     },
   },
