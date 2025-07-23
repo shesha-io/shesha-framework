@@ -111,7 +111,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
@@ -139,7 +139,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,

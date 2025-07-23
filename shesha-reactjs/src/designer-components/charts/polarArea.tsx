@@ -1,8 +1,9 @@
+import React from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { RadarChartOutlined } from '@ant-design/icons';
-import React from 'react';
+import { Alert } from 'antd';
 import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
@@ -11,8 +12,10 @@ import { getSettings } from './settingsFormIndividual';
 import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
-import { useNestedPropertyMetadatAccessor } from '@/index';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import useStyles from './styles';
+import ChartLoader from './components/chartLoader';
+import { useChartFilters } from './hooks/useChartFilters';
 
 const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   type: 'polarAreaChart',
@@ -21,8 +24,9 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <RadarChartOutlined />,
   Factory: ({ model }) => {
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.entityType);
-    const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: model.filters });
+    useShaFormDataUpdate();
+    const { stateEvaluatedFilters, filtersReady, filterError } = useChartFilters(model);
+    const { cx, styles } = useStyles();
 
     const {
       dimensionsStyles,
@@ -44,6 +48,33 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
 
     if (model.hidden) return null;
 
+    // Show error alert if there was an error evaluating filters
+    if (filterError) {
+      return (
+        <ConfigurableFormItem model={model}>
+          <Alert
+            showIcon
+            message="Error evaluating filters"
+            description={filterError}
+            type="error"
+            style={{ margin: '16px' }}
+          />
+        </ConfigurableFormItem>
+      );
+    }
+
+    // Don't render chart until filters are ready to prevent race conditions
+    if (!filtersReady) {
+      return (
+        <ConfigurableFormItem model={model}>
+          <div className={cx(styles.loadingContainer)}>
+            <ChartLoader chartType={model.chartType} /> 
+            <div className={cx(styles.loadingText)}>Fetching data...</div>
+          </div>
+        </ConfigurableFormItem>
+      );
+    }
+
     return (
       <ConfigurableFormItem model={model}>
         {() => {
@@ -57,7 +88,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
                 flexDirection: 'column',
                 overflow: 'hidden'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='polarArea' evaluatedFilters={evaluatedFilters} />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='polarArea' evaluatedFilters={stateEvaluatedFilters} />}
               </div>
             </ChartDataProvider>
           );
