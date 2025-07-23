@@ -236,6 +236,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
   }
 
+  
   return (
     <ConfigurableFormItem
       model={{ ...props, hideLabel: true }}
