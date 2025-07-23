@@ -33,6 +33,8 @@ import { FormLayout } from 'antd/es/form/Form';
 import { CustomLabelValueEditorInputs, getEditor } from './utils';
 import EditModeSelector from '@/components/editModeSelector';
 import Icon from '@/components/icon/Icon';
+import { IQueryBuilderComponentProps } from '../queryBuilder/interfaces';
+import { IDynamicActionsConfiguratorComponentProps } from '../dynamicActionsConfigurator/interfaces';
 
 const { Password } = Input;
 
@@ -183,7 +185,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'editModeSelector':
             return <EditModeSelector readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'dynamicItemsConfigurator':
-            return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
+            return <DynamicActionsConfigurator editorConfig={{ ...props } as IDynamicActionsConfiguratorComponentProps} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'autocomplete':
             return <Autocomplete
                 dataSourceType={dataSourceType}
@@ -193,14 +195,15 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 placeholder={placeholder}
                 defaultValue={defaultValue}
                 size={size}
-                {...{ ...props, style: {} }}
+                { ...props}
+                style={{}}
             />;
         case 'endpointsAutocomplete':
             return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={onChange} />;
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
-            return <QueryBuilder {...props} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
+            return <QueryBuilder {...props as IQueryBuilderComponentProps} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':

@@ -1,20 +1,20 @@
 import EntityConfigTree, { IEntityConfigTreeInstance } from '@/components/entityConfigTree';
 import IndexToolbar from '@/components/indexToolbar';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Checkbox, Col, Form, App, Modal, Row } from 'antd';
-import { Autocomplete, ModelConfigurator, Page } from '@/components';
+import { Autocomplete, Page } from '@/components';
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { EntityConfigDto } from '@/apis/entityConfig';
-import { IModelConfiguratorInstance } from '@/providers/modelConfigurator/interfaces';
 import { IToolbarItem, PageWithLayout } from '@/interfaces';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { modelConfigurationsMerge } from '@/apis/modelConfigurations';
 import { useLocalStorage } from '@/hooks';
-import { useSheshaApplication } from '@/providers';
+import { useModelConfigurator, useSheshaApplication } from '@/providers';
 import { ValidationErrors } from '@/components';
 import { SizableColumns } from '@/components/sizableColumns';
 import classNames from 'classnames';
 import { useStyles } from './styles';
+import ModelConfiguratorRenderer from '@/components/modelConfigurator/renderer';
 
 export interface IEntityConfiguratorPageProps {
   id?: string;
@@ -29,7 +29,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const { styles } = useStyles();
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const configuratorRef = useRef<IModelConfiguratorInstance>();
+  const configurator = useModelConfigurator();
   const entityConfigTreeRef = useRef<IEntityConfigTreeInstance>();
   const [loadingState, setLoadingState] = useState<ILoadingState>({});
   const [entityConfigId, setEntityConfigId] = useState<string>(id);
@@ -42,10 +42,24 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const { message } = App.useApp();
 
   const onChange = (item: EntityConfigDto) => {
-    setEntityConfigId(item.id);
-    setEntityConfig(item);
-    if (configuratorRef.current) configuratorRef.current.changeModelId(item.id);
+    if (item) {
+      setEntityConfigId(item.id);
+      setEntityConfig(item);
+      configurator.changeModelId(item.id);
+    }
   };
+
+  // update after create
+  useEffect(() => {
+    if (configurator.modelConfiguration?.id && configurator.modelConfiguration?.id !== entityConfigId) {
+      onChange(configurator.modelConfiguration);
+      if (entityConfigId === '') //{
+        entityConfigTreeRef.current.refresh(configurator.modelConfiguration?.id);
+      /*} else {
+        entityConfigTreeRef.current.update(configurator.modelConfiguration);*
+      }*/
+    }
+  }, [configurator.modelConfiguration?.id])
 
   const handleOk = () => {
     const del =
@@ -85,7 +99,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
       icon: <PlusOutlined />,
       onClick: () => {
         setEntityConfigId('');
-        configuratorRef.current.createNew({source: MetadataSourceType.UserDefined});
+        configurator.createNew({source: MetadataSourceType.UserDefined});
       },
     },
     {
@@ -93,26 +107,24 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
       icon: <SaveOutlined />,
       disabled: entityConfigId === null, // Check only entityConfigId
       onClick: () => {
-        if (configuratorRef.current) {
-          setLoadingState({ loading: true, loadingText: 'Saving...' });
-          configuratorRef.current
-            .save()
-            .then((item) => {
-              if (entityConfigId === '') {
-                entityConfigTreeRef.current.refresh(item?.id);
-                setEntityConfigId(item?.id);
-              } else {
-                entityConfigTreeRef.current.update(item);
-              }
-              message.success('Configuration saved successfully');
-            })
-            .catch((error) => {
-              if (!error?.errorFields) message.error('Failed to save configuration');
-            })
-            .finally(() => {
-              setLoadingState({ loading: false, loadingText: null });
-            });
-        }
+        setLoadingState({ loading: true, loadingText: 'Saving...' });
+        configurator
+          .saveForm()
+          .then((item) => {
+            if (entityConfigId === '') {
+              entityConfigTreeRef.current.refresh(item?.id);
+              setEntityConfigId(item?.id);
+            } else {
+              entityConfigTreeRef.current.update(item);
+            }
+            message.success('Configuration saved successfully');
+          })
+          .catch((error) => {
+            if (!error?.errorFields) message.error('Failed to save configuration');
+          })
+          .finally(() => {
+            setLoadingState({ loading: false, loadingText: null });
+          });
       },
     },
     /*{
@@ -136,22 +148,20 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
         modal.confirm({
           content: 'Are you sure want to delete?',
           onOk: () => {
-            if (configuratorRef.current) {
-              setLoadingState({ loading: true, loadingText: 'Saving...' });
-              configuratorRef.current
-                .delete()
-                .then(() => {
-                  entityConfigTreeRef.current.refresh(null);
-                  setEntityConfigId(null);
-                  message.success('Configuration deleted successfully');
-                })
-                .catch((error) => {
-                  if (!error?.errorFields) message.error('Failed to delete configuration');
-                })
-                .finally(() => {
-                  setLoadingState({ loading: false, loadingText: null });
-                });
-            }
+            setLoadingState({ loading: true, loadingText: 'Saving...' });
+            configurator
+              .delete()
+              .then(() => {
+                entityConfigTreeRef.current.refresh(null);
+                setEntityConfigId(null);
+                message.success('Configuration deleted successfully');
+              })
+              .catch((error) => {
+                if (!error?.errorFields) message.error('Failed to delete configuration');
+              })
+              .finally(() => {
+                setLoadingState({ loading: false, loadingText: null });
+              });
           },
         });
       },
@@ -188,11 +198,12 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
           <div className={styles.propsPanel}>
             <div  className={classNames(styles.propsPanelContent  )}>
               <IndexToolbar className={classNames(styles.propsPanelHeader)} items={toolbarItems} />
-              <ModelConfigurator id={entityConfigId} configuratorRef={configuratorRef} />
+              {entityConfigId != null && <ModelConfiguratorRenderer />}
             </div>
           </div>
         </SizableColumns>
         <div>{contextHolder}</div>
+
         <Modal
           title="Merge entity confifurations"
           open={isModalOpen}

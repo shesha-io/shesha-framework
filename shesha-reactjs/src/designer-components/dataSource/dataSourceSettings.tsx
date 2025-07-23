@@ -35,7 +35,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
       </SettingsFormItem>
       {(state.sourceType === 'Entity') &&
         <SettingsFormItem key='entityType' name="entityType" label='Entity Type' jsSetting>
-          <Autocomplete.Raw dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
+          <Autocomplete.Raw dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
         </SettingsFormItem>
       }
       {(state.sourceType === 'Entity' || state.sourceType === 'Url') &&

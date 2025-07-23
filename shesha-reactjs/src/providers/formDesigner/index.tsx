@@ -153,7 +153,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   }, [dispatch]);
 
   const updateComponent = useCallback((payload: IComponentUpdatePayload) => {
-    // ToDo: AS - optimize
+    // ToDo: AS - need to optimize
      if (componentInitialization.current) {
       // Do not trigger an update if first component initialization (reduce unnecessary re-renders)
       componentInitialization.current = false;

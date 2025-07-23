@@ -1,4 +1,4 @@
-import { MetadataSourceType } from './metadata';
+import { MetadataSourceType, ModelTypeIdentifier } from './metadata';
 
 export interface IModelItem {
   id: string;
@@ -27,13 +27,9 @@ export interface IModelItem {
    */
   entityType?: string | null;
   /**
-   * Reference list name
+   * Reference list Id
    */
-  referenceListName?: string | null;
-  /**
-   * Reference list module
-   */
-  referenceListModule?: string | null;
+  referenceListId?: ModelTypeIdentifier | null;
 
   source?: MetadataSourceType;
 
@@ -45,8 +41,14 @@ export interface IModelItem {
 
   isItemsType?: boolean;
 
+  isChildProperty?: boolean;
+
   /**
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
    */
   isFrameworkRelated?: boolean;
+
+  columnName?: string;
+  createdInDb?: boolean;
+  inheritedFromId?: string;
 }

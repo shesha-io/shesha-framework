@@ -1437,12 +1437,15 @@ export const createComponentModelForDataProperty = (
     toolboxComponent: IToolboxComponent<any>
   ) => IConfigurableFormComponent
 ): IConfigurableFormComponent => {
-  const toolboxComponent = findToolboxComponent(
-    components,
-    (c) =>
-      Boolean(c.dataTypeSupported) &&
-      c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
+  let toolboxComponent = findToolboxComponent(components, c => c.type === propertyMetadata.formatting.defaultEditor );
+  toolboxComponent = toolboxComponent ||
+    findToolboxComponent(
+      components, 
+      c => 
+        Boolean(c.dataTypeSupported) 
+        && c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
   );
+
   if (!Boolean(toolboxComponent)) return null;
 
   // find appropriate toolbox component

@@ -12,12 +12,17 @@ export interface IModelConfiguratorStateContext {
   id?: string;
   modelConfiguration?: ModelConfigurationDto;
   form?: FormInstance;
+  isCreateNew?: boolean;
 }
 
 export interface IModelConfiguratorActionsContext {
   changeModelId: (id: string) => void;
+  createNew: (model: ModelConfigurationDto) => void;
   load: () => void;
   save: (value: ModelConfigurationDto) => Promise<ModelConfigurationDto>;
+  saveForm: () => Promise<ModelConfigurationDto>;
+  cancel: () => void;
+  delete: () => Promise<void>;
   submit: () => void;
   getModelSettings: () => ModelConfigurationDto;
 

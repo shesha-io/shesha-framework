@@ -183,7 +183,7 @@ export const getSettings = () => {
                       label: 'Owner Type',
                       type: 'autocomplete',
                       dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                       useRawValues: true,
                       jsSetting: true,
                     },

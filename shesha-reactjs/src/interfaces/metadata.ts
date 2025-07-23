@@ -1,5 +1,5 @@
 import { FormFullName } from "@/providers";
-import { DataTypes } from "./dataTypes";
+import { DataTypes, ObjectFormats } from "./dataTypes";
 import { IDictionary } from "./shesha";
 import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
 
@@ -113,7 +113,7 @@ export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {
-  return propMeta && propMeta.dataType === DataTypes.objectReference;
+  return propMeta && propMeta.dataType === DataTypes.object && propMeta.dataFormat === ObjectFormats.interface;
 };
 
 export interface IRefListPropertyMetadata extends IMemberMetadata {
@@ -136,6 +136,11 @@ export type PropertiesLoader = () => PropertiesPromise;
 export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
 
 export interface IPropertyMetadata extends IMemberMetadata {
+  columnName?: string | null;
+  createdInDb?: boolean;
+  inheritedFromId?: string | null;
+
+  containerType?: string;
   required?: boolean;
   readonly?: boolean;
   minLength?: number | null;
@@ -151,6 +156,8 @@ export interface IPropertyMetadata extends IMemberMetadata {
    */
   properties?: NestedProperties;
   functions?: IFunctionMetadata[] | null;
+
+  formatting?: any;
 
   /**
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
@@ -200,7 +207,6 @@ export type ProperyDataType =
   | 'boolean'
   | 'array'
   | 'object'
-  | 'object-reference'
   | 'guid';
 
 export enum MetadataSourceType {

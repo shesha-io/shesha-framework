@@ -21,7 +21,6 @@ import { IModelItem } from '@/interfaces/modelConfigurator';
 import { Action } from 'redux-actions';
 import { nanoid } from '@/utils/uuid';
 
-
 export interface IPropertiesEditorProviderProps {
   id?: string;
   items: IModelItem[];
@@ -47,6 +46,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     });
   }
   */
+
   const dispatchAndFire = (action: Action<any>) => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(action);

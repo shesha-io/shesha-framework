@@ -3,8 +3,6 @@ import { Collapse, Empty } from 'antd';
 import { getLastSection } from '@/utils/string';
 import { ObjectsTree } from './objectsTree';
 
-const { Panel } = Collapse;
-
 export interface IGrouppedObjectsTreeProps<TItem> {
   defaultSelected?: string;
   items: TItem[];
@@ -107,46 +105,53 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
     }
   }, [groups]);
 
+  const defaultExpandAll = props?.searchText.length > 1 && groups[0].visibleItems.length <= 6;
+
   return (
     <>
+      {groups.length === 1 &&
+        <div key={groups[0].groupName} >
+          <ObjectsTree<TItem>
+            items={groups[0].visibleItems}
+            searchText={props?.searchText}
+            defaultExpandAll={defaultExpandAll}
+            onChange={onChangeHandler}
+            defaultSelected={props.defaultSelected?.toLowerCase()}
+            onRenterItem={props?.onRenterItem}
+            getIcon={groups[0].groupName === '-' ? undefined :props?.getIcon}
+            getIsLeaf={groups[0].groupName === '-' ? undefined : props?.getIsLeaf}
+          />
+        </div>
+      }
       {groups.length > 0 && (
-        <Collapse activeKey={props?.openedKeys} accordion onChange={onCollapseChange} >
-          {groups.map((ds) => {
-            const visibleItems = ds.visibleItems;
-            const defaultExpandAll = props?.searchText.length > 1 && visibleItems.length <= 6;
-
-            let classes = ['sha-toolbox-panel'];
-
-            return visibleItems.length === 0 ? null : (
-              ds.groupName === '-'
-                ? (
-                  <div key={ds.groupName}>
-                    <ObjectsTree<TItem>
-                      items={visibleItems}
-                      searchText={props?.searchText}
-                      defaultExpandAll={defaultExpandAll}
-                      onChange={onChangeHandler}
-                      defaultSelected={props.defaultSelected?.toLowerCase()}
-                      onRenterItem={props?.onRenterItem}
-                    />
-                  </div>
-                )
-                : (
-                  <Panel header={ds.groupName} key={ds.groupName} className={classes.reduce((a, c) => a + ' ' + c)} forceRender={true}>
-                    <ObjectsTree<TItem>
-                      items={visibleItems}
-                      searchText={props?.searchText}
-                      defaultExpandAll={defaultExpandAll}
-                      onChange={onChangeHandler}
-                      defaultSelected={props?.openedKeys?.find(key => key === ds.groupName) ? props.defaultSelected?.toLowerCase() : null}
-                      onRenterItem={props?.onRenterItem}
-                      getIcon={props?.getIcon}
-                      getIsLeaf={props?.getIsLeaf}
-                    />
-                  </Panel>
-                )
-            );
+        <Collapse 
+          activeKey={props?.openedKeys} 
+          accordion
+          onChange={onCollapseChange} 
+          items={groups.map((ds) => {
+            const defaultExpandAll = props?.searchText.length > 1 && ds.visibleItems.length <= 6;
+            return {
+              label: <span >{ds.groupName}</span>,
+              className: 'sha-toolbox-panel',
+              title: ds.groupName,
+              forceRender: true,
+              children: ds.visibleItems.length === 0 ? null :
+                <div key={ds.groupName}>
+                  <ObjectsTree<TItem>
+                    items={ds.visibleItems}
+                    searchText={props?.searchText}
+                    defaultExpandAll={defaultExpandAll}
+                    onChange={onChangeHandler}
+                    defaultSelected={props.defaultSelected?.toLowerCase()}
+                    onRenterItem={props?.onRenterItem}
+                    getIcon={ds.groupName === '-' ? undefined :props?.getIcon}
+                    getIsLeaf={ds.groupName === '-' ? undefined : props?.getIsLeaf}
+                  />
+                </div>
+            };
           })}
+        >
+          {}
         </Collapse>
       )}
       {groups.length === 0 && (

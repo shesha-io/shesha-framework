@@ -2,17 +2,45 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { ModelPropertyDto } from '@/apis/modelConfigurations';
+import { SimplePropertySettings } from './simplePropertySettings';
+import { DataTypes, IToolboxComponents } from '@/index';
 
-export const getSettings = (data: ModelPropertyDto) => {
+export const getSettings = (data: ModelPropertyDto, components: IToolboxComponents) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
-  const settingsFormatId = nanoid();
-  const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
+  const cascadeTabId = nanoid();
+  const attributesTabId = nanoid();
+  const databaseTabId = nanoid();
+
+  const entityFormatId = nanoid();
+  const objectRefFormatId = nanoid();
+  const listFormatId = nanoid();
+  const advancedFormatId = nanoid();
+  const listDbFormatId = nanoid();
+  const listRelFormatId = nanoid();
+  const manyToOneFormatId = nanoid();
+  const manyToManyFormatId = nanoid();
+
+  let editorsCode = `\n`;
+  editorsCode += `const components = {\n`;
+  for(const component in components) {
+    if (component.indexOf('.') > -1 || component.indexOf('-') > -1) continue;
+    editorsCode += `'${component}': '${components[component]?.name}',\n`;
+  }
+  editorsCode += '}\n';
+  editorsCode += DataTypes.allowedCompoenentsCode;
+  editorsCode += '\n';
+  editorsCode += 'const editors = allowedComponents(data.dataType, data.dataFormat);\n';
+  editorsCode += 'return editors.map((e) => ({ value: e, label: components[e] }));\n';
+
+  let defaultEditorCode = DataTypes.allowedCompoenentsCode;
+  defaultEditorCode += '\n';
+  defaultEditorCode += 'const editors = allowedComponents(data.dataType, data.dataFormat);\n';
+  defaultEditorCode += 'return editors?.[0];\n';
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: new DesignerToolbarSettings<ModelPropertyDto>(data)
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -27,97 +55,229 @@ export const getSettings = (data: ModelPropertyDto) => {
             title: 'Common',
             id: commonTabId,
             components: [...new DesignerToolbarSettings()
-              .addSettingsInput({ id: nanoid(), parentId: commonTabId, inputType: 'textField', propertyName: 'name', label: 'Name', validate: { required: true }, })
-              .addSettingsInput({ id: nanoid(), parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
-              .addSettingsInput({ id: nanoid(), parentId: commonTabId, inputType: 'textArea', propertyName: 'description', label: 'Description',})
+              .addSettingsInput({ parentId: commonTabId, inputType: 'switch', propertyName: 'suppress', label: 'Hidden', })
+              .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'name', label: 'Name', validate: { required: true }, 
+                editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
+              })
+              .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
+              .addSettingsInput({ parentId: commonTabId, inputType: 'textArea', propertyName: 'description', label: 'Description',})
+              .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default editor', mode: 'single',
+                defaultValue: { '_value': '', '_mode': 'code', '_code': defaultEditorCode } as any,
+                dropdownOptions: { '_value': '', '_mode': 'code', '_code': editorsCode } as any,
+              })
               .toJson(),
             ]
           },
           {
             key: '2',
-            title: 'Data type and format',
+            title: 'Data type',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({ id: nanoid(), parentId: dataTabId, inputType: 'dropdown', propertyName: 'dataType', label: 'Data type', validate: { required: true },
-                customEnabled: 'return data.source != 1;', mode: 'single',
-                dropdownOptions: [
-                  { value: 'string', label: 'String' },
-                  { value: 'float',  label: 'float' },
-                  { value: 'int32',  label: 'int32' },
-                  { value: 'int64',  label: 'int64' },
-                  { value: 'decimal', label: 'decimal' },
-                  { value: 'date-time', label: 'Date time' },
-                  { value: 'date', label: 'Date' },
-                  { value: 'time', label: 'Time' },
-                  { value: 'boolean', label: 'Boolean' },
-                  { value: 'reference-list-item', label: 'Reference list' },
-                  { value: 'entity', label: 'Entity reference' },
-                  { value: 'multi-entity', label: 'Multiple Entity reference' },
-                  { value: 'array-entity', label: 'List of Entities' },
-                  { value: 'array', label: 'Object list' },
-                  { value: 'file', label: 'File' },
-                  { value: 'advanced', label: 'Advanced' },
-                  { value: 'object', label: 'Object' },
-                  { value: 'geometry', label: 'Geometry' },
-                  /*
-                  { value: 'number', label: 'Number' },
-                  { value: 'double', label: 'double' },
-                  { value: 'object-reference', label: 'Object' },
-                  { value: 'json', label: 'JSON' },
-                  listOf: 'external-list',
-                  */
-                ]
-              })
+            components: [
 
-              // Date & Time format
-              .addSettingsInputRow({ id: nanoid(), parentId: dataTabId, inputs: [
-                  { id: nanoid(), type: 'textField', propertyName: 'dataFormat', label: 'Date format', 
-                    tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
-                  }],
-                  hidden: { _code: 'return getSettingValue(data?.dataType) !== \'date\' && getSettingValue(data?.dataType) !== \'date-time\';', _mode: 'code', '_value': false },
-              })
-              .addSettingsInputRow({ id: nanoid(), parentId: dataTabId, inputs: [
-                  { id: nanoid(), type: 'textField', propertyName: 'dataFormat', label: 'Time format',
-                    tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
-                  }],
-                  hidden: { '_code': 'return getSettingValue(data?.dataType) !== \'time\';', '_mode': 'code', '_value': false },
-              })
+              // Main properties and Simple format
 
-              // String format
+              ...SimplePropertySettings(dataTabId, 'full')
 
-              .addContainer({ id: nanoid(), parentId: dataTabId, hidden: { '_code': 'return getSettingValue(data?.dataType) !== \'string\';', '_mode': 'code', '_value': false },
+              // Entity format
+
+              .addContainer({ id: entityFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'entity\';', '_mode': 'code', '_value': false },
                 components: [...new DesignerToolbarSettings()
-                  .addSettingsInput({ id: nanoid(), parentId: settingsFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'String format',
-                    customEnabled: 'return data.source != 1;', mode: 'single',
+                  .addSettingsInput({ parentId: entityFormatId, inputType: 'autocomplete', propertyName: 'entityType',
+                    label: 'Entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete",
+                    queryParams: { '_value': '', '_mode': 'code', '_code': 'return { baseClass:data.baseEntityType};' } as any,
+                    editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                  })
+                  .addSettingsInput({ parentId: entityFormatId, inputType: 'queryBuilder', propertyName: 'formatting.filter', label: 'Filter',
+                    modelType: { '_value': '', '_mode': 'code', '_code': 'return data.entityType;' } as any,
+                   })
+                  .toJson()
+                ],
+              })
+
+              // Object and objectreference format
+
+              .addContainer({ id: objectRefFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'object\';', '_mode': 'code', '_value': false },
+                components: [...new DesignerToolbarSettings()
+                  .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Object format', mode: 'single',
+                    editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
                     dropdownOptions: [
-                      { label: 'single line', value: 'singleline' },
-                      { label: 'multiline', value: 'multiline' },
-                      { label: 'html', value: 'html' },
-                      { label: 'json', value: 'json' },
-                      { label: 'javascript', value: 'javascript' },
-                      { label: 'password', value: 'password' },
-                      { label: 'email', value: 'email' },
-                      { label: 'phone', value: 'phone' }
+                      { label: 'Nested object', value: 'object' },
+                      { label: 'Part of entity', value: 'interface' },
                     ]
                   })
-                  .addSettingsInput({ id: nanoid(), parentId: dataTabId, inputType: 'numberField', propertyName: 'minLength', label: 'Min Length', 
-                    editMode: { '_code': 'return !getSettingValue(data.sizeHardcoded);', '_mode': 'code', '_value': false } as any,
-                  })
-                  .addSettingsInput({ id: nanoid(), parentId: dataTabId, inputType: 'numberField', propertyName: 'maxLength', label: 'Max Length', 
-                    editMode: { '_code': 'return !getSettingValue(data.sizeHardcoded);', '_mode': 'code', '_value': false } as any,
-                  })
-                  .addSettingsInput({ id: nanoid(), parentId: dataTabId, inputType: 'textField', propertyName: 'regExp', label: 'Regular Expression', 
-                    editMode: { '_code': 'return !getSettingValue(data.regExpHardcoded);', '_mode': 'code', '_value': false } as any,
+                  .addSettingsInputRow({ parentId: objectRefFormatId, inputs: [
+                      { type: 'autocomplete', propertyName: 'entityType', label: 'Pasrt of entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete",
+                        queryParams: { baseClass: "{{data.baseEntityType}}" },
+                      },
+                    ],
+                    hidden: { '_code': 'return data?.dataFormat !== \'interface\';', '_mode': 'code', '_value': false },
+                    editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
                   })
                   .toJson()
                 ],
               })
 
+              // Advanced format
 
-              .addSettingsInput({ id: nanoid(), parentId: dataTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
+              .addContainer({ id: advancedFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'advanced\';', '_mode': 'code', '_value': false },
+                components: [...new DesignerToolbarSettings()
+                  .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Advanced format', mode: 'single',
+                    dropdownOptions: [
+                      { label: 'List of files', value: 'attachmentsEditor' },
+                      { label: 'Notes', value: 'notes' },
+                    ]
+                  })
+                  .toJson()
+                ],
+              })
+
+              // List format
+
+              .addContainer({ id: listFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'array\';', '_mode': 'code', '_value': false },
+                components: [...new DesignerToolbarSettings()
+                  .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'List format', mode: 'single',
+                    editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
+                    dropdownOptions: [
+                      { label: 'Simple values', value: 'simple' },
+                      { label: 'Referencing entities', value: 'entity' },
+                      { label: 'Entities', value: 'many-entity' },
+                      { label: 'Child objects', value: 'object' },
+                      { label: 'Child Entities', value: 'child-entity' },
+                      { label: 'Multi value Reference list item', value: 'multivalue-reference-list' },
+                    ]
+                  })
+
+                  // Referencing entities and Entities (many-entity )
+
+                  .addSettingsInputRow({ parentId: listFormatId, inputs: [
+                      { type: 'autocomplete', propertyName: 'entityType', label: 'Entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete" },
+                    ],
+                    hidden: { '_code': 'const d = data?.dataFormat; return d !== \'many-entity\' && d !== \'entity\';', '_mode': 'code', '_value': false },
+                    editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
+                  })
+                  .addSettingsInputRow({ parentId: listFormatId, inputs: [
+                    { type: 'propertyAutocomplete', propertyName: 'listConfiguration.foreignProperty', label: 'Referencing property', 
+                      modelType: { _code: 'return data?.entityType;', _mode: 'code', _value: false } as any },
+                    ],
+                    hidden: { '_code': 'return data?.dataFormat !== \'entity\';', '_mode': 'code', '_value': false },
+                  })
+
+                  // Child objects
+
+                  .addSettingsInputRow({ parentId: listFormatId, inputs: [
+                      { type: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object format', mode: 'single',
+                        editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
+                        dropdownOptions: [
+                          { label: 'Nested object', value: 'object' },
+                          { label: 'Part of entity', value: 'interface' },
+                        ]
+                      },
+                    ],
+                    hidden: { '_code': 'return data?.dataFormat !== \'object\';', '_mode': 'code', '_value': false },
+                  })
+                  .addSettingsInputRow({ parentId: listFormatId, inputs: [
+                      { type: 'autocomplete', propertyName: 'entityType', label: 'Pasrt of entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete" },
+                    ],
+                    hidden: { '_code': 'return data?.dataFormat !== \'object\' || data?.itemsType?.dataFormat !== \'interface\';', '_mode': 'code', '_value': false },
+                    editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
+                  })
+
+                  // Reference list format
+
+                  .addSettingsInputRow({ parentId: listFormatId, inputs: [
+                      { type: 'referenceListAutocomplete', propertyName: `itemsType.referenceListId`, label: 'Reference List', },
+                    ],
+                    hidden: { '_code': 'return data?.dataFormat !== \'multivalue-reference-list\';', '_mode': 'code', '_value': false },
+                  })
+
+
+                  // simple
+
+                  .addContainer({ id: listFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataFormat !== \'simple\';', '_mode': 'code', '_value': false },
+                    components: [...SimplePropertySettings(listFormatId, 'array', 'itemsType.').toJson()],
+                  })
+
+                  .toJson()
+                ],
+              })
+            
+              // Validation message
+              .addSettingsInput({ parentId: dataTabId, inputType: 'textField', propertyName: 'validationMessage', label: 'Validation Message' })
+
               .toJson(),
             ]
-          }
+          },
+          {
+            key: '3',
+            title: 'Attributes',
+            id: attributesTabId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({ parentId: attributesTabId, inputType: 'switch', propertyName: 'audited', label: 'Audited', /*tooltip: 'Allows to create child/nested entity'*/ })
+              .addSettingsInput({ parentId: attributesTabId, inputType: 'switch', propertyName: 'required', label: 'Required', /*tooltip: 'Allows to create child/nested entity'*/ })
+              .addSettingsInput({ parentId: attributesTabId, inputType: 'switch', propertyName: 'readOnly', label: 'ReadOnly', /*tooltip: 'Allows to create child/nested entity'*/ })
+              .toJson(),
+            ],
+            hidden: { '_code': 'return data?.isChildProperty;', '_mode': 'code', '_value': false },
+          },
+          {
+            key: '4',
+            title: 'Cascade rules',
+            id: cascadeTabId,
+            hidden: { '_code': 'return data?.isChildProperty || data?.dataType !== \'entity\';', '_mode': 'code', '_value': false },
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({ parentId: cascadeTabId, inputType: 'switch', propertyName: 'cascadeCreate', label: 'Create', tooltip: 'On creation of this entity, will cascade creation to the referenced entity' })
+              .addSettingsInput({ parentId: cascadeTabId, inputType: 'switch', propertyName: 'cascadeUpdate', label: 'Update ', tooltip: 'On update of this entity, will cascade the update action to the referenced entity' })
+              .addSettingsInput({ parentId: cascadeTabId, inputType: 'switch', propertyName: 'cascadeDeleteUnreferenced', label: 'Delete',
+                tooltip: 'On deletion of this entity, will cascade the delete action to the referenced entity if not referenced by any other entity' })
+              .toJson(),
+            ]
+          },
+          {
+            key: '5',
+            title: 'Database',
+            id: databaseTabId,
+            hidden: { '_code': 'return data?.isChildProperty || (!data?.createdInDb && data.dataFormat !== \'entity\');', '_mode': 'code', '_value': false },
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({ parentId: cascadeTabId, inputType: 'textField', propertyName: 'columnName', label: 'DB column name', editMode: false })
+              .addContainer({ id: listDbFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'array\';', '_mode': 'code', '_value': false },
+                components: [...new DesignerToolbarSettings()
+                  .addContainer({ id: listRelFormatId, parentId: dataTabId, hidden: { '_code': 'return !data?.listConfiguration;', '_mode': 'code', '_value': false },
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInput({ parentId: listRelFormatId, inputType: 'dropdown', propertyName: 'listConfiguration.mappingType', label: 'Mapping type', mode: 'single',
+                        dropdownOptions: [
+                          { label: 'Many to many', value: 'many-to-many' },
+                          { label: 'Many to one', value: 'many-to-one' },
+                        ],
+                        editMode: false,
+                      })
+                      .toJson()
+                    ],
+                  })
+                  .addContainer({ id: manyToOneFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.listConfiguration?.mappingType !== \'many-to-one\';', '_mode': 'code', '_value': false },
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInput({ parentId: manyToOneFormatId, inputType: 'textField', propertyName: 'listConfiguration.foreignProperty', label: 'Foreign ptoperty name', editMode: false })
+                      .toJson()
+                    ],
+                  })
+                  .addContainer({ id: manyToManyFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.listConfiguration?.mappingType !== \'many-to-many\';', '_mode': 'code', '_value': false },
+                    components: [...new DesignerToolbarSettings()
+                      .addSettingsInput({ parentId: manyToManyFormatId, inputType: 'textField',
+                        propertyName: 'listConfiguration.dbMapping.manyToManyTableName', label: 'Many to many table name', editMode: false })
+                      .addSettingsInput({ parentId: manyToManyFormatId, inputType: 'textField', 
+                        propertyName: 'listConfiguration.dbMapping.manyToManyKeyColumnName', label: 'Key column name', editMode: false })
+                      .addSettingsInput({ parentId: manyToManyFormatId, inputType: 'textField', 
+                        propertyName: 'listConfiguration.dbMapping.manyToManyChildColumnName', label: 'Child column name', editMode: false })
+                      .addSettingsInput({ parentId: manyToManyFormatId, inputType: 'textField', 
+                        propertyName: 'listConfiguration.dbMapping.manyToManyInversePropertyName', label: 'Inverse property', editMode: false })
+                      .toJson()
+                    ],
+                  })
+                  .toJson()
+                ],
+              })
+              .toJson(),
+            ]
+          },
         ],
       }).toJson(),
     formSettings: {

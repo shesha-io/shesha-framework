@@ -63,7 +63,7 @@ export const getSettings = () => {
                                             labelAlign: 'right',
                                             parentId: 'root',
                                             allowClear: true,
-                                            dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
+                                            dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?.map((item) => ({ ...item, label: item?.title, value: item?.key }));', _mode: 'code', _value: 0 } as any
                                         },
                                         {
                                             id: nanoid(),

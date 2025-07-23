@@ -55,7 +55,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
             return this.getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
 
         if (isObjectReferencePropertyMetadata(propMeta)) {
-            return this.getMetadata({ dataType: DataTypes.objectReference, modelType: propMeta.entityType });
+            return this.getMetadata({ dataType: DataTypes.object, modelType: propMeta.entityType });
         }
 
         if (isDataPropertyMetadata(propMeta) && propMeta.dataType === DataTypes.object) {
@@ -78,7 +78,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
         const loadedModel = this.#models[modelType]; // TODO: split list by types
         if (loadedModel) return loadedModel;
 
-        if (dataType === DataTypes.entityReference || dataType === DataTypes.objectReference || dataType === null) {
+        if (dataType === DataTypes.entityReference || dataType === DataTypes.object || dataType === null) {
             const promise = this.#entityMetaFetcher.isEntity(modelType).then(isEntity => {
                 if (isEntity)
                     return this.#entityMetaFetcher.getByClassName(modelType);

@@ -4,10 +4,22 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { usePropertiesEditor } from '../provider';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { Item } from './item';
+import { ItemChangeDetails } from '@/components/listEditor';
+
+export interface IContainerRenderArgs {
+  index?: number[];
+  items: IModelItem[];
+  parent?: IModelItem;
+  disableDrag?: boolean;
+  onChange?: (items: IModelItem[], changeDetails: ItemChangeDetails) => void;
+}
+
+export type ContainerRenderer = (args: IContainerRenderArgs) => React.ReactNode;
 
 export interface IItemsContainerProps {
   index?: number[];
   items: IModelItem[];
+  parent?: IModelItem;
   disableDrag?: boolean;
 }
 
@@ -49,6 +61,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
           itemProps={item}
           index={[...props.index, index]}
           key={index.toString()}
+          parent={props.parent}
           containerRendering={(args) => (<ItemsContainer {...args} />)}
         />
       )

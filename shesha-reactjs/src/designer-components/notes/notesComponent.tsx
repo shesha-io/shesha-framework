@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { DataTypes, IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
@@ -45,6 +45,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   isInput: false,
   name: 'Notes',
   icon: <FormOutlined />,
+  dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === 'notes',
   Factory: ({ model }) => {
     const httpClient = useHttpClient();
     const form = useForm();
@@ -148,6 +149,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     return customModel;
   },
   settingsFormMarkup: (data) => getSettings(data),
+  linkToModelMetadata: (model, metadata) => ({...model, ownerId: '{data.id}', ownerType: metadata.containerType, category: metadata.path}),  
   migrator: (m) =>
     m
       .add<INotesProps>(

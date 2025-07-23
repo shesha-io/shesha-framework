@@ -216,7 +216,7 @@
             "parentId": "111nm2re1eYM1M7pEEuf9",
             "labelAlign": "right",
             "dataSourceType": "url",
-            "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+            "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
             "useRawValues": true
           },
           {

@@ -140,7 +140,7 @@ export const getSettings = (data) => {
                         jsSetting: true,
                         dataSourceType: 'url',
                         validate: {},
-                        dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                        dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                         settingsValidationErrors: [],
                       },
                     ],

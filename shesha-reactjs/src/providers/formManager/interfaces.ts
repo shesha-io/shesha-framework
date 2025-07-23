@@ -22,6 +22,11 @@ export interface UpToDateForm {
 
     flatStructure: IFlatComponentsStructure;
     settings: IFormSettings;
+
+    /** Form asscess mode */
+    access?: number;
+    /** Form permissions for Required premission mode */
+    permissions?: string[];
 }
 
 export const FORM_LOADING_STATES = ['ready', 'loading', 'error'] as const;

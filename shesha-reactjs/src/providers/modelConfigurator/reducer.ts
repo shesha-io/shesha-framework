@@ -11,6 +11,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
     ) => {
       return {
         ...state,
+        isCreateNew: true,
         modelConfiguration: action.payload,
         id: '',
       };
@@ -25,6 +26,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       }
       return {
         ...state,
+        isCreateNew: false,
         modelConfiguration: {},
         id: action.payload,
       };
@@ -45,6 +47,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
 
       return {
         ...state,
+        isCreateNew: false,
         modelConfiguration: payload,
       };
     },
@@ -57,10 +60,21 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
 
       return {
         ...state,
+        isCreateNew: false,
         id: payload.id,
         modelConfiguration: { ...payload },
       };
     },
+
+    [ModelActionEnums.Cancel]: (
+      state: IModelConfiguratorStateContext
+    ) => {
+      return {
+        ...state,
+        isCreateNew: false,
+      };
+    },
+
   },
 
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE
