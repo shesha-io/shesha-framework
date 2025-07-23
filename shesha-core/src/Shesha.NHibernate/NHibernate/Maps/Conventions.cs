@@ -535,7 +535,9 @@ namespace Shesha.NHibernate.Maps
                     var manyToOneAttribute = propertyPath.LocalMember.GetAttributeOrNull<DynamicManyToOneAttribute>(true);
                     if (manyToOneAttribute != null)
                     {
-                        var referenceProperty = containerEntity.GetProperty(manyToOneAttribute.PropertyName);
+                        var propType = (propertyPath.LocalMember as PropertyInfo)?.PropertyType;
+                        var foreignClass = (propType?.IsGenericType ?? false) ? propType.GenericTypeArguments[0] : null;
+                        var referenceProperty = foreignClass?.GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == manyToOneAttribute.PropertyName.ToCamelCase());
                         if (referenceProperty != null)
                             map.Key(keyMapper => keyMapper.Column(MappingHelper.GetColumnName(referenceProperty)));
                         else
@@ -592,7 +594,6 @@ namespace Shesha.NHibernate.Maps
                     {
                     });
                 }
-
             };
 
             mapper.BeforeMapManyToMany += (modelInspector, propertyPath, map) =>
@@ -611,6 +612,7 @@ namespace Shesha.NHibernate.Maps
                         map.Column(childColumnName);
                     }
                 }
+                map.Lazy(LazyRelation.NoProxy);
             };
 
             foreach (var assembly in _assemblies)

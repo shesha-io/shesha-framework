@@ -68,6 +68,27 @@ namespace Shesha.DynamicEntities.DbGenerator
             return this;
         }
 
+        public virtual Task CreateInternalManyToManyTableAsync(
+            string tableName,
+            string primaryTableName, string foreignTableName,
+            string primaryIdName, string foreignIdName,
+            string keyColumnName, string foreignColumnName
+        )
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<IDbMetadataActions> CreateManyToManyTableAsync(
+            string tableName,
+            string primaryTableName, string foreignTableName,
+            string primaryIdName, string foreignIdName,
+            string keyColumnName, string foreignColumnName
+        )
+        {
+            await CreateInternalManyToManyTableAsync(tableName, primaryTableName, foreignTableName, primaryIdName, foreignIdName, keyColumnName, foreignColumnName);
+            return this;
+        }
+
         public virtual Task CreateCurrentTableAsync()
         {
             throw new System.NotImplementedException();
@@ -80,13 +101,18 @@ namespace Shesha.DynamicEntities.DbGenerator
             return this;
         }
 
-        public virtual Task CreateCurrentColumnAsync(DbColumnTypeEnum type, bool indexed = false)
+        public virtual Task CreateCurrentColumnAsync(DbColumnType type, bool indexed = false)
         {
             throw new System.NotImplementedException();
         }
 
-
         public async Task<IDbMetadataActions> CreateColumnAsync(string columnName, DbColumnTypeEnum type, bool indexed = false)
+        {
+            await CreateColumnAsync(columnName, new DbColumnType(type), indexed);
+            return this;
+        }
+
+        public async Task<IDbMetadataActions> CreateColumnAsync(string columnName, DbColumnType type, bool indexed = false)
         {
             await UseColumnAsync(columnName, true);
             await CreateCurrentColumnAsync(type, indexed);

@@ -50,7 +50,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
     [DiscriminatorValue("Core.Person")]
     public class PersonModuleB : Person
     {
-
+        //public new virtual OrganisationTest? PrimaryOrganisation { get => base.PrimaryOrganisation as OrganisationTest; set => base.PrimaryOrganisation = value; }
     }
 
 }

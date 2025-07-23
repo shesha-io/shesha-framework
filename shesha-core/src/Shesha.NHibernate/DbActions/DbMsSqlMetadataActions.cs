@@ -7,6 +7,7 @@ using Shesha.DynamicEntities.DbGenerator;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -57,9 +58,39 @@ namespace Shesha.DbActions
                 .ExecuteUpdateAsync();
         }
 
+        public override async Task CreateInternalManyToManyTableAsync(
+            string tableName,
+            string primaryTableName, string foreignTableName,
+            string primaryIdName, string foreignIdName,
+            string keyColumnName, string foreignColumnName
+            )
+        {
+            var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+
+            var names = tableName.Split(".");
+            var table = names.Length == 1 ? tableName : names[1];
+
+            await session
+                .CreateSQLQuery(@$"
+CREATE TABLE {tableName} (
+[{keyColumnName}] [uniqueidentifier] NOT NULL,
+[{foreignColumnName}] [uniqueidentifier] NOT NULL
+)")
+                .ExecuteUpdateAsync();
+
+            await session
+                .CreateSQLQuery($"ALTER TABLE {tableName}  WITH CHECK ADD CONSTRAINT [FK_{table}_{keyColumnName}_{primaryTableName}] FOREIGN KEY([{keyColumnName}]) REFERENCES {primaryTableName} ([{primaryIdName}])")
+                .ExecuteUpdateAsync();
+
+            await session
+                .CreateSQLQuery($"ALTER TABLE {tableName}  WITH CHECK ADD CONSTRAINT [FK_{table}_{foreignColumnName}_{foreignTableName}] FOREIGN KEY([{foreignColumnName}]) REFERENCES {foreignTableName} ([{foreignIdName}])")
+                .ExecuteUpdateAsync();
+        }
+
         public override async Task CreateCurrentTableAsync()
         {
             var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
+
             await session
                 .CreateSQLQuery(@$"
 CREATE TABLE {TableName} (
@@ -85,7 +116,7 @@ CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED (Id ASC))")
                 .ExecuteUpdateAsync();
         }
 
-        public override async Task CreateCurrentColumnAsync(DbColumnTypeEnum type, bool indexed = false)
+        public override async Task CreateCurrentColumnAsync(DbColumnType type, bool indexed = false)
         {
             var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
             await session
@@ -98,21 +129,21 @@ CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED (Id ASC))")
             var primaryTable = primaryTableName.Split('.').Last();
             var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName} ADD {CurrentColumn} {GetDBType(DbColumnTypeEnum.Guid)} Null")
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD {CurrentColumn} uniqueidentifier Null")
                 .ExecuteUpdateAsync();
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName}  WITH CHECK ADD CONSTRAINT [FK_{CurrentColumn}_{primaryTable}] FOREIGN KEY([{CurrentColumn}]) REFERENCES {primaryTableName} ({primaryColumnName})")
+                .CreateSQLQuery($"ALTER TABLE {TableName} WITH CHECK ADD CONSTRAINT [FK_{CurrentTable}_{CurrentColumn}_{primaryTable}] FOREIGN KEY([{CurrentColumn}]) REFERENCES {primaryTableName} ({primaryColumnName})")
                 .ExecuteUpdateAsync();
         }
 
-        private string GetDBType(DbColumnTypeEnum type)
+        private string GetDBType(DbColumnType type)
         {
             // ToDo: AS - add geometry type
-            switch (type)
+            switch (type.ColumnType)
             {
                 case DbColumnTypeEnum.Guid: return "uniqueidentifier";
-                case DbColumnTypeEnum.String: return "nvarchar(max)";
-                // ToDo: AS - what is the double in the DB?
+                case DbColumnTypeEnum.String: return $"nvarchar({(type.Size == null ? "max" : type.Size.ToString())})";
+                case DbColumnTypeEnum.Decimal: return $"decimal(18, {(type.Size == null ? "0" : type.Size.ToString())})";
                 case DbColumnTypeEnum.Double: return "float";
                 case DbColumnTypeEnum.Float: return "float";
                 case DbColumnTypeEnum.Int32: return "int";

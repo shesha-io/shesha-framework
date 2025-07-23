@@ -1,35 +1,20 @@
 ﻿using Abp.Application.Services.Dto;
-using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
-using Shesha.Dto.Interfaces;
-using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shesha.DynamicEntities.Dtos
 {
     /// <summary>
-    /// Model configuration DTO
+    /// Create model configuration DTO
     /// </summary>
-    public class ModelConfigurationCreateDto : EntityDto<Guid?>//, IConfigurationItemDto
+    public class ModelConfigurationCreateDto : EntityDto<Guid?>
     {
+        public EntityConfigTypes EntityConfigType { get; set; }
+
         public Guid? InheritedFromId { get; set; }
         public string? InheritedFromClassName { get; set; }
         public string? InheritedFromNamespace { get; set; }
-
-        //public string ClassName { get; set; }
-        //public string Namespace { get; set; }
-
-        //public bool GenerateAppService { get; set; }
-
-        //public bool AllowConfigureAppService { get; set; }
-
-        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
-
-        //public string? HardcodedPropertiesMD5 { get; set; }
-        //public DateTime ChangeTime { get; set; }
 
         // ConfigurationItem        
         public Guid? ModuleId { get; set; }
@@ -37,14 +22,22 @@ namespace Shesha.DynamicEntities.Dtos
         public string Name { get; set; }
         public string? Label { get; set; }
         public string? Description { get; set; }
+
+        // ToDo: AS - Remove after make create modal form
+        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
+        public List<EntityViewConfigurationDto> ViewConfigurations { get; set; } = new List<EntityViewConfigurationDto>();
+
+        //public string ClassName { get; set; }
+        //public string Namespace { get; set; }
+        //public bool GenerateAppService { get; set; }
+        //public bool AllowConfigureAppService { get; set; }
+        //public string? HardcodedPropertiesMD5 { get; set; }
+        //public DateTime ChangeTime { get; set; }
         //public int VersionNo { get; set; }
         //public ConfigurationItemVersionStatus VersionStatus { get; set; }
         //public bool Suppress { get; set; }
         //public bool NotImplemented { get; set; }
 
-        /// <summary>
-        /// Source of the entity (code/user)
-        /// </summary>
         //public MetadataSourceType? Source { get; set; }
 
         //public virtual EntityConfigTypes? EntityConfigType { get; set; }
@@ -56,8 +49,7 @@ namespace Shesha.DynamicEntities.Dtos
         //public PermissionedObjectDto? PermissionUpdate { get; set; }
         //public PermissionedObjectDto? PermissionDelete { get; set; }
 
-        public List<EntityViewConfigurationDto> ViewConfigurations { get; set; } = new List<EntityViewConfigurationDto>();
-
+        /*
         public void NormalizeViewConfigurations(EntityConfig model)
         {
             var list = new List<EntityViewConfigurationDto>();
@@ -89,7 +81,7 @@ namespace Shesha.DynamicEntities.Dtos
                 }
             }
             ViewConfigurations = list;
-
         }
+        */
     }
 }

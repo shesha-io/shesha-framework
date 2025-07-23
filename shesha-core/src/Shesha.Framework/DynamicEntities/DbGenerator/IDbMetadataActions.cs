@@ -24,7 +24,15 @@ namespace Shesha.DynamicEntities.DbGenerator
 
         Task<IDbMetadataActions> CreateSchemaAsync(string schemaName);
         Task<IDbMetadataActions> CreateTableAsync(string tableName);
+        Task<IDbMetadataActions> CreateManyToManyTableAsync(
+            string tableName,
+            string primaryTableName, string foreignTableName,
+            string primaryIdName, string foreignIdName,
+            string keyColumnName, string foreignColumnName
+        );
+
         Task<IDbMetadataActions> CreateColumnAsync(string columnName, DbColumnTypeEnum type, bool indexed = false);
+        Task<IDbMetadataActions> CreateColumnAsync(string columnName, DbColumnType type, bool indexed = false);
         Task<IDbMetadataActions> CreateEntityReferenceColumnAsync(string columnName, string primaryTableName, string primaryColumnName);
         Task<IDbMetadataActions> CreateIndexAsync(string[] columns);
 

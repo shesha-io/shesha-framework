@@ -1,23 +1,21 @@
-﻿using Abp.AutoMapper;
-using Abp.Collections.Extensions;
+﻿using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Domain.Uow;
-using Abp.Reflection;
 using Abp.Runtime.Caching;
 using AutoMapper;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.DbGenerator;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Exceptions;
 using Shesha.DynamicEntities.TypeFinder;
-using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
@@ -53,6 +51,9 @@ namespace Shesha.DynamicEntities
             TypeProperties = 2,
         }
 
+        // ToDo: AS - decide if we will generate entities on fly
+        private readonly bool metadataRefresh = false;
+
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
@@ -62,8 +63,8 @@ namespace Shesha.DynamicEntities
         private readonly IMappingMetadataProvider _mappingMetadataProvider;
         private readonly IRepository<Domain.ConfigurationItems.Module, Guid> _moduleRepository;
         private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
-        private readonly IDynamicEntitiesDbGenerator _dbGenerator;
         private readonly IModuleList _moduleList;
+        private readonly IDynamicEntitiesDbGenerator _dbGenerator;
 
         private readonly IMapper _propertyCopy;
 
@@ -80,8 +81,8 @@ namespace Shesha.DynamicEntities
             IRepository<Domain.ConfigurationItems.Module, Guid> moduleRepository,
             IModelConfigsCacheHolder modelConfigsCacheHolder,
             IUnitOfWorkManager unitOfWorkManager,
-            IDynamicEntitiesDbGenerator dbGenerator,
-            IModuleList moduleList
+            IModuleList moduleList,
+            IDynamicEntitiesDbGenerator dbGenerator
             )
         {
             _entityConfigRepository = entityConfigRepository;
@@ -94,8 +95,8 @@ namespace Shesha.DynamicEntities
             _moduleRepository = moduleRepository;
             _modelConfigsCache = modelConfigsCacheHolder.Cache;
             _unitOfWorkManager = unitOfWorkManager;
-            _dbGenerator = dbGenerator;
             _moduleList = moduleList;
+            _dbGenerator = dbGenerator;
 
             var propertyCopyMapping = new MapperConfiguration(cfg =>
             {
@@ -109,202 +110,17 @@ namespace Shesha.DynamicEntities
             _propertyCopy = propertyCopyMapping.CreateMapper();
         }
 
-        public async Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate)
-        {
-            // Copy main data
-            destination.Label = source.Label;
-            destination.GenerateAppService = source.GenerateAppService;
-
-            // Copy View configs
-            CopyViewConfigs(source, destination);
-
-            // Copy properties
-            await CopyPropertiesAsync(source, destination);
-
-            // Copy permissions
-            await CopyPermissionsAsync(source, destination);
-
-            // update ClassName references
-            if (deepUpdate)
-                await DeepUpdateAsync(source, destination);
-
-            if (deleteAfterMerge)
-            {
-                await _entityPropertyRepository.DeleteAsync(x => x.EntityConfig.Id == source.Id);
-                await _configurationItemRepository.DeleteAsync(source.Id);
-            }
-
-            await _modelConfigsCache.RemoveAsync($"{destination.Namespace}|{destination.ClassName}");
-        }
-
-        private void CopyViewConfigs(EntityConfig source, EntityConfig destination)
-        {
-            // update only empty ViewConfigurations
-            if (source.ViewConfigurations != null)
-            {
-                if (destination.ViewConfigurations == null)
-                    destination.ViewConfigurations = new List<EntityViewConfigurationDto>();
-
-                foreach (var configuration in source.ViewConfigurations)
-                {
-                    var vconfig = destination.ViewConfigurations.FirstOrDefault(x => x.Type == configuration.Type);
-                    if (vconfig == null)
-                    {
-                        destination.ViewConfigurations.Add(
-                            new EntityViewConfigurationDto()
-                            {
-                                Type = configuration.Type,
-                                FormId = new FormIdFullNameDto()
-                                {
-                                    Name = configuration.FormId?.Name,
-                                    Module = configuration.FormId?.Module
-                                },
-                                IsStandard = configuration.IsStandard,
-                            });
-                    }
-                    else if (vconfig.FormId.IsEmpty())
-                    {
-                        vconfig.FormId = new FormIdFullNameDto()
-                        {
-                            Name = configuration.FormId?.Name,
-                            Module = configuration.FormId?.Module
-                        };
-                    }
-                }
-            }
-        }
-
-        private async Task CopyPropertiesAsync(EntityConfig destination, List<EntityProperty>? destPs, List<EntityProperty> sourcePs, EntityProperty? parent)
-        {
-            foreach (var prop in sourcePs)
-            {
-                var destProp = destPs?.FirstOrDefault(x => x.Name == prop.Name);
-                if (destProp == null && prop.Source == MetadataSourceType.UserDefined)
-                {
-                    destProp = new EntityProperty()
-                    {
-                        Name = prop.Name,
-                        // ToDo: AS - check how to copy these props
-                        //ColumnName = prop.Name,
-                        //CreatedInDb = prop.CreatedInDb,
-                        EntityConfig = destination,
-                        DataType = prop.DataType,
-                        DataFormat = prop.DataFormat,
-                        EntityType = prop.EntityType,
-                        IsFrameworkRelated = prop.IsFrameworkRelated,
-                        ItemsType = prop.ItemsType,
-                        ReferenceListName = prop.ReferenceListName,
-                        ReferenceListModule = prop.ReferenceListModule,
-                        Source = destination.Source == MetadataSourceType.ApplicationCode ? prop.Source : MetadataSourceType.UserDefined,
-                        Suppress = prop.Suppress,
-                        ParentProperty = parent
-                    };
-                }
-
-                if (destProp != null)
-                {
-                    destProp.Audited = prop.Audited;
-                    destProp.Description = prop.Description;
-                    destProp.Label = prop.Label;
-                    destProp.Max = prop.Max;
-                    destProp.Min = prop.Min;
-                    destProp.Required = prop.Required;
-                    destProp.MaxLength = prop.MaxLength;
-                    destProp.MinLength = prop.MinLength;
-                    destProp.ReadOnly = prop.ReadOnly;
-                    destProp.RegExp = prop.RegExp;
-                    destProp.CascadeCreate = destProp.CascadeCreate || prop.CascadeCreate;
-                    destProp.CascadeUpdate = destProp.CascadeUpdate || prop.CascadeUpdate;
-                    destProp.CascadeDeleteUnreferenced = destProp.CascadeDeleteUnreferenced || prop.CascadeDeleteUnreferenced;
-
-                    await _entityPropertyRepository.InsertOrUpdateAsync(destProp);
-
-                    if (prop.Properties?.Any() ?? false)
-                        await CopyPropertiesAsync(destination, destProp.Properties?.ToList(), prop.Properties.ToList(), destProp);
-                }
-            }
-        }
-
-        private async Task CopyPropertiesAsync(EntityConfig source, EntityConfig destination)
-        {
-            var destProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == destination.Id).ToListAsync();
-            var sourceProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == source.Id).ToListAsync();
-
-            await CopyPropertiesAsync(destination, destProps, sourceProps, null);
-        }
-
-        private async Task CopyPermissionsAsync(EntityConfig source, EntityConfig destination)
-        {
-            var copyPermission = async (string method, string type) =>
-            {
-                var sourcePermission = await _permissionedObjectManager.GetOrDefaultAsync($"{source.FullClassName}{method}", type);
-                var destinationPermission = await _permissionedObjectManager.GetOrDefaultAsync($"{destination.FullClassName}{method}", type);
-                destinationPermission.Access = sourcePermission.Access;
-                destinationPermission.Type = type;
-                if (sourcePermission.Permissions != null) 
-                {
-                    destinationPermission.Permissions ??= new();
-
-                    sourcePermission.Permissions.ToList().ForEach(x =>
-                    {
-                        if (!destinationPermission.Permissions.Contains(x))
-                            destinationPermission.Permissions.Add(x);
-                    });
-                }                
-                await _permissionedObjectManager.SetAsync(destinationPermission);
-            };
-
-            await copyPermission("", ShaPermissionedObjectsTypes.Entity);
-            await copyPermission("@Get", ShaPermissionedObjectsTypes.EntityAction);
-            await copyPermission("@Create", ShaPermissionedObjectsTypes.EntityAction);
-            await copyPermission("@Update", ShaPermissionedObjectsTypes.EntityAction);
-            await copyPermission("@Delete", ShaPermissionedObjectsTypes.EntityAction);
-        }
-
-        private async Task DeepUpdateAsync(EntityConfig source, EntityConfig destination)
-        {
-            // update Properties
-            var toUpdate = _entityPropertyRepository.GetAll().Where(x => x.EntityType == source.FullClassName);
-            foreach (var entity in toUpdate)
-            {
-                entity.EntityType = destination.FullClassName;
-                await _entityPropertyRepository.UpdateAsync(entity);
-            }
-
-            // update JsonEntity and GenericEntityReference properties
-
-            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType()).ToList();
-            foreach (var entityType in entityTypes)
-            {
-                var jsonProps = entityType.GetProperties().Where(x => x.PropertyType.IsJsonEntityType()).ToList();
-                var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
-
-                if (jsonProps.Any())
-                    try
-                    {
-                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
-                    }
-                    catch { /* hide exception for entities without tables */ }
-
-                if (genericProps.Any())
-                    try
-                    {
-                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
-                    }
-                    catch { /* hide exception for entities without tables */ }
-            }
-        }
-
         private List<ModelPropertyDto> OverrideProperties(List<ModelPropertyDto> properties)
         {
             return properties.Select(x =>
             {
-                return new ModelPropertyDto()
+                var prop = new ModelPropertyDto()
                 {
                     Source = MetadataSourceType.UserDefined,
                     InheritedFromId = x.Id.ToGuidOrNull(),
                     CreatedInDb = true,
                     ColumnName = x.ColumnName,
+                    IsItemsType = x.IsItemsType,
 
                     Name = x.Name,
                     Label = x.Label,
@@ -324,11 +140,11 @@ namespace Shesha.DynamicEntities
 
                     // ToDo: AS - review
                     ModuleAccessor = x.ModuleAccessor,
-                    Properties = x.Properties != null ? OverrideProperties(x.Properties) : x.Properties,
+
+                    Properties = x.Properties != null ? OverrideProperties(x.Properties) : new List<ModelPropertyDto>(),
 
                     ReadOnly = x.ReadOnly,
-                    ReferenceListModule = x.ReferenceListModule,
-                    ReferenceListName = x.ReferenceListName,
+                    ReferenceListId = x.ReferenceListId != null ? new ReferenceListIdentifier(x.ReferenceListId.Module, x.ReferenceListId.Name) : null,
                     RegExp = x.RegExp,
                     Required = x.Required,
                     SortOrder = x.SortOrder,
@@ -336,10 +152,20 @@ namespace Shesha.DynamicEntities
                     TypeAccessor = x.TypeAccessor,
                     ValidationMessage = x.ValidationMessage,
                     IsFrameworkRelated = x.IsFrameworkRelated,
+
+                    Formatting = x.Formatting.GetFullCopyViaJson(),
+                    ListConfiguration = x.ListConfiguration.GetFullCopyViaJson(),
                 };
+
+                prop.ItemsType = x.ItemsType != null
+                    ? prop.Properties?.FirstOrDefault(y => y.InheritedFromId == x.ItemsType.Id.ToGuidOrNull())
+                    : null;
+
+                return prop;
             }).ToList();
         }
 
+        [UnitOfWork]
         public async Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input)
         {
             // todo: add validation
@@ -363,10 +189,12 @@ namespace Shesha.DynamicEntities
             var modelConfig = new EntityConfig();
             modelConfig.InheritedFrom = inheritedFrom;
 
+            // ToDo: AS - get active module
+
             var module = await _moduleRepository.GetAsync(input.ModuleId ?? Guid.Empty);
 
             var dynamicNamespace = (module?.Name).IsNullOrEmpty() ? "ShaDynamic" : $"{module?.Name}.ShaDynamic";
-            var discriminatorValue = (module?.Name).IsNullOrEmpty() ? $"ShaDynamic.{input.Name}" : $"{dynamicNamespace}.{input.Name}";
+            var discriminatorValue = $"{dynamicNamespace}.{input.Name}";
 
             var tablePrefix = module != null
                 ? MappingHelper.GetTablePrefix((_moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == module.Name)?.Assembly).NotNull())
@@ -397,7 +225,7 @@ namespace Shesha.DynamicEntities
                 Suppress = false,
                 //NotImplemented = false,
                 Source = MetadataSourceType.UserDefined,
-                EntityConfigType = EntityConfigTypes.Class,
+                EntityConfigType = input.EntityConfigType,
 
                 Properties = input.Properties,
             };
@@ -405,17 +233,12 @@ namespace Shesha.DynamicEntities
             return await CreateOrUpdateAsync(modelConfig, modelDto);
         }
 
+        [UnitOfWork]
         public async Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input)
         {
             var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.Id == input.Id).FirstOrDefaultAsync();
             if (modelConfig == null)
                 throw new ModelConfigurationNotFoundException(input.Namespace, input.Name);
-
-            /*if (modelConfig.Source == MetadataSourceType.UserDefined)
-            {
-                input.Namespace = "ShaDynamic";
-                input.ClassName = input.Name;
-            }*/
 
             // todo: add validation
 
@@ -425,6 +248,7 @@ namespace Shesha.DynamicEntities
             return res;
         }
 
+        [UnitOfWork]
         private async Task<ModelConfigurationDto> CreateOrUpdateAsync(EntityConfig modelConfig, ModelConfigurationDto input)
         {
             var isNew = modelConfig.Id == Guid.Empty;
@@ -444,8 +268,8 @@ namespace Shesha.DynamicEntities
 
                 await _entityConfigRepository.InsertAsync(modelConfig);
 
-                // ToDo: AS - decide if we will generate entities on fly
-                //await _dbGenerator.ProcessEntityConfigAsync(modelConfig, new List<EntityProperty>()); // use empty list because properties will be processed later
+                if (metadataRefresh)
+                  await _dbGenerator.ProcessEntityConfigAsync(modelConfig, new List<EntityProperty>()); // use empty list because properties will be processed later
             }
             else
             {
@@ -459,7 +283,7 @@ namespace Shesha.DynamicEntities
                 { ModelUpdateType.AllProperties, GetPropertyMapper(ModelUpdateType.AllProperties) }
             };
 
-            await BindPropertiesAsync(mappers, properties, input.Properties, modelConfig, null);
+            await BindPropertiesAndReturnItemsTypeAsync(mappers, properties, input.Properties, modelConfig, null, false, new List<EntityProperty>());
 
             // delete missing properties
             var allPropertiesId = new List<Guid>();
@@ -469,7 +293,7 @@ namespace Shesha.DynamicEntities
                 if (propId != Guid.Empty)
                     allPropertiesId.Add(propId);
             });
-            var toDelete = properties.Where(p => !p.Name.IsSpecialProperty() && !allPropertiesId.Contains(p.Id)).ToList();
+            var toDelete = properties.Where(p => !p.Name.IsSpecialProperty() && !allPropertiesId.Contains(p.Id) && p.InheritedFrom == null).ToList();
             foreach (var prop in toDelete)
             {
                 var toReOvrrride = await _entityPropertyRepository.GetAll().Where(x => x.InheritedFrom == prop).ToListAsync();
@@ -510,54 +334,6 @@ namespace Shesha.DynamicEntities
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
             var dto = await GetModelConfigurationOrNullAsync(modelConfig);
-            if (dto != null)
-            {
-                // update permissions from the input because data is not saved to DB yet
-                if (input.Permission != null)
-                {
-                    dto.Permission = input.Permission;
-                    dto.Permission.ActualAccess = input.Permission.Access;
-                    dto.Permission.ActualPermissions = input.Permission.Permissions;
-                }
-                else
-                    dto.Permission = null;
-
-                if (input.PermissionGet != null)
-                {
-                    dto.PermissionGet = input.PermissionGet;
-                    dto.PermissionGet.ActualAccess = input.PermissionGet.Access;
-                    dto.PermissionGet.ActualPermissions = input.PermissionGet.Permissions;
-                }
-                else
-                    dto.PermissionGet = null;
-
-                if (input.PermissionUpdate != null)
-                {
-                    dto.PermissionUpdate = input.PermissionUpdate;
-                    dto.PermissionUpdate.ActualAccess = input.PermissionUpdate.Access;
-                    dto.PermissionUpdate.ActualPermissions = input.PermissionUpdate.Permissions;
-                }
-                else
-                    dto.PermissionUpdate = null;
-
-                if (input.PermissionDelete != null)
-                {
-                    dto.PermissionDelete = input.PermissionDelete;
-                    dto.PermissionDelete.ActualAccess = input.PermissionDelete.Access;
-                    dto.PermissionDelete.ActualPermissions = input.PermissionDelete.Permissions;
-                }
-                else
-                    dto.PermissionDelete = null;
-
-                if (input.PermissionCreate != null)
-                {
-                    dto.PermissionCreate = input.PermissionCreate;
-                    dto.PermissionCreate.ActualAccess = input.PermissionCreate.Access;
-                    dto.PermissionCreate.ActualPermissions = input.PermissionCreate.Permissions;
-                }
-                else
-                    dto.PermissionCreate = null;
-            }
             return dto.NotNull();
         }
 
@@ -598,73 +374,165 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private async Task BindPropertiesAsync(Dictionary<ModelUpdateType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty? parentProperty)
+        private async Task<EntityProperty?> BindPropertiesAndReturnItemsTypeAsync(
+            Dictionary<ModelUpdateType, IMapper> mappers, 
+            List<EntityProperty> allProperties,
+            List<ModelPropertyDto> inputProperties, 
+            EntityConfig entityConfig, 
+            EntityProperty? parentProperty,
+            bool inherited,
+            List<EntityProperty> inheritedFromProperties
+        )
         {
-            if (inputProperties == null) return;
+            EntityProperty? itemsType = null;
+            if (inputProperties == null) return itemsType;
+
             var sortOrder = 0;
             foreach (var inputProp in inputProperties.OrderBy(x => x.SortOrder ?? int.MaxValue))
             {
                 var propId = inputProp.Id.ToGuid();
-                var isNew = propId == Guid.Empty;
-                var dbProp = allProperties.FirstOrDefault(p => p.Id == propId)
-                    ?? new EntityProperty { EntityConfig = modelConfig, Name = inputProp.Name};
+                var dbProp = inherited
+                    ? allProperties.FirstOrDefault(p => p.Name == inputProp.Name)
+                    : allProperties.FirstOrDefault(p => p.Id == propId);
 
-                if (dbProp == null)
-                    throw new EntityNotFoundException($"Property with id =`{inputProp.Id}` of entity `{modelConfig.Name}` not found. Unable to Add/Update");
+                var inheritedFromProp = inheritedFromProperties.FirstOrDefault(p => p.Name == inputProp.Name);
+
+                var isNew = propId == Guid.Empty && dbProp == null;
+
+                if (!isNew && dbProp == null)
+                    throw new EntityNotFoundException($"Property with id =`{inputProp.Id}` of entity `{entityConfig.Name}` not found. Unable to Add/Update");
+
+                dbProp = dbProp ?? new EntityProperty { EntityConfig = entityConfig, Name = inputProp.Name };
 
                 var propertyMapper = mappers[
-                    dbProp.InheritedFrom != null 
-                        ? ModelUpdateType.DecorProperties 
+                    dbProp.InheritedFrom != null
+                        ? ModelUpdateType.DecorProperties
                         : dbProp.Source == MetadataSourceType.ApplicationCode
                             ? ModelUpdateType.DecorProperties
-                            :ModelUpdateType.AllProperties
+                            : ModelUpdateType.AllProperties
                     ];
+
+                // clear itemsType because will get relevant property from the properties list
+                inputProp.ItemsType = null;
+
                 propertyMapper.Map(inputProp, dbProp);
+
+                if (dbProp.DataType == DataTypes.Array)
+                {
+                    if (dbProp.DataFormat == ArrayFormats.EntityReference)
+                    {
+                        dbProp.ListConfiguration = dbProp.ListConfiguration ?? new EntityPropertyListConfiguration();
+                        dbProp.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToOne;
+                    }
+                    if (dbProp.DataFormat == ArrayFormats.ManyToManyEntities)
+                    {
+                        dbProp.ListConfiguration = dbProp.ListConfiguration ?? new EntityPropertyListConfiguration();
+                        dbProp.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToMany;
+                    }
+                }
 
                 if (isNew)
                 {
-                    dbProp.ColumnName = inputProp.ColumnName ?? MappingHelper.GetColumnName(dbProp, _moduleList);
                     dbProp.ParentProperty = parentProperty;
                     dbProp.InheritedFrom = inputProp.InheritedFromId != null
                         ? await _entityPropertyRepository.GetAsync(inputProp.InheritedFromId.Value)
-                        : null;
+                        : inherited
+                            ? inheritedFromProp
+                            : null;
+
+                    parentProperty?.Properties.Add(dbProp);
                 }
+
+                // use ColumnName only for root properties (nested proprties is always stored as Json and must not mapped to DB)
+                dbProp.ColumnName = parentProperty == null
+                    ? dbProp.CreatedInDb // update only if the property is not created in DB yet
+                        ? dbProp.ColumnName
+                        : inputProp.ColumnName ?? MappingHelper.GetColumnName(dbProp, _moduleList)
+                    : null;
 
                 dbProp.SortOrder = sortOrder++;
 
+                if (inputProp.ReferenceListId != null)
+                {
+                    dbProp.ReferenceListModule = inputProp.ReferenceListId.Module;
+                    dbProp.ReferenceListName = inputProp.ReferenceListId.Name;
+                }
+
                 // bind child properties
                 if (inputProp.Properties != null && inputProp.Properties.Any())
-                    await BindPropertiesAsync(mappers, allProperties, inputProp.Properties, dbProp.EntityConfig, dbProp);
+                {
+                    dbProp.ItemsType = await BindPropertiesAndReturnItemsTypeAsync(
+                        mappers,
+                        dbProp.Properties.ToList(),
+                        inputProp.Properties,
+                        dbProp.EntityConfig,
+                        dbProp,
+                        inherited,
+                        inheritedFromProp?.Properties.ToList() ?? new List<EntityProperty>()
+                    );
+                    if (!(dbProp.ItemsType?.ReferenceListName).IsNullOrEmpty())
+                    {
+                        dbProp.ReferenceListModule = dbProp.ItemsType?.ReferenceListModule;
+                        dbProp.ReferenceListName = dbProp.ItemsType?.ReferenceListName;
+                    }
+                }
 
                 await _entityPropertyRepository.InsertOrUpdateAsync(dbProp);
 
-                // Add to inherited entities
-                if (isNew)
+                if (parentProperty == null)
                 {
-                    var inheritedEntities = await _entityConfigRepository.GetAll().Where(x => x.InheritedFrom == modelConfig).ToListAsync();
-                    foreach(var inheritedEntity in inheritedEntities)
+                    // Add to inherited entities
+                    if (isNew)
                     {
-                        await BindPropertiesAsync(mappers, new List<EntityProperty>(), new List<ModelPropertyDto> { inputProp }, inheritedEntity, null);
+                        var inheritedEntities = await _entityConfigRepository.GetAll().Where(x => x.InheritedFrom == entityConfig).ToListAsync();
+                        foreach (var inheritedEntity in inheritedEntities)
+                        {
+                            await BindPropertiesAndReturnItemsTypeAsync(
+                                mappers,
+                                new List<EntityProperty>(),
+                                new List<ModelPropertyDto> { inputProp },
+                                inheritedEntity,
+                                null,
+                                true,
+                                new List<EntityProperty> { dbProp }
+                            );
+
+                            await _modelConfigsCache.RemoveAsync($"{inheritedEntity.Namespace}|{inheritedEntity.ClassName}");
+                        }
                     }
-                }
-                // Update inherited entities
-                else
-                { 
-                    var inheritedProperties = await _entityPropertyRepository.GetAll().Where(x => x.InheritedFrom == dbProp).ToListAsync();
-                    foreach (var inheritedProperty in inheritedProperties)
+                    // Update inherited entities
+                    else
                     {
-                        var inhProp = _propertyCopy.Map<ModelPropertyDto>(inputProp);
-                        inhProp.Id = inheritedProperty.Id.ToString();
-                        await BindPropertiesAsync(mappers, new List<EntityProperty>() { inheritedProperty }, new List<ModelPropertyDto> { inhProp }, inheritedProperty.EntityConfig, null);
+                        var inheritedProperties = await _entityPropertyRepository.GetAll().Where(x => x.InheritedFrom == dbProp).ToListAsync();
+                        foreach (var inheritedProperty in inheritedProperties)
+                        {
+                            var inhProp = _propertyCopy.Map<ModelPropertyDto>(inputProp);
+                            inhProp.Id = inheritedProperty.Id.ToString();
+                            //inhProp.Properties = new List<ModelPropertyDto>();
+                            await BindPropertiesAndReturnItemsTypeAsync(
+                                mappers, 
+                                new List<EntityProperty>() { inheritedProperty }, 
+                                new List<ModelPropertyDto> { inhProp },
+                                inheritedProperty.EntityConfig,
+                                inheritedProperty.ParentProperty,
+                                true,
+                                new List<EntityProperty> { dbProp }
+                            );
+
+                            await _modelConfigsCache.RemoveAsync($"{inheritedProperty.EntityConfig.Namespace}|{inheritedProperty.EntityConfig.ClassName}");
+                        }
                     }
                 }
 
                 if (isNew)
                 {
-                    // ToDo: AS - decide if we will generate entities on fly
-                    //await _dbGenerator.ProcessEntityPropertyAsync(dbProp);
+                    if (metadataRefresh)
+                        await _dbGenerator.ProcessEntityPropertyAsync(dbProp);
                 }
+
+                itemsType = inputProp.IsItemsType ? dbProp : null;
             }
+            return itemsType;
         }
 
         private IMapper GetPropertyMapper(ModelUpdateType updateType)
@@ -681,19 +549,14 @@ namespace Shesha.DynamicEntities
                     .ForMember(d => d.SortOrder, o => o.Ignore())
                     .ForMember(d => d.Properties, o => o.Ignore())
                     .ForMember(d => d.Source, o => o.Ignore())
-                    .ForMember(d => d.Name, o => o.Ignore());
-
-                /*if (updateType == PropertyUpdateType.TypeProperties)
-                {
-                    mapExpression.ForMember(d => d.Description, o => o.MapFrom((s, d) => d.Description == "Shurik" ? "Шурик" : s.Description));
-                }*/
+                    .ForMember(d => d.Name, o => o.MapFrom((dto, m) => m.CreatedInDb ? m.Name : dto.Name)) // update only if the property is not created in DB yet
+                ;
 
                 if (updateType == ModelUpdateType.DecorProperties)
                 {
                     mapExpression.ForMember(d => d.DataType, o => o.Ignore());
                     mapExpression.ForMember(d => d.DataFormat, o => o.Ignore());
                     mapExpression.ForMember(d => d.ItemsType, o => o.Ignore());
-                    mapExpression.ForMember(d => d.EntityType, o => o.Ignore());
                 }
             });
 
@@ -717,9 +580,12 @@ namespace Shesha.DynamicEntities
                 .Where(p => p.EntityConfig == modelConfig && p.ParentProperty == null)
                 .OrderBy(p => p.SortOrder).ToListAsync();
 
-            dto.Properties = properties.Select(p => ObjectMapper.Map<ModelPropertyDto>(p)).OrderBy(x => x.SortOrder).ToList();
+            dto.Properties = new List<ModelPropertyDto>();
 
-            var containerType = _typeFinder.Find(x => x.Namespace == modelConfig.Namespace && x.Name == modelConfig.ClassName).FirstOrDefault();
+            // Check hard-coded properties only for Application classes because User defined classes are configured from the DB
+            var containerType = modelConfig.Source == MetadataSourceType.ApplicationCode
+                ? _typeFinder.Find(x => x.Namespace == modelConfig.Namespace && x.Name == modelConfig.ClassName).FirstOrDefault()
+                : null;
 
             if (containerType != null)
             {
@@ -728,48 +594,61 @@ namespace Shesha.DynamicEntities
                     .Select(p => _metadataProvider.GetPropertyMetadata(p, metadataContext))
                     .OrderBy(e => e.Path)
                     .ToList();
+            }
 
-                foreach (var prop in dto.Properties)
+            foreach (var dbProp in properties.OrderBy(x => x.SortOrder))
+            {
+                var prop = ObjectMapper.Map<ModelPropertyDto>(dbProp);
+                prop.ReferenceListId = dbProp.ReferenceListName.IsNullOrEmpty()
+                    ? null
+                    : new ReferenceListIdentifier(dbProp.ReferenceListModule, dbProp.ReferenceListName.NotNull());
+
+                var baseProp = dbProp;
+                while (baseProp.InheritedFrom != null)
+                    baseProp = baseProp.InheritedFrom;
+
+                prop.BaseEntityType = baseProp != dbProp ? baseProp.EntityType : null;
+
+                var hardCodedProp = hardCodedProps?.FirstOrDefault(pp => pp.Path == prop.Name);
+                if (hardCodedProp != null)
                 {
-                    var hardCodedProp = hardCodedProps.FirstOrDefault(pp => pp.Path == prop.Name);
-                    if (hardCodedProp != null)
-                    {
-                        prop.Suppress = !hardCodedProp.IsVisible || (prop.Suppress ?? false);
-                        prop.Required = hardCodedProp.Required || (prop.Required ?? false);
-                        prop.ReadOnly = hardCodedProp.Readonly || (prop.ReadOnly ?? false);
-                        prop.Audited = hardCodedProp.Audited || (prop.Audited ?? false);
-                        prop.MinLength = hardCodedProp.MinLength ?? prop.MinLength;
-                        prop.MaxLength = hardCodedProp.MaxLength ?? prop.MaxLength;
-                        prop.Min = hardCodedProp.Min ?? prop.Min;
-                        prop.Max = hardCodedProp.Max ?? prop.Max;
-                        prop.RegExp = string.IsNullOrWhiteSpace(hardCodedProp.RegExp) ? prop.RegExp : hardCodedProp.RegExp;
-                        prop.ValidationMessage = string.IsNullOrWhiteSpace(hardCodedProp.ValidationMessage)
-                            ? prop.ValidationMessage
-                            : hardCodedProp.ValidationMessage;
+                    prop.Suppress = !hardCodedProp.IsVisible || (prop.Suppress ?? false);
+                    prop.Required = hardCodedProp.Required || (prop.Required ?? false);
+                    prop.ReadOnly = hardCodedProp.Readonly || (prop.ReadOnly ?? false);
+                    prop.Audited = hardCodedProp.Audited || (prop.Audited ?? false);
+                    prop.MinLength = hardCodedProp.MinLength ?? prop.MinLength;
+                    prop.MaxLength = hardCodedProp.MaxLength ?? prop.MaxLength;
+                    prop.Min = hardCodedProp.Min ?? prop.Min;
+                    prop.Max = hardCodedProp.Max ?? prop.Max;
+                    prop.RegExp = string.IsNullOrWhiteSpace(hardCodedProp.RegExp) ? prop.RegExp : hardCodedProp.RegExp;
+                    prop.ValidationMessage = string.IsNullOrWhiteSpace(hardCodedProp.ValidationMessage)
+                        ? prop.ValidationMessage
+                        : hardCodedProp.ValidationMessage;
 
-                        prop.SuppressHardcoded = !hardCodedProp.IsVisible;
-                        prop.RequiredHardcoded = hardCodedProp.Required;
-                        prop.ReadOnlyHardcoded = hardCodedProp.Readonly;
-                        prop.AuditedHardcoded = hardCodedProp.Audited;
-                        prop.SizeHardcoded = hardCodedProp.Min.HasValue
-                            || hardCodedProp.Max.HasValue
-                            || hardCodedProp.MinLength.HasValue
-                            || hardCodedProp.MaxLength.HasValue;
-                        prop.RegExpHardcoded = !string.IsNullOrWhiteSpace(hardCodedProp.RegExp);
+                    prop.SuppressHardcoded = !hardCodedProp.IsVisible;
+                    prop.RequiredHardcoded = hardCodedProp.Required;
+                    prop.ReadOnlyHardcoded = hardCodedProp.Readonly;
+                    prop.AuditedHardcoded = hardCodedProp.Audited;
+                    prop.SizeHardcoded = hardCodedProp.Min.HasValue
+                        || hardCodedProp.Max.HasValue
+                        || hardCodedProp.MinLength.HasValue
+                        || hardCodedProp.MaxLength.HasValue;
+                    prop.RegExpHardcoded = !string.IsNullOrWhiteSpace(hardCodedProp.RegExp);
 
-                        prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate != null;
-                        prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate != null;
-                        prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;
+                    prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate != null;
+                    prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate != null;
+                    prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;
 
-                        prop.EntityModule = hardCodedProp.EntityModule;
-                        prop.ModuleAccessor = hardCodedProp.ModuleAccessor;
-                        prop.TypeAccessor = hardCodedProp.TypeAccessor;
-                    }
+                    prop.EntityModule = hardCodedProp.EntityModule;
+                    prop.ModuleAccessor = hardCodedProp.ModuleAccessor;
+                    prop.TypeAccessor = hardCodedProp.TypeAccessor;
                 }
+
+                dto.Properties.Add(prop);
             }
 
             dto.HardcodedPropertiesMD5 = modelConfig.HardcodedPropertiesMD5;
-            
+
             var changeDates = properties.Select(p => p.LastModificationTime ?? p.CreationTime).ToList();
             changeDates.Add(modelConfig.LastModificationTime ?? modelConfig.CreationTime);
             dto.ChangeTime = changeDates.Max();
@@ -788,8 +667,9 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null)
         {
             var cacheKey = $"{@namespace}|{className}";
-            var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {
-                using (var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
+            var result = await _modelConfigsCache.GetAsync(cacheKey, async () =>
+            {
+                using (var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew))
                 {
                     var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == className && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
                     if (modelConfig == null)
@@ -798,13 +678,13 @@ namespace Shesha.DynamicEntities
                     var result = await GetModelConfigurationOrNullAsync(modelConfig, hardCodedProps);
                     await uow.CompleteAsync();
                     return result;
-                }                    
+                }
             });
 
             return result;
         }
 
-        public async Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null) 
+        public async Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null)
         {
             var result = await GetCachedModelConfigurationOrNullAsync(@namespace, className, hardCodedProps);
             return result ?? throw new ModelConfigurationNotFoundException(@namespace, className);

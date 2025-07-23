@@ -89,9 +89,7 @@ namespace Shesha.Settings
                 var format = paramType.NotNull().IsClass
                     ? paramType.IsEntityType()
                         ? ArrayFormats.EntityReference
-                        : paramType.IsJsonEntityType()
-                            ? ArrayFormats.ObjectReference
-                            : ArrayFormats.Object
+                        : ArrayFormats.ChildObjects
                     : null;
                 return new DataTypeInfo(DataTypes.Array, format, format != null ? paramType.FullName : null);
             }
@@ -99,9 +97,9 @@ namespace Shesha.Settings
             if (propType.IsClass)
             {
                 if (propType.IsJsonEntityType())
-                    return new DataTypeInfo(DataTypes.ObjectReference);
+                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Interface);
                 else
-                    return new DataTypeInfo(DataTypes.Object);
+                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Object);
             }
 
             throw new NotSupportedException($"Data type not supported: {propType.FullName}");

@@ -44,20 +44,36 @@ namespace Shesha
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
                 var configs = _entityConfigRepository.GetAll()
-                    .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined).ToList();
+                    .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && x.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+                    .ToList();
 
-                var otherConfigs = configs.Where(x => x.CreatedInDb);
+                var allCount = configs.Count;
+                var sortedToAdd = configs.Where(x => configs.All(y => x.InheritedFrom != y)).ToList();
+                var nextLevel = configs.Where(x => sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
+                while (sortedToAdd.Count < allCount && nextLevel.Count > 0)
+                {
+                    sortedToAdd.AddRange(nextLevel);
+                    nextLevel = configs.Where(x => !sortedToAdd.Contains(x) && sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
+                }
+
+                var otherConfigs = sortedToAdd.Where(x => x.CreatedInDb);
                 // check for properties
                 foreach (var config in otherConfigs)
                 {
-                    var properties = _entityPropertyRepository.GetAll().Where(x => x.EntityConfig == config && !x.CreatedInDb && x.ParentProperty == null && x.Name != "Id");
+                    var properties = _entityPropertyRepository.GetAll()
+                        .Where(x => 
+                            x.EntityConfig == config 
+                            && !x.CreatedInDb 
+                            && (x.InheritedFrom == null || x.InheritedFrom.IsDeleted)
+                            && x.ParentProperty == null 
+                            && x.Name != "Id");
                     foreach (var property in properties.Where(x => !x.CreatedInDb))
                     {
                         await _dbGenerator.ProcessEntityPropertyAsync(property);
                     }
                 }
 
-                var createTableConfigs = configs.Where(x => !x.CreatedInDb);
+                var createTableConfigs = sortedToAdd.Where(x => !x.CreatedInDb);
                 foreach (var config in createTableConfigs)
                 {
                     await _dbGenerator.ProcessEntityConfigAsync(config);

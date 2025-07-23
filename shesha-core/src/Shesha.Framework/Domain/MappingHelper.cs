@@ -194,7 +194,8 @@ namespace Shesha.Domain
 
             var suffix = propertyConfig.DataType == DataTypes.EntityReference || propertyConfig.DataType == DataTypes.File
                 ? "Id"
-                : propertyConfig.DataType == DataTypes.ReferenceListItem
+                : propertyConfig.DataType == DataTypes.ReferenceListItem 
+                    || (propertyConfig.DataType == DataTypes.Array && propertyConfig.DataFormat == ArrayFormats.MultivalueReferenceList)
                     ? "Lkp"
                     : null;
             return $"{GetColumnPrefix(propertyConfig.EntityConfig, moduleList)}{propertyConfig.Name}{suffix}";
@@ -410,7 +411,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Returns true if the specified type is an Json entity type
         /// </summary>
-        public static bool IsJsonEntity(Type type)
+        public static bool IsJsonEntity(Type? type)
         {
             // todo: use global helper
             return type != null &&

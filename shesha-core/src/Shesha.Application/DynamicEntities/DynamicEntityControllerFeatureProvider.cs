@@ -4,11 +4,9 @@ using Abp.Domain.Uow;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Shesha.Application.Services;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Extensions;
-using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -35,17 +33,7 @@ namespace Shesha.DynamicEntities
         {
             var entityConfigurationStore = _iocManager.Resolve<IEntityConfigurationStore>();
 
-            var entityControllers = feature.Controllers.Where(c => c.AsType().ImplementsGenericInterface(typeof(IEntityAppService<,>))).ToList();
-            foreach (var controller in entityControllers)
-            {
-                var genericInterface = controller.AsType().GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
-
-                var entityType = genericInterface.GenericTypeArguments.First();
-
-                entityConfigurationStore.SetDefaultAppService(entityType, controller);
-            }
-
-            Dictionary<string, TypeInfo> existingControllers = feature.Controllers.ToDictionary(MvcHelper.GetControllerName).OrderBy(x => x.Key).ToDictionary();// Select(c => MvcHelper.GetControllerName(c)).OrderBy(i => i).ToList();
+            var existingControllers = feature.Controllers.ToDictionary(MvcHelper.GetControllerName).OrderBy(x => x.Key).ToDictionary();
 
             // configured registrations
             var _unitOfWorkManager = _iocManager.Resolve<IUnitOfWorkManager>();
@@ -71,8 +59,6 @@ namespace Shesha.DynamicEntities
                             appServiceType = DynamicAppServiceHelper.MakeApplicationServiceType(entityType);
                             if (appServiceType == null)
                                 continue;
-
-                            // ToDo: AS - remove logging
                             if (entityConfig.Source == Domain.Enums.MetadataSourceType.UserDefined)
                                 _logger.Warn($"Create AppServices for dynamic entity: {entityConfig.FullClassName} - {appServiceType.Name}");
                         }

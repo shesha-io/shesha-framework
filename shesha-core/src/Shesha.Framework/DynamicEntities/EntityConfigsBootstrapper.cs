@@ -214,7 +214,8 @@ namespace Shesha.DynamicEntities
                 await _entityConfigRepository.UpdateAsync(config.db);
 
                 if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5 
-                    || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null)))
+                    || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null))
+                    || ForceUpdate)
                     await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
             }
 
@@ -618,7 +619,9 @@ namespace Shesha.DynamicEntities
                 dst.Suppress = !src.IsVisible || dst.Suppress;
 
                 // leave Data Format from DB property if exists because number format is always hardcoded
-                dst.DataFormat = dst.DataFormat.GetDefaultIfEmpty(src.DataFormat);
+                // ToDo: AS - need to review
+                dst.DataFormat = src.DataFormat;
+                //dst.DataFormat = dst.DataFormat.GetDefaultIfEmpty(src.DataFormat);
                 dst.Min = src.Min.GetDefaultIfEmpty(dst.Min);
                 dst.Max = src.Max.GetDefaultIfEmpty(dst.Max);
                 dst.MinLength = src.MinLength.GetDefaultIfEmpty(dst.MinLength);

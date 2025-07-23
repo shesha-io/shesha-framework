@@ -70,9 +70,7 @@ namespace Shesha.Metadata
             {
                 DataType = isEntity 
                     ? DataTypes.EntityReference 
-                    : isJsonEntity
-                        ? DataTypes.ObjectReference
-                        : DataTypes.Object,// todo: check other types
+                    : DataTypes.Object,
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
@@ -120,7 +118,6 @@ namespace Shesha.Metadata
                         switch (dt.DataType)
                         {
                             case DataTypes.Object:
-                            case DataTypes.ObjectReference:
                                 return assemblies.Contains(type.Assembly);
                             case DataTypes.Array:
                                 {
@@ -278,6 +275,7 @@ namespace Shesha.Metadata
                         idx = p.SortOrder.HasValue ? p.SortOrder.Value : idx + 1;
 
                         var prop = _mapper.Map<PropertyMetadataDto>(p);
+                        prop.ContainerType = containerType.FullName ?? "";
                         prop.EnumType = hardCodedProp?.EnumType;
                         prop.IsNullable = hardCodedProp?.IsNullable ?? false;
                         prop.OrderIndex = idx;

@@ -125,8 +125,8 @@ namespace Shesha.GraphQL.Helpers
             {
 
                 case DataTypes.Array:
-                    if (property.DataFormat == ArrayFormats.ReferenceListItem
-                        || property.DataFormat == ArrayFormats.ObjectReference)
+                    if (property.DataFormat == ArrayFormats.MultivalueReferenceList
+                        || property.DataFormat == ArrayFormats.ChildObjects)
                     {
                         sb.AppendLine(propertyName);
                         break;
@@ -213,8 +213,7 @@ namespace Shesha.GraphQL.Helpers
                     {
                         sb.Append(prop);
                         // skip Json properties because only whole Json data is allowed to be retrieved
-                        if (propConfig.DataType != DataTypes.ObjectReference
-                            && propConfig.DataType != DataTypes.Object)
+                        if (propConfig.DataType != DataTypes.Object)
                         {
                             sb.Append(" { id ");
                             await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());

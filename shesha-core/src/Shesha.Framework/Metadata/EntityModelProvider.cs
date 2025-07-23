@@ -67,6 +67,7 @@ namespace Shesha.Metadata
                     return new EntityModelDto
                     {
                         Suppress = t.Suppress,
+                        Name = t.ClassName,
                         ClassName = t.FullClassName,
                         Type = config?.EntityType,
                         Description = t.Description ?? (config != null && config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),

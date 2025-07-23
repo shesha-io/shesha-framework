@@ -3,7 +3,6 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
-using Abp.Reflection;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using NetTopologySuite.Geometries;
@@ -14,6 +13,7 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.EntityTypeBuilder.Model;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
@@ -38,7 +38,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
         private readonly ApplicationPartManager _appPartManager;
         private readonly IModuleList _moduleList;
-        private readonly ITypeFinder _typeFinder;
+        private readonly IShaTypeFinder _typeFinder;
         private readonly ILogger _logger;
 
         public DynamicEntityTypeBuilder(
@@ -47,7 +47,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             IRepository<EntityConfig, Guid> entityConfigRepo,
             ApplicationPartManager appPartManager,
             IModuleList moduleList,
-            ITypeFinder typeFinder,
+            IShaTypeFinder typeFinder,
             ILogger logger
         )
         {
@@ -82,7 +82,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             // Get all user configs
-            var userConfigs = _entityConfigRepo.GetAll().Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined).ToList();
+            var userConfigs = _entityConfigRepo.GetAll().Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted).ToList();
 
             // Generate dynamic assembly per module
             CreateDynamicAssemblies(context, assemblies, userConfigs);
@@ -141,7 +141,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 var assemblyName = new AssemblyName(assembluNamespace);
                 assemblyName.Version = new Version(1, (lastAssemblyName?.Version?.Minor ?? 0) + 1);
 
-                var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndCollect);
+                // ToDo: AS - need to find solution to use AssemblyBuilderAccess.RunAndCollect for collecting old assemblies
+                var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
                 var module = moduleGroup.Key;
                 if (module != null)
                 {
@@ -188,57 +189,9 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             }
         }
 
-        // ToDo: AS - remove after implementation
-        /*public void CreateTypeBuilders(ModuleBuilder moduleBuilder, List<EntityConfig> configs, EntityTypeBuilderContext context)
-        {
-            var allCount = configs.Count;
-            var sortedToAdd = configs.Where(x => configs.All(y => x.InheritedFrom != y)).ToList();
-            var nextLevel = configs.Where(x => sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
-            while (sortedToAdd.Count < allCount && nextLevel.Count > 0)
-            {
-                sortedToAdd.AddRange(nextLevel);
-                nextLevel = configs.Where(x => !sortedToAdd.Contains(x) && sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
-            }
-
-            foreach (var config in sortedToAdd.Where(x => !x.IsDeleted).ToList())
-            {
-                CreateTypeBuilder(moduleBuilder, config, context);
-            }
-        }*/
-
-        // ToDo: AS - remove after implementation
-        /*public List<Type> CreateTypes(ModuleBuilder moduleBuilder, List<EntityConfig> configs, EntityTypeBuilderContext context)
-        {
-            var allCount = configs.Count;
-            var sortedToAdd = configs.Where(x => configs.All(y => x.InheritedFrom != y)).ToList();
-            var nextLevel = configs.Where(x => sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
-            while (sortedToAdd.Count < allCount && nextLevel.Count > 0)
-            {
-                sortedToAdd.AddRange(nextLevel);
-                nextLevel = configs.Where(x => !sortedToAdd.Contains(x) && sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
-            }
-
-            var types = new List<Type>();
-            // Create only not deleted
-            foreach (var config in sortedToAdd.Where(x => !x.IsDeleted).ToList())
-            {
-                types.Add(CreateType(moduleBuilder, config, context));
-            }
-
-            return types;
-        }*/
-
-        // ToDo: AS - remove after implementation
-        /*
-        public Type CreateType(ModuleBuilder moduleBuilder, EntityConfig entityConfig, EntityTypeBuilderContext context)
-        {
-            var properties = _propertyConfigRepo.GetAll().Where(x => x.EntityConfig == entityConfig).ToList();
-            return CreateType(moduleBuilder, entityConfig, properties, context);
-        }*/
-
         public Type CreateType(EntityTypeBuilderType typeBuilderType, EntityTypeBuilderContext context)
         {
-            var properties = _propertyConfigRepo.GetAll().Where(x => x.EntityConfig == typeBuilderType.EntityConfig).ToList();
+            var properties = _propertyConfigRepo.GetAll().Where(x => x.EntityConfig == typeBuilderType.EntityConfig && !x.IsDeleted).ToList();
             return CreateType(typeBuilderType, properties, context);
         }
 
@@ -267,7 +220,11 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 }
             }
 
-            baseType = baseType ?? typeof(FullPowerEntity);
+            baseType = baseType ?? (
+                entityConfig.EntityConfigType == Domain.Enums.EntityConfigTypes.Class
+                    ? typeof(FullPowerEntity)
+                    : typeof(JsonEntity)
+                );
 
             // Base class info
             var typeBuilder = moduleBuilder.DefineType($"{moduleBuilder.Assembly.GetName().Name}.{entityConfig.ClassName}",
@@ -278,14 +235,16 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     TypeAttributes.BeforeFieldInit |
                     TypeAttributes.AutoLayout,
                     baseType,
-                    new Type[] { typeof(IEntity<Guid>) });
+                    entityConfig.EntityConfigType == Domain.Enums.EntityConfigTypes.Class
+                        ? [ typeof(IEntity<Guid>) ]
+                        : null );
 
             // Class Attributes
             // Set Table
-            SetClassAttribute(typeBuilder, typeof(TableAttribute), [$"dynamic.{entityConfig.TableName.NotNull()}"]);
+            SetAttribute(typeBuilder, typeof(TableAttribute), [$"dynamic.{entityConfig.TableName.NotNull()}"]);
             // Set Discriminator
-            SetClassAttribute(typeBuilder, typeof(DiscriminatorAttribute), []);
-            SetClassAttribute(typeBuilder, typeof(DiscriminatorValueAttribute), [entityConfig.DiscriminatorValue.NotNull()]);
+            SetAttribute(typeBuilder, typeof(DiscriminatorAttribute), []);
+            SetAttribute(typeBuilder, typeof(DiscriminatorValueAttribute), [entityConfig.DiscriminatorValue.NotNull()]);
 
             var typeBuilderType = new EntityTypeBuilderType()
             {
@@ -298,41 +257,13 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             return typeBuilderType;
         }
 
-        private void SetClassAttribute(TypeBuilder builder, Type attributeType, object[] arguments)
+        private void SetAttribute(TypeBuilder builder, Type attributeType, object[] arguments)
         {
             var argTypes = arguments.Select(x => x.GetType()).ToArray();
             var attribute = attributeType.GetConstructor(argTypes);
             var attributeBuilder = new CustomAttributeBuilder(attribute.NotNull(), arguments);
             builder.SetCustomAttribute(attributeBuilder);
         }
-
-        // ToDo: AS - remove after implementation
-        /*public Type CreateType(ModuleBuilder moduleBuilder, EntityConfig entityConfig, List<EntityProperty>? properties, EntityTypeBuilderContext context)
-        {
-            // ToDo: AS - remove logging
-            _logger.Warn($"DynamicEntityTypeBuilder: CreateType - {entityConfig.Accessor}");
-
-            var typeBuilderType =
-                context.Types.FirstOrDefault(x => x.EntityConfig == entityConfig)
-                ?? CreateTypeBuilder(moduleBuilder, entityConfig, context);
-
-            var existProperties = typeBuilderType.TypeBuilder.GetProperties();
-
-            // Class properties
-            if (properties != null)
-            {
-                foreach (var property in properties.Where(x => x.Name != "Id" && !existProperties.Any(y => y.Name == x.Name)))
-                {
-                    var propType = GetDtoPropertyType(property, context);
-                    if (propType != null)
-                        CreateProperty(typeBuilderType.TypeBuilder, property.Name, propType);
-                }
-            }
-
-            var type = typeBuilderType.TypeBuilder.CreateType();
-            typeBuilderType.Type = type;
-            return type;
-        }*/
 
         public Type CreateType(EntityTypeBuilderType typeBuilderType, List<EntityProperty>? properties, EntityTypeBuilderContext context)
         {
@@ -343,8 +274,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             if (properties != null)
             {
                 var existProperties = typeBuilderType.TypeBuilder.BaseType?.GetProperties();
-                var propertiesToAdd = properties.Where(x => 
-                    x.Name != "Id" 
+                var propertiesToAdd = properties.Where(x =>
+                    x.Name != "Id"
                     && (!existProperties?.Any(y => y.Name == x.Name) ?? true)
                     && x.ParentProperty == null
                 );
@@ -358,8 +289,6 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
             var type = typeBuilderType.TypeBuilder.CreateType();
             typeBuilderType.Type = type;
-
-            var name = type.Name;
 
             return type;
         }
@@ -410,36 +339,42 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             // Column Attributes
 
             // Set ColumnName to avoid incorrect mapping
-            SetPropertyAttribute(propertyBuilder, typeof(ColumnAttribute), [ property.ColumnName.NotNull() ]);
+            SetAttribute(propertyBuilder, typeof(ColumnAttribute), [property.ColumnName.NotNull()]);
 
             switch (property.DataType)
             {
                 case DataTypes.ReferenceListItem:
-                    SetPropertyAttribute(propertyBuilder, typeof(ReferenceListAttribute), [ property.ReferenceListModule.NotNull(), property.ReferenceListName.NotNull() ]);
+                    SetAttribute(propertyBuilder, typeof(ReferenceListAttribute), [property.ReferenceListModule.NotNull(), property.ReferenceListName.NotNull()]);
                     break;
                 case DataTypes.Object:
-                    SetPropertyAttribute(propertyBuilder, typeof(SaveAsJsonAttribute), []);
+                    SetAttribute(propertyBuilder, typeof(SaveAsJsonAttribute), []);
                     break;
 
                 case DataTypes.Array:
-                    if (property.DataFormat == ArrayFormats.Object || property.DataFormat == ArrayFormats.ObjectReference)
-                        SetPropertyAttribute(propertyBuilder, typeof(SaveAsJsonAttribute), []);
-                    if (property.DataFormat == ArrayFormats.EntityReference)
+                    if (property.DataFormat == ArrayFormats.MultivalueReferenceList)
+                        SetAttribute(propertyBuilder, typeof(MultiValueReferenceListAttribute),
+                            [property.ReferenceListModule.NotNull("Reference List Module must not be null"),
+                                property.ReferenceListName.NotNull("Reference List Name must not be null")
+                            ]);
+                    if (property.DataFormat == ArrayFormats.ChildObjects || property.DataFormat == ArrayFormats.Simple)
+                        SetAttribute(propertyBuilder, typeof(SaveAsJsonAttribute), []);
+                    if (property.DataFormat == ArrayFormats.EntityReference && !(property.ListConfiguration?.ForeignProperty).IsNullOrWhiteSpace())
                     {
-                        if (property.ItemsType != null)
-                        {
-                            if (property.ListConfiguration.MappingType == "many-to-many")
-                                SetPropertyAttribute(propertyBuilder, typeof(ManyToManyAttribute), 
-                                    [ property.ListConfiguration.DbMapping.ManyToManyTableName, property.ListConfiguration.DbMapping.ManyToManyChildColumnName, property.ListConfiguration.DbMapping.ManyToManyKeyColumnName ]);
-                            else if (!property.ListConfiguration.ForeignProperty.IsNullOrWhiteSpace())
-                                SetPropertyAttribute(propertyBuilder, typeof(DynamicManyToOneAttribute), [ property.ListConfiguration.ForeignProperty.NotNull() ]);
-                        }
+                        SetAttribute(propertyBuilder, typeof(DynamicManyToOneAttribute), [(property.ListConfiguration?.ForeignProperty).NotNull()]);
+                    }
+                    if (property.DataFormat == ArrayFormats.ManyToManyEntities)
+                    {
+                        SetAttribute(propertyBuilder, typeof(ManyToManyAttribute),
+                            [(property.ListConfiguration?.DbMapping?.ManyToManyTableName).NotNull("TableName most not be null"),
+                                (property.ListConfiguration?.DbMapping?.ManyToManyChildColumnName).NotNull("ChildColumnName most not be null"),
+                                (property.ListConfiguration?.DbMapping?.ManyToManyKeyColumnName).NotNull("KeyColumnName most not be null")
+                            ]);
                     }
                     break;
             }
         }
 
-        private void SetPropertyAttribute(PropertyBuilder propertyBuilder, Type attributeType, object[] arguments)
+        private void SetAttribute(PropertyBuilder propertyBuilder, Type attributeType, object[] arguments)
         {
             var argTypes = arguments.Select(x => x.GetType()).ToArray();
             var attribute = attributeType.GetConstructor(argTypes);
@@ -471,9 +406,6 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 case DataTypes.Boolean:
                     return typeof(bool?);
                 case DataTypes.ReferenceListItem:
-                    // todo: find a way to check an entity property
-                    // if it's declared as an enum - get base type of this enum
-                    // if it's declared as int/Int64 - use this type
                     return typeof(long?);
 
                 case DataTypes.Number:
@@ -494,26 +426,23 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     }
 
                 case DataTypes.EntityReference:
-                    if (property.EntityType.IsNullOrWhiteSpace())
-                        return typeof(GenericEntityReference);
-                    else
-                        return GetReferenceType(property, context);
+                    return property.EntityType.IsNullOrWhiteSpace()
+                        ? typeof(GenericEntityReference)
+                        : GetReferenceType(property, context);
+
                 case DataTypes.File:
                     return typeof(StoredFile);
 
                 case DataTypes.Object:
-                    if (property.EntityType.IsNullOrWhiteSpace())
-                        return typeof(JObject);
-                    else
-                        return GetReferenceType(property, context);
-
-                case DataTypes.ObjectReference:
-                    if (property.EntityType.IsNullOrWhiteSpace())
-                        return typeof(JsonEntity);
-                    else
-                        return GetReferenceType(property, context);
+                    return !property.EntityType.IsNullOrWhiteSpace()
+                        ? GetReferenceType(property, context)
+                        : dataFormat == ObjectFormats.Object
+                            ? typeof(JObject)
+                            : typeof(JsonEntity);
 
                 case DataTypes.Array:
+                    if (dataFormat == ArrayFormats.MultivalueReferenceList)
+                        return typeof(long?);
                     if (property.ItemsType != null)
                     {
                         var nestedType = GetPropertyType(property.ItemsType, context);
@@ -530,8 +459,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
         private Type GetReferenceType(EntityProperty property, EntityTypeBuilderContext context)
         {
-            if (property.DataType != DataTypes.EntityReference && property.DataType != DataTypes.ObjectReference)
-                throw new NotSupportedException($"DataType {property.DataType} is not supported. Expected {DataTypes.EntityReference} or {DataTypes.ObjectReference}");
+            if (property.DataType != DataTypes.EntityReference && property.DataType != DataTypes.Object)
+                throw new NotSupportedException($"DataType {property.DataType} is not supported. Expected {DataTypes.EntityReference} or {DataTypes.Object}");
 
             if (string.IsNullOrWhiteSpace(property.EntityType))
                 throw new EntityTypeNotFoundException("Entity type is empty");

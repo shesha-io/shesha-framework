@@ -160,16 +160,15 @@ namespace Shesha.DynamicEntities
                         var arrayType = typeof(List<>).MakeGenericType(nestedType.NotNull());
                         return arrayType;
                     }
-                    if (propertyDto.DataFormat == ArrayFormats.ObjectReference)
-                    {
-                        var arrayType = typeof(List<>).MakeGenericType(typeof(object));
-                        return arrayType;
-                    }
                     return null;
-                case DataTypes.Object:
-                    return await GetNestedTypeAsync(propertyDto, context); // JSON content
-                case DataTypes.ObjectReference:
-                    return typeof(object);
+                case DataTypes.Object: // JSON content
+                    if (dataFormat == ObjectFormats.Object)
+                        return await GetNestedTypeAsync(propertyDto, context); 
+                    if (dataFormat == ObjectFormats.Interface)
+                        return typeof(object);
+                    throw new NotSupportedException($"Data type not supported: {dataType} {dataFormat}");
+                case DataTypes.Advanced:
+                    return null;
                 default:
                     throw new NotSupportedException($"Data type not supported: {dataType}");
             }
@@ -198,7 +197,7 @@ namespace Shesha.DynamicEntities
             if (t == null)
             {
                 t = propertyDto.Properties?.Any() ?? false
-                    ? propertyDto.DataType == DataTypes.ObjectReference
+                    ? propertyDto.DataFormat == ObjectFormats.Interface
                         ? typeof(object)
                         : await BuildNestedTypeAsync(propertyDto, context)
                     : typeof(object);

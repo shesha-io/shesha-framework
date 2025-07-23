@@ -1,6 +1,8 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using Newtonsoft.Json.Linq;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -186,35 +188,17 @@ namespace Shesha.Domain
         /// List configuration and DB mapping
         /// </summary>
         [SaveAsJson]
-        public virtual EntityPropertyListConfiguration ListConfiguration { get; set; }
+        public virtual EntityPropertyListConfiguration? ListConfiguration { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        [SaveAsJson]
+        public virtual JObject? Formatting { get; set; }
 
         public override string ToString()
         {
             return $"{Name} {DataType} ({DataFormat} {EntityType})";
         }
     }
-
-    public class EntityPropertyListConfiguration
-    {
-        public static readonly string ManyToMany = "many-to-many";
-        public static readonly string ManyToOne = "many-to-one";
-
-        public string MappingType { get; set; }
-
-        public string ForeignProperty { get; set; }
-
-        public EntityPropertyListDbMapping DbMapping { get; set; }
-    }
-
-    public class EntityPropertyListDbMapping
-    {
-        public string ManyToManyTableName { get; set; }
-
-        public string ManyToManyKeyColumnName { get; set; }
-
-        public string ManyToManyChildColumnName { get; set; }
-
-        public string ManyToManyInversePropertyName { get; set; }
-    }
-
 }

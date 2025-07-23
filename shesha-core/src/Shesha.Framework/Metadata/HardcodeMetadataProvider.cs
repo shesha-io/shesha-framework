@@ -3,6 +3,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using NetTopologySuite.Geometries;
+using Newtonsoft.Json.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -38,8 +39,8 @@ namespace Shesha.Metadata
         /// inheritedDoc
         public List<PropertyMetadataDto> GetProperties(Type containerType, MetadataContext? context = null)
         {
-            // ToDo: AS - remove after implementation
-            var name = containerType.Name;
+            if (containerType == typeof(JObject))
+                return new List<PropertyMetadataDto>();
 
             var flags = BindingFlags.Public | BindingFlags.Instance;
 
@@ -149,6 +150,11 @@ namespace Shesha.Metadata
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
+                if (result.ItemsType != null && result.DataFormat == ArrayFormats.MultivalueReferenceList)
+                {
+                    result.ItemsType.ReferenceListModule = epc?.ReferenceListModule;
+                    result.ItemsType.ReferenceListName = epc?.ReferenceListName;
+                }
 
                 var entityType = result.DataFormat == DataTypes.EntityReference
                     ? result.ItemsType
@@ -169,8 +175,8 @@ namespace Shesha.Metadata
 
         private void FillEntityRelatedProperties(PropertyMetadataDto propertyDto, Type propertyType, DataTypeInfo dataType)
         {
-            var isEntity = propertyType.IsEntityType();
             var propType = propertyType.StripCastleProxyType();
+            var isEntity = propType.IsEntityType();
             var isJsonEntity = propType.IsJsonEntityType();
 
             // todo: review and move handling of other types to separate methods
@@ -178,9 +184,7 @@ namespace Shesha.Metadata
                     ? _entityConfigurationStore.Get(propType)?.SafeTypeShortAlias ?? propType.FullName
                     : isJsonEntity
                         ? propType.FullName
-                        : dataType.DataType == DataTypes.Array
-                            ? dataType.ObjectType
-                            : null;
+                        : dataType.ObjectType;
 
             if (isEntity || isJsonEntity)
             {
@@ -201,8 +205,7 @@ namespace Shesha.Metadata
                 return new PropertyMetadataDto
                 {
                     Path = "value",
-                    DataType = DataTypes.Number,
-                    DataFormat = NumberFormats.Int64,
+                    DataType = DataTypes.ReferenceListItem,
                 };
             }
 
@@ -222,7 +225,6 @@ namespace Shesha.Metadata
                         Path = property.Name,
                         DataType = dataType.DataType,
                         DataFormat = dataType.DataFormat,
-                        
                     };
                     if (!context.ProcessedTypes.Contains(paramType) && paramType.IsNotAnyEntityAndSystemType())
                     {
@@ -358,7 +360,7 @@ namespace Shesha.Metadata
                 return new DataTypeInfo(DataTypes.Boolean);
 
             if (propInfo != null && propInfo.IsMultiValueReferenceListProperty())
-                return new DataTypeInfo(DataTypes.Array, ArrayFormats.ReferenceListItem);
+                return new DataTypeInfo(DataTypes.Array, ArrayFormats.MultivalueReferenceList);
 
             if (propInfo != null && propInfo.IsReferenceListProperty())
                 return new DataTypeInfo(DataTypes.ReferenceListItem);
@@ -397,9 +399,9 @@ namespace Shesha.Metadata
                 if (propType.IsClass)
             {
                 if (propType.IsJsonEntityType())
-                    return new DataTypeInfo(DataTypes.ObjectReference, propType.FullName);
+                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Interface, propType.FullName);
                 else
-                    return new DataTypeInfo(DataTypes.Object, propType.FullName);
+                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Object, propType.FullName);
             }
             return null;
         }

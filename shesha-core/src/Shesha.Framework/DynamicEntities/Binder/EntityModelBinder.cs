@@ -236,12 +236,62 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.Array:
                                     switch (propType.DataFormat)
                                     {
-                                        case ArrayFormats.EntityReference:
-                                        case ArrayFormats.Object:
-                                        case ArrayFormats.ObjectReference:
-                                        case ArrayFormats.String:
-                                        case ArrayFormats.Number:
-                                        case ArrayFormats.Boolean:
+                                        case ArrayFormats.MultivalueReferenceList:
+                                            string[] valComponents;
+                                            if (jproperty.Value is JArray jArray)
+                                            {
+                                                valComponents = jArray.Select(x => x.ToString()).ToArray();
+                                            }
+                                            else
+                                            {
+                                                var propertyValue = jproperty.Value.ToString();
+                                                // Removing the redundant ',' from the hidden element.
+                                                if (propertyValue.EndsWith(",")) propertyValue = propertyValue.Substring(0, propertyValue.Length - 1);
+                                                else if (propertyValue.StartsWith(",")) propertyValue = propertyValue.Substring(1, propertyValue.Length - 1);
+                                                else propertyValue.Replace(",,", ",");
+                                                valComponents = propertyValue.Split(',');
+                                            }
+                                            var totalVal = 0;
+                                            for (int i = 0; i < valComponents.Length; i++)
+                                            {
+                                                if (!string.IsNullOrEmpty(valComponents[i]))
+                                                {
+                                                    int val;
+                                                    if (!int.TryParse(valComponents[i], out val))
+                                                    {
+                                                        // Try parse enum
+                                                        var prop = !string.IsNullOrWhiteSpace(propertyName)
+                                                            ? entity.GetType().GetProperty(ExtractName(propertyName))
+                                                            : null;
+                                                        if (prop != null && prop.PropertyType.IsEnum)
+                                                        {
+                                                            var type = prop.PropertyType.GetUnderlyingTypeIfNullable();
+                                                            object enumVal;
+                                                            try
+                                                            {
+                                                                enumVal = Enum.Parse(type, valComponents[i], true);
+                                                            }
+                                                            catch (Exception)
+                                                            {
+                                                                context.LocalValidationResult.Add(new ValidationResult($"Value '{valComponents[i]}' of '{jproperty.Path}' is not valid."));
+                                                                break;
+                                                            }
+                                                            if (enumVal != null)
+                                                            {
+                                                                totalVal += (int)enumVal;
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                        totalVal += val;
+                                                }
+                                            }
+                                            object? refValue = null;
+                                            result = Parser.TryParseToValueType(totalVal.ToString(), property.PropertyType, out refValue);
+                                            if (result && (await ValidateAsync(entity, jFullName, refValue, context)))
+                                                property.SetValue(entity, refValue);
+                                            break;
+                                        default:
                                             if (property.PropertyType.IsGenericType && jproperty.Value is JArray jList)
                                             {
                                                 var paramType = property.PropertyType.GetGenericArguments()[0];
@@ -321,65 +371,9 @@ namespace Shesha.DynamicEntities.Binder
                                                 }
                                             }
                                             break;
-                                        case ArrayFormats.ReferenceListItem:
-                                            string[] valComponents;
-                                            if (jproperty.Value is JArray jArray)
-                                            {
-                                                valComponents = jArray.Select(x => x.ToString()).ToArray();
-                                            }
-                                            else
-                                            {
-                                                var propertyValue = jproperty.Value.ToString();
-                                                // Removing the redundant ',' from the hidden element.
-                                                if (propertyValue.EndsWith(",")) propertyValue = propertyValue.Substring(0, propertyValue.Length - 1);
-                                                else if (propertyValue.StartsWith(",")) propertyValue = propertyValue.Substring(1, propertyValue.Length - 1);
-                                                else propertyValue.Replace(",,", ",");
-                                                valComponents = propertyValue.Split(',');
-                                            }
-                                            var totalVal = 0;
-                                            for (int i = 0; i < valComponents.Length; i++)
-                                            {
-                                                if (!string.IsNullOrEmpty(valComponents[i]))
-                                                {
-                                                    int val;
-                                                    if (!int.TryParse(valComponents[i], out val))
-                                                    {
-                                                        // Try parse enum
-                                                        var prop = !string.IsNullOrWhiteSpace(propertyName)
-                                                            ? entity.GetType().GetProperty(ExtractName(propertyName))
-                                                            : null;
-                                                        if (prop != null && prop.PropertyType.IsEnum)
-                                                        {
-                                                            var type = prop.PropertyType.GetUnderlyingTypeIfNullable();
-                                                            object enumVal;
-                                                            try
-                                                            {
-                                                                enumVal = Enum.Parse(type, valComponents[i], true);
-                                                            }
-                                                            catch (Exception)
-                                                            {
-                                                                context.LocalValidationResult.Add(new ValidationResult($"Value '{valComponents[i]}' of '{jproperty.Path}' is not valid."));
-                                                                break;
-                                                            }
-                                                            if (enumVal != null)
-                                                            {
-                                                                totalVal += (int)enumVal;
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                        totalVal += val;
-                                                }
-                                            }
-                                            object? refValue = null;
-                                            result = Parser.TryParseToValueType(totalVal.ToString(), property.PropertyType, out refValue);
-                                            if (result && (await ValidateAsync(entity, jFullName, refValue, context)))
-                                                property.SetValue(entity, refValue);
-                                            break;
                                     }
                                     break;
                                 case DataTypes.Object:
-                                case DataTypes.ObjectReference:
                                     if (isReadOnly)
                                         break;
                                     if (jproperty.Value is JObject jObject)

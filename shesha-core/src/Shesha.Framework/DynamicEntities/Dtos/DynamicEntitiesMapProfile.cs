@@ -35,7 +35,10 @@ namespace Shesha.DynamicEntities.Dtos
             CreateMap<EntityProperty, ModelPropertyDto>()
                 .ForMember(e => e.Properties, c => c.MapFrom(e => e.Properties.OrderBy(p => p.SortOrder).ToList()))
                 .ForMember(e => e.IsItemsType, c => c.MapFrom(e => e.ParentProperty != null && e.ParentProperty.ItemsType == e))
-                .ForMember(e => e.InheritedFromId, c => c.MapFrom(e => e.InheritedFrom != null ? e.InheritedFrom.Id : (Guid?)null));
+                .ForMember(e => e.InheritedFromId, c => c.MapFrom(e => e.InheritedFrom != null ? e.InheritedFrom.Id : (Guid?)null))
+                .ForMember(e => e.IsChildProperty, c => c.MapFrom(e => e.ParentProperty != null))
+                .ForMember(e => e.ReferenceListId, c => c.MapFrom(e => string.IsNullOrEmpty(e.ReferenceListName) ? null : new ReferenceListIdentifier(e.ReferenceListModule, e.ReferenceListName)))
+                ;
 
             CreateMap<EntityConfig, ModelConfigurationDto>()
                 .ForMember(e => e.InheritedFromId, m => m.MapFrom(e => e.InheritedFrom != null ? e.InheritedFrom.Id : (Guid?)null))
@@ -67,9 +70,10 @@ namespace Shesha.DynamicEntities.Dtos
                 .ForMember(e => e.OrderIndex, c => c.MapFrom(e => e.SortOrder ?? 0))
                 .ForMember(e => e.EntityType, c => c.MapFrom(e => e.EntityType))
                 .ForMember(e => e.EntityModule, c => c.MapFrom(e => e.EntityModule))
+                .ForMember(e => e.EntityModule, c => c.MapFrom(e => e.EntityModule))
+                .ForMember(e => e.ReferenceListModule, c => c.MapFrom(e => e.ReferenceListId != null ? e.ReferenceListId.Module : null))
+                .ForMember(e => e.ReferenceListName, c => c.MapFrom(e => e.ReferenceListId != null ? e.ReferenceListId.Name : null))
                 ;
-            
-            //CreateMap<PropertyMetadataDto, ModelPropertyDto>();            
         }
 
         private bool AllowConfigureAppService(EntityConfig entityConfig)

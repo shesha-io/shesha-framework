@@ -12,12 +12,21 @@ namespace Shesha.Metadata
     public interface IMetadataAppService: IApplicationService
     {
         /// <summary>
-        /// Autocomplete of entity types
+        /// Autocomplete of types
         /// </summary>
         /// <param name="term">Term to search</param>
         /// <param name="selectedValue">Selected value, is used to fetch user-friendly name of selected item</param>
         /// <returns></returns>
-        Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue);
+        Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue);
+
+        /// <summary>
+        /// Autocomplete of entity types
+        /// </summary>
+        /// <param name="term">Term to search</param>
+        /// <param name="selectedValue">Selected value, is used to fetch user-friendly name of selected item</param>
+        /// <param name="baseClass">Base class for filtering types</param>
+        /// <returns></returns>
+        Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue, string? baseClass);
 
         /// <summary>
         /// Autocomplete of container's properties

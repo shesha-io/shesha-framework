@@ -12,16 +12,6 @@ namespace Shesha.DynamicEntities
     public interface IModelConfigurationManager
     {
         /// <summary>
-        /// Merge entity configurations
-        /// </summary>
-        /// <param name="source">Source configuration</param>
-        /// <param name="destination">Destination configuration</param>
-        /// <param name="deleteAfterMerge">Delete source configuration after merge</param>
-        /// <param name="deepUpdate">Set to true to update all references from the source class name to the destination class name (properties, JsonEntities, etc)</param>
-        /// <returns></returns>
-        Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate);
-
-        /// <summary>
         /// Get model configuration
         /// </summary>
         Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null);

@@ -125,6 +125,23 @@ namespace Shesha.DynamicEntities.Cache
             return item?.EntityConfig;
         }
 
+        public async Task<List<EntityPropertyDto>?> GetDynamicSafeEntityPropertiesAsync(string entityType)
+        {
+            var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
+            {
+                var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
+                if (eType == null)
+                {
+                    var (classNamespace, className) = GetNamespaceAndClassName(entityType);
+                    return await FetchConfigAsync(classNamespace, className);
+                }
+                else
+                    return await FetchConfigAsync(eType);
+            });
+
+            return item?.Properties;
+        }
+
         public async Task<EntityConfigDto?> GetEntityConfigAsync(string entityType, bool raiseException = false)
         {
             var item = await _propertyCache.GetAsync(entityType, async (entityType) =>

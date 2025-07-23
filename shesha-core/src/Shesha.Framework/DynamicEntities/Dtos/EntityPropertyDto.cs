@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
-using Shesha.Domain;
+using Newtonsoft.Json.Linq;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -148,5 +149,10 @@ namespace Shesha.DynamicEntities.Dtos
         /// List configuration and DB mapping
         /// </summary>
         public EntityPropertyListConfiguration ListConfiguration { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        public JObject? Formatting { get; set; }
     }
 }

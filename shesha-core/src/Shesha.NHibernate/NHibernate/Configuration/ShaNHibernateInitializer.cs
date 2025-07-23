@@ -1,5 +1,7 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Reflection;
+using Castle.Core.Logging;
+
 using NHibernate;
 using Shesha.Attributes;
 using Shesha.Domain;
@@ -28,6 +30,8 @@ namespace Shesha.NHibernate.Configuration
         private readonly IInterceptor? _interceptor;
         private readonly IShaTypeFinder _shaTypeFinder;
 
+        private ILogger Logger { get; set; } = NullLogger.Instance;
+
         public ShaNHibernateInitializer(
             IShaNHibernateModuleConfiguration configuration,
             IAssemblyFinder assembleFinder,
@@ -45,6 +49,8 @@ namespace Shesha.NHibernate.Configuration
 
         public ISessionFactory Initialize()
         {
+            Logger.Debug("NH Initialization - started");
+
             var configProvider = GetConfigProvider(_configuration.DatabaseType);
 
             var nhConfig = new global::NHibernate.Cfg.Configuration();
@@ -65,6 +71,8 @@ namespace Shesha.NHibernate.Configuration
             nhConfig.AddFilterDefinition(SoftDeleteFilter.GetDefinition());
             nhConfig.AddFilterDefinition(MayHaveTenantFilter.GetDefinition());
             nhConfig.AddFilterDefinition(MustHaveTenantFilter.GetDefinition());
+
+            Logger.Debug("NH Initialization - add assemblies to conventions");
 
             var conventions = new Conventions(_nameGenerator);
             var mappingAssemblies = new Dictionary<Assembly, string>
@@ -88,19 +96,29 @@ namespace Shesha.NHibernate.Configuration
                     conventions.AddAssembly(assembly, assembly.GetCustomAttribute<TablePrefixAttribute>()?.Prefix);
             }
 
+            Logger.Debug("NH Initialization - compile conventions");
+
             conventions.Compile(nhConfig);
+
+            Logger.Debug("NH Initialization - Set Interceptor");
 
             if (_interceptor != null)
                 nhConfig.SetInterceptor(_interceptor);
+
+            Logger.Debug("NH Initialization - Generate Statistics");
 
             nhConfig.SessionFactory().GenerateStatistics();
 
             // ToDo: ABP662, some ABP entities (WebhookEvent, DynamicProperty) contain not virtual properties
             nhConfig.Properties.Add("use_proxy_validator", "false");
 
+            Logger.Debug("NH Initialization - Build Session Factory");
+
             var _sessionFactory = _configuration.SessionFactoryBuilder != null
                 ? _configuration.SessionFactoryBuilder.Invoke(nhConfig)
                 : nhConfig.BuildSessionFactory();
+
+            Logger.Debug("NH Initialization - finish");
 
             return _sessionFactory;
         }
