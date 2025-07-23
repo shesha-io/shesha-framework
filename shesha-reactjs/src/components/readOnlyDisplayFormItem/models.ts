@@ -13,7 +13,8 @@ export interface IReadOnlyDisplayFormItemProps {
   | 'datetime'
   | 'checkbox'
   | 'switch'
-  | 'radiogroup';
+  | 'radiogroup'
+  | 'textArea';
   dropdownDisplayMode?: 'raw' | 'tags';
   showIcon?: boolean;
   solidColor?: boolean;

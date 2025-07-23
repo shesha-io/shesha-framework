@@ -137,6 +137,9 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       case 'switch': {
         return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...style }} />;
       }
+      case 'textArea': {
+        return <div style={{ ...style, whiteSpace: 'pre-wrap' }}>{value}</div>;
+      }
 
       default:
         break;
