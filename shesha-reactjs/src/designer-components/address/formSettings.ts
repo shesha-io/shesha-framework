@@ -288,7 +288,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                         ]
                     },
                     {
-                        key: '5',
+                        key: 'appearance',
                         title: 'Appearance',
                         id: appearanceTabId,
                         components: [...new DesignerToolbarSettings()
