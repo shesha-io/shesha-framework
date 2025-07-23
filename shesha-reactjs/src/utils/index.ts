@@ -1,12 +1,13 @@
 import { IAnchoredDirection, IStoredFilter } from '@/providers/dataTable/interfaces';
 import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
-import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
+import { IArgumentEvaluationResult, convertJsonLogicNode, convertJsonLogicNodeSync } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { Cell } from 'react-table';
 import { IPersistedFormProps } from '@/providers';
 import { CSSProperties } from 'react';
 import { ISidebarGroup } from '@/interfaces/sidebar';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { IPropertyMetadata, NestedProperties } from '@/interfaces/metadata';
 
 export type NumberOrString = number | string;
 
@@ -258,6 +259,74 @@ export const evaluateDynamicFilters = async (
       return Promise.resolve(filter);
     })
   );
+
+  return convertedFilters;
+};
+
+// Synchronous version of evaluateDynamicFilters
+export const evaluateDynamicFiltersSync = (
+  filters: IStoredFilter[],
+  mappings: IMatchData[],
+  propertyMetadata: NestedProperties
+): IStoredFilter[] => {
+  if (filters?.length === 0 || !mappings?.length) return filters;
+
+  const convertedFilters = filters.map((filter) => {
+    // correct way of processing JsonLogic rules
+    if (typeof filter.expression === 'object') {
+      const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
+        const argValue = args[argIndex];
+        // special handling for specifications
+        // TODO: move `is_satisfied` operator name to constant
+        if (operator === 'is_satisfied' && argIndex === 1) {
+          // second argument is an expression that should be converted to boolean
+          if (typeof argValue === 'string') {
+            const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+            const evaluatedValue = executeExpression<boolean>(argValue, evaluationContext, false, (err) => {
+              console.error('Failed to convert value', err);
+              return null;
+            });
+
+            return { handled: evaluatedValue !== null, value: Boolean(evaluatedValue) };
+          }
+        }
+
+        return { handled: false };
+      };
+
+      const evaluationData = {
+        hasDynamicExpression: false,
+        allFieldsEvaluatedSuccessfully: true,
+        unevaluatedExpressions: [],
+      };
+
+      const getVariableDataType = (variable: string): string => {
+        return propertyMetadata
+          ? (propertyMetadata as IPropertyMetadata[]).find((m) => m.label === variable)?.dataType
+          : 'string';
+      };
+
+      const convertedExpression = convertJsonLogicNodeSync(filter.expression, {
+        argumentEvaluator: evaluator,
+        mappings,
+        getVariableDataType,
+        onEvaluated: (args) => {
+          evaluationData.hasDynamicExpression = true;
+          evaluationData.allFieldsEvaluatedSuccessfully =
+            evaluationData.allFieldsEvaluatedSuccessfully && args.success;
+          if (args.unevaluatedExpressions && args.unevaluatedExpressions.length)
+            evaluationData.unevaluatedExpressions.push(...args.unevaluatedExpressions);
+        },
+      });
+      return {
+        ...filter,
+        ...evaluationData,
+        expression: convertedExpression,
+      } as IStoredFilter;
+    }
+
+    return filter;
+  });
 
   return convertedFilters;
 };

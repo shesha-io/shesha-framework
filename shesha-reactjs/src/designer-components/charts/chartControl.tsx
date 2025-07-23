@@ -420,8 +420,6 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
   // Memoize the loader component
   const loaderComponent = useMemo(() => {
-    if (state.isLoaded && metadataProcessed) return null;
-
     return (
       <div className={cx(styles.loadingContainer)}>
         <ChartLoader chartType={chartType} handleCancelClick={() => {
