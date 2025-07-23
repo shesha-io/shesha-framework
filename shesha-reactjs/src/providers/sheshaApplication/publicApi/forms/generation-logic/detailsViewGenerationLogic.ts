@@ -46,6 +46,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       if (extensionJson?.modelType && metadataHelper) {
         const entity = await metadataHelper.fetchEntityMetadata(extensionJson.modelType);
 
+        console.log("LOG:: entity", entity)
         const nonFrameworkProperties = (entity.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
 
         await this.addComponentsToMarkup(markupObj, extensionJson, entity, nonFrameworkProperties, metadataHelper);
@@ -192,7 +193,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
    * @param _extensionJson The extension configuration (unused).
    * @param metadataHelper The metadata helper instance.
    */
-  private addDetailsPanel(metadata: any[], markup: any, _extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): void {
+  private addDetailsPanel(metadata: PropertyMetadataDto[], markup: any, _extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): void {
     const builder = new DesignerToolbarSettings({});
 
     const detailsPanelContainer = findContainersWithPlaceholder(markup, "//*DETAILSPANEL*//");

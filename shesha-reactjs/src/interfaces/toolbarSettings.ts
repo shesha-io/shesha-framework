@@ -42,6 +42,7 @@ import { ITableContextComponentProps } from '@/designer-components/dataTable/tab
 import { ITableComponentProps } from '@/designer-components/dataTable/table/models';
 import { IQuickSearchComponentProps } from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
 import { IPagerComponentProps } from '@/designer-components/dataTable/pager/pagerComponent';
+import { ITableViewSelectorComponentProps } from '@/designer-components/dataTable/tableViewSelector/models';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -64,6 +65,8 @@ type TabsType = ToolbarSettingsProp & Omit<ITabsComponentProps, 'hidden' | 'type
 type TextType = ToolbarSettingsProp & Omit<ITextTypographyProps, 'hidden' | 'type'>;
 
 type KeyInformationBarType = ToolbarSettingsProp & Omit<IKeyInformationBarProps, 'hidden' | 'type'>;
+
+type TableViewSelectorType = ToolbarSettingsProp & Omit<ITableViewSelectorComponentProps, 'hidden' | 'type'>;
 
 type ContextPropertyAutocompleteType = ToolbarSettingsProp &
   Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
@@ -175,6 +178,10 @@ export class DesignerToolbarSettings<T> {
 
   public addTablePager(props: TablePagerType | ((data: T) => TablePagerType)) {
     return this.addProperty(props, 'datatable.pager');
+  }
+
+  public addTableViewSelector(props: TableViewSelectorType | ((data: T) => TableViewSelectorType)) {
+    return this.addProperty(props, 'tableViewSelector');
   }
 
   public addDatatable(props: DatatableType | ((data: T) => DatatableType)) {
