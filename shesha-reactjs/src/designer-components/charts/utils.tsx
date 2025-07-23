@@ -654,11 +654,11 @@ export function aggregateValues(items: object[], aggregationMethod: TAggregation
 export function createFontConfig(
   fontConfig?: { family?: string; size?: number; weight?: string; color?: string },
   defaultSize: number = 12,
-  defaultWeight: string = '400'
+  defaultWeight: string | number = '400'
 ) {
   return {
     family: fontConfig?.family || 'Segoe UI',
     size: fontConfig?.size || defaultSize,
-    weight: fontConfig?.weight || defaultWeight
+    weight: fontConfig?.weight || defaultWeight,
   };
 }
