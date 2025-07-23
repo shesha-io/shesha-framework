@@ -46,7 +46,6 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       if (extensionJson?.modelType && metadataHelper) {
         const entity = await metadataHelper.fetchEntityMetadata(extensionJson.modelType);
 
-        console.log("LOG:: entity", entity)
         const nonFrameworkProperties = (entity.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
 
         await this.addComponentsToMarkup(markupObj, extensionJson, entity, nonFrameworkProperties, metadataHelper);

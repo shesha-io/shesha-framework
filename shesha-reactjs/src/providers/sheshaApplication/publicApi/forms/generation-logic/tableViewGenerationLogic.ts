@@ -5,7 +5,7 @@ import { castToExtensionType, findContainersWithPlaceholder, processBaseMarkup }
 import { EntityMetadataHelper } from "./entityMetadataHelper";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
-import { nanoid } from "nanoid";
+import { nanoid } from "@/utils/uuid";
 import { ISpecification } from "@/interfaces/metadata";
 import { ITableViewProps } from "@/providers/dataTable/filters/models";
 import { toCamelCase } from "@/utils/string";
@@ -26,7 +26,6 @@ export class TableViewGenerationLogic implements GenerationLogic {
 
         const nonFrameworkProperties = (entity.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
 
-        console.log("LOG:: markUp", markup)
         await this.addComponentsToMarkup(markupObj, entity, nonFrameworkProperties);
       }
 
@@ -41,18 +40,6 @@ export class TableViewGenerationLogic implements GenerationLogic {
     return template?.generationLogicTypeName === "TableViewGenerationLogic";
   }
 
-  /**
- * Adds components to the markup based on the extension configuration.
- * This method adds header, details panel, and child tables to the markup object
- * according to the provided extension configuration and entity metadata.
- *
- * @param markup The JSON markup object to modify.
- * @param extensionJson The extension configuration for the details view.
- * @param entity The entity metadata for the main entity.
- * @param nonFrameworkProperties The filtered list of non-framework properties for the entity.
- * @param metadataHelper The form builder or metadata helper instance.
- * @returns The updated markup object with added components.
- */
   private async addComponentsToMarkup(markup: any, entity: IEntityMetadata, nonFrameworkProperties: PropertyMetadataDto[]): Promise<any> {
     try {
       // Add header components
@@ -151,18 +138,18 @@ export class TableViewGenerationLogic implements GenerationLogic {
       id: nanoid(),
       propertyName: `datatable ${nanoid()}`,
       items: nonFrameworkProperties.map((prop, idx) => {
-          return {
-            id: nanoid(),
-            columnType: 'data',
-            propertyName: toCamelCase(prop.path),
-            caption: prop.label,
-            isVisible: true,
-            description: prop.description,
-            sortOrder: idx,
-            itemType: 'item'
-          };
+        return {
+          id: nanoid(),
+          columnType: 'data',
+          propertyName: toCamelCase(prop.path),
+          caption: prop.label,
+          isVisible: true,
+          description: prop.description,
+          sortOrder: idx,
+          itemType: 'item'
+        };
       })
-    })
+    });
 
     if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {
       tableContainer[0].components.push(...builder.toJson());
