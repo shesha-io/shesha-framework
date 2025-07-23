@@ -1124,7 +1124,6 @@ export const getSettings = (data: any) => {
                               { label: 'Descending', value: 'desc' },
                             ],
                             validate: { required: true },
-                            defaultValue: 'asc',
                             hidden: {
                               _code: 'return !(getSettingValue(data?.orderBy))',
                               _mode: 'code',
