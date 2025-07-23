@@ -44,7 +44,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: hidden;
             text-overflow: ellipsis;
         }
-  `); 
+  `);
+
+  const inputField = css`
+    padding: 0px 8px;
+    margin: 0;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  `;
+
   return {
     readOnlyDisplayFormItem,
     readOnlyModeToggler,
