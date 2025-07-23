@@ -619,6 +619,67 @@ export function getPredictableColor(input: string | number): string {
   return getPredictableColorHSL(input + '');
 }
 
+
+/**
+ * Get predictable color HSL with higher transparency for polar area charts
+ * @param value the string value to generate color for
+ * @returns HSLA color string with higher transparency
+ */
+function getPredictableColorHSLPolarArea(value: string): string {
+  // Hash the string value to get a semi-random seed without bitwise operations
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    // A non-linear function to mix character codes :)
+    hash += (value.charCodeAt(i) * (i + 1)) ** 3.5;  // Raising to 3.5 to exaggerate differences
+  }
+
+  // Use the hash to calculate the hue (0 - 360 degrees on the color wheel)
+  const hue = Math.abs(hash % 360);
+
+  // Set a fixed saturation and lightness for the color to ensure visibility
+  const saturation = 60 + (hash % 30);  // Varies between 60% and 90% for some saturation variation
+  const lightness = 57 + (hash % 20);  // Varies between 50% and 70% for lightness variation
+
+  // Set a higher alpha for more transparency (50% transparency instead of 25%)
+  const alpha = 0.5;  // 50% transparency
+
+  // Construct the HSLA color string
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
+}
+
+/**
+ * Get predictable color with higher transparency for polar area charts
+ * @param input the input to get the color for
+ * @returns a predictable color in HSL format with higher transparency
+ */
+export function getPredictableColorPolarArea(input: string | number): string {
+  if (typeof input === 'string') {
+    switch (input.toLocaleLowerCase()) {
+      case 'true':
+        return 'hsla(120, 100%, 20%, 0.4)';
+      case 'false':
+        return 'hsla(0, 100%, 20%, 0.4)';
+      case 'unknown':
+        return 'hsla(0, 0%, 50%, 0.4)';
+      case 'undefined':
+        return 'hsla(0, 0%, 20%, 0.4)';
+      case 'null':
+        return 'hsla(0, 100%, 20%, 0.4)';
+      case '':
+        return 'hsla(240, 100%, 20%, 0.4)';
+      case 'none':
+        return 'hsla(0, 0%, 75%, 0.4)';
+      case 'not disclosed':
+        return 'hsla(20, 20%, 90%, 0.4)';
+      default:
+        return getPredictableColorHSLPolarArea(input.toString());
+    }
+  }
+
+  // If the input is a number, convert it to a string and return the color
+  return getPredictableColorHSLPolarArea(input + '');
+}
+
 /**
  * Function to aggregate values based on the aggregation method
  * @param items the items to aggregate
