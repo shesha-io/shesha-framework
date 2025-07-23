@@ -24,9 +24,8 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           return model.readOnly
-            ? <ReadOnlyDisplayFormItem value={value} />
-            : <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus}/>
-          ;
+            ? <ReadOnlyDisplayFormItem value={value} style={model.allStyles.fullStyle} />
+            : <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus} />;
         }}
       </ConfigurableFormItem>
     );

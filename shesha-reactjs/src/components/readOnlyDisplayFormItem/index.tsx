@@ -40,7 +40,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showItemName
   } = props;
 
-  const { styles } = useStyles();
+  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
 
   const renderValue = useMemo(() => {
     if (render) {

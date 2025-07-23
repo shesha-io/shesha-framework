@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles, getTextHoverEffects } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, { textAlign }) => {
   const readOnlyModeToggler = "read-only-mode-toggler";
 
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
@@ -29,6 +29,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    justify-content: ${textAlign};
   `;
 
   return {

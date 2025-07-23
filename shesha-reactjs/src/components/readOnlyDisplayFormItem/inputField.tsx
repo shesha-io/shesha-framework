@@ -3,7 +3,7 @@ import { useStyles } from './styles/styles';
 
 function InputField({ value, style, children }: { value: string | number | React.ReactNode; style?: React.CSSProperties; children?: React.ReactNode }) {
 
-    const { styles } = useStyles();
+    const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
 
     const { fontSize, fontWeight, color, fontFamily, textAlign } = style || {};
 
