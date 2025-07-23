@@ -1330,7 +1330,7 @@ export const getSettings = (data: any) => {
                   ghost: true,
                   collapsible: 'header',
                   hidden: {
-                    _code: 'return ["line", "bar"].includes(getSettingValue(data?.chartType)) && getSettingValue(data?.chartType) !== "pivot";',
+                    _code: 'return ["line", "bar"].includes(getSettingValue(data?.chartType)) && getSettingValue(data?.simpleOrPivot) === "simple";',
                     _mode: 'code',
                     _value: false,
                   } as any,

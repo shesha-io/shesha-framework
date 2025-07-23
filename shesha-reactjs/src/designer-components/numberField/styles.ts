@@ -21,6 +21,14 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         font-family: ${fontFamily};
         text-align: ${textAlign};
         height: 100% !important;
+        padding-left: ${hasPrefix ? '4px' : '8px'} !important;
+        padding-right: 4px !important;
+        padding-bottom: 6px !important;
+
+        &:hover {
+          padding-right: ${hasSuffix ? '4px' : '30px'} !important;
+          transition: padding-right 0.2s ease;
+        }
       }
 
       .ant-input-number {
@@ -47,6 +55,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         margin-inline-start: 0px !important;
         margin-right: 8px !important;
         position: relative;
+        padding: 4px 0px;
 
         .anticon {
           margin-left: 4px !important;
@@ -56,9 +65,10 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
 
       .ant-input-number-prefix {
         ${!hasPrefix && 'display: none;'}   
-        margin-inline-end: 4px !important;
+        margin-inline-end: 0px !important;
         margin-left: 8px !important ;
         position: relative !important;
+        padding: 4px 0px;
 
         .anticon {
           margin-right: 4px !important;

@@ -13,18 +13,17 @@ import { useStyles } from './styles/styles';
 import { CreateFormCell, ICreateFormCellProps } from '../dataTable/cell/formCell/formCell';
 import { isFormFullName } from '@/index';
 
-const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
+const getStyles = (props: Partial<TableHeaderProps | TableCellProps>) => [
   props,
   {
     style: {
-      justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-      alignItems: 'flex-start',
       display: 'flex',
+      height: '-webkit-fill-available !important'
     },
   },
 ];
 
-const cellProps: HeaderPropGetter<object> = (props, { column }) => getStyles(props, column.align);
+const cellProps: HeaderPropGetter<object> = (props) => getStyles(props);
 
 export interface INewRowCellProps {
   column: ColumnInstance;
@@ -75,8 +74,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
 
   const fixedStyled: React.CSSProperties = {
     [direction]: anchored?.direction && shiftedBy,
-    backgroundColor: 'white',
-    borderBottom: '1px solid #f0f0f0',
+    height: '100%',
   };
 
   const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
@@ -97,10 +95,12 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
         [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
-      })}
+      }, styles.shaCrudCell)}
     >
       {columnConfig && columnConfig.columnType === 'data' && (
-        <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
+        <div className={styles.shaCellParentFW}>
+          <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
+        </div>
       )}
       {columnConfig && columnConfig.columnType === 'form' && (
         <CreateFormCell columnConfig={columnConfig} {...parentFormProps} />

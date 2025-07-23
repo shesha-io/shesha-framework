@@ -11,6 +11,8 @@ import ChartControlURL from './chartControlURL';
 import ChartDataProvider from '@/providers/chartData';
 import ChartControl from './chartControl';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
+import { useNestedPropertyMetadatAccessor } from '@/index';
 
 const BarChartComponent: IToolboxComponent<IChartProps> = {
   type: 'barChart',
@@ -19,6 +21,9 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <BarChartOutlined />,
   Factory: ({ model }) => {
+    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.entityType);
+    const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: model.filters });
+    
     const {
       dimensionsStyles,
       borderStyles,
@@ -52,7 +57,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
                 flexDirection: 'column',
                 overflow: 'hidden'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' filters={model.filters} />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' evaluatedFilters={evaluatedFilters} />}
               </div>
             </ChartDataProvider>
           );
