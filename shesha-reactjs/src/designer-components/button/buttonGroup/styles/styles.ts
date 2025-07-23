@@ -36,6 +36,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   */
 
   const shaResponsiveButtonGroupContainer = cx("sha-responsive-button-group-container", css`
+
           .${shaResponsiveButtonGroup} {
             line-height: unset;
             min-height: 30px;
@@ -98,11 +99,25 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             }
           }
         }
+
+        > ul {
+          &:empty {
+            display: none;
+          }
+        }
   `);
+
+  const shaHideEmpty = cx("sha-hide-empty", css`
+    &:empty {
+      display: none;
+    }
+  `);
+
   return {
     shaResponsiveButtonGroupContainer,
     shaResponsiveButtonGroup,
     shaResponsiveButtonGroupInlineContainer,
     a,
+    shaHideEmpty
   };
 });
