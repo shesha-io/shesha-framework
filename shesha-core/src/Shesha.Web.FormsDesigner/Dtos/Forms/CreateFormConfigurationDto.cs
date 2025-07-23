@@ -52,5 +52,21 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// If true, indeicates that the form is a template
         /// </summary>
         public bool IsTemplate { get; set; }
+        /// <summary>
+        /// Form module for getting additional configuration options for template
+        /// </summary>
+        public string? ConfigurationFormModule { get; set; }
+        /// <summary>
+        /// Form name for getting additional configuration options for template
+        /// </summary>
+        public string? ConfigurationFormName { get; set; }
+        /// <summary>
+        /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator
+        /// </summary>
+        public string? GenerationLogicTypeName { get; set; }
+        public string? GenerationLogicExtensionJson { get; set; }
+        public string? PlaceholderIcon { get; set; }
+
+
     }
 }

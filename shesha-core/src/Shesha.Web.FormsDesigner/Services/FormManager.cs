@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
@@ -64,6 +65,10 @@ namespace Shesha.Web.FormsDesigner.Services
             newVersion.ModelType = form.ModelType;
             newVersion.IsTemplate = form.IsTemplate;
             newVersion.Template = form.Template;
+            newVersion.GenerationLogicTypeName = form.GenerationLogicTypeName;
+            newVersion.GenerationLogicExtensionJson = form.GenerationLogicExtensionJson;
+            newVersion.ConfigurationForm = form.ConfigurationForm;
+            newVersion.PlaceholderIcon = form.PlaceholderIcon;
             newVersion.Normalize();
 
             await Repository.InsertAsync(newVersion);
@@ -190,6 +195,10 @@ namespace Shesha.Web.FormsDesigner.Services
             form.ModelType = input.ModelType;
             form.IsTemplate = input.IsTemplate;
             form.Template = template;
+            form.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            form.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            form.ConfigurationForm = !input.ConfigurationFormName.IsNullOrWhiteSpace() ? new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!) : null;
+            form.PlaceholderIcon = input.PlaceholderIcon;
             form.Normalize();
 
             await Repository.InsertAsync(form);
@@ -245,6 +254,10 @@ namespace Shesha.Web.FormsDesigner.Services
             form.ModelType = srcForm.ModelType;
             form.IsTemplate = srcForm.IsTemplate;
             form.Template = srcForm.Template;
+            form.GenerationLogicTypeName = srcForm.GenerationLogicTypeName;
+            form.GenerationLogicExtensionJson = srcForm.GenerationLogicExtensionJson;
+            form.ConfigurationForm = srcForm.ConfigurationForm;
+            form.PlaceholderIcon = srcForm.PlaceholderIcon;
             form.Normalize();
 
             await Repository.InsertAsync(form);

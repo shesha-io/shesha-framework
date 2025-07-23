@@ -82,7 +82,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Form for getting additional configuration options for template
         /// </summary>
-        public Guid ConfigurationFormId { get; set; }
+        public FormIdentifier ConfigurationForm { get; set; }
 
         /// <summary>
         /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator

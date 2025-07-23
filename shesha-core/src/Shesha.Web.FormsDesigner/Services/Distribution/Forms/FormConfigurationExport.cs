@@ -70,6 +70,10 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 IsTemplate = form.IsTemplate,
                 Access = permission?.Access,
                 Permissions = permission?.Permissions,
+                ConfigurationForm = form.ConfigurationForm,
+                GenerationLogicTypeName = form.GenerationLogicTypeName,
+                GenerationLogicExtensionJson = form.GenerationLogicExtensionJson,
+                PlaceholderIcon = form.PlaceholderIcon
             };
 
             return result;

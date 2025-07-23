@@ -32,7 +32,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
                 .ForMember(e => e.Suppress, m => m.MapFrom(e => e.Suppress))
                 .ForMember(e => e.ModelType, m => m.MapFrom(e => e.ModelType))
                 .ForMember(e => e.Markup, m => m.MapFrom(e => e.Markup))
-                .ForMember(e => e.ConfigurationFormId, m => m.MapFrom(e => e.ConfigurationForm != null ? e.ConfigurationForm.Id : (Guid?)null))
+                .ForMember(e => e.ConfigurationForm, m => m.MapFrom(e => e.ConfigurationForm))
                 .ForMember(e => e.GenerationLogicTypeName, m => m.MapFrom(e => e.GenerationLogicTypeName))
                 .ForMember(e => e.GenerationLogicExtensionJson, m => m.MapFrom(e => e.GenerationLogicExtensionJson))
                 .ForMember(e => e.PlaceholderIcon, m => m.MapFrom(e => e.PlaceholderIcon))
