@@ -77,7 +77,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             .${prefixCls}-menu-overflow-item,
             .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
               padding-left: 8px !important;
-              background: purple !important;
       
               &:first-child,
               &:last-child {
