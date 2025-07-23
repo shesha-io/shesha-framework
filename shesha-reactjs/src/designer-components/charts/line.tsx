@@ -1,8 +1,9 @@
+import React from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { LineChartOutlined } from '@ant-design/icons';
-import React from 'react';
+import { Alert } from 'antd';
 import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
@@ -11,8 +12,10 @@ import { getSettings } from './settingsFormIndividual';
 import { defaultConfigFiller, defaultStyles, filterNonNull } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
-import { useNestedPropertyMetadatAccessor } from '@/index';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import useStyles from './styles';
+import ChartLoader from './components/chartLoader';
+import { useChartFilters } from './hooks/useChartFilters';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
@@ -21,8 +24,9 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   isOutput: true,
   icon: <LineChartOutlined />,
   Factory: ({ model }) => {
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(model.entityType);
-    const evaluatedFilters = useFormEvaluatedFilter({ metadataAccessor: propertyMetadataAccessor, filter: model.filters });
+    useShaFormDataUpdate();
+    const { stateEvaluatedFilters, filtersReady, filterError } = useChartFilters(model);
+    const { cx, styles } = useStyles();
 
     const {
       dimensionsStyles,
@@ -43,7 +47,34 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
     });
 
     if (model.hidden) return null;
-    
+
+    // Show error alert if there was an error evaluating filters
+    if (filterError) {
+      return (
+        <ConfigurableFormItem model={model}>
+          <Alert
+            showIcon
+            message="Error evaluating filters"
+            description={filterError}
+            type="error"
+            style={{ margin: '16px' }}
+          />
+        </ConfigurableFormItem>
+      );
+    }
+
+    // Don't render chart until filters are ready to prevent race conditions
+    if (!filtersReady) {
+      return (
+        <ConfigurableFormItem model={model}>
+          <div className={cx(styles.loadingContainer)}>
+            <ChartLoader chartType={model.chartType} />
+            <div className={cx(styles.loadingText)}>Fetching data...</div>
+          </div>
+        </ConfigurableFormItem>
+      );
+    }
+
     return (
       <ConfigurableFormItem model={model}>
         {() => {
@@ -57,7 +88,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
                 flexDirection: 'column',
                 overflow: 'hidden'
               }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' evaluatedFilters={evaluatedFilters} />}
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='line' evaluatedFilters={stateEvaluatedFilters} />}
               </div>
             </ChartDataProvider>
           );
@@ -68,25 +99,25 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m
-    .add<IChartProps>(0, prev => ({ 
+    .add<IChartProps>(0, prev => ({
       chartType: 'line',
       showTitle: false,
       showLegend: true,
       legendPosition: 'top',
       hidden: false,
       ...prev,
-     }))
+    }))
     .add<IChartProps>(1, prev => ({ ...prev, hideLabel: true }))
     .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
     .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
     .add<IChartProps>(4, prev => ({ ...prev, showTitle: true, showLegend: false }))
-    .add<IChartProps>(5, prev => ({ 
+    .add<IChartProps>(5, prev => ({
       ...defaultConfigFiller,
       ...filterNonNull(prev),
       type: prev.type,
       id: prev.id
     }))
-    .add<IChartProps>(6, prev => ({ 
+    .add<IChartProps>(6, prev => ({
       ...prev,
       isAxisTimeSeries: false,
       isGroupingTimeSeries: false,
@@ -101,7 +132,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       maxResultCount: 10000,
       requestTimeout: 10000,
     }))
-    .add<IChartProps>(7, prev => ({ 
+    .add<IChartProps>(7, prev => ({
       ...prev,
       timeSeriesFormat: 'month-year',
       groupingTimeSeriesFormat: 'month-year',

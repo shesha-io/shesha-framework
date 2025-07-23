@@ -1,7 +1,7 @@
 import { useChartDataStateContext } from '@/providers';
 import { useEffect, useState, useMemo } from 'react';
 import { IChartData } from './model';
-import { aggregateValues, getPredictableColor, getPropertyValue, stringifyValues } from './utils';
+import { aggregateValues, getPredictableColor, getPredictableColorPolarArea, getPropertyValue, stringifyValues } from './utils';
 
 export const useIsSmallScreen = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(
@@ -88,7 +88,13 @@ export const useProcessedChartData = (): IChartData => {
 
   if (simpleOrPivot === 'simple' || !groupingProperty) {
     // Generate different colors for each data point based on the label
-    const colors = labels.map((label) => getPredictableColor(typeof label === 'string' ? label : label + ''));
+    const colors = labels.map((label) => {
+      const labelStr = typeof label === 'string' ? label : label + '';
+      // Use more transparent colors for polar area charts
+      return chartType === 'polarArea' 
+        ? getPredictableColorPolarArea(labelStr)
+        : getPredictableColor(labelStr);
+    });
 
     datasets = [
       {
@@ -115,7 +121,9 @@ export const useProcessedChartData = (): IChartData => {
 
     datasets = legendItems?.map((legend) => {
       const strLegend = typeof legend === 'string' ? legend : legend + '';
-      const barBackgroundColor = getPredictableColor(strLegend);
+      const barBackgroundColor = chartType === 'polarArea' 
+        ? getPredictableColorPolarArea(strLegend)
+        : getPredictableColor(strLegend);
       let colors: string[] = [];
       const legendDisplayValue = legend;
       return {
@@ -131,7 +139,9 @@ export const useProcessedChartData = (): IChartData => {
               break;
             default:
               const strLabel = typeof label === 'string' ? label : label + '';
-              colors.push(getPredictableColor(strLabel));
+              colors.push(chartType === 'polarArea' 
+                ? getPredictableColorPolarArea(strLabel)
+                : getPredictableColor(strLabel));
               break;
           }
           return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
