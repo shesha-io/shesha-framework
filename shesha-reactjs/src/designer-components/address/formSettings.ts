@@ -288,7 +288,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                         ]
                     },
                     {
-                        key: '4',
+                        key: 'appearance',
                         title: 'Appearance',
                         id: appearanceTabId,
                         components: [
