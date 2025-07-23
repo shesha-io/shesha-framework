@@ -273,7 +273,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         updateAction={updater}
         deleteAction={deleter}
         actionRef={dataListRef}
-        modalWidth={width}
+        modalWidth={width ?? '60%'}
       />
     </ConfigurableFormItem>
   );

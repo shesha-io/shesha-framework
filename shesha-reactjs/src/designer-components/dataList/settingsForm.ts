@@ -423,7 +423,7 @@ export const getSettings = (data: any) => {
               .addConfigurableActionConfigurator({
                 id: nanoid(),
                 propertyName: 'onListItemSaveSuccessAction',
-                label: 'On List Item Save Action',
+                label: 'On List Item Save Success',
                 hideLabel: true,
                 description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
               })
