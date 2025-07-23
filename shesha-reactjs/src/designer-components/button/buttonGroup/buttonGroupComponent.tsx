@@ -21,7 +21,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
-    return model.hidden ? null :
+    return model.hidden || !model.items?.filter(item => !item.hidden).length ? null :
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
         <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
       </ConfigurableFormItem>;
