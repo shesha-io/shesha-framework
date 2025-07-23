@@ -8,6 +8,10 @@ import { evaluateString } from "@/providers/form/utils";
 import { nanoid } from "@/utils/uuid";
 import { GenerationLogicFactory } from "./generation-logic/factory";
 import { EntityMetadataHelper } from "./generation-logic/entityMetadataHelper";
+import { MetadataDispatcher } from "@/providers/metadataDispatcher/dispatcher";
+import { EntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/entityMetadataFetcher";
+import { ICache, ICacheProvider } from "@/providers/metadataDispatcher/entities/models";
+import localForage from "localforage";
 
 export interface IFormsApi {
   /**
@@ -39,7 +43,18 @@ export class FormsApi implements IFormsApi {
     this._formsManager = new FormsManager(httpClient);
     this._httpClient = httpClient;
     this._generationLogicFactory = new GenerationLogicFactory();
-    this._entityMetadataHelper = new EntityMetadataHelper(httpClient);
+    
+    // Create a simple cache provider implementation
+    const cacheProvider: ICacheProvider = {
+      getCache: (name: string): ICache => {
+        return localForage.createInstance({ name: name });
+      }
+    };
+    
+    const entityMetadataFetcher = new EntityMetadataFetcher(httpClient, cacheProvider);
+    const metadataDispatcher = new MetadataDispatcher(entityMetadataFetcher, httpClient);
+    
+    this._entityMetadataHelper = new EntityMetadataHelper(metadataDispatcher);
   }
 
   

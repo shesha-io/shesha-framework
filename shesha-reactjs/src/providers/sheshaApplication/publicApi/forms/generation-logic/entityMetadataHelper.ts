@@ -1,49 +1,51 @@
-import { HttpClientApi } from "@/publicJsApis/httpClient";
-import { EntityMetadataDto } from "../models/entityMetadata";
-import qs from "qs";
-import { IAbpWrappedGetEntityResponse } from "@/interfaces/gql";
-import { PropertyMetadataDto } from "@/apis/metadata";
-import { DataTypes, DesignerToolbarSettings, EditMode } from "@/index";
+import { DataTypes, DesignerToolbarSettings, EditMode, IEntityMetadata, IPropertyMetadata } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
+import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
+import { PropertyMetadataDto } from "@/apis/metadata";
 
 /**
  * Helper class for fetching and working with entity metadata.
  * Provides methods to retrieve entity metadata from the backend and to generate configuration fields for form builders.
  */
 export class EntityMetadataHelper {
-  private _httpClient: HttpClientApi;
+  private _metadataDispatcher: IMetadataDispatcher;
 
   /**
    * Creates an instance of EntityMetadataHelper.
-   * @param httpClient The HTTP client to use for API requests.
+   * @param metadataDispatcher The metadata dispatcher to use for fetching entity metadata.
    */
-  constructor(httpClient: HttpClientApi) {
-    this._httpClient = httpClient;
+  constructor(metadataDispatcher: IMetadataDispatcher) {
+    this._metadataDispatcher = metadataDispatcher;
   }
 
   /**
-   * Fetches entity metadata from the backend or an API service.
+   * Fetches entity metadata from the backend or an API service using IMetadataDispatcher.
    * @param modelType The type of model to fetch metadata for.
    * @returns A promise that resolves to the entity metadata object.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadata (modelType: string): Promise<EntityMetadataDto>{
+  public async fetchEntityMetadata(modelType: string): Promise<IEntityMetadata> {
     if (!modelType?.trim()) {
       throw new Error('Model type is required and cannot be empty');
     }
     
-    const url = `/api/services/app/Metadata/Get?${qs.stringify({ container: modelType })}`;
-    return this._httpClient
-      .get<IAbpWrappedGetEntityResponse<EntityMetadataDto>>(url)
-      .then(async (response) => {
-        const metadata = response.data.result;
-        return metadata as EntityMetadataDto;
-      })
-      .catch((error) => {
-        console.error(`Error fetching metadata for model type ${modelType}:`, error);
-        throw new Error(`Unable to fetch metadata for model type: ${modelType}`);
+    try {
+      const metadata = await this._metadataDispatcher.getMetadata({ 
+        modelType: modelType, 
+        dataType: DataTypes.entityReference 
       });
+      
+      if (!metadata) {
+        throw new Error(`No metadata found for model type: ${modelType}`);
+      }
+      
+      return metadata as IEntityMetadata;
+      
+    } catch (error) {
+      console.error(`Error fetching metadata for model type ${modelType}:`, error);
+      throw new Error(`Unable to fetch metadata for model type: ${modelType}: ${error.message || error}`);
+    }
   };
   
   /**

@@ -2,8 +2,7 @@ import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
 import { GenerationLogic } from "./interface";
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { EntityMetadataDto } from "../models/entityMetadata";
-import { DesignerToolbarSettings, EditMode } from "@/index";
+import { DesignerToolbarSettings, EditMode, IEntityMetadata} from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { EntityMetadataHelper } from "./entityMetadataHelper";
@@ -44,10 +43,10 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       const markupObj = JSON.parse(processedMarkup);
 
       const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
-      if (extensionJson?.modelType) {
+      if (extensionJson?.modelType && metadataHelper) {
         const entity = await metadataHelper.fetchEntityMetadata(extensionJson.modelType);
 
-        const nonFrameworkProperties = entity.properties.filter(x => !x.isFrameworkRelated);
+        const nonFrameworkProperties = (entity.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
 
         await this.addComponentsToMarkup(markupObj, extensionJson, entity, nonFrameworkProperties, metadataHelper);
       }
@@ -83,7 +82,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
    * @param metadataHelper The form builder or metadata helper instance.
    * @returns The updated markup object with added components.
    */
-  private async addComponentsToMarkup(markup: any, extensionJson: DetailsViewExtensionJson, entity: EntityMetadataDto, nonFrameworkProperties: PropertyMetadataDto[], metadataHelper: EntityMetadataHelper): Promise<any> {
+  private async addComponentsToMarkup(markup: any, extensionJson: DetailsViewExtensionJson, entity: IEntityMetadata, nonFrameworkProperties: PropertyMetadataDto[], metadataHelper: EntityMetadataHelper): Promise<any> {
     try {
       // Add header components
       this.addHeader(entity, nonFrameworkProperties, markup, extensionJson, metadataHelper);
@@ -112,7 +111,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
    * @param extensionJson The extension configuration.
    * @param metadataHelper The metadata helper instance.
    */
-  private addHeader(entity: EntityMetadataDto, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): void {
+  private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): void {
     const title = `${entity.typeAccessor} Details`;
     
     const titleContainer = findContainersWithPlaceholder(markup, "//*TITLE*//");
@@ -272,7 +271,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       throw new Error("No child table container found in the markup.");
     }
 
-    const entities: EntityMetadataDto[] = await Promise.all(
+    const entities: IEntityMetadata[] = await Promise.all(
       extensionJson.childTablesList.map(async (childTable: string) => {
         return await metadataHelper.fetchEntityMetadata(childTable);
       })
@@ -289,7 +288,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
         hidden: false,
         componentName: "childTables",
         tabs: entities.map((childTable, index) => {
-          const nonFrameworkProperties = childTable.properties.filter(x => !x.isFrameworkRelated);
+          const nonFrameworkProperties = (childTable.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
 
           const childTableAccessoriesBuilder = new DesignerToolbarSettings({});
           childTableAccessoriesBuilder.addQuickSearch({
@@ -370,7 +369,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
                   "==": [
                     {
                       // Fallback to "parentId" if no matching property is found
-                      "var": childTable.properties
+                      "var": (childTable.properties as PropertyMetadataDto[])
                                .find(p => p.entityType === extensionJson.modelType)
                                ?.path
                              || "parentId",
