@@ -22,23 +22,26 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         text-align: ${textAlign};
         height: 100% !important;
         padding-left: ${hasPrefix ? '4px' : '8px'} !important;
-        padding-right: 4px !important;
-        padding-bottom: 6px !important;
-
-        &:hover {
-          padding-right: ${hasSuffix ? '4px' : '30px'} !important;
-          transition: padding-right 0.2s ease;
-        }
+        padding-right: ${hasSuffix ? '4px' : '8px'} !important;
+        padding-bottom: 5px !important;
       }
+
+      
 
       .ant-input-number {
         align-items: center;
+        
+        &:hover {
+          padding-right: 28px !important;
+          transition: padding-right 0.2s ease;
+        }
       }
 
       .ant-input-number-handler-wrap {
         ${(hasSuffix || padding?.paddingRight) && 'border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);'}
         border-start-end-radius: 0px !important;
         border-end-end-radius: 0px !important;
+        ${hasSuffix && 'margin-right: 4px !important;'}
 
         .ant-input-number-handler-up {
           border-start-end-radius: 0px !important;
