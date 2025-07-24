@@ -1,16 +1,16 @@
 import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
-import { GenerationLogic } from "./interface";
-import { castToExtensionType, findContainersWithPlaceholder, processBaseMarkup } from "./viewGenerationUtils";
+import { GenerationLogic } from "../interface";
+import { castToExtensionType, findContainersWithPlaceholder, processBaseMarkup } from "../viewGenerationUtils";
 import { DesignerToolbarSettings, EditMode } from "@/index";
-import { EntityMetadataHelper } from "./entityMetadataHelper";
+import { EntityMetadataHelper } from "../entityMetadataHelper";
 import { nanoid } from "@/utils/uuid";
 import { PropertyMetadataDto } from "@/apis/metadata";
+import { BlankViewExtensionJson } from "../../models/BlankViewExtensionJson";
 
-export interface BlankViewExtensionJson {
-  modelType?: string;
-}
-
+/**
+ * Implements generation logic for blank views.
+ */
 export class BlankViewGenerationLogic implements GenerationLogic {
   async processTemplate(markup: string, replacements: object, metadataHelper: EntityMetadataHelper): Promise<string> {
     try {

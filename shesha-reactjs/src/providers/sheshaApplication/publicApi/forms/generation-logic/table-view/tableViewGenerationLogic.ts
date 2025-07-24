@@ -1,19 +1,20 @@
 import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
-import { GenerationLogic } from "./interface";
-import { castToExtensionType, findContainersWithPlaceholder, processBaseMarkup } from "./viewGenerationUtils";
-import { EntityMetadataHelper } from "./entityMetadataHelper";
+import { GenerationLogic } from "../interface";
+import { castToExtensionType, findContainersWithPlaceholder, processBaseMarkup } from "../viewGenerationUtils";
+import { EntityMetadataHelper } from "../entityMetadataHelper";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { ISpecification } from "@/interfaces/metadata";
 import { ITableViewProps } from "@/providers/dataTable/filters/models";
 import { toCamelCase } from "@/utils/string";
+import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
 
-export interface TableViewExtensionJson {
-  modelType: string;
-}
-
+/**
+ * Implements generation logic for table views.
+ * This class processes the template markup, adds header components, and configures table columns.
+ */
 export class TableViewGenerationLogic implements GenerationLogic {
   async processTemplate(markup: string, replacements: object, metadataHelper?: EntityMetadataHelper): Promise<string> {
     try {

@@ -1,25 +1,14 @@
 import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
-import { GenerationLogic } from "./interface";
+import { GenerationLogic } from "../interface";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DesignerToolbarSettings, EditMode, IEntityMetadata} from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
-import { EntityMetadataHelper } from "./entityMetadataHelper";
+import { EntityMetadataHelper } from "../entityMetadataHelper";
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, processBaseMarkup } from "./viewGenerationUtils";
-
-/**
- * Interface for the extension JSON configuration for Details View.
- * Defines the structure of the configuration object used to control details view generation.
- */
-export interface DetailsViewExtensionJson {
-  modelType: string; // The entity type for which the details view is generated
-  showKeyInformationBar: boolean; // Whether to show the key information bar
-  keyInformationBarProperties: string[]; // List of property names to display in the key information bar
-  addChildTables: boolean; // Whether to add child tables to the view
-  childTablesList: string[]; // List of child entity types to include as tables
-}
+import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, processBaseMarkup } from "../viewGenerationUtils";
+import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 
 /**
  * Implements generation logic for detail views.
@@ -125,6 +114,11 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
     // Add key information bar if configured
     const builder = new DesignerToolbarSettings({});
     if (extensionJson.showKeyInformationBar) {
+      const keyInfoBarContainer = findContainersWithPlaceholder(markup, "//*KEYINFOBAR*//");
+      
+      if (keyInfoBarContainer.length === 0) {
+        throw new Error("No key information bar container found in the markup.");
+      }
       const keyInfoProperties = metadata.filter(x => 
         extensionJson.keyInformationBarProperties.includes(x.path || x.label)
       );
@@ -170,12 +164,6 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
           };
         })
       });
-
-      const keyInfoBarContainer = findContainersWithPlaceholder(markup, "//*KEYINFOBAR*//");
-      
-      if (keyInfoBarContainer.length === 0) {
-        throw new Error("No key information bar container found in the markup.");
-      }
       
       if (keyInfoBarContainer[0].components && Array.isArray(keyInfoBarContainer[0].components)) {
         keyInfoBarContainer[0].components.push(...builder.toJson());     

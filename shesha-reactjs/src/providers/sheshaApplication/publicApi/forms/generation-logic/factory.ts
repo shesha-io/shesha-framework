@@ -1,9 +1,9 @@
 import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
 import { GenerationLogic } from "./interface";
-import { DetailsViewGenerationLogic } from "./detailsViewGenerationLogic";
-import { BlankViewGenerationLogic } from "./blankViewGenerationLogic";
-import { TableViewGenerationLogic } from "./tableViewGenerationLogic";
+import { DetailsViewGenerationLogic } from "./details-view/detailsViewGenerationLogic";
+import { BlankViewGenerationLogic } from "./blank-view/blankViewGenerationLogic";
+import { TableViewGenerationLogic } from "./table-view/tableViewGenerationLogic";
 
 /**
  * Factory for creating appropriate GenerationLogic implementations

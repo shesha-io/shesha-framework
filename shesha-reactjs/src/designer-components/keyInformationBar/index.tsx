@@ -31,6 +31,15 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   migrator: (m) =>
     m
       .add<IKeyInformationBarProps>(
+        -1,
+        (prev) => {
+          if (prev?.type === 'KeyInformationBar') {
+            return { ...prev, type: 'keyInformationBar' };
+          }
+          return prev;
+        }
+      )
+      .add<IKeyInformationBarProps>(
         0,
         (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps
       )

@@ -3,8 +3,8 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations
 {
-    [Migration(20250618201500)]
-    public class M20250618201500 : OneWayMigration
+    [Migration(20250724100800)]
+    public class M20250724100800 : OneWayMigration
     {
         public override void Up()
         {
