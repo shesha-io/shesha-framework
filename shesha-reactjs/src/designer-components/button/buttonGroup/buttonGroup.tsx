@@ -35,7 +35,6 @@ import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow
 import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import { addPx } from '@/utils/style';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { useShaFormUpdateDate } from '@/providers/form/providers/shaFormProvider';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -59,8 +58,8 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
         ...dimensionsStyles,
         ...stylingBoxAsCSS,
         ...(isPrimaryOrDefault && borderStyles),
-        ...(isPrimaryOrDefault && shadowStyles),
-        ...(buttonType === 'default' && backgroundStyles),
+        ...((isPrimaryOrDefault || buttonType === 'dashed') && shadowStyles),
+        ...((buttonType === 'default' || buttonType === 'dashed') && backgroundStyles),
         ...jsStyle,
         justifyContent: model?.font?.align,
     });
@@ -77,7 +76,6 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
             size={size}
             danger={props.danger}
             style={removeNullUndefined({ ...finalStyles })}
-            readOnly={props.readOnly}
             buttonType={buttonType}
             form={form}
         />
@@ -224,7 +222,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     if (isInline) {
         return (
-            <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }}>
+            <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }} className={styles.shaHideEmpty}>
                 <Space size={gap}>
                     {filteredItems?.map((item) =>
                         (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />)
@@ -249,8 +247,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    // react to every change in the form data
-    useShaFormUpdateDate();
     const items = useActualContextData(
         props.items?.map(item => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
         props.readOnly,

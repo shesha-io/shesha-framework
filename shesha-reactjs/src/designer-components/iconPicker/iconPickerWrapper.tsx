@@ -68,7 +68,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const iconValue = finalValue ?? defaultValue;
 
   return (
-    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
+    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
       <Tooltip title={props?.description}>
         <div
           style={{

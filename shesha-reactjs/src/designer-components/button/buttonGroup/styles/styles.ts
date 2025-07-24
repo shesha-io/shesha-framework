@@ -7,6 +7,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const a = css`
 
         .${shaButtonMenu} {
+            background: red !important;
             .${prefixCls}-menu-submenu.${prefixCls}-menu-submenu-popup & {
                 padding: unset !important;
                 button {
@@ -35,6 +36,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   */
 
   const shaResponsiveButtonGroupContainer = cx("sha-responsive-button-group-container", css`
+
           .${shaResponsiveButtonGroup} {
             line-height: unset;
             min-height: 30px;
@@ -63,6 +65,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             .${prefixCls}-menu-overflow-item,
             .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
               padding-left: 6px !important;
+              background: orange !important;
       
               &:first-child,
               &:last-child {
@@ -87,6 +90,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             .${prefixCls}-menu-overflow-item,
             .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
               padding-left: 12px !important;
+              background: green !important;
       
               &:first-child,
               &:last-child {
@@ -95,11 +99,45 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             }
           }
         }
+
+        > ul {
+          &:empty {
+            display: none;
+          }
+        }
   `);
+
+  const shaHideEmpty = cx("sha-hide-empty", css`
+    &:empty {
+      display: none;
+    }
+    
+    /* Hide when containing empty ul elements */
+    &:has(ul:empty) {
+      display: none;
+    }
+    
+    /* Hide when containing ul with no li children */
+    &:has(ul:not(:has(li))) {
+      display: none;
+    }
+    
+    /* Hide when containing empty ant-btn-group */
+    &:has(.ant-btn-group:empty) {
+      display: none;
+    }
+    
+    /* Hide when containing ant-btn-group with no button children */
+    &:has(.ant-btn-group:not(:has(button))) {
+      display: none;
+    }
+  `);
+
   return {
     shaResponsiveButtonGroupContainer,
     shaResponsiveButtonGroup,
     shaResponsiveButtonGroupInlineContainer,
     a,
+    shaHideEmpty
   };
 });

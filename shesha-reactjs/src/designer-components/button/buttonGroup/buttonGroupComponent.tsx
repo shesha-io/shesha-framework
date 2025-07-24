@@ -13,6 +13,8 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { defaultContainerStyles, defaultStyles } from './utils';
+import { ConfigurableFormItem } from '@/components';
+import { useStyles } from './styles/styles';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -20,7 +22,11 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
-    return model.hidden ? null : <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />;
+    const { styles } = useStyles();
+    return model.hidden ? null :
+      <ConfigurableFormItem model={{ ...model, hideLabel: true }} className={styles.shaHideEmpty}>
+        <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
+      </ConfigurableFormItem>;
   },
   actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m

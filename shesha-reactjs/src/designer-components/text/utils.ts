@@ -108,7 +108,7 @@ export const defaultStyles = (textType: string): IStyleType => {
     },
     dimensions: {
       width: '100%',
-      height: '100%',
+      height: 'auto',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',

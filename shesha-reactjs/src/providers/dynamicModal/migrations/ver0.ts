@@ -1,5 +1,5 @@
 import { FormIdentifier } from "@/interfaces";
-import { IShowModalActionArguments } from "../configurable-actions/show-dialog-arguments";
+import { IShowModalActionArguments } from "../configurable-actions/dialog-arguments";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { ButtonGroupItemProps } from "@/providers/buttonGroupConfigurator";
 import { ModalFooterButtons } from "../models";

@@ -9,7 +9,7 @@ import {
   getParentReadOnly,
   pickStyleFromModel,
   useAvailableConstantsContexts,
-  useDataContextManager,
+  useAvailableConstantsContextsNoRefresh,
   useDeepCompareMemo,
   useSheshaApplication,
   wrapConstantsData
@@ -35,7 +35,6 @@ export function useActualContextData<T = any>(
 ) {
   const parent = useParent(false);
   const fullContext = useAvailableConstantsContexts();
-  fullContext.dcm = useDataContextManager(); // override DataContextManager to be responsive to changes in contexts
   const accessors = wrapConstantsData({ fullContext, topContextId: 'all' });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
@@ -85,7 +84,7 @@ export function useCalculatedModel<T = any>(
   useCalculateModel: (model: T, allData: IApplicationContext) => T = (_model, _allData) => ({} as T),
   calculateModel?: (model: T, allData: IApplicationContext, useCalculatedModel?: T) => T,
 ) {
-  const fullContext = useAvailableConstantsContexts();
+  const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext, topContextId: 'all' });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
@@ -128,7 +127,8 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
   } else {
     contextProxyRef.current.refreshAccessors(accessors);
   }
-  contextProxyRef.current.setAdditionalData(additionalData);
+  if (additionalData)
+    contextProxyRef.current.setAdditionalData(additionalData);
 
   contextProxyRef.current.checkChanged();
 
@@ -147,7 +147,7 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
 }
 
 export function useActualContextExecutionExecutor<T = any>(executor: (context: any) => any, additionalData?: any) {
-  const fullContext = useAvailableConstantsContexts();
+  const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();

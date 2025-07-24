@@ -2,7 +2,7 @@ import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
-import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
+import { fontTypes, fontWeightsOptions, textAlignOptions } from "../_settings/utils/font/utils";
 import { positionOptions, repeatOptions, sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
@@ -332,7 +332,7 @@ export const getSettings = (data: any) => {
                                   propertyName: 'font.weight',
                                   hideLabel: true,
                                   tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                  dropdownOptions: fontWeights,
+                                  dropdownOptions: fontWeightsOptions,
                                   width: 100,
                                 },
                                 {
@@ -349,7 +349,7 @@ export const getSettings = (data: any) => {
                                   propertyName: 'font.align',
                                   hideLabel: true,
                                   width: 60,
-                                  dropdownOptions: textAlign,
+                                  dropdownOptions: textAlignOptions,
                                 },
                               ],
                             })
