@@ -90,7 +90,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
             onChange(newValue);
           };
           return model.readOnly
-            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} />
+            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} style={model.allStyles.fullStyle} />
             : <InputNumber
               type='number'
               value={value ?? model?.defaultValue}

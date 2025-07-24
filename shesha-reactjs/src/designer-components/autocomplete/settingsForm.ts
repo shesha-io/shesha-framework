@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IAutocompleteComponentProps } from './interfaces';
@@ -775,7 +775,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
+                                                                dropdownOptions: fontWeightsOptions,
                                                                 width: 100,
                                                             },
                                                             {
@@ -792,7 +792,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 propertyName: 'font.align',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                dropdownOptions: textAlign,
+                                                                dropdownOptions: textAlignOptions,
                                                             },
                                                         ],
                                                     })

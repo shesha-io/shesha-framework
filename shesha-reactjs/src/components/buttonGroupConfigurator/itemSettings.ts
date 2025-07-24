@@ -1,6 +1,6 @@
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
-import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '@/designer-components/_settings/utils/font/utils';
 import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
@@ -312,7 +312,7 @@ export const getItemSettings = () => {
                                                         propertyName: 'font.weight',
                                                         hideLabel: true,
                                                         tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                        dropdownOptions: fontWeights,
+                                                        dropdownOptions: fontWeightsOptions,
                                                         width: 100,
                                                     },
                                                     {
@@ -329,7 +329,7 @@ export const getItemSettings = () => {
                                                         propertyName: 'font.align',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        dropdownOptions: textAlign,
+                                                        dropdownOptions: textAlignOptions,
                                                     },
                                                 ],
                                             })

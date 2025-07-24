@@ -12,6 +12,9 @@ import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
+import { IDateFieldProps } from '../dateField/interfaces';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
@@ -79,7 +82,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-  ,
+    .add<IDateFieldProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): ITimePickerComponentProps => {
 
     return {
