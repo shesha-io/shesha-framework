@@ -31,4 +31,5 @@ export interface IReadOnlyDisplayFormItemProps {
   quickviewWidth?: number;
   style?: React.CSSProperties;
   tagStyle?: React.CSSProperties;
+  disabledStyleOnReadonly?: boolean;
 }

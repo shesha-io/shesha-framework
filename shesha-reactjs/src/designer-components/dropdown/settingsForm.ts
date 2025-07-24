@@ -441,6 +441,16 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         .addSettingsInput({
                                             id: nanoid(),
                                             parentId: styleRouterId,
+                                            propertyName: 'disabledStyleOnReadonly',
+                                            label: 'Disable Style On Readonly',
+                                            tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                                            inputType: 'switch',
+                                            jsSetting: true,
+                                            defaultValue: true,
+                                        })
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            parentId: styleRouterId,
                                             propertyName: 'displayStyle',
                                             label: 'Display Style',
                                             inputType: 'dropdown',
