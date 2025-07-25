@@ -270,6 +270,10 @@ export const stringifyValues = (data: object[]) => {
         // Don't stringify objects, keep them as is for nested property access
         return value;
       }
+      // Preserve numeric values for aggregation - don't convert them to strings
+      if (typeof value === 'number') {
+        return value;
+      }
       if (typeof value !== 'string') {
         return `${value}`;
       }
@@ -469,7 +473,17 @@ export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string
 export const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string) => {
   const groupedData = data.reduce((acc: object, item: { [key: string]: string | number | object }) => {
     const xValue = getPropertyValue(item, xProperty); // Use getPropertyValue to support nested properties
-    const yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
+    let yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
+
+    // Convert string numbers to actual numbers for aggregation
+    if (typeof yValue === 'string') {
+      const numValue = parseFloat(yValue);
+      yValue = isNaN(numValue) ? 0 : numValue;
+    }
+    // Ensure we have a number
+    if (typeof yValue !== 'number') {
+      yValue = 0;
+    }
 
     if (!acc[xValue as unknown as string]) {
       acc[xValue as unknown as string] = [];
@@ -486,13 +500,13 @@ export const aggregateData = (data: object[], xProperty: string, yProperty: stri
         aggregatedValue = values.reduce((acc: number, val: number) => acc + val, 0);
         break;
       case 'average':
-        aggregatedValue = values.reduce((acc: number, val: number) => acc + val, 0) / values.length;
+        aggregatedValue = values.length > 0 ? values.reduce((acc: number, val: number) => acc + val, 0) / values.length : 0;
         break;
       case 'min':
-        aggregatedValue = Math.min(...values);
+        aggregatedValue = values.length > 0 ? Math.min(...values) : 0;
         break;
       case 'max':
-        aggregatedValue = Math.max(...values);
+        aggregatedValue = values.length > 0 ? Math.max(...values) : 0;
         break;
       case 'count': // Count the number of items, also used as the default case
       default:
@@ -734,18 +748,32 @@ export function getPredictableColorPolarArea(input: string | number): string {
  * @returns the aggregated value
  */
 export function aggregateValues(items: object[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
-  const values: number[] = items?.map((item: { [key: string]: any }) => item[valueProperty]);
+  const values: number[] = items?.map((item: { [key: string]: any }) => {
+    const value = item[valueProperty];
+    // Convert string numbers to actual numbers, handle null/undefined/NaN
+    if (typeof value === 'string') {
+      const numValue = parseFloat(value);
+      return isNaN(numValue) ? 0 : numValue;
+    }
+    // Handle null/undefined values
+    if (value === null || value === undefined) {
+      return 0;
+    }
+    // Ensure we have a number
+    return typeof value === 'number' ? value : 0;
+  });
+  
   switch (aggregationMethod) {
     case 'sum':
-      return values.reduce((acc, val) => acc + (val || 0), 0);
+      return values.reduce((acc, val) => acc + val, 0);
     case 'count':
       return values.length;
     case 'average':
-      return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
+      return values.length > 0 ? values.reduce((acc, val) => acc + val, 0) / values.length : 0;
     case 'min':
-      return Math.min(...values);
+      return values.length > 0 ? Math.min(...values) : 0;
     case 'max':
-      return Math.max(...values);
+      return values.length > 0 ? Math.max(...values) : 0;
     default:
       return 0;
   }
