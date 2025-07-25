@@ -431,7 +431,7 @@ export const getSettings = (data: any) => {
                                 parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
-                                  _code: 'return !getSettingValue(data?.groupingProperty)',
+                                  _code: 'return !getSettingValue(data?.groupingProperty) && getSettingValue(data?.simpleOrPivot) !== `pivot`',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -1130,6 +1130,7 @@ export const getSettings = (data: any) => {
                               _value: false,
                             } as any,
                             jsSetting: true,
+                            width: '100%',
                           }
                         ]
                       })
