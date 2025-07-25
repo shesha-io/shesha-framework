@@ -13,7 +13,7 @@ import React, { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
-import { useGeneratedTitle } from '../../hooks';
+import { useGeneratedTitle } from '../../hooks/hooks';
 import { splitTitleIntoLines, getPredictableColor, createFontConfig } from '../../utils';
 
 interface ILineChartProps extends IChartDataProps {
