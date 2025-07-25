@@ -108,31 +108,77 @@ export const sortItems = (items: any[], isTimeSeries: boolean, property: string)
 /**
  * Function to manage the length of the title, ie if the title is too long, we need to split it into multiple lines
  * @param title the title to manage
+ * @param lineWordLength the maximum number of words per line
+ * @param lineCount the maximum number of lines
  * @returns the managed title
  */
 export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_TITLE_LINE_LENGTH, lineCount: number = 5): string | string[] => {
-  const words = title?.split(' ') ?? [];
+  if (!title) return '';
+  
+  const words = title.split(' ');
+  const MAX_CHARS_PER_LINE = 30;
+  
+  // If there's only one word (no spaces), handle character-based splitting
+  if (words.length === 1) {
+    const singleWord = words[0];
+    // Only split if the word is longer than 10 characters
+    if (singleWord.length <= 10) {
+      return title;
+    }
+    
+    // Split the long word into chunks, ensuring no line exceeds 30 characters
+    const lines = [];
+    for (let i = 0; i < singleWord.length; i += MAX_CHARS_PER_LINE) {
+      if (lines.length >= lineCount) {
+        // Add ellipsis to the last line if we've reached the limit
+        lines[lineCount - 1] = lines[lineCount - 1] + "...";
+        break;
+      }
+      lines.push(singleWord.slice(i, i + MAX_CHARS_PER_LINE));
+    }
+    return lines;
+  }
+  
+  // Handle multiple words with character limit enforcement
   const lines = [];
   let currentLine = '';
 
-  if (words?.length < lineWordLength) {
+  // If total words are less than lineWordLength and total length is under 30 chars, return the original title
+  if (words.length <= lineWordLength && title.length <= MAX_CHARS_PER_LINE) {
     return title;
   }
 
   for (const word of words) {
-    if (currentLine?.split(' ').length < lineWordLength) {
-      currentLine += (currentLine ? ' ' : '') + word;
+    // Check if adding this word would exceed the line word limit OR character limit
+    const currentWordCount = currentLine ? currentLine.split(' ').length : 0;
+    const potentialLine = currentLine + (currentLine ? ' ' : '') + word;
+    
+    if (currentWordCount < lineWordLength && potentialLine.length <= MAX_CHARS_PER_LINE) {
+      // Add word to current line
+      currentLine = potentialLine;
     } else {
-      if (lines.length === lineCount) {
-        lines.push("...");
+      // Current line is full (by word count or character limit), start a new line
+      if (lines.length >= lineCount - 1) {
+        // We're at the last line, add ellipsis and return
+        lines.push(currentLine + "...");
         return lines;
       }
+      
       lines.push(currentLine);
-      currentLine = '';
+      currentLine = word; // Start new line with current word
     }
   }
 
-  if (currentLine) lines.push(currentLine);
+  // Add any remaining content
+  if (currentLine) {
+    if (lines.length >= lineCount) {
+      // If we've already reached the line limit, add ellipsis to the last line
+      lines[lineCount - 1] = lines[lineCount - 1] + "...";
+    } else {
+      lines.push(currentLine);
+    }
+  }
+
   return lines;
 };
 
