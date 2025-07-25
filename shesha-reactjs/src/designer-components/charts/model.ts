@@ -55,7 +55,7 @@ export interface IChartsProps {
     showYAxisTitle?: boolean;
     stacked?: boolean;
     aggregationMethod?: TAggregationMethod;
-    filters?: FilterExpression;
+    filters?: FilterExpression | FilterExpression[];
 
     axisPropertyLabel?: string;
     valuePropertyLabel?: string;
