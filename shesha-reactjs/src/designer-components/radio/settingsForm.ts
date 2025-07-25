@@ -268,8 +268,7 @@ export const getSettings = (data: any) => {
                       .addSettingsInput({
                         id: nanoid(),
                         parentId: styleRouterId,
--                        propertyName: 'displayStyle',
-+                        propertyName: 'disabledStyleOnReadonly',
+                        propertyName: 'disabledStyleOnReadonly',
                         label: 'Disable Style On Readonly',
                         tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                         inputType: 'switch',
