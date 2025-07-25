@@ -416,6 +416,11 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
+                                        hidden: {
+                                            _code: "return getSettingValue(data?.dataSourceType) === 'url' && !getSettingValue(data?.dataSourceUrl)",
+                                            _mode: 'code',
+                                            _value: false
+                                        },
                                         inputs: [
                                             {
                                                 id: nanoid(),
