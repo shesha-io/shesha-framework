@@ -7,7 +7,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const a = css`
 
         .${shaButtonMenu} {
-            background: red !important;
             .${prefixCls}-menu-submenu.${prefixCls}-menu-submenu-popup & {
                 padding: unset !important;
                 button {
@@ -65,7 +64,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             .${prefixCls}-menu-overflow-item,
             .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
               padding-left: 6px !important;
-              background: orange !important;
       
               &:first-child,
               &:last-child {
@@ -90,7 +88,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             .${prefixCls}-menu-overflow-item,
             .${prefixCls}-menu-overflow-item.${prefixCls}-menu-item.${prefixCls}-menu-item-only-child.${shaButtonMenu} {
               padding-left: 12px !important;
-              background: green !important;
       
               &:first-child,
               &:last-child {
