@@ -249,6 +249,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         type={props.mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
         disabled={props.readOnly}
         style={style}
+        disabledStyleOnReadonly={props.disabledStyleOnReadonly}
         quickviewEnabled={props.quickviewEnabled}
         quickviewFormPath={props.quickviewFormPath}
         quickviewDisplayPropertyName={props.quickviewDisplayPropertyName || props.displayPropName}

@@ -32,7 +32,7 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
             max={max}
             onChange={onChange}
             value={value}
-            style={{ ...getStyle(model?.style, formData), ...(model.readOnly ? { pointerEvents: 'none' } : {}) }}
+            style={{ ...(model.disabledStyleOnReadonly && model.readOnly ? {} : getStyle(model?.style, formData)), ...(model.readOnly ? { pointerEvents: 'none' } : {}) }}
           />
         )}
       </ConfigurableFormItem>

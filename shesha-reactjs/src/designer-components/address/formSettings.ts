@@ -310,19 +310,12 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         .addSettingsInput({
                                             id: nanoid(),
                                             parentId: styleRouterId,
-                                            propertyName: 'displayStyle',
-                                            label: 'Display Style',
-                                            inputType: 'dropdown',
-                                            dropdownOptions: [
-                                                {
-                                                    value: 'text',
-                                                    label: 'Plain text'
-                                                },
-                                                {
-                                                    value: 'tags',
-                                                    label: 'Tags'
-                                                }
-                                            ]
+                                            propertyName: 'disabledStyleOnReadonly',
+                                            label: 'Disable Style On Readonly',
+                                            tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                                            inputType: 'switch',
+                                            jsSetting: true,
+                                            defaultValue: true,
                                         })
                                         .addCollapsiblePanel({
                                             id: nanoid(),

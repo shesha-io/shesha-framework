@@ -118,7 +118,13 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
           return showAsJson
             ? <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
             : model.readOnly
-              ? <ReadOnlyDisplayFormItem value={value} style={{ ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) }} type='textArea' />
+              ? <ReadOnlyDisplayFormItem value={value} style={model.disabledStyleOnReadonly ?
+                {
+                  ...model.allStyles.fontStyles,
+                  ...model.allStyles.dimensionsStyles,
+                  ...getOverflowStyle(true, false)
+                }
+                : { ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) }} type='textArea' />
               : <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
