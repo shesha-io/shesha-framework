@@ -17,7 +17,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     `);
 
     const disabled = css`
-        opacity: 0.6;
         cursor: not-allowed;
     `;
     return {

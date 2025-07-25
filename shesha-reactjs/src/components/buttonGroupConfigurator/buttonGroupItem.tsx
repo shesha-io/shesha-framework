@@ -39,7 +39,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
 
   const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius,
     height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth,
-    readOnly, block, danger } = actualItem;
+    readOnly, block, danger, disabledStyleOnReadonly } = actualItem;
 
   const model = {
     ...actualItem,
@@ -59,14 +59,15 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   const prevStyles = migratePrevStyles(model, initialValues());
 
   const buttonStyles = useFormComponentStyles(prevStyles);
+  const disableReadonlyStyles = disabledStyleOnReadonly && readOnly;
 
   const newStyles = {
     ...buttonStyles.dimensionsStyles,
-    ...(['primary', 'default'].includes(item.buttonType) && buttonStyles.borderStyles),
+    ...(['primary', 'default', 'ghost'].includes(item.buttonType) && !disableReadonlyStyles && buttonStyles.borderStyles),
     ...buttonStyles.fontStyles,
-    ...(['dashed', 'default'].includes(item.buttonType) && buttonStyles.backgroundStyles),
-    ...(['primary', 'default', 'dashed'].includes(item.buttonType) && buttonStyles.shadowStyles),
-    ...buttonStyles.jsStyle,
+    ...(['dashed', 'default', 'ghost'].includes(item.buttonType) && !disableReadonlyStyles && buttonStyles.backgroundStyles),
+    ...(['primary', 'default', 'dashed', 'ghost'].includes(item.buttonType) && !disableReadonlyStyles && buttonStyles.shadowStyles),
+    ...(!disableReadonlyStyles && buttonStyles.jsStyle),
     ...buttonStyles.stylingBoxAsCSS,
     justifyContent: buttonStyles.fontStyles.textAlign,
   };
