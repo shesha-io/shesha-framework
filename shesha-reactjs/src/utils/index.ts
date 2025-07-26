@@ -194,6 +194,16 @@ export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: str
   return fn.apply(null, argList);
 };
 
+export const executeFunction = (expression: string, args: { [key: string]: any }) => {
+  try {
+    return expression
+      ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
+      : null;
+  } catch {
+    return null;
+  }
+};
+
 export const evaluateDynamicFilters = async (
   filters: IStoredFilter[],
   mappings: IMatchData[],
@@ -272,10 +282,32 @@ export const evaluateDynamicFiltersSync = (
   if (filters?.length === 0 || !mappings?.length) return filters;
 
   const convertedFilters = filters.map((filter) => {
+    // Handle string expressions by parsing them to objects
+    if (typeof filter.expression === 'string') {
+      try {
+        filter.expression = JSON.parse(filter.expression);
+      } catch (error) {
+        console.error('Failed to parse filter expression:', error);
+        return filter;
+      }
+    }
+
     // correct way of processing JsonLogic rules
     if (typeof filter.expression === 'object') {
       const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
-        const argValue = args[argIndex];
+        const argValue: any = args[argIndex];
+        
+        // Handle mustache expressions in string values
+        if (typeof argValue === 'string' && argValue.includes('{{') && argValue.includes('}}')) {
+          const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+          const evaluatedValue = executeExpression<any>(argValue, evaluationContext, false, (err) => {
+            console.error('Failed to evaluate mustache expression:', err);
+            return null;
+          });
+
+          return { handled: evaluatedValue !== null, value: evaluatedValue };
+        }
+
         // special handling for specifications
         // TODO: move `is_satisfied` operator name to constant
         if (operator === 'is_satisfied' && argIndex === 1) {
@@ -289,6 +321,25 @@ export const evaluateDynamicFiltersSync = (
 
             return { handled: evaluatedValue !== null, value: Boolean(evaluatedValue) };
           }
+        }
+
+        // Handle JavaScript expressions
+        if (typeof argValue === 'string' && (argValue.includes('function') || argValue.includes('=>'))) {
+          const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+          const evaluatedValue = executeFunction(argValue, evaluationContext);
+
+          return { handled: evaluatedValue !== null, value: evaluatedValue };
+        }
+
+        // Handle simple variable references (var operator)
+        if (typeof argValue === 'string' && argValue.startsWith('{{') && argValue.endsWith('}}')) {
+          const variableName = argValue.slice(2, -2).trim();
+          const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+          
+          // Try to resolve the variable from the context
+          const variableValue = variableName.split('.').reduce((obj, key) => obj?.[key], evaluationContext);
+          
+          return { handled: variableValue !== undefined, value: variableValue };
         }
 
         return { handled: false };
@@ -335,16 +386,6 @@ export const getUrlKeyParam = (url: string = ''): '?' | '&' => (url?.includes('?
 
 export const removeEmptyArrayValues = (list: any[]) =>
   Array.isArray(list) && list.length ? list.filter((item) => !!item) : [];
-
-export const executeFunction = (expression: string, args: { [key: string]: any }) => {
-  try {
-    return expression
-      ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
-      : null;
-  } catch {
-    return null;
-  }
-};
 
 export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: IPersistedFormProps[]) =>
   configs.some(({ name: n, module: m }) => props?.module === m && props?.name === n);
