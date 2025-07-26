@@ -285,13 +285,18 @@ export const evaluateDynamicFiltersSync = (
     // Handle string expressions by parsing them to objects
     if (typeof filter.expression === 'string') {
       try {
-        filter.expression = JSON.parse(filter.expression);
+        const parsed = JSON.parse(filter.expression);
+        // Validate the parsed expression has expected structure
+        if (typeof parsed !== 'object' || parsed === null) {
+          throw new Error('Parsed expression must be an object');
+        }
+        filter.expression = parsed;
       } catch (error) {
-        console.error('Failed to parse filter expression:', error);
-        return filter;
+        console.error(`Failed to parse filter expression for filter ${filter.id || 'unknown'}:`, error);
+        // Mark filter as having an invalid expression
+        return { ...filter, hasInvalidExpression: true, expressionError: error.message };
       }
     }
-
     // correct way of processing JsonLogic rules
     if (typeof filter.expression === 'object') {
       const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
