@@ -323,8 +323,9 @@ export const evaluateDynamicFiltersSync = (
           }
         }
 
-        // Handle JavaScript expressions
-        if (typeof argValue === 'string' && (argValue.includes('function') || argValue.includes('=>'))) {
+        // Handle JavaScript expressions - use stricter pattern matching
+        const functionPattern = /^\s*(function\s*\(|\(.*?\)\s*=>|[a-zA-Z_$][a-zA-Z0-9_$]*\s*=>)/;
+        if (typeof argValue === 'string' && functionPattern.test(argValue)) {
           const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
           const evaluatedValue = executeFunction(argValue, evaluationContext);
 
