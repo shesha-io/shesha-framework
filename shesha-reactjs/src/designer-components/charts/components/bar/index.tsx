@@ -157,7 +157,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
             if (isSmallScreen && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';
             }
-            return value;
+            return value.toLocaleString();
           }
         },
         grid: {

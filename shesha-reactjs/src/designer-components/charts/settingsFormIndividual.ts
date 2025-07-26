@@ -338,7 +338,7 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     propertyName: 'timeSeriesFormat',
                                     parentId: dataSettingsId,
-                                    label: 'Time Series Format',
+                                    label: 'Axis Property Time Series Format',
                                     type: 'dropdown',
                                     allowClear: true,
                                     dropdownOptions: [
@@ -431,7 +431,7 @@ export const getSettings = (data: any) => {
                                 parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
-                                  _code: 'return !getSettingValue(data?.groupingProperty)',
+                                  _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot`',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -448,6 +448,11 @@ export const getSettings = (data: any) => {
                                     validate: { required: true },
                                     width: '50%',
                                     jsSetting: true,
+                                    hidden: {
+                                      _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !getSettingValue(data?.groupingProperty)',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
                                   },
                                   {
                                     id: nanoid(),
@@ -468,7 +473,7 @@ export const getSettings = (data: any) => {
                                     defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                                      _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !!!getSettingValue(data?.isGroupingTimeSeries)',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
@@ -937,7 +942,7 @@ export const getSettings = (data: any) => {
                             id: nanoid(),
                             propertyName: 'timeSeriesFormat',
                             parentId: dataTabId,
-                            label: 'Time Series Format',
+                            label: 'Axis Property Time Series Format',
                             type: 'dropdown',
                             allowClear: true,
                             dropdownOptions: [
@@ -1029,7 +1034,7 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         inline: true,
                         hidden: {
-                          _code: 'return !getSettingValue(data?.groupingProperty)',
+                          _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -1046,6 +1051,11 @@ export const getSettings = (data: any) => {
                             validate: { required: false },
                             width: '50%',
                             jsSetting: true,
+                            hidden: {
+                              _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !getSettingValue(data?.groupingProperty)',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                           },
                           {
                             id: nanoid(),
@@ -1067,7 +1077,7 @@ export const getSettings = (data: any) => {
                             width: '50%',
                             jsSetting: true,
                             hidden: {
-                              _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                              _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !!!getSettingValue(data?.isGroupingTimeSeries)',
                               _mode: 'code',
                               _value: false,
                             } as any,
@@ -1130,6 +1140,7 @@ export const getSettings = (data: any) => {
                               _value: false,
                             } as any,
                             jsSetting: true,
+                            width: '100%',
                           }
                         ]
                       })
