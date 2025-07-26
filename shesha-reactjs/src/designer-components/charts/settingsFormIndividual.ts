@@ -473,7 +473,7 @@ export const getSettings = (data: any) => {
                                     defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !getSettingValue(data?.isGroupingTimeSeries)',
+                                      _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !!!getSettingValue(data?.isGroupingTimeSeries)',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
@@ -1077,7 +1077,7 @@ export const getSettings = (data: any) => {
                             width: '50%',
                             jsSetting: true,
                             hidden: {
-                              _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !getSettingValue(data?.isGroupingTimeSeries)',
+                              _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !!!getSettingValue(data?.isGroupingTimeSeries)',
                               _mode: 'code',
                               _value: false,
                             } as any,
