@@ -338,7 +338,7 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     propertyName: 'timeSeriesFormat',
                                     parentId: dataSettingsId,
-                                    label: 'Time Series Format',
+                                    label: 'Axis Property Time Series Format',
                                     type: 'dropdown',
                                     allowClear: true,
                                     dropdownOptions: [
@@ -942,7 +942,7 @@ export const getSettings = (data: any) => {
                             id: nanoid(),
                             propertyName: 'timeSeriesFormat',
                             parentId: dataTabId,
-                            label: 'Time Series Format',
+                            label: 'Axis Property Time Series Format',
                             type: 'dropdown',
                             allowClear: true,
                             dropdownOptions: [
