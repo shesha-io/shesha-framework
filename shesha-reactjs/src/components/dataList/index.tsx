@@ -463,7 +463,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={{...itemStyles, width: 'unset'}}
+            style={{...itemStyles, width: orientation === 'wrap' ?  'unset' : itemStyles.width, overflow: 'auto'}}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
@@ -538,8 +538,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           gridAutoFlow: 'row',
           gridAutoColumns: 'max-content',
           alignItems: 'start',
-          overflowX: 'auto',
-          width: '100%'
         };
 
       case 'wrap':
