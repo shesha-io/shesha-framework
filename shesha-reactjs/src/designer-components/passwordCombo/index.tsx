@@ -74,12 +74,6 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IPasswordComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()), editMode: 'inherited' }))
-    .add<IPasswordComponentProps>(8, (prev) => {
-      return {
-        ...prev,
-        repeatPropertyName: prev.propertyName
-      };
-    })
 };
 
 export default PasswordComboComponent;
