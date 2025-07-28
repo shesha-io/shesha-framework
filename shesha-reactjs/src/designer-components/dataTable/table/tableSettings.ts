@@ -331,6 +331,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
+
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
@@ -344,6 +345,21 @@ export const getSettings = (data: ITableComponentProps) => {
                                             tooltip: 'Allows configurators to specify logic to initialise the object bound to a new row.',
                                             description: 'Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>.',
                                             exposedVariables: NEW_ROW_EXPOSED_VARIABLES,
+                                        }
+                                    ]
+                                })
+                                .addSettingsInputRow({
+                                    id: nanoid(),
+                                    hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'onRowSave',
+                                            label: 'On Row Save',
+                                            type: 'codeEditor',
+                                            tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
+                                            description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
+                                            exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                                         }
                                     ]
                                 })
@@ -421,14 +437,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     label: 'On Row Delete Success',
                                     description: 'Custom business logic to be executed after successfull deletion of a row.',
                                     hideLabel: true,
-                                })
-                                .addSettingsInput({
-                                    id: nanoid(),
-                                    propertyName: 'onRowSave',
-                                    label: 'On Row Save',
-                                    inputType: 'codeEditor',
-                                    description: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
-                                    exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                                 })
                                 .toJson()
                         ]
