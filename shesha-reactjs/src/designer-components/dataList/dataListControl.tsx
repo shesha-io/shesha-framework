@@ -89,12 +89,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     []
   );
 
+
   const data = useDeepCompareMemo(() => {
-    return isDesignMode
-      ? props.orientation === 'vertical'
-        ? [{}]
-        : [{}, {}, {}, {}]
-      : tableData;
+    return isDesignMode ? [{}, {}, {}, {}] : tableData;
   }, [isDesignMode, tableData, props.orientation]);
 
   // http, moment, setFormData
