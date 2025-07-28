@@ -1,7 +1,13 @@
 import React from 'react';
 import { useStyles } from './styles/styles';
 
-function InputField({ value, style, children }: { value: string | number | React.ReactNode; style?: React.CSSProperties; enableStyleOnReadonly?: boolean; children?: React.ReactNode }) {
+interface IInputFieldProps {
+    value: string | number | React.ReactNode;
+    style?: React.CSSProperties;
+    children?: React.ReactNode;
+}
+
+function InputField({ value, style, children }: IInputFieldProps) {
 
     const { styles } = useStyles();
 

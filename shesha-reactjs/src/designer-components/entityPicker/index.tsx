@@ -102,7 +102,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
 
-    const finalStyle = !model.disabledStyleOnReadonly && model.readOnly ? {
+    const finalStyle = model.disabledStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle;
