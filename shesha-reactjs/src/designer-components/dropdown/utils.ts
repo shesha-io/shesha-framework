@@ -34,12 +34,13 @@ export const defaultStyles = (): IStyleType => {
 
 export const defaultTagStyles = (): IStyleType => {
     return {
-        background: { type: 'color', color: '' },
+        background: { type: 'color', color: '#f0f0f0' },
         font: {
             weight: '400',
             size: 14,
             color: '#000',
-            type: 'Segoe UI'
+            type: 'Segoe UI',
+            align: 'center'
         },
         border: {
             border: {
@@ -60,7 +61,8 @@ export const defaultTagStyles = (): IStyleType => {
             maxHeight: 'auto',
             minWidth: '0px',
             maxWidth: 'auto'
-        }
+        },
+
     };
 };
 

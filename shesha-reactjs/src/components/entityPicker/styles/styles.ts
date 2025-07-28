@@ -50,6 +50,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
           margin: unset;
           overflow: auto;
           ${sheshaStyles.thinScrollbars}
+        }
       
         .${entityPickerModalPagerContainer} {
           display: flex;

@@ -2,8 +2,10 @@ import { nanoid } from "@/utils/uuid";
 import { addPx } from '@/utils/style';
 import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
+type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type' | 'id'> & { block?: boolean; type?: string };
 
+const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
+const isInputField = (prev: ExtendedType) => inputTypes.includes(prev.type);
 export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
     const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
 
@@ -14,7 +16,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
         color: prevStyles?.borderColor ?? prev?.border?.border?.[side]?.color ?? defaults?.border?.border?.[side]?.color
     });
 
-    const heightFromSize = prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
+    const heightFromSize = !isInputField(prev) ? null : prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
     const fontSizeFromSize = prevStyles?.size === 'small' ? 14 : prevStyles?.size === 'large' ? 16 : null;
     const isColor = prevStyles.backgroundType === 'color' || prev.backgroundType === 'color';
     const isBase64 = prevStyles.backgroundDataSource === 'base64' || prev.backgroundDataSource === 'base64';
@@ -54,7 +56,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
             type: backgroundType,
             color: backgroundColor || defaults?.background?.color,
             repeat: backgroundRepeat || defaults?.background?.repeat || 'no-repeat',
-            size: backgroundCover || defaults?.background?.size || 'cover',
+            size: backgroundCover || defaults?.background?.size || 'auto',
             position: 'center',
             gradient: { direction: 'to right', colors: {} },
             url: backgroundUrl || defaults?.background?.url || '',
@@ -70,7 +72,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
         },
         dimensions: {
             width: prev.block ? '100%' : addPx(prevStyles?.width) ?? addPx(prev?.width) ?? addPx(prev?.dimensions?.width) ?? defaults?.dimensions?.width,
-            height: addPx(prevStyles?.height) ?? heightFromSize ?? addPx(prev?.dimensions?.height) ?? defaults?.dimensions?.height,
+            height: addPx(prevStyles?.height) ?? addPx(prev?.height) ?? heightFromSize ?? addPx(prev?.dimensions?.height) ?? defaults?.dimensions?.height,
             minHeight: addPx(prev?.dimensions?.minHeight) ?? defaults?.dimensions?.minHeight,
             maxHeight: addPx(prev?.dimensions?.maxHeight) ?? defaults?.dimensions?.maxHeight,
             minWidth: addPx(prev?.dimensions?.minWidth) ?? defaults?.dimensions?.minWidth,
@@ -93,9 +95,10 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
 
     const result: T = {
         ...prev,
-        desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop') },
-        tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet') },
-        mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile') },
+        disabledStyleOnReadonly: prev.disabledStyleOnReadonly || true,
+        desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), disabledStyleOnReadonly: prev.desktop?.disabledStyleOnReadonly || true },
+        tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), disabledStyleOnReadonly: prev.tablet?.disabledStyleOnReadonly || true },
+        mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), disabledStyleOnReadonly: prev.mobile?.disabledStyleOnReadonly || true },
     };
 
     return result;

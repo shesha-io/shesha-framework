@@ -1,4 +1,8 @@
 import { IConfigurableFormComponent } from "@/providers";
+import { FilterExpression } from "@/providers/dataTable/interfaces";
+import { IBackgroundValue } from "../_settings/utils/background/interfaces";
+import { IShadowValue } from "../_settings/utils/shadow/interfaces";
+import { IBorderValue } from "../_settings/utils/border/interfaces";
 
 /**
  * Chart data that will go into the actual chart component from ChartJS
@@ -13,11 +17,11 @@ export interface IChartData {
 export interface IChartsProps {
     width?: number;
     height?: number;
-    showBorder?: boolean;
     orderBy?: string;
     orderDirection?: TOrderDirection;
     dataMode?: TDataMode;
     url?: string;
+    additionalProperties?: Array<{ key: string; value: string }>;
     chartType?: TChartType;
     isDoughnut?: boolean;
     showTitle?: boolean;
@@ -31,7 +35,9 @@ export interface IChartsProps {
     axisProperty?: string;
     isAxisTimeSeries?: boolean;
     timeSeriesFormat?: TTimeSeriesFormat;
-    legendProperty?: string;
+    groupingProperty?: string;
+    isGroupingTimeSeries?: boolean;
+    groupingTimeSeriesFormat?: TTimeSeriesFormat;
     allowFilter?: boolean;
     filterProperties?: string[];
     xProperty?: string;
@@ -49,6 +55,38 @@ export interface IChartsProps {
     showYAxisTitle?: boolean;
     stacked?: boolean;
     aggregationMethod?: TAggregationMethod;
+    filters?: FilterExpression | FilterExpression[];
+
+    axisPropertyLabel?: string;
+    valuePropertyLabel?: string;
+    maxResultCount?: number;
+    requestTimeout?: number; // Timeout in milliseconds (default: 5000)
+    
+    // Font configuration properties
+    titleFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
+    axisLabelFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
+    legendFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
+    tickFont?: {
+        family?: string;
+        size?: number;
+        weight?: string;
+        color?: string;
+    };
 }
 
 /**
@@ -56,6 +94,10 @@ export interface IChartsProps {
  */
 export interface IChartProps extends IConfigurableFormComponent, IChartsProps {
     hidden?: boolean;
+        
+    border?: IBorderValue;
+    shadow?: IShadowValue;
+    background?: IBackgroundValue;
  }
 
 export interface IChartDataProps extends IChartsProps {

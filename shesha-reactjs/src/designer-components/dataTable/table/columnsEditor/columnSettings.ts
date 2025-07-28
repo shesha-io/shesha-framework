@@ -30,7 +30,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "value": "action"
                                 },
                                 {
-                                    "label": "CRUD Operations",
+                                    "label": "CRUD operations",
                                     "value": "crud-operations"
                                 },
                                 {
@@ -83,7 +83,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "propertyAutocomplete",
                                     "propertyName": "propertiesNames",
-                                    "label": "Properties to fetch",
+                                    "label": "Properties to Fetch",
                                     "labelAlign": "right",
                                     "mode": "multiple"
                                 }
@@ -108,7 +108,12 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "textArea",
                                     "propertyName": "description",
                                     "label": "Tooltip",
-                                    "labelAlign": "right"
+                                    "labelAlign": "right",
+                                    "hidden": {
+                                        "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                                        "_mode": "code",
+                                        "_value": false
+                                    },
                                 },
                             ]
                         },
@@ -145,42 +150,6 @@ export const getColumnSettings = (data?: any) => ({
                             ]
                         },
                         {
-                            "id": "isVisible-anchored-row",
-                            "type": "settingsInputRow",
-                            "propertyName": "isVisibleAnchoredRow",
-                            "label": "Is Visible & Anchored",
-                            "labelAlign": "right",
-                            "inputs": [
-                                {
-                                    "id": "anchored1",
-                                    "type": "radio",
-                                    "propertyName": "anchored",
-                                    "label": "Anchored",
-                                    "jsSetting": true,
-                                    "buttonGroupOptions": [
-                                        {
-                                            "title": "Left",
-                                            "value": "left",
-                                            "icon": "LeftOutlined"
-                                        },
-                                        {
-                                            "title": "Right",
-                                            "value": "right",
-                                            "icon": "RightOutlined"
-                                        }
-                                    ],
-                                    "allowClear": true
-                                },
-                                {
-                                    "id": "isVisible1",
-                                    "type": "switch",
-                                    "propertyName": "isVisible",
-                                    "label": "Is Visible",
-                                    "labelAlign": "right"
-                                }
-                            ]
-                        },
-                        {
                             "id": "displayContainer1",
                             "type": "container",
                             "propertyName": "displayContainer",
@@ -200,6 +169,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "output",
                                     "noSelectionItemText": "Default",
                                     "noSelectionItemValue": "[default]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
@@ -211,6 +181,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "input",
                                     "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
                                 {
@@ -222,12 +193,97 @@ export const getColumnSettings = (data?: any) => ({
                                     "componentType": "input",
                                     "noSelectionItemText": "Not Editable",
                                     "noSelectionItemValue": "[not-editable]",
+                                    "propertyAccessor": "{{data.propertyName}}",
                                     "hidden": data?.type === 'entityPicker'
                                 },
+                            ]
+                        },
+                        {
+                            "id": "formDisplayContainer1",
+                            "type": "container",
+                            "propertyName": "formDisplayContainer",
+                            "label": "Form Display Settings",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "components": [
+                                {
+                                    "id": "displayFormId1",
+                                    "type": "settingsInput",
+                                    "inputType": "formAutocomplete",
+                                    "propertyName": "displayFormId",
+                                    "label": "Display Form"
+                                },
+                                {
+                                    "id": "createFormId1",
+                                    "type": "settingsInput",
+                                    "inputType": "formAutocomplete",
+                                    "propertyName": "createFormId",
+                                    "label": "Create Form"
+                                },
+                                {
+                                    "id": "editFormId1",
+                                    "type": "settingsInput",
+                                    "inputType": "formAutocomplete",
+                                    "propertyName": "editFormId",
+                                    "label": "Edit Form"
+                                }
+                            ]
+                        },
+
+                        {
+                            "id": "allowSortingContainer1",
+                            "type": "settingsInputRow",
+                            "propertyName": "allowSortingContainer",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "labelAlign": "right",
+                            "inputs": [
+                                {
+                                    "id": "anchored1",
+                                    "inputType": "radio",
+                                    "propertyName": "anchored",
+                                    "label": "Anchored",
+                                    "jsSetting": true,
+                                    "buttonGroupOptions": [
+                                        {
+                                            "title": "Left",
+                                            "value": "left",
+                                            "icon": "LeftOutlined"
+                                        },
+                                        {
+                                            "title": "Right",
+                                            "value": "right",
+                                            "icon": "RightOutlined"
+                                        }
+                                    ],
+                                    "allowClear": true
+                                },
+                                {
+                                    "id": "allowSorting1",
+                                    "type": "settingsInput",
+                                    "inputType": "switch",
+                                    "propertyName": "allowSorting",
+                                    "label": "Allow Sorting",
+                                    "jsSetting": true
+                                }
+                            ]
+                        },
+                        {
+                            "id": "isVisible-anchored-row",
+                            "type": "settingsInputRow",
+                            "propertyName": "isVisibleAnchoredRow",
+                            "label": "Hide & Anchored",
+                            "labelAlign": "right",
+                            "inputs": [
                                 {
                                     "id": "customVisibility1",
-                                    "type": "settingsInput",
-                                    "inputType": "codeEditor",
+                                    "type": "codeEditor",
                                     "propertyName": "customVisibility",
                                     "label": "Custom Visibility",
                                     "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
@@ -248,169 +304,112 @@ export const getColumnSettings = (data?: any) => ({
                                     "templateSettings": {
                                         "functionName": "customVisibility"
                                     }
+                                },
+                                {
+                                    "id": "isVisible1",
+                                    "type": "switch",
+                                    "propertyName": "isVisible",
+                                    "label": "Visible",
+                                    "labelAlign": "right",
+                                    "jsSetting": true,
                                 }
                             ]
                         },
-                        {
-                            "id": "formDisplayContainer1",
-                            "type": "container",
-                            "propertyName": "formDisplayContainer",
-                            "label": "Form Display Settings",
-                            "hidden": {
-                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
-                                "_mode": "code",
-                                "_value": false
-                            },
-                            "components": [
-                                {
-                                    "id": "displayFormId1",
-                                    "type": "settingsInput",
-                                    "inputType": "formAutocomplete",
-                                    "propertyName": "displayFormId",
-                                    "label": "Display form"
-                                },
-                                {
-                                    "id": "createFormId1",
-                                    "type": "settingsInput",
-                                    "inputType": "formAutocomplete",
-                                    "propertyName": "createFormId",
-                                    "label": "Create form"
-                                },
-                                {
-                                    "id": "editFormId1",
-                                    "type": "settingsInput",
-                                    "inputType": "formAutocomplete",
-                                    "propertyName": "editFormId",
-                                    "label": "Edit form"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "allowSortingContainer1",
-                            "type": "container",
-                            "propertyName": "allowSortingContainer",
-                            "hidden": {
-                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
-                                "_mode": "code",
-                                "_value": false
-                            },
-                            "components": [
-                        {
-                            "id": "allowSorting1",
-                            "type": "settingsInput",
-                            "inputType": "switch",
-                            "propertyName": "allowSorting",
-                            "label": "Allow Sorting",
-
-                        },]
-                        }
                     ]
                 },
                 {
-                    key: '2',
+                    key: 'appearance',
+                    forceRender: true,
                     title: 'Appearance',
                     id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                     components: [...new DesignerToolbarSettings()
-                        .addPropertyRouter({
-                            id: 'styleRouter',
-                            propertyName: 'propertyRouter1',
-                            componentName: 'propertyRouter',
-                            label: 'Property router1',
+
+                        .addCollapsiblePanel({
+                            id: 'dimensionsStyleCollapsiblePanel',
+                            propertyName: 'pnlDimensions',
+                            label: 'Dimensions',
                             labelAlign: 'right',
-                            parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
-                            hidden: false,
-                            propertyRouteName: {
-                                _mode: "code",
-                                _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                                _value: ""
-                            },
-                            components: [
-                                ...new DesignerToolbarSettings()
-                                    .addCollapsiblePanel({
-                                        id: 'dimensionsStyleCollapsiblePanel',
-                                        propertyName: 'pnlDimensions',
-                                        label: 'Dimensions',
-                                        parentId: 'styleRouter',
-                                        labelAlign: 'right',
-                                        ghost: true,
-                                        collapsible: 'header',
-                                        content: {
-                                            id: 'dimensionsStylePnl',
-                                            components: [...new DesignerToolbarSettings()
-                                                .addSettingsInputRow({
-                                                    id: 'dimensionsStyleRowWidth',
-                                                    parentId: 'dimensionsStylePnl',
-                                                    inline: true,
-                                                    inputs: [
-                                                        {
-                                                            "id": "minWidth1",
-                                                            "type": "numberField",
-                                                            "propertyName": "minWidth",
-                                                            "label": "Min Width",
-                                                            "defaultValue": "100",
-                                                            "labelAlign": "right"
-                                                        },
-                                                        {
-                                                            "id": "maxWidth1",
-                                                            "type": "numberField",
-                                                            "propertyName": "maxWidth",
-                                                            "label": "Max Width",
-                                                            "labelAlign": "right"
-                                                        },
-                                                    ]
-                                                })
-                                                .addSettingsInputRow({
-                                                    id: 'dimensionsStyleRowHeight',
-                                                    parentId: 'dimensionsStylePnl',
-                                                    inline: true,
-                                                    hidden: {
-                                                        _code: "return getSettingValue(data?.columnType) !== 'form';",
-                                                        _mode: "code",
-                                                        _value: false
-                                                    },
-                                                    inputs: [
-                                                        {
-                                                            "id": "minHeight1",
-                                                            "type": "numberField",
-                                                            "propertyName": "minHeight",
-                                                            "label": "Min Height",
-                                                            "labelAlign": "right"
-                                                        }
-                                                    ]
-                                                })
-                                                .toJson()
-                                            ]
-                                        }
+                            ghost: true,
+                            collapsible: 'header',
+                            content: {
+                                id: 'dimensionsStylePnl',
+                                components: [...new DesignerToolbarSettings()
+                                    .addSettingsInputRow({
+                                        id: 'dimensionsStyleRowWidth',
+                                        parentId: 'dimensionsStylePnl',
+                                        inputs: [
+                                            {
+                                                "id": "minWidth1",
+                                                "type": "numberField",
+                                                "propertyName": "minWidth",
+                                                "label": "Min Width",
+                                                "labelAlign": "right",
+                                                "icon": "minWidthIcon",
+                                                "tooltip": "You can use any unit (%, px, em, etc). px by default if without unit"
+                                            },
+                                            {
+                                                "id": "maxWidth1",
+                                                "type": "numberField",
+                                                "propertyName": "maxWidth",
+                                                "label": "Max Width",
+                                                "labelAlign": "right",
+                                                "icon": "maxWidthIcon",
+                                                "tooltip": "You can use any unit (%, px, em, etc). px by default if without unit"
+                                            },
+                                        ]
                                     })
-                                    .addCollapsiblePanel({
-                                        id: 'backgroundStyleCollapsiblePanel',
-                                        propertyName: 'pnlBackgroundStyle',
-                                        label: 'Background',
-                                        labelAlign: 'right',
-                                        ghost: true,
-                                        parentId: 'styleRouter',
-                                        collapsible: 'header',
-                                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
-                                        content: {
-                                            id: 'backgroundStylePnl',
-                                            components: [
-                                                ...new DesignerToolbarSettings()
-                                                    .addSettingsInput(
-                                                        {
-                                                            "id": "backgroundColor1",
-                                                            "inputType": "colorPicker",
-                                                            "propertyName": "backgroundColor",
-                                                            "label": "Background Color",
-                                                            "allowClear": true,
-                                                            "showText": true,
-                                                            "jsSetting": true,
-                                                        })
-                                                    .toJson()
-                                            ],
-                                        }
+                                    .addSettingsInputRow({
+                                        id: 'dimensionsStyleRowHeight',
+                                        parentId: 'dimensionsStylePnl',
+                                        inline: true,
+                                        hidden: {
+                                            _code: "return getSettingValue(data?.columnType) !== 'form';",
+                                            _mode: "code",
+                                            _value: false
+                                        },
+                                        inputs: [
+                                            {
+                                                "id": "minHeight1",
+                                                "type": "textField",
+                                                "propertyName": "minHeight",
+                                                "label": "Min Height",
+                                                "labelAlign": "right",
+                                                "icon": "heightIcon",
+                                                "tooltip": "You can use any unit (%, px, em, etc). px by default if without unit"
+                                            }
+                                        ]
                                     })
-                                    .toJson()]
-                        }).toJson()]
+                                    .toJson()
+                                ]
+                            }
+                        })
+                        .addCollapsiblePanel({
+                            id: 'backgroundStyleCollapsiblePanel',
+                            propertyName: 'pnlBackgroundStyle',
+                            label: 'Background',
+                            labelAlign: 'right',
+                            ghost: true,
+                            collapsible: 'header',
+                            hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                            content: {
+                                id: 'backgroundStylePnl',
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addSettingsInput(
+                                            {
+                                                "id": "backgroundColor1",
+                                                "inputType": "colorPicker",
+                                                "propertyName": "backgroundColor",
+                                                "label": "Background Color",
+                                                "allowClear": true,
+                                                "showText": true,
+                                                "jsSetting": true,
+                                            })
+                                        .toJson()
+                                ],
+                            }
+                        })
+                        .toJson()]
                 },
                 {
                     "key": "security",
@@ -422,7 +421,8 @@ export const getColumnSettings = (data?: any) => ({
                             "type": "settingsInput",
                             "inputType": "permissions",
                             "propertyName": "permissions",
-                            "label": "Permissions"
+                            "label": "Permissions",
+                            "jsSetting": true,
                         }
                     ]
                 }

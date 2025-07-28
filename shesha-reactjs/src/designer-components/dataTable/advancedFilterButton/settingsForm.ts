@@ -9,7 +9,7 @@ import {
 } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { buttonTypes } from '@/designer-components/button/util';
-import { fontTypes, fontWeights } from '@/designer-components/_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '@/designer-components/_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -68,28 +68,9 @@ export const getSettings = (data: any) => {
                   propertyName: 'icon',
                   label: 'Icon',
                   labelAlign: 'right',
+                  defaultValue: 'FilterOutlined',
                   parentId: commonTabId,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'danger',
-                      label: 'Danger',
-                      labelAlign: 'right',
-                      parentId: commonTabId,
-                      hidden: false,
-                    },
-                    {
-                      id: nanoid(),
-                      type: 'switch',
-                      propertyName: 'block',
-                      label: 'Block',
-                    },
-                  ],
+                  jsSetting: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -102,6 +83,7 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       labelAlign: 'right',
                       type: 'switch',
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -110,18 +92,9 @@ export const getSettings = (data: any) => {
                       parentId: commonTabId,
                       label: 'Edit Mode',
                       labelAlign: 'right',
+                      jsSetting: true,
                     },
                   ],
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'configurableActionConfigurator',
-                  propertyName: 'actionConfiguration',
-                  label: 'Action Configuration',
-                  hideLabel: true,
-                  parentId: commonTabId,
-                  validate: {},
-                  settingsValidationErrors: [],
                 })
                 .toJson(),
             ],
@@ -212,7 +185,7 @@ export const getSettings = (data: any) => {
                                       _value: false,
                                     } as any,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -664,6 +637,7 @@ export const getSettings = (data: any) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
                 })

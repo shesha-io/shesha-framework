@@ -42,7 +42,7 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
     return selectedItems?.map(ent => getValueByPropertyName(ent, displayEntityKey)).join(', ');
   }, [selectedItems, displayEntityKey]);
 
-  return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} />;
+  return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} style={props.style} />;
 };
 
 const EntityPickerEditable = (props: IEntityPickerProps) => {
@@ -248,7 +248,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
   return restProps.readOnly ? (
-    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
+    <EntityPickerReadOnly  {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );

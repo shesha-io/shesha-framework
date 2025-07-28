@@ -269,6 +269,7 @@ export const getSettings = (data: any) => {
                                 inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
+                                jsSetting: true,
                                 size: 'small',
                                 parentId: securityTabId,
                                 tooltip: 'Enter a list of permissions that should be associated with this component'

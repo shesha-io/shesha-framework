@@ -68,12 +68,15 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const iconValue = finalValue ?? defaultValue;
 
   return (
-    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
+    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
       <Tooltip title={props?.description}>
         <div
           style={{
             ...fullStyles,
-            fontSize: 24
+            fontSize: 20,
+            background: 'transparent', //icon should not have background and take the background of the parent like container
+            borderWidth: '0px',
+            borderColor: 'transparent',
           }}
         >
           <IconPicker
@@ -85,7 +88,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
               iconSize ?? fontSize
             }
             readOnly={readOnly}
-            style={style}
+            style={{...style,   background: 'transparent'}}
             color={props.color}
             twoToneColor={color}
           />

@@ -84,13 +84,6 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'switch',
-                  propertyName: 'defaultValue',
-                  label: 'Default Checked',
-                  jsSetting: true,
-                })
                 .toJson(),
             ],
           },
@@ -170,6 +163,16 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'disabledStyleOnReadonly',
+                        label: 'Disable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true,
+                        defaultValue: true,
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'customStyle',
@@ -212,6 +215,7 @@ export const getSettings = (data: any) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

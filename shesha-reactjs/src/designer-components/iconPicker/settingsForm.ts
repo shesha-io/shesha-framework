@@ -1,7 +1,7 @@
 import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { textAlign } from '../_settings/utils/font/utils';
+import { textAlignOptions } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -54,19 +54,6 @@ export const getSettings = (data: any) => {
                   parentId: commonTabId,
                   label: 'Tooltip',
                   jsSetting: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'iconPicker',
-                      propertyName: 'defaultValue',
-                      label: 'Default Icon',
-                      jsSetting: true,
-                    },
-                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -154,7 +141,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.align',
                                     hideLabel: true,
                                     width: 60,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
                                   },
                                 ],
                               })

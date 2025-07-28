@@ -179,7 +179,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     };
 
     #buildMethodReturnTypeAsync = async (method: IMethodMetadata, typesImporter: TypesImporter): Promise<string> => {
-        const returnType: TypeAndLocation = method.returnType 
+        const returnType: TypeAndLocation = method.returnType
             ? await this.#getTypescriptType(method.returnType)
             : undefined;
 
@@ -190,15 +190,19 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return this.#makeAsync(typeName, method.isAsync);
     };
 
-    #buildMethodArgumentsAsync = async (_method: IMethodMetadata, _typesImporter: TypesImporter): Promise<string> => {
-        return '';
+    #buildMethodArgumentsAsync = async (method: IMethodMetadata, _typesImporter: TypesImporter): Promise<string> => {
+        // TODO: implement arguments support
+        return method.arguments && method.arguments.length > 0
+            ? 'args: any'
+            : '';
     };
 
     buildBackEndTypeAsync = async (request: TypeBuildRequest): Promise<string> => {
         const { typeAccessor, metadata, typesImporter } = request;
 
         // TODO: implement arguments support
-        const supportedMethods = (metadata.methods ?? []).filter(m => !m.arguments || m.arguments.length === 0);
+        //const supportedMethods = (metadata.methods ?? []).filter(m => !m.arguments || m.arguments.length === 0);
+        const supportedMethods = metadata.methods ?? [];
         if (supportedMethods.length === 0)
             return undefined;
 

@@ -9,7 +9,7 @@ import {
   getParentReadOnly,
   pickStyleFromModel,
   useAvailableConstantsContexts,
-  useDataContextManager,
+  useAvailableConstantsContextsNoRefresh,
   useDeepCompareMemo,
   useSheshaApplication,
   wrapConstantsData
@@ -22,7 +22,7 @@ import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
 import { getShadowStyle } from "@/designer-components/_settings/utils/shadow/utils";
 import { useDeepCompareEffect } from "./useDeepCompareEffect";
 import { getBackgroundStyle } from "@/designer-components/_settings/utils/background/utils";
-import { removeUndefinedProps } from "@/utils/object";
+import { jsonSafeParse, removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
 
@@ -35,7 +35,6 @@ export function useActualContextData<T = any>(
 ) {
   const parent = useParent(false);
   const fullContext = useAvailableConstantsContexts();
-  fullContext.dcm = useDataContextManager(); // override DataContextManager to be responsive to changes in contexts
   const accessors = wrapConstantsData({ fullContext, topContextId: 'all' });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
@@ -85,7 +84,7 @@ export function useCalculatedModel<T = any>(
   useCalculateModel: (model: T, allData: IApplicationContext) => T = (_model, _allData) => ({} as T),
   calculateModel?: (model: T, allData: IApplicationContext, useCalculatedModel?: T) => T,
 ) {
-  const fullContext = useAvailableConstantsContexts();
+  const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext, topContextId: 'all' });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
@@ -128,7 +127,8 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
   } else {
     contextProxyRef.current.refreshAccessors(accessors);
   }
-  contextProxyRef.current.setAdditionalData(additionalData);
+  if (additionalData)
+    contextProxyRef.current.setAdditionalData(additionalData);
 
   contextProxyRef.current.checkChanged();
 
@@ -147,7 +147,7 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
 }
 
 export function useActualContextExecutionExecutor<T = any>(executor: (context: any) => any, additionalData?: any) {
-  const fullContext = useAvailableConstantsContexts();
+  const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
@@ -191,7 +191,7 @@ export const useFormComponentStyles = <TModel,>(
       : getBackgroundStyle(background, jsStyle)
   );
 
-  const styligBox = JSON.parse(stylingBox || '{}');
+  const styligBox = jsonSafeParse(stylingBox || '{}');
 
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);

@@ -13,7 +13,8 @@ export interface IReadOnlyDisplayFormItemProps {
   | 'datetime'
   | 'checkbox'
   | 'switch'
-  | 'radiogroup';
+  | 'radiogroup'
+  | 'textArea';
   dropdownDisplayMode?: 'raw' | 'tags';
   showIcon?: boolean;
   solidColor?: boolean;
@@ -29,4 +30,6 @@ export interface IReadOnlyDisplayFormItemProps {
   quickviewGetEntityUrl?: string;
   quickviewWidth?: number;
   style?: React.CSSProperties;
+  tagStyle?: React.CSSProperties;
+  disabledStyleOnReadonly?: boolean;
 }

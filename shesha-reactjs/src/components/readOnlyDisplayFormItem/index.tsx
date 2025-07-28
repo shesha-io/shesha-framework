@@ -8,6 +8,7 @@ import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
 import ReflistTag from '../refListDropDown/reflistTag';
+import InputField from './inputField';
 
 type AutocompleteType = ISelectOption;
 
@@ -33,12 +34,15 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewGetEntityUrl,
     quickviewWidth,
     style,
+    tagStyle,
     showIcon,
     solidColor,
-    showItemName
+    showItemName,
+    disabledStyleOnReadonly = true
   } = props;
 
-  const { styles } = useStyles();
+  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
+
   const renderValue = useMemo(() => {
     if (render) {
       return typeof render === 'function' ? render() : render;
@@ -60,36 +64,35 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       case 'dropdown':
         if (!Array.isArray(value)) {
           if (quickviewEnabled && quickviewFormPath) {
-            return quickviewFormPath && quickviewGetEntityUrl ? (
-              <QuickView
+            return quickviewFormPath && quickviewGetEntityUrl
+              ? <QuickView
                 entityId={entityId}
                 formIdentifier={quickviewFormPath}
                 getEntityUrl={quickviewGetEntityUrl}
                 displayProperty={quickviewDisplayPropertyName}
                 width={quickviewWidth}
               />
-            ) : (
-              <GenericQuickView
+              : <GenericQuickView
                 entityId={entityId}
                 className={className}
                 displayName={displayName}
                 displayProperty={quickviewDisplayPropertyName}
                 width={quickviewWidth}
-              />
-            );
+              />;
           } else {
-            return dropdownDisplayMode === 'tags' ?
-              <ReflistTag
+            return dropdownDisplayMode === 'tags'
+              ? <ReflistTag
                 value={value}
                 color={value?.color}
                 icon={value?.icon}
                 showIcon={showIcon}
-                tagStyle={style}
-                tooltip={value?.description}
+                tagStyle={tagStyle}
+                description={value?.description}
                 solidColor={solidColor}
                 showItemName={showItemName}
                 label={displayName}
-              /> : displayName ?? value;
+              />
+              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
           }
         }
 
@@ -100,7 +103,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           const values = (value as AutocompleteType[])?.map(({ label }) => label);
 
           return dropdownDisplayMode === 'raw'
-            ? values?.join(', ')
+            ? <InputField style={style} value={values?.join(', ')} />
             : <Space size={8}>
               {value?.map(({ label, color, icon, value, description }) => {
                 return <ReflistTag
@@ -108,9 +111,9 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                   value={value}
                   color={color}
                   icon={icon}
-                  tooltip={description}
+                  description={description}
                   showIcon={showIcon}
-                  tagStyle={style}
+                  tagStyle={tagStyle}
                   solidColor={solidColor}
                   showItemName={showItemName}
                   label={label}
@@ -124,22 +127,26 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />;
+        return <InputField disabledStyleOnReadonly={disabledStyleOnReadonly} style={style} value={<ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />} />;
       }
       case 'datetime': {
-        return getMoment(value, dateFormat)?.format(dateFormat) || '';
+        return <InputField disabledStyleOnReadonly={disabledStyleOnReadonly} style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
       }
       case 'checkbox': {
-        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;
+        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled style={disabledStyleOnReadonly ? {} : style} />;
       }
       case 'switch': {
-        return <Switch checked={checked} defaultChecked={defaultChecked} disabled />;
+        return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...(disabledStyleOnReadonly ? {} : style) }} />;
+      }
+      case 'textArea': {
+        return <div style={{ ...(disabledStyleOnReadonly ? {} : style), whiteSpace: 'pre-wrap' }}>{value}</div>;
       }
 
       default:
         break;
     }
-    return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+    return <InputField disabledStyleOnReadonly={disabledStyleOnReadonly} style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value
+    } />;
   }, [value,
     type,
     dateFormat,

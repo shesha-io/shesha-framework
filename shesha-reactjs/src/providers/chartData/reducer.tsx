@@ -4,15 +4,7 @@ import { INITIAL_STATE } from "./context";
 
 export const chartDataReducer = handleActions(
   {
-    [ChartDataActionsEnum.SetChartFilters]: (state, action) => ({
-      ...state,
-      ...action.payload,
-    }),
     [ChartDataActionsEnum.SetData]: (state, action) => ({
-      ...state,
-      ...action.payload,
-    }),
-    [ChartDataActionsEnum.SetFilterdData]: (state, action) => ({
       ...state,
       ...action.payload,
     }),
@@ -30,6 +22,18 @@ export const chartDataReducer = handleActions(
       ...action.payload,
     }),
     [ChartDataActionsEnum.SetUrlTypeData]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
+    
+    [ChartDataActionsEnum.CleanData]: () => ({
+      ...INITIAL_STATE,
+    }),
+    [ChartDataActionsEnum.SetAxisPropertyLabel]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
+    [ChartDataActionsEnum.SetValuePropertyLabel]: (state, action) => ({
       ...state,
       ...action.payload,
     }),

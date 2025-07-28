@@ -12,7 +12,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
       align-items: center;
 
       min-height: ${shaPageHeadingHeight};
-      max-height: ${shaPageHeadingHeight};
       background: white;
 
       &.fixed-heading {
@@ -135,6 +134,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
       .ant-tabs-dropdown {
       --ant-tabs-z-index-popup: 2000 !important;
       z-index: 2000 !important;
+      }
+      .ant-dropdown-menu-submenu-title {
+        display: flex !important;
+        align-items: center !important;
       }
     }
   }

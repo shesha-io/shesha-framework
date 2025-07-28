@@ -515,6 +515,34 @@ export const getSettings = (data: any) => {
                             jsSetting: true,
                           },
                         ],
+                      })                      
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        inline: true,
+                        hidden: {
+                          _value: false,
+                          _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          _mode: 'code',
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'customReorderEndpoint',
+                            label: 'Custom Reorder Endpoint',
+                            labelAlign: 'right',
+                            parentId: dataTabId,
+                            type: 'endpointsAutocomplete',
+                            description: 'The endpoint to use to reorder data (if not provided, the default endpoint will be used).',
+                            dataSourceType: 'url',
+                            dataSourceUrl: '/api/services/app/Api/Endpoints',
+                            settingsValidationErrors: [],
+                            useRawValues: true,
+                            jsSetting: true,
+                            width: '100%',
+                            placeholder: '',
+                          },
+                        ],
                       })
                       .toJson(),
                   ],
@@ -533,10 +561,11 @@ export const getSettings = (data: any) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
-                  jsSetting: true,
                 })
+      
                 .toJson(),
             ],
           },

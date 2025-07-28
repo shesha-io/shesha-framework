@@ -90,6 +90,7 @@ export const getSettings = (data: ITableComponentProps) => {
     const crudTabId = nanoid();
     const layoutTabId = nanoid();
     const emptyTableTabId = nanoid();
+    const eventsTabId = nanoid();
     const securityTabId = nanoid();
 
     return {
@@ -117,7 +118,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     validate: { required: true },
                                     jsSetting: false,
                                 })
-                            .toJson()
+                                .toJson()
                         ]
                     },
                     {
@@ -126,13 +127,28 @@ export const getSettings = (data: ITableComponentProps) => {
                         id: crudTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'items',
-                                    label: data.readOnly ? 'View Columns' : 'Customize Columns',
-                                    inputType: 'columnsConfig',
-                                    jsSetting: true,
-                                    parentId: commonTabId,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'items',
+                                            label: data.readOnly ? 'View Columns' : 'Customize Columns',
+                                            type: 'columnsConfig',
+                                            jsSetting: true,
+                                            parentId: commonTabId,
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'showExpandedView',
+                                            label: 'Show Expanded View',
+                                            type: 'switch',
+                                            tooltip: 'Limited to default display components',
+                                            description: 'Limited to default display components',
+                                            jsSetting: true,
+                                            parentId: commonTabId,
+                                        }
+                                    ]
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
@@ -171,7 +187,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
-
                                     hidden: { _code: 'return getSettingValue(data?.canEditInline) !== "js";', _mode: 'code', _value: false } as any,
                                     inputs: [
                                         {
@@ -316,6 +331,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
+
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
@@ -332,17 +348,20 @@ export const getSettings = (data: ITableComponentProps) => {
                                         }
                                     ]
                                 })
-
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'onRowSave',
-                                    label: 'On Row Save',
-                                    inputType: 'codeEditor',
-                                    parentId: crudTabId,
-                                    tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                                    description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
-                                    exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'onRowSave',
+                                            label: 'On Row Save',
+                                            type: 'codeEditor',
+                                            tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
+                                            description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
+                                            exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+                                        }
+                                    ]
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
@@ -396,7 +415,7 @@ export const getSettings = (data: ITableComponentProps) => {
                     {
                         key: 'events',
                         title: 'Events',
-                        id: securityTabId,
+                        id: eventsTabId,
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addConfigurableActionConfigurator({
@@ -404,21 +423,26 @@ export const getSettings = (data: ITableComponentProps) => {
                                     propertyName: "dblClickActionConfiguration",
                                     parentId: 'root',
                                     label: "On Double-Click",
-                                    jsSetting: false,
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowSaveSuccessAction',
                                     label: 'On Row Save Success',
-                                    parentId: crudTabId,
                                     description: 'Custom business logic to be executed after successfull saving of new/updated row.',
                                     hideLabel: true,
-                                    jsSetting: true,
+                                })
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: 'onRowDeleteSuccessAction',
+                                    label: 'On Row Delete Success',
+                                    description: 'Custom business logic to be executed after successfull deletion of a row.',
+                                    hideLabel: true,
                                 })
                                 .toJson()
                         ]
                     },
                     {
+
                         key: 'appearance',
                         title: 'Appearance',
                         id: layoutTabId,

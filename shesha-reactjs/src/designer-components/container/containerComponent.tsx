@@ -1,6 +1,6 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -24,6 +24,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
     const { styles, cx } = useStyles();
+
     const {
       dimensionsStyles,
       borderStyles,
@@ -65,6 +66,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           wrapperStyle={{
             ...wrapperStyles,
             alignSelf: model.alignSelf,
+            justifySelf: model.justifySelf,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
           }}
           style={{
@@ -120,7 +122,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         return { ...prev, showAdvanced: showAdvanced, desktop: { ...styles, showAdvanced }, tablet: { ...styles, showAdvanced }, mobile: { ...styles, showAdvanced } };
       })
       .add<IContainerComponentProps>(6, (prev) => {
-        const flexAndGridStyles = {
+        const flexAndGridStyles: ICommonContainerProps = {
           display: prev?.display,
           flexDirection: prev?.flexDirection,
           direction: prev?.direction,

@@ -24,23 +24,48 @@ export const useStyles = createStyles(({ css, cx }, { style }) => {
             .ant-pagination-next button {
             font-size: ${style?.fontSize} !important;
             }
-
-            .ant-select {
-             --ant-color-text : ${style?.color} !important;
-            --ant-font-size : ${style?.fontSize} !important;
-            --ant-font-family : ${style?.fontFamily} !important; 
-                height: calc(${style?.fontSize} * 1.5);
-
-                .ant-select-selection-item {
-                    height: calc(${style?.fontSize} * 1.5);
-                    line-height: calc(${style?.fontSize} * 1.5) !important;
-                    font-weight: ${style?.fontWeight} !important;
-                }
-            }
         }
+    `);
+
+    const dropdown = cx("sha-dropdown", css`
+        
+        // height: calc(${style?.fontSize} * 1.5);
+
+        .ant-select-selection-item {
+         height: calc(${style?.fontSize} * 1.5);
+         display: flex;
+         align-items: center;
+        }
+
+        * {
+            --ant-color-text : ${style?.color} !important;
+            --ant-font-size : ${style?.fontSize} !important;
+            --ant-font-family : ${style?.fontFamily} !important;
+            font-weight: ${style?.fontWeight} !important;
+            font-family: ${style?.fontFamily} !important;
+        }
+    `);
+
+    const popup = cx("sha-popup", css`
+        .ant-select-item-option-content {
+            font-size: ${style?.fontSize} !important;
+            font-family: ${style?.fontFamily} !important;
+            color: ${style?.color} !important;
+            font-weight: ${style?.fontWeight} !important;
+        }
+    `);
+
+    const pagerContainer = cx("sha-pager-container", css`
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        justify-content: center;
     `);
 
     return {
         pager,
+        dropdown,
+        popup,
+        pagerContainer,
     };
 });

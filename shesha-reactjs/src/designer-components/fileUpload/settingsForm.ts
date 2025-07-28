@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -91,7 +91,7 @@ export const getSettings = () => {
                   ],
                 })
                 .addSettingsInputRow({
-                   id: nanoid(),
+                  id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
                     {
@@ -291,7 +291,7 @@ export const getSettings = () => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -313,7 +313,7 @@ export const getSettings = () => {
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
                                   },
                                 ],
                               })
@@ -790,6 +790,7 @@ export const getSettings = () => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

@@ -24,7 +24,8 @@ import { App, Button, Spin } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import { innerEntityReferenceButtonBoxStyle, innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
+import { addPx } from '@/utils/style';
+import { useStyles } from './styles/styles';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -47,15 +48,13 @@ export interface IEntityReferenceProps {
   formType?: string;
 
   // Quickview properties
-  quickviewWidth?: number;
+  quickviewWidth?: number | string;
 
   // Dialog properties
   modalTitle?: string;
   showModalFooter?: boolean;
   additionalProperties?: IKeyValue[];
   modalWidth?: number | string;
-  customWidth?: number;
-  widthUnits?: '%' | 'px';
   footerButtons?: ModalFooterButtons;
   buttons?: ButtonGroupItemProps[];
   /**
@@ -104,22 +103,19 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityType = props.entityType ?? props.value?._className;
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
+  const {styles, cx} = useStyles();
+
   useEffect(() => {
-    let isSubscribed = true;
 
     const fetchFormId = async () => {
       if (
-        !formIdentifier &&
         props.formSelectionMode === 'dynamic' &&
         Boolean(entityType) &&
-        Boolean(formType) &&
-        props.entityReferenceType !== 'Quickview'
+        Boolean(formType)
       ) {
         try {
           const formid = await getEntityFormId(entityType, formType);
-          if (isSubscribed) {
-            setFormIdentifier({ name: formid.name, module: formid.module });
-          }
+          setFormIdentifier({ name: formid.name, module: formid.module });
         } catch (error) {
           console.error('Error fetching form ID:', error);
         }
@@ -127,22 +123,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     fetchFormId();
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [formIdentifier, entityType, formType, props.formSelectionMode, props.entityReferenceType]);
+  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType]);
 
   useEffect(() => {
-    let isSubscribed = true;
-
     const fetchMetadata = async () => {
       if (entityType) {
         try {
           const res = await getMetadata({ modelType: entityType, dataType: null });
-          if (isSubscribed) {
             setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
-          }
         } catch (error) {
           console.error('Error fetching metadata:', error);
         }
@@ -150,10 +138,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     fetchMetadata();
-
-    return () => {
-      isSubscribed = false;
-    };
   }, [entityType]);
 
   useEffect(() => {
@@ -208,12 +192,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         buttons: props.buttons,
         footerButtons: props?.footerButtons,
         additionalProperties:
-          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
+          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some(p => p.key === 'id')
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
-        modalWidth: props.modalWidth,
-        customWidth: props.customWidth,
-        widthUnits: props.widthUnits,
+        modalWidth: addPx(props.modalWidth),
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
@@ -236,23 +218,23 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       argumentsEvaluationContext: evaluationContext,
     });
   };
-
+ 
   const displayTextByType = useMemo(() => {
+    const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : displayText;
+
     return props.displayType === 'icon' ? (
       <ShaIcon iconName={props.iconName} style={props.style} />
-    ) : props.displayType === 'textTitle' ? (
-      props.textTitle
-    ) : (
-      displayText
-    );
-  }, [props.displayType, props.iconName, props.textTitle, displayText, props.style]);
+    ) : displayIfNotIcon;
+  }, [props.displayType, props.iconName, props.style, props.textTitle, displayText]);
 
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
-        <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-          <Spin size="small" />
-          <span style={innerEntityReferenceSpanBoxStyle}> Loading...</span>
+        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>
+            <Spin size="small" className={cx(styles.spin)} />
+            <span className={cx(styles.inlineBlock)}>Loading...</span>
+          </span>
         </Button>
       );
 
@@ -279,7 +261,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           entityId={props.value?.id ?? props.value}
           className={entityType}
           getEntityUrl={props.getEntityUrl}
-          width={props.quickviewWidth}
+          width={addPx(props.quickviewWidth)}
           formIdentifier={formIdentifier}
           formType={formType}
           disabled={props.disabled}
@@ -291,23 +273,23 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     return (
-      <Button type="link" onClick={dialogExecute} style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-        <span style={innerEntityReferenceSpanBoxStyle}>{displayTextByType}</span>
+      <Button type="link" onClick={dialogExecute} className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{displayTextByType}</span>
       </Button>
     );
   }, [props.formIdentifier, displayText, entityId, props.disabled, properties.length, displayTextByType, fetched]);
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-        <span style={innerEntityReferenceSpanBoxStyle}>Form identifier is not configured</span>
+      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>Form identifier is not configured</span>
       </Button>
     );
 
   if (!props.value)
     return (
-      <Button type="link" disabled style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-        <span style={innerEntityReferenceSpanBoxStyle}>{displayText}</span>
+      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{displayText}</span>
       </Button>
     );
 

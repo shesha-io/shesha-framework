@@ -53,7 +53,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   entityType,
   selectedIds,
   changeSelectedIds,
-  orientation,
+  orientation = 'vertical',
   grouping,
   groupingMetadata,
   collapsible,
@@ -76,6 +76,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   cardSpacing,
   style,
   gap,
+  onRowDeleteSuccessAction,
   ...props
 }) => {
 
@@ -268,7 +269,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -413,6 +414,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
+  
+
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
     const stylesAsCSS = style as CSSProperties;
 
@@ -421,7 +424,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return borderProps.some(prop => {
         const value = stylesAsCSS?.[prop];
         return value && value !== 'none' && value !== '0' && value !== '0px';
-      }) || showBorder;
+      });
     };
 
     const selected =
@@ -435,8 +438,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         border: '1px solid #d3d3d3',
         borderRadius: '8px'
       }),
-      ...(cardHeight && { height: cardHeight }),
-      overflow: 'auto'
     };
 
     return (
@@ -462,14 +463,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={itemStyles}
+            style={{...itemStyles, width: orientation === 'wrap' ?  'unset' : itemStyles.width, overflow: 'auto'}}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>
         {(orientation !== "wrap" && (!isLastItem) && !hasBorder() && gap === undefined && (
           <Divider
-            style={{ margin: '0' }}
+            style={{ margin: '10px', width: itemStyles.width }}
             className={classNames(styles.shaDatalistComponentDivider, { selected })}
           />
         ))}
@@ -518,7 +519,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       ...fcContainerStyles.dimensionsStyles
 
     };
-
+    
 
     const rawItemWidth =
       (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
@@ -537,8 +538,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           gridAutoFlow: 'row',
           gridAutoColumns: 'max-content',
           alignItems: 'start',
-          overflowX: 'auto',
-          width: '100%'
         };
 
       case 'wrap':

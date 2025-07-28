@@ -1,4 +1,6 @@
-const getHeaderStyles = () => (
+import { IStyleType } from "@/providers";
+
+export const getHeaderStyles = (): IStyleType => (
     {
         font: {
             color: "darkslategray",
@@ -41,7 +43,7 @@ const getHeaderStyles = () => (
     }
 );
 
-const getBodyStyles = () => ({
+export const getBodyStyles = (): IStyleType => ({
     border: {
         radiusType: "all",
         borderType: "all",

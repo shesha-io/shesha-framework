@@ -285,6 +285,16 @@ export const getSettings = (data: any) => {
                     ...new DesignerToolbarSettings()
                       .addSettingsInput({
                         id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'disabledStyleOnReadonly',
+                        label: 'Disable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true,
+                        defaultValue: true,
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
                         inputType: 'dropdown',
                         propertyName: 'direction',
                         label: 'Direction',
@@ -346,6 +356,7 @@ export const getSettings = (data: any) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

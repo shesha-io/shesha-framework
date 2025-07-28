@@ -5,7 +5,7 @@ import { MovieOutlined } from './movieOutlined';
 //file icons
 const imageTypes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
 const videoTypes = ['.mp4', '.webm', '.ogg'];
-const audioTypes = ['.mp3', '.wav', '.ogg'];
+const audioTypes = ['.mp3', '.wav', '.ogg', '.m4a'];
 const compressedTypes = ['.zip', '.rar', '.tar'];
 
 export const isImageType = (type) => imageTypes.includes(type);

@@ -2,6 +2,14 @@ import cleanDeep from "clean-deep";
 import { mergeWith } from "lodash";
 import moment from "moment";
 
+export const jsonSafeParse = (value: any, defaultValue?: any): any => {
+  try {
+    return !value ? (defaultValue ?? value) : typeof value === "string" ? JSON.parse(value) : value;
+  } catch {
+    return value;
+  }
+};
+
 export const unproxyValue = (value: any) => {
   return value && Boolean(value['getAccessorValue']) ? value.getAccessorValue() : value;
 };

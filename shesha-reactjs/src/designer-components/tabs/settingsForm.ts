@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
@@ -62,6 +62,7 @@ export const getSettings = () => {
                                             label: 'Default Active Tab',
                                             labelAlign: 'right',
                                             parentId: 'root',
+                                            allowClear: true,
                                             dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
                                         },
                                         {
@@ -195,7 +196,7 @@ export const getSettings = () => {
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
+                                                                dropdownOptions: fontWeightsOptions,
                                                                 width: 100,
                                                             },
                                                             {
@@ -212,7 +213,7 @@ export const getSettings = () => {
                                                                 propertyName: 'font.align',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                dropdownOptions: textAlign,
+                                                                dropdownOptions: textAlignOptions,
                                                             },
                                                         ],
                                                     })
@@ -651,7 +652,7 @@ export const getSettings = () => {
                                                                             hideLabel: true,
                                                                             defaultValue: 400,
                                                                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                            dropdownOptions: fontWeights,
+                                                                            dropdownOptions: fontWeightsOptions,
                                                                             width: 100,
                                                                         },
                                                                         {
@@ -668,7 +669,7 @@ export const getSettings = () => {
                                                                             propertyName: 'card.font.align',
                                                                             hideLabel: true,
                                                                             width: 60,
-                                                                            dropdownOptions: textAlign,
+                                                                            dropdownOptions: textAlignOptions,
                                                                         },
                                                                     ],
                                                                 })
@@ -932,6 +933,7 @@ export const getSettings = () => {
                                 propertyName: 'permissions',
                                 label: 'Permissions',
                                 size: 'small',
+                                jsSetting: true,
                                 parentId: securityTabId
                             })
                             .toJson()

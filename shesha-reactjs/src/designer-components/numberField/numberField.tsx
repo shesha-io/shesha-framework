@@ -5,10 +5,8 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useMetadata } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { INumberFieldComponentProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
@@ -23,7 +21,6 @@ import { useStyles } from './styles';
 import { InputNumber, InputNumberProps } from 'antd';
 import { ShaIcon } from '@/components';
 
-const settingsForm = settingsFormJson as unknown as FormMarkup;
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
 interface INumberFieldComponentCalulatedValues {
@@ -41,10 +38,10 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   calculateModel: (model, allData) => {
     return {
-      defaultValue: model?.defaultValue 
-        ? evaluateString(model?.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) 
+      defaultValue: model?.defaultValue
+        ? evaluateString(model?.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
         : undefined,
-      eventHandlers: {...getEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData)},
+      eventHandlers: { ...getEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData) },
     };
   },
   Factory: ({ model, calculatedModel }) => {
@@ -54,25 +51,32 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       textAlign: model?.font?.align,
       color: model?.font?.color,
       fontSize: model?.font?.size,
+      padding: {
+        padding: model?.allStyles?.fullStyle?.padding,
+        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
+        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
+        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
+      },
+      hasSuffix: model?.suffix || model?.suffixIcon,
+      hasPrefix: model?.prefix || model?.prefixIcon,
     });
 
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties, []);
 
     const inputProps: InputNumberProps = {
-      className: 'sha-number-field',
       disabled: model.readOnly,
       variant: model.hideBorder ? 'borderless' : undefined,
-      min: model?.validate?.minValue ?? 0,
-      max: model?.validate?.maxValue ?? Number.MAX_SAFE_INTEGER,
+      min: model.min !== undefined ? model.min : null,
+      max: model.max !== undefined ? model.max : Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
-      style: model.style ? model.allStyles.jsStyle : { width: '100%' },
-      step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
+      step: model?.highPrecision ? model?.stepString : model?.stepNumeric,
       ...calculatedModel.eventHandlers,
       defaultValue: calculatedModel.defaultValue,
       changeOnWheel: false,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={suffixStyle} />}</>,
+      prefix: <>{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={suffixStyle} />}{model.prefix}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={suffixStyle} />}</>,
     };
 
@@ -80,21 +84,21 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange(args[0]);
-            onChange(...args);
+          const onChangeInternal = (val: number | string | null) => {
+            const newValue = val === undefined || val === null ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
+            customEvents.onChange(newValue);
+            onChange(newValue);
           };
-          return model.readOnly 
-            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} /> 
+          return model.readOnly
+            ? <ReadOnlyDisplayFormItem disabledStyleOnReadonly={model.disabledStyleOnReadonly} type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} style={model.allStyles.fullStyle} />
             : <InputNumber
+              type='number'
               value={value ?? model?.defaultValue}
               {...inputProps}
-              stringMode={!model?.highPrecision}
-              style={model.allStyles.fullStyle}
-              className={`sha-input ${styles.numberField}`}
+              style={{ ...model.allStyles.fullStyle }}
+              className={styles.numberField}
               onChange={onChangeInternal}
-            />
-          ;
+            />;
         }}
       </ConfigurableFormItem>
     );
@@ -120,8 +124,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,

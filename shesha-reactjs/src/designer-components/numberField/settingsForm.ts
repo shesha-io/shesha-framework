@@ -1,7 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { INumberFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import {
   backgroundTypeOptions,
@@ -18,6 +18,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
+  const styleRouterId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -96,20 +97,6 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                       label: 'Hide',
                       jsSetting: true,
                       layout: 'horizontal',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'defaultValue',
-                      label: 'Default Value',
-                      tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                      jsSetting: true,
                     },
                   ],
                 })
@@ -294,7 +281,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addPropertyRouter({
-                  id: nanoid(),
+                  id: styleRouterId,
                   propertyName: 'propertyRouter1',
                   componentName: 'propertyRouter',
                   label: 'Property router1',
@@ -308,6 +295,16 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'disabledStyleOnReadonly',
+                        label: 'Disable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true,
+                        defaultValue: true,
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -349,7 +346,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -366,7 +363,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                     propertyName: 'font.align',
                                     hideLabel: true,
                                     width: 60,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
                                   },
                                 ],
                               })
@@ -794,6 +791,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
                   parentId: securityTabId,
                 })

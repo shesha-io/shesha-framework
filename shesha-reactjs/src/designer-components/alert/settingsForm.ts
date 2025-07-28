@@ -207,6 +207,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                 inputType: 'permissions',
                 propertyName: 'permissions',
                 label: 'Permissions',
+                jsSetting: true,
                 size: 'small',
                 parentId: securityTabId
               })

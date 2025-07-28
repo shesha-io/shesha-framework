@@ -3,7 +3,8 @@ import React from 'react';
 import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
-import { useGeneratedTitle } from '../../hooks';
+import { useGeneratedTitle } from '../../hooks/hooks';
+import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
 interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
@@ -12,14 +13,9 @@ interface IPolarAreaChartProps extends IChartDataProps {
 ChartJS.register(Title, Tooltip, Legend, ArcElement, RadialLinearScale);
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  const { showTitle, legendPosition, showLegend, strokeColor, dataMode, strokeWidth } = useChartDataStateContext();
+  const { showTitle, legendPosition, showLegend, strokeColor, dataMode, strokeWidth, titleFont, legendFont, tickFont } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
-
-  if (!data) throw new Error('PolarAreaChart: No data to display. Please check the data source.');
-
-  if (!data.datasets || !data.labels)
-    throw new Error('PolarAreaChart: No datasets or labels to display. Please check the data source.');
 
   data.datasets.forEach((dataset: { data: any[] }) => {
     dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
@@ -36,16 +32,34 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
 
   const options: ChartOptions<any> = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain aspect ratio to prevent overflow
+    maintainAspectRatio: false, // Allow the chart to fill available space
     aspectRatio: 1, // Square aspect ratio for polar area charts
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 350, // Quick animation for hover effects
+        },
+      },
+      resize: {
+        animation: {
+          duration: 700, // Smooth resize animation
+        },
+      },
+    },
     plugins: {
       scales: {
         r: {
           ticks: {
-            color: 'green',
-            font: {
-              size: 14, // Make ticks larger for better visibility
-            },
+            color: tickFont?.color || '#000000',
+            font: createFontConfig(tickFont, 14, '400'),
             backdropColor: 'rgba(255, 255, 255, 0)', // Remove the tick's backdrop
           },
           grid: {
@@ -56,18 +70,22 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       legend: {
         display: !!showLegend,
         position: legendPosition ?? 'top',
+        align: 'center',
+        fullSize: false, // This ensures legend doesn't consume chart space
+        labels: {
+          boxWidth: 20,
+          padding: 10,
+          font: createFontConfig(legendFont, 12, '400'),
+          color: legendFont?.color || '#000000',
+        },
       },
       title: {
-        display: showTitle && chartTitle.length > 0,
-        text: chartTitle,
-      },
-    },
-    layout: {
-      padding: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
+        display: !!(showTitle && chartTitle?.length > 0),
+        text: splitTitleIntoLines(chartTitle),
+        font: createFontConfig(titleFont, 16, 'bold'),
+        color: titleFont?.color || '#000000',
+        align: 'center',
+        fullSize: false, // This ensures title doesn't consume chart space
       },
     },
   };

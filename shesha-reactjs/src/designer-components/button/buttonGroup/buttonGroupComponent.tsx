@@ -13,6 +13,8 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { defaultContainerStyles, defaultStyles } from './utils';
+import { ConfigurableFormItem } from '@/components';
+import { useStyles } from './styles/styles';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -20,7 +22,11 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
-    return model.hidden ? null : <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />;
+    const { styles } = useStyles();
+    return model.hidden ? null :
+      <ConfigurableFormItem model={{ ...model, hideLabel: true }} className={styles.shaHideEmpty}>
+        <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
+      </ConfigurableFormItem>;
   },
   actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
@@ -88,17 +94,22 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         items: prev.items.map(setDownIcon),
       };
     })
-    .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles(prev)) }))
+    .add<IButtonGroupComponentProps>(11, (prev) => ({ ...migratePrevStyles(prev, defaultContainerStyles()) }))
     .add<IButtonGroupComponentProps>(12, (prev) => {
-      const newModel = { ...prev };
+      const newModel = { ...prev, gap: prev.spaceSize ?? 'middle' };
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        const newItem = { ...item, ...migrateStyles(item, defaultStyles(item)) };
+        const newItem = { ...item, ...migrateStyles({ ...item, size: item.size ?? prev.size }, defaultStyles({ ...item, size: item.size ?? prev.size })) };
         if (Array.isArray(newItem['childItems']))
           newItem['childItems'] = newItem['childItems'].map(updateItems);
         return newItem;
       };
 
       newModel.items = newModel.items.map(updateItems);
+      return newModel;
+    })
+    .add<IButtonGroupComponentProps>(13, (prev) => {
+      const newModel = { ...prev };
+      newModel.items = prev.items;
       return newModel;
     }),
   settingsFormMarkup: (props) => getSettings(props),

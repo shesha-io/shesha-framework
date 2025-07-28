@@ -2,7 +2,7 @@ import { DesignerToolbarSettings } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontWeights, fontTypes } from '../_settings/utils/font/utils';
+import { fontWeightsOptions, fontTypes } from '../_settings/utils/font/utils';
 export const getItemSettings = () => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
@@ -48,7 +48,7 @@ export const getItemSettings = () => {
                   id: nanoid(),
                   type: 'textField',
                   propertyName: 'name',
-                  label: 'Component Name',
+                  label: 'Name',
                   size: 'small',
                   validate: {
                     required: true,
@@ -518,7 +518,7 @@ export const getItemSettings = () => {
                           hideLabel: true,
                           placeholder: '400',
                           tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                          dropdownOptions: fontWeights,
+                          dropdownOptions: fontWeightsOptions,
                           width: 100,
                         },
                         {

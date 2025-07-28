@@ -17,7 +17,29 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     }
   `);
 
+  const loadingSpinner = cx("sha-autocomplete-loading", css`
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    border-radius: ${token.borderRadius}px;
+    padding: 4px 11px;
+    font-size: ${style?.fontSize || token.fontSize}px;
+    font-family: ${style?.fontFamily || token.fontFamily};
+    color: ${style?.color || token.colorText};
+    
+    &:hover {
+      border-color: ${token.colorPrimaryHover};
+    }
+  `);
+
+  const loadingText = cx("sha-autocomplete-loading-text", css`
+    margin-left: 8px;
+    color: ${token.colorTextSecondary};
+  `);
+
   return {
-    autocomplete
+    autocomplete,
+    loadingSpinner,
+    loadingText
   };
 });

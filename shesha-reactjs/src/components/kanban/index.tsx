@@ -8,6 +8,7 @@ import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
+import { jsonSafeParse } from '@/utils/object';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
@@ -29,7 +30,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-  const styling = JSON.parse(props.columnStyles.stylingBox || '{}');
+  const styling = jsonSafeParse(props.columnStyles.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
