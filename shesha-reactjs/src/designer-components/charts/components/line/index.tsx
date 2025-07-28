@@ -13,7 +13,7 @@ import React, { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
-import { useGeneratedTitle } from '../../hooks';
+import { useGeneratedTitle } from '../../hooks/hooks';
 import { splitTitleIntoLines, getPredictableColor, createFontConfig } from '../../utils';
 
 interface ILineChartProps extends IChartDataProps {
@@ -114,7 +114,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     },
     plugins: {
       legend: {
-        display: !!showLegend,
+        display: !!showLegend && simpleOrPivot === 'pivot',
         position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,
@@ -139,7 +139,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
@@ -165,7 +165,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,

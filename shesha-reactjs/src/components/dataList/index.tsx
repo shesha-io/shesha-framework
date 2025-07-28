@@ -53,7 +53,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   entityType,
   selectedIds,
   changeSelectedIds,
-  orientation = 'horizontal',
+  orientation = 'vertical',
   grouping,
   groupingMetadata,
   collapsible,
@@ -463,7 +463,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={itemStyles}
+            style={{...itemStyles, width: orientation === 'wrap' ?  'unset' : itemStyles.width, overflow: 'auto'}}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
@@ -519,7 +519,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       ...fcContainerStyles.dimensionsStyles
 
     };
-
+    
 
     const rawItemWidth =
       (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
@@ -538,8 +538,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           gridAutoFlow: 'row',
           gridAutoColumns: 'max-content',
           alignItems: 'start',
-          overflowX: 'auto',
-          width: '100%'
         };
 
       case 'wrap':

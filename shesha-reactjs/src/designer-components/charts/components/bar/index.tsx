@@ -12,7 +12,7 @@ import {
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-import { useGeneratedTitle, useIsSmallScreen } from '../../hooks';
+import { useGeneratedTitle, useIsSmallScreen } from '../../hooks/hooks';
 import { IChartData, IChartDataProps } from '../../model';
 import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
@@ -43,7 +43,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     titleFont,
     axisLabelFont,
     legendFont,
-    tickFont
+    tickFont,
+    simpleOrPivot
   } = useChartDataStateContext();
   const chartTitle: string = useGeneratedTitle();
   const isSmallScreen = useIsSmallScreen();
@@ -85,7 +86,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     },
     plugins: {
       legend: {
-        display: !!showLegend,
+        display: !!showLegend && simpleOrPivot === 'pivot',
         position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,
@@ -110,7 +111,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
@@ -138,7 +139,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
-          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, 'bold'),
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
           color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,

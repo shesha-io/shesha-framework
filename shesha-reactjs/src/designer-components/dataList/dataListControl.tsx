@@ -89,12 +89,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     []
   );
 
+
   const data = useDeepCompareMemo(() => {
-    return isDesignMode
-      ? props.orientation === 'vertical'
-        ? [{}]
-        : [{}, {}, {}, {}]
-      : tableData;
+    return isDesignMode ? [{}, {}, {}, {}] : tableData;
   }, [isDesignMode, tableData, props.orientation]);
 
   // http, moment, setFormData
@@ -236,6 +233,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
   }
 
+  
   return (
     <ConfigurableFormItem
       model={{ ...props, hideLabel: true }}
@@ -273,7 +271,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         updateAction={updater}
         deleteAction={deleter}
         actionRef={dataListRef}
-        modalWidth={width}
+        modalWidth={width ?? '60%'}
       />
     </ConfigurableFormItem>
   );

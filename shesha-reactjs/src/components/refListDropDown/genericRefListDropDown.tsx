@@ -71,12 +71,12 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       .filter((num) => !isNaN(num)); // Remove invalid values
   };
 
-  const disableValue = (item, index) => {
+  const disableValue = (item) => {
     const parsedDisabledValues = parseDisabledValues(disabledValues);
 
     return {
       ...item,
-      disabled: parsedDisabledValues.includes(index),
+      disabled: parsedDisabledValues.includes(item.value),
     };
   };
 
@@ -127,7 +127,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         showIcon={showIcon}
         showItemName={showItemName}
         solidColor={solidColor}
-        style={displayStyle === 'tags' ? tagStyle : style}
+        tagStyle={tagStyle}
+        style={style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
       />

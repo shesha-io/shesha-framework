@@ -66,6 +66,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           wrapperStyle={{
             ...wrapperStyles,
             alignSelf: model.alignSelf,
+            justifySelf: model.justifySelf,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
           }}
           style={{

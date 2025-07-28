@@ -1,8 +1,30 @@
+import React from 'react';
+import { Spin } from 'antd';
 import { getDataProperty, getFormatContent } from '@/utils/metadata';
+
+export const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    md: { span: 8 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    md: { span: 16 },
+    sm: { span: 16 },
+  },
+};
+
+export const loadingBox = (cx: (className: string) => string, styles: { innerEntityReferenceSpanBoxStyle: string; spin: string; inlineBlock: string }) => (
+  <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>
+    <Spin size="small" className={cx(styles.spin)} />
+    <span className={cx(styles.inlineBlock)}>Loading...</span>
+  </span>
+);
 
 export const innerEntityReferenceButtonBoxStyle = {
   backgroundColor: 'transparent',
-  whiteSpace: 'nowrap',
+  whiteSpace:  'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   width: '100%',
@@ -12,17 +34,7 @@ export const innerEntityReferenceButtonBoxStyle = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
-};
-
-export const innerEntityReferenceSpanBoxStyle = {
-  width: '100%',
-  margin: '0',
-  padding: '0',
-  textOverflow: 'ellipsis',
-  overflow: 'hidden',
-  whiteSpace: 'nowrap',
-  display: 'inline-block',
-};
+};  
 
 export const compareValueToProperty = (key: string, value: string, properties: Array<{ [key in string]: any }>) => {
   const dataType = getDataProperty(properties, key, 'dataType');

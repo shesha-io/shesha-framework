@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { IDropdownComponentProps } from './model';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -441,6 +441,16 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                         .addSettingsInput({
                                             id: nanoid(),
                                             parentId: styleRouterId,
+                                            propertyName: 'disabledStyleOnReadonly',
+                                            label: 'Disable Style On Readonly',
+                                            tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                                            inputType: 'switch',
+                                            jsSetting: true,
+                                            defaultValue: true,
+                                        })
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            parentId: styleRouterId,
                                             propertyName: 'displayStyle',
                                             label: 'Display Style',
                                             inputType: 'dropdown',
@@ -496,7 +506,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
+                                                                dropdownOptions: fontWeightsOptions,
                                                                 width: 100,
                                                             },
                                                             {
@@ -513,7 +523,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                 propertyName: 'font.align',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                dropdownOptions: textAlign,
+                                                                dropdownOptions: textAlignOptions,
                                                             },
                                                         ],
                                                     })
@@ -930,7 +940,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                                 propertyName: 'tag.font.weight',
                                                                                 hideLabel: true,
                                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                                dropdownOptions: fontWeights,
+                                                                                dropdownOptions: fontWeightsOptions,
                                                                                 width: 100,
                                                                             },
                                                                             {
@@ -947,7 +957,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                                                                 propertyName: 'tag.font.align',
                                                                                 hideLabel: true,
                                                                                 width: 60,
-                                                                                dropdownOptions: textAlign,
+                                                                                dropdownOptions: textAlignOptions,
                                                                             },
                                                                         ],
                                                                     })

@@ -52,16 +52,17 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
     const { backgroundStyles, fontStyles, borderStyles, shadowStyles, dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(model);
 
     const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType);
+    const disableReadonlyStyles = model.disabledStyleOnReadonly && model.readOnly;
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...fontStyles,
         ...dimensionsStyles,
+        ...(isPrimaryOrDefault && !disableReadonlyStyles && borderStyles),
+        ...fontStyles,
+        ...(['dashed', 'default'].includes(model.buttonType) && !disableReadonlyStyles && backgroundStyles),
+        ...(isPrimaryOrDefault && !disableReadonlyStyles && shadowStyles),
         ...stylingBoxAsCSS,
-        ...(isPrimaryOrDefault && borderStyles),
-        ...(isPrimaryOrDefault && shadowStyles),
-        ...(buttonType === 'default' && backgroundStyles),
-        ...jsStyle,
-        justifyContent: model?.font?.align,
+        ...(!disableReadonlyStyles && jsStyle),
+        justifyContent: model.font?.align
     });
 
 
@@ -76,7 +77,6 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
             size={size}
             danger={props.danger}
             style={removeNullUndefined({ ...finalStyles })}
-            readOnly={props.readOnly}
             buttonType={buttonType}
             form={form}
         />
@@ -223,7 +223,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
     if (isInline) {
         return (
-            <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }}>
+            <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }} className={styles.shaHideEmpty}>
                 <Space size={gap}>
                     {filteredItems?.map((item) =>
                         (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />)

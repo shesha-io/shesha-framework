@@ -113,7 +113,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       fileName={props.fileName ?? props.propertyName}
       availableConstants={props.availableConstants}
       resultType={props.resultType}
-      style={mode === 'dialog' ? { height: "100%" } : undefined}
+      style={mode === 'dialog' ? { height: "100%" } : { marginTop: "5px" }}
       environment={environment}
     />
   );

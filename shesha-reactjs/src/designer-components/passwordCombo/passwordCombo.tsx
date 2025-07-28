@@ -13,6 +13,7 @@ export interface IProps {
   readonly placeholder: string;
   readonly style?: React.CSSProperties;
   readonly className?: string;
+  readonly repeatPropertyName?: string;
 }
 
 interface IState {
@@ -34,7 +35,8 @@ export const PasswordCombo: FC<IProps> = ({
   formItemConfirmProps,
   formProps,
   passwordLength,
-  style
+  style,
+  repeatPropertyName
 }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { newPassword, repeatPassword } = state;
@@ -58,6 +60,7 @@ export const PasswordCombo: FC<IProps> = ({
       errorMessage={errorMessage}
       isPasswordOk={_e => { /*nop*/ }}
       style={style}
+      repeatPropertyName={repeatPropertyName}
     />
   );
 };
