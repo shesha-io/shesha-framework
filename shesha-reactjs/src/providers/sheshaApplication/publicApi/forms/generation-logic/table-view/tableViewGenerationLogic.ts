@@ -23,7 +23,7 @@ export class TableViewGenerationLogic implements GenerationLogic {
 
       const extensionJson = castToExtensionType<TableViewExtensionJson>(replacements);
       if (extensionJson?.modelType && metadataHelper) {
-        const entity = await metadataHelper.fetchEntityMetadata(extensionJson.modelType);
+        const entity = await metadataHelper.fetchEntityMetadataAsync(extensionJson.modelType);
 
         const nonFrameworkProperties = (entity.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
 
@@ -41,14 +41,15 @@ export class TableViewGenerationLogic implements GenerationLogic {
     return template?.generationLogicTypeName === "TableViewGenerationLogic";
   }
 
-  private async addComponentsToMarkup(markup: any, entity: IEntityMetadata, nonFrameworkProperties: PropertyMetadataDto[]): Promise<any> {
+  private addComponentsToMarkup(markup: any, entity: IEntityMetadata, nonFrameworkProperties: PropertyMetadataDto[]): any {
     try {
       // Add header components
       this.addHeader(entity, markup);
 
       this.addColumns(nonFrameworkProperties, markup);
     } catch (error) {
-      console.error("Error adding components to markup:", error);
+      console.error("Error adding components to table view markup:", error);
+      throw error;
     }
 
     return markup;
@@ -86,7 +87,7 @@ export class TableViewGenerationLogic implements GenerationLogic {
     ];
 
     // Add filters from IEntityMetadata specifications
-    if (entity.specifications.length) {
+    if (entity.specifications?.length) {
       entity.specifications.forEach((spec: ISpecification, index: number) => {
         filters.push({
           id: nanoid(),
@@ -101,7 +102,6 @@ export class TableViewGenerationLogic implements GenerationLogic {
               }
             ]
           },
-          // Optionally add tooltip or other ITableViewProps fields if available
         });
       });
     }

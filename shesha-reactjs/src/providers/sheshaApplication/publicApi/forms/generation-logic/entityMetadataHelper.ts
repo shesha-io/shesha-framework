@@ -25,7 +25,7 @@ export class EntityMetadataHelper {
    * @returns A promise that resolves to the entity metadata object.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadata(modelType: string): Promise<IEntityMetadata> {
+  public async fetchEntityMetadataAsync(modelType: string): Promise<IEntityMetadata> {
     if (!modelType?.trim()) {
       throw new Error('Model type is required and cannot be empty');
     }

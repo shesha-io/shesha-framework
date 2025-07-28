@@ -490,6 +490,7 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.ModelType = input.ModelType;
             entity.ConfigurationForm = !input.ConfigurationFormName.IsNullOrWhiteSpace() ? new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!): null;
             entity.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            entity.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
             entity.PlaceholderIcon = input.PlaceholderIcon;
 
             await CurrentUnitOfWork.SaveChangesAsync();

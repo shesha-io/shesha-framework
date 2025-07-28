@@ -80,6 +80,12 @@ export class FormsApi implements IFormsApi {
         };
 
          try {
+          if (!markup) {
+            throw new Error('Markup parameter is required');
+          }
+          if (!replacements) {
+            throw new Error('Replacements parameter is required');
+          }
           // Determine the correct generation logic for this template
           const generationLogic = this._generationLogicFactory.getGenerationLogic(template);
 
