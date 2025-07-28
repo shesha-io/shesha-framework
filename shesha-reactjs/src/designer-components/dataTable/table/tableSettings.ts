@@ -349,6 +349,17 @@ export const getSettings = (data: ITableComponentProps) => {
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
+                                    propertyName: 'onRowSave',
+                                    label: 'On Row Save',
+                                    inputType: 'codeEditor',
+                                    parentId: crudTabId,
+                                    tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
+                                    hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
+                                    description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
+                                    exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+                                })
+                                .addSettingsInput({
+                                    id: nanoid(),
                                     propertyName: 'canDeleteInline',
                                     label: 'Can Delete Inline',
                                     inputType: 'dropdown',
@@ -421,14 +432,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     label: 'On Row Delete Success',
                                     description: 'Custom business logic to be executed after successfull deletion of a row.',
                                     hideLabel: true,
-                                })
-                                .addSettingsInput({
-                                    id: nanoid(),
-                                    propertyName: 'onRowSave',
-                                    label: 'On Row Save',
-                                    inputType: 'codeEditor',
-                                    description: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
-                                    exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                                 })
                                 .toJson()
                         ]
