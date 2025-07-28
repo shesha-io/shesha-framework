@@ -124,4 +124,4 @@ export const remToPx = (remValue: string | number, rootFontSize = 16): number | 
   const rem = parseFloat(match[1]);
   if (isNaN(rem)) return null;
   return rem * rootFontSize;
-}
+};
