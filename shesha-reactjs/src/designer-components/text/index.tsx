@@ -41,8 +41,6 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       ...jsStyle,
     });
 
-    console.log("MODEL::",model)
-
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
         {(value) => (
@@ -83,10 +81,10 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       .add<ITextTypographyProps>(5, (prev) => {
         const fontSizeEntry = FONT_SIZES[prev.fontSize as keyof typeof FONT_SIZES];
         const rem = fontSizeEntry ? fontSizeEntry.fontSize : prev.fontSize;
-        const px = remToPx(rem);
+        const px = remToPx(rem);        
         return {
           ...prev,
-          font: {size: typeof px === 'number' ? px : prev.fontSize},
+          desktop: {...prev.desktop, font: {...prev.desktop.font, size: px}},
         };
       })
 };
