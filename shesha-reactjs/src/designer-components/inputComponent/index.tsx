@@ -114,7 +114,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 variant={variant}
                 className={className}
                 showSearch={showSearch}
-                value={defaultValue ?? value}
+                value={!value ? defaultValue : value}
                 defaultValue={defaultValue}
                 style={{ width: props.width ?? "100%" }}
                 onChange={onChange}
