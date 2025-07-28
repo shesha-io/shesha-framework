@@ -21,7 +21,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     display: flex;
     align-items: center;
     min-height: 32px;
-    border: 1px solid ${token.colorBorder};
+    border: 0px solid ${token.colorBorder};
     border-radius: ${token.borderRadius}px;
     padding: 4px 11px;
     background-color: ${token.colorBgContainer};

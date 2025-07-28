@@ -347,6 +347,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             type: 'dropdown',
                             allowClear: true,
                             jsSetting: true,
+                            defaultValue: 'default',
                             dropdownOptions: [
                               { value: 'default', label: 'Default' },
                               { value: 'custom', label: 'Custom' },

@@ -143,6 +143,8 @@ export const getSettings = (data: ITableComponentProps) => {
                                             propertyName: 'showExpandedView',
                                             label: 'Show Expanded View',
                                             type: 'switch',
+                                            tooltip: 'Limited to default display components',
+                                            description: 'Limited to default display components',
                                             jsSetting: true,
                                             parentId: commonTabId,
                                         }
