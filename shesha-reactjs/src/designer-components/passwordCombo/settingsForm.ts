@@ -44,6 +44,16 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                 },
                                 jsSetting: true,
                             })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'repeatPropertyName',
+                                label: 'Repeat Property Name',
+                                parentId: commonTabId,
+                                inputType: 'textField',
+                                size: 'small',
+                                tooltip: 'The name of the property that will be used to repeat the password',
+                                jsSetting: true,
+                            })
                             .addLabelConfigurator({
                                 id: nanoid(),
                                 propertyName: 'hideLabel',

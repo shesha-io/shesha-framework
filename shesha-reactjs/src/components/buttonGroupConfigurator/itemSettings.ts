@@ -245,6 +245,19 @@ export const getItemSettings = () => {
                                         },
                                         {
                                             id: nanoid(),
+                                            type: 'switch',
+                                            propertyName: 'disabledStyleOnReadonly',
+                                            label: 'Disable Style On Readonly',
+                                            tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                                            jsSetting: true,
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any,
+                                        },
+                                        {
+                                            id: nanoid(),
                                             type: 'textField',
                                             propertyName: 'dividerWidth',
                                             label: "Thickness",
@@ -431,7 +444,7 @@ export const getItemSettings = () => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: `return  ["dashed","text", "link"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {
@@ -459,7 +472,7 @@ export const getItemSettings = () => {
                                     ghost: true,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
-                                    hidden: { _code: `return  ["text", "link", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link", "primary", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     content: {
                                         id: backgroundStylePnlId,
                                         components: [
@@ -590,7 +603,7 @@ export const getItemSettings = () => {
                                     label: 'Shadow',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: `return  ["text", "link"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
                                     content: {

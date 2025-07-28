@@ -116,3 +116,12 @@ export const defaultStyles = (textType: string): IStyleType => {
     },
   };
 };
+
+export const remToPx = (remValue: string | number, rootFontSize = 16): number | null => {
+  if (typeof remValue !== 'string') return null;
+  const match = remValue.trim().match(/^([0-9.]+)rem$/);
+  if (!match) return null;
+  const rem = parseFloat(match[1]);
+  if (isNaN(rem)) return null;
+  return rem * rootFontSize;
+};
