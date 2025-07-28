@@ -23,7 +23,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     min-height: 32px;
     border-radius: ${token.borderRadius}px;
     padding: 4px 11px;
-    font-size: ${style?.fontSize || token.fontSize}px;
+    font-size: ${style?.fontSize || token.fontSize};
     font-family: ${style?.fontFamily || token.fontFamily};
     color: ${style?.color || token.colorText};
     

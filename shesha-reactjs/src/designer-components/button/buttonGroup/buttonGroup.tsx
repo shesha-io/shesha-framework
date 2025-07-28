@@ -59,7 +59,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
         ...(isPrimaryOrDefault && !disableReadonlyStyles && borderStyles),
         ...fontStyles,
         ...(['dashed', 'default'].includes(model.buttonType) && !disableReadonlyStyles && backgroundStyles),
-        ...(isPrimaryOrDefault && !disableReadonlyStyles && shadowStyles),
+        ...((isPrimaryOrDefault || model.buttonType === 'dashed') && !disableReadonlyStyles && shadowStyles),
         ...stylingBoxAsCSS,
         ...(!disableReadonlyStyles && jsStyle),
         justifyContent: model.font?.align

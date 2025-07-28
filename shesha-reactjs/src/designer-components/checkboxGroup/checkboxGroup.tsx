@@ -55,8 +55,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
           return (
             <RefListCheckboxGroup
               {...model}
-              disabledStyleOnReadonly={model.disabledStyleOnReadonly}
-              style={model.allStyles.fullStyle}
+              style={model.disabledStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value}
               defaultValue={model.defaultValue}
