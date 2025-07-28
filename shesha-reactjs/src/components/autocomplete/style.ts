@@ -21,10 +21,8 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     display: flex;
     align-items: center;
     min-height: 32px;
-    border: 0px solid ${token.colorBorder};
     border-radius: ${token.borderRadius}px;
     padding: 4px 11px;
-    background-color: ${token.colorBgContainer};
     font-size: ${style?.fontSize || token.fontSize}px;
     font-family: ${style?.fontFamily || token.fontFamily};
     color: ${style?.color || token.colorText};
