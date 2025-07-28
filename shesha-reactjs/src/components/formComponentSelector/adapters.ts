@@ -48,7 +48,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
   [DropdownComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
-      'mode',
       //'referenceListId',
       //'dataSourceType',
       //'valueFormat',
