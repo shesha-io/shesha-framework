@@ -20,7 +20,7 @@ import React from 'react';
 import { Pie, Doughnut } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
-import { useGeneratedTitle } from '../../hooks';
+import { useGeneratedTitle } from '../../hooks/hooks';
 import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
 interface IPieChartProps extends IChartDataProps {

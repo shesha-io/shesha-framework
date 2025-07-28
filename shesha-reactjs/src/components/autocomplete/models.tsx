@@ -126,6 +126,8 @@ export interface IAutocompleteBaseProps {
    * @deprecated
    */
   typeShortAlias?: string;
+
+  disabledStyleOnReadonly?: boolean;
 }
 
 export interface IAutocompleteProps extends Omit<IAutocompleteBaseProps, 'uid'> {

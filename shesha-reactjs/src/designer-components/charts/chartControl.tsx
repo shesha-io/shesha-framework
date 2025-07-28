@@ -6,7 +6,7 @@ import { toCamelCase } from '@/utils/string';
 import { Alert, Button } from 'antd';
 import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import { useProcessedChartData } from './hooks';
+import { useProcessedChartData } from './hooks/hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';

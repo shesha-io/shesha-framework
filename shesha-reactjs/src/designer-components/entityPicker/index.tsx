@@ -102,7 +102,10 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
 
-    const finalStyle = model.allStyles.fullStyle;
+    const finalStyle = model.disabledStyleOnReadonly !== false && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>

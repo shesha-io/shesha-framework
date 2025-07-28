@@ -1,7 +1,7 @@
 import { useChartDataStateContext } from '@/providers';
 import { useEffect, useState, useMemo } from 'react';
-import { IChartData } from './model';
-import { aggregateValues, getPredictableColor, getPredictableColorPolarArea, getPropertyValue, stringifyValues } from './utils';
+import { IChartData } from '../model';
+import { aggregateValues, getPredictableColor, getPredictableColorPolarArea, getPropertyValue, stringifyValues } from '../utils';
 
 export const useIsSmallScreen = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(

@@ -3,7 +3,7 @@ import React from 'react';
 import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
-import { useGeneratedTitle } from '../../hooks';
+import { useGeneratedTitle } from '../../hooks/hooks';
 import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
 interface IPolarAreaChartProps extends IChartDataProps {

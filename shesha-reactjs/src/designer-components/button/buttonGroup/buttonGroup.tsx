@@ -52,16 +52,17 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
     const { backgroundStyles, fontStyles, borderStyles, shadowStyles, dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(model);
 
     const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType);
+    const disableReadonlyStyles = model.disabledStyleOnReadonly && model.readOnly;
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...fontStyles,
         ...dimensionsStyles,
+        ...(isPrimaryOrDefault && !disableReadonlyStyles && borderStyles),
+        ...fontStyles,
+        ...(['dashed', 'default'].includes(model.buttonType) && !disableReadonlyStyles && backgroundStyles),
+        ...(isPrimaryOrDefault && !disableReadonlyStyles && shadowStyles),
         ...stylingBoxAsCSS,
-        ...(isPrimaryOrDefault && borderStyles),
-        ...((isPrimaryOrDefault || buttonType === 'dashed') && shadowStyles),
-        ...((buttonType === 'default' || buttonType === 'dashed') && backgroundStyles),
-        ...jsStyle,
-        justifyContent: model?.font?.align,
+        ...(!disableReadonlyStyles && jsStyle),
+        justifyContent: model.font?.align
     });
 
 

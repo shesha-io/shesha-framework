@@ -248,7 +248,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
   return restProps.readOnly ? (
-    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
+    <EntityPickerReadOnly  {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );

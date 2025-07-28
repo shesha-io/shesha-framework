@@ -52,6 +52,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   hideBorder,
   showNow = false,
   allowClear = false,
+  disabledStyleOnReadonly,
   ...rest
 }) => {
   const { styles } = useStyles({ fullStyles: style });
@@ -88,7 +89,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   };
 
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} style={style} />;
+    return <ReadOnlyDisplayFormItem disabledStyleOnReadonly={disabledStyleOnReadonly} value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} style={style} />;
   }
 
   if (range) {
