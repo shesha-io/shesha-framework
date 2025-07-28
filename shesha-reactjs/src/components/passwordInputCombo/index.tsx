@@ -78,6 +78,7 @@ const PasswordInputCombo: FC<IProps> = ({
       >
         <FormItem
           {...(formItemConfirmProps || formItemProps)}
+          name={`${formItemProps.name}Repeat`}
           {...confirmPasswordValidations(newPassword, repeatPassword, errorMessage)}
         >
           <Password
