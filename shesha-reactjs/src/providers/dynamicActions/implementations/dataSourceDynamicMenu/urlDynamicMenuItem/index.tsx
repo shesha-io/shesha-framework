@@ -49,6 +49,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
       style: p.style ?? item.style,
       dimensions: p.dimensions ?? item.dimensions,
       actionConfiguration: actionConfiguration,
+      permissions: p.permissions ?? item.permissions,
     }));
 
     return result;

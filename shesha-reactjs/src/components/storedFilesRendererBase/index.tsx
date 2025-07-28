@@ -265,13 +265,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 {'file name'}
               </span>}
           </div>)
-        : (props.disabled
-          ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-          : isDragger ?
-            <Dragger {...props}>
-              <DraggerStub styles={styles} />
-            </Dragger>
-            : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
+        : (props.disabled && fileList.length === 0
+          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
+            {renderUploadContent()}
+          </div>
+          : props.disabled
+            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+            : isDragger ?
+              <Dragger {...props}>
+                <DraggerStub styles={styles} />
+              </Dragger>
+              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)
       }
       {previewImage && (
         <Image

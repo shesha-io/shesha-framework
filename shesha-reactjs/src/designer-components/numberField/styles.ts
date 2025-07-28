@@ -21,16 +21,27 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         font-family: ${fontFamily};
         text-align: ${textAlign};
         height: 100% !important;
+        padding-left: ${hasPrefix ? '4px' : '8px'} !important;
+        padding-right: ${hasSuffix ? '4px' : '8px'} !important;
+        padding-bottom: 5px !important;
       }
+
+      
 
       .ant-input-number {
         align-items: center;
+        
+        &:hover {
+          padding-right: 28px !important;
+          transition: padding-right 0.2s ease;
+        }
       }
 
       .ant-input-number-handler-wrap {
         ${(hasSuffix || padding?.paddingRight) && 'border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);'}
         border-start-end-radius: 0px !important;
         border-end-end-radius: 0px !important;
+        ${hasSuffix && 'margin-right: 4px !important;'}
 
         .ant-input-number-handler-up {
           border-start-end-radius: 0px !important;
@@ -47,6 +58,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         margin-inline-start: 0px !important;
         margin-right: 8px !important;
         position: relative;
+        padding: 4px 0px;
 
         .anticon {
           margin-left: 4px !important;
@@ -56,9 +68,10 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
 
       .ant-input-number-prefix {
         ${!hasPrefix && 'display: none;'}   
-        margin-inline-end: 4px !important;
+        margin-inline-end: 0px !important;
         margin-left: 8px !important ;
         position: relative !important;
+        padding: 4px 0px;
 
         .anticon {
           margin-right: 4px !important;

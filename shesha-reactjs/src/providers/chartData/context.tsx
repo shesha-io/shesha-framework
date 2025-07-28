@@ -48,7 +48,7 @@ export interface IChartDataContext extends IChartsProps {
 
   axisPropertyLabel?: string;
   valuePropertyLabel?: string;
-  filters?: FilterExpression;
+  filters?: FilterExpression | FilterExpression[];
   
   // Font configuration properties
   titleFont?: {

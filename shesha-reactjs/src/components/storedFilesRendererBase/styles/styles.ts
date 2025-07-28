@@ -354,6 +354,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 `);
 
+  const thumbnailReadOnly = cx("ant-upload-list-item thumbnail-readonly", css`
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      background-color: #00000005 !important;
+      border: 1px dashed #d9d9d9 !important;
+      border-radius: 8px !important;
+  `);
+
   return {
     shaStoredFilesRenderer,
     shaStoredFilesRendererHorizontal,
@@ -362,6 +371,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     storedFilesRendererBtnContainer,
     storedFilesRendererNoFiles,
     antUploadDragIcon,
-    antPreviewDownloadIcon
+    antPreviewDownloadIcon,
+    thumbnailReadOnly
   };
 });

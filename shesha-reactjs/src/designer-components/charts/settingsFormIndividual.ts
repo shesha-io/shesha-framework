@@ -3,7 +3,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -327,6 +327,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'isAxisTimeSeries',
                                     label: 'Is Axis Property Time Series?',
                                     description: 'If the x-axis is a time series, switch to true.',
+                                    tooltip: 'If the x-axis is a time series i.e. the Axis Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
                                     defaultValue: false,
                                     validate: { required: true },
@@ -441,6 +442,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'isGroupingTimeSeries',
                                     label: 'Is Grouping Property Time Series?',
                                     description: 'If the grouping property is a time series, switch to true.',
+                                    tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
                                     defaultValue: false,
                                     validate: { required: true },
@@ -924,6 +926,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'isAxisTimeSeries',
                             label: 'Is Axis Property Time Series?',
                             description: 'If the x-axis is a time series, switch to true.',
+                            tooltip: 'If the x-axis is a time series i.e. the Axis Property is a DateTime / ISO string data property, switch to true.',
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: false },
@@ -1037,6 +1040,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'isGroupingTimeSeries',
                             label: 'Is Grouping Property Time Series?',
                             description: 'If the grouping property is a time series, switch to true.',
+                            tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                             parentId: dataTabId,
                             defaultValue: false,
                             validate: { required: false },
@@ -1120,7 +1124,6 @@ export const getSettings = (data: any) => {
                               { label: 'Descending', value: 'desc' },
                             ],
                             validate: { required: true },
-                            defaultValue: 'asc',
                             hidden: {
                               _code: 'return !(getSettingValue(data?.orderBy))',
                               _mode: 'code',
@@ -1236,7 +1239,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'titleFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1298,7 +1301,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'axisLabelFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1330,7 +1333,7 @@ export const getSettings = (data: any) => {
                   ghost: true,
                   collapsible: 'header',
                   hidden: {
-                    _code: 'return ["line", "bar"].includes(getSettingValue(data?.chartType)) && getSettingValue(data?.chartType) !== "pivot";',
+                    _code: 'return ["line", "bar"].includes(getSettingValue(data?.chartType)) && getSettingValue(data?.simpleOrPivot) === "simple";',
                     _mode: 'code',
                     _value: false,
                   } as any,
@@ -1370,7 +1373,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'legendFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1432,7 +1435,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'tickFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },

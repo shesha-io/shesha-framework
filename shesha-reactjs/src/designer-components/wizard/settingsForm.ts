@@ -3,7 +3,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
@@ -219,7 +219,7 @@ export const getSettings = () => {
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
+                                                                dropdownOptions: fontWeightsOptions,
                                                                 width: 100,
                                                             },
                                                             {
