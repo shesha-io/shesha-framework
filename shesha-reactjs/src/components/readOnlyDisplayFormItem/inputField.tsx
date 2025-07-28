@@ -1,18 +1,17 @@
 import React from 'react';
 import { useStyles } from './styles/styles';
 
-function InputField({ value, style, disabledStyleOnReadonly = true, children }: { value: string | number | React.ReactNode; style?: React.CSSProperties; disabledStyleOnReadonly?: boolean; children?: React.ReactNode }) {
+function InputField({ value, style, children }: { value: string | number | React.ReactNode; style?: React.CSSProperties; enableStyleOnReadonly?: boolean; children?: React.ReactNode }) {
 
     const { styles } = useStyles();
 
-    const { fontSize, fontWeight, color, fontFamily, textAlign, width, height = '32px', minWidth, maxWidth, minHeight, maxHeight } = style || {};
+    const { fontSize, fontWeight, color, fontFamily, textAlign, height, } = style || {};
 
-    return (
-        <div style={disabledStyleOnReadonly ? { width, height, minWidth, maxWidth, minHeight, maxHeight, display: 'flex', alignItems: 'center', justifyContent: textAlign } :
-            { ...style, display: 'flex', alignItems: 'center', justifyContent: textAlign }} >
+    return value || children ? (
+        <div style={{ ...style, height: height === 'auto' ? '32px' : height, display: 'flex', alignItems: 'center', justifyContent: textAlign }} >
             <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily }}>{value || children}</div>
         </div>
-    );
+    ) : null;
 }
 
 export default InputField;
