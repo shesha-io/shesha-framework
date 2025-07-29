@@ -282,7 +282,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               overflow: hidden;
               white-space: nowrap;
               text-overflow: ellipsis;
-              cursor: pointer;
+              cursor: auto;
 
               & .ant-form-item-control-input {
                 overflow: visible;
@@ -342,6 +342,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: -100;
+
           }
 
           &.${boxShadowLeft} {
@@ -349,6 +350,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
           &.${boxShadowRight} {
             box-shadow: -5px 0 3px -2px #ccc;
+          }
+
+          &.ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: orange;
           }
         }
 
