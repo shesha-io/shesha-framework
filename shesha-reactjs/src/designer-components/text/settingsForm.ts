@@ -342,54 +342,6 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
-                                inputs: [
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    propertyName: 'contentType',
-                                    label: 'Type',
-                                    hideLabel: false,
-                                    defaultValue: DEFAULT_CONTENT_TYPE,
-                                    dropdownOptions: [
-                                      {
-                                        label: 'Default',
-                                        value: '',
-                                      },
-                                      {
-                                        label: 'Primary',
-                                        value: 'primary',
-                                      },
-                                      {
-                                        label: 'Secondary',
-                                        value: 'secondary',
-                                      },
-                                      {
-                                        label: 'Success',
-                                        value: 'success',
-                                      },
-                                      {
-                                        label: 'Warning',
-                                        value: 'warning',
-                                      },
-                                      {
-                                        label: 'Info',
-                                        value: 'info',
-                                      },
-                                      {
-                                        label: 'Error',
-                                        value: 'danger',
-                                      },
-                                      {
-                                        label: 'Custom color',
-                                        value: 'custom',
-                                      },
-                                    ],
-                                  },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
                                 inline: true,
                                 propertyName: 'font',
                                 inputs: [
@@ -468,6 +420,54 @@ export const getSettings = (data: any) => {
                                     width: 60,
                                     dropdownOptions: textAlignOptions,
                                   }
+                                ],
+                              })
+                               .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [
+                                  {
+                                    type: 'dropdown',
+                                    id: nanoid(),
+                                    propertyName: 'contentType',
+                                    label: 'Type',
+                                    hideLabel: false,
+                                    defaultValue: DEFAULT_CONTENT_TYPE,
+                                    dropdownOptions: [
+                                      {
+                                        label: 'Default',
+                                        value: '',
+                                      },
+                                      {
+                                        label: 'Primary',
+                                        value: 'primary',
+                                      },
+                                      {
+                                        label: 'Secondary',
+                                        value: 'secondary',
+                                      },
+                                      {
+                                        label: 'Success',
+                                        value: 'success',
+                                      },
+                                      {
+                                        label: 'Warning',
+                                        value: 'warning',
+                                      },
+                                      {
+                                        label: 'Info',
+                                        value: 'info',
+                                      },
+                                      {
+                                        label: 'Error',
+                                        value: 'danger',
+                                      },
+                                      {
+                                        label: 'Custom color',
+                                        value: 'custom',
+                                      },
+                                    ],
+                                  },
                                 ],
                               })
                               .addSettingsInputRow({
