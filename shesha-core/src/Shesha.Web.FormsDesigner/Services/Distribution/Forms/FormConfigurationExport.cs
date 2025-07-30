@@ -67,6 +67,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
                 Access = permission?.Access,
                 Permissions = permission?.Permissions,
+
+                ConfigurationForm = form.Revision.ConfigurationForm,
+                GenerationLogicTypeName = form.Revision.GenerationLogicTypeName,
+                GenerationLogicExtensionJson = form.Revision.GenerationLogicExtensionJson,
+                PlaceholderIcon = form.Revision.PlaceholderIcon
             };
 
             return result;

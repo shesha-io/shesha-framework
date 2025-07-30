@@ -52,13 +52,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.Common", "src\Shesha
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "analyzers", "analyzers", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheshaCodeAnalyzers", "analyzers\SheshaCodeAnalyzers\SheshaCodeAnalyzers.csproj", "{588EA4DF-22E2-64C6-2DD1-6E8ADEDCBF1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SheshaCodeAnalyzers", "analyzers\SheshaCodeAnalyzers\SheshaCodeAnalyzers.csproj", "{588EA4DF-22E2-64C6-2DD1-6E8ADEDCBF1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheshaCodeAnalyzers.CodeFixes", "analyzers\SheshaCodeAnalyzers.CodeFixes\SheshaCodeAnalyzers.CodeFixes.csproj", "{05DC5A74-CCC2-3A28-008A-F69B34CF66E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SheshaCodeAnalyzers.CodeFixes", "analyzers\SheshaCodeAnalyzers.CodeFixes\SheshaCodeAnalyzers.CodeFixes.csproj", "{05DC5A74-CCC2-3A28-008A-F69B34CF66E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheshaCodeAnalyzers.Package", "analyzers\SheshaCodeAnalyzers.Package\SheshaCodeAnalyzers.Package.csproj", "{18145AAA-0E16-6212-F535-4A82F5069A17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SheshaCodeAnalyzers.Package", "analyzers\SheshaCodeAnalyzers.Package\SheshaCodeAnalyzers.Package.csproj", "{18145AAA-0E16-6212-F535-4A82F5069A17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheshaCodeAnalyzers.Test", "analyzers\SheshaCodeAnalyzers.Test\SheshaCodeAnalyzers.Test.csproj", "{C2196593-1C13-50DC-5C68-2C3B3193BB38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SheshaCodeAnalyzers.Test", "analyzers\SheshaCodeAnalyzers.Test\SheshaCodeAnalyzers.Test.csproj", "{C2196593-1C13-50DC-5C68-2C3B3193BB38}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.Tests.ModuleA", "test\Shesha.Tests.ModuleA\Shesha.Tests.ModuleA.csproj", "{19D9494E-A684-4EBD-9F35-89BC7D7DB902}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shesha.Tests.ModuleB", "test\Shesha.Tests.ModuleB\Shesha.Tests.ModuleB.csproj", "{77485276-CE3C-4097-AA47-D7CB4B3DFD26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -154,6 +158,14 @@ Global
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19D9494E-A684-4EBD-9F35-89BC7D7DB902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19D9494E-A684-4EBD-9F35-89BC7D7DB902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19D9494E-A684-4EBD-9F35-89BC7D7DB902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19D9494E-A684-4EBD-9F35-89BC7D7DB902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77485276-CE3C-4097-AA47-D7CB4B3DFD26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77485276-CE3C-4097-AA47-D7CB4B3DFD26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77485276-CE3C-4097-AA47-D7CB4B3DFD26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77485276-CE3C-4097-AA47-D7CB4B3DFD26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +194,8 @@ Global
 		{05DC5A74-CCC2-3A28-008A-F69B34CF66E5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{18145AAA-0E16-6212-F535-4A82F5069A17} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{C2196593-1C13-50DC-5C68-2C3B3193BB38} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{19D9494E-A684-4EBD-9F35-89BC7D7DB902} = {F10AA149-2626-486E-85BB-9CD5365F3016}
+		{77485276-CE3C-4097-AA47-D7CB4B3DFD26} = {F10AA149-2626-486E-85BB-9CD5365F3016}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95ED23F3-8DEA-456E-A44B-87A161CB696A}

@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.Runtime.Validation;
 using Abp.Threading;
 using Microsoft.AspNetCore.Authorization;
@@ -387,7 +388,10 @@ namespace Shesha.Web.FormsDesigner.Services
             revision.Description = input.Description;
             revision.Markup = input.Markup;
             revision.ModelType = input.ModelType;
-
+            revision.ConfigurationForm = !input.ConfigurationFormName.IsNullOrWhiteSpace() ? new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!) : null;
+            revision.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            revision.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            revision.PlaceholderIcon = input.PlaceholderIcon;
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return await MapToEntityDtoAsync(entity);

@@ -63,7 +63,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         {
             var equals = revision.Markup == distributedItem.Markup &&
                 revision.ModelType == distributedItem.ModelType &&
-                revision.IsTemplate == distributedItem.IsTemplate;
+                revision.IsTemplate == distributedItem.IsTemplate &&
+                revision.ConfigurationForm == distributedItem.ConfigurationForm &&
+                revision.GenerationLogicTypeName == distributedItem.GenerationLogicTypeName &&
+                revision.GenerationLogicExtensionJson == distributedItem.GenerationLogicExtensionJson &&
+                revision.PlaceholderIcon == distributedItem.PlaceholderIcon;
 
             return Task.FromResult(equals);
         }
@@ -73,7 +77,10 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             revision.Markup = distributedItem.Markup;
             revision.ModelType = distributedItem.ModelType;
             revision.IsTemplate = distributedItem.IsTemplate;
-
+            revision.ConfigurationForm = distributedItem.ConfigurationForm;
+            revision.GenerationLogicTypeName = distributedItem.GenerationLogicTypeName;
+            revision.GenerationLogicExtensionJson = distributedItem.GenerationLogicExtensionJson;
+            revision.PlaceholderIcon = distributedItem.PlaceholderIcon;
             return Task.CompletedTask;
         }
     }

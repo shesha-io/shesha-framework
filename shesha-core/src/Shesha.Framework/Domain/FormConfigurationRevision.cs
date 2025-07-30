@@ -1,4 +1,5 @@
-﻿using Shesha.Domain.Attributes;
+﻿using JetBrains.Annotations;
+using Shesha.Domain.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
@@ -32,5 +33,26 @@ namespace Shesha.Domain
         /// </summary>
         public virtual FormConfiguration? Template { get; set; }
         */
+
+        /// <summary>
+        /// Form for getting additional configuration options for template
+        /// </summary>
+        [CanBeNull]
+        public virtual FormIdentifier? ConfigurationForm { get; set; }
+
+        /// <summary>
+        /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator
+        /// </summary>
+        public virtual string? GenerationLogicTypeName { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual string? GenerationLogicExtensionJson { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual string? PlaceholderIcon { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Shesha.AutoMapper;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Shesha.AutoMapper;
 using Shesha.Domain;
 using System;
 
@@ -23,6 +24,10 @@ namespace Shesha.Web.FormsDesigner.Dtos
                 .ForMember(e => e.Description, m => m.MapFrom(e => e.Revision.Description))
                 .ForMember(e => e.ModelType, m => m.MapFrom(e => e.Revision.ModelType))
                 .ForMember(e => e.Markup, m => m.MapFrom(e => e.Revision.Markup))
+                .ForMember(e => e.ConfigurationForm, m => m.MapFrom(e => e.Revision.ConfigurationForm))
+                .ForMember(e => e.GenerationLogicTypeName, m => m.MapFrom(e => e.Revision.GenerationLogicTypeName))
+                .ForMember(e => e.GenerationLogicExtensionJson, m => m.MapFrom(e => e.Revision.GenerationLogicExtensionJson))
+                .ForMember(e => e.PlaceholderIcon, m => m.MapFrom(e => e.Revision.PlaceholderIcon))
             ;
         }
     }

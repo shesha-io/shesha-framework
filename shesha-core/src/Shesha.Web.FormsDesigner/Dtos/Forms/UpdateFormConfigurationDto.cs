@@ -31,5 +31,30 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// Type of the form model
         /// </summary>
         public string? ModelType { get; set; }
+
+        /// <summary>
+        /// Form module for getting additional configuration options for template
+        /// </summary>
+        public virtual string? ConfigurationFormModule { get; set; }
+
+        /// <summary>
+        /// Form module for getting additional configuration options for template
+        /// </summary>
+        public virtual string? ConfigurationFormName { get; set; }
+
+        /// <summary>
+        /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator
+        /// </summary>
+        public virtual string? GenerationLogicTypeName { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual string? GenerationLogicExtensionJson { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual string? PlaceholderIcon { get; set; }
     }
 }

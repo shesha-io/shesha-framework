@@ -15,7 +15,7 @@ import { defaultStyles } from './utils';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
-  type: 'KeyInformationBar',
+  type: 'keyInformationBar',
   isInput: false,
   name: 'Key Information Bar',
   icon: <BorderLeftOutlined />,
@@ -29,7 +29,16 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
     );
   },
   migrator: (m) =>
-    m
+    m      
+      .add<IKeyInformationBarProps>(
+        -1,
+        (prev) => {
+          if (prev?.type === 'KeyInformationBar') {
+            return { ...prev, type: 'keyInformationBar' };
+          }
+          return prev;
+        }
+      )
       .add<IKeyInformationBarProps>(
         0,
         (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps

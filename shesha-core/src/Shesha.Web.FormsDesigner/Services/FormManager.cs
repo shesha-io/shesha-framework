@@ -1,7 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.Runtime.Session;
 using DocumentFormat.OpenXml.Office2016.Excel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -63,6 +65,10 @@ namespace Shesha.Web.FormsDesigner.Services
             //newVersion.ModelType = form.ModelType;
             //newVersion.IsTemplate = form.IsTemplate;
             //newVersion.Template = form.Template;
+            //newVersion.GenerationLogicTypeName = form.GenerationLogicTypeName;
+            //newVersion.GenerationLogicExtensionJson = form.GenerationLogicExtensionJson;
+            //newVersion.ConfigurationForm = form.ConfigurationForm;
+            //newVersion.PlaceholderIcon = form.PlaceholderIcon;
             newVersion.Normalize();
 
             await Repository.InsertAsync(newVersion);
@@ -162,6 +168,10 @@ namespace Shesha.Web.FormsDesigner.Services
             revision.ModelType = input.ModelType;
             revision.IsTemplate = input.IsTemplate;
             //revision.Template = template;
+            revision.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            revision.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            revision.ConfigurationForm = !input.ConfigurationFormName.IsNullOrWhiteSpace() ? new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!) : null;
+            revision.PlaceholderIcon = input.PlaceholderIcon;
             form.Normalize();
 
             await Repository.InsertAsync(form);
@@ -217,6 +227,10 @@ namespace Shesha.Web.FormsDesigner.Services
             revision.ModelType = srcForm.Revision.ModelType;
             revision.IsTemplate = srcForm.Revision.IsTemplate;
             //revision.Template = srcForm.Template;
+            revision.GenerationLogicTypeName = srcForm.Revision.GenerationLogicTypeName;
+            revision.GenerationLogicExtensionJson = srcForm.Revision.GenerationLogicExtensionJson;
+            revision.ConfigurationForm = srcForm.Revision.ConfigurationForm;
+            revision.PlaceholderIcon = srcForm.Revision.PlaceholderIcon;
             form.Normalize();
 
             await Repository.InsertAsync(form);
