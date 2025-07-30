@@ -118,7 +118,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   }
 
   return (
-    <Title key={`title-${updateKey}`} style={{margin: '0px'}}  {...titleProps} className={className}>
+    <Title key={`title-${updateKey}`}  {...titleProps}  style={{...titleProps.style, fontSize: ''}} className={className}>
       {children}
     </Title>
   );

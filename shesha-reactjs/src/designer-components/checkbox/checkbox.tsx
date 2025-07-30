@@ -52,9 +52,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
           };
 
           return model.readOnly
-            ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} disabledStyleOnReadonly={model.disabledStyleOnReadonly} style={model.allStyles.fullStyle} />
-            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />
-            ;
+            ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} style={model.disabledStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle} />
+            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />;
         }}
       </ConfigurableFormItem>
     );

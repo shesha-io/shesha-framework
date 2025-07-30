@@ -16,11 +16,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     }
     `);
 
-    const disabled = css`
-        cursor: not-allowed;
-    `;
     return {
-        configurableButton,
-        disabled
+        configurableButton
     };
 });

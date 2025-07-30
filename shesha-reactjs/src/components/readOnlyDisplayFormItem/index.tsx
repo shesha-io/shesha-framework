@@ -38,7 +38,6 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showIcon,
     solidColor,
     showItemName,
-    disabledStyleOnReadonly = true
   } = props;
 
   const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
@@ -127,25 +126,25 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <InputField disabledStyleOnReadonly={disabledStyleOnReadonly} style={style} value={<ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />} />;
+        return <InputField style={style} value={<ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />} />;
       }
       case 'datetime': {
-        return <InputField disabledStyleOnReadonly={disabledStyleOnReadonly} style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
+        return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
       }
       case 'checkbox': {
-        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled style={disabledStyleOnReadonly ? {} : style} />;
+        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled style={style} />;
       }
       case 'switch': {
-        return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...(disabledStyleOnReadonly ? {} : style) }} />;
+        return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...style }} />;
       }
       case 'textArea': {
-        return <div style={{ ...(disabledStyleOnReadonly ? {} : style), whiteSpace: 'pre-wrap' }}>{value}</div>;
+        return <div style={{ ...style, whiteSpace: 'pre-wrap' }}>{value}</div>;
       }
 
       default:
         break;
     }
-    return <InputField disabledStyleOnReadonly={disabledStyleOnReadonly} style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value
+    return <InputField style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value
     } />;
   }, [value,
     type,

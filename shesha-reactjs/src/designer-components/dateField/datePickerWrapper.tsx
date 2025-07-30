@@ -218,7 +218,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   if (readOnly) {
     const format = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-    return <ReadOnlyDisplayFormItem disabledStyleOnReadonly={disabledStyleOnReadonly} value={momentValue} type="datetime" dateFormat={format} timeFormat={timeFormat} style={allStyles.fullStyle} />;
+    return <ReadOnlyDisplayFormItem value={momentValue} type="datetime" dateFormat={format} timeFormat={timeFormat} style={allStyles.fullStyle} />;
   }
 
   return (
