@@ -356,7 +356,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            background-color: orange;
           }
         }
 
