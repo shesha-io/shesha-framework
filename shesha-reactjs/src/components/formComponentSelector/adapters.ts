@@ -9,9 +9,7 @@ import NumberComponent from '@/designer-components/numberField/numberField';
 import RefListStatusComponent from '@/designer-components/refListStatus/index';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import { IDictionary } from '@/interfaces';
-
-type PropertyInclusionPredicate = (name: string) => boolean;
+import { IDictionary, IEditorAdapter, PropertyInclusionPredicate } from '@/interfaces';
 
 export const updateModelExcludeFiltered = (model: any, updatedModel: any, filter: PropertyInclusionPredicate) => {
   Object.keys(updatedModel).forEach((key) => {
@@ -21,10 +19,6 @@ export const updateModelExcludeFiltered = (model: any, updatedModel: any, filter
   });
   return model;
 };
-
-export interface IEditorAdapter {
-  propertiesFilter: PropertyInclusionPredicate;
-}
 
 export const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
   return (name: string) => {
