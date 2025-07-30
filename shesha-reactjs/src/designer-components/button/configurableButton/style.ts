@@ -17,6 +17,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
     const disabled = css`
         cursor: not-allowed;
+        pointer-events: none;
     `;
 
     return {
