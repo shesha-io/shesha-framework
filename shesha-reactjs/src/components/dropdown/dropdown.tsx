@@ -34,7 +34,8 @@ export const Dropdown: FC<IDropdownProps> = ({
     showItemName,
     allowClear = true,
     displayStyle,
-    tagStyle
+    tagStyle,
+    enableStyleOnReadonly
 }) => {
 
     const { styles } = useStyles({ style });
@@ -143,6 +144,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 filterOption={filterOption}
                 incomeValueFunc={incomeValueFunc}
                 outcomeValueFunc={outcomeValueFunc}
+                enableStyleOnReadonly={enableStyleOnReadonly}
             />
         );
     }
@@ -156,14 +158,13 @@ export const Dropdown: FC<IDropdownProps> = ({
         return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(({ label }) => ({ label }));
     };
 
-
-
     if (readOnly) {
         return <ReadOnlyDisplayFormItem
             showIcon={showIcon}
             solidColor={solidColor}
             showItemName={showItemName}
-            style={displayStyle === 'tags' ? tagStyle : style}
+            tagStyle={tagStyle}
+            style={style}
             dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
             type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
             value={mode === 'multiple' ?
@@ -224,7 +225,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     return (
         <Select
             {...commonSelectProps}
-            style={{ ...style }}
+            style={style}
             showSearch
             filterOption={filterOption}
             placeholder={placeholder}

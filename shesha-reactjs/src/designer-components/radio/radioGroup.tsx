@@ -64,7 +64,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
   );
 
   if (model.readOnly) {
-    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} disabledStyleOnReadonly={model.disabledStyleOnReadonly} style={model.style} />;
+    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} style={model.style} />;
   }
 
   return renderCheckGroup();

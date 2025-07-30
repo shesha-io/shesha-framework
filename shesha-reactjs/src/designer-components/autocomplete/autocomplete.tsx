@@ -1,5 +1,5 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -33,15 +33,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
-    const [style, setStyle] = useState<React.CSSProperties>({});
-
-    useEffect(() => {
-      setStyle(model.disabledStyleOnReadonly !== true && model.readOnly ? {
-        ...model.allStyles.fontStyles,
-        ...model.allStyles.dimensionsStyles,
-      } : model?.allStyles?.fullStyle);
-
-    }, [model.disabledStyleOnReadonly, model.readOnly, model.allStyles]);
 
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
@@ -77,6 +68,11 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         : executeExpression(model.filterKeysFunc, { value: localValue }, null, null);
     }, [model.filterKeysFunc]);
 
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange) => {
@@ -95,7 +91,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             outcomeValueFunc={outcomeValueFunc}
             displayValueFunc={displayValueFunc}
             filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-            style={style}
+            style={finalStyle}
             size={model?.size ?? 'middle'}
             value={value}
             onChange={onChangeInternal}

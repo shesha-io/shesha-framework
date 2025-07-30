@@ -352,12 +352,11 @@ export const getSettings = (data: any) => {
                                         .addSettingsInput({
                                             id: nanoid(),
                                             parentId: styleRouterId,
-                                            propertyName: 'disabledStyleOnReadonly',
-                                            label: 'Disable Style On Readonly',
+                                            propertyName: 'enableStyleOnReadonly',
+                                            label: 'Enable Style On Readonly',
                                             tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                                             inputType: 'switch',
                                             jsSetting: true,
-                                            defaultValue: true,
                                         })
                                         .addCollapsiblePanel({
                                             id: nanoid(),
