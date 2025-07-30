@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
+    /*
     public class OrganisationTest : Organisation
     {
         [CascadeUpdateRules(true, true)]
@@ -15,6 +16,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         [AuditedAsManyToMany]
         public virtual IList<Person> DirectPersons { get; set; } = new List<Person>();
     }
+    */
 
     /* AS: Experiments for using one table for linking two entities with several list properties with the same entity types
     [Table("ShaAutoGen_OrganisationTest_DirectPersons_Reference")]
