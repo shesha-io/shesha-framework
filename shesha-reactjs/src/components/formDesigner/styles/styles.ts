@@ -312,7 +312,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 line-height: 1.5;
                 border-radius: 3px;
                 background: #fff;
-                margin: 4px 0;
+                // margin: 4px 0;
                 border: 1px solid #ddd;
         
                 .${iconPrefixCls} {
@@ -373,21 +373,25 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             
                 .${shaComponent} {
                     min-height: 30px;
+                    > div {
+                    height: 100%;
+                    width: 100%;
+                    }
                 }
             }
         }
 
         .${shaComponentGhost} {
-            border: 1px dashed ${token.colorPrimary};
+            border: 2px dashed ${token.colorPrimary};
             border-radius: 2px;
-            opacity: 0.7;        
+            opacity: 0.7;      
         }
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
         }
         .${shaComponent} {
             position: relative;
-            margin: 4px;
+            // margin: 4px;
             //margin-left: 10px;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
