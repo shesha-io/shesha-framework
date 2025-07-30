@@ -63,7 +63,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   container?: IStyleType;
   primaryColor?: string;
   allStyles?: IFormComponentStyles;
-  disabledStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -93,7 +93,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
-  disabledStyleOnReadonly = true,
+  enableStyleOnReadonly = true,
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -105,16 +105,23 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const model = rest;
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
+  const { dimensionsStyles: containerDimensionsStyles, stylingBoxAsCSS, ...restStyles } = useFormComponentStyles({ ...model.container });
 
   const { styles } = useStyles({
-    containerStyles: {
+    containerStyles: !enableStyleOnReadonly && disabled ? {
       ...containerDimensionsStyles,
       width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
-      ...containerJsStyle, ...stylingBoxAsCSS,
+      ...stylingBoxAsCSS,
+    } : {
+      ...containerDimensionsStyles,
+      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
+      ...stylingBoxAsCSS,
+      ...restStyles,
     },
-    style: disabledStyleOnReadonly && disabled ?
-      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } : { ...model?.allStyles?.fullStyle }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    style: !enableStyleOnReadonly && disabled ?
+      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } :
+      { ...model?.allStyles?.fullStyle },
+    model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
 

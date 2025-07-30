@@ -438,15 +438,24 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
-                                        .addSettingsInput({
+                                        .addSettingsInputRow({
                                             id: nanoid(),
                                             parentId: styleRouterId,
-                                            propertyName: 'disabledStyleOnReadonly',
-                                            label: 'Disable Style On Readonly',
-                                            tooltip: 'Removes all visual styling except typography when the component becomes read-only',
-                                            inputType: 'switch',
-                                            jsSetting: true,
-                                            defaultValue: true,
+                                            inputs: [
+                                                {
+                                                    id: nanoid(),
+                                                    propertyName: 'enableStyleOnReadonly',
+                                                    label: 'Enable Style On Readonly',
+                                                    tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                                                    type: 'switch',
+                                                    jsSetting: true,
+                                                }
+                                            ],
+                                            hidden: {
+                                                _code: 'return  getSettingValue(data?.mode) === "single" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags";',
+                                                _mode: 'code',
+                                                _value: false
+                                            } as any
                                         })
                                         .addSettingsInput({
                                             id: nanoid(),

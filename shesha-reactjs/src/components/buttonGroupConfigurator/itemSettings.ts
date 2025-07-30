@@ -246,8 +246,8 @@ export const getItemSettings = () => {
                                         {
                                             id: nanoid(),
                                             type: 'switch',
-                                            propertyName: 'disabledStyleOnReadonly',
-                                            label: 'Disable Style On Readonly',
+                                            propertyName: 'enableStyleOnReadonly',
+                                            label: 'Enable Style On Readonly',
                                             tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                                             jsSetting: true,
                                             hidden: {

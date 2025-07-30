@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { FormIdentifier } from '@/providers/form/models';
+import { SwitchSize } from 'antd/es/switch';
 
 export interface IReadOnlyDisplayFormItemProps {
   value?: any;
@@ -31,5 +32,5 @@ export interface IReadOnlyDisplayFormItemProps {
   quickviewWidth?: number;
   style?: React.CSSProperties;
   tagStyle?: React.CSSProperties;
-  disabledStyleOnReadonly?: boolean;
+  size?: SwitchSize;
 }

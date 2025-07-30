@@ -1,4 +1,4 @@
-import { Space, Switch } from 'antd';
+import { Switch } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import React, { FC, useMemo } from 'react';
@@ -90,11 +90,10 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                 solidColor={solidColor}
                 showItemName={showItemName}
                 label={displayName}
-              />
-              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
+              /> :
+              <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
           }
         }
-
         return null;
 
       case 'dropdownMultiple': {
@@ -103,7 +102,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
 
           return dropdownDisplayMode === 'raw'
             ? <InputField style={style} value={values?.join(', ')} />
-            : <Space size={8}>
+            : <div style={{ padding: '0px 4px', ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, justifyContent: style?.textAlign }}>
               {value?.map(({ label, color, icon, value, description }) => {
                 return <ReflistTag
                   key={value}
@@ -118,7 +117,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                   label={label}
                 />;
               })}
-            </Space>;
+            </div>;
         }
 
         throw new Error(
@@ -135,7 +134,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled style={style} />;
       }
       case 'switch': {
-        return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...style }} />;
+        return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...style }} size={props.size} />;
       }
       case 'textArea': {
         return <div style={{ ...style, whiteSpace: 'pre-wrap' }}>{value}</div>;

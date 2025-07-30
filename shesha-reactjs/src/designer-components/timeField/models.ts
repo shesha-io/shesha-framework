@@ -23,5 +23,5 @@ export interface ITimePickerProps {
   onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
   style?: React.CSSProperties;
   readOnly?: boolean;
-  disabledStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean;
 }

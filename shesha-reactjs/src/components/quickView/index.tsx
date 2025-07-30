@@ -71,7 +71,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { notification } = App.useApp();
-  const {styles, cx} = useStyles();
+  const { styles, cx } = useStyles();
 
   useEffect(() => {
     if (formIdentifier) {
@@ -194,7 +194,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const { getEntityFormId } = useConfigurationItemsLoader();
   const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier ?? undefined);
-  const {styles, cx} = useStyles();
+  const { styles, cx } = useStyles();
 
   useEffect(() => {
     if (props.className && !formConfig)
