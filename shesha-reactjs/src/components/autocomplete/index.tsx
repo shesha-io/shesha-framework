@@ -244,7 +244,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       };
 
     return (
-      <div style={{ width: 'fit-content' }}>
       <ReadOnlyDisplayFormItem
         value={readonlyValue}
         type={props.mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
@@ -256,7 +255,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         quickviewGetEntityUrl={props.quickviewGetEntityUrl}
         quickviewWidth={props.quickviewWidth ? Number(props.quickviewWidth) : null} // quick fix string value of quickviewWidth (from configurator)
       />
-      </div>
     );
   }
 

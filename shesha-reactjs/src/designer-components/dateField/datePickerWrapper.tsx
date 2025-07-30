@@ -42,14 +42,19 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     defaultToMidnight,
     resolveToUTC,
     allStyles,
-    disabledStyleOnReadonly,
+    enableStyleOnReadonly,
     ...rest
   } = props;
 
+  const finalStyle = !enableStyleOnReadonly && readOnly ? {
+    ...allStyles.fontStyles,
+    ...allStyles.dimensionsStyles,
+  } : allStyles.fullStyle;
+
   const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-  const fullStyles = { ...allStyles?.fullStyle || {} };
-  const { styles } = useStyles({ fullStyles });
+
+  const { styles } = useStyles({ fullStyles: finalStyle });
 
   const { formData } = useForm();
 
@@ -209,7 +214,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         disabled={readOnly}
-        style={allStyles.fullStyle}
+        style={finalStyle}
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
       />
@@ -218,7 +223,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   if (readOnly) {
     const format = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-    return <ReadOnlyDisplayFormItem value={momentValue} type="datetime" dateFormat={format} timeFormat={timeFormat} style={allStyles.fullStyle} />;
+    return <ReadOnlyDisplayFormItem value={momentValue} type="datetime" dateFormat={format} timeFormat={timeFormat} style={finalStyle} />;
   }
 
   return (

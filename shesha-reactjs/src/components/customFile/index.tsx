@@ -28,7 +28,7 @@ export interface ICustomFileProps extends IInputStyles {
   hideFileName?: boolean;
   container?: IStyleType;
   primaryColor?: string;
-  disabledStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {

@@ -80,8 +80,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       iconPosition={props.iconPosition}
-      disabled={buttonDisabled}
-      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
+      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton, buttonDisabled && styles.disabled)}
       size={props?.size}
       style={{
         ...props?.style,
