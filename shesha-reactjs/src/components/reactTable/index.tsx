@@ -389,16 +389,58 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const renderExpandedContentView = (cellRef) => {
     const cellRect = cellRef?.current?.getBoundingClientRect();
+    
+    const getSmartPosition = () => {
+      if (!cellRect) return { top: 0, left: 0 };
+      
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+      
+      const popup = {
+        width: Math.max(cellRect.width, 80),
+        height: 60
+      };
+      
+      const offset = 20;
+      const margin = 10;
+      const bottomOffset = 5;
+      
+      let top = cellRect.top + offset;
+      let left = cellRect.left + offset;
+      
+      if (left + popup.width + margin > viewport.width) {
+        left = cellRect.right - popup.width - offset;
+      }
+      
+      if (left < margin) {
+        left = margin;
+      }
+      
+      if (top + popup.height + margin > viewport.height) {
+        top = cellRect.top - popup.height - bottomOffset;
+      }
+      
+      if (top < margin) {
+        top = margin;
+      }
+      
+      return { top, left };
+    };
+    
+    const position = getSmartPosition();
+    
     return (
       <div
         onMouseEnter={(event) => {
           event.stopPropagation();
-          setAllowExpandedView(true);
         }}
         onMouseLeave={(event) => {
           event.stopPropagation();
           setAllowExpandedView(false);
           setActiveCell(null);
+          setIsCellContentOverflowing(false);
         }}
         style={{
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -407,14 +449,15 @@ export const ReactTable: FC<IReactTableProps> = ({
           visibility: allowExpandedView && isCellContentOverflowing ? 'visible' : 'hidden',
           position: 'fixed',
           minWidth: 80,
+          maxWidth: Math.min(cellRect?.width || 200, window.innerWidth - 40),
           width: cellRect?.width,
           backgroundColor: '#fff',
           border: '1px #dddddd solid',
           borderRadius: 8,
           padding: activeCell !== null && allowExpandedView && 10,
           boxShadow: '0px 2px 2px 0px rgba(0, 0, 0, .15)',
-          top: `${cellRect?.top + 20}px`,
-          left: `${cellRect?.left + 20}px`,
+          top: `${position.top}px`,
+          left: `${position.left}px`,
           zIndex: 50,
           transformOrigin: 'center',
           pointerEvents: activeCell !== null && allowExpandedView ? 'auto' : 'none',
@@ -454,7 +497,16 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
         onMouseOver={(activeCell, isContentOverflowing) => {
-          setActiveCell(activeCell); setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);
+          setActiveCell(activeCell);
+          setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);
+          if (activeCell && isContentOverflowing) {
+            setAllowExpandedView(true);
+          }
+        }}
+        onMouseLeave={() => {
+          setActiveCell(null);
+          setAllowExpandedView(false);
+          setIsCellContentOverflowing(false);
         }}
       />
     );
@@ -465,6 +517,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       ? onRowsRendering({ rows: rows, defaultRender: renderRow })
       : rows.map((row, rowIndex) => renderRow(row, rowIndex));
   };
+  
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
     ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
     : null;
@@ -590,12 +643,6 @@ export const ReactTable: FC<IReactTableProps> = ({
               overflowX: 'unset',
             }}
             {...getTableBodyProps()}
-            onMouseEnter={() => {
-              setAllowExpandedView(true);
-            }}
-            onMouseLeave={() => {
-              setAllowExpandedView(false);
-            }}
           >
             {rows?.length === 0 && !loading && (
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />

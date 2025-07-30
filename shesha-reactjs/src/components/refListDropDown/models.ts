@@ -47,6 +47,7 @@ export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<an
   size?: SizeType;
   displayStyle?: 'tags' | 'text';
   onChange?: (value: TValue | TValue[]) => void;
+  enableStyleOnReadonly?: boolean;
 }
 
 export interface IRefListDropDownOption {

@@ -361,7 +361,6 @@ export const getColumnSettings = (data?: any) => ({
                                     .addSettingsInputRow({
                                         id: 'dimensionsStyleRowHeight',
                                         parentId: 'dimensionsStylePnl',
-                                        inline: true,
                                         hidden: {
                                             _code: "return getSettingValue(data?.columnType) !== 'form';",
                                             _mode: "code",

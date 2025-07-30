@@ -55,7 +55,6 @@ export interface IButtonGroupItemBase extends IStyleType {
   borderStyle?: 'dotted' | 'solid' | 'dashed';
   borderRadius?: number;
   styles?: React.CSSProperties;
-  disabledStyleOnReadonly?: boolean;
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase, ListItemWithId {
