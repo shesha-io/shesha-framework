@@ -18,7 +18,8 @@ import { ReferenceListCell } from './default/referenceListCell';
 import { useCrud } from '@/providers/crudContext';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
+import { updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
+import { getEditorAdapter } from '@/components/formComponentSelector';
 import MultiEntityCell from './default/multiEntityCell';
 import FormComponentMemo from '@/components/formDesigner/formComponent';
 import { useStyles } from '../styles/styles';
@@ -91,7 +92,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       readOnly: model.readOnly === undefined ? props.readOnly : model.readOnly,
     };
 
-    const adapter = editorAdapters[customComponent.type];
+    const adapter = getEditorAdapter(component);
 
     if (component.linkToModelMetadata && propertyMeta && adapter?.propertiesFilter) {
       editorModel = updateModelExcludeFiltered(editorModel, component.linkToModelMetadata({

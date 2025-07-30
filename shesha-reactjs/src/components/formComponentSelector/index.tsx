@@ -1,6 +1,6 @@
 import { Button, Space, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
+import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IEditorAdapter, IToolboxComponent, IToolboxComponents } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { nanoid } from '@/utils/uuid';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -27,6 +27,20 @@ export interface IFormComponentSelectorProps {
   propertyMeta?: IPropertyMetadata;
 }
 
+export const getEditorAdapter = (component: IToolboxComponent): IEditorAdapter | undefined => {
+  return component.editorAdapter ?? editorAdapters[component.type];
+};
+
+const getEditorAdapterByType = (components: IToolboxComponents, type: string): IEditorAdapter | undefined => {
+  const component = components[type];
+  return component ? getEditorAdapter(component) : undefined;
+};
+
+const canBeUsedAsEditor = (component: IToolboxComponent): boolean => {
+  const adapter = getEditorAdapter(component);
+  return Boolean(adapter);
+};
+
 export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) => {
   const { componentType, noSelectionItem, value, onChange, readOnly = false, propertyMeta } = props;
 
@@ -36,8 +50,8 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     const result: IToolboxComponent[] = [];
     for (const key in allComponents) {
       if (allComponents.hasOwnProperty(key)) {
-        if (!editorAdapters[key]) continue; // skip components without adapters
         const component = allComponents[key];
+        if (!canBeUsedAsEditor(component)) continue; // skip components without adapters
 
         if (
           component.isHidden !== true &&
@@ -123,7 +137,9 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   };
 
   const propertyFilter = (name: string): boolean => {
-    const adapter = value?.type ? editorAdapters[value.type] : null;
+    const adapter = value?.type 
+      ? getEditorAdapterByType(allComponents, value.type)
+      : null;
     if (!adapter) return false;
 
     return !adapter.propertiesFilter || adapter.propertiesFilter(name);
