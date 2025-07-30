@@ -349,13 +349,12 @@ export const getSettings = (data: any) => {
                                       { label: 'Day-Month-Year', value: 'day-month-year' },
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
-                                    validate: { required: true },
                                     defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
+                                      _code: 'return !!!getSettingValue(data?.isAxisTimeSeries)',
                                       _mode: 'code',
-                                      _value: false,
+                                      _value: true,
                                     } as any,
                                     width: '50%',
                                   }
@@ -431,7 +430,7 @@ export const getSettings = (data: any) => {
                                 parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
-                                  _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot`',
+                                  _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -445,14 +444,8 @@ export const getSettings = (data: any) => {
                                     tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
                                     defaultValue: false,
-                                    validate: { required: true },
                                     width: '50%',
                                     jsSetting: true,
-                                    hidden: {
-                                      _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !getSettingValue(data?.groupingProperty)',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
                                   },
                                   {
                                     id: nanoid(),
@@ -473,9 +466,9 @@ export const getSettings = (data: any) => {
                                     defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !!!getSettingValue(data?.isGroupingTimeSeries)',
+                                      _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                                       _mode: 'code',
-                                      _value: false,
+                                      _value: true,
                                     } as any,
                                     width: '50%',
                                   }
@@ -1034,7 +1027,7 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         inline: true,
                         hidden: {
-                          _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
+                          _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -1048,14 +1041,8 @@ export const getSettings = (data: any) => {
                             tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                             parentId: dataTabId,
                             defaultValue: false,
-                            validate: { required: false },
                             width: '50%',
                             jsSetting: true,
-                            hidden: {
-                              _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !getSettingValue(data?.groupingProperty)',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
                           },
                           {
                             id: nanoid(),
@@ -1077,9 +1064,9 @@ export const getSettings = (data: any) => {
                             width: '50%',
                             jsSetting: true,
                             hidden: {
-                              _code: 'return getSettingValue(data?.simpleOrPivot) === `simple` && !!!getSettingValue(data?.isGroupingTimeSeries)',
+                              _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                               _mode: 'code',
-                              _value: false,
+                              _value: true,
                             } as any,
                           },
                         ],
