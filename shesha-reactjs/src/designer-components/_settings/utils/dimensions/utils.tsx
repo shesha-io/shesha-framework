@@ -5,7 +5,9 @@ import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 
 const getDimension = (main: string | number, left: any, right: any) => {
-  return `calc(${addPx(main)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
+  //return `calc(${addPx(main)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
+  // console.log("MPX",main)
+  return main;
 };
 
 export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties): CSSProperties => {

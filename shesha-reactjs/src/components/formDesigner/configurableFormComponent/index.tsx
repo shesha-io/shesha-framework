@@ -17,7 +17,7 @@ import {
   FunctionOutlined,
   StopOutlined
 } from '@ant-design/icons';
-import { getActualPropertyValue, useAvailableConstantsData } from '@/providers/form/utils';
+import { getActualPropertyValue, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
 import { Tooltip } from 'antd';
@@ -26,6 +26,9 @@ import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { useShaFormInstance } from '@/providers';
+
+
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -36,6 +39,7 @@ export interface IConfigurableFormComponentDesignerProps {
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
+
 const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
   componentModel,
   componentRef,
@@ -46,13 +50,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   componentEditMode
 }) => {
   const { styles } = useStyles();
-
   const getToolboxComponent = useFormDesignerComponentGetter();
+  const {formMode} = useShaFormInstance();
+
+  const propertiesPanelDims = componentModel?.desktop?.dimensions;
+  const propertiesPanelStylingBox = JSON.parse(componentModel?.desktop?.stylingBox || '{}');
+
 
   const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
-
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
-
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
 
   const hiddenFx = isPropertySettings(componentModel.hidden);
@@ -87,15 +93,53 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  const dims = { ...componentModel.desktop, width: hasLabel ? componentModel?.desktop?.width : '100%', height: '100%', minHeight: '', minWidth: '', maxHeight: '', maxWidth: '' };
+  const stylingBox = JSON.parse(componentModel?.desktop?.stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(stylingBox);
+  const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
-  const { width, height, minWidth, minHeight, maxWidth, maxHeight } = componentModel.desktop.dimensions;
+  const outerContainerStyle = {
+    ...componentModel?.desktop?.dimensions,
+    width: hasLabel ? componentModel?.desktop?.width : '100%',
+    height: '100%',
+    marginLeft,
+    marginRight,
+    marginTop,
+    marginBottom,
+    paddingTop,
+    paddingBottom,
+    paddingLeft,
+    paddingRight,
+    backgroundColor: 'red',
+    boxSizing: 'border-box',
+  };
+
+  const cleanComponentModel = {
+    ...componentModel,
+    desktop: {
+      ...componentModel.desktop,
+    }
+  };
 
 
+  const dims = { 
+    ...componentModel.desktop,
+    width: '100%', 
+    height: '100%', 
+    boxSizing: 'border-box',
+  };
 
-  return (
+  const noPadding = {
+    paddingLeft: 0,
+    paddingBottom: 0,
+    paddingTop: 0,
+    paddingRight: 0,
+  }
+
+  const padding = JSON.stringify({paddingBottom: propertiesPanelStylingBox.paddingBottom, paddingLeft: propertiesPanelStylingBox.paddingLeft, paddingRight: propertiesPanelStylingBox.paddingRight, paddingTop: propertiesPanelStylingBox.paddingTop})
+
+  return ( 
     <div
-      style={{ width, height, minWidth, minHeight, maxWidth, maxHeight }}
+      style={{...outerContainerStyle, ...propertiesPanelDims, ...noPadding, boxSizing: 'border-box'}}
       className={classNames(styles.shaComponent, {
         selected: isSelected,
         'has-config-errors': invalidConfiguration,
@@ -127,10 +171,24 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      <div style={{ width: '100%', height: '100%' }}>
-        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
-          <div style={{ width: '100%', height: '100%' }}>
-            <FormComponent componentModel={{ ...componentModel, desktop: { ...componentModel.desktop, dimensions: dims } }} componentRef={componentRef} />
+      
+      <div style={{ width: '100%', height: '100%',     boxSizing: 'border-box',
+ }}>
+        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly}>
+          <div style={{ width: '100%', height: '100%',     boxSizing: 'border-box',
+ }}>
+            <FormComponent 
+              componentModel={{ 
+                ...cleanComponentModel, 
+                desktop: { 
+                  ...cleanComponentModel.desktop,
+                  dimensions: dims,
+                  stylingBox: formMode === 'designer' ? padding
+                  : propertiesPanelStylingBox
+                } 
+              }} 
+              componentRef={componentRef} 
+            />
           </div>
         </DragWrapper>
       </div>
@@ -142,7 +200,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 const ConfigurableFormComponentDesignerMemo = memo(ConfigurableFormComponentDesignerInner);
 
 export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = (props) => {
-
   const allData = useAvailableConstantsData({ topContextId: 'all' });
   const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
   const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
