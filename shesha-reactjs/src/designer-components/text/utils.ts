@@ -117,7 +117,7 @@ export const defaultStyles = (textType: string): IStyleType => {
   };
 };
 
-export const remToPx = (remValue: string | number, rootFontSize = 16): number | null => {
+export const remToPx = (remValue: string | number, rootFontSize = 14): number | null => {
   if (typeof remValue !== 'string') return rootFontSize;
   const match = remValue.trim().match(/^([0-9.]+)rem$/);
   if (!match) return rootFontSize;
