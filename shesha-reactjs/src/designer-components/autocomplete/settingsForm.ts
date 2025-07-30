@@ -237,7 +237,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         id: nanoid(),
                                         parentId: dataTabId,
                                         hidden: {
-                                            _code: 'return !getSettingValue(data.entityType);',
+                                            _code: `return  getSettingValue(data.dataSourceType) !== 'entitiesList';`,
                                             _mode: 'code',
                                             _value: false
                                         },
@@ -429,7 +429,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 tooltip: 'Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.',
                                                 parentId: dataTabId,
                                                 modelType: {
-                                                    _code: `return getSettingValue(data.dataSourceType) === 'entitiesList' ? getSettingValue(data?.entityType) :  getSettingValue(data?.dataSourceUrl);`,
+                                                    _code: `return getSettingValue(data.dataSourceType) === 'entitiesList' ? getSettingValue(data?.entityType) : getSettingValue(data?.dataSourceUrl);`,
                                                     _mode: 'code',
                                                     _value: false
                                                 } as any,
