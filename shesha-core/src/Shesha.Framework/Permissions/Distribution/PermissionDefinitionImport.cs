@@ -110,6 +110,8 @@ namespace Shesha.DynamicEntities.Distribution
                 await _shaPermissionManager.CreatePermissionAsync(newItem);
                 await _permissionDefinitionRepo.InsertAsync(newItem);
 
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+
                 return newItem;
             }
         }
