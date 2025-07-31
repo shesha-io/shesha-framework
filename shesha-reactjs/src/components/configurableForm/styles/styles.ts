@@ -39,6 +39,7 @@ export const ShaFormStyles = createGlobalStyle`
                     flex-wrap: wrap;
 
                     &.ant-form-item {
+                        width: 100%
                         margin-bottom: unset;
                     }
                 }

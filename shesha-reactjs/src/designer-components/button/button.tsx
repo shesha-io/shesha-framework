@@ -24,9 +24,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   icon: <BorderOutlined />,
   Factory: ({ model, form }) => {
     const { style, ...restProps } = model;
-
-    console.log("BUTTON MODELs",model)
-
+    
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
       ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.borderStyles),

@@ -178,6 +178,8 @@ export const useFormComponentStyles = <TModel,>(
   const app = useSheshaApplication();
   const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
 
+  console.log("MODEL",model);
+
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
   const [backgroundStyles, setBackgroundStyles] = useState(

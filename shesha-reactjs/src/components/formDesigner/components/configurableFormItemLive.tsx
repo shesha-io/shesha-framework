@@ -6,6 +6,8 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { useStyles } from './styles';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -20,6 +22,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
+  const getToolboxComponent = useFormDesignerComponentGetter();
+  const {styles} = useStyles();
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -33,11 +37,16 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
+    const isInput = getToolboxComponent(model.type)?.isInput;
+
+  console.log("TYPE INPUT::",model.type, isInput)
+
   const formItemProps: FormItemProps = {
-    className: classNames(className),
+    className: classNames(className, styles.formItem),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
+    style: {...model.desktop?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px', width: isInput ? model.desktop?.dimensions.width : 'auto'},
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
