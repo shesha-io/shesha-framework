@@ -466,7 +466,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         <p style={{
           whiteSpace: 'normal',
           overflow: 'visible',
-          wordBreak: 'break-word',
+          wordBreak: 'keep-all',
           margin: 0,
         }}>
           {cellRef?.current?.innerText}
