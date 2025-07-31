@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Abp.Localization;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
@@ -12,6 +13,25 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
     public class PlaygroundAppService: SheshaAppServiceBase
     {
+        private readonly IRepository<TestClass, Guid> _testClassRepo;
+
+        public PlaygroundAppService(
+            IRepository<TestClass, Guid> testClassRepo
+        )
+        {
+            _testClassRepo = testClassRepo;
+        }
+
+        public async Task TestJsonWithGenericEntityReference(Guid id)
+        {
+            var test = await _testClassRepo.GetAsync(id);
+            if (test.JsonProp is TestJsonWithGenericEntityReference json)
+            {
+                var entity = json.Entity;
+                var person = (Person)json.Entity;
+            }
+        }
+
         public async Task<string> TestAuditAsync()
         {
             var repoP = IocManager.Resolve<IRepository<Person, Guid>>();
