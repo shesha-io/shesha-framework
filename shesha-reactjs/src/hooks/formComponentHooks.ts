@@ -178,8 +178,6 @@ export const useFormComponentStyles = <TModel,>(
   const app = useSheshaApplication();
   const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
 
-  console.log("MODEL",model);
-
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
   const [backgroundStyles, setBackgroundStyles] = useState(
@@ -195,7 +193,7 @@ export const useFormComponentStyles = <TModel,>(
 
   const styligBox = jsonSafeParse(stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions, stylingBox]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
