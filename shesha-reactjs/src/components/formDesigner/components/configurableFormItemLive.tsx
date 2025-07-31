@@ -23,7 +23,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const {styles} = useStyles();
+  const { styles } = useStyles();
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -37,16 +37,14 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-    const isInput = getToolboxComponent(model.type)?.isInput;
-
-  console.log("TYPE INPUT::",model.type, isInput)
+  const isInput = getToolboxComponent(model.type)?.isInput;
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
-    style: {...model.desktop?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px', width: isInput ? model.desktop?.dimensions.width : 'auto'},
+    style: { ...model.desktop?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px', width: isInput ? model.desktop?.dimensions.width : 'auto' },
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
