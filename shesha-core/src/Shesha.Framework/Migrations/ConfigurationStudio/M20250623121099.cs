@@ -64,7 +64,7 @@ BEGIN
 				from 
 					frwk.configuration_items existing
 				where 
-					existing.module_id = i.module_id
+					(existing.module_id = i.module_id or existing.module_id is null and i.module_id is null)
 					and (existing.folder_id = i.folder_id or existing.folder_id is null and i.folder_id is null)
 			) calc
 	)
