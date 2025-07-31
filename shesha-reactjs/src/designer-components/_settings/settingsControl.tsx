@@ -36,9 +36,10 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
   { name: "form", description: "Form instance", type: "object" },
   { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-  { name: "moment", description: "moment", type: "object" },
-  { name: "http", description: "axiosHttp", type: "object" },
-  { name: "message", description: "message framework", type: "object" },
+  { name: "moment", description: "moment.js library to manipulate dates and times", type: "object" },
+  { name: "http", description: "axios library http client to make http requests", type: "object" },
+  { name: "message", description: "Antd message utilities to show messages to users", type: "object" },
+  { name: "query", description: "Query string values", type: "object" },
 ];
 
 export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
