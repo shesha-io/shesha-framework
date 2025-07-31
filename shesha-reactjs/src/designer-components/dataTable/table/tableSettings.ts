@@ -135,7 +135,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                             propertyName: 'items',
                                             label: data.readOnly ? 'View Columns' : 'Customize Columns',
                                             type: 'columnsConfig',
-                                            jsSetting: true,
                                             parentId: commonTabId,
                                         },
                                         {
