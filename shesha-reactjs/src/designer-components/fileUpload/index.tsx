@@ -48,7 +48,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
 
     const finalStyle = model.disabledStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
+      ...model.listType === 'thumbnail' ? model.allStyles.dimensionsStyles : {},
     } : model.allStyles.fullStyle;
 
     // TODO: refactor and implement a generic way for values evaluation

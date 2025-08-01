@@ -28,8 +28,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${layout ? (width ?? '54px') : '100%'};
-    --thumbnail-height: ${layout ? (height ?? '54px') : '100%'};
+    --thumbnail-width: ${layout ? (width) : '100%'};
+    --thumbnail-height: ${layout ? (height) : '100%'};
     --ant-margin-xs: ${gap ?? '8px'} !important;
     --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
@@ -80,8 +80,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --font-size: ${fontSize ?? '14px'} !important;
       --ant-font-size: ${fontSize ?? '14px'} !important;
       display: flex;
-      width: ${layout ? (width ?? '54px') + ' !important' : ''};
-      height: ${layout ? (height ?? '54px') + ' !important' : ''};
+      width: ${layout ? (width) + ' !important' : ''};
+      height: ${layout ? (height) + ' !important' : ''};
 
       :before {
         top: 0;
@@ -104,8 +104,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${rest}
 
       img {
-        width: var(--thumbnail-width, 54px) !important;
-        height: var(--thumbnail-height, 54px) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
         object-fit: cover !important;
         display: flex !important;
@@ -125,7 +123,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       font-weight: ${fontWeight ?? '400'};
       text-align: ${textAlign ?? 'center'};
       padding: 0 8px !important;
-      width: ${(layout && width) ?? '54px'} !important;
+      width: ${(layout && width)} !important;
       font-size: var(--font-size, 14px) !important;
     }
 
@@ -204,8 +202,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         animation: none !important;
         transition: none !important;
       }
-      width: ${layout ? (width ?? '54px') + ' !important' : ''};
-      height: ${layout ? (height ?? '54px') + ' !important' : ''};
+      width: ${layout ? (width) + ' !important' : ''};
+      height: ${layout ? (height) + ' !important' : ''};
     }
 
     .ant-upload-list-item-action {

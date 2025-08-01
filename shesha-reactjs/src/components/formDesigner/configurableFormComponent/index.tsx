@@ -51,9 +51,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
-  const isFileorFileList = getToolboxComponent(componentModel.type)?.type === 'attachmentsEditor' || getToolboxComponent(componentModel.type)?.type === 'fileUpload';
+  const isFileList = getToolboxComponent(componentModel.type)?.type === 'attachmentsEditor';
+  const isFileUpload = getToolboxComponent(componentModel.type)?.type === 'fileUpload';
+
   const desktopConfig = componentModel?.[activeDevice] || {};
-  const originalDimensions = isFileorFileList ? desktopConfig.container?.dimensions || {} : desktopConfig.dimensions || {};
+  const originalDimensions = isFileList ? desktopConfig.container?.dimensions || {} : desktopConfig.dimensions || {};
   const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
 
   const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
@@ -116,9 +118,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         dimensions: formMode === 'designer' ? {
           ...originalDimensions,
           width: '100%',
-          height: '100%',
+          height: isFileList ? originalDimensions.height : '100%',
           boxSizing: 'border-box',
           flexShrink: 0,
+          backgroundColor: 'violet',
           flexBasis: originalDimensions.width
         } : {
           // For render mode, let the inner component fill its container
@@ -150,7 +153,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...originalDimensions,
         width: originalDimensions.width,
         height: originalDimensions.height,
-        minHeight: `calc(${originalDimensions.minHeight === 'auto' || originalDimensions.minHeight === undefined || originalDimensions.minHeight === '0px' ? originalDimensions.height : originalDimensions.minHeight} + 5px)`,
+        minHeight: isFileUpload ? '' : `calc(${originalDimensions.minHeight === 'auto' || originalDimensions.minHeight === undefined || originalDimensions.minHeight === '0px' ? originalDimensions.height : originalDimensions.minHeight} + 5px)`,
       };
     } else {
       return {
