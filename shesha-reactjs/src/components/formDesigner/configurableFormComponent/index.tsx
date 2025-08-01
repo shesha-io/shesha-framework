@@ -52,7 +52,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
   const isFileorFileList = getToolboxComponent(componentModel.type)?.type === 'attachmentsEditor' || getToolboxComponent(componentModel.type)?.type === 'fileUpload';
-  // Extract styling and dimensions from the original desktop object
   const desktopConfig = componentModel?.[activeDevice] || {};
   const originalDimensions = isFileorFileList ? desktopConfig.container?.dimensions || {} : desktopConfig.dimensions || {};
   const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
@@ -93,14 +92,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  // Create derived styles without mutating the original desktop object
   const stylingBoxAsCSS = pickStyleFromModel(originalStylingBox);
   const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
-  // Create render-specific styling that preserves the original desktop structure
   const renderStylingBox = useMemo(() => {
     if (formMode === 'designer') {
-      // In designer mode, apply only padding for proper rendering
       return JSON.stringify({
         paddingBottom: originalStylingBox.paddingBottom,
         paddingLeft: originalStylingBox.paddingLeft,
@@ -108,19 +104,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         paddingTop: originalStylingBox.paddingTop
       });
     }
-    // In other modes, use the original styling box as-is
     return desktopConfig.stylingBox || '{}';
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
-  // Create the component model for rendering that preserves the desktop structure
   const renderComponentModel = useMemo(() => {
     return {
       ...componentModel,
       [activeDevice]: {
         ...desktopConfig,
-        // Override only the styling box for rendering, keep dimensions unchanged
         stylingBox: renderStylingBox,
-        // Keep all other desktop properties intact
         dimensions: formMode === 'designer' ? {
           ...originalDimensions,
           width: '100%',
@@ -158,6 +150,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...originalDimensions,
         width: originalDimensions.width,
         height: originalDimensions.height,
+        minHeight: `calc(${originalDimensions.minHeight === 'auto' || originalDimensions.minHeight === undefined || originalDimensions.minHeight === '0px' ? originalDimensions.height : originalDimensions.minHeight} + 5px)`,
       };
     } else {
       return {
