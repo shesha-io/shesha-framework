@@ -9,9 +9,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     overflow: hidden;
     white-space: nowrap;
     display: inline-block;
-    .ant-btn >span {
-      width: unset;
-    }
+    flex-basis: fit-content;
   `);
 
 

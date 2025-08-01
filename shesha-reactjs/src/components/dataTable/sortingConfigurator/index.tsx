@@ -25,7 +25,6 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
       const resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const width = entry.contentRect.width;
-          console.log('Observed width:', width);
           setCompactMode(width < 140); 
         }
       });
