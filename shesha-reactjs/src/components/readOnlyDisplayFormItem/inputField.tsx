@@ -15,7 +15,7 @@ function InputField({ value, style, children }: IInputFieldProps) {
 
     return value || children ? (
         <div style={{ padding: '4px', ...style, height: height, display: 'flex', alignItems: 'center', justifyContent: textAlign }} >
-            <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap' }}>{value || children}</div>
+            <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap', flex:'none' }}>{value || children}</div>
         </div>
     ) : null;
 }

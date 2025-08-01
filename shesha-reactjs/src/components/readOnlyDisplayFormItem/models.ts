@@ -29,7 +29,7 @@ export interface IReadOnlyDisplayFormItemProps {
   quickviewFormPath?: FormIdentifier;
   quickviewDisplayPropertyName?: string;
   quickviewGetEntityUrl?: string;
-  quickviewWidth?: number;
+  quickviewWidth?: number | string;
   style?: React.CSSProperties;
   tagStyle?: React.CSSProperties;
   size?: SwitchSize;
