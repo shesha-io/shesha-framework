@@ -45,7 +45,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                                 onChange={(value) => {
                                     itemOnChange({ ...item, sorting: value }, undefined);
                                 }}
-                                style={{ width: '100%' }}
+                                style={{ width: '120px' }}
                                 size='small'
                                 disabled={readOnly}
                             >
