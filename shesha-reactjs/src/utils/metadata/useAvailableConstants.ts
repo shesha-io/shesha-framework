@@ -139,6 +139,7 @@ const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.fileSaver,
     SheshaConstants.form,
     SheshaConstants.formData,
+    SheshaConstants.query
 ];
 
 export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, standardConstants = ALL_STANDARD_CONSTANTS }: AvailableConstantsArgs): IObjectMetadata => {
