@@ -56,19 +56,22 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       onListItemSave: migrateFormApi.full(prev.onListItemSave)
     }))
     .add<IDataListComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-    .add<IDataListComponentProps>(9, (prev) => ({
+    .add<IDataListComponentProps>(9, (prev) => {
+      return {
       ...prev,
-      dimensions: {
+      desktop: {...prev.desktop,
+        gap: prev.cardSpacing,
+        dimensions: {
+        ...prev.desktop.dimensions,
         minWidth: prev.cardMinWidth,
         maxWidth: prev.cardMaxWidth,
         width: prev.customWidth,
         height: prev.cardHeight, 
-      }
-    }))
-    
+      }}
+    };
+})
 ,
 settingsFormMarkup: (data) => getSettings(data),
 };
 
 export default DataListComponent;
-
