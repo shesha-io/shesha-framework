@@ -167,6 +167,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .ant-form-item-control-input-content {
                 height: 100% !important;
             }
+            
+            .thumbnail-stub {
+                width: auto !important;
+                height: auto !important;
+            }
         }
         
         // .ant-input,

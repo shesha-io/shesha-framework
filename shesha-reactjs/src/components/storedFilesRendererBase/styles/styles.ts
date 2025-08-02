@@ -34,7 +34,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-lg: ${borderRadius ?? '8px'} !important;
-    --container-width: ${containerWidth};
+    --container-width: 100% !important;
     --container-max-width: ${containerMaxWidth};
     --container-min-width: ${containerMinWidth};
     --container-min-height: ${containerMinHeight};
@@ -102,6 +102,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       box-shadow: ${boxShadow};
       border-radius: ${borderRadius ?? '8px'} !important;
       ${rest}
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
 
       img {
         border-radius: ${borderRadius ?? '8px'} !important;

@@ -27,7 +27,6 @@ import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useShaFormInstance } from '@/providers';
-import { isFile } from '@/components/codeEditor/client-side/fileTree/utils';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -56,8 +55,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const isFileUpload = getToolboxComponent(componentModel.type)?.type === 'fileUpload';
 
   const desktopConfig = componentModel?.[activeDevice] || {};
-  console.log("DTCA",desktopConfig, activeDevice)
-  const originalDimensions = isFileList ? desktopConfig.dimensions || {} : desktopConfig?.dimensions || {};
+  const originalDimensions = desktopConfig?.dimensions || {};
   const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
 
   const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
@@ -113,7 +111,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
 
   const renderComponentModel = useMemo(() => {
-    const dynamicFileStyle = isFileList ? originalDimensions : {}
+    const dynamicFileStyle = isFileList ? originalDimensions : {};
     return {
       ...componentModel,
       [activeDevice]: {
@@ -122,17 +120,16 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         dimensions: formMode === 'designer' ? {
           ...dynamicFileStyle,
           ...desktopConfig.dimensions,
-          width: isFileList ? desktopConfig.dimensions.width : '100%',
-          height:  isFileList ? desktopConfig.dimensions.height :'100%',
+          width: isFileList ? desktopConfig?.dimensions?.width : '100%',
+          height:  isFileList || isFileUpload ? desktopConfig?.dimensions?.height :'100%',
           boxSizing: 'border-box',
           flexShrink: 0,
-          backgroundColor: 'violet',
-          flexBasis: desktopConfig.dimensions.width
+          flexBasis: desktopConfig?.dimensions?.width
         } : {
           // For render mode, let the inner component fill its container
           ...originalDimensions,
           width: '100%',
-          height: originalDimensions.height || '100%',
+          height: isFileUpload ? '100%' : originalDimensions.height || '100%',
           boxSizing: 'border-box'
         }
       }
@@ -156,15 +153,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       return {
         ...baseStyle,
         ...originalDimensions,
-        width: isFileList ? desktopConfig.container.dimensions.wdith : desktopConfig.dimensions.wdith,
-        height: isFileList ? desktopConfig.container.dimensions.height : desktopConfig.dimensions.height,
+        width:  isFileList ? desktopConfig.container?.dimensions?.width : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.width,
+        height:  isFileList && componentModel?.listType !== 'thumbnail' ? desktopConfig.container?.dimensions?.height : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.height,
         minHeight: isFileUpload ? '' : `calc(${originalDimensions.minHeight === 'auto' || originalDimensions.minHeight === undefined || originalDimensions.minHeight === '0px' ? originalDimensions.height : originalDimensions.minHeight} + 5px)`,
       };
     } else {
       return {
         ...baseStyle,
-        width: isFileList ? desktopConfig.container.dimensions.wdith : desktopConfig.dimensions.wdith,
-        height: isFileList ? desktopConfig.container.dimensions.height : desktopConfig.dimensions.height,
+        width: isFileList ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
+        height: isFileList ? desktopConfig.container?.dimensions?.height : desktopConfig?.dimensions?.height,
         flexShrink: 0,
         flexBasis: originalDimensions.width,
         paddingTop: 0,

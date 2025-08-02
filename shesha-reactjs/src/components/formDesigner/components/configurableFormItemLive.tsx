@@ -39,7 +39,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const isInput = getToolboxComponent(model.type)?.isInput;
-  const isFileorFileList = getToolboxComponent(model.type)?.type === 'attachmentsEditor' || getToolboxComponent(model.type)?.type === 'fileUpload';
+  const isFileList = getToolboxComponent(model.type)?.type === 'attachmentsEditor';
+  const isFileUpload = getToolboxComponent(model.type)?.type === 'fileUpload';
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
@@ -48,8 +49,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     hidden: model.hidden,
     style: {
       ...model[activeDevice]?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px',
-      width: isInput ? isFileorFileList ? model[activeDevice]?.container?.dimensions?.width : model[activeDevice]?.dimensions?.width : 'auto',
-      height: isInput ? isFileorFileList ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : 'auto'
+      width: isInput ? isFileList ? model[activeDevice]?.container?.dimensions?.width : isFileUpload && model?.listType !== 'thumbnail' ? 'auto' : model[activeDevice]?.dimensions?.width : 'auto',
+      height: isInput ? isFileList ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : 'auto',
     },
     valuePropName: valuePropName,
     initialValue: initialValue,
