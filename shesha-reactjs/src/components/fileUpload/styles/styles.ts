@@ -79,13 +79,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --ant-button-content-font-size: ${fontSize} !important;
       --ant-button-font-weight: ${fontWeight} !important;
       --ant-font-family: ${fontFamily} !important;
-      height: ${height ?? '54px'} !important;
-      width: ${width ?? '54px'} !important;
       max-height: ${maxHeight ?? 'auto'} !important;
       min-height: ${minHeight} !important;
       max-width: ${maxWidth} !important;
       min-width: ${minWidth} !important;
-      dispaly: block;
+      display: block !important;
+      height: ${model?.listType == 'thumbnail' ? height ?? '54px' : 'auto'} !important;
 
       > div {
         height: 100%;
@@ -174,6 +173,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         justify-content: center;
         border: 1px ${borderStyle} ${borderColor} !important;
         ${style}
+        height: ${height ?? '54px'} !important;
+      width: ${width ?? '54px'} !important;
       }
 
       .ant-upload-list-text {
