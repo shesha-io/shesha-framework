@@ -149,7 +149,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .${shaComponent} {
 
         .ant-form-item {
-            height: 100% !important;
+            height: 100%;
             margin-bottom: 0 !important;
             
             .ant-form-item-row {

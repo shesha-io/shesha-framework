@@ -154,7 +154,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...baseStyle,
         ...originalDimensions,
         width:  isFileList ? desktopConfig.container?.dimensions?.width : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.width,
-        height:  isFileList && componentModel?.listType !== 'thumbnail' ? desktopConfig.container?.dimensions?.height : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.height,
+        height:  isFileList ? desktopConfig.container?.dimensions?.height : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.height,
         minHeight: isFileUpload ? '' : `calc(${originalDimensions.minHeight === 'auto' || originalDimensions.minHeight === undefined || originalDimensions.minHeight === '0px' ? originalDimensions.height : originalDimensions.minHeight} + 5px)`,
       };
     } else {
