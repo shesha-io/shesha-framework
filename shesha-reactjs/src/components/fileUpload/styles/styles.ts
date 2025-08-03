@@ -84,7 +84,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       max-width: ${maxWidth} !important;
       min-width: ${minWidth} !important;
       display: block !important;
-      height: ${model?.listType == 'thumbnail' ? height ?? '54px' : 'auto'} !important;
+      height: ${model?.listType === 'thumbnail' ? height ?? '54px' : 'auto'} !important;
 
       > div {
         height: 100%;
