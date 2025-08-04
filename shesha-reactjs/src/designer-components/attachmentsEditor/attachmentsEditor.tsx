@@ -115,6 +115,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 filesLayout={model.filesLayout}
                 listType={model.listType}
                 {...model}
+                enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
               />
             </StoredFilesProvider>
