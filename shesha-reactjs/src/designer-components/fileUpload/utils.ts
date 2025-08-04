@@ -1,6 +1,6 @@
 import { IStyleType } from '@/index';
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (prev?: IStyleType): IStyleType => {
   return {
     border: {
       hideBorder: false,
@@ -43,4 +43,15 @@ export const defaultStyles = (): IStyleType => {
       spreadRadius: 0,
     },
   };
+};
+
+export const containerDefaultStyles = (): IStyleType => {
+  return  {dimensions: {
+    width: 'auto',
+    height: 'auto',
+    minHeight: '0px',
+    maxHeight: 'auto',
+    minWidth: '0px',
+    maxWidth: 'auto',
+}}
 };

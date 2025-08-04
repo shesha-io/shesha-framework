@@ -71,8 +71,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
     css`
-      --thumbnail-width: 100%;
-      --thumbnail-height: 100%;
+      --thumbnail-width: ${width ?? '100%'};
+      --thumbnail-height: ${height ?? '100%'};
       --ant-border-radius-xs: ${borderRadius} !important;
       --ant-border-radius-sm: ${borderRadius} !important;
       --ant-border-radius-lg: ${borderRadius} !important;
