@@ -129,7 +129,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
           // For render mode, let the inner component fill its container
           ...originalDimensions,
           width: '100%',
-          height: isFileUpload ? '100%' : originalDimensions.height || '100%',
+          height: '100%',
           boxSizing: 'border-box'
         }
       }
