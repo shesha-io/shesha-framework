@@ -584,11 +584,13 @@ namespace Shesha.NHibernate.Maps
                 }
                 else if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType))
                 {
-                    //TODO: Check IsDeletedColumn for Many-To-Many
+                    var isDeletedProp = bagMapper.ElementType.GetRequiredProperty(nameof(ISoftDelete.IsDeleted));
+                    var isDeletedColumnName = MappingHelper.GetColumnName(isDeletedProp);
                     map.Filter("SoftDelete", m =>
                     {
+                        if (isDeletedColumnName != isDeletedProp.Name)
+                            m.Condition(SoftDeleteFilter.GetCondition(isDeletedColumnName));
                     });
-                    // map.Where($"{SheshaDatabaseConsts.IsDeletedColumn.DoubleQuote()} = 0");
                 }
 
             };
