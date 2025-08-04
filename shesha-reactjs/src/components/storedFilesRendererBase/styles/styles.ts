@@ -93,7 +93,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-item-thumbnail {
-      background: ${backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
+      background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
       border: ${borderWidth} ${borderStyle} ${borderColor};
       border-top: ${borderTopWidth ?? borderWidth} ${borderTopStyle ?? borderStyle} ${borderTopColor ?? borderColor};
       border-right: ${borderRightWidth ?? borderWidth} ${borderRightStyle ?? borderStyle} ${borderRightColor ?? borderColor};

@@ -291,11 +291,6 @@ export const getSettings = () => {
                       label: 'Enable Style On Readonly',
                       tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                       jsSetting: true,
-                      hidden: {
-                        _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
-                        _mode: 'code',
-                        _value: false
-                      } as any,
                     })
                     .addCollapsiblePanel({
                       id: nanoid(),

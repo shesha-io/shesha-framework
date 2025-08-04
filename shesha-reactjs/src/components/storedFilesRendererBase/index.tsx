@@ -93,7 +93,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
-  enableStyleOnReadonly = true,
+  enableStyleOnReadonly = false,
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -105,18 +105,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const model = rest;
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, stylingBoxAsCSS, ...restStyles } = useFormComponentStyles({ ...model.container });
+  const { dimensionsStyles: containerDimensionsStyles, stylingBoxAsCSS, fullStyle } = useFormComponentStyles({ ...model.container });
 
   const { styles } = useStyles({
     containerStyles: !enableStyleOnReadonly && disabled ? {
       ...containerDimensionsStyles,
-      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
+      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles?.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles?.height),
       ...stylingBoxAsCSS,
     } : {
-      ...containerDimensionsStyles,
-      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
-      ...stylingBoxAsCSS,
-      ...restStyles,
+      ...fullStyle,
+      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles?.width),
+      height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles?.height),
     },
     style: !enableStyleOnReadonly && disabled ?
       { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } :
