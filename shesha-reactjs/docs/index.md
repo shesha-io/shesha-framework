@@ -15,7 +15,7 @@ The Getting Started documentation will help you in getting your environment setu
 
 ## Guides
 
-The Guides documentation has long-form, in-depth articles about Shesha technical features and capabilities to help you gete building solutions.
+The Guides documentation has long-form, in-depth articles about Shesha technical features and capabilities to help you get started building solutions.
 
 ## Reference
 
