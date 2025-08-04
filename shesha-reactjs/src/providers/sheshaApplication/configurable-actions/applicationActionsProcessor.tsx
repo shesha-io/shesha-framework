@@ -6,6 +6,8 @@ import { useApiCallAction } from './api-call';
 import { useConfigurationItemsExportAction } from './configuration-items-export';
 import { useConfigurationItemsImportAction } from './configuration-items-import';
 import { useShowMessageAction } from "./show-message";
+import { useRegisterSettingsComponents } from './settings-components';
+
 
 export const ApplicationActionsProcessor: FC<PropsWithChildren<{}>> = ({ children }) => {
   useExecuteScriptAction();
@@ -14,6 +16,7 @@ export const ApplicationActionsProcessor: FC<PropsWithChildren<{}>> = ({ childre
   useShowMessageAction();
   useConfigurationItemsExportAction();
   useConfigurationItemsImportAction();
+  useRegisterSettingsComponents();
 
   return (
     <>{children}</>

@@ -38,6 +38,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       dataFormat === StringFormats.password),
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+
+    // useEffect(()=>{
+    //   console.log("TF MODEL", model)
+    // },[model])
+
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
