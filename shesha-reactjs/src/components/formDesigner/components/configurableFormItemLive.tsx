@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
-import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
+import { getFieldNameFromExpression, getValidationRules, pickStyleFromModel } from '@/providers/form/utils';
 import classNames from 'classnames';
 import { useCanvas, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
@@ -18,7 +18,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-  const { getPublicFormApi } = useShaFormInstance();
+  const { getPublicFormApi, formMode } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
@@ -42,14 +42,24 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const isFileList = getToolboxComponent(model.type)?.type === 'attachmentsEditor';
   const isFileUpload = getToolboxComponent(model.type)?.type === 'fileUpload';
 
+  const originalStylingBox = JSON.parse(model[activeDevice]?.stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(originalStylingBox);
+  const { marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
+
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
     style: {
+      ...(formMode !== 'designer' && {
+        marginLeft,
+        marginRight,
+        marginBottom,
+        marginTop,
+      }),
       ...model[activeDevice]?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px',
-      width: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : isFileUpload && model?.listType !== 'thumbnail' ? 'auto' : model[activeDevice]?.dimensions?.width : 'auto',
+      width: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : model[activeDevice]?.dimensions?.width : 'auto',
       height: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : 'auto',
     },
     valuePropName: valuePropName,
