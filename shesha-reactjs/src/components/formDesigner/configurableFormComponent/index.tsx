@@ -154,14 +154,21 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...baseStyle,
         ...originalDimensions,
         width:  isFileList ? desktopConfig.container?.dimensions?.width : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.width,
+        maxWidth:  isFileList ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
+        minWidth:  isFileList ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
         height:  isFileList ? desktopConfig.container?.dimensions?.height : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.height,
-        minHeight: isFileUpload ? '' : `calc(${originalDimensions.minHeight === 'auto' || originalDimensions.minHeight === undefined || originalDimensions.minHeight === '0px' ? originalDimensions.height : originalDimensions.minHeight} + 5px)`,
+        minHeight:  isFileList ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
+        maxHeight:  isFileList ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
       };
     } else {
       return {
         ...baseStyle,
         width: isFileList ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
         height: isFileList ? desktopConfig.container?.dimensions?.height : desktopConfig?.dimensions?.height,
+        minHeight:  isFileList ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
+        maxHeight:  isFileList ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
+        maxWidth:  isFileList ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
+        minWidth:  isFileList ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
         flexShrink: 0,
         flexBasis: originalDimensions.width,
         paddingTop: 0,
