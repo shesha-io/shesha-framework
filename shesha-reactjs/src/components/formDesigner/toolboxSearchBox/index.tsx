@@ -2,11 +2,13 @@ import React, { FC } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { useStyles } from '../styles/styles';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
 
 export interface ISearchBoxProps {
     value: string;
     onChange: (v: string) => void;
     placeholder?: string;
+    size?: SizeType;
 }
 
 export const SearchBox: FC<ISearchBoxProps> = (props) => {
@@ -17,6 +19,7 @@ export const SearchBox: FC<ISearchBoxProps> = (props) => {
 
     return (
         <Input
+            size={props.size || 'small'}
             className={styles.shaComponentSearch}
             placeholder={props.placeholder}
             allowClear={true}

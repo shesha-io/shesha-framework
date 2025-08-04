@@ -31,7 +31,7 @@ export const getHeaderStyles = (): IStyleType => (
                 bottom: {
                     width: "2px",
                     style: "solid",
-                    color: "var(--primary-color)"
+                    color: "#d9d9d9"
                 },
                 left: {}
             },

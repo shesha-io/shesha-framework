@@ -271,6 +271,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     color: #f50;
                 }
             }
+            
+            .ant-tabs-tab, .ant-tabs-nav-operations {
+                height: 30px;
+            }
         
             .${prefixCls}-collapse-item {
                 .${prefixCls}-collapse-header {
