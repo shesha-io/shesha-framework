@@ -1,8 +1,6 @@
 # Release Notes
 💪 Enhancements
-Added property to allow custom endpoint when reordering DataTable rows
-Additional variable to the property Custom Visibility on the DataTable
-Exposed DateWrapper component
+- GenericEntityReferences support for JsonEntity
 
 🐞 Bug Fixes
-Autocomplete component breaks when using URL Data Source
+- Fixed support of custom column names in SoftDelete filter for one-to-may relations
