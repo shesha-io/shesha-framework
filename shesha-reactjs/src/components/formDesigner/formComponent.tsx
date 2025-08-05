@@ -47,17 +47,22 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       });
     }, [ originalStylingBox, desktopConfig.stylingBox]);
 
-    console.log("HERE:::", componentModel?.[activeDevice]);
-    const dimensions = componentModel.type === 'fileUpload' || componentModel.type === 'attachmentsEditor' ? 
+    
+    const dimensions = getToolboxComponent(componentModel.type).isInput || componentModel.type === 'button' ? 
+    componentModel.type === 'fileUpload' || componentModel.type === 'attachmentsEditor' ? 
     {container: {
-      dimensions: {width: '100%',height: '100%'}
-    }} : {dimensions: {
+      dimensions: {
+        width: '100%',
+        height: '100%'
+      }
+    }} : {
+      dimensions: {
       width: '100%',
       height: '100%'
-    }}
+    }} : {};
     
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, ...dimensions }
+    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, componentModel, ...dimensions }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

@@ -4,7 +4,10 @@ export const useStyles = createStyles(({ css, cx }) => {
 
     const formItem = cx(css`
         
-        .ant-row, .ant-col {
+        .ant-row {
+            display: flex !important;
+        }
+        .ant-row .ant-form-item-control {
             width: 100% !important;
             height: 100% !important;
 
