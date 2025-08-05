@@ -194,286 +194,205 @@ export const getSettings = (data: any) => {
                   { label: 'Multiple', value: 'multiple' },
                 ],
               })
-              .addCollapsiblePanel({
+              .addSettingsInput({
                 id: nanoid(),
-                propertyName: 'addInlineData',
+                propertyName: 'canAddInline',
                 label: 'Can Add Inline',
-                labelAlign: 'right',
-                ghost: true,
-                collapsible: 'header',
-                collapsedByDefault: true,
-                content: {
-                  id: 'addInlineDataContent',
-                  components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: 'canAddInline',
-                      label: 'Can Add Inline',
-                      inputType: 'dropdown',
-                      parentId: dataTabId,
-                      jsSetting: true,
-                      dropdownOptions: [
-                        { value: 'yes', label: 'Yes' },
-                        { value: 'no', label: 'No' },
-                        { value: 'inherit', label: 'Inherit' },
-                      ],
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      parentId: dataTabId,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.canAddInline) === "no" || getSettingValue(data?.formSelectionMode) === "view";',
-                        _mode: 'code',
-                        _value: false
-                      } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          propertyName: 'createFormId',
-                          label: 'Form',
-                          type: 'formAutocomplete',
-                          labelAlign: 'right',
-                          hidden: false,
-                          jsSetting: true,
-                          validate: {
-                            required: true,
-                          },
-                        }
-                      ],
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      parentId: dataTabId,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.canAddInline) === "no" || getSettingValue(data?.formSelectionMode) !== "view";',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          propertyName: 'createFormType',
-                          label: 'Form Type',
-                          type: 'formTypeAutocomplete',
-                          jsSetting: true,
-                          width: '100%',
-                          allowClear: true,
-                        }
-                      ],
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          propertyName: 'customCreateUrl',
-                          label: 'Custom Create URL',
-                          type: 'endpointsAutocomplete',
-                          jsSetting: true,
-                        }
-                      ]
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [{
-                        id: nanoid(),
-                        type: 'codeEditor',
-                        propertyName: 'onNewListItemInitialize',
-                        label: 'New List Item Init',
-                        jsSetting: false,
-                        tooltip: 'Custom code to initialize new list items with default values or setup logic',
-                      },
-                      ],
-                      hideLabel: true,
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          propertyName: 'modalWidth',
-                          customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                          label: 'Dialog Width',
-                          parentId: dataTabId,
-                          type: 'customDropdown',
-                          allowClear: true,
-                          jsSetting: true,
-                          customDropdownMode: 'single',
-                          dropdownOptions: [
-                            {
-                              label: 'Small',
-                              value: '40%',
-                            },
-                            {
-                              label: 'Medium',
-                              value: '60%',
-                            },
-                            {
-                              label: 'Large',
-                              value: '80%',
-                            }
-                          ],
-                          width: '60%',
-                        },
-                      ],
-                      hideLabel: true,
-                    })
-                    .toJson()
-                  ]
-                }
+                inputType: 'dropdown',
+                parentId: dataTabId,
+                jsSetting: true,
+                dropdownOptions: [
+                  { value: 'yes', label: 'Yes' },
+                  { value: 'no', label: 'No' },
+                  { value: 'inherit', label: 'Inherit' },
+                ],
               })
-              .addCollapsiblePanel({
-                id: nanoid(),
-                propertyName: 'editInlineData',
-                label: 'Can Edit Inline',
-                labelAlign: 'right',
-                ghost: true,
-                collapsible: 'header',
-                collapsedByDefault: true,
-                content: {
-                  id: 'editInlineDataContent',
-                  components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: 'canEditInline',
-                      label: 'Can Edit Inline',
-                      inputType: 'dropdown',
-                      parentId: dataTabId,
-                      jsSetting: true,
-                      dropdownOptions: [
-                        { value: 'yes', label: 'Yes' },
-                        { value: 'no', label: 'No' },
-                        { value: 'inherit', label: 'Inherit' },
-                      ],
-                    })
-                    .addSettingsInputRow({
-                      parentId: dataTabId,
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          propertyName: 'inlineEditMode',
-                          label: 'Edit Mode',
-                          type: 'dropdown',
-                          dropdownOptions: [
-                            { value: 'all-at-once', label: 'All at Once' },
-                            { value: 'one-by-one', label: 'One by One' },
-                          ],
-                        },
-                        {
-                          id: nanoid(),
-                          propertyName: 'inlineSaveMode',
-                          label: 'Save Mode',
-                          type: 'dropdown',
-                          dropdownOptions: [
-                            { value: 'auto', label: 'Auto' },
-                            { value: 'manual', label: 'Manual' },
-                          ],
-                        }
-                      ]
-                    })
-                    .addSettingsInputRow({
-                      parentId: dataTabId,
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          propertyName: 'customUpdateUrl',
-                          label: 'Custom Update URL',
-                          type: 'endpointsAutocomplete',
-                          parentId: dataTabId,
-                          jsSetting: true,
-                        }
-                      ]
-                    })
-                    .toJson()
-                  ]
-                }
-              })
-              .addCollapsiblePanel({
+              .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                propertyName: 'deleteInlineData',
-                label: 'Can Delete Inline',
-                labelAlign: 'right',
-                ghost: true,
-                collapsible: 'header',
-                collapsedByDefault: true,
-                content: {
+                hidden: {
+                  _code: 'return getSettingValue(data?.canAddInline) === "no" || getSettingValue(data?.formSelectionMode) === "view";',
+                  _mode: 'code',
+                  _value: false
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'createFormId',
+                    label: 'Form',
+                    type: 'formAutocomplete',
+                    labelAlign: 'right',
+                    hidden: false,
+                    jsSetting: true,
+                    validate: {
+                      required: true,
+                    },
+                  }
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: dataTabId,
+                hidden: {
+                  _code: 'return getSettingValue(data?.canAddInline) === "no" || getSettingValue(data?.formSelectionMode) !== "view";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'createFormType',
+                    label: 'Form Type',
+                    type: 'formTypeAutocomplete',
+                    jsSetting: true,
+                    width: '100%',
+                    allowClear: true,
+                  }
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'customCreateUrl',
+                    label: 'Custom Create URL',
+                    type: 'endpointsAutocomplete',
+                    jsSetting: true,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
+                inputs: [{
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: 'canDeleteInline',
-                      label: 'Can Delete Inline',
-                      inputType: 'dropdown',
-                      parentId: dataTabId,
-                      jsSetting: true,
-                      dropdownOptions: [
-                        { value: 'yes', label: 'Yes' },
-                        { value: 'no', label: 'No' },
-                        { value: 'inherit', label: 'Inherit' },
-                      ],
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      hidden: { _code: 'return getSettingValue(data?.canDeleteInline) === "no";', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          id: nanoid(),
-                          propertyName: 'customDeleteUrl',
-                          label: 'Custom Delete URL',
-                          type: 'endpointsAutocomplete',
-                          parentId: dataTabId,
-                          jsSetting: true,
-                        }
-                      ]
-                    }).toJson()
-                  ]
-                }
+                  type: 'codeEditor',
+                  propertyName: 'onNewListItemInitialize',
+                  label: 'New List Item Init',
+                  jsSetting: false,
+                  tooltip: 'Custom code to initialize new list items with default values or setup logic',
+                },
+                ],
+                hideLabel: true,
               })
-              .addCollapsiblePanel({
+              .addSettingsInputRow({
                 id: nanoid(),
-                parentId: dataTabId,
-                propertyName: 'createEditContent',
-                label: 'Create & Edit Methods',
-                labelAlign: 'right',
-                ghost: true,
-                collapsible: 'header',
-                collapsedByDefault: true,
-                content: {
-                  id: 'createEditContentId',
-                  components: [...new DesignerToolbarSettings()
-                    .addConfigurableActionConfigurator({
-                      id: nanoid(),
-                      propertyName: 'onListItemSaveSuccessAction',
-                      label: 'On List Item Save Action',
-                      hideLabel: true,
-                      description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
-                    })
-                    .addSettingsInputRow({
-                      id: nanoid(),
-                      inputs: [{
-                        id: nanoid(),
-                        type: 'codeEditor',
-                        propertyName: 'onListItemSave',
-                        label: 'On List Item Save',
-                        jsSetting: false,
-                        tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
+                hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'modalWidth',
+                    customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                    label: 'Dialog Width',
+                    parentId: dataTabId,
+                    type: 'customDropdown',
+                    allowClear: true,
+                    jsSetting: true,
+                    customDropdownMode: 'single',
+                    defaultValue: 'Medium',
+                    dropdownOptions: [
+                      {
+                        label: 'Small',
+                        value: '40%',
+                      },
+                      {
+                        label: 'Medium',
+                        value: '60%',
+                      },
+                      {
+                        label: 'Large',
+                        value: '80%',
                       }
-                      ],
-                      hideLabel: true,
-                    })
-                    .toJson()
-                  ]
-                }
+                    ],
+                    width: '60%',
+                  },
+                ],
+                hideLabel: true,
               })
-              .toJson()
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'canEditInline',
+                label: 'Can Edit Inline',
+                inputType: 'dropdown',
+                parentId: dataTabId,
+                jsSetting: true,
+                dropdownOptions: [
+                  { value: 'yes', label: 'Yes' },
+                  { value: 'no', label: 'No' },
+                  { value: 'inherit', label: 'Inherit' },
+                ],
+              })
+              .addSettingsInputRow({
+                parentId: dataTabId,
+                id: nanoid(),
+                hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'inlineEditMode',
+                    label: 'Edit Mode',
+                    type: 'dropdown',
+                    dropdownOptions: [
+                      { value: 'all-at-once', label: 'All at Once' },
+                      { value: 'one-by-one', label: 'One by One' },
+                    ],
+                  },
+                  {
+                    id: nanoid(),
+                    propertyName: 'inlineSaveMode',
+                    label: 'Save Mode',
+                    type: 'dropdown',
+                    dropdownOptions: [
+                      { value: 'auto', label: 'Auto' },
+                      { value: 'manual', label: 'Manual' },
+                    ],
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                parentId: dataTabId,
+                id: nanoid(),
+                hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'customUpdateUrl',
+                    label: 'Custom Update URL',
+                    type: 'endpointsAutocomplete',
+                    parentId: dataTabId,
+                    jsSetting: true,
+                  }
+                ]
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'canDeleteInline',
+                label: 'Can Delete Inline',
+                inputType: 'dropdown',
+                parentId: dataTabId,
+                jsSetting: true,
+                dropdownOptions: [
+                  { value: 'yes', label: 'Yes' },
+                  { value: 'no', label: 'No' },
+                  { value: 'inherit', label: 'Inherit' },
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                hidden: { _code: 'return getSettingValue(data?.canDeleteInline) === "no";', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'customDeleteUrl',
+                    label: 'Custom Delete URL',
+                    type: 'endpointsAutocomplete',
+                    parentId: dataTabId,
+                    jsSetting: true,
+                  }
+                ]
+              }).toJson()
             ]
           },
           {
@@ -481,12 +400,32 @@ export const getSettings = (data: any) => {
             title: 'Events',
             id: eventsTabId,
             components: [...new DesignerToolbarSettings()
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [{
+                  id: nanoid(),
+                  type: 'codeEditor',
+                  propertyName: 'onListItemSave',
+                  label: 'On List Item Save',
+                  jsSetting: false,
+                  tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
+                }
+                ],
+                hideLabel: true,
+              })
               .addConfigurableActionConfigurator({
                 id: nanoid(),
                 propertyName: "dblClickActionConfiguration",
                 parentId: eventsTabId,
                 label: "On Double-Click",
                 jsSetting: false,
+              })
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: 'onListItemSaveSuccessAction',
+                label: 'On List Item Save Success',
+                hideLabel: true,
+                description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -502,8 +441,8 @@ export const getSettings = (data: any) => {
               .addConfigurableActionConfigurator({
                 id: nanoid(),
                 propertyName: 'onRowDeleteSuccessAction',
-                label: 'On Row Delete Success',
-                description: 'Custom business logic to be executed after successfull deletion of a row.',
+                label: 'On List Item Delete Success',
+                description: 'Custom business logic to be executed after successfull deletion of a list item.',
                 hideLabel: true,
               })
               .toJson()

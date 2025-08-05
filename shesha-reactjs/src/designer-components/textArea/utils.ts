@@ -29,5 +29,6 @@ export const defaultStyles = (): IStyleType => {
             minWidth: '0px',
             maxWidth: 'auto',
         },
+        overflow: true
     };
 };

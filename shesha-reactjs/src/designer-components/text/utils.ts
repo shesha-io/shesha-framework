@@ -108,11 +108,20 @@ export const defaultStyles = (textType: string): IStyleType => {
     },
     dimensions: {
       width: '100%',
-      height: '100%',
+      height: 'auto',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
       maxWidth: 'auto',
     },
   };
+};
+
+export const remToPx = (remValue: string | number, rootFontSize = 14): number | null => {
+  if (typeof remValue !== 'string') return rootFontSize;
+  const match = remValue.trim().match(/^([0-9.]+)rem$/);
+  if (!match) return rootFontSize;
+  const rem = parseFloat(match[1]);
+  if (isNaN(rem)) return rootFontSize;
+  return rem * rootFontSize;
 };

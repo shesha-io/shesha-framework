@@ -23,8 +23,6 @@ import { INote } from '@/providers/notes/contexts';
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string;
-  ownerIdExpression: string;
-  ownerTypeExpression: string;
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
@@ -70,11 +68,16 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    const handleDeleteAction = (noteId: string) => {
+    const handleDeleteAction = (note: INote) => {
       if (!model.onDeleteAction) return;
 
       executeScript<void>(model.onDeleteAction, {
-        noteId,
+        note: {
+          ...note,
+          creationTime: note.creationTime || null,
+          priority: note.priority || null,
+          parentId: note.parentId || null,
+        },
         data,
         form: getFormApi(form),
         globalState,

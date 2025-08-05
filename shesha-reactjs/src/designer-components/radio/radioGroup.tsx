@@ -10,7 +10,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
   const { data: refListItems } = useReferenceList(referenceListId);
 
   //#region Data source is url
-    const { refetch, data } = useGet({ path: model.dataSourceUrl, lazy: true });
+  const { refetch, data } = useGet({ path: model.dataSourceUrl, lazy: true });
 
   useEffect(() => {
     if (model.dataSourceType === 'url' && model.dataSourceUrl) {
@@ -64,7 +64,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
   );
 
   if (model.readOnly) {
-    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} />;
+    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} style={model.style} />;
   }
 
   return renderCheckGroup();

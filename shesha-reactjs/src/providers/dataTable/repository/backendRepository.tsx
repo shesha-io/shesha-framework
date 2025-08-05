@@ -287,8 +287,9 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     };
 
     const reorder = (payload: RowsReorderPayload) => {
-        const reorderEndpoint = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
-        const reorderUrl = `${backendUrl}${reorderEndpoint}`;
+        let reorderUrl = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
+        if (payload.customReorderEndpoint?.trim().length > 0)
+            reorderUrl = payload.customReorderEndpoint;
 
         const oldRows = payload.getOld();
         const newRows = payload.getNew();
@@ -308,26 +309,25 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         payload.applyOrder(newRows);
 
         return axios({
-            url: reorderUrl,
+            url: `${backendUrl}${reorderUrl}`,
             method: 'PUT',
             data: reorderPayload,
             headers: httpHeaders,
         })
-            .then(response => {
-                const dataResponse = response.data as IResult<EntityReorderResponse>;
-                if (dataResponse) {
-                    const responseItems = dataResponse.result.items;
-                    const orderedRows = newRows.map(row => {
-                        const newOrder = responseItems[row['id']];
-                        return newOrder
-                            ? { ...row, [payload.propertyName]: newOrder }
-                            : row;
-                    });
-                    // real update
-                    payload.applyOrder(orderedRows);
-                }
-                return;
-            });
+        .then(response => {
+            const dataResponse = response.data as IResult<EntityReorderResponse>;
+            if (dataResponse) {
+                const responseItems = dataResponse.result.items;
+                const orderedRows = newRows.map(row => {
+                    const newOrder = responseItems[row['id']];
+                    return newOrder
+                        ? { ...row, [payload.propertyName]: newOrder }
+                        : row;
+                });
+                // real update
+                payload.applyOrder(orderedRows);
+            }
+        });
     };
 
     const supportsReordering = (args: SupportsReorderingArgs) => {

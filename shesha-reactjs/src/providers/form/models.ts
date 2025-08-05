@@ -278,6 +278,8 @@ export interface IConfigurableFormComponent
   mobile?: any;
 
   allStyles?: IFormComponentStyles;
+
+  enableStyleOnReadonly?: boolean;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

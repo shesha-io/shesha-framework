@@ -9,7 +9,7 @@ import {
 } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { buttonTypes } from '@/designer-components/button/util';
-import { fontTypes, fontWeights } from '@/designer-components/_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '@/designer-components/_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -70,6 +70,7 @@ export const getSettings = (data: any) => {
                   labelAlign: 'right',
                   defaultValue: 'FilterOutlined',
                   parentId: commonTabId,
+                  jsSetting: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -82,6 +83,7 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       labelAlign: 'right',
                       type: 'switch',
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -90,6 +92,7 @@ export const getSettings = (data: any) => {
                       parentId: commonTabId,
                       label: 'Edit Mode',
                       labelAlign: 'right',
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -182,7 +185,7 @@ export const getSettings = (data: any) => {
                                       _value: false,
                                     } as any,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {

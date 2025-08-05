@@ -36,7 +36,8 @@
   },
   "overrides": {
     "eslint": "^9.14.0",
-    "rc-resize-observer": "1.4.0"
+    "rc-resize-observer": "1.4.0",
+    "stylus": "0.0.1-security"
   },
   "resolutions": {
     "jodit-react": "4.1.2",

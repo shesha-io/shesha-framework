@@ -27,6 +27,7 @@ interface IProps {
   readonly formItemProps?: FormItemProps;
   readonly formItemConfirmProps?: FormItemProps;
   readonly style?: React.CSSProperties;
+  readonly repeatPropertyName?: string;
 }
 
 const FormItem = Form.Item;
@@ -46,7 +47,8 @@ const PasswordInputCombo: FC<IProps> = ({
   formProps,
   formItemProps,
   formItemConfirmProps,
-  style
+  style,
+  repeatPropertyName
 }) => {
   useEffect(() => isPasswordOk(isSamePassword(newPassword, repeatPassword, passwordLength)), [
     newPassword,
@@ -78,6 +80,7 @@ const PasswordInputCombo: FC<IProps> = ({
       >
         <FormItem
           {...(formItemConfirmProps || formItemProps)}
+          name={repeatPropertyName || formItemProps.name}
           {...confirmPasswordValidations(newPassword, repeatPassword, errorMessage)}
         >
           <Password

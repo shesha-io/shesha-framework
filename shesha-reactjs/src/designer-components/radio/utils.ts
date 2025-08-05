@@ -27,6 +27,7 @@ export interface IRadioProps {
   reducerFunc?: string; // The function that receives data from the API and returns it in the format { value, label }
   readOnly?: boolean;
   defaultValue?: any;
+  enableStyleOnReadonly?: boolean;
 }
 
 export const getDataSourceList = (

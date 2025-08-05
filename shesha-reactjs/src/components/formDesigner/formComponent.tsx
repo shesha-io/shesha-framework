@@ -8,7 +8,6 @@ import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -28,9 +27,6 @@ export const formComponentActualModelPropertyFilter = (component: IToolboxCompon
 };
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
-
-  useShaFormDataUpdate();
-
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const { isComponentFiltered } = useForm();

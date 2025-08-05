@@ -1,12 +1,37 @@
 import { IAnchoredDirection, IStoredFilter } from '@/providers/dataTable/interfaces';
 import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
-import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
+import { IArgumentEvaluationResult, convertJsonLogicNode, convertJsonLogicNodeSync } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { Cell } from 'react-table';
 import { IPersistedFormProps } from '@/providers';
 import { CSSProperties } from 'react';
+import { ISidebarGroup } from '@/interfaces/sidebar';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { IPropertyMetadata, NestedProperties } from '@/interfaces/metadata';
 
 export type NumberOrString = number | string;
+
+export const getDynamicPath = (formId: IReferenceListIdentifier) =>
+  `/dynamic/${formId?.module}/${formId?.name}`;
+
+export const getSelectedKeys = (path: string, menuItems: ISidebarGroup[]) => {
+  const keys = menuItems.find((item) =>
+    [
+      item?.actionConfiguration?.actionArguments?.url,
+      getDynamicPath(item?.actionConfiguration?.actionArguments?.formId),
+    ].includes(path)
+  );
+  return keys ? [keys?.id] : [];
+};
+
+export const filterObjFromKeys = <T = any>(value: T, keys: Array<keyof T>) =>
+  keys.length > 0
+    ? Object.entries(value || {})
+        .filter(([key]) => keys.includes(key as any))
+        .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {})
+    : value;
+
+
 /**
  * Returns the parameter value, from the url, by name
  *
@@ -169,6 +194,16 @@ export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: str
   return fn.apply(null, argList);
 };
 
+export const executeFunction = (expression: string, args: { [key: string]: any }) => {
+  try {
+    return expression
+      ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
+      : null;
+  } catch {
+    return null;
+  }
+};
+
 export const evaluateDynamicFilters = async (
   filters: IStoredFilter[],
   mappings: IMatchData[],
@@ -238,20 +273,125 @@ export const evaluateDynamicFilters = async (
   return convertedFilters;
 };
 
+// Synchronous version of evaluateDynamicFilters
+export const evaluateDynamicFiltersSync = (
+  filters: IStoredFilter[],
+  mappings: IMatchData[],
+  propertyMetadata: NestedProperties
+): IStoredFilter[] => {
+  if (filters?.length === 0 || !mappings?.length) return filters;
+
+  const convertedFilters = filters.map((filter) => {
+    // Handle string expressions by parsing them to objects
+    if (typeof filter.expression === 'string') {
+      try {
+        const parsed = JSON.parse(filter.expression);
+        // Validate the parsed expression has expected structure
+        if (typeof parsed !== 'object' || parsed === null) {
+          throw new Error('Parsed expression must be an object');
+        }
+        filter.expression = parsed;
+      } catch (error) {
+        console.error(`Failed to parse filter expression for filter ${filter.id || 'unknown'}:`, error);
+        // Mark filter as having an invalid expression
+        return { ...filter, hasInvalidExpression: true, expressionError: error.message };
+      }
+    }
+    // correct way of processing JsonLogic rules
+    if (typeof filter.expression === 'object') {
+      const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
+        const argValue: any = args[argIndex];
+        
+        // Handle mustache expressions in string values
+        if (typeof argValue === 'string' && argValue.includes('{{') && argValue.includes('}}')) {
+          const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+          const evaluatedValue = executeExpression<any>(argValue, evaluationContext, false, (err) => {
+            console.error('Failed to evaluate mustache expression:', err);
+            return null;
+          });
+
+          return { handled: evaluatedValue !== null, value: evaluatedValue };
+        }
+
+        // special handling for specifications
+        // TODO: move `is_satisfied` operator name to constant
+        if (operator === 'is_satisfied' && argIndex === 1) {
+          // second argument is an expression that should be converted to boolean
+          if (typeof argValue === 'string') {
+            const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+            const evaluatedValue = executeExpression<boolean>(argValue, evaluationContext, false, (err) => {
+              console.error('Failed to convert value', err);
+              return null;
+            });
+
+            return { handled: evaluatedValue !== null, value: Boolean(evaluatedValue) };
+          }
+        }
+
+        // Handle JavaScript expressions - use stricter pattern matching
+        const functionPattern = /^\s*(function\s*\(|\(.*?\)\s*=>|[a-zA-Z_$][a-zA-Z0-9_$]*\s*=>)/;
+        if (typeof argValue === 'string' && functionPattern.test(argValue)) {
+          const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+          const evaluatedValue = executeFunction(argValue, evaluationContext);
+
+          return { handled: evaluatedValue !== null, value: evaluatedValue };
+        }
+
+        // Handle simple variable references (var operator)
+        if (typeof argValue === 'string' && argValue.startsWith('{{') && argValue.endsWith('}}')) {
+          const variableName = argValue.slice(2, -2).trim();
+          const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
+          
+          // Try to resolve the variable from the context
+          const variableValue = variableName.split('.').reduce((obj, key) => obj?.[key], evaluationContext);
+          
+          return { handled: variableValue !== undefined, value: variableValue };
+        }
+
+        return { handled: false };
+      };
+
+      const evaluationData = {
+        hasDynamicExpression: false,
+        allFieldsEvaluatedSuccessfully: true,
+        unevaluatedExpressions: [],
+      };
+
+      const getVariableDataType = (variable: string): string => {
+        return propertyMetadata
+          ? (propertyMetadata as IPropertyMetadata[]).find((m) => m.label === variable)?.dataType
+          : 'string';
+      };
+
+      const convertedExpression = convertJsonLogicNodeSync(filter.expression, {
+        argumentEvaluator: evaluator,
+        mappings,
+        getVariableDataType,
+        onEvaluated: (args) => {
+          evaluationData.hasDynamicExpression = true;
+          evaluationData.allFieldsEvaluatedSuccessfully =
+            evaluationData.allFieldsEvaluatedSuccessfully && args.success;
+          if (args.unevaluatedExpressions && args.unevaluatedExpressions.length)
+            evaluationData.unevaluatedExpressions.push(...args.unevaluatedExpressions);
+        },
+      });
+      return {
+        ...filter,
+        ...evaluationData,
+        expression: convertedExpression,
+      } as IStoredFilter;
+    }
+
+    return filter;
+  });
+
+  return convertedFilters;
+};
+
 export const getUrlKeyParam = (url: string = ''): '?' | '&' => (url?.includes('?') ? '&' : '?');
 
 export const removeEmptyArrayValues = (list: any[]) =>
   Array.isArray(list) && list.length ? list.filter((item) => !!item) : [];
-
-export const executeFunction = (expression: string, args: { [key: string]: any }) => {
-  try {
-    return expression
-      ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
-      : null;
-  } catch {
-    return null;
-  }
-};
 
 export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: IPersistedFormProps[]) =>
   configs.some(({ name: n, module: m }) => props?.module === m && props?.name === n);

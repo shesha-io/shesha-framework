@@ -46,6 +46,11 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
@@ -58,12 +63,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={{ ...model.allStyles.fullStyle, overflow: 'hidden' }}
+            style={finalStyle}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
-            tagStyle={{ ...tagStyle, justifyContent: tagStyle?.textAlign }}
+            tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
             onChange={onChangeInternal}
           />;
         }}

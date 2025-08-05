@@ -15,11 +15,10 @@ const getMoment = (value: any, dateFormat: string): Moment => {
   if (value === null || value === undefined) return undefined;
   const values = [
     isMoment(value) ? value : null,
-    typeof(value) === 'number' ? moment.utc(value * 1000) : null, // time in millis
-    typeof(value) === 'string' ? moment(value as string, dateFormat) : null, 
-    typeof(value) === 'string' ? moment(value as string) : null
+    typeof (value) === 'number' ? moment.utc(value * 1000) : null, // time in millis
+    typeof (value) === 'string' ? moment(value as string) : null,
+    typeof (value) === 'string' ? moment(value as string, dateFormat) : null,
   ];
-
   const parsed = values.find((i) => isMoment(i) && i.isValid());
 
   return parsed;
@@ -55,7 +54,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   allowClear = false,
   ...rest
 }) => {
-  const { styles } = useStyles();
+  const { styles } = useStyles({ fullStyles: style });
 
   const evaluatedValue = getMoment(value, format);
 
@@ -69,19 +68,19 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     minuteStep: 1 <= minuteStepLocal && minuteStepLocal <= 59 ? minuteStepLocal as TimeSteps['minuteStep'] : 1, // value should be in range 1..59
     secondStep: 1 <= secondStepLocal && secondStepLocal <= 59 ? secondStepLocal as TimeSteps['secondStep'] : 1, // value should be in range 1..59
   };
-   
+
   const getRangePickerValues = (value: string | [string, string]) =>
-      Array.isArray(value) && value?.length === 2 ? value?.map((v) => getMoment(v, format)) : [null, null];
+    Array.isArray(value) && value?.length === 2 ? value?.map((v) => getMoment(v, format)) : [null, null];
 
   const handleTimePickerChange = (newValue: Moment, timeString: string) => {
-    if (onChange){
+    if (onChange) {
       const seconds = getTotalSeconds(newValue);
       (onChange as TimePickerChangeEvent)(seconds, timeString);
     }
   };
-  
+
   const handleRangePicker = (values: Moment[], timeString: [string, string]) => {
-    if (onChange){
+    if (onChange) {
       const seconds = values?.map(value => getTotalSeconds(value));
 
       (onChange as RangePickerChangeEvent)(seconds, timeString);
@@ -89,13 +88,13 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   };
 
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} />;
+    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} style={style} />;
   }
 
   if (range) {
     return (
       <TimeRangePicker
-        variant={hideBorder ? 'borderless' : undefined }
+        variant={hideBorder ? 'borderless' : undefined}
         onChange={handleRangePicker}
         format={format}
         value={getRangePickerValues(value || defaultValue) as RangeValue}
@@ -106,17 +105,17 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
         allowClear={allowClear}
         {...rest}
         placeholder={[placeholder, placeholder]}
-     
+
       />
     );
   }
 
   return (
     <TimePicker
-      variant={hideBorder ? 'borderless' : undefined }
+      variant={hideBorder ? 'borderless' : undefined}
       onChange={handleTimePickerChange}
       format={format}
-      value={evaluatedValue|| (defaultValue && moment(defaultValue))}
+      value={evaluatedValue || (defaultValue && moment(defaultValue))}
       {...steps}
       style={style}
       className={styles.shaTimepicker}

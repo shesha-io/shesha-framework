@@ -13,6 +13,13 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
             .${iconPrefixCls} {
                 margin-right: ${sheshaStyles.paddingLG}px;
             }
+
+            .ant-btn {
+                background: transparent;
+                &:hover {
+                    background: transparent;
+                }
+            }
         }
     `);
     const shaIconPickerSearch = "sha-icon-picker-search";

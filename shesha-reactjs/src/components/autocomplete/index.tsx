@@ -16,8 +16,7 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
-  const { allowClear = true } = props;
-  const { style = {} } = props;
+  const { allowClear = true, style = {} } = props;
 
   const { styles } = useStyles({ style });
 
@@ -243,11 +242,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         _displayName: displayValueFunc(selected.current[0], allData),
         _className: selected.current[0]?._className
       };
+
     return (
       <ReadOnlyDisplayFormItem
         value={readonlyValue}
         type={props.mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
         disabled={props.readOnly}
+        style={style}
         quickviewEnabled={props.quickviewEnabled}
         quickviewFormPath={props.quickviewFormPath}
         quickviewDisplayPropertyName={props.quickviewDisplayPropertyName || props.displayPropName}

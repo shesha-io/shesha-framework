@@ -2,7 +2,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { DEFAULT_CONTENT_TYPE } from './utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
 
@@ -327,55 +327,6 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: styleRouterId,
-                        inputs: [
-                          {
-                            type: 'dropdown',
-                            id: nanoid(),
-                            propertyName: 'contentType',
-                            label: 'Type',
-                            hideLabel: false,
-                            width: 50,
-                            defaultValue: DEFAULT_CONTENT_TYPE,
-                            dropdownOptions: [
-                              {
-                                label: 'Default',
-                                value: '',
-                              },
-                              {
-                                label: 'Primary',
-                                value: 'primary',
-                              },
-                              {
-                                label: 'Secondary',
-                                value: 'secondary',
-                              },
-                              {
-                                label: 'Success',
-                                value: 'success',
-                              },
-                              {
-                                label: 'Warning',
-                                value: 'warning',
-                              },
-                              {
-                                label: 'Info',
-                                value: 'info',
-                              },
-                              {
-                                label: 'Error',
-                                value: 'danger',
-                              },
-                              {
-                                label: 'Custom color',
-                                value: 'custom',
-                              },
-                            ],
-                          },
-                        ],
-                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -457,21 +408,8 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
-                                  },
-                                  {
-                                    type: 'colorPicker',
-                                    id: nanoid(),
-                                    label: 'Color',
-                                    hideLabel: true,
-                                    propertyName: 'font.color',
-                                    hidden: {
-                                      _code:
-                                        'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.contentType) !== "custom";',
-                                      _mode: 'code',
-                                      _value: false,
-                                    } as any,
                                   },
                                   {
                                     type: 'dropdown',
@@ -480,7 +418,74 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.align',
                                     hideLabel: true,
                                     width: 60,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
+                                  }
+                                ],
+                              })
+                               .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [
+                                  {
+                                    type: 'dropdown',
+                                    id: nanoid(),
+                                    propertyName: 'contentType',
+                                    label: 'Type',
+                                    hideLabel: false,
+                                    defaultValue: DEFAULT_CONTENT_TYPE,
+                                    dropdownOptions: [
+                                      {
+                                        label: 'Default',
+                                        value: '',
+                                      },
+                                      {
+                                        label: 'Primary',
+                                        value: 'primary',
+                                      },
+                                      {
+                                        label: 'Secondary',
+                                        value: 'secondary',
+                                      },
+                                      {
+                                        label: 'Success',
+                                        value: 'success',
+                                      },
+                                      {
+                                        label: 'Warning',
+                                        value: 'warning',
+                                      },
+                                      {
+                                        label: 'Info',
+                                        value: 'info',
+                                      },
+                                      {
+                                        label: 'Error',
+                                        value: 'danger',
+                                      },
+                                      {
+                                        label: 'Custom color',
+                                        value: 'custom',
+                                      },
+                                    ],
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                inputs: [
+                                  {
+                                    type: 'colorPicker',
+                                    id: nanoid(),
+                                    label: 'Custom Color',
+                                    propertyName: 'font.color',
+                                    jsSetting: true,
+                                    hidden: {
+                                      _code:
+                                        'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.contentType) !== "custom";',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
                                   },
                                 ],
                               })

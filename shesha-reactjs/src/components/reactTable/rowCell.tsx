@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useRef, useCallback } from 'react';
+import React, { FC, ReactNode, useRef, useCallback, useEffect } from 'react';
 import { Cell, CellPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
 import { useStyles } from './styles/styles';
 import { isStyledColumn } from '../dataTable/interfaces';
@@ -12,7 +12,7 @@ const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'l
   {
     style: {
       justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       display: 'flex',
     },
   },
@@ -55,19 +55,70 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     cellStyle = { ...cellStyle, background: anchoredCellStyle?.backgroundColor };
   }
 
-  const checkOverflow = useCallback(() => {
-    if (cellRef.current) {
-      return  (typeof cell.value === 'string' || typeof cell.value === 'object') && cellRef.current.scrollWidth > cellRef.current.clientWidth;
-    }
-    return false;
+ const findOverflowElement = (root: HTMLElement | null): HTMLElement | null => {
+  if (!root) return null;
+  if (
+    root.childNodes.length === 1 &&
+    root.childNodes[0].nodeType === Node.TEXT_NODE
+  ) {
+    return root;
+  }
+
+  const richText = root.querySelector<HTMLElement>('.acss-o0dn82');
+  if (richText) return richText;
+
+  let node: HTMLElement = root;
+  while (
+    node.children &&
+    node.children.length === 1 &&
+    node.children[0] instanceof HTMLElement
+  ) {
+    node = node.children[0] as HTMLElement;
+  }
+  return node || root;
+};
+
+
+ const checkOverflow = useCallback((): boolean => {
+    if (!cellRef.current) return false;
+    const overflowEl = findOverflowElement(cellRef.current);
+    if (!overflowEl) return false;
+    return overflowEl.scrollWidth > overflowEl.clientWidth;
   }, []);
+
+  //antd's css-in-js classes force a css flex property, which prevents ellipsis from working.
+  //this overrides the flex and puts it back when we no longer need inline-block
+   useEffect(() => {
+    const overflowEl = findOverflowElement(cellRef.current);
+    if (!cellRef.current) return;
+      if(!showExpandedView){
+      overflowEl.classList.remove("ellipsis");
+      overflowEl.style.textOverflow = "initial";
+      overflowEl.style.setProperty('display', 'flex', 'important');
+      overflowEl.style.cursor = 'auto';
+      return;
+    }
+    if (overflowEl && showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data') {
+      if (checkOverflow()) {
+        overflowEl.style.maxWidth = cellRef.current.width + 'px';
+        overflowEl.style.setProperty('overflow', 'hidden', 'important');
+        overflowEl.style.setProperty('text-overflow', 'ellipsis', 'important');
+        overflowEl.style.setProperty('white-space', 'nowrap', 'important');
+        overflowEl.style.setProperty('max-width', cellRef.current.width + 'px', 'important');
+        overflowEl.style.setProperty('display', 'inline-block', 'important');
+        overflowEl.style.cursor = 'pointer';
+      } else {
+        overflowEl.classList.remove("ellipsis");
+      }
+    }
+  }, [checkOverflow, showExpandedView]);
 
   return (
     <div
       key={key}
       ref={cellParentRef}
       {...restProps}
-      style={style ?? cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight, cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : undefined}
+      style={style ?? cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight, cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignItems: 'flex-start' } : undefined}
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,

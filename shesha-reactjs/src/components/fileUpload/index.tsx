@@ -230,7 +230,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     <Button
       icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
       type="link"
-      style={{ display: !showUploadButton ? 'none' : '' }}
+      disabled={!showUploadButton}
     >
       {listType === 'text' ? `(press to upload)` : null}
     </Button>
@@ -274,7 +274,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {!isUploading && <Upload {...fileProps} listType={antListType}>
-          {allowUpload && !fileInfo && uploadButton}
+          {!fileInfo && uploadButton}
         </Upload>}
       </div>
     );

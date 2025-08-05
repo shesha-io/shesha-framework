@@ -1,22 +1,16 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { Button, Flex, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
-import { IConfigurableActionConfiguration, useDynamicActionsDispatcher, useSheshaApplication } from '@/providers';
+import { IConfigurableActionConfiguration, useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import classNames from 'classnames';
 import { addPx } from '@/utils/style';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { initialValues } from './utils';
-import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
-import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { useActualContextData } from '@/hooks';
-import { jsonSafeParse } from '@/utils/object';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 const { Text } = Typography;
 
@@ -39,8 +33,6 @@ export interface IButtonGroupItemProps {
 }
 
 export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfiguration }) => {
-  const { backendUrl, httpHeaders } = useSheshaApplication();
-
   const { styles } = useStyles();
   const actualItem = useActualContextData({ ...item, actionConfiguration });
 
@@ -64,52 +56,19 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     borderRadius: addPx(borderRadius)
   };
 
-
   const prevStyles = migratePrevStyles(model, initialValues());
-  const dimensions = prevStyles?.dimensions;
-  const border = prevStyles?.border;
-  const font = prevStyles?.font;
-  const shadow = prevStyles?.shadow;
-  const background = prevStyles?.background;
-  const styling = jsonSafeParse(model.stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-  const jsStyle = useMemo(() => getStyle(model.style), [model.style]);
-  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-  const fontStyles = useMemo(() => getFontStyle(font), [font]);
-  const [backgroundStyles, setBackgroundStyles] = useState({});
-  const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-  const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-  useEffect(() => {
-    const fetchStyles = async () => {
-
-      const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-        ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-          { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-          .then((response) => {
-            return response.blob();
-          })
-          .then((blob) => {
-            return URL.createObjectURL(blob);
-          }) : '';
-
-      const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
-      setBackgroundStyles(style);
-    };
-
-    fetchStyles();
-  }, [background, httpHeaders, backendUrl, jsStyle]);
+  const buttonStyles = useFormComponentStyles(prevStyles);
 
   const newStyles = {
-    ...dimensionsStyles,
-    ...(['primary', 'default'].includes(item.buttonType) && borderStyles),
-    ...fontStyles,
-    ...(['dashed', 'default'].includes(item.buttonType) && backgroundStyles),
-    ...(['primary', 'default'].includes(item.buttonType) && shadowStyles),
-    ...jsStyle,
-    ...stylingBoxAsCSS,
-    justifyContent: font?.align,
+    ...buttonStyles.dimensionsStyles,
+    ...(['primary', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.borderStyles),
+    ...buttonStyles.fontStyles,
+    ...(['dashed', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.backgroundStyles),
+    ...(['primary', 'default', 'dashed', 'ghost'].includes(item.buttonType) && buttonStyles.shadowStyles),
+    ...(buttonStyles.jsStyle),
+    ...buttonStyles.stylingBoxAsCSS,
+    justifyContent: buttonStyles.fontStyles.textAlign,
   };
 
   return (
@@ -125,8 +84,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
             block={block}
-            disabled={readOnly}
-            style={{ ...newStyles }}
+            style={{ ...newStyles, ...(readOnly && { cursor: 'not-allowed' }) }}
           >
             {label}
           </Button>

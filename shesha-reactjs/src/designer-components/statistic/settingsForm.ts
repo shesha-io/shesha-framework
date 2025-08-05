@@ -2,7 +2,7 @@ import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
-import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
+import { fontTypes, fontWeightsOptions, textAlignOptions } from "../_settings/utils/font/utils";
 import { repeatOptions, positionOptions, sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
@@ -67,6 +67,16 @@ export const getSettings = (data: any) => {
                   }
                 ]
               })
+              .addSettingsInput(
+                {
+                  inputType: 'switch',
+                  id: nanoid(),
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  jsSetting: true,
+                  parentId: commonTabId,
+                }
+              )
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
@@ -210,7 +220,7 @@ export const getSettings = (data: any) => {
                                   label: 'Weight',
                                   propertyName: 'titleFont.weight',
                                   hideLabel: true,
-                                  dropdownOptions: fontWeights,
+                                  dropdownOptions: fontWeightsOptions,
                                   width: 100,
                                 },
                                 {
@@ -227,7 +237,7 @@ export const getSettings = (data: any) => {
                                   propertyName: 'titleFont.align',
                                   hideLabel: true,
                                   width: 60,
-                                  dropdownOptions: textAlign,
+                                  dropdownOptions: textAlignOptions,
                                 },
                               ],
                             })
@@ -284,7 +294,7 @@ export const getSettings = (data: any) => {
                                   label: 'Weight',
                                   propertyName: 'valueFont.weight',
                                   hideLabel: true,
-                                  dropdownOptions: fontWeights,
+                                  dropdownOptions: fontWeightsOptions,
                                   width: 100,
                                 },
                                 {
@@ -301,7 +311,7 @@ export const getSettings = (data: any) => {
                                   propertyName: 'valueFont.align',
                                   hideLabel: true,
                                   width: 60,
-                                  dropdownOptions: textAlign,
+                                  dropdownOptions: textAlignOptions,
                                 },
                               ],
                             })

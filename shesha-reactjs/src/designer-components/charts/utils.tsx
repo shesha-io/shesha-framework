@@ -25,7 +25,7 @@ export const defaultStyles = (): IStyleType => {
             borderType: 'all',
             radiusType: 'all'
         },
-        dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+        dimensions: { width: '100%', height: '400px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
     };
 };
 
@@ -108,31 +108,77 @@ export const sortItems = (items: any[], isTimeSeries: boolean, property: string)
 /**
  * Function to manage the length of the title, ie if the title is too long, we need to split it into multiple lines
  * @param title the title to manage
+ * @param lineWordLength the maximum number of words per line
+ * @param lineCount the maximum number of lines
  * @returns the managed title
  */
 export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_TITLE_LINE_LENGTH, lineCount: number = 5): string | string[] => {
-  const words = title?.split(' ') ?? [];
+  if (!title) return '';
+  
+  const words = title.split(' ');
+  const MAX_CHARS_PER_LINE = 30;
+  
+  // If there's only one word (no spaces), handle character-based splitting
+  if (words.length === 1) {
+    const singleWord = words[0];
+    // Only split if the word is longer than 10 characters
+    if (singleWord.length <= 10) {
+      return title;
+    }
+    
+    // Split the long word into chunks, ensuring no line exceeds 30 characters
+    const lines = [];
+    for (let i = 0; i < singleWord.length; i += MAX_CHARS_PER_LINE) {
+      if (lines.length >= lineCount) {
+        // Add ellipsis to the last line if we've reached the limit
+        lines[lineCount - 1] = lines[lineCount - 1] + "...";
+        break;
+      }
+      lines.push(singleWord.slice(i, i + MAX_CHARS_PER_LINE));
+    }
+    return lines;
+  }
+  
+  // Handle multiple words with character limit enforcement
   const lines = [];
   let currentLine = '';
 
-  if (words?.length < lineWordLength) {
+  // If total words are less than lineWordLength and total length is under 30 chars, return the original title
+  if (words.length <= lineWordLength && title.length <= MAX_CHARS_PER_LINE) {
     return title;
   }
 
   for (const word of words) {
-    if (currentLine?.split(' ').length < lineWordLength) {
-      currentLine += (currentLine ? ' ' : '') + word;
+    // Check if adding this word would exceed the line word limit OR character limit
+    const currentWordCount = currentLine ? currentLine.split(' ').length : 0;
+    const potentialLine = currentLine + (currentLine ? ' ' : '') + word;
+    
+    if (currentWordCount < lineWordLength && potentialLine.length <= MAX_CHARS_PER_LINE) {
+      // Add word to current line
+      currentLine = potentialLine;
     } else {
-      if (lines.length === lineCount) {
-        lines.push("...");
+      // Current line is full (by word count or character limit), start a new line
+      if (lines.length >= lineCount - 1) {
+        // We're at the last line, add ellipsis and return
+        lines.push(currentLine + "...");
         return lines;
       }
+      
       lines.push(currentLine);
-      currentLine = '';
+      currentLine = word; // Start new line with current word
     }
   }
 
-  if (currentLine) lines.push(currentLine);
+  // Add any remaining content
+  if (currentLine) {
+    if (lines.length >= lineCount) {
+      // If we've already reached the line limit, add ellipsis to the last line
+      lines[lineCount - 1] = lines[lineCount - 1] + "...";
+    } else {
+      lines.push(currentLine);
+    }
+  }
+
   return lines;
 };
 
@@ -222,6 +268,10 @@ export const stringifyValues = (data: object[]) => {
       }
       if (typeof value === 'object' && !(value instanceof Date)) {
         // Don't stringify objects, keep them as is for nested property access
+        return value;
+      }
+      // Preserve numeric values for aggregation - don't convert them to strings
+      if (typeof value === 'number') {
         return value;
       }
       if (typeof value !== 'string') {
@@ -423,7 +473,17 @@ export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string
 export const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string) => {
   const groupedData = data.reduce((acc: object, item: { [key: string]: string | number | object }) => {
     const xValue = getPropertyValue(item, xProperty); // Use getPropertyValue to support nested properties
-    const yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
+    let yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
+
+    // Convert string numbers to actual numbers for aggregation
+    if (typeof yValue === 'string') {
+      const numValue = parseFloat(yValue);
+      yValue = isNaN(numValue) ? 0 : numValue;
+    }
+    // Ensure we have a number
+    if (typeof yValue !== 'number') {
+      yValue = 0;
+    }
 
     if (!acc[xValue as unknown as string]) {
       acc[xValue as unknown as string] = [];
@@ -440,13 +500,13 @@ export const aggregateData = (data: object[], xProperty: string, yProperty: stri
         aggregatedValue = values.reduce((acc: number, val: number) => acc + val, 0);
         break;
       case 'average':
-        aggregatedValue = values.reduce((acc: number, val: number) => acc + val, 0) / values.length;
+        aggregatedValue = values.length > 0 ? values.reduce((acc: number, val: number) => acc + val, 0) / values.length : 0;
         break;
       case 'min':
-        aggregatedValue = Math.min(...values);
+        aggregatedValue = values.length > 0 ? Math.min(...values) : 0;
         break;
       case 'max':
-        aggregatedValue = Math.max(...values);
+        aggregatedValue = values.length > 0 ? Math.max(...values) : 0;
         break;
       case 'count': // Count the number of items, also used as the default case
       default:
@@ -619,6 +679,67 @@ export function getPredictableColor(input: string | number): string {
   return getPredictableColorHSL(input + '');
 }
 
+
+/**
+ * Get predictable color HSL with higher transparency for polar area charts
+ * @param value the string value to generate color for
+ * @returns HSLA color string with higher transparency
+ */
+function getPredictableColorHSLPolarArea(value: string): string {
+  // Hash the string value to get a semi-random seed without bitwise operations
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    // A non-linear function to mix character codes :)
+    hash += (value.charCodeAt(i) * (i + 1)) ** 3.5;  // Raising to 3.5 to exaggerate differences
+  }
+
+  // Use the hash to calculate the hue (0 - 360 degrees on the color wheel)
+  const hue = Math.abs(hash % 360);
+
+  // Set a fixed saturation and lightness for the color to ensure visibility
+  const saturation = 60 + (hash % 30);  // Varies between 60% and 90% for some saturation variation
+  const lightness = 57 + (hash % 20);  // Varies between 50% and 70% for lightness variation
+
+  // Set a higher alpha for more transparency (50% transparency instead of 25%)
+  const alpha = 0.5;  // 50% transparency
+
+  // Construct the HSLA color string
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
+}
+
+/**
+ * Get predictable color with higher transparency for polar area charts
+ * @param input the input to get the color for
+ * @returns a predictable color in HSL format with higher transparency
+ */
+export function getPredictableColorPolarArea(input: string | number): string {
+  if (typeof input === 'string') {
+    switch (input.toLocaleLowerCase()) {
+      case 'true':
+        return 'hsla(120, 100%, 20%, 0.4)';
+      case 'false':
+        return 'hsla(0, 100%, 20%, 0.4)';
+      case 'unknown':
+        return 'hsla(0, 0%, 50%, 0.4)';
+      case 'undefined':
+        return 'hsla(0, 0%, 20%, 0.4)';
+      case 'null':
+        return 'hsla(0, 100%, 20%, 0.4)';
+      case '':
+        return 'hsla(240, 100%, 20%, 0.4)';
+      case 'none':
+        return 'hsla(0, 0%, 75%, 0.4)';
+      case 'not disclosed':
+        return 'hsla(20, 20%, 90%, 0.4)';
+      default:
+        return getPredictableColorHSLPolarArea(input.toString());
+    }
+  }
+
+  // If the input is a number, convert it to a string and return the color
+  return getPredictableColorHSLPolarArea(input + '');
+}
+
 /**
  * Function to aggregate values based on the aggregation method
  * @param items the items to aggregate
@@ -627,19 +748,52 @@ export function getPredictableColor(input: string | number): string {
  * @returns the aggregated value
  */
 export function aggregateValues(items: object[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
-  const values: number[] = items?.map((item: { [key: string]: any }) => item[valueProperty]);
+  const values: number[] = items?.map((item: { [key: string]: any }) => {
+    const value = item[valueProperty];
+    // Convert string numbers to actual numbers, handle null/undefined/NaN
+    if (typeof value === 'string') {
+      const numValue = parseFloat(value);
+      return isNaN(numValue) ? 0 : numValue;
+    }
+    // Handle null/undefined values
+    if (value === null || value === undefined) {
+      return 0;
+    }
+    // Ensure we have a number
+    return typeof value === 'number' ? value : 0;
+  });
+  
   switch (aggregationMethod) {
     case 'sum':
-      return values.reduce((acc, val) => acc + (val || 0), 0);
+      return values.reduce((acc, val) => acc + val, 0);
     case 'count':
       return values.length;
     case 'average':
-      return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
+      return values.length > 0 ? values.reduce((acc, val) => acc + val, 0) / values.length : 0;
     case 'min':
-      return Math.min(...values);
+      return values.length > 0 ? Math.min(...values) : 0;
     case 'max':
-      return Math.max(...values);
+      return values.length > 0 ? Math.max(...values) : 0;
     default:
       return 0;
   }
+}
+
+/**
+ * Helper function to create font configuration for Chart.js
+ * @param fontConfig - The font configuration object
+ * @param defaultSize - Default font size if not specified
+ * @param defaultWeight - Default font weight if not specified
+ * @returns Chart.js font configuration object
+ */
+export function createFontConfig(
+  fontConfig?: { family?: string; size?: number; weight?: string; color?: string },
+  defaultSize: number = 12,
+  defaultWeight: string | number = '400'
+) {
+  return {
+    family: fontConfig?.family || 'Segoe UI',
+    size: fontConfig?.size || defaultSize,
+    weight: fontConfig?.weight || defaultWeight,
+  };
 }
