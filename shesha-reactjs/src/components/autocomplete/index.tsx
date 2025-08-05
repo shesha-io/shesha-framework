@@ -373,6 +373,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       allowReordering={false}
       permanentFilter={permanentFilter}
       disableRefresh={disableRefresh.current}
+      needToRegisterContext={false}
     >
       <AutocompleteInner
         {...props}
