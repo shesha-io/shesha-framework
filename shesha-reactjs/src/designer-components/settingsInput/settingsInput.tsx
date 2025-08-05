@@ -45,7 +45,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                     layout='vertical'
                     jsSetting={type === 'codeEditor' || rest.inputType === 'codeEditor' ? false : jsSetting}
                     readOnly={readOnly}>
-                    {children ?? CustomComponent ? <CustomComponent{...rest} readOnly={readOnly}/> : <InputComponent size={size ?? 'small'}
+                    {children || CustomComponent ? <CustomComponent{...rest} /> : <InputComponent size={size ?? 'small'}
                         label={label}
                         type={rest.inputType || type}
                         dropdownOptions={dropdownOptions}
