@@ -27,6 +27,7 @@ import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useShaFormInstance } from '@/providers';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -53,6 +54,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { activeDevice } = useCanvas();
   const isFileList = getToolboxComponent(componentModel.type)?.type === 'attachmentsEditor';
   const isFileUpload = getToolboxComponent(componentModel.type)?.type === 'fileUpload';
+  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(componentModel?.[activeDevice] || componentModel);
 
   const desktopConfig = componentModel?.[activeDevice] || {};
   const originalDimensions = desktopConfig?.dimensions || {};
@@ -94,7 +96,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  const stylingBoxAsCSS = pickStyleFromModel(originalStylingBox);
   const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
   const renderStylingBox = useMemo(() => {
@@ -116,7 +117,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         width: '100%',
         height:'100%',
         stylingBox: renderStylingBox,
-        flexBasis: isFileList || isFileUpload ? desktopConfig.container.dimensions.width : desktopConfig.dimensions.width
+        flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width
       }
     };
   }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);

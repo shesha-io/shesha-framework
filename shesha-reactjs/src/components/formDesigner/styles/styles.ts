@@ -146,11 +146,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             color: #aaa;
         }
 
-            .${shaComponent} {
+        .${shaComponent} {
 
-        .ant-form-item {
-            height: 100%;
-            margin-bottom: 0 !important;
+            .ant-form-item {
+                height: 100% !important;
+                width: 100% !important;
+                margin-bottom: 0 !important;
             
             .ant-form-item-row {
                 height: 100% !important;
@@ -158,14 +159,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             
             .ant-form-item-control {
                 height: 100% !important;
+                width: 100% !imporrtant;
             }
             
             .ant-form-item-control-input {
                 height: 100% !important;
+                width: 100% !important;
             }
             
             .ant-form-item-control-input-content {
                 height: 100% !important;
+                width: 100% !important;
             }
             
         }
@@ -454,8 +458,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaComponent} {
             position: relative;
-            // margin: 4px;
-            //margin-left: 10px;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
