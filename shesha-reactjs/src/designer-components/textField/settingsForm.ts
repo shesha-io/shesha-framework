@@ -77,7 +77,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: commonTabId,
                                 inputs: [
                                     {
-                                        type: 'basicComponent',
+                                        type: 'editModeSelector',
                                         id: nanoid(),
                                         propertyName: 'editMode',
                                         label: 'Edit Mode',
