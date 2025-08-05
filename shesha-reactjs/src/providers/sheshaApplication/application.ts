@@ -47,7 +47,7 @@ export interface ISheshaApplicationInstance {
   formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
   registerFormDesignerComponents: (owner: string, components: IToolboxComponentGroup[]) => void;
 
-settingsComponentGroups: ISettingsComponentGroup[];
+  settingsComponentGroups: ISettingsComponentGroup[];
   settingsComponentRegistrations: IDictionary<ISettingsComponentGroup[]>;
   registerSettingsComponents: (owner: string, components: ISettingsComponentGroup[]) => void;
 

@@ -5,20 +5,14 @@ import { ISettingsComponent, ISettingsComponentGroup } from '@/designer-componen
 
 export const useRegisterSettingsComponents = () => {
     const { registerSettingsComponents } = useSheshaApplication();
-
     useEffect(() => {
         const settingsComponents: ISettingsComponentGroup[] = [
             {
                 name: 'Enterprise Settings Components',
                 components: [
                     {
-                        componentType: 'basicComponent',
                         component: BasicComponent,
-                        readonly: false,
                         type: 'basicComponent',
-                        isInput: true,
-                        name: 'Basic Component',
-                        icon: 'SettingOutlined'
                     } as ISettingsComponent
                 ],
             },

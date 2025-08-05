@@ -13,7 +13,7 @@ const BasicComponent: React.FC<BasicComponentProps> = ({
   onChange,
   value,
   defaultValue = 0,
-  readonly = false
+  readonly,
 }) => {
   const isControlled = value !== undefined;
   
