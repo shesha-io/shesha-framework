@@ -17,6 +17,9 @@ export * from './components/formDesigner/components/utils';
 export { requestHeaders } from './utils/requestHeaders';
 export * from './providers/form/observableProxy';
 
+export * from  './hooks/formComponentHooks';
+export * from './designer-components/_settings/utils/index';
+
 export { ConfigurableComponentRenderer } from './components/configurableComponentRenderer';
 
 export { DynamicPage } from './generic-pages/dynamic';
