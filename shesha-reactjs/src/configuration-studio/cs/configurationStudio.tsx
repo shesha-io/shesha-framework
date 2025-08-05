@@ -194,14 +194,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
 
     registerDocumentDefinition = (definition: DocumentDefinition) => {
-        // eslint-disable-next-line no-console
-        console.log('LOG: register definition ✅', definition);
+        //console.log('LOG: register definition ✅', definition);
         this._documentDefinitions.set(definition.documentType, definition);
     };
 
     unregisterDocumentDefinition = (definition: DocumentDefinition) => {
-        // eslint-disable-next-line no-console
-        console.log('LOG: unregister definition 🟥', definition);
+        //console.log('LOG: unregister definition 🟥', definition);
         this._documentDefinitions.delete(definition.documentType);
     };
 

@@ -130,7 +130,6 @@ namespace Shesha.ConfigurationStudio
                 OrderIndex = orderIndex,
 
                 Name = request.Name,
-                ItemType = request.ItemType,
             });
 
             var dto = await manager.MapToDtoAsync(item);

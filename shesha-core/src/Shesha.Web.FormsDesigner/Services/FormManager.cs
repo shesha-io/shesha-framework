@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -26,8 +25,7 @@ namespace Shesha.Web.FormsDesigner.Services
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IModuleManager _moduleManager;
-        private readonly IRepository<FormConfigurationRevision, Guid> _revisionRepo;
-
+        
         public FormManager(
             IPermissionedObjectManager permissionedObjectManager,
             IModuleManager moduleManager,
@@ -36,7 +34,6 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             _permissionedObjectManager = permissionedObjectManager;
             _moduleManager = moduleManager;
-            _revisionRepo = revisionRepo;
         }
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
@@ -247,14 +244,18 @@ namespace Shesha.Web.FormsDesigner.Services
                 ExposedFromRevision = srcRevision,
                 SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
             };
-            var exposedRevision = exposedConfig.EnsureLatestRevision();
+            await Repository.InsertAsync(exposedConfig);
+
+            var exposedRevision = exposedConfig.MakeNewRevision();
 
             await MapRevisionAsync(srcRevision, exposedRevision);
             exposedRevision.VersionNo = 1;
             exposedRevision.VersionName = null;            
 
-            await Repository.InsertAsync(exposedConfig);
-            await _revisionRepo.InsertOrUpdateAsync(exposedRevision);
+            await RevisionRepository.InsertAsync(exposedRevision);
+            await Repository.UpdateAsync(exposedConfig);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             return exposedConfig;
         }
@@ -311,6 +312,8 @@ namespace Shesha.Web.FormsDesigner.Services
             form.Normalize();
 
             await RevisionRepository.InsertAsync(revision);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             return form;
         }
