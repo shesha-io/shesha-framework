@@ -47,7 +47,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       });
     }, [ originalStylingBox, desktopConfig.stylingBox]);
     
-    const dimensions = getToolboxComponent(componentModel.type).isInput || componentModel.type === 'button' ?
+    const dimensions = getToolboxComponent(componentModel.type).isInput ?
     componentModel.type === 'fileUpload' || componentModel.type === 'attachmentsEditor' ? 
     {
       container: {
@@ -66,7 +66,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     };
     
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, componentModel, ...(shaForm.formMode === 'designer' && dimensions) }
+    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, componentModel, ...dimensions }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

@@ -23,6 +23,10 @@ export const useStyles = createStyles(({ css, cx }, layout) => {
                 .ant-form-item-control-input-content {
                     height: 100%;
                     width: 100%;
+                    > div {
+                    height: 100%;
+                    width: 100%; 
+                    }
                 }
             }
         }
