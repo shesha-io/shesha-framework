@@ -19,6 +19,7 @@ export * from './providers/form/observableProxy';
 
 export * from  './hooks/formComponentHooks';
 export * from './designer-components/_settings/utils/index';
+export * from './designer-components/_common-migrations/index';
 
 export { ConfigurableComponentRenderer } from './components/configurableComponentRenderer';
 
