@@ -69,8 +69,26 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         height: prev.cardHeight, 
       }}
     };
-})
-,
+}).add<IDataListComponentProps>(10, (prev) => {
+  const gap = parseInt(prev.cardSpacing.replace('px', ''), 10);
+  return {
+    ...prev,
+    orientation: prev.orientation,
+    desktop: {
+      gap: gap ?? 0,
+      orientation: prev.orientation,
+      ...prev.desktop.dimensions,
+      dimensions: {
+        minWidth: prev.cardMinWidth ?? 'auto',
+        maxWidth: prev.cardMaxWidth ?? 'auto',
+        width: prev.customWidth ?? prev.cardMaxWidth ?? 'auto',
+        height: prev.cardHeight ?? 'auto',
+        minHeight: 'auto',
+        maxHeight: 'auto'
+      }
+    } 
+  };
+}),
 settingsFormMarkup: (data) => getSettings(data),
 };
 
