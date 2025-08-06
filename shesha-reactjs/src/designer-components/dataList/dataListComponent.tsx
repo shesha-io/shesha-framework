@@ -70,14 +70,17 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       }}
     };
 }).add<IDataListComponentProps>(10, (prev) => {
-  const gap = parseInt(prev.cardSpacing.replace('px', ''), 10);
+  const cardSpacing = prev.cardSpacing || '0px';
+  const parsedGap = parseInt(cardSpacing.replace('px', ''), 10);
+  const gap = isNaN(parsedGap) ? 0 : parsedGap;
+  
   return {
     ...prev,
     orientation: prev.orientation,
     desktop: {
-      gap: gap ?? 0,
+      ...prev.desktop,
+      gap: gap,
       orientation: prev.orientation,
-      ...prev.desktop.dimensions,
       dimensions: {
         minWidth: prev.cardMinWidth ?? 'auto',
         maxWidth: prev.cardMaxWidth ?? 'auto',
