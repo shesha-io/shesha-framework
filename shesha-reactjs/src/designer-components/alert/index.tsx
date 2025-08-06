@@ -115,7 +115,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
         type={alertType}
         description={descriptionContent}
         showIcon={showIcon}
-        style={{ ...getStyle(style, {}), padding: '8px' }} // Temporary. Make it configurable
+        style={{ ...model.allStyles.fullStyle, width: '100%', height: '100%', padding: '8px' }} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />
