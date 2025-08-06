@@ -159,7 +159,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             
             .ant-form-item-control {
                 height: 100% !important;
-                width: 100% !imporrtant;
+                width: 100% !important;
             }
             
             .ant-form-item-control-input {

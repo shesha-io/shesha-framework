@@ -45,7 +45,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       hidden,
     } = model;
 
-
     const evaluatedLabel = useMemo(() => (
       typeof label === 'string' ? evaluateString(label, data) : label
     ), [label, data]);
@@ -78,8 +77,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           extra={extra}
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           ghost={ghost}
-          bodyStyle={model.allStyles.fullStyle}
-          headerStyle={headerStyles}
+          bodyStyle={{...model.allStyles.fullStyle}}
+          headerStyle={{...headerStyles, width: '100%', height: '100%'}}
           className={className}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}

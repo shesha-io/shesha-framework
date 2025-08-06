@@ -229,7 +229,7 @@ export const useFormComponentStyles = <TModel,>(
       fontWeight: fontStyles.fontWeight || 400,
     }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles]);
 
-  const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, ...jsStyle }), [appearanceStyle, jsStyle]);
+  const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, flexBasis: dimensionsStyles.maxWidth || dimensionsStyles.width, ...jsStyle }), [appearanceStyle, jsStyle]);
 
   const allStyles: IFormComponentStyles = useMemo(() => ({
     stylingBoxAsCSS,

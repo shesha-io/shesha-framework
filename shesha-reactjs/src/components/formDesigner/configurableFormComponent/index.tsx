@@ -57,8 +57,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(componentModel?.[activeDevice] || componentModel);
 
   const desktopConfig = componentModel?.[activeDevice] || {};
-  const originalDimensions = desktopConfig?.dimensions || {};
-  const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
+  const originalDimensions = dimensionsStyles;
+  const originalStylingBox = stylingBoxAsCSS;
 
   const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
@@ -114,8 +114,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       stylingBox: renderStylingBox,
       [activeDevice]: {
         ...desktopConfig,
-        width: '100%',
-        height:'100%',
+        ...((!isFileList && !isFileUpload) && { dimensions: {
+          width: '100%',
+          height:'100%'
+        }}),
         stylingBox: renderStylingBox,
         flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width
       }
@@ -134,14 +136,14 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         marginLeft,
         marginRight,
         ...originalDimensions,
-        width:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
-        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : desktopConfig?.dimensions?.maxWidth,
-        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : desktopConfig?.dimensions?.minWidth,
-        height:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  desktopConfig?.dimensions?.height,
-        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : desktopConfig?.dimensions?.minHeight,
-        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : desktopConfig?.dimensions?.maxHeight,
+        width:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
+        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : dimensionsStyles?.maxWidth,
+        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.minWidth,
+        height:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  dimensionsStyles?.height || 'auto',
+        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : dimensionsStyles?.minHeight,
+        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : dimensionsStyles?.maxHeight,
         // flexShrink: 0,
-        flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : desktopConfig?.dimensions?.minWidth,
+        flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.maxWidth || dimensionsStyles.width,
     };
   }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
 
