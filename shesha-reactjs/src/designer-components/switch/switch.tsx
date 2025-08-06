@@ -37,12 +37,12 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
           };
 
           return model.readOnly ? (
-            <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
+            <ReadOnlyDisplayFormItem type="switch" style={ {...(model.disabledStyleOnReadonly ? {...model.allStyles.fullStyle, width: 'auto', height: 'auto'} : {})}} disabled={model.readOnly} checked={value} />
           ) : (
             <Switch 
               className="sha-switch"
               disabled={model.readOnly}
-              style={model.allStyles.fullStyle}
+              style={{...model.allStyles.fullStyle, width: 'auto', height: 'auto'}}
               size={model.size as SwitchSize}
               checked={value}
               defaultChecked={model.defaultChecked}
