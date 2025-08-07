@@ -94,8 +94,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
       if(!showExpandedView){
       return;
     }
-    if (overflowElement && showExpandedView && ((cell.column as unknown as { columnType: string }).columnType === 'data') || (cell.column as unknown as { columnType: string }).columnType === 'crud-operations') {
-
+    if (overflowElement && showExpandedView && (((cell.column as unknown as { columnType: string }).columnType === 'data') || ((cell.column as unknown as { columnType: string }).columnType === 'crud-operations'))) {
       if (checkOverflow()) {
         overflowElement.style.maxWidth = cellRef.current.width + 'px';
         overflowElement.style.setProperty('overflow', 'hidden', 'important');
