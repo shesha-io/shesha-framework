@@ -81,34 +81,31 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
 
  const checkOverflow = useCallback((): boolean => {
     if (!cellRef.current) return false;
-    const overflowEl = findOverflowElement(cellRef.current);
-    if (!overflowEl) return false;
-    return overflowEl.scrollWidth > overflowEl.clientWidth;
+    const overflowElement = findOverflowElement(cellRef.current);
+    if (!overflowElement) return false;
+    return overflowElement.scrollWidth > overflowElement.clientWidth;
   }, []);
 
   //antd's css-in-js classes force a css flex property, which prevents ellipsis from working.
   //this overrides the flex and puts it back when we no longer need inline-block
    useEffect(() => {
-    const overflowEl = findOverflowElement(cellRef.current);
+    const overflowElement = findOverflowElement(cellRef.current);
     if (!cellRef.current) return;
       if(!showExpandedView){
-      overflowEl.classList.remove("ellipsis");
-      overflowEl.style.textOverflow = "initial";
-      overflowEl.style.setProperty('display', 'flex', 'important');
-      overflowEl.style.cursor = 'auto';
       return;
     }
-    if (overflowEl && showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data') {
+    if (overflowElement && showExpandedView && ((cell.column as unknown as { columnType: string }).columnType === 'data') || (cell.column as unknown as { columnType: string }).columnType === 'crud-operations') {
+
       if (checkOverflow()) {
-        overflowEl.style.maxWidth = cellRef.current.width + 'px';
-        overflowEl.style.setProperty('overflow', 'hidden', 'important');
-        overflowEl.style.setProperty('text-overflow', 'ellipsis', 'important');
-        overflowEl.style.setProperty('white-space', 'nowrap', 'important');
-        overflowEl.style.setProperty('max-width', cellRef.current.width + 'px', 'important');
-        overflowEl.style.setProperty('display', 'inline-block', 'important');
-        overflowEl.style.cursor = 'pointer';
+        overflowElement.style.maxWidth = cellRef.current.width + 'px';
+        overflowElement.style.setProperty('overflow', 'hidden', 'important');
+        overflowElement.style.setProperty('text-overflow', 'ellipsis', 'important');
+        overflowElement.style.setProperty('white-space', 'nowrap', 'important');
+        overflowElement.style.setProperty('max-width', cellRef.current.width + 'px', 'important');
+        overflowElement.style.setProperty('display', 'inline-block', 'important');
+        overflowElement.style.cursor = 'pointer';
       } else {
-        overflowEl.classList.remove("ellipsis");
+        overflowElement.classList.remove("ellipsis");
       }
     }
   }, [checkOverflow, showExpandedView]);
