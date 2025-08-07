@@ -85,7 +85,8 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     return (
       <ParentProvider model={model}>
-        <Card
+        <div style={{ width: '100%', height: '100%'}}>
+          <Card
           className={classNames(model.className, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
           extra={extra}
@@ -96,6 +97,8 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
             dynamicComponents={model?.isDynamic ? model?.content.components : []}
           />
         </Card>
+        </div>
+        
       </ParentProvider>
     );
   },

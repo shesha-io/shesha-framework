@@ -52,8 +52,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
-  const isFileList = getToolboxComponent(componentModel.type)?.type === 'attachmentsEditor';
-  const isFileUpload = getToolboxComponent(componentModel.type)?.type === 'fileUpload';
+  
+  const component = getToolboxComponent(componentModel.type);
+  const isDataTableContext = component?.type === 'datatableContext';
+  const isFileList = component?.type === 'attachmentsEditor';
+  const isFileUpload = component?.type === 'fileUpload';
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles( {...componentModel, ...componentModel?.[activeDevice]});
 
   const desktopConfig = componentModel?.[activeDevice] || {};
@@ -137,12 +140,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         marginLeft,
         marginRight,
         ...originalDimensions,
-        width:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
-        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : dimensionsStyles?.maxWidth,
-        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.minWidth,
-        height:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  dimensionsStyles?.height || 'auto',
-        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : dimensionsStyles?.minHeight,
-        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : dimensionsStyles?.maxHeight,
+        width:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
+        maxWidth:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : dimensionsStyles?.maxWidth,
+        minWidth:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.minWidth,
+        height:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  dimensionsStyles?.height || 'auto',
+        minHeight:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : dimensionsStyles?.minHeight,
+        maxHeight:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : dimensionsStyles?.maxHeight,
         // flexShrink: 0,
         flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.maxWidth || dimensionsStyles.width,
     };
