@@ -7,54 +7,66 @@ const getDimension = (main: string | number, left: any, right: any) => {
   return `calc(${addPx(main)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
 };
 
+const getDimensionValue = (
+    additionalValue: string | number | undefined,
+    dimensionValue: string | number | undefined,
+    marginStart: any,
+    marginEnd: any
+  ): string | number | undefined => {
+    if (additionalValue !== undefined) {
+      return hasNumber(additionalValue) 
+        ? getDimension(additionalValue, marginStart, marginEnd)
+        : additionalValue;
+    }
+    if (dimensionValue !== undefined) {
+      return hasNumber(dimensionValue)
+        ? getDimension(dimensionValue, marginStart, marginEnd)
+        : dimensionValue;
+    }
+    return undefined;
+  };
 export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties): CSSProperties => {
-  const width = additionalStyles?.width ? 
-    hasNumber(additionalStyles?.width) ?
-      getDimension(additionalStyles?.width, additionalStyles?.marginLeft, additionalStyles?.marginRight) :
-       additionalStyles.width :
-        hasNumber(dimensions?.width) ?
-    getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight)
-    : dimensions?.width;
+  const width = getDimensionValue(
+      additionalStyles?.width,
+      dimensions?.width,
+      additionalStyles?.marginLeft,
+      additionalStyles?.marginRight
+    );
 
-  const height = additionalStyles?.height
-    ? hasNumber(additionalStyles?.height)
-      ? getDimension(additionalStyles?.height, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-      : additionalStyles.height
-    : hasNumber(dimensions?.height)
-      ? getDimension(dimensions.height, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-      : dimensions?.height;
+  const height = getDimensionValue(
+    additionalStyles?.height,
+    dimensions?.height,
+    additionalStyles?.marginTop,
+    additionalStyles?.marginBottom
+  );
 
-  const minWidth = additionalStyles?.minWidth
-    ? hasNumber(additionalStyles?.minWidth)
-      ? getDimension(additionalStyles?.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
-      : additionalStyles.minWidth
-    : hasNumber(dimensions?.minWidth)
-      ? getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
-      : dimensions?.minWidth;
+  const minWidth = getDimensionValue(
+    additionalStyles?.minWidth,
+    dimensions?.minWidth,
+    additionalStyles?.marginLeft,
+    additionalStyles?.marginRight
+  );
 
-  const maxWidth = additionalStyles?.maxWidth
-    ? hasNumber(additionalStyles?.maxWidth)
-      ? getDimension(additionalStyles?.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
-      : additionalStyles.maxWidth
-    : hasNumber(dimensions?.maxWidth)
-      ? getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
-      : dimensions?.maxWidth;
+  const maxWidth = getDimensionValue(
+    additionalStyles?.maxWidth,
+    dimensions?.maxWidth,
+    additionalStyles?.marginLeft,
+    additionalStyles?.marginRight
+  );
 
-  const minHeight = additionalStyles?.minHeight
-    ? hasNumber(additionalStyles?.minHeight)
-      ? getDimension(additionalStyles?.minHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-      : additionalStyles.minHeight
-    : hasNumber(dimensions?.minHeight)
-      ? getDimension(dimensions.minHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-      : dimensions?.minHeight;
+  const minHeight = getDimensionValue(
+    additionalStyles?.minHeight,
+    dimensions?.minHeight,
+    additionalStyles?.marginTop,
+    additionalStyles?.marginBottom
+  );
 
-  const maxHeight = additionalStyles?.maxHeight
-    ? hasNumber(additionalStyles?.maxHeight)
-      ? getDimension(additionalStyles?.maxHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-      : additionalStyles.maxHeight
-    : hasNumber(dimensions?.maxHeight)
-      ? getDimension(dimensions.maxHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-      : dimensions?.maxHeight;
+  const maxHeight = getDimensionValue(
+    additionalStyles?.maxHeight,
+    dimensions?.maxHeight,
+    additionalStyles?.marginTop,
+    additionalStyles?.marginBottom
+  );
 
 
   return {
