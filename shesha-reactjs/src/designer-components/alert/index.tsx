@@ -2,7 +2,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FormMode } from '@/providers';
 import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
@@ -49,7 +49,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
     formMode: allData.form.formMode,
   }),
   Factory: ({ model, calculatedModel }) => {
-    const { alertType, showIcon, closable, icon, style } = model;
+    const { alertType, showIcon, closable, icon } = model;
     let { evaluatedMessage, evaluatedDescription, formMode } = calculatedModel;
 
     if (model.hidden) return null;

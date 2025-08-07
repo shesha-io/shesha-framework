@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
-import { getFieldNameFromExpression, getValidationRules, pickStyleFromModel } from '@/providers/form/utils';
+import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
 import { useCanvas, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
@@ -27,6 +27,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const { activeDevice } = useCanvas();
   const { styles } = useStyles(form.settings.layout);
 
+  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(model?.[activeDevice] || model);
+
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
@@ -39,18 +41,18 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-    const component = getToolboxComponent(model.type);
+    const component = getToolboxComponent(model.type) as any;
   const isDataTableContext = component?.type === 'datatableContext';
   const isFileList = component?.type === 'attachmentsEditor';
   const isFileUpload = component?.type === 'fileUpload';
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(model?.[activeDevice] || model);
+  const isPasswordCombo = component?.type === 'passwordCombo';
 
   const {
     marginLeft,
     marginRight,
     marginBottom,
     marginTop,
-  } = stylingBoxAsCSS
+  } = stylingBoxAsCSS;
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem, form.settings.layout),
@@ -64,10 +66,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         marginBottom,
         marginTop,
       }),
-      ...model[activeDevice]?.dimensions,
+      ...dimensionsStyles,
       flexBasis: 'auto',
-      width: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width,
-      height: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : dimensionsStyles?.height,
+      width: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
+      height: isPasswordCombo ? '' : isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : dimensionsStyles?.height,
     },
     valuePropName: valuePropName,
     initialValue: initialValue,

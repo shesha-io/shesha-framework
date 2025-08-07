@@ -51,7 +51,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
           return <TimePickerWrapper
             {...model}
             {...customEvents}
-            style={model.allStyles.fullStyle}
+            style={{...model.allStyles.fullStyle}}
             value={value}
             onChange={onChangeInternal}
           />;

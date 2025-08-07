@@ -61,7 +61,7 @@ const PasswordInputCombo: FC<IProps> = ({
   const onConfirmPasswordChange = (e: ChangeEvent) => setRepeatPassword(getValue(e));
 
   return (
-    <PasswordComboWrapper formProps={formProps}>
+    <PasswordComboWrapper formProps={formProps} style={{width: style.width}}>
       <Popover
         placement="top"
         title="The password must contain the following conditions"
@@ -69,7 +69,7 @@ const PasswordInputCombo: FC<IProps> = ({
         trigger="focus"
       >
         <FormItem {...formItemProps} {...passwordValidations(newPassword, errorMessage, passwordLength)}>
-          <Password {...inputProps} placeholder={placeholder} value={newPassword} onChange={onPasswordChange} style={style} />
+          <Password {...inputProps} placeholder={placeholder} value={newPassword} onChange={onPasswordChange} style={{...style, width: '100%'}} />
         </FormItem>
       </Popover>
 
@@ -87,7 +87,7 @@ const PasswordInputCombo: FC<IProps> = ({
             {...inputProps}
             placeholder={confirmPlaceholder}
             value={repeatPassword}
-            style={style}
+            style={{...style, width: '100%'}}
             onChange={onConfirmPasswordChange}
           />
         </FormItem>
