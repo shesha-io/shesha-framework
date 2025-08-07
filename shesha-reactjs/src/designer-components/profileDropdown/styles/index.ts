@@ -23,6 +23,9 @@ export const useStyles = createStyles(({ css, cx }, props: IStyle) => {
       justify-content: space-between;
       flex-direction: row;
       align-items: center;
+      white-space: nowrap;
+      flex-wrap: nowrap;
+      gap: 5px;
     `
   );
 
