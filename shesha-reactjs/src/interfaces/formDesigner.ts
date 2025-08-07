@@ -195,7 +195,7 @@ export type SettingsMigrator<TSettings> = (
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components: IToolboxComponent<any>[];
+  components?: IToolboxComponent<any>[];
 }
 
 export interface IToolboxComponents {

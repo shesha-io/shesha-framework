@@ -80,6 +80,11 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={suffixStyle} />}</>,
     };
 
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
       <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
         {(value, onChange) => {
@@ -90,7 +95,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
             onChange(newValue);
           };
           return model.readOnly
-            ? <ReadOnlyDisplayFormItem disabledStyleOnReadonly={model.disabledStyleOnReadonly} type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} style={model.allStyles.fullStyle} />
+            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} style={finalStyle} />
             : <InputNumber
               type='number'
               value={value ?? model?.defaultValue}

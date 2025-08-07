@@ -40,6 +40,12 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
     eventHandlers: getAllEventHandlers(model, allData),
   }),
   Factory: ({ model, calculatedModel }) => {
+
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
@@ -51,7 +57,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
           return <TimePickerWrapper
             {...model}
             {...customEvents}
-            style={{...model.allStyles.fullStyle}}
+            style={finalStyle}
             value={value}
             onChange={onChangeInternal}
           />;

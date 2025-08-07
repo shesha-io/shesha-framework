@@ -55,7 +55,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
           return (
             <RadioGroup
               {...restProps}
-              style={model.disabledStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
+              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               value={value}
               defaultValue={model.defaultValue}
               dataSourceUrl={calculatedModel.dataSourceUrl}

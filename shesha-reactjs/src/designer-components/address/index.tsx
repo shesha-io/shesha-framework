@@ -22,11 +22,17 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
     const customEvents = getEventHandlers(model, allData);
+
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           return model.readOnly
-            ? <ReadOnlyDisplayFormItem disabledStyleOnReadonly={model.disabledStyleOnReadonly} value={value} style={model.allStyles.fullStyle} />
+            ? <ReadOnlyDisplayFormItem value={value} style={finalStyle} />
             : <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus} />;
         }}
       </ConfigurableFormItem>

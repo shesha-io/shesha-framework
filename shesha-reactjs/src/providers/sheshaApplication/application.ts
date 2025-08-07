@@ -8,6 +8,7 @@ import { createNamedContext } from '@/utils/react';
 import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 import { IAuthProviderRefProps } from '../auth';
 import { FRONT_END_APP_HEADER_NAME } from './models';
+import { ISettingsComponentGroup } from '@/designer-components/settingsInput/settingsInput';
 
 export interface IShaApplicationArgs {
   backendUrl: string;
@@ -46,6 +47,10 @@ export interface ISheshaApplicationInstance {
   formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
   registerFormDesignerComponents: (owner: string, components: IToolboxComponentGroup[]) => void;
 
+  settingsComponentGroups: ISettingsComponentGroup[];
+  settingsComponentRegistrations: IDictionary<ISettingsComponentGroup[]>;
+  registerSettingsComponents: (owner: string, components: ISettingsComponentGroup[]) => void;
+
   anyOfPermissionsGranted: (permissions: string[]) => boolean;
 
   init: () => Promise<void>;
@@ -64,6 +69,8 @@ export interface ApplicationInitializationState {
 }
 
 export class SheshaApplicationInstance implements ISheshaApplicationInstance {
+  #settingsComponentRegistrations: IDictionary<ISettingsComponentGroup[]>;
+  #settingsComponentGroups: ISettingsComponentGroup[];
   #initializationState: ApplicationInitializationState;
   #backendUrl: string;
   #httpHeaders: IHttpHeadersDictionary;
@@ -129,6 +136,9 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     this.#httpHeaders = { [FRONT_END_APP_HEADER_NAME]: this.#applicationKey };
 
     this.#rerender = forceRootUpdate;
+
+    this.#settingsComponentRegistrations = {};
+    this.#settingsComponentGroups = [];
   }
 
   #initializationActions: Record<string, InitializationAction> = {};
@@ -160,6 +170,14 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
       this.#rerender();
     }
   };
+
+  get settingsComponentGroups() {
+    return this.#settingsComponentGroups;
+  }
+  
+  get settingsComponentRegistrations() {
+    return this.#settingsComponentRegistrations;
+  }
 
   setRequestHeaders = (headers: IRequestHeaders) => {
     this.#httpHeaders = {
@@ -194,6 +212,19 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     }
     this.#formDesignerComponentRegistrations = registrations;
     this.#formDesignerComponentGroups = componentGroups;
+    this.#rerender();
+  };
+
+  registerSettingsComponents = (owner: string, components: ISettingsComponentGroup[]) => {
+    const registrations = { ...this.#settingsComponentRegistrations, [owner]: components };
+    const componentGroups: ISettingsComponentGroup[]= [];
+    for (const key in registrations) {
+      if (registrations.hasOwnProperty(key) && registrations[key]) {
+        componentGroups.push(...registrations[key]);
+      }
+    }
+    this.#settingsComponentRegistrations = registrations;
+    this.#settingsComponentGroups = componentGroups;
     this.#rerender();
   };
 }

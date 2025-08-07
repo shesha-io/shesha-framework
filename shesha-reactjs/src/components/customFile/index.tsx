@@ -29,7 +29,7 @@ export interface ICustomFileProps extends IInputStyles {
   container?: IStyleType;
   thumbnail?: IStyleType;
   primaryColor?: string;
-  disabledStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {

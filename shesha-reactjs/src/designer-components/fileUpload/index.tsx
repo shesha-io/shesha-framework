@@ -46,7 +46,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 
-    const finalStyle = model.disabledStyleOnReadonly && model.readOnly ? {
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.listType === 'thumbnail' ? model.allStyles.dimensionsStyles : {},
     } : {...model.allStyles.fullStyle};

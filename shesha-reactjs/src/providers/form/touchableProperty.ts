@@ -141,7 +141,6 @@ class PropertyTouchAccessor implements IPropertyTouched {
         const child = this._data[accessor];
         const unproxiedValue = unproxyValue(child);
 
-
         if (typeof unproxiedValue === 'function')
             return unproxiedValue;
 

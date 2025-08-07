@@ -57,7 +57,6 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
 
  const findOverflowElement = (root: HTMLElement | null): HTMLElement | null => {
   if (!root) return null;
-
   if (
     root.childNodes.length === 1 &&
     root.childNodes[0].nodeType === Node.TEXT_NODE
@@ -87,24 +86,23 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     return overflowEl.scrollWidth > overflowEl.clientWidth;
   }, []);
 
-
   //antd's css-in-js classes force a css flex property, which prevents ellipsis from working.
   //this overrides the flex and puts it back when we no longer need inline-block
    useEffect(() => {
     const overflowEl = findOverflowElement(cellRef.current);
     if (!cellRef.current) return;
-        if(!showExpandedView){
+      if(!showExpandedView){
       overflowEl.classList.remove("ellipsis");
       overflowEl.style.textOverflow = "initial";
       overflowEl.style.setProperty('display', 'flex', 'important');
       overflowEl.style.cursor = 'auto';
       return;
     }
-    if (overflowEl && showExpandedView) {
+    if (overflowEl && showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data') {
       if (checkOverflow()) {
         overflowEl.style.maxWidth = cellRef.current.width + 'px';
         overflowEl.style.setProperty('overflow', 'hidden', 'important');
-        overflowEl.style.setProperty("text-overflow", "ellipsis", "important");
+        overflowEl.style.setProperty('text-overflow', 'ellipsis', 'important');
         overflowEl.style.setProperty('white-space', 'nowrap', 'important');
         overflowEl.style.setProperty('max-width', cellRef.current.width + 'px', 'important');
         overflowEl.style.setProperty('display', 'inline-block', 'important');

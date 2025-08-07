@@ -279,7 +279,7 @@ export interface IConfigurableFormComponent
 
   allStyles?: IFormComponentStyles;
 
-  disabledStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean;
 
   listType?: 'text' | 'thumbnail';
 }

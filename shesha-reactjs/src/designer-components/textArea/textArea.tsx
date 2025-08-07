@@ -117,16 +117,18 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
             if (typeof onChange === 'function') onChange(...args);
           };
 
+          const finalStyle = !model.enableStyleOnReadonly && model.readOnly ?
+            {
+              ...model.allStyles.fontStyles,
+              ...model.allStyles.dimensionsStyles,
+              ...getOverflowStyle(true, false)
+            }
+            : { ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) };
+
           return showAsJson
             ? <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
             : model.readOnly
-              ? <ReadOnlyDisplayFormItem value={value} style={model.disabledStyleOnReadonly ?
-                {
-                  ...model.allStyles.fontStyles,
-                  ...model.allStyles.dimensionsStyles,
-                  ...getOverflowStyle(true, false)
-                }
-                : { ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) }} type='textArea' />
+              ? <ReadOnlyDisplayFormItem value={value} style={{ padding: 8, ...finalStyle }} type='textArea' />
               : <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>

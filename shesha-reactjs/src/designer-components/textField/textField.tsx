@@ -38,8 +38,14 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       dataFormat === StringFormats.password),
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
+
+    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     if (model.hidden) return null;
 
@@ -69,7 +75,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
           };
 
           return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem disabledStyleOnReadonly={model.disabledStyleOnReadonly} value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={model.allStyles.fullStyle} />
+            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={finalStyle} />
             : <InputComponentType {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>

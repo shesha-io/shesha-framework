@@ -63,7 +63,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   container?: IStyleType;
   primaryColor?: string;
   allStyles?: IFormComponentStyles;
-  disabledStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
 }
 
@@ -94,7 +94,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout = 'horizontal',
   listType,
   gap,
-  disabledStyleOnReadonly = true,
+  enableStyleOnReadonly = true,
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -115,7 +115,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
       ...containerJsStyle, ...stylingBoxAsCSS,
     },
-    style: disabledStyleOnReadonly && disabled ?
+    style: enableStyleOnReadonly && disabled ?
       { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } :
       { ...model?.allStyles?.fullStyle, ...thumbnailDimensionsStyles },
     model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
