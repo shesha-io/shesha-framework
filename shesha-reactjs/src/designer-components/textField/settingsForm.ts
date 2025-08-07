@@ -32,25 +32,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                         title: 'Common',
                         id: commonTabId,
                         components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: nanoid(),
-                                label: 'Pick Questionnaire Type',
-                                propertyName: 'questionnaireType',
-                                parentId: 'root',
-                                jsSetting: true,
-                                inputType: 'autocomplete',
-                                dataSourceType: 'url',
-                                dataSourceUrl: '/api/services/app/ReferenceList/GetItems?module=Shesha.Questionnaire.Domain&name=QuestionnaireType',
-                                useRawValues: true,
-                                valueTitle: 'item',
-                                value: 'id',
-                                valueName: 'item',
-                                displayPropName: 'item',
-                                // displayPropName: 'item',
-                                // keyPropName: 'id',
-                               
-                                // valueFormat: 'simple',
-                              })
                             .addContextPropertyAutocomplete({
                                 id: nanoid(),
                                 propertyName: 'propertyName',
