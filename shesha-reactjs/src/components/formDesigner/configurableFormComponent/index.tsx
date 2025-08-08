@@ -54,7 +54,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { activeDevice } = useCanvas();
   const isFileList = getToolboxComponent(componentModel.type)?.type === 'attachmentsEditor';
   const isFileUpload = getToolboxComponent(componentModel.type)?.type === 'fileUpload';
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles( {...componentModel, ...componentModel?.[activeDevice]});
+  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(componentModel?.[activeDevice] || componentModel);
 
   const desktopConfig = componentModel?.[activeDevice] || {};
   const originalDimensions = dimensionsStyles;
@@ -118,7 +118,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
           width: '100%',
           height:'100%'
         }}),
-
         stylingBox: renderStylingBox,
         flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width
       }

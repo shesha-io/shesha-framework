@@ -19,6 +19,7 @@ import { defaultCardStyles, defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { ConfigurableFormItem } from '@/components';
 
 type TabItem = TabsProps['items'][number];
 
@@ -99,19 +100,20 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       return tabItems;
     }, [tabs]);
 
-    console.log("Tabs Styles::", model)
     return model.hidden || !items.length ? null : (
-      <Tabs
+      <ConfigurableFormItem model={model}>
+        <Tabs
         animated={false}
         activeKey={activeKey}
         onChange={setActiveKey}
         size={size}
-        style={model.allStyles.dimensionsStyles}
         type={tabType}
         tabPosition={tabPosition}
         items={items}
         className={styles.content}
       />
+      </ConfigurableFormItem>
+      
     );
   },
   initModel: (model) => {
