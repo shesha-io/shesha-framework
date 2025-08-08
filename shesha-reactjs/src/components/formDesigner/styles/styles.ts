@@ -91,7 +91,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         formNameParent,
         //mainArea,
     } = useStyles().styles;
-    
 
     const quickEditModal = cx("sha-designer-modal", css`
         .${prefixCls}-modal {
@@ -145,36 +144,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             font-size: 14px;
             color: #aaa;
         }
-
-        .${shaComponent} {
-
-            .ant-form-item {
-                height: 100% !important;
-                width: 100% !important;
-            
-            .ant-form-item-row {
-                height: 100% !important;
-            }
-            
-            .ant-form-item-control {
-                height: 100% !important;
-                width: 100% !important;
-            }
-            
-            .ant-form-item-control-input {
-                height: 100% !important;
-                width: 100% !important;
-            }
-            
-            .ant-form-item-control-input-content {
-                height: 100% !important;
-                width: 100% !important;
-            }
-            
-        }
-    
-    }
-
         &.${shaDragging} {
             .${shaForm} {
                 .${componentDragHandle} {
@@ -183,7 +152,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${componentDragHandle} {
-
             top: 0px;
             left: 0px;
         }
@@ -344,7 +312,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 line-height: 1.5;
                 border-radius: 3px;
                 background: #fff;
-                // margin: 4px 0;
+                margin: 4px 0;
                 border: 1px solid #ddd;
         
                 .${iconPrefixCls} {
@@ -405,24 +373,22 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             
                 .${shaComponent} {
                     min-height: 30px;
-                    > div {
-                    height: 100%;
-                    width: 100%;
-                    }
                 }
             }
         }
 
         .${shaComponentGhost} {
-            border: 2px dashed ${token.colorPrimary};
+            border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
-            opacity: 0.7;      
+            opacity: 0.7;        
         }
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
         }
         .${shaComponent} {
             position: relative;
+            margin: 4px;
+            //margin-left: 10px;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;

@@ -45,7 +45,7 @@ export const defaultStyles = (prev): IStyleType => {
             spreadRadius: 0,
         },
         dimensions: {
-            width: prev.block ? '100%' : 'max-content',
+            width: prev.block ? '100%' : 'auto',
             height: '32px', minHeight: '0px',
             maxHeight: 'auto',
             minWidth: '0px',

@@ -2,13 +2,10 @@ import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useCanvas, useFormItem, useShaFormInstance } from '@/providers';
+import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
-import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { useStyles } from './styles';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -19,15 +16,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-  const { getPublicFormApi, formMode, form } = useShaFormInstance();
+  const { getPublicFormApi } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
-  const getToolboxComponent = useFormDesignerComponentGetter();
-  const { activeDevice } = useCanvas();
-  const { styles } = useStyles(form.settings.layout);
-
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(model?.[activeDevice] || model);
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -41,36 +33,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-    const component = getToolboxComponent(model.type) as any;
-  const isDataTableContext = component?.type === 'datatableContext';
-  const isFileList = component?.type === 'attachmentsEditor';
-  const isFileUpload = component?.type === 'fileUpload';
-  const isPasswordCombo = component?.type === 'passwordCombo';
-
-  const {
-    marginLeft,
-    marginRight,
-    marginBottom = 5,
-    marginTop,
-  } = stylingBoxAsCSS;
-
   const formItemProps: FormItemProps = {
-    className: classNames(className, styles.formItem, form.settings.layout),
+    className: classNames(className),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
-    style: {
-      ...(formMode !== 'designer' && {
-        marginLeft,
-        marginRight,
-        marginBottom,
-        marginTop,
-      }),
-      ...dimensionsStyles,
-      flexBasis: 'auto',
-      width: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
-      height: isPasswordCombo ? '' : isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : dimensionsStyles?.height,
-    },
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,

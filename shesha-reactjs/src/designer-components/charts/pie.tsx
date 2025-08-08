@@ -38,7 +38,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
-      ...{...dimensionsStyles, width: '100%', height: '100%'},
+      ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,

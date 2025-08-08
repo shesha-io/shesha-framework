@@ -24,12 +24,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         /* Ensure content doesn't overflow */
         > * {
-            // width: 100% !important;
+            width: 100%;
             max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            height: 100% !important;
         }
 
         /* Handle Space component for multiple items */

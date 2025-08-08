@@ -44,14 +44,3 @@ export const defaultStyles = (): IStyleType => {
     },
   };
 };
-
-export const containerDefaultStyles = (): IStyleType => {
-  return  {dimensions: {
-    width: 'auto',
-    height: 'auto',
-    minHeight: '0px',
-    maxHeight: 'auto',
-    minWidth: '0px',
-    maxWidth: 'auto',
-  }};
-};

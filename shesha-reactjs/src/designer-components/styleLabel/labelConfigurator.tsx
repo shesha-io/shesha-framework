@@ -17,7 +17,7 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
   const { styles } = useStyles();
   return (
     <>
-      <div className={!value ? styles.flexWrapper : ''} style={{width: 'max-content'}}>
+      <div className={!value ? styles.flexWrapper : ''}>
         <SettingInput
           label={`Label Align`}
           hideLabel

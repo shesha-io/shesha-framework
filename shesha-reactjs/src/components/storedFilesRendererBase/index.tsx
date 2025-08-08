@@ -91,7 +91,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowedFileTypes = [],
   downloadZip,
   allowDelete,
-  layout = 'horizontal',
+  layout,
   listType,
   gap,
   enableStyleOnReadonly = true,
@@ -107,7 +107,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
-  const { dimensionsStyles: thumbnailDimensionsStyles } = useFormComponentStyles({ ...model });
 
   const { styles } = useStyles({
     containerStyles: {
@@ -116,9 +115,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...containerJsStyle, ...stylingBoxAsCSS,
     },
     style: enableStyleOnReadonly && disabled ?
-      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } :
-      { ...model?.allStyles?.fullStyle, ...thumbnailDimensionsStyles },
-    model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } : { ...model?.allStyles?.fullStyle }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
 
@@ -263,7 +260,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       {isStub
         ? (isDragger
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
-          : disabled ? null : <div
+          : <div
             className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
           >
             {renderUploadContent()}
@@ -273,7 +270,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               </span>}
           </div>)
         : (props.disabled && fileList.length === 0
-          ? disabled ? null : <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
+          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
             {renderUploadContent()}
           </div>
           : props.disabled

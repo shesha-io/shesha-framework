@@ -41,7 +41,7 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
         ...marginStyles,
       }}
     >
-      <Statistic className={classNames(styles.shaStatistic, className)} {...{ ...rest, style: {...restStyle,  width: '100%', height: '100%'}, }} />
+      <Statistic className={classNames(styles.shaStatistic, className)} {...{ ...rest, style: restStyle }} />
     </div>
   );
 };

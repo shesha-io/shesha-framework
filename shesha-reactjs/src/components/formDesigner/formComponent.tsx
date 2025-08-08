@@ -35,51 +35,8 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const desktopConfig = componentModel?.[activeDevice] || {};
-  const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
-
-  const renderStylingBox = useMemo(() => {
-    return JSON.stringify({
-      paddingBottom: originalStylingBox.paddingBottom,
-      paddingLeft: originalStylingBox.paddingLeft,
-      paddingRight: originalStylingBox.paddingRight,
-      paddingTop: originalStylingBox.paddingTop
-    });
-  }, [originalStylingBox, desktopConfig.stylingBox]);
-
-  const getDimensions = () => {
-    const toolboxComponent = getToolboxComponent(componentModel.type);
-
-    if (!toolboxComponent.isInput) {
-      return {
-        width: '100%',
-        height: '100%'
-      };
-    }
-
-    if (componentModel.type === 'fileUpload' || componentModel.type === 'attachmentsEditor') {
-      return {
-        container: {
-          dimensions: {
-            width: '100%',
-            height: '100%'
-          }
-        }
-      };
-    }
-
-    return {
-      dimensions: {
-        width: '100%',
-        height: componentModel.type === 'passwordCombo' ? 'auto' : '100%'
-      }
-    };
-  };
-
-  const dimensions = getDimensions();
-
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, ...dimensions }
+    ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
@@ -106,7 +63,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
   const control = useMemo(() => (
-    <toolboxComponent.Factory
+    <toolboxComponent.Factory 
       componentRef={componentRef}
       form={shaForm.antdForm}
       model={actualModel}
@@ -120,8 +77,8 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     return <ComponentError errors={{
       hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type
     }} message={`Component '${actualModel.type}' not found`} type='error'
-    />;
-
+  />;
+  
   if (shaForm.formMode === 'designer') {
     const validationResult: IModelValidation = { hasErrors: false, errors: [] };
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
@@ -138,7 +95,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       validationResult.componentType = actualModel.type;
       return <ComponentError errors={validationResult} message='' type='warning' />;
     }
-  }
+  }  
 
   if (shaForm.form.settings.isSettingsForm)
     return control;
@@ -150,7 +107,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   };
 
   if (componentModel.type === 'subForm') {
-    if ((componentModel as any)?.formSelectionMode !== 'dynamic') {
+    if ((componentModel as any)?.formSelectionMode !== 'dynamic'){
       attributes['data-sha-c-form-name'] = `${(componentModel as any)?.formId?.module}/${(componentModel as any)?.formId?.name}`;
     }
     attributes['data-sha-parent-form-id'] = `${shaForm.form.id}`;
