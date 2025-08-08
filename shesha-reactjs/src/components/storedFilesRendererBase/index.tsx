@@ -91,7 +91,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowedFileTypes = [],
   downloadZip,
   allowDelete,
-  layout = 'horizontal',
+  layout,
   listType,
   gap,
   enableStyleOnReadonly = true,
