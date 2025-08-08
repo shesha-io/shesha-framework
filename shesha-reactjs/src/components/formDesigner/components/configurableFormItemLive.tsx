@@ -58,7 +58,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
         marginBottom,
         marginTop,
       }),
-      ...model[activeDevice]?.dimensions, flexBasis: 'auto',
+      ...model[activeDevice]?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px',
       width: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : model[activeDevice]?.dimensions?.width : 'auto',
       height: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : 'auto',
     },

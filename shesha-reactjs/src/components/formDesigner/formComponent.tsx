@@ -6,7 +6,7 @@ import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, pickStyleFromModel, useActualContextData, useCalculatedModel } from '@/index';
+import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IFormComponentProps {
@@ -35,29 +35,8 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const desktopConfig = componentModel?.[activeDevice] || {};
-  const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
-
-  const renderStylingBox = useMemo(() => {
-      return JSON.stringify({
-        paddingBottom: originalStylingBox.paddingBottom,
-        paddingLeft: originalStylingBox.paddingLeft,
-        paddingRight: originalStylingBox.paddingRight,
-        paddingTop: originalStylingBox.paddingTop
-      });
-    }, [ originalStylingBox, desktopConfig.stylingBox]);
-
-    console.log("HERE:::", componentModel?.[activeDevice]);
-    const dimensions = componentModel.type === 'fileUpload' || componentModel.type === 'attachmentsEditor' ? 
-    {container: {
-      dimensions: {width: '100%',height: '100%'}
-    }} : {dimensions: {
-      width: '100%',
-      height: '100%'
-    }}
-    
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, ...dimensions }
+    ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

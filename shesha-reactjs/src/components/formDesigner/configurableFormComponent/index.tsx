@@ -110,12 +110,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const renderComponentModel = useMemo(() => {
     return {
       ...componentModel,
-      stylingBox: renderStylingBox,
       [activeDevice]: {
         ...desktopConfig,
-        width: '100%',
-        height:'100%',
         stylingBox: renderStylingBox,
+        flexBasis: desktopConfig?.dimensions?.width
       }
     };
   }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);
@@ -123,14 +121,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const rootContainerStyle = useMemo(() => {
     const baseStyle = {
       boxSizing: 'border-box' as const,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
     };
 
+    if (formMode === 'designer') {
       return {
         ...baseStyle,
-        marginTop,
-        marginBottom,
-        marginLeft,
-        marginRight,
         ...originalDimensions,
         width:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
         maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : desktopConfig?.dimensions?.maxWidth,
@@ -138,9 +137,20 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         height:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  desktopConfig?.dimensions?.height,
         minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : desktopConfig?.dimensions?.minHeight,
         maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : desktopConfig?.dimensions?.maxHeight,
-        // flexShrink: 0,
-        // flexBasis: originalDimensions.width,
-    };
+      };
+    } else {
+      return {
+        ...baseStyle,
+        width: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
+        height: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height : desktopConfig?.dimensions?.height,
+        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : desktopConfig?.dimensions?.minHeight,
+        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : desktopConfig?.dimensions?.maxHeight,
+        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : desktopConfig?.dimensions?.maxWidth,
+        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : desktopConfig?.dimensions?.minWidth,
+        flexShrink: 0,
+        flexBasis: originalDimensions.width,
+      };
+    }
   }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
 
   return (
@@ -230,6 +240,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={{...componentModel, }} componentRef={componentRef} />
+    <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
   );
 };
