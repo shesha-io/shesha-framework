@@ -53,7 +53,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
   
-  const component = getToolboxComponent(componentModel.type);
+  const component = getToolboxComponent(componentModel?.type);
   const isDataTableContext = component?.type === 'datatableContext';
   const isFileList = component?.type === 'attachmentsEditor';
   const isFileUpload = component?.type === 'fileUpload';
@@ -116,12 +116,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     
     return {
       width: '100%',
-      height: isPasswordcombo ? dimensionsStyles.height : '100%'
+      height: isPasswordcombo ? dimensionsStyles?.height : '100%'
     };
   };
 
   const getDeviceFlexBasis = () => {
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
+    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.width;
     return dimensionsStyles?.width;
   };
 
@@ -142,25 +142,25 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   const getComponentWidth = () => {
     if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
+    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.width;
     return dimensionsStyles?.width || 'auto';
   };
 
   const getComponentHeight = () => {
     if (isPasswordcombo) return 'auto';
     if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.height;
+    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.height;
     return dimensionsStyles?.height;
   };
 
   const getDimensionValue = (dimensionType: 'maxWidth' | 'minWidth' | 'maxHeight' | 'minHeight') => {
     if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.[dimensionType];
+    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.[dimensionType];
     return dimensionsStyles?.[dimensionType];
   };
 
   const getFlexBasis = () => {
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
+    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.width;
     return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
   };
 
@@ -172,7 +172,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return {
       ...baseStyle,
       marginTop,
-      marginBottom,
+      marginBottom: marginBottom || 5,
       marginLeft,
       marginRight,
       ...originalDimensions,
