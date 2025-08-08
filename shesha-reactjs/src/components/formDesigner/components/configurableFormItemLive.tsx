@@ -39,10 +39,9 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-    const component = getToolboxComponent(model.type);
-  const isDataTableContext = component?.type === 'datatableContext';
-  const isFileList = component?.type === 'attachmentsEditor';
-  const isFileUpload = component?.type === 'fileUpload';
+  const isInput = getToolboxComponent(model.type)?.isInput;
+  const isFileList = getToolboxComponent(model.type)?.type === 'attachmentsEditor';
+  const isFileUpload = getToolboxComponent(model.type)?.type === 'fileUpload';
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(model?.[activeDevice] || model);
 
   const {
@@ -66,8 +65,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       }),
       ...model[activeDevice]?.dimensions,
       flexBasis: 'auto',
-      width: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width,
-      height: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : dimensionsStyles?.height,
+      width: isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width,
+      height: isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : dimensionsStyles?.height,
     },
     valuePropName: valuePropName,
     initialValue: initialValue,

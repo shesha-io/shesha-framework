@@ -1,4 +1,4 @@
-import { Col, Form, FormProps } from 'antd';
+import { Form, FormProps } from 'antd';
 import React, { FC, Fragment, PropsWithChildren } from 'react';
 
 interface IProps {
@@ -10,7 +10,7 @@ export const PasswordComboWrapper: FC<PropsWithChildren<IProps>> = ({ children, 
     return <Form {...formProps}>{children}</Form>;
   }
 
-  return <Col>{children}</Col>;
+  return <Fragment>{children}</Fragment>;
 };
 
 export default PasswordComboWrapper;
