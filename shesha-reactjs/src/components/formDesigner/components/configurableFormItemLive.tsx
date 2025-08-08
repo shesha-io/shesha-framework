@@ -8,7 +8,6 @@ import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useStyles } from './styles';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -19,13 +18,13 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-  const { getPublicFormApi, formMode, form } = useShaFormInstance();
+  const { getPublicFormApi, formMode } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { activeDevice } = useCanvas();
-  const { styles } = useStyles(form.settings.layout);
+  const { styles } = useStyles();
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -42,17 +41,13 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const isInput = getToolboxComponent(model.type)?.isInput;
   const isFileList = getToolboxComponent(model.type)?.type === 'attachmentsEditor';
   const isFileUpload = getToolboxComponent(model.type)?.type === 'fileUpload';
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(model?.[activeDevice] || model);
 
-  const {
-    marginLeft,
-    marginRight,
-    marginBottom,
-    marginTop,
-  } = stylingBoxAsCSS
+  const originalStylingBox = JSON.parse(model[activeDevice]?.stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(originalStylingBox);
+  const { marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className, styles.formItem, form.settings.layout),
+    className: classNames(className, styles.formItem),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
@@ -65,10 +60,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       }),
       ...model[activeDevice]?.dimensions,
       flexBasis: 'auto',
-      width: isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width,
-      height: isInput ? 
-      isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height :
-       dimensionsStyles?.height : '100%',
+      width: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : model[activeDevice]?.dimensions?.width :  '100%',
+      height: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : '100%',
     },
     valuePropName: valuePropName,
     initialValue: initialValue,
