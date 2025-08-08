@@ -103,86 +103,51 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
   const renderStylingBox = useMemo(() => {
-    return JSON.stringify({
-      paddingBottom: originalStylingBox.paddingBottom,
-      paddingLeft: originalStylingBox.paddingLeft,
-      paddingRight: originalStylingBox.paddingRight,
-      paddingTop: originalStylingBox.paddingTop
-    });
+      return JSON.stringify({
+        paddingBottom: originalStylingBox.paddingBottom,
+        paddingLeft: originalStylingBox.paddingLeft,
+        paddingRight: originalStylingBox.paddingRight,
+        paddingTop: originalStylingBox.paddingTop
+      });
+    
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
-  const getDeviceDimensions = () => {
-    if (isFileList || isFileUpload) return undefined;
-    
-    return {
-      width: '100%',
-      height: isPasswordcombo ? dimensionsStyles.height : '100%'
-    };
-  };
-
-  const getDeviceFlexBasis = () => {
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
-    return dimensionsStyles?.width;
-  };
-
   const renderComponentModel = useMemo(() => {
-    const deviceDimensions = getDeviceDimensions();
-    
     return {
       ...componentModel,
       stylingBox: renderStylingBox,
       [activeDevice]: {
         ...desktopConfig,
-        ...(deviceDimensions && { dimensions: deviceDimensions }),
+        ...((!isFileList && !isFileUpload) && { dimensions: {
+          width: '100%',
+          height: isPasswordcombo ? dimensionsStyles.height: '100%'
+        }}),
         stylingBox: renderStylingBox,
-        flexBasis: getDeviceFlexBasis()
+        flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width
       }
     };
   }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);
-
-  const getComponentWidth = () => {
-    if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
-    return dimensionsStyles?.width || 'auto';
-  };
-
-  const getComponentHeight = () => {
-    if (isPasswordcombo) return 'auto';
-    if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.height;
-    return dimensionsStyles?.height;
-  };
-
-  const getDimensionValue = (dimensionType: 'maxWidth' | 'minWidth' | 'maxHeight' | 'minHeight') => {
-    if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.[dimensionType];
-    return dimensionsStyles?.[dimensionType];
-  };
-
-  const getFlexBasis = () => {
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
-    return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
-  };
 
   const rootContainerStyle = useMemo(() => {
     const baseStyle = {
       boxSizing: 'border-box' as const,
     };
 
-    return {
-      ...baseStyle,
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
-      ...originalDimensions,
-      width: getComponentWidth(),
-      maxWidth: getDimensionValue('maxWidth'),
-      minWidth: getDimensionValue('minWidth'),
-      height: getComponentHeight(),
-      minHeight: getDimensionValue('minHeight'),
-      maxHeight: getDimensionValue('maxHeight'),
-      flexBasis: getFlexBasis(),
+      return {
+        ...baseStyle,
+        marginTop,
+        marginBottom,
+        marginLeft,
+        marginRight,
+        ...originalDimensions,
+        width:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
+        maxWidth:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : dimensionsStyles?.maxWidth,
+        minWidth:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.minWidth,
+        height:  isPasswordcombo ? 'auto' : isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  dimensionsStyles?.height,
+        minHeight:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : dimensionsStyles?.minHeight,
+        maxHeight:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : dimensionsStyles?.maxHeight,
+        // flexShrink: 0,
+        flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.maxWidth || dimensionsStyles.width,
     };
   }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
 
