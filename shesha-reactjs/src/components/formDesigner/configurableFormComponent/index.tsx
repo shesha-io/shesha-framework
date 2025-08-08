@@ -160,7 +160,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   };
 
   const getFlexBasis = () => {
-    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.minWidth;
+    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
     return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
   };
 
