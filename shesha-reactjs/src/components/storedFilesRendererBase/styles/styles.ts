@@ -236,7 +236,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-name-stub { 
       position: absolute;
-      top: ${height};
+      bottom: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

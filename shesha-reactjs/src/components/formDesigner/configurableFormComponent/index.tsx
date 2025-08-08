@@ -109,7 +109,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return desktopConfig.stylingBox || '{}';
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
-console.log("FileList::", isFileList, "FileUpload::", isFileUpload, "ComponentModel::", componentModel);
 
   const renderComponentModel = useMemo(() => {
     const dynamicFileStyle = isFileList ? originalDimensions : {};
@@ -121,8 +120,8 @@ console.log("FileList::", isFileList, "FileUpload::", isFileUpload, "ComponentMo
         dimensions: formMode === 'designer' ? {
           ...dynamicFileStyle,
           ...desktopConfig.dimensions,
-          width: isFileList || isFileUpload ? desktopConfig?.dimensions?.width : '50%',
-          height:  isFileList || isFileUpload ? desktopConfig?.dimensions?.height :'90%',
+          width: isFileList ? desktopConfig?.dimensions?.width : '100%',
+          height:  isFileList || isFileUpload ? desktopConfig?.dimensions?.height :'100%',
           boxSizing: 'border-box',
           flexShrink: 0,
           flexBasis: desktopConfig?.dimensions?.width
@@ -154,22 +153,22 @@ console.log("FileList::", isFileList, "FileUpload::", isFileUpload, "ComponentMo
       return {
         ...baseStyle,
         ...originalDimensions,
-        width:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.width,
-        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
-        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
-        height:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.height,
-        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
-        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
+        width:  isFileList ? desktopConfig.container?.dimensions?.width : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.width,
+        maxWidth:  isFileList ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
+        minWidth:  isFileList ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
+        height:  isFileList ? desktopConfig.container?.dimensions?.height : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.height,
+        minHeight:  isFileList ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
+        maxHeight:  isFileList ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
       };
     } else {
       return {
         ...baseStyle,
-        width: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
-        height: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height : desktopConfig?.dimensions?.height,
-        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
-        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
-        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
-        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
+        width: isFileList ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
+        height: isFileList ? desktopConfig.container?.dimensions?.height : desktopConfig?.dimensions?.height,
+        minHeight:  isFileList ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
+        maxHeight:  isFileList ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
+        maxWidth:  isFileList ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
+        minWidth:  isFileList ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
         flexShrink: 0,
         flexBasis: originalDimensions.width,
         paddingTop: 0,

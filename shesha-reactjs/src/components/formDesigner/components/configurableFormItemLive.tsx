@@ -49,8 +49,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     hidden: model.hidden,
     style: {
       ...model[activeDevice]?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px',
-      width: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : isFileUpload && model?.listType !== 'thumbnail' ? 'auto' : model[activeDevice]?.dimensions?.width : 'auto',
-      height: isInput ? isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : 'auto',
+      width: isInput ? isFileList ? model[activeDevice]?.container?.dimensions?.width : isFileUpload && model?.listType !== 'thumbnail' ? 'auto' : model[activeDevice]?.dimensions?.width : 'auto',
+      height: isInput ? isFileList ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : 'auto',
     },
     valuePropName: valuePropName,
     initialValue: initialValue,
