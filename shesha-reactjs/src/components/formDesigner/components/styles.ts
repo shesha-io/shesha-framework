@@ -2,6 +2,7 @@ import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }, layout) => {
 
+    console.log("Layout:::", layout)
     const formItem = cx(css`
         
         .ant-form-item-row {

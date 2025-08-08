@@ -66,7 +66,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     };
     
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, ...dimensions }
+    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, componentModel, ...dimensions }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

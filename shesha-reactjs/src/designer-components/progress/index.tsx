@@ -51,14 +51,16 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       steps,
       gapPosition,
       strokeWidth,
+      width,
       defaultValue,
       hidden,
-      gapDegree
+      gapDegree,
+      style
     } = model;
 
     if (hidden) return null;
 
-      const styles = model.allStyles.fullStyle;;
+      const styles = getStyle(style);
     
 
     const getEvaluatedSuccessColor = () => {
@@ -102,6 +104,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               strokeColor={getEvaluatedStrokeValue()}
               format={getEvaluatedFormat}
               percent={percent || value}
+              width={width}
               strokeWidth={strokeWidth}
               gapPosition={gapPosition}
               steps={steps}
@@ -112,7 +115,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               success={getEvaluatedSuccessColor()}
               defaultValue={defaultValue}
               gapDegree={gapDegree}
-              style={{...styles, width: '100%'}}
+              style={styles}
             />);
         }}
       </ConfigurableFormItem>

@@ -52,7 +52,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
         formItemConfirmProps={getFormItemProps(confirmModel(defaultModel), options)}
         passwordLength={minLength}
         errorMessage={message}
-        style={{...model.allStyles.fullStyle}}
+        style={model.allStyles.fullStyle}
         className={styles.passwordCombo}
         repeatPropertyName={repeatPropertyName}
       />

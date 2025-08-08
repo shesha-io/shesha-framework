@@ -173,6 +173,40 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
             
         }
+        
+        // .ant-input,
+        // .ant-input-affix-wrapper,
+        // .ant-input-number,
+        // .ant-input-number-affix-wrapper,
+        // .ant-textarea,
+        // .ant-picker,
+        // .ant-cascader,
+        // .ant-mentions,
+        // .ant-input-search {
+        //     width: 100% !important;
+        //     height: 100% !important;
+        // }
+        
+        .ant-select {
+            width: 100% !important;
+            height: 100% !important;
+            
+            .ant-select-selector {
+                height: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+            
+            .ant-select-selection-search {
+                height: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+            
+            .ant-select-selection-search-input {
+                height: 100% !important;
+            }
+        }
     
     }
 

@@ -99,6 +99,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       return tabItems;
     }, [tabs]);
 
+    console.log("Tabs Styles::", model)
     return model.hidden || !items.length ? null : (
       <Tabs
         animated={false}
