@@ -87,7 +87,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
                 ${rest};
                 width: 100%;
-                height: auto;
+                height: 100%;
                 border: ${borderMap.default};
                 box-shadow: ${boxShadow} !important;
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;

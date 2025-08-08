@@ -50,7 +50,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const {
     marginLeft,
     marginRight,
-    marginBottom = 5,
+    marginBottom,
     marginTop,
   } = stylingBoxAsCSS;
 
