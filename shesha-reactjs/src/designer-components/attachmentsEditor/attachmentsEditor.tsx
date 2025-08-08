@@ -1,4 +1,4 @@
-import { ConsoleSqlOutlined, FolderAddOutlined } from '@ant-design/icons';
+import { FolderAddOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import moment from 'moment';
 import React from 'react';
@@ -64,7 +64,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
-    console.log("MODEL", model);
     const enabled = !model.readOnly;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
