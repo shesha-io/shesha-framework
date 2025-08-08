@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { EditMode, IConfigurableFormComponent } from '@/providers';
+import { EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -26,6 +26,8 @@ import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { useShaFormInstance } from '@/providers';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -36,7 +38,8 @@ export interface IConfigurableFormComponentDesignerProps {
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
-const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({ 
+
+const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
   componentModel,
   componentRef,
   selectedComponentId,
@@ -46,11 +49,23 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   componentEditMode
 }) => {
   const { styles } = useStyles();
-
   const getToolboxComponent = useFormDesignerComponentGetter();
+  const { formMode } = useShaFormInstance();
+  const { activeDevice } = useCanvas();
+  
+  const component = getToolboxComponent(componentModel.type);
+  const isDataTableContext = component?.type === 'datatableContext';
+  const isFileList = component?.type === 'attachmentsEditor';
+  const isFileUpload = component?.type === 'fileUpload';
+  const isPasswordcombo = component?.type === 'passwordCombo';
+  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles( {...componentModel, ...componentModel?.[activeDevice]});
 
+  const desktopConfig = componentModel?.[activeDevice] || {};
+  const originalDimensions = dimensionsStyles;
+  const originalStylingBox = stylingBoxAsCSS;
+
+  const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
-
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
 
   const hiddenFx = isPropertySettings(componentModel.hidden);
@@ -60,9 +75,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
 
   const settingsEditor = useMemo(() => {
-    const renderRerquired = isSelected && settingsPanelRef.current;
+    const renderRequired = isSelected && settingsPanelRef.current;
 
-    if (!renderRerquired)
+    if (!renderRequired)
       return null;
 
     const createPortalInner = true
@@ -85,8 +100,95 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
+  const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
+
+  const renderStylingBox = useMemo(() => {
+    return JSON.stringify({
+      paddingBottom: originalStylingBox.paddingBottom,
+      paddingLeft: originalStylingBox.paddingLeft,
+      paddingRight: originalStylingBox.paddingRight,
+      paddingTop: originalStylingBox.paddingTop
+    });
+  }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
+
+  const getDeviceDimensions = () => {
+    if (isFileList || isFileUpload) return undefined;
+    
+    return {
+      width: '100%',
+      height: isPasswordcombo ? dimensionsStyles.height : '100%'
+    };
+  };
+
+  const getDeviceFlexBasis = () => {
+    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
+    return dimensionsStyles?.width;
+  };
+
+  const renderComponentModel = useMemo(() => {
+    const deviceDimensions = getDeviceDimensions();
+    
+    return {
+      ...componentModel,
+      stylingBox: renderStylingBox,
+      [activeDevice]: {
+        ...desktopConfig,
+        ...(deviceDimensions && { dimensions: deviceDimensions }),
+        stylingBox: renderStylingBox,
+        flexBasis: getDeviceFlexBasis()
+      }
+    };
+  }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);
+
+  const getComponentWidth = () => {
+    if (isDataTableContext) return '100%';
+    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.width;
+    return dimensionsStyles?.width || 'auto';
+  };
+
+  const getComponentHeight = () => {
+    if (isPasswordcombo) return 'auto';
+    if (isDataTableContext) return '100%';
+    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.height;
+    return dimensionsStyles?.height;
+  };
+
+  const getDimensionValue = (dimensionType: 'maxWidth' | 'minWidth' | 'maxHeight' | 'minHeight') => {
+    if (isDataTableContext) return '100%';
+    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.[dimensionType];
+    return dimensionsStyles?.[dimensionType];
+  };
+
+  const getFlexBasis = () => {
+    if (isFileList || isFileUpload) return desktopConfig.container?.dimensions?.minWidth;
+    return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
+  };
+
+  const rootContainerStyle = useMemo(() => {
+    const baseStyle = {
+      boxSizing: 'border-box' as const,
+    };
+
+    return {
+      ...baseStyle,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      ...originalDimensions,
+      width: getComponentWidth(),
+      maxWidth: getDimensionValue('maxWidth'),
+      minWidth: getDimensionValue('minWidth'),
+      height: getComponentHeight(),
+      minHeight: getDimensionValue('minHeight'),
+      maxHeight: getDimensionValue('maxHeight'),
+      flexBasis: getFlexBasis(),
+    };
+  }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
+
   return (
     <div
+      style={rootContainerStyle}
       className={classNames(styles.shaComponent, {
         selected: isSelected,
         'has-config-errors': invalidConfiguration,
@@ -110,6 +212,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
             <StopOutlined />
           </Tooltip>
         </Show>
+
         <Show when={!componentEditModeFx && componentEditMode === 'editable'}>
           <Tooltip title="This component is always in Edit/Action mode">
             <EditOutlined />
@@ -118,10 +221,22 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      <div>
-        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
-          <div style={{ padding: '5px 3px' }}>
-            <FormComponent componentModel={componentModel} componentRef={componentRef} />
+
+      <div style={{
+        width: '100%',
+        height: '100%',
+        boxSizing: 'border-box'
+      }}>
+        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly}>
+          <div style={{
+            width: '100%',
+            height: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <FormComponent
+              componentModel={renderComponentModel}
+              componentRef={componentRef}
+            />
           </div>
         </DragWrapper>
       </div>
@@ -133,13 +248,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 const ConfigurableFormComponentDesignerMemo = memo(ConfigurableFormComponentDesignerInner);
 
 export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = (props) => {
-
   const allData = useAvailableConstantsData({ topContextId: 'all' });
   const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
   const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
   const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;
 
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode}}/>;
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
 };
 
 export interface IConfigurableFormComponentProps {
@@ -147,7 +261,7 @@ export interface IConfigurableFormComponentProps {
   model?: IConfigurableFormComponent;
 }
 
-export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({id, model}) => {
+export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id, model }) => {
   const isDrawing = useIsDrawingForm();
 
   const componentRef = useRef(null);
@@ -159,6 +273,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={componentModel} componentRef={componentRef}  />
+    <ComponentRenderer componentModel={{...componentModel, }} componentRef={componentRef} />
   );
 };

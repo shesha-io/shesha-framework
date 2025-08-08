@@ -36,7 +36,7 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
         {(value) => {
           const content = contentProp || value;
           return (
-            <div style={{ ...allStyles?.dimensionsStyles }}>
+            <div style={{ height: '100%', width: '100%' }}>
               <Markdown {...model} content={content} style={{ ...additionalStyles }} />
             </div>
           );

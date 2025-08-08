@@ -23,8 +23,8 @@ export const defaultStyles = (): IStyleType => {
         },
         dimensions: {
             width: '100%',
-            height: 'auto',
-            minHeight: '32px',
+            height: '32px',
+            minHeight: 'auto',
             maxHeight: 'auto',
             minWidth: '0px',
             maxWidth: 'auto'

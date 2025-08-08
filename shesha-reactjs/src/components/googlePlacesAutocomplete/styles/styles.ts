@@ -11,6 +11,7 @@ export const useStyles = createStyles(({ css, cx, token }, { fontFamily, fontWei
     `;
 
     const locationSearchInputWrapper = cx("location-search-input-wrapper", css`
+        height: 100%;
         width: 100%;
         position: relative;
     

@@ -71,20 +71,30 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
     css`
-      --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
-      --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};
+      --thumbnail-width: ${width ?? '100%'};
+      --thumbnail-height: ${height ?? '100%'};
       --ant-border-radius-xs: ${borderRadius} !important;
       --ant-border-radius-sm: ${borderRadius} !important;
       --ant-border-radius-lg: ${borderRadius} !important;
       --ant-button-content-font-size: ${fontSize} !important;
       --ant-button-font-weight: ${fontWeight} !important;
       --ant-font-family: ${fontFamily} !important;
-      height: ${height ?? '54px'} !important;
-      width: ${width ?? '54px'} !important;
       max-height: ${maxHeight ?? 'auto'} !important;
       min-height: ${minHeight} !important;
       max-width: ${maxWidth} !important;
       min-width: ${minWidth} !important;
+      display: block !important;
+      height: ${model?.listType === 'thumbnail' ? height ?? '54px' : 'auto'} !important;
+
+      > div {
+        height: 100%;
+        .ant-upload-wrapper {
+          height: 100%;
+          .ant-upload-list-picture-card {
+            height: 100%;
+          }
+        }
+      }
 
       .ant-upload-select-picture-card {
         width: var(--thumbnail-width) !important;
@@ -102,12 +112,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         border-right: ${borderRight} !important;
       }
 
-      .ant-upload-list-picture-card {
-        height: ${hideFileName
-        ? 'var(--thumbnail-height)'
-        : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
-        padding-bottom: 1rem;
-      }
+      // .ant-upload-list-picture-card {
+      //   height: ${hideFileName ? 'var(--thumbnail-height)' : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
+      // }
 
       .ant-upload-list-item-image {
         object-fit: contain !important;
@@ -166,6 +173,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         justify-content: center;
         border: 1px ${borderStyle} ${borderColor} !important;
         ${style}
+        height: ${height ?? '54px'} !important;
+      width: ${width ?? '54px'} !important;
       }
 
       .ant-upload-list-text {
@@ -173,9 +182,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         height: calc(var(--container-height) - 32px) !important;
         max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
         min-height: calc(var(--container-min-height) - 32px) !important;
-        width: calc(var(--container-width) - 32px) !important;
-        max-width: calc(var(--container-max-width) - 32px) !important;
-        min-width: calc(var(--container-min-width) - 32px) !important;
+        width: var(--container-width) !important;
+        max-width: var(--container-max-width) !important;
+        min-width: var(--container-min-width) !important;
       }
 
       .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -223,6 +232,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           animation: none !important;
           transition: none !important;
         }
+        div {
+          height: 100%;
+          .styled-file-controls {
+            height: 100%;
+          }
+        }
         ${listType !== 'thumbnail' && style}
       }
     `
@@ -260,8 +275,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       top: 0;
       left: 0;
       background: rgba(0, 0, 0, 0.6);
-      height: ${height ?? '54px'} !important;
-      width: ${width ?? '54px'} !important;
+      height: 100% !important;
+      width: 100% !important;
       opacity: 0;
       border-radius: 8px;
       transition: opacity 0.3s ease;
@@ -291,8 +306,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-radius: ${borderRadius} !important;
       padding: 0 !important;
       background: ${background ?? backgroundImage ?? backgroundColor} !important;
-      width: ${width || '54px'} !important;
-      height: ${height || '54px'} !important;
+      width: 100% !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;

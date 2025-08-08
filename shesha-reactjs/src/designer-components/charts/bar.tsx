@@ -43,7 +43,8 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       ...backgroundStyles,
       ...shadowStyles,
       ...stylingBoxAsCSS,
-      ...jsStyle
+      ...jsStyle,
+       width: '100%', height: '100%'
     });
 
     if (model.hidden) return null;

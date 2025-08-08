@@ -57,15 +57,24 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             disableRefresh={disableRefresh}
             customReorderEndpoint={customReorderEndpoint}
         >
-            <ComponentsContainer containerId={id} />
+            <ComponentsContainer containerId={id} wrapperStyle={{width: '100%', height: '100%'}}/>
         </DataTableProvider>
     );
 
     if (props?.hidden) {
         return null;
     }
+    const dimensions= {
+      width: '100%',
+      height: '100%',
+      minHeight: '100%',
+      maxWidth: '100%',
+      maxHeight: '100%',
+      minWidth: '100%'
+    };
+
     return sourceType === 'Form'
-        ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+        ? <ConfigurableFormItem model={{ ...props, desktop: { dimensions}, mobile: {dimensions}, tablet: {dimensions},  hideLabel: true }} wrapperCol={{ md: 24 }}>
             {(value, onChange) => provider(() => value, onChange)}
         </ConfigurableFormItem>
         : provider();

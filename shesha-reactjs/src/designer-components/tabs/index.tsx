@@ -105,6 +105,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         activeKey={activeKey}
         onChange={setActiveKey}
         size={size}
+        style={model.allStyles.dimensionsStyles}
         type={tabType}
         tabPosition={tabPosition}
         items={items}

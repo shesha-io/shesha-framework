@@ -68,7 +68,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
-      width: toSizeCssProp(model.width),
+      width: '100%',
       borderWidth: model.hideBorder ? 0 : model.borderSize,
       borderRadius: model.borderRadius,
       borderStyle: model.borderType,
@@ -94,6 +94,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
       style: {
         ...finalStyle,
         ...getOverflowStyle(true, false),
+        width: '100%',
+        height: '100%',
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model?.showCount ? '16px' : '0px' }
           : {})

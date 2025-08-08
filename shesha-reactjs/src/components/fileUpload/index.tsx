@@ -245,7 +245,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       );
     }
 
-    return (
+    return showUploadButton ? (
       <>
         <div
           className={
@@ -256,7 +256,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
         </div>
         {listType === 'thumbnail' && !hideFileName ? <div className="thumbnail-item-name">File name</div> : null}
       </>
-    );
+    ) : null;
   };
 
   const renderUploader = () => {

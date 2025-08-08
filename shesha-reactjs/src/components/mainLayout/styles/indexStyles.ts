@@ -79,11 +79,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
     font-weight: bold;
   }
   .${(p) => p.theme.prefixCls}-form-item {
-    margin-bottom: 0 !important;
   
     .${(p) => p.theme.prefixCls}-row {
       &.${(p) => p.theme.prefixCls}-form-item-row {
-        margin-bottom: 5px;
+        // margin-bottom: 5px;
       }
     }
   }
@@ -95,6 +94,11 @@ export const GlobalSheshaStyles = createGlobalStyle`
     }
   }
 
+  .ant-form-item {
+   .ant-form-item-control-input{
+     display: inline !important;
+    }
+  }
 
 
   .sha-form-designer {

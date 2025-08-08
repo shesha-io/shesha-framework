@@ -70,6 +70,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     labelName?: string;
     valueTitle?: string;
     valueName?: string;
+    displayPropName?: string;
     value?: any;
     placeholder?: string;
     mode?: any;

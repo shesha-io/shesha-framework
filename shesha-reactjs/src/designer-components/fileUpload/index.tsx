@@ -18,7 +18,7 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
+import { containerDefaultStyles, defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
@@ -48,8 +48,8 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
 
     const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+      ...model.listType === 'thumbnail' ? model.allStyles.dimensionsStyles : {},
+    } : {...model.allStyles.fullStyle};
 
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
@@ -139,7 +139,8 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         desktop: { ...defaultStyles() },
         mobile: { ...defaultStyles() },
         tablet: { ...defaultStyles() },
-      })),
+      }))
+      .add<IFileUploadProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

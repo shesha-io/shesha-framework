@@ -60,7 +60,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             count={localCount ?? 5}
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
-            style={model.allStyles.fullStyle}
+            style={{...model.allStyles.fullStyle, width: '100%', height: '100%'}}
             {...customEvent}
             value={value}
             onChange={onChangeInternal}

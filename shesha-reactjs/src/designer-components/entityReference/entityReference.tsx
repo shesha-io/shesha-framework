@@ -40,7 +40,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
-          return <EntityReference {...model} value={value} style={{ ...allStyles.fullStyle }} />;
+          return <EntityReference {...model} value={value} style={{ ...allStyles.fullStyle,width: '100%', height: '100%' }} />;
         }}
       </ConfigurableFormItem>
     );
