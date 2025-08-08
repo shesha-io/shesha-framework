@@ -45,7 +45,6 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   borderRadius?: number;
   hideFileName?: boolean;
   container?: IStyleType;
-  thumbnail?: IStyleType;
   primaryColor?: string;
 }
 

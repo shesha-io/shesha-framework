@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useCanvas, useFormItem, useShaFormInstance } from '@/providers';
+import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
@@ -23,7 +23,6 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const { activeDevice } = useCanvas();
   const { styles } = useStyles();
 
   const layout = useMemo(() => {
@@ -39,18 +38,13 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const isInput = getToolboxComponent(model.type)?.isInput;
-  const isFileorFileList = getToolboxComponent(model.type)?.type === 'attachmentsEditor' || getToolboxComponent(model.type)?.type === 'fileUpload';
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
-    style: {
-      ...model[activeDevice]?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px',
-      width: isInput ? isFileorFileList ? model[activeDevice]?.container?.dimensions?.width : model[activeDevice]?.dimensions?.width : 'auto',
-      height: isInput ? isFileorFileList ? model[activeDevice]?.container?.dimensions?.height : model[activeDevice]?.dimensions?.height : 'auto'
-    },
+    style: { ...model.desktop?.dimensions, flexBasis: 'auto', margin: '0px', padding: '0px', width: isInput ? model.desktop?.dimensions.width : 'auto' },
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,

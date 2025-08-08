@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
+import { EditMode, IConfigurableFormComponent } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -50,11 +50,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { formMode } = useShaFormInstance();
-  const { activeDevice } = useCanvas();
-  const isFileorFileList = getToolboxComponent(componentModel.type)?.type === 'attachmentsEditor' || getToolboxComponent(componentModel.type)?.type === 'fileUpload';
+
+  console.log("CLEAN COMPONENT MODEL", componentModel);
+
   // Extract styling and dimensions from the original desktop object
-  const desktopConfig = componentModel?.[activeDevice] || {};
-  const originalDimensions = isFileorFileList ? desktopConfig.container?.dimensions || {} : desktopConfig.dimensions || {};
+  const desktopConfig = componentModel?.desktop || {};
+  const originalDimensions = desktopConfig.dimensions || {};
   const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
 
   const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
@@ -116,7 +117,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const renderComponentModel = useMemo(() => {
     return {
       ...componentModel,
-      [activeDevice]: {
+      desktop: {
         ...desktopConfig,
         // Override only the styling box for rendering, keep dimensions unchanged
         stylingBox: renderStylingBox,
@@ -174,7 +175,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     }
   }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
 
-  return (
+  return ( 
     <div
       style={rootContainerStyle}
       className={classNames(styles.shaComponent, {
@@ -200,7 +201,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
             <StopOutlined />
           </Tooltip>
         </Show>
-
+        
         <Show when={!componentEditModeFx && componentEditMode === 'editable'}>
           <Tooltip title="This component is always in Edit/Action mode">
             <EditOutlined />
@@ -209,21 +210,21 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-
-      <div style={{
-        width: '100%',
-        height: '100%',
+      
+      <div style={{ 
+        width: '100%', 
+        height: '100%', 
         boxSizing: 'border-box'
       }}>
         <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly}>
-          <div style={{
-            width: '100%',
-            height: '100%',
+          <div style={{ 
+            width: '100%', 
+            height: '100%', 
             boxSizing: 'border-box'
           }}>
-            <FormComponent
+            <FormComponent 
               componentModel={renderComponentModel}
-              componentRef={componentRef}
+              componentRef={componentRef} 
             />
           </div>
         </DragWrapper>

@@ -107,7 +107,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
-  const { dimensionsStyles: thumbnailDimensionsStyles } = useFormComponentStyles({ ...model.thumbnail });
 
   const { styles } = useStyles({
     containerStyles: {
@@ -115,8 +114,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
       ...containerJsStyle, ...stylingBoxAsCSS,
     },
-    style: disabledStyleOnReadonly && disabled ?
-      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } : { ...model?.allStyles?.fullStyle, ...thumbnailDimensionsStyles }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    style: enableStyleOnReadonly && disabled ?
+      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } : { ...model?.allStyles?.fullStyle }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
 
