@@ -1,4 +1,4 @@
-import { FolderAddOutlined } from '@ant-design/icons';
+import { ConsoleSqlOutlined, FolderAddOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import moment from 'moment';
 import React from 'react';
@@ -56,6 +56,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
 
+    console.log("AE MODEL",model.desktop.container);
     const { backendUrl } = useSheshaApplication();
     const httpClient = useHttpClient();
     const form = useForm();
