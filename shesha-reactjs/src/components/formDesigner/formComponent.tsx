@@ -46,27 +46,23 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
         paddingTop: originalStylingBox.paddingTop
       });
     }, [ originalStylingBox, desktopConfig.stylingBox]);
+
     
-    const dimensions = getToolboxComponent(componentModel.type).isInput || componentModel.type === 'button' ?
+    const dimensions = getToolboxComponent(componentModel.type).isInput || componentModel.type === 'button' ? 
     componentModel.type === 'fileUpload' || componentModel.type === 'attachmentsEditor' ? 
-    {
-      container: {
+    {container: {
       dimensions: {
         width: '100%',
         height: '100%'
       }
-    }
-  } : {
+    }} : {
       dimensions: {
       width: '100%',
       height: '100%'
-    }} : {
-      width: '100%',
-      height: '100%'
-    };
+    }} : {};
     
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, componentModel, ...(shaForm.formMode === 'designer' && dimensions) }
+    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, componentModel, ...dimensions }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
