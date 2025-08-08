@@ -147,7 +147,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
 
             .${shaComponent} {
-
         .ant-form-item {
             height: 100% !important;
             margin-bottom: 0 !important;
@@ -213,7 +212,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${componentDragHandle} {
-
             top: 0px;
             left: 0px;
         }
