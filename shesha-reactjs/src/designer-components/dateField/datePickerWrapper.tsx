@@ -53,8 +53,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-  const fullStyles = { ...allStyles?.fullStyle, width: '100%', height: '100%'};
-  const { styles } = useStyles({ fullStyles });
+
+  const { styles } = useStyles({ fullStyles: finalStyle });
 
   const { formData } = useForm();
 
@@ -129,6 +129,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     handleDatePickerChange(newDate, newDate.format(pickerFormat));
   };
 
+
+
+  const handleOnOk = (value: moment.Moment | null) => handleDatePickerChange(value, value?.format(pickerFormat));
+
   const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
   const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
   const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
@@ -196,7 +200,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   if (range) {
     return (
       <RangePicker
-        {...rest}
         onCalendarChange={(dates) => {
           if (dates && showTime && !defaultToMidnight) handleCalendarRangeChange(dates);
         }}
@@ -207,10 +210,11 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         format={pickerFormat}
         value={rangeMomentValue}
         defaultValue={defaultMomentValue}
+        {...rest}
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         disabled={readOnly}
-        style={{...allStyles.fullStyle, width: '100%', height: '100%'}}
+        style={finalStyle}
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
       />
@@ -228,12 +232,13 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabledTime={disabledTime(props, formData, globalState)}
       onChange={handleDatePickerChange}
+      onOk={handleOnOk}
       variant={hideBorder ? 'borderless' : undefined}
       showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
       showNow={showNow}
       picker={picker}
       format={pickerFormat}
-      style={{...allStyles.fullStyle, width: '100%', height: '100%'}}
+      style={allStyles.fullStyle}
       onCalendarChange={(dates) => {
         if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
       }}

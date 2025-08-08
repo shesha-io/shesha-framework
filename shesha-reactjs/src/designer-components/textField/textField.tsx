@@ -38,7 +38,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       dataFormat === StringFormats.password),
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
@@ -59,7 +58,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       disabled: model.readOnly,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
-      style: {...model.allStyles.fullStyle, width: '100%', height: '100%' },
+      style: model.allStyles.fullStyle,
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,

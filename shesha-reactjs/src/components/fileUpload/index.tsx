@@ -231,7 +231,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
       icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
       type="link"
       disabled={!showUploadButton}
-      style={{width: '100%', height: '100%'}}
     >
       {listType === 'text' ? `(press to upload)` : null}
     </Button>
@@ -246,7 +245,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       );
     }
 
-    return showUploadButton ? (
+    return (
       <>
         <div
           className={
@@ -257,7 +256,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
         </div>
         {listType === 'thumbnail' && !hideFileName ? <div className="thumbnail-item-name">File name</div> : null}
       </>
-    ) : null;
+    );
   };
 
   const renderUploader = () => {

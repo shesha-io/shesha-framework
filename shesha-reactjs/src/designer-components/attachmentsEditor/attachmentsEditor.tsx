@@ -45,7 +45,6 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   borderRadius?: number;
   hideFileName?: boolean;
   container?: IStyleType;
-  thumbnail?: IStyleType;
   primaryColor?: string;
 }
 
@@ -55,7 +54,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   name: 'File list',
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
-
     const { backendUrl } = useSheshaApplication();
     const httpClient = useHttpClient();
     const form = useForm();
@@ -117,7 +115,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 filesLayout={model.filesLayout}
                 listType={model.listType}
                 {...model}
-                enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
               />
             </StoredFilesProvider>

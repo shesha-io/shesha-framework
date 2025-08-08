@@ -259,7 +259,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }
 
 
-  const { width, height, minHeight, maxHeight, ...restOfDropdownStyles } = style ?? {};
+  const { width, ...restOfDropdownStyles } = style ?? {};
 
   return (
     <Select
@@ -267,7 +267,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       onDropdownVisibleChange={onDropdownVisibleChange}
       value={keys}
       className={styles.autocomplete}
-      dropdownStyle={{...restOfDropdownStyles, height: 'max-content'}}
+      dropdownStyle={restOfDropdownStyles}
       showSearch={!props.disableSearch}
       notFoundContent={props.notFoundContent}
       defaultActiveFirstOption={false}
@@ -373,7 +373,6 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       allowReordering={false}
       permanentFilter={permanentFilter}
       disableRefresh={disableRefresh.current}
-      needToRegisterContext={false}
     >
       <AutocompleteInner
         {...props}

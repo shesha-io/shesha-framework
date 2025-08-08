@@ -74,7 +74,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         'content',
         css`
             --ant-tabs-horizontal-margin: 0 !important;
-            height: 100%;
+            height: max-content;
             margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important;
 
             &.ant-tabs-left , &.ant-tabs-right {
@@ -86,8 +86,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
             .ant-tabs-content-holder {
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
                 ${rest};
-                width: 100%;
-                height: auto;
                 border: ${borderMap.default};
                 box-shadow: ${boxShadow} !important;
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;

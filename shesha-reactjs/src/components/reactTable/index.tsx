@@ -448,7 +448,7 @@ export const ReactTable: FC<IReactTableProps> = ({
           transform: allowExpandedView && isCellContentOverflowing ? 'scale(1)' : 'scale(0.95)',
           visibility: allowExpandedView && isCellContentOverflowing ? 'visible' : 'hidden',
           position: 'fixed',
-          minWidth: 160,
+          minWidth: 80,
           maxWidth: Math.min(cellRect?.width || 200, window.innerWidth - 40),
           width: cellRect?.width,
           backgroundColor: '#fff',
@@ -463,16 +463,14 @@ export const ReactTable: FC<IReactTableProps> = ({
           pointerEvents: activeCell !== null && allowExpandedView ? 'auto' : 'none',
         }}
       >
-<p
-  style={{
-    wordBreak: 'keep-all',      // Do not break words or URLs
-    whiteSpace: 'normal',       // Allow normal wrapping (but won't break long words)
-    maxWidth: '100%',           // Constrain to container width
-    overflowX: 'auto', 
-  }}
->
-  {cellRef?.current?.innerText}
-</p>
+        <p style={{
+          whiteSpace: 'normal',
+          overflow: 'visible',
+          wordBreak: 'break-word',
+          margin: 0,
+        }}>
+          {cellRef?.current?.innerText}
+        </p>
       </div>
     );
   };

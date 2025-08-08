@@ -10,7 +10,7 @@ import {
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { ICommonCellProps } from './interfaces';
 import Link from 'next/link';
-import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { TypedProxy, useAvailableConstantsData } from '@/index';
 
 
@@ -40,19 +40,13 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     } else console.error('Action is not configured');
   };
 
-  const navigationUrl = useAsyncDeepCompareMemo(async () => {
+  const navigationUrl = useAsyncMemo(async () => {
     if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
       return "";
 
     const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
     return getUrlFromNavigationRequest(preparedArguments);
-  }, [
-    actionConfiguration, 
-    {...evaluationContext.data},
-    {...evaluationContext.contexts.appConext},
-    {...evaluationContext.contexts.pageContext},
-    {...evaluationContext.contexts.foemContext}
-  ], "");
+  }, [actionConfiguration], "");
 
   return (
     <>
