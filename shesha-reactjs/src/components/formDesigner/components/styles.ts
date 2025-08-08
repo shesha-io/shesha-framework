@@ -16,11 +16,6 @@ export const useStyles = createStyles(({ css, cx }) => {
                     height: 100%;
                     width: 100%;
                 }
-
-                .stored-files-renderer-wrapper {
-                    width: 100% !important;
-                    height: 100% !important;
-                }
             }
         }
 
