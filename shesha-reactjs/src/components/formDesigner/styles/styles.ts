@@ -91,7 +91,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         formNameParent,
         //mainArea,
     } = useStyles().styles;
-    
 
     const quickEditModal = cx("sha-designer-modal", css`
         .${prefixCls}-modal {
@@ -145,65 +144,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             font-size: 14px;
             color: #aaa;
         }
-
-            .${shaComponent} {
-        .ant-form-item {
-            height: 100% !important;
-            margin-bottom: 0 !important;
-            
-            .ant-form-item-row {
-                height: 100% !important;
-            }
-            
-            .ant-form-item-control {
-                height: 100% !important;
-            }
-            
-            .ant-form-item-control-input {
-                height: 100% !important;
-            }
-            
-            .ant-form-item-control-input-content {
-                height: 100% !important;
-            }
-        }
-        
-        .ant-input,
-        .ant-input-affix-wrapper,
-        .ant-input-number,
-        .ant-input-number-affix-wrapper,
-        .ant-textarea,
-        .ant-picker,
-        .ant-cascader,
-        .ant-mentions,
-        .ant-input-search {
-            width: 100% !important;
-            height: 100% !important;
-        }
-        
-        .ant-select {
-            width: 100% !important;
-            height: 100% !important;
-            
-            .ant-select-selector {
-                height: 100% !important;
-                display: flex !important;
-                align-items: center !important;
-            }
-            
-            .ant-select-selection-search {
-                height: 100% !important;
-                display: flex !important;
-                align-items: center !important;
-            }
-            
-            .ant-select-selection-search-input {
-                height: 100% !important;
-            }
-        }
-    
-    }
-
         &.${shaDragging} {
             .${shaForm} {
                 .${componentDragHandle} {
