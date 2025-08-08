@@ -279,7 +279,9 @@ export interface IConfigurableFormComponent
 
   allStyles?: IFormComponentStyles;
 
-  disabledStyleOnReadonly?: boolean;
+  enableStyleOnReadonly?: boolean;
+
+  listType?: 'text' | 'thumbnail';
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
