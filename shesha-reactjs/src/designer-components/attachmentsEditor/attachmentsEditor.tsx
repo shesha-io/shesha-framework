@@ -55,8 +55,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   name: 'File list',
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
-
-    console.log("AE MODEL",model.desktop.container);
     const { backendUrl } = useSheshaApplication();
     const httpClient = useHttpClient();
     const form = useForm();
@@ -66,6 +64,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
+    console.log("MODEL", model);
     const enabled = !model.readOnly;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
