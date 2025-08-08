@@ -36,7 +36,7 @@ export interface IConfigurableFormComponentDesignerProps {
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
-const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
+const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({ 
   componentModel,
   componentRef,
   selectedComponentId,
@@ -48,8 +48,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { styles } = useStyles();
 
   const getToolboxComponent = useFormDesignerComponentGetter();
-
-  const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
 
@@ -87,15 +85,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  const dims = { ...componentModel.desktop, width: hasLabel ? componentModel?.desktop?.width : '100%', height: '100%', minHeight: '', minWidth: '', maxHeight: '', maxWidth: '' };
-
-  const { width, height, minWidth, minHeight, maxWidth, maxHeight } = componentModel.desktop.dimensions;
-
-
-
   return (
     <div
-      style={{ width, height, minWidth, minHeight, maxWidth, maxHeight }}
       className={classNames(styles.shaComponent, {
         selected: isSelected,
         'has-config-errors': invalidConfiguration,
@@ -127,10 +118,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      <div style={{ width: '100%', height: '100%' }}>
+      <div>
         <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
-          <div style={{ width: '100%', height: '100%' }}>
-            <FormComponent componentModel={{ ...componentModel, desktop: { ...componentModel.desktop, dimensions: dims } }} componentRef={componentRef} />
+          <div style={{ padding: '5px 3px' }}>
+            <FormComponent componentModel={componentModel} componentRef={componentRef} />
           </div>
         </DragWrapper>
       </div>
@@ -148,7 +139,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
   const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;
 
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode}}/>;
 };
 
 export interface IConfigurableFormComponentProps {
@@ -156,7 +147,7 @@ export interface IConfigurableFormComponentProps {
   model?: IConfigurableFormComponent;
 }
 
-export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id, model }) => {
+export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({id, model}) => {
   const isDrawing = useIsDrawingForm();
 
   const componentRef = useRef(null);
@@ -168,6 +159,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
+    <ComponentRenderer componentModel={componentModel} componentRef={componentRef}  />
   );
 };
