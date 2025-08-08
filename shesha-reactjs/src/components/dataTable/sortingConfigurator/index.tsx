@@ -27,7 +27,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
             {({ item, itemOnChange, readOnly }) => {
                 return (
                     <div>
-                        <Space.Compact style={{ width: '100%' }}>
+                        <Space.Compact style={{ width: '85%' }}>
                             <PropertyAutocomplete
                                 style={{ width: 'calc(100% - 120px)' }}
                                 mode='single'

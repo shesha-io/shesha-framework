@@ -232,7 +232,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
-  if (props.readOnly) {
+  if (props.readOnly) {  
     if (!selected.current)
       return null;
     const readonlyValue = props.mode === 'multiple'
@@ -253,7 +253,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         quickviewFormPath={props.quickviewFormPath}
         quickviewDisplayPropertyName={props.quickviewDisplayPropertyName || props.displayPropName}
         quickviewGetEntityUrl={props.quickviewGetEntityUrl}
-        quickviewWidth={props.quickviewWidth ? Number(props.quickviewWidth) : null} // quick fix string value of quickviewWidth (from configurator)
+        quickviewWidth={props.quickviewWidth ?? null} // quick fix string value of quickviewWidth (from configurator)
       />
     );
   }
