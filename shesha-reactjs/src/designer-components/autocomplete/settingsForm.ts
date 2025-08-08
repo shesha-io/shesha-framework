@@ -236,8 +236,8 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        hidden: {
-                                            _code: `return  getSettingValue(data.dataSourceType) !== 'entitiesList';`,
+                                            hidden: {
+                                            _code: `return  getSettingValue(data.entityType) == undefined || getSettingValue(data.dataSourceType) !== 'entitiesList';`,
                                             _mode: 'code',
                                             _value: false
                                         },
@@ -250,7 +250,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 label: 'Entity Filter',
                                                 isDynamic: true,
                                                 validate: {},
-                                                hidden: false,
                                                 settingsValidationErrors: [],
                                                 modelType: {
                                                     _code: 'return getSettingValue(data?.entityType);',
@@ -556,6 +555,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         label: 'Grouping',
                                         isDynamic: true,
                                         jsSetting: true,
+                                        maxItemsCount: 1,
                                         validate: {},
                                         hidden: false,
                                         settingsValidationErrors: [],
