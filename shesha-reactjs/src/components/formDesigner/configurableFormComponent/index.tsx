@@ -28,6 +28,8 @@ import { ComponentProperties } from '../componentPropertiesPanel/componentProper
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useShaFormInstance } from '@/providers';
 
+
+
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
   componentRef: MutableRefObject<any>;
@@ -49,14 +51,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const { formMode } = useShaFormInstance();
+  const {formMode} = useShaFormInstance();
 
-  console.log("CLEAN COMPONENT MODEL", componentModel);
+  const propertiesPanelDims = componentModel?.desktop?.dimensions;
+  const propertiesPanelStylingBox = JSON.parse(componentModel?.desktop?.stylingBox || '{}');
 
-  // Extract styling and dimensions from the original desktop object
-  const desktopConfig = componentModel?.desktop || {};
-  const originalDimensions = desktopConfig.dimensions || {};
-  const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
 
   const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
@@ -69,9 +68,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
 
   const settingsEditor = useMemo(() => {
-    const renderRequired = isSelected && settingsPanelRef.current;
+    const renderRerquired = isSelected && settingsPanelRef.current;
 
-    if (!renderRequired)
+    if (!renderRerquired)
       return null;
 
     const createPortalInner = true
@@ -94,90 +93,53 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  // Create derived styles without mutating the original desktop object
-  const stylingBoxAsCSS = pickStyleFromModel(originalStylingBox);
+  const stylingBox = JSON.parse(componentModel?.desktop?.stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(stylingBox);
   const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
-  // Create render-specific styling that preserves the original desktop structure
-  const renderStylingBox = useMemo(() => {
-    if (formMode === 'designer') {
-      // In designer mode, apply only padding for proper rendering
-      return JSON.stringify({
-        paddingBottom: originalStylingBox.paddingBottom,
-        paddingLeft: originalStylingBox.paddingLeft,
-        paddingRight: originalStylingBox.paddingRight,
-        paddingTop: originalStylingBox.paddingTop
-      });
+  const outerContainerStyle = {
+    ...componentModel?.desktop?.dimensions,
+    width: hasLabel ? componentModel?.desktop?.width : '100%',
+    height: '100%',
+    marginLeft,
+    marginRight,
+    marginTop,
+    marginBottom,
+    paddingTop,
+    paddingBottom,
+    paddingLeft,
+    paddingRight,
+    backgroundColor: 'red',
+    boxSizing: 'border-box',
+  };
+
+  const cleanComponentModel = {
+    ...componentModel,
+    desktop: {
+      ...componentModel.desktop,
     }
-    // In other modes, use the original styling box as-is
-    return desktopConfig.stylingBox || '{}';
-  }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
+  };
 
-  // Create the component model for rendering that preserves the desktop structure
-  const renderComponentModel = useMemo(() => {
-    return {
-      ...componentModel,
-      desktop: {
-        ...desktopConfig,
-        // Override only the styling box for rendering, keep dimensions unchanged
-        stylingBox: renderStylingBox,
-        // Keep all other desktop properties intact
-        dimensions: formMode === 'designer' ? {
-          ...originalDimensions,
-          width: '100%',
-          height: '100%',
-          boxSizing: 'border-box',
-          flexShrink: 0,
-          flexBasis: originalDimensions.width
-        } : {
-          // For render mode, let the inner component fill its container
-          ...originalDimensions,
-          width: '100%',
-          height: originalDimensions.height || '100%',
-          boxSizing: 'border-box'
-        }
-      }
-    };
-  }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);
 
-  const rootContainerStyle = useMemo(() => {
-    const baseStyle = {
-      boxSizing: 'border-box' as const,
-      marginLeft,
-      marginRight,
-      marginTop,
-      marginBottom,
-      paddingTop,
-      paddingBottom,
-      paddingLeft,
-      paddingRight,
-    };
+  const dims = { 
+    ...componentModel.desktop,
+    width: '100%', 
+    height: '100%', 
+    boxSizing: 'border-box',
+  };
 
-    if (formMode === 'designer') {
-      return {
-        ...baseStyle,
-        ...originalDimensions,
-        width: originalDimensions.width,
-        height: originalDimensions.height,
-      };
-    } else {
-      return {
-        ...baseStyle,
-        width: originalDimensions.width,
-        height: originalDimensions.height,
-        flexShrink: 0,
-        flexBasis: originalDimensions.width,
-        paddingTop: 0,
-        paddingBottom: 0,
-        paddingLeft: 0,
-        paddingRight: 0,
-      };
-    }
-  }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
+  const noPadding = {
+    paddingLeft: 0,
+    paddingBottom: 0,
+    paddingTop: 0,
+    paddingRight: 0,
+  }
+
+  const padding = JSON.stringify({paddingBottom: propertiesPanelStylingBox.paddingBottom, paddingLeft: propertiesPanelStylingBox.paddingLeft, paddingRight: propertiesPanelStylingBox.paddingRight, paddingTop: propertiesPanelStylingBox.paddingTop})
 
   return ( 
     <div
-      style={rootContainerStyle}
+      style={{...outerContainerStyle, ...propertiesPanelDims, ...noPadding, boxSizing: 'border-box'}}
       className={classNames(styles.shaComponent, {
         selected: isSelected,
         'has-config-errors': invalidConfiguration,
@@ -201,7 +163,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
             <StopOutlined />
           </Tooltip>
         </Show>
-        
         <Show when={!componentEditModeFx && componentEditMode === 'editable'}>
           <Tooltip title="This component is always in Edit/Action mode">
             <EditOutlined />
@@ -211,19 +172,21 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       
-      <div style={{ 
-        width: '100%', 
-        height: '100%', 
-        boxSizing: 'border-box'
-      }}>
+      <div style={{ width: '100%', height: '100%',     boxSizing: 'border-box',
+ }}>
         <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly}>
-          <div style={{ 
-            width: '100%', 
-            height: '100%', 
-            boxSizing: 'border-box'
-          }}>
+          <div style={{ width: '100%', height: '100%',     boxSizing: 'border-box',
+ }}>
             <FormComponent 
-              componentModel={renderComponentModel}
+              componentModel={{ 
+                ...cleanComponentModel, 
+                desktop: { 
+                  ...cleanComponentModel.desktop,
+                  dimensions: dims,
+                  stylingBox: formMode === 'designer' ? padding
+                  : propertiesPanelStylingBox
+                } 
+              }} 
               componentRef={componentRef} 
             />
           </div>
