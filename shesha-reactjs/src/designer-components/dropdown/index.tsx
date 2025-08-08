@@ -64,7 +64,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={!model.enableStyleOnReadonly && model.readOnly ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles } : { ...model.allStyles.fullStyle, overflow: 'hidden' }}
+            style={finalStyle}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
