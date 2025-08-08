@@ -116,7 +116,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         width: '100%',
         height:'100%',
         stylingBox: renderStylingBox,
-        flexBasis: isFileList || isFileUpload ? desktopConfig.container.dimensions.width : desktopConfig.dimensions.width
       }
     };
   }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);
@@ -140,7 +139,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : desktopConfig?.dimensions?.minHeight,
         maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : desktopConfig?.dimensions?.maxHeight,
         // flexShrink: 0,
-        flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : desktopConfig?.dimensions?.minWidth,
+        // flexBasis: originalDimensions.width,
     };
   }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
 
