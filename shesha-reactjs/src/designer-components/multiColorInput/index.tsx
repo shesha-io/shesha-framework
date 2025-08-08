@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Row, Tag } from 'antd';
+import { Button, Row, Tag, Tooltip } from 'antd';
 import { nanoid } from '@/utils/uuid';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTheme } from '@/providers';
-import FormItem from 'antd/es/form/FormItem';
 import { removeUndefinedProps } from '@/utils/object';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { gradientDirectionOptions } from '../_settings/utils/background/utils';
@@ -46,14 +45,12 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                         </Tag>
                     );
                 })}
-            </Row>
-
-            <InputRow inline={true} readOnly={readOnly} inputs={[{ id: nanoid(), propertyName: propertyName.replace('gradient.colors', 'gradient.direction'), label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions }]} >
-                <FormItem>
-                    <Button
+                <Tooltip title='Add Color'>
+                     <Button
                         type='primary'
                         ghost
                         size='small'
+                        style={{marginLeft: 8}}
                         onClick={() => {
                             const id = nanoid();
                             onChange({ ...value, [id]: '#000000' });
@@ -61,11 +58,10 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                         }}
                         disabled={readOnly}
                         icon={<PlusOutlined />}
-                    >
-                        Add Color
-                    </Button>
-                </FormItem>
-            </InputRow>
+                     />
+                </Tooltip>
+            </Row>
+            <InputRow inline={true} readOnly={readOnly} inputs={[{ id: nanoid(), propertyName: propertyName.replace('gradient.colors', 'gradient.direction'), label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions }]}/>
         </>
     );
 };
