@@ -140,7 +140,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         mobile: { ...defaultStyles() },
         tablet: { ...defaultStyles() },
       }))
-      .add<IFileUploadProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
+      .add<IFileUploadProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev.desktop), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

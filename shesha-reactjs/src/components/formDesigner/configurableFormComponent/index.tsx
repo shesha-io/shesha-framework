@@ -17,7 +17,7 @@ import {
   FunctionOutlined,
   StopOutlined
 } from '@ant-design/icons';
-import { getActualPropertyValue, useAvailableConstantsData } from '@/providers/form/utils';
+import { getActualPropertyValue, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
 import { Tooltip } from 'antd';
@@ -57,7 +57,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const isDataTableContext = component?.type === 'datatableContext';
   const isFileList = component?.type === 'attachmentsEditor';
   const isFileUpload = component?.type === 'fileUpload';
-  const isPasswordcombo = component?.type === 'passwordCombo';
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles( {...componentModel, ...componentModel?.[activeDevice]});
 
   const desktopConfig = componentModel?.[activeDevice] || {};
@@ -120,8 +119,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...desktopConfig,
         ...((!isFileList && !isFileUpload) && { dimensions: {
           width: '100%',
-          height: isPasswordcombo ? dimensionsStyles.height: '100%'
+          height:'100%'
         }}),
+
         stylingBox: renderStylingBox,
         flexBasis: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width
       }
@@ -143,7 +143,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         width:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
         maxWidth:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : dimensionsStyles?.maxWidth,
         minWidth:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : dimensionsStyles?.minWidth,
-        height:  isPasswordcombo ? 'auto' : isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  dimensionsStyles?.height,
+        height:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  dimensionsStyles?.height || 'auto',
         minHeight:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : dimensionsStyles?.minHeight,
         maxHeight:  isDataTableContext ? '100%' : isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : dimensionsStyles?.maxHeight,
         // flexShrink: 0,

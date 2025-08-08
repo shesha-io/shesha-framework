@@ -1,6 +1,6 @@
 import { IStyleType } from '@/index';
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (prev?: IStyleType): IStyleType => {
   return {
     border: {
       hideBorder: false,
@@ -53,5 +53,5 @@ export const containerDefaultStyles = (): IStyleType => {
     maxHeight: 'auto',
     minWidth: '0px',
     maxWidth: 'auto',
-  }};
+}}
 };

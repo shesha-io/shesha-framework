@@ -10,7 +10,6 @@ import {
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
-  useCanvas,
   useDeepCompareMemo,
   useSheshaApplication,
   wrapConstantsData
@@ -177,12 +176,9 @@ export const useFormComponentStyles = <TModel,>(
   model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
-  const { activeDevice } = useCanvas();
-  const componentModel = {...model, ...model?.[activeDevice]};
+  const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
 
-  const jsStyle = useActualContextExecution(componentModel.style, null, {}); // use default style if empty or error
-
-  const { dimensions, border, font, shadow, background, stylingBox, overflow } = componentModel;
+  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'

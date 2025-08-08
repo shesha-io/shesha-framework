@@ -6,7 +6,7 @@ import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
+import { IStyleType, isValidGuid, pickStyleFromModel, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IFormComponentProps {
@@ -59,7 +59,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   } : {
       dimensions: {
       width: '100%',
-      height: componentModel.type === 'passwordCombo' ? 'auto' : '100%'
+      height: '100%'
     }} : {
       width: '100%',
       height: '100%'
