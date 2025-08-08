@@ -417,26 +417,6 @@ export const getSettings = () => {
                                   },
                                 ],
                               })
-                              .addCollapsiblePanel({
-                                id: nanoid(),
-                                propertyName: 'stylingBox',
-                                label: 'Margin & Padding',
-                                labelAlign: 'right',
-                                ghost: true,
-                                collapsible: 'header',
-                                content: {
-                                    id: nanoid(),
-                                    components: [...new DesignerToolbarSettings()
-                                        .addStyleBox({
-                                            id: nanoid(),
-                                            label: 'Margin Padding',
-                                            hideLabel: true,
-                                            propertyName: 'stylingBox',
-                                        })
-                                        .toJson()
-                                    ]
-                                }
-                            })                              
                               .toJson(),
                           ],
                         },

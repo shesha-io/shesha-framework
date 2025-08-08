@@ -98,22 +98,41 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
   const renderStylingBox = useMemo(() => {
+    if (formMode === 'designer') {
       return JSON.stringify({
         paddingBottom: originalStylingBox.paddingBottom,
         paddingLeft: originalStylingBox.paddingLeft,
         paddingRight: originalStylingBox.paddingRight,
         paddingTop: originalStylingBox.paddingTop
       });
-    
+    }
+    return desktopConfig.stylingBox || '{}';
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
+console.log("FileList::", isFileList, "FileUpload::", isFileUpload, "ComponentModel::", componentModel);
+
   const renderComponentModel = useMemo(() => {
+    const dynamicFileStyle = isFileList ? originalDimensions : {};
     return {
       ...componentModel,
       [activeDevice]: {
         ...desktopConfig,
         stylingBox: renderStylingBox,
-        flexBasis: desktopConfig?.dimensions?.width
+        dimensions: formMode === 'designer' ? {
+          ...dynamicFileStyle,
+          ...desktopConfig.dimensions,
+          width: isFileList || isFileUpload ? desktopConfig?.dimensions?.width : '50%',
+          height:  isFileList || isFileUpload ? desktopConfig?.dimensions?.height :'90%',
+          boxSizing: 'border-box',
+          flexShrink: 0,
+          flexBasis: desktopConfig?.dimensions?.width
+        } : {
+          // For render mode, let the inner component fill its container
+          ...originalDimensions,
+          width: '100%',
+          height: '100%',
+          boxSizing: 'border-box'
+        }
       }
     };
   }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);
@@ -121,34 +140,42 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const rootContainerStyle = useMemo(() => {
     const baseStyle = {
       boxSizing: 'border-box' as const,
-      marginTop,
-      marginBottom,
       marginLeft,
       marginRight,
+      marginTop,
+      marginBottom,
+      paddingTop,
+      paddingBottom,
+      paddingLeft,
+      paddingRight,
     };
 
     if (formMode === 'designer') {
       return {
         ...baseStyle,
         ...originalDimensions,
-        width:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
-        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : desktopConfig?.dimensions?.maxWidth,
-        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : desktopConfig?.dimensions?.minWidth,
-        height:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height :  desktopConfig?.dimensions?.height,
-        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : desktopConfig?.dimensions?.minHeight,
-        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : desktopConfig?.dimensions?.maxHeight,
+        width:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.width,
+        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
+        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
+        height:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.height,
+        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
+        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
       };
     } else {
       return {
         ...baseStyle,
         width: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.width : desktopConfig?.dimensions?.width,
         height: isFileList || isFileUpload ? desktopConfig.container?.dimensions?.height : desktopConfig?.dimensions?.height,
-        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : desktopConfig?.dimensions?.minHeight,
-        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : desktopConfig?.dimensions?.maxHeight,
-        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : desktopConfig?.dimensions?.maxWidth,
-        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : desktopConfig?.dimensions?.minWidth,
+        minHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minHeight,
+        maxHeight:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxHeight : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxHeight,
+        maxWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.maxWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.maxWidth,
+        minWidth:  isFileList || isFileUpload ? desktopConfig.container?.dimensions?.minWidth : isFileUpload && componentModel?.listType !== 'thumbnail' ? 'auto' : desktopConfig?.dimensions?.minWidth,
         flexShrink: 0,
         flexBasis: originalDimensions.width,
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
       };
     }
   }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);

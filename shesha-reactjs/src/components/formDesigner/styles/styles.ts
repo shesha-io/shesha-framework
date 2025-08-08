@@ -167,6 +167,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .ant-form-item-control-input-content {
                 height: 100% !important;
             }
+
+            .stored-files-renderer-wrapper {
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            .sha-stored-files-renderer {
+                width: 100% !important;
+                height: 100% !important;
+            }
             
         }
         
