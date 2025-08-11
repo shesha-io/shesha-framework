@@ -208,6 +208,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           font-family: ${fontFamily} !important;
         }
         ${listType === 'thumbnail' && style}
+        width: 100%;
+        height: 100%;
       }
 
       .ant-upload-list-item-container {

@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     overflow: hidden;
     white-space: nowrap;
     display: inline-block;
+    flex-basis: fit-content;
   `);
 
 

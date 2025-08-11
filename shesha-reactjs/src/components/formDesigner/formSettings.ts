@@ -159,7 +159,7 @@ export const getSettings = () => {
                                                             id: nanoid(),
                                                             type: "propertyAutocomplete",
                                                             propertyName: "dataLoadersSettings.gql.fieldsToFetch",
-                                                            label: "Additional fields for fetch",
+                                                            label: "Additional Fields for Fetch",
                                                             mode: "multiple",
                                                             labelAlign: "right",
                                                             hidden: false,
@@ -336,7 +336,7 @@ export const getSettings = () => {
                                                     type: 'switch',
                                                     id: nanoid(),
                                                     propertyName: 'dataSubmittersSettings.gql.excludeFormFields',
-                                                    label: 'Exclude \'_formFields\' in the payload?',
+                                                    label: 'Exclude \'_formFields\' in the Payload?',
                                                     tooltip: 'Whether or not _formFields should be included in the payload. By default it is included.'
                                                 }
                                             ]

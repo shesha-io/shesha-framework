@@ -137,6 +137,8 @@ interface IDataTableProviderBaseProps {
    * Custom reorder endpoint
    */
   customReorderEndpoint?: string;
+
+  needToRegisterContext?: boolean;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -253,6 +255,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     allowReordering = false,
     permanentFilter,
     customReorderEndpoint,
+    needToRegisterContext = true
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -806,24 +809,32 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   /* Data Context section */
 
+  if (needToRegisterContext)
+    return (
+      <DataContextBinder
+        id={'ctx_' + props.userConfigId}
+        name={props.actionOwnerName}
+        description={`Table context for ${props.actionOwnerName}`}
+        type='control'
+        data={state}
+        api={actions}
+        onChangeData={contextOnChangeData}
+        metadata={contextMetadata}
+      >
+        <DataTableStateContext.Provider value={state}>
+          <DataTableActionsContext.Provider value={actions}>
+            {children}
+          </DataTableActionsContext.Provider>
+        </DataTableStateContext.Provider>
+      </DataContextBinder>
+    );
 
   return (
-    <DataContextBinder
-      id={'ctx_' + props.userConfigId}
-      name={props.actionOwnerName}
-      description={`Table context for ${props.actionOwnerName}`}
-      type='control'
-      data={state}
-      api={actions}
-      onChangeData={contextOnChangeData}
-      metadata={contextMetadata}
-    >
-      <DataTableStateContext.Provider value={state}>
-        <DataTableActionsContext.Provider value={actions}>
-          {children}
-        </DataTableActionsContext.Provider>
-      </DataTableStateContext.Provider>
-    </DataContextBinder>
+    <DataTableStateContext.Provider value={state}>
+      <DataTableActionsContext.Provider value={actions}>
+        {children}
+      </DataTableActionsContext.Provider>
+    </DataTableStateContext.Provider>
   );
 };
 

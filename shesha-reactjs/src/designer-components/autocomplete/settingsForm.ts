@@ -236,8 +236,8 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        hidden: {
-                                            _code: 'return !getSettingValue(data.entityType);',
+                                            hidden: {
+                                            _code: `return  getSettingValue(data.entityType) == undefined || getSettingValue(data.dataSourceType) !== 'entitiesList';`,
                                             _mode: 'code',
                                             _value: false
                                         },
@@ -250,7 +250,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 label: 'Entity Filter',
                                                 isDynamic: true,
                                                 validate: {},
-                                                hidden: false,
                                                 settingsValidationErrors: [],
                                                 modelType: {
                                                     _code: 'return getSettingValue(data?.entityType);',
@@ -297,9 +296,23 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 label: 'Value Format',
                                                 hidden: false,
                                                 dropdownOptions: {
-                                                    _code: `return getSettingValue(data?.dataSourceType) === 'entitiesList' ? [{\"label\": \"Simple ID\",\"value\":\"simple\",\"id\": \"1\"},
-                                                    {\"label\": \"Entity reference\",\"value\": \"entityReference\",\"id\": \"2\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}]
-                                                    : [{\"label\": \"Simple ID\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}];`,
+                                                    _code: `
+                                                        if (getSettingValue(data?.dataSourceType) === 'entitiesList') {
+                                                            return [
+                                                                {\"label\": \"Simple ID\",\"value\":\"simple\",\"id\": \"1\"},
+                                                                {\"label\": \"Entity reference\",\"value\": \"entityReference\",\"id\": \"2\"},
+                                                                {\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}
+                                                                ];
+                                                        } else {
+                                                            const prevValueFormat = getSettingValue(data?.valueFormat);
+                                                            if (prevValueFormat === 'entityReference') {
+                                                                form.setFieldValue('valueFormat', 'simple');
+                                                            }
+                                                            return [
+                                                                {\"label\": \"Simple ID\",\"value\": \"simple\",\"id\": \"1\"},
+                                                                {\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}
+                                                                ];
+                                                        }`,
                                                     _mode: "code",
                                                     _value: false
                                                 } as any,
@@ -355,7 +368,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        // hidden: { _code: "return getSettingValue(data?.valueFormat) === 'simple';", _mode: 'code', _value: false } as any,
                                         inputs: [
                                             {
                                                 id: nanoid(),
@@ -416,11 +428,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     .addSettingsInputRow({
                                         id: nanoid(),
                                         parentId: dataTabId,
-                                        hidden: {
-                                            _code: "return getSettingValue(data?.dataSourceType) === 'url' && !getSettingValue(data?.dataSourceUrl)",
-                                            _mode: 'code',
-                                            _value: false
-                                        },
                                         inputs: [
                                             {
                                                 id: nanoid(),
@@ -429,7 +436,16 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 tooltip: 'Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.',
                                                 parentId: dataTabId,
                                                 modelType: {
-                                                    _code: `return getSettingValue(data.dataSourceType) === 'entitiesList' ? getSettingValue(data?.entityType) :  getSettingValue(data?.dataSourceUrl);`,
+                                                    _code: `    
+                                                         if (getSettingValue(data.dataSourceType) === 'entitiesList'){
+                                                            return getSettingValue(data?.entityType)
+                                                         } else{
+                                                            if (!getSettingValue(data?.dataSourceUrl)){
+                                                                form.setFieldValue('displayPropName', undefined);
+                                                            }
+                                                          return getSettingValue(data?.dataSourceUrl)
+                                                         }
+                                                        `,
                                                     _mode: 'code',
                                                     _value: false
                                                 } as any,
@@ -539,6 +555,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         label: 'Grouping',
                                         isDynamic: true,
                                         jsSetting: true,
+                                        maxItemsCount: 1,
                                         validate: {},
                                         hidden: false,
                                         settingsValidationErrors: [],
