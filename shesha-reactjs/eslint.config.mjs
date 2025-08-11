@@ -103,6 +103,7 @@ export default [{
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
         "react/prop-types": ["off"],
+        "require-await": "error",
         "no-restricted-imports": ["error", {
             paths: ["@/utils/publicUtils",
                 {

@@ -23,6 +23,7 @@ const DropPositions = {
     Inside: 0,
     After: 1
 };
+type OnTreeKeyDown = TreeProps<TreeNode>['onKeyDown'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
     return isConfigItemTreeNode(node) || isFolderTreeNode(node);
@@ -119,6 +120,10 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
         console.log('LOG: onSearchChange', value);
     };
 
+    const handleKeyDown: OnTreeKeyDown = (e) => {
+        console.log('LOG: key', e.key);
+    };
+
     return (
         <Spin
             spinning={treeLoadingState.status === 'loading'}
@@ -155,6 +160,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                                 onSelect={handleSelect}
                                 selectedKeys={selectedKeys}
                                 onExpand={onNodeExpand}
+                                onKeyDown={handleKeyDown}
+                                tabIndex={0}
                             />
                         </Dropdown>
                     </div>

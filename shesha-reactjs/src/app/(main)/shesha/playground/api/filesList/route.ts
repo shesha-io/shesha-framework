@@ -27,7 +27,7 @@ export interface ComponentSettingsFile {
 
 const settingsRegex = /\\designer-components\\(?<name>[^\n]+)\\[^\\]+\.json/gm;
 
-export const GET = async (_request: Request) => {
+export const GET = (_request: Request) => {
     const rootDir = path.resolve('./src');
     const jsonFiles = recFindByExt(rootDir, 'json');
 

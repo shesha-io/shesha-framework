@@ -26,9 +26,9 @@ const FieldWidget: FieldWidgetType = {
 
         return (
             <>
-                { false && <Typography.Paragraph
+                {false && <Typography.Paragraph
                     copyable={{
-                        text: async () => JSON.stringify(filterProps, null, 2)
+                        text: () => JSON.stringify(filterProps, null, 2)
                     }}
                 >
                     Copy widget props.

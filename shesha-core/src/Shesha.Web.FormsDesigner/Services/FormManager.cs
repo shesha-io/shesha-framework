@@ -121,51 +121,6 @@ namespace Shesha.Web.FormsDesigner.Services
             }            
         }
 
-        /// inheritedDoc
-        [Obsolete]
-        public async Task<FormConfiguration> CreateAsync(CreateFormConfigurationDto input)
-        {
-            var module = input.ModuleId.HasValue
-                ? await ModuleRepository.GetAsync(input.ModuleId.Value)
-                : null;
-
-            var validationResults = new List<ValidationResult>();
-
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add(new ValidationResult(
-                    module != null
-                        ? $"Form with name `{input.Name}` already exists in module `{module.Name}`"
-                        : $"Form with name `{input.Name}` already exists"
-                    )
-                );
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var template = input.TemplateId.HasValue
-                ? await Repository.GetAsync(input.TemplateId.Value)
-                : null;
-
-            var form = new FormConfiguration();
-            form.Name = input.Name;
-            form.Module = module;
-
-            form.Origin = form;
-
-            // TODO: V1 review
-            var revision = form.EnsureLatestRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-            revision.Markup = input.Markup ?? "";
-            revision.ModelType = input.ModelType;
-            revision.IsTemplate = input.IsTemplate;
-            //revision.Template = template;
-            form.Normalize();
-
-            await Repository.InsertAsync(form);
-
-            return form;
-        }
-
         public override Task<IConfigurationItemDto> MapToDtoAsync(FormConfiguration item)
         {
             return Task.FromResult<IConfigurationItemDto>(ObjectMapper.Map<FormConfigurationDto>(item));

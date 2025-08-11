@@ -35,13 +35,6 @@ namespace Shesha.Web.FormsDesigner.Services
         Task<FormConfiguration> CopyAsync(CopyItemInput input);
 
         /// <summary>
-        /// Create new form
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        Task<FormConfiguration> CreateAsync(CreateFormConfigurationDto input);
-
-        /// <summary>
         /// Get All forms
         /// </summary>
         /// <returns></returns>

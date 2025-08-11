@@ -30,8 +30,8 @@ export class CustomSubmitter implements IFormDataSubmitter {
                 ? (args: SubmitCallerArgs) => { 
                     return executeScript(settings.onSubmitData, args);
                 }
-                : async (args: SubmitCallerArgs): Promise<any> => {
-                    return args.data;
+                : (args: SubmitCallerArgs): Promise<any> => {
+                    return Promise.resolve(args.data);
                 };
 
             const response = await submitCaller({ data: submitData });

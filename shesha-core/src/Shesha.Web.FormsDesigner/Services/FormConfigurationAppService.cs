@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
@@ -287,20 +286,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
                 await _permissionedObjectManager.SetAsync(permisson);
             }
-        }
-
-        /// <summary>
-        /// Create new form configuration
-        /// </summary>
-        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationDto input)
-        {
-            CheckCreatePermission();
-
-            var form = await _formManager.CreateAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(form);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationStudio.Dtos;
 using Shesha.Domain;
@@ -44,19 +45,27 @@ namespace Shesha.ConfigurationStudio
         }
 
         [HttpPost]
-        public async Task<FolderTreeNode> CreateFolderAsync(CreateFolderRequest input)
+        public async Task<FolderTreeNode> CreateFolderAsync(CreateFolderRequest request)
         {
-            var module = await ModuleRepository.GetAsync(input.ModuleId);
+            var module = await ModuleRepository.GetAsync(request.ModuleId);
             module.EnsureEditable();
 
-            var parentFolder = input.FolderId != null
-                ? await FolderRepository.GetAsync(input.FolderId.Value)
+            var parentFolder = request.FolderId != null
+                ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
+
+            var orderIndex = await GetOrderIndexForInsertAsync(request.ModuleId, request.FolderId);
+            /*
+            var prevOrderIndex = request.PrevItemId.HasValue
+                ? await ItemRepo.GetAll().Where(e => e.Id == request.PrevItemId.Value).Select(e => e.OrderIndex).FirstOrDefaultAsync()
+                : (double?)null;
+            */
 
             var folder = new ConfigurationItemFolder { 
                 Module = module,
-                Name = input.Name,
+                Name = request.Name,
                 Parent = parentFolder,
+                //OrderIndex = orderIndex,
             };
             await FolderRepository.InsertAsync(folder);
 

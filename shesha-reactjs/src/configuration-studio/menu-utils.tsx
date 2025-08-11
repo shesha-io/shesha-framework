@@ -116,8 +116,8 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             label: label,
             key: itemType,
             icon: getIcon(TreeNodeType.ConfigurationItem, itemType),
-            onClick: () => {
-                configurationStudio.createItemAsync({
+            onClick: async () => {
+                await configurationStudio.createItemAsync({
                     moduleId: node.moduleId,
                     folderId: isFolderTreeNode(node)
                         ? node.id
@@ -141,9 +141,11 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             onClick: () => {
                 configurationStudio.createFolderAsync({
                     moduleId: node.moduleId,
-                    folderId: isModuleTreeNode(node)
-                        ? undefined
-                        : node.id
+                    folderId: isFolderTreeNode(node)
+                        ? node.id
+                        : isConfigItemTreeNode(node)
+                            ? node.parentId
+                            : undefined
                 });
             },
         },

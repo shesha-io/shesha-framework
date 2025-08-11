@@ -12,7 +12,7 @@ export interface IAsyncStorage {
 class AsyncLocalStorage implements IAsyncStorage {
     private static instance: AsyncLocalStorage;
 
-    private constructor() { 
+    private constructor() {
         //
     }
 
@@ -23,7 +23,7 @@ class AsyncLocalStorage implements IAsyncStorage {
         return AsyncLocalStorage.instance;
     }
 
-    public async getAsync<T extends StorageValue>(key: string): Promise<T | null> {
+    public getAsync<T extends StorageValue>(key: string): Promise<T | null> {
         return new Promise((resolve) => {
             try {
                 const item = localStorage.getItem(key);
@@ -44,7 +44,7 @@ class AsyncLocalStorage implements IAsyncStorage {
         });
     }
 
-    public async setAsync(key: string, value: StorageValue): Promise<void> {
+    public setAsync(key: string, value: StorageValue): Promise<void> {
         return new Promise((resolve) => {
             try {
                 if (value === null || value === undefined) {
@@ -62,7 +62,7 @@ class AsyncLocalStorage implements IAsyncStorage {
         });
     }
 
-    public async removeAsync(key: string): Promise<void> {
+    public removeAsync(key: string): Promise<void> {
         return new Promise((resolve) => {
             try {
                 localStorage.removeItem(key);
@@ -74,7 +74,7 @@ class AsyncLocalStorage implements IAsyncStorage {
         });
     }
 
-    public async clearAsync(): Promise<void> {
+    public clearAsync(): Promise<void> {
         return new Promise((resolve) => {
             try {
                 localStorage.clear();
@@ -91,7 +91,7 @@ class AsyncLocalStorage implements IAsyncStorage {
         return value !== null;
     }
 
-    public async getKeysAsync(): Promise<string[]> {
+    public getKeysAsync(): Promise<string[]> {
         return new Promise((resolve) => {
             try {
                 resolve(Object.keys(localStorage));

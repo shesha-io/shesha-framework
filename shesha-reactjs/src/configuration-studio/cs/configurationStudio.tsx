@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { FormFullName, HttpClientApi } from "@/providers";
 import { moveTreeNodeAsync, MoveNodePayload, reorderTreeNodeAsync, ReorderNodePayload, fetchFlatTreeAsync, deleteFolderAsync, fetchItemTypesAsync, deleteConfigurationItemAsync, duplicateItemAsync } from "../apis";
 import { ConfigItemTreeNode, FolderTreeNode, ForceRenderFunc, IDocumentInstance, isConfigItemTreeNode, ItemTypeDefinition, TreeNode, TreeNodeType } from "../models";
@@ -170,7 +171,15 @@ export class ConfigurationStudio implements IConfigurationStudio {
     private _itemTypes: ItemTypeDefinition[];
     private _itemTypesMap: Map<string, ItemTypeDefinition> = new Map<string, ItemTypeDefinition>();
 
-    docs: IDocumentInstance[] = [];
+    //docs: IDocumentInstance[] = [];
+    _docs: IDocumentInstance[] = [];
+    get docs(): IDocumentInstance[] {
+        return this._docs;
+    }
+    set docs(value: IDocumentInstance[]) {
+        console.log('LOG: set docs', value);
+        this._docs = value;
+    }
     activeDocId?: string;
     private getDocumenById = (id: string): IDocumentInstance | undefined => {
         return id
@@ -220,7 +229,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     private saveTreeExpandedNodesAsync = async () => {
-        this.storage.setAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS, this._treeExpandedKeys);
+        await this.storage.setAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS, this._treeExpandedKeys);
     };
     private saveTreeSelectionAsync = async () => {
         if (this._selectedNodeId)
@@ -256,7 +265,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         await this.doSelectTreeNodeAsync(node);
 
         if (isConfigItemTreeNode(node) && this.activeDocId !== node.id) {
-            const tab = this.findTabById(node.id);
+            const tab = this.findDocumentById(node.id);
             if (!tab) {
                 // load item, add new tab and select
                 const newTab = await this.createNewTabAsync(node);
@@ -311,7 +320,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             label: d.label,
             type: d.type,
         }));
-        this.storage.setAsync(STORAGE_KEYS.OPENED_DOCS, storedData);
+        await this.storage.setAsync(STORAGE_KEYS.OPENED_DOCS, storedData);
     };
     private saveDocSelectionAsync = async () => {
         if (this.activeDocId)
@@ -347,7 +356,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return newDocument;
     };
 
-    private findTabById = (tabId: string): DocumentBase | undefined => {
+    private findDocumentById = (tabId: string): DocumentBase | undefined => {
         return this.docs.find(t => t.itemId === tabId);
     };
 
@@ -381,16 +390,35 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     openDocById = async (docId?: string): Promise<void> => {
-        const tab = docId ? this.findTabById(docId) : undefined;
-        await this.selectTabAsync(tab);
+        const doc = docId ? this.findDocumentById(docId) : undefined;
+        await this.selectTabAsync(doc);
     };
 
     removeTabAsync = async (tabId?: string): Promise<void> => {
+        
         // TODO: check for unsaved changes, ask user to confirm
         // TODO: unload document
+        const index = this.docs.findIndex(t => t.itemId === tabId);
+        const isActive = this.activeDocId === tabId;
+
+        console.log('LOG: removeTabAsync', { tabId, index, isActive });
+
         this.docs = this.docs.filter(t => t.itemId !== tabId);
+
         await this.saveOpenedDocsAsync();
-        this.notifySubscribers(['tabs']);
+        this.notifySubscribers(['tabs', 'doc']);
+
+        // if the document was active - activate next if available
+        if (isActive) {
+            const indexToSwitch = this.docs.length - 1 >= index
+                ? index
+                : index - 1;
+            const docToSwitchTo = indexToSwitch >= 0
+                ? this.docs[indexToSwitch]
+                : undefined;
+            if (docToSwitchTo)
+                this.selectTabAsync(docToSwitchTo);
+        }
     };
 
     getDocumentDefinition = (itemType: string): DocumentDefinition | undefined => {
@@ -599,6 +627,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         });
         await this.loadTreeAsync();
 
+        console.log('LOG: item created');
         if (response?.id) {
             const treeNode = this._treeNodesMap.get(response.id);
 
@@ -609,9 +638,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 }
 
                 // load item, add new tab and select
+                const docsBefore = this.docs;
                 const newTab = await this.createNewTabAsync(treeNode);
+                const docsAfter = this.docs;
+                console.log('LOG: docs ' + (docsAfter !== docsBefore ? '✅ changed' : '❌ unchanged'));
+
                 // select new tab
-                this.selectTabAsync(newTab);
+                await this.selectTabAsync(newTab);
+                this.notifySubscribers(['tabs']);
             } else
                 console.error(`Tree node not found for a new item with id = '${response.id}'. Item type = '${itemType}'`);
         } else
