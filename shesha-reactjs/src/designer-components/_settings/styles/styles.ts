@@ -59,7 +59,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             max-width: 100%;
             margin-left: 5px;
             margin-right: 0px;
-            color: ${token.colorPrimary};
+            color: grey;
             display: flex;
             justify-content: center;
             align-items: center;
