@@ -88,7 +88,7 @@ export interface IConfigurationStudio {
 
     onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
 
-    loadTreeAsync: () => Promise<void>;
+    loadTreeAndDocsAsync: () => Promise<void>;
     moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;
     reorderTreeNodeAsync: (payload: ReorderNodePayload) => Promise<void>;
     subscribe(type: CsSubscriptionType, callback: () => void): () => void;
@@ -394,16 +394,22 @@ export class ConfigurationStudio implements IConfigurationStudio {
         await this.selectTabAsync(doc);
     };
 
-    removeTabAsync = async (tabId?: string): Promise<void> => {
-        
+    isDocOpened = (docId: string): boolean => {
+        return this.docs.some(t => t.itemId === docId);
+    };
+
+    removeTabAsync = async (docId?: string): Promise<void> => {
+        if (!this.isDocOpened(docId))
+            return;
+
         // TODO: check for unsaved changes, ask user to confirm
         // TODO: unload document
-        const index = this.docs.findIndex(t => t.itemId === tabId);
-        const isActive = this.activeDocId === tabId;
+        const index = this.docs.findIndex(t => t.itemId === docId);
+        const isActive = this.activeDocId === docId;
 
-        console.log('LOG: removeTabAsync', { tabId, index, isActive });
+        console.log('LOG: removeTabAsync', { tabId: docId, index, isActive });
 
-        this.docs = this.docs.filter(t => t.itemId !== tabId);
+        this.docs = this.docs.filter(t => t.itemId !== docId);
 
         await this.saveOpenedDocsAsync();
         this.notifySubscribers(['tabs', 'doc']);
@@ -514,8 +520,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     loadTreeAsync = async () => {
-        this.log('load tree');
-
         this.treeLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
         try {
             const flatTreeNodes = await fetchFlatTreeAsync(this.httpClient);
@@ -544,17 +548,20 @@ export class ConfigurationStudio implements IConfigurationStudio {
             this._treeNodes = treeNodes;
             this._treeNodesMap = treeNodeMap;
 
-            this.loadTreeStateAsync();
-            this.loadDocsStateAsync();
-
             this.treeLoadingState = { status: 'ready', hint: null, error: null };
         } catch (error) {
             this.treeLoadingState = { status: 'failed', hint: 'Failed to fetch tree', error: error };
         }
 
         this.notifySubscribers(['tree', 'tabs', 'doc']);
+    };
 
-        this.log('CS: load tree - done');
+    loadTreeAndDocsAsync = async () => {
+        await this.loadTreeAsync();
+        this.loadTreeStateAsync();
+        this.loadDocsStateAsync();
+
+        this.notifySubscribers(['tree', 'tabs', 'doc']);
     };
 
     moveTreeNodeAsync = async (payload: MoveNodePayload): Promise<void> => {
@@ -657,14 +664,18 @@ export class ConfigurationStudio implements IConfigurationStudio {
         if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
             return;
 
+        const docId = node.id;
         try {
-            await deleteConfigurationItemAsync(this.httpClient, { itemId: node.id });
-            // TODO: change selection, update tabs if required (opened items may be deleted)
+            
+            await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
+            
+            if (this.isDocOpened(docId))
+                this.removeTabAsync(docId);
+            
             await this.loadTreeAsync();
         } catch (error) {
-            console.error(`Failed to delete ${definition.friendlyName} '${node.name}' (id: '${node.id}')`, error);
+            console.error(`Failed to delete ${definition.friendlyName} '${node.name}' (id: '${docId}')`, error);
         }
-
     };
 
     renameItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
@@ -680,7 +691,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 }
             });
 
-            await this.loadTreeAsync();
+            await this.loadTreeAndDocsAsync();
         } catch (error) {
             console.error(`Failed to rename folder '${node.name}' (id: '${node.id}')`, error);
         }
@@ -797,7 +808,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this.log('CS: initialization');
 
         await this.loadItemTypesAsync();
-        await this.loadTreeAsync();
+        await this.loadTreeAndDocsAsync();
 
         this.log('CS: initialization - done');
     };

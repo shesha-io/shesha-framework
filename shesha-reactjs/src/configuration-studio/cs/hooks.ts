@@ -36,7 +36,7 @@ export const useCsTree = (): UseCsTreeResponse => {
 
     return {
         treeNodes: cs.treeNodes,
-        loadTreeAsync: cs.loadTreeAsync,
+        loadTreeAsync: cs.loadTreeAndDocsAsync,
         treeLoadingState: cs.treeLoadingState,
         expandedKeys: cs.treeExpandedKeys,
         selectedKeys: cs.treeSelectedKeys,
