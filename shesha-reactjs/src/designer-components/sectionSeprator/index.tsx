@@ -43,7 +43,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       ...getStyle(model?.containerStyle, formData),
     };
 
-    const dimensions = getDimensionsStyle(extractedDimensions);
+    const dimensions = getDimensionsStyle(extractedDimensions, containerAdditionalStyles);
 
     const inputProps = {
       ...model,

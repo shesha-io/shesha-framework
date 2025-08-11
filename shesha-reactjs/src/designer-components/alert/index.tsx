@@ -2,7 +2,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FormMode } from '@/providers';
 import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
@@ -49,7 +49,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
     formMode: allData.form.formMode,
   }),
   Factory: ({ model, calculatedModel }) => {
-    const { alertType, showIcon, closable, icon } = model;
+    const { alertType, showIcon, closable, icon, style } = model;
     let { evaluatedMessage, evaluatedDescription, formMode } = calculatedModel;
 
     if (model.hidden) return null;
@@ -115,7 +115,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
         type={alertType}
         description={descriptionContent}
         showIcon={showIcon}
-        style={{ ...model.allStyles.fullStyle, width: '100%', height: '100%', padding: '8px' }} // Temporary. Make it configurable
+        style={{ ...getStyle(style, {}), padding: '8px' }} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />
