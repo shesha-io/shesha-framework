@@ -39,6 +39,7 @@ namespace Shesha.ConfigurationStudio
                     IsCodegenPending = e.IsCodegenPending,
                     IsUpdated = e.IsUpdated,
                     IsExposed = e.IsExposed,
+                    IsUpdatedByMe = e.LastModifierUserId != null && e.LastModifierUserId == AbpSession.UserId,
                 })
                 .ToListAsync();
             return treeNodes;

@@ -19,5 +19,6 @@ namespace Shesha.ConfigurationStudio.Dtos
         public bool IsCodegenPending { get; set; }
         public bool IsUpdated { get; set; }
         public bool IsExposed { get; set; }
+        public bool IsUpdatedByMe { get; set; }
     }
 }

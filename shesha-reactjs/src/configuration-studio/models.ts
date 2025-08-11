@@ -14,6 +14,7 @@ export type DocumentFlags = {
     isCodeBased: boolean;
     isCodegenPending: boolean;
     isUpdated: boolean;
+    isUpdatedByMe: boolean;
     isExposed: boolean;
 };
 
@@ -65,6 +66,10 @@ export const isFolderTreeNode = (node: DataNode): node is FolderTreeNode => {
 
 export const isModuleTreeNode = (node: DataNode): node is ModuleTreeNode => {
     return isTreeNode(node) && node.nodeType === TreeNodeType.Module;
+};
+
+export const isNodeWithChildren = (node: DataNode): node is ModuleTreeNode | FolderTreeNode  => {
+    return isModuleTreeNode(node) || isFolderTreeNode(node);
 };
 
 export const TREE_NODE_TYPES =

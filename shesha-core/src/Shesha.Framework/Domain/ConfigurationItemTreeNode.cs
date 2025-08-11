@@ -43,5 +43,6 @@ namespace Shesha.Domain
         public virtual bool IsCodegenPending { get; set; }
         public virtual bool IsUpdated { get; set; }
         public virtual bool IsExposed { get; set; }
+        public virtual int? LastModifierUserId { get; set; }
     }
 }
