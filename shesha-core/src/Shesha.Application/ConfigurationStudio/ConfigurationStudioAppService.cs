@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.Runtime.Validation;
 using Abp.Timing;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,10 @@ namespace Shesha.ConfigurationStudio
             var folder = request.FolderId != null
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
+
+            if (folder != null && folder.Module != module)
+                throw new AbpValidationException($"Selected folder '{folder.Name}' doesn't belong to module '{module.Name}'");
+
             /* TODO: add validation
              * Validate request: check each items and terminate expose if destination module already contains CI with the same name
              */

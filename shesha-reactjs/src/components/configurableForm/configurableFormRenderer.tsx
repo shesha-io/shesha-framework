@@ -55,7 +55,9 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       await shaForm.submitData();
     } catch (error) {
       onSubmittedFailed?.();
-      setValidationErrors(error?.data?.error || error);
+      setValidationErrors(error instanceof Error 
+        ? error.message
+        : error?.data?.error || error);
       console.error('Submit failed: ', error);
     }
   };

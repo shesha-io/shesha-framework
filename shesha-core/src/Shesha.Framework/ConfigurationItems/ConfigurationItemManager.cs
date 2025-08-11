@@ -19,7 +19,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Base class of the Configuration Item Manager
     /// </summary>
-    public abstract class ConfigurationItemManager<TItem, TRevision> : AbpServiceBase, IConfigurationItemManager<TItem> 
+    public abstract class ConfigurationItemManager<TItem, TRevision> : AbpServiceBase, IConfigurationItemManager<TItem>
         where TItem : ConfigurationItem, new()
         where TRevision: ConfigurationItemRevision
     {
@@ -122,6 +122,9 @@ namespace Shesha.ConfigurationItems
 
         public async Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module)
         {
+            if (await ItemExistsAsync(item.Name, module))
+                throw new ArgumentException($"{item.GetFriendlyClassName()} '{item.Name}' already exists in module '{module.Name}'");
+
             return await ExposeAsync((TItem)item, module);
         }
 
@@ -142,6 +145,17 @@ namespace Shesha.ConfigurationItems
         async Task<ConfigurationItem> IConfigurationItemManager.CreateItemAsync(CreateItemInput input)
         {
             return await CreateItemAsync(input);
+        }
+
+        /// <summary>
+        /// Checks existence of item with name <paramref name="name"/> in a module <paramref name="module"/>
+        /// </summary>
+        /// <param name="name">Item name</param>
+        /// <param name="module">Module</param>
+        /// <returns></returns>
+        public Task<bool> ItemExistsAsync(string name, Module module)
+        {
+            return Repository.GetAll().AnyAsync(e => e.Name == name && e.Module == module);
         }
     }
 }

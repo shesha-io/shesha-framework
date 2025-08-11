@@ -46,6 +46,14 @@ namespace Shesha.ConfigurationItems
         /// <param name="module">Module to expose to</param>
         /// <returns></returns>
         Task<TItem> ExposeAsync(TItem item, Module module);
+
+        /// <summary>
+        /// Checks existence of item with name <paramref name="name"/> in a module <paramref name="module"/>
+        /// </summary>
+        /// <param name="name">Item name</param>
+        /// <param name="module">Module</param>
+        /// <returns></returns>
+        Task<bool> ItemExistsAsync(string name, Module module);
     }
 
     public interface IConfigurationItemManager

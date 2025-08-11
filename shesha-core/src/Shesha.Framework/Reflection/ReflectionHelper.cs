@@ -448,6 +448,17 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
+        /// Returns user-friendly name of the class
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        public static string GetFriendlyClassName(this object instance) 
+        { 
+            // TODO: use metadata and entity attribute
+            return instance.GetType().Name.ToFriendlyName();
+        }
+
+        /// <summary>
         /// Returns description of enum item
         /// </summary>
         public static string? GetEnumDescription(Type enumType, Int64? itemValue)

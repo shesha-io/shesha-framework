@@ -12,8 +12,9 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IApplicationContext } from '..';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
+import { AxiosResponse } from 'axios';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -215,7 +216,7 @@ export interface IAsyncValidationError {
   message: string;
 }
 
-export interface IFormValidationErrors { }
+export type IFormValidationErrors = string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error;
 
 export { type ConfigurableFormInstance };
 
