@@ -27,7 +27,6 @@ export interface ICustomFileProps extends IInputStyles {
   borderRadius?: number;
   hideFileName?: boolean;
   container?: IStyleType;
-  thumbnail?: IStyleType;
   primaryColor?: string;
   enableStyleOnReadonly?: boolean;
 }

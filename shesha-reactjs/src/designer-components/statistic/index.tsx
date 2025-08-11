@@ -95,7 +95,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
                     </span>
                   </div>
                 }
-                style={removeUndefinedProps({ ...allStyles.fullStyle, width: '100%', height: '100%' })}
+                style={removeUndefinedProps({ ...allStyles.fullStyle })}
                 valueStyle={removeUndefinedProps({
                   ...valueFontStyles,
                   ...valueStyles,

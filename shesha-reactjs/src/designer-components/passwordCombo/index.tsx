@@ -37,20 +37,22 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
 
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
 
+
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
+
     return (
 
       <PasswordCombo
-        inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.passwordCombo}}
+        inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.passwordCombo }}
         placeholder={placeholder}
         confirmPlaceholder={confirmPlaceholder}
         formItemProps={getFormItemProps(defaultModel, options)}
         formItemConfirmProps={getFormItemProps(confirmModel(defaultModel), options)}
         passwordLength={minLength}
         errorMessage={message}
-        style={ model?.allStyles?.fullStyle }
+        style={model.allStyles.fullStyle}
         className={styles.passwordCombo}
         repeatPropertyName={repeatPropertyName}
       />
