@@ -1,5 +1,32 @@
 export const formApiDefinition = `import { IEntityEndpoints } from 'entities/interfaces';
 
+export interface IValidationErrorInfo {
+  message?: string | null;
+  members?: string | string[] | null;
+}
+
+export interface IErrorInfo {
+  code?: number | null;
+  message?: string | null;
+  details?: string | null;
+  validationErrors?: IValidationErrorInfo[] | null;
+}
+
+export interface IAjaxResponseBase {
+  targetUrl?: string | null;
+  success?: boolean;
+  error?: IErrorInfo;
+  unAuthorizedRequest?: boolean;
+  __abp?: boolean;
+}
+
+export interface AxiosResponse<IAjaxResponseBase> {
+  data: IAjaxResponseBase;
+  status: number;
+  statusText: string;
+  request?: any;
+}
+
 /** Form mode */
 export type FormMode = 'readonly' | 'edit' | 'designer';
 
@@ -62,6 +89,12 @@ export interface FormApi<Values = any> {
    * @param payload data payload
    */
   setFormData: (payload: ISetFormDataPayload) => void;
+
+  /** Get form data. Need for getting actual form data (using in scripts) */
+  getFormData: () => Values;
+
+  /** Set validation errors. Need for display validation errors in the ValidationErrors component */
+  setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;
 
   /** antd form instance */
   formInstance?: FormInstance<Values>;

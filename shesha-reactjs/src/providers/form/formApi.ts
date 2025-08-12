@@ -2,10 +2,11 @@ import { setValueByPropertyName } from "@/utils/object";
 import { ConfigurableFormInstance, ISetFormDataPayload } from "./contexts";
 import { FormMode } from "@/generic-pages/dynamic/interfaces";
 import { FormInstance } from "antd";
-import { isEntityMetadata } from "@/interfaces";
+import { IAjaxResponseBase, IErrorInfo, IFormValidationErrors, isEntityMetadata } from "@/interfaces";
 import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
+import { AxiosResponse } from "axios";
 
 export interface IFormSettings {
   modelType?: string;
@@ -63,6 +64,9 @@ export interface IFormApi<Values = any> {
   /** Get form data. Need for getting actual form data (using in scripts) */
   getFormData: () => Values;
 
+  /** Set validation errors. Need for display validation errors in the ValidationErrors component */
+  setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;
+
   /** antd form instance */
   formInstance?: FormInstance<Values>;
   /** Configurable form settings */
@@ -114,6 +118,9 @@ class PublicFormApiWrapper implements IFormApi {
   };
   getFormData = () => {
     return this.#form?.formData;
+  };
+  setValidationErrors = (payload: IFormValidationErrors) => {
+    this.#form?.shaForm?.setValidationErrors(payload);
   };
   get formInstance(): FormInstance<any> {
     // antd form
