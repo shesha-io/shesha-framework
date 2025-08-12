@@ -25,6 +25,8 @@ export type UseCsTreeResponse = {
     readonly treeLoadingState: ProcessingState;
     loadTreeAsync: () => Promise<void>;
 
+    quickSearch: string;
+    setQuickSearch: (value: string) => void;
     expandedKeys: ExpandedKeys;
     selectedKeys: SeletcedKeys;
     selectedItemNode?: ConfigItemTreeNode;
@@ -38,6 +40,8 @@ export const useCsTree = (): UseCsTreeResponse => {
         treeNodes: cs.treeNodes,
         loadTreeAsync: cs.loadTreeAndDocsAsync,
         treeLoadingState: cs.treeLoadingState,
+        quickSearch: cs.quickSearch,
+        setQuickSearch: cs.setQuickSearch,
         expandedKeys: cs.treeExpandedKeys,
         selectedKeys: cs.treeSelectedKeys,
         selectedItemNode: cs.treeSelectedItemNode,

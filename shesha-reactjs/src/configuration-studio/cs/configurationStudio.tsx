@@ -42,6 +42,7 @@ const STORAGE_KEYS = {
     ACTIVE_DOC_ID: 'activeDocId',
     TREE_EXPANDED_KEYS: 'treeExpandedKeys',
     TREE_SELECTION: 'treeSelection',
+    QUICK_SEARCH: 'quickSearch',
 };
 
 interface CreateItemResponse {
@@ -78,6 +79,7 @@ export type ExportPackageArgs = {
 export interface IConfigurationStudio {
     readonly treeNodes?: TreeNode[];
     readonly treeLoadingState: ProcessingState;
+    readonly quickSearch: string;
     readonly treeExpandedKeys: React.Key[];
     readonly treeSelectedKeys: React.Key[];
     readonly treeSelectedItemNode?: ConfigItemTreeNode;
@@ -87,6 +89,7 @@ export interface IConfigurationStudio {
     setDocumentToolbarRerenderer: (itemId: string, forceRender: ForceRenderFunc) => void;
 
     onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
+    setQuickSearch: (value: string) => void;
 
     loadTreeAndDocsAsync: () => Promise<void>;
     moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;
@@ -166,6 +169,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     private _treeNodes: TreeNode[] = [];
     private _treeNodesMap: Map<string, TreeNode> = new Map<string, TreeNode>();
     private _treeExpandedKeys: React.Key[] = [];
+    private _quickSearch: string;
 
     private _documentDefinitions: DocumentDefinitions;
     private _itemTypes: ItemTypeDefinition[];
@@ -209,6 +213,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this._documentDefinitions.delete(definition.documentType);
     };
 
+    get quickSearch(): string {
+        return this._quickSearch;
+    }
+    setQuickSearch = (value: string) => {
+        this._quickSearch = value;
+        this.saveQuickSearchAsync();
+        this.notifySubscribers(['tree']);
+    };
     get treeExpandedKeys(): React.Key[] {
         return this._treeExpandedKeys;
     };
@@ -234,13 +246,20 @@ export class ConfigurationStudio implements IConfigurationStudio {
         else
             await this.storage.removeAsync(STORAGE_KEYS.TREE_SELECTION);
     };
+    private saveQuickSearchAsync = async () => {
+        await this.storage.setAsync(STORAGE_KEYS.QUICK_SEARCH, this._quickSearch);
+    };
     private loadTreeSelectionAsync = async () => {
         this._selectedNodeId = await this.storage.getAsync(STORAGE_KEYS.TREE_SELECTION);
     };
     private loadTreeExpandedNodesAsync = async () => {
         this._treeExpandedKeys = await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS) ?? [];
     };
+    private loadQuickSearchAsync = async () => {
+        this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH) ?? "";
+    };
     private loadTreeStateAsync = async () => {
+        await this.loadQuickSearchAsync();
         await this.loadTreeExpandedNodesAsync();
         await this.loadTreeSelectionAsync();
     };

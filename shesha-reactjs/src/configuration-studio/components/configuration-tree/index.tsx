@@ -49,11 +49,10 @@ const allowNodeDrop: AllowDrop = (options): boolean => {
 
 export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
     const cs = useConfigurationStudio();
-    const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand } = useCsTree();
+    const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch } = useCsTree();
     const [contextNode, setContextNode] = useState<TreeNode>(null);
     const { styles } = useStyles();
 
-    const [quickSearch, setQuickSearch] = useState<string>("");
     const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
     const handleSelect: OnSelectHandler = (_keys, info) => {
