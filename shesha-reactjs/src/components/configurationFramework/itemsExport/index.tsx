@@ -1,6 +1,6 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import React, { MutableRefObject, ReactNode, useMemo, useState } from 'react';
+import React, { MutableRefObject, useMemo, useState } from 'react';
 import { FC } from 'react';
 import {
   Button,
@@ -11,7 +11,6 @@ import {
   Spin,
   Switch,
   Tree,
-  Typography
 } from 'antd';
 import { getFileNameFromResponse } from '@/utils/fetchers';
 import { useSheshaApplication } from '@/providers';
@@ -20,8 +19,7 @@ import { ExportFilter } from './filter';
 import { useTreeForExport } from '@/configuration-studio/apis';
 import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from '@/configuration-studio/models';
 import { DownOutlined } from '@ant-design/icons';
-
-const { Text } = Typography;
+import { getTitleWithHighlight } from '@/configuration-studio/filter-utils';
 
 export interface IExportInterface {
   exportExecuter: () => Promise<any>;
@@ -33,57 +31,6 @@ export interface IConfigurationItemsExportProps {
   onExported?: () => void;
   exportRef: MutableRefObject<IExportInterface>;
 }
-
-const replaceWithHighLight = (str: string, searchStr: string, replacement: (value: string) => ReactNode): ReactNode[] => {
-  if (!str || !searchStr)
-    return [];
-  const searchStrLen = searchStr.length;
-  if (searchStrLen === 0)
-    return [];
-
-  const strLower = str.toLowerCase();
-  const searchStrLower = searchStr.toLowerCase();
-
-  let index = -1;
-  let startIndex = 0;
-  const result = [];
-
-  while ((index = strLower.indexOf(searchStrLower, startIndex)) > -1) {
-    if (index > 0)
-      result.push(str.substring(startIndex, index));
-
-    const occ = str.substring(index, index + searchStrLen);
-    const newContent = replacement(occ);
-    result.push(newContent);
-
-    startIndex = index + searchStrLen;
-  }
-  if (startIndex < str.length)
-    result.push(str.substring(startIndex));
-
-  return result;
-};
-
-const getTitleWithHighlight = (node: TreeNode, searchString?: string): ReactNode | undefined => {
-  if (!searchString)
-    return undefined;
-  if (typeof (node.title) !== 'string')
-    return undefined;
-
-  const strTitle = node.title as string;
-  const index = strTitle.toLowerCase().indexOf(searchString.toLowerCase());
-  if (index <= -1)
-    return undefined;
-
-  const parts = replaceWithHighLight(strTitle, searchString, str => (<Text type="success">{str}</Text>));
-  return (
-    <>
-      {parts.map((part, index) => (
-        <React.Fragment key={index}>{part}</React.Fragment>
-      ))}
-    </>
-  );
-};
 
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();

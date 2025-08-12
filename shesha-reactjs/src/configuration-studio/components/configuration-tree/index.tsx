@@ -9,6 +9,7 @@ import { useCsTree } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { buildNodeContextMenu } from '../../menu-utils';
 import { useStyles } from '../../styles';
+import { useFilteredTreeNodes } from './filter';
 
 export interface IConfigurationTreeProps {
 }
@@ -51,6 +52,9 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
     const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand } = useCsTree();
     const [contextNode, setContextNode] = useState<TreeNode>(null);
     const { styles } = useStyles();
+
+    const [quickSearch, setQuickSearch] = useState<string>("");
+    const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
     const handleSelect: OnSelectHandler = (_keys, info) => {
         const selectedNode = handleSelect && info.selectedNodes.length === 1
@@ -116,8 +120,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-
-        console.log('LOG: onSearchChange', value);
+        setQuickSearch(value);
     };
 
     const handleKeyDown: OnTreeKeyDown = (e) => {
@@ -134,6 +137,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                     <div className={styles.csNavPanelHeader}>
                         <Input.Search
                             placeholder="Search"
+                            value={quickSearch}
                             onChange={onSearchChange}
                             allowClear
                         />
@@ -148,7 +152,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                                 showIcon
                                 switcherIcon={<DownOutlined />}
 
-                                treeData={treeNodes}
+                                //treeData={treeNodes}
+                                treeData={filteredTreeNodes}
                                 blockNode /*required for correct dragging*/
 
                                 draggable={isNodeDraggable}

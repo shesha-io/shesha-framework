@@ -177,7 +177,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return this._docs;
     }
     set docs(value: IDocumentInstance[]) {
-        console.log('LOG: set docs', value);
         this._docs = value;
     }
     activeDocId?: string;
@@ -203,12 +202,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
 
     registerDocumentDefinition = (definition: DocumentDefinition) => {
-        //console.log('LOG: register definition ✅', definition);
         this._documentDefinitions.set(definition.documentType, definition);
     };
 
     unregisterDocumentDefinition = (definition: DocumentDefinition) => {
-        //console.log('LOG: unregister definition 🟥', definition);
         this._documentDefinitions.delete(definition.documentType);
     };
 
@@ -406,8 +403,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
         // TODO: unload document
         const index = this.docs.findIndex(t => t.itemId === docId);
         const isActive = this.activeDocId === docId;
-
-        console.log('LOG: removeTabAsync', { tabId: docId, index, isActive });
 
         this.docs = this.docs.filter(t => t.itemId !== docId);
 
@@ -634,7 +629,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
         });
         await this.loadTreeAsync();
 
-        console.log('LOG: item created');
         if (response?.id) {
             const treeNode = this._treeNodesMap.get(response.id);
 
@@ -645,10 +639,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 }
 
                 // load item, add new tab and select
-                const docsBefore = this.docs;
                 const newTab = await this.createNewTabAsync(treeNode);
-                const docsAfter = this.docs;
-                console.log('LOG: docs ' + (docsAfter !== docsBefore ? '✅ changed' : '❌ unchanged'));
 
                 // select new tab
                 await this.selectTabAsync(newTab);
