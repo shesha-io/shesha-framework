@@ -7,6 +7,8 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch: string)
     const filteredTreeNodes = useMemo<TreeNode[]>(() => {
         if (!treeNodes || treeNodes.length === 0)
             return emptyNodes;
+        if (!quickSearch)
+            return treeNodes;
 
         const loop = (data: TreeNode[]): TreeNode[] => {
             const result: TreeNode[] = [];
