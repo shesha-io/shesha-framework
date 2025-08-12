@@ -111,6 +111,8 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
 };
 
 const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArgs): MenuItemType[] => {
+    if (!node)
+        return [];
     const buildCreateCIMenuItem = (label: string, itemType: string): MenuItemType => {
         return {
             label: label,
@@ -233,9 +235,12 @@ export const buildNodeContextMenu = (args: BuildNodeMenuArgs): MenuItemType[] =>
 };
 
 export const buildCreateNewMenu = (args: BuildNodeMenuArgs<TreeNode>): MenuItemType[] => {
-    return [
-        ...buildCreateNewItemsMenu(args),
-        getDivider(),
-        ...buildExposeAndImportExportMenu(args),
-    ];
+    console.log('LOG: buildCreateNewMenu');
+    const result = buildCreateNewItemsMenu(args);
+    const serviceItems = buildExposeAndImportExportMenu(args);
+    if (result.length > 0 && serviceItems.length > 0)
+        result.push(getDivider());
+    
+    result.push(...serviceItems);
+    return result;
 };

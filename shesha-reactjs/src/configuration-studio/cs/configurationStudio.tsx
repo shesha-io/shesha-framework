@@ -82,7 +82,8 @@ export interface IConfigurationStudio {
     readonly quickSearch: string;
     readonly treeExpandedKeys: React.Key[];
     readonly treeSelectedKeys: React.Key[];
-    readonly treeSelectedItemNode?: ConfigItemTreeNode;
+    readonly treeSelectedNode?: TreeNode;
+    readonly treeSelectedItemNode?: ConfigItemTreeNode;    
 
     readonly itemTypes: ItemTypeDefinition[];
     toolbarRef?: MutableRefObject<any>;
@@ -230,10 +231,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
             : [];
     };
 
-    get treeSelectedItemNode(): ConfigItemTreeNode | undefined {
-        const node = this._selectedNodeId
+    get treeSelectedNode(): TreeNode | undefined {
+        return this._selectedNodeId
             ? this._treeNodesMap.get(this._selectedNodeId)
-            : undefined;
+            : undefined;        
+    };
+
+    get treeSelectedItemNode(): ConfigItemTreeNode | undefined {
+        const node = this.treeSelectedNode;
         return isConfigItemTreeNode(node) ? node : undefined;
     };
 
