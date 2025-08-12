@@ -27,8 +27,6 @@ const tableClassNames = {
   shaCellParent: 'sha-cell-parent',
   shaCellParentFW: 'sha-cell-parent-fw', // Full width cell parent, used for cells that should take full width of the row,
   shaSpanCenterVertically: 'sha-span-center-vertically',
-  iconPrefixCls: 'anticon',
-
 };
 const tableStyles = {
   styles: tableClassNames,
@@ -113,10 +111,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         justify-content: center;
         height: 100%;
       }
-
-       .${iconPrefixCls} > svg {
-          margin-top: 3px;
-       }
+      .anticon svg{
+        margin-top: 3px !important;
+      }
 
       .${shaTable} {
         border-spacing: 0;
