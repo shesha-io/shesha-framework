@@ -4,6 +4,7 @@ import React, { MutableRefObject, useMemo, useState } from 'react';
 import { FC } from 'react';
 import {
   Button,
+  Card,
   Empty,
   Form,
   Result,
@@ -146,15 +147,19 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             filteredTreeNodes.length > 0
               ? (
                 <>
-                  <Tree<TreeNode>
-                    showLine
-                    checkable
-                    showIcon
-                    switcherIcon={<DownOutlined />}
-                    treeData={filteredTreeNodes}
-                    onCheck={onCheck}
-                    checkedKeys={checkedIds}
-                  />
+                  <Card
+                    styles={{ body: { padding: 0, maxHeight: '70vh', overflowY: 'auto' } }}
+                  >
+                    <Tree<TreeNode>
+                      showLine
+                      checkable
+                      showIcon
+                      switcherIcon={<DownOutlined />}
+                      treeData={filteredTreeNodes}
+                      onCheck={onCheck}
+                      checkedKeys={checkedIds}
+                    />
+                  </Card>
                   <Form.Item label="Include dependencies">
                     <Switch checked={exportDependencies} onChange={setExportDependencies}></Switch>
                   </Form.Item>
