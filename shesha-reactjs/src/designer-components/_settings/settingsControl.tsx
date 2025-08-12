@@ -115,7 +115,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         danger={mode === 'value' && !!code}
         size='small'
         icon={mode === 'code' && !!code ? <CodeFilled /> : !!code ? <CodeFilled /> : <CodeOutlined />}
-        color='lightslategrey'
         onClick={onSwitchMode}
       />
       {mode === 'code' && editor}
