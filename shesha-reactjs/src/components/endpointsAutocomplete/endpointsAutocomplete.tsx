@@ -145,7 +145,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       onSearch={handleSearch}
       notFoundContent={null}
       size={props.size}
-      dropdownStyle={props?.dropdownStyle}
+      styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >
       <Input addonBefore={props.prefix} addonAfter={props.suffix} size={props.size} />
