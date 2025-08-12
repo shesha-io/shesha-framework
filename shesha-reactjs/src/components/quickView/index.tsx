@@ -179,6 +179,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     );
 
   const title = loadingState === 'error' ? 'Quickview not configured properly' : formTitle;
+
   return (
     <Popover
       overlayInnerStyle={{ width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }}
