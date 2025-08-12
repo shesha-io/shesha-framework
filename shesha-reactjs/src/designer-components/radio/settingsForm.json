@@ -428,11 +428,6 @@
                 "type": "object"
               },
               {
-                "name": "dateString",
-                "description": "Date string of current value",
-                "type": "string"
-              },
-              {
                 "name": "form",
                 "description": "Form instance",
                 "type": "FormInstance"
@@ -463,9 +458,9 @@
                 "type": "object"
               },
               {
-                "name": "current",
+                "name": "value",
                 "description": "Component current value",
-                "type": "object"
+                "type": "string"
               },
               {
                 "name": "setFormData",
@@ -485,7 +480,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"dateString\", \"Date string value\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .build();"
           }
         ]
       },
