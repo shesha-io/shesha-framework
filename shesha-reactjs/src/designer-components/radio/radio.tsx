@@ -13,7 +13,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useFormData } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { customDateEventHandler } from '@/components/formDesigner/components/utils';
+import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -38,10 +38,10 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     return (
       <ConfigurableFormItem model={restProps}>
         {(value, onChange) => {
-          const customEvent = customDateEventHandler(model, allData);
+          const customEvent = customOnChangeValueEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
             const newValue = args[0]?.target?.value;
-            customEvent?.onChange?.(newValue, args[0]);
+            customEvent?.onChange?.(newValue);
             if (typeof onChange === 'function')
               onChange(...args);
           };
