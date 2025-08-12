@@ -7,12 +7,10 @@ using Shesha.Domain;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Permissions;
-using Shesha.Reflection;
 using Shesha.Validations;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,149 +41,14 @@ namespace Shesha.Web.FormsDesigner.Services
             return $"{module}.{name}";
         }
 
-        /// inheritedDoc
-        public override async Task<FormConfiguration> CreateNewVersionAsync(FormConfiguration form)
-        {
-            // todo: check business rules
-
-            var newVersion = new FormConfiguration();
-            newVersion.Origin = form.Origin;
-            newVersion.Name = form.Name;
-            newVersion.Module = form.Module;
-
-            // TODO: V1 review
-            //newVersion.Description = form.Description;
-            //newVersion.Label = form.Label;
-            //newVersion.Markup = form.Markup;
-            //newVersion.ModelType = form.ModelType;
-            //newVersion.IsTemplate = form.IsTemplate;
-            //newVersion.Template = form.Template;
-            newVersion.Normalize();
-
-            await Repository.InsertAsync(newVersion);
-
-            /* note: we must mark previous version as retired only during publication of the new version
-            if (form.Configuration.VersionStatus == ConfigurationItemVersionStatus.Live) 
-            {
-                form.Configuration.VersionStatus = ConfigurationItemVersionStatus.Retired;
-                await ConfigurationItemRepository.UpdateAsync(form.Configuration);
-            }
-            */
-
-            return newVersion;
-        }
-
         public Task<List<FormConfiguration>> GetAllAsync()
         {
             return Repository.GetAllListAsync();
         }
 
-        /// inheritedDoc
-        public async Task DeleteAllVersionsAsync(Guid id)
-        {
-            var config = await Repository.GetAsync(id);
-
-            await Repository.DeleteAsync(f => f.Origin == config.Origin && !f.IsDeleted);
-        }
-
-        /// inheritedDoc
-        public async Task MoveToModuleAsync(MoveToModuleInput input)
-        {
-            var form = await Repository.GetAsync(input.ItemId);
-            var module = await ModuleRepository.GetAsync(input.ModuleId);
-
-            var validationResults = new List<ValidationResult>();
-
-            // todo: review validation messages, add localization support
-            if (module == null)
-                validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
-            if (module != null && form != null)
-            {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == form.Name && f != form).AnyAsync();
-                if (alreadyExist)
-                    validationResults.Add(new ValidationResult($"Form with name `{form.Name}` already exists in module `{module.Name}`")
-                    );
-            }
-
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            form.NotNull();
-
-            var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == form.Origin);
-            var allVersions = await allVersionsQuery.ToListAsync();
-
-            foreach (var version in allVersions)
-            {
-                version.Module = module;
-                await Repository.UpdateAsync(version);
-            }            
-        }
-
         public override Task<IConfigurationItemDto> MapToDtoAsync(FormConfiguration item)
         {
             return Task.FromResult<IConfigurationItemDto>(ObjectMapper.Map<FormConfigurationDto>(item));
-        }
-
-        public override async Task<FormConfiguration> CopyAsync(FormConfiguration item, CopyItemInput input)
-        {
-            var srcForm = item;
-
-            // todo: validate input
-            var module = await ModuleRepository.FirstOrDefaultAsync(input.ModuleId);
-
-            var validationResults = new List<ValidationResult>();
-
-            // todo: review validation messages, add localization support
-            if (module == null)
-                validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
-            if (string.IsNullOrWhiteSpace(input.Name))
-                validationResults.Add(new ValidationResult("Name is mandatory", new List<string> { nameof(input.Name) }));
-
-            if (module != null && !string.IsNullOrWhiteSpace(input.Name))
-            {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
-                if (alreadyExist)
-                    validationResults.Add(new ValidationResult(
-                        module != null
-                            ? $"Form with name `{input.Name}` already exists in module `{module.Name}`"
-                            : $"Form with name `{input.Name}` already exists"
-                        )
-                    );
-            }
-
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var form = new FormConfiguration();
-            form.Name = input.Name;
-            form.Module = module;
-
-            form.Origin = form;
-
-            // TODO: V1 review
-            var revision = form.EnsureLatestRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-            revision.Markup = srcForm.Revision.Markup;
-            revision.ModelType = srcForm.Revision.ModelType;
-            revision.IsTemplate = srcForm.Revision.IsTemplate;
-            //revision.Template = srcForm.Template;
-            form.Normalize();
-
-            await Repository.InsertAsync(form);
-
-            await _permissionedObjectManager.CopyAsync(
-                GetFormPermissionedObjectName(item.Module?.Name, item.Name),
-                GetFormPermissionedObjectName(form.Module?.Name, form.Name),
-                ShaPermissionedObjectsTypes.Form
-            );
-
-            return form;
-        }
-
-        public async Task<FormConfiguration> CopyAsync(CopyItemInput input)
-        {
-            var srcForm = await Repository.GetAsync(input.ItemId);
-            return await CopyAsync(srcForm, input) as FormConfiguration;
         }
 
         public override async Task<FormConfiguration> ExposeAsync(FormConfiguration item, Module module)
@@ -273,9 +136,12 @@ namespace Shesha.Web.FormsDesigner.Services
             return form;
         }
 
-        public override Task<FormConfiguration> DuplicateAsync(FormConfiguration item)
+        protected override Task CopyRevisionPropertiesAsync(FormConfigurationRevision source, FormConfigurationRevision destination)
         {
-            throw new NotImplementedException();
+            destination.Markup = source.Markup;
+            destination.IsTemplate = source.IsTemplate;
+
+            return Task.CompletedTask;
         }
     }
 }

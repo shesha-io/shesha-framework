@@ -1,5 +1,6 @@
 ﻿using Abp;
 using Abp.Domain.Repositories;
+using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.New;
@@ -7,10 +8,7 @@ using Shesha.Domain;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Validations;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,8 +18,8 @@ namespace Shesha.ConfigurationItems
     /// Base class of the Configuration Item Manager
     /// </summary>
     public abstract class ConfigurationItemManager<TItem, TRevision> : AbpServiceBase, IConfigurationItemManager<TItem>
-        where TItem : ConfigurationItem, new()
-        where TRevision: ConfigurationItemRevision
+        where TItem : ConfigurationItem<TRevision>, new()
+        where TRevision: ConfigurationItemRevision, new()
     {
         /// <summary>
         /// Configurable Item type supported by the current manager
@@ -43,10 +41,90 @@ namespace Shesha.ConfigurationItems
             LocalizationSourceName = SheshaConsts.LocalizationSourceName;
         }
 
-        /// inheritedDoc
-        public abstract Task<TItem> CopyAsync(TItem item, CopyItemInput input);
+        private async Task<string> GenerateItemDuplicateNameAsync(TItem item)
+        {
+            // ‘{original file name} – copy’
+            var baseName = $"{item.Name} - copy";
 
-        public abstract Task<TItem> DuplicateAsync(TItem item);
+            var existingNames = await Repository.GetAll()
+                .Where(e => e.Name.StartsWith(baseName))
+                .Select(e => e.Name)
+                .ToListAsync();
+
+            var maxCopyNumber = existingNames.Any()
+                ? existingNames.Select(n =>
+                    {
+                        var suffix = n.Replace(baseName, "").Trim();
+                        return string.IsNullOrWhiteSpace(suffix)
+                            ? 1
+                            : int.TryParse(suffix, out  var copyNo)
+                                ? copyNo
+                                : -1;
+                    })
+                    .MaxOrDefault(0)
+                : 0;
+            int? newNumber = maxCopyNumber > 0 
+                ? maxCopyNumber + 1 
+                : null;
+
+            return $"{baseName}{newNumber}";
+        }
+
+        public virtual async Task<TItem> DuplicateAsync(TItem item) 
+        {
+            var newName = await GenerateItemDuplicateNameAsync(item);
+            var duplicate = new TItem { 
+                Module = item.Module,
+                Application = item.Application,
+                Folder = item.Folder,
+                Name = newName,
+                // OrderIndex = !!!
+            };
+            await CopyItemPropertiesAsync(item, duplicate);
+
+            duplicate.SurfaceStatus = null;
+            duplicate.ExposedFrom = null;
+            duplicate.ExposedFromRevision = null;
+            duplicate.LatestImportedRevisionId = null;
+
+            duplicate.Normalize();
+            await Repository.InsertAsync(duplicate);
+
+            var sourceRevision = item.LatestRevision;
+            var duplicateRevision = duplicate.MakeNewRevision();
+
+            // copy base properties
+            duplicateRevision.Description = sourceRevision.Description;
+            duplicateRevision.Label = sourceRevision.Label;
+
+            // TODO: map revision properties            
+            await CopyRevisionPropertiesAsync(sourceRevision, duplicateRevision);
+
+            duplicateRevision.CreatedByImport = null;
+            duplicateRevision.ParentRevision = null;
+            
+            await RevisionRepository.InsertAsync(duplicateRevision);
+
+            await Repository.UpdateAsync(duplicate);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            return duplicate;
+        }
+
+        protected virtual Task CopyItemPropertiesAsync(TItem source, TItem destination)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Copy value of custom properties from <paramref name="source"/> to <paramref name="destination"/> revision.
+        /// Is used in Duplicate operation
+        /// </summary>
+        /// <param name="source">Source revision to copy custom properties from</param>
+        /// <param name="destination">Destination revision to copy custom properties to</param>
+        /// <returns></returns>
+        protected abstract Task CopyRevisionPropertiesAsync(TRevision source, TRevision destination);
 
         /// inheritedDoc
         public abstract Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
@@ -54,65 +132,9 @@ namespace Shesha.ConfigurationItems
         /// inheritedDoc
         public abstract Task<TItem> ExposeAsync(TItem item, Module module);
         
-
-        /// inheritedDoc
-        public async virtual Task MoveToModuleAsync(TItem item, MoveItemToModuleInput input)
-        {
-            var module = await ModuleRepository.GetAsync(input.ModuleId);
-
-            var validationResults = new List<ValidationResult>();
-
-            // todo: review validation messages, add localization support
-            if (item == null)
-                validationResults.Add(new ValidationResult("Please select an item to move", new List<string> { nameof(input.ItemId) }));
-            if (module == null)
-                validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
-            if (module != null && item != null)
-            {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == item.Name && f != item).AnyAsync();
-                if (alreadyExist)
-                    validationResults.Add(new ValidationResult($"Item with name `{item.Name}` already exists in module `{module.Name}`")
-                    );
-            }
-
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            item.NotNull();
-
-            item.Module = module;
-            await Repository.UpdateAsync(item);
-        }
-
-        public abstract Task<TItem> CreateNewVersionAsync(TItem item);
-
-        public virtual Task DeleteAllVersionsAsync(TItem item)
-        {
-            return Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && !f.IsDeleted);
-        }
-
-        public async Task<ConfigurationItem> CopyAsync(ConfigurationItem item, CopyItemInput input)
-        {
-            return await CopyAsync((TItem)item, input);
-        }
-
         public async Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item)
         {
             return await DuplicateAsync((TItem)item);
-        }
-
-        public Task MoveToModuleAsync(ConfigurationItem item, MoveItemToModuleInput input)
-        {
-            return MoveToModuleAsync((TItem)item, input);
-        }
-
-        public async Task<ConfigurationItem> CreateNewVersionAsync(ConfigurationItem item)
-        {
-            return await CreateNewVersionAsync((TItem)item);
-        }
-
-        public Task DeleteAllVersionsAsync(ConfigurationItem item)
-        {
-            return DeleteAllVersionsAsync((TItem)item);
         }
 
         public async Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItem item)

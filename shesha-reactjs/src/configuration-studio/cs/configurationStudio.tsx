@@ -676,12 +676,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
         const docId = node.id;
         try {
-            
+
             await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
-            
+
             if (this.isDocOpened(docId))
                 this.removeTabAsync(docId);
-            
+
             await this.loadTreeAsync();
         } catch (error) {
             console.error(`Failed to delete ${definition.friendlyName} '${node.name}' (id: '${docId}')`, error);
@@ -710,8 +710,32 @@ export class ConfigurationStudio implements IConfigurationStudio {
     duplicateItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
         const definition = this.getItemTypeDefinition(node.itemType);
         try {
-            await duplicateItemAsync(this.httpClient, { itemId: node.id });
+            const response = await duplicateItemAsync(this.httpClient, { itemId: node.id });
+            if (!response.success)
+                return;
+
             await this.loadTreeAsync();
+            const duplicateId = response.result?.itemId;
+
+            if (duplicateId) {
+                const treeNode = this._treeNodesMap.get(duplicateId);
+
+                if (treeNode && isConfigItemTreeNode(treeNode)) {
+                    if (treeNode.parentId && !(this._treeExpandedKeys.includes(treeNode.parentId))) {
+                        this._treeExpandedKeys.push(treeNode.parentId);
+                        this.notifySubscribers(['tree']);
+                    }
+
+                    // load item, add new tab and select
+                    const newTab = await this.createNewTabAsync(treeNode);
+
+                    // select new tab
+                    await this.selectTabAsync(newTab);
+                    this.notifySubscribers(['tabs']);
+                } else
+                    console.error(`Tree node not found for a new item with id = '${duplicateId}'. Item type = '${node.itemType}'`);
+            } else
+                console.error(`Item creation API didn't return expected id of a new item. Item type = '${node.itemType}'`);
         } catch (error) {
             this.showError(`Failed to duplicate ${definition.friendlyName} '${node.name}'`, error);
         }

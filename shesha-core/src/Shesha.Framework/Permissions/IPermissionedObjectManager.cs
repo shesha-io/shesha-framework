@@ -59,8 +59,6 @@ namespace Shesha.Permissions
 
         Task<PermissionedObjectDto> GetAsync(Guid id);
 
-        Task<PermissionedObjectDto?> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string? dstObjectType = null);
-
         /// <summary>
         /// Get Protected Object by object name
         /// </summary>

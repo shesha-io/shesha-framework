@@ -11,11 +11,9 @@ using Shesha.Extensions;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
-using Shesha.Reflection;
 using Shesha.Validations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -110,74 +108,6 @@ namespace Shesha.Notifications
             return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
-        public override async Task<NotificationTypeConfig> CopyAsync(NotificationTypeConfig src, CopyItemInput input)
-        {
-            // todo: validate input
-            var module = await ModuleRepository.FirstOrDefaultAsync(input.ModuleId);
-
-            var validationResults = new List<ValidationResult>();
-
-            // todo: review validation messages, add localization support
-            if (src == null)
-                validationResults.Add(new ValidationResult("Please select notification type to copy", new List<string> { nameof(input.ItemId) }));
-            if (module == null)
-                validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
-            if (string.IsNullOrWhiteSpace(input.Name))
-                validationResults.Add(new ValidationResult("Name is mandatory", new List<string> { nameof(input.Name) }));
-
-            if (module != null && !string.IsNullOrWhiteSpace(input.Name))
-            {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
-                if (alreadyExist)
-                    validationResults.Add(new ValidationResult(
-                        module != null
-                            ? $"Notification Type with name `{input.Name}` already exists in module `{module.Name}`"
-                            : $"Notification Type with name `{input.Name}` already exists"
-                        )
-                    );
-            }
-            src.NotNull();
-
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var newCopy = new NotificationTypeConfig();
-            newCopy.Name = input.Name;
-            newCopy.Module = module;
-
-            var revision = newCopy.EnsureLatestRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-
-            newCopy.Origin = newCopy;
-
-            // notification specific props
-            revision.CopyNotificationSpecificPropsFrom(src.Revision);
-
-            newCopy.Normalize();
-
-            await Repository.InsertAsync(newCopy);
-
-            await CopyTemplatesAsync(src, newCopy);
-
-            return newCopy;
-        }
-
-        private Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
-        {
-            throw new NotImplementedException();
-            /*
-            var srcItems = await _templateRepository.GetAll().Where(i => i.PartOf == source).ToListAsync();
-
-            foreach (var srcItem in srcItems)
-            {
-                var dstItem = srcItem.Clone();
-                dstItem.PartOf = destination;
-
-                await _templateRepository.InsertAsync(dstItem);
-            }
-            */
-        }        
-
         public async Task<NotificationTypeConfig> CreateNewVersionWithoutDetailsAsync(NotificationTypeConfig src)
         {
             var newVersion = new NotificationTypeConfig();
@@ -195,15 +125,6 @@ namespace Shesha.Notifications
             newVersion.Normalize();
 
             await Repository.InsertAsync(newVersion);
-
-            return newVersion;
-        }
-
-        public override async Task<NotificationTypeConfig> CreateNewVersionAsync(NotificationTypeConfig src)
-        {
-            var newVersion = await CreateNewVersionWithoutDetailsAsync(src);
-
-            await CopyTemplatesAsync(src, newVersion);
 
             return newVersion;
         }
@@ -241,7 +162,7 @@ namespace Shesha.Notifications
             return notification;
         }
 
-        public override Task<NotificationTypeConfig> DuplicateAsync(NotificationTypeConfig item)
+        protected override Task CopyRevisionPropertiesAsync(NotificationTypeConfigRevision source, NotificationTypeConfigRevision destination)
         {
             throw new NotImplementedException();
         }

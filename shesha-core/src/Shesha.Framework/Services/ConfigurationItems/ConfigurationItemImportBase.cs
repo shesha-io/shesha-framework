@@ -148,6 +148,7 @@ namespace Shesha.Services.ConfigurationItems
                     Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
                     Name = distributedItem.Name,
                 };
+                item.Normalize();
                 await Repository.InsertAsync(item);
             }
             var revision = item.MakeNewRevision();
@@ -155,7 +156,6 @@ namespace Shesha.Services.ConfigurationItems
             await MapCustomPropsToItemAsync(item, revision, distributedItem);
 
             revision.CreatedByImport = context.ImportResult;
-            item.Normalize();
 
             await RevisionRepository.InsertAsync(revision);
 

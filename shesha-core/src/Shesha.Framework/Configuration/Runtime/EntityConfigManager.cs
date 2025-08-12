@@ -55,21 +55,6 @@ namespace Shesha.Configuration.Runtime
                 : result;
         }
 
-        public override async Task<EntityConfig> CreateNewVersionAsync(EntityConfig item)
-        {
-            // todo: check business rules
-
-            var newVersion =new EntityConfig();
-
-            MapEntityConfig(item, newVersion);
-
-            await Repository.InsertAsync(newVersion);
-
-            await MapPropertiesAsync(item, newVersion);
-
-            return newVersion;
-        }
-
         protected EntityConfig MapEntityConfig(EntityConfig src, EntityConfig dest)
         {
             dest.Name = src.Name;
@@ -147,11 +132,6 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        public override Task<EntityConfig> CopyAsync(EntityConfig item, CopyItemInput input)
-        {
-            throw new NotImplementedException();
-        }
-
         public override Task<IConfigurationItemDto> MapToDtoAsync(EntityConfig item)
         {
             throw new NotImplementedException();
@@ -167,7 +147,7 @@ namespace Shesha.Configuration.Runtime
             throw new NotImplementedException();
         }
 
-        public override Task<EntityConfig> DuplicateAsync(EntityConfig item)
+        protected override Task CopyRevisionPropertiesAsync(EntityConfigRevision source, EntityConfigRevision destination)
         {
             throw new NotImplementedException();
         }

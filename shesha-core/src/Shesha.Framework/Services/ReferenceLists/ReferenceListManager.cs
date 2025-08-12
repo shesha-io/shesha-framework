@@ -5,7 +5,6 @@ using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
-using Shesha.Reflection;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Validations;
 using System;
@@ -121,64 +120,6 @@ namespace Shesha.Services.ReferenceLists
             return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
-        public override async Task<ReferenceList> CopyAsync(ReferenceList item, CopyItemInput input)
-        {
-            // todo: validate input
-            var module = await ModuleRepository.FirstOrDefaultAsync(input.ModuleId);
-
-            var validationResults = new List<ValidationResult>();
-
-            // todo: review validation messages, add localization support
-            if (item == null)
-                validationResults.Add(new ValidationResult("Please select a referencelist to copy", new List<string> { nameof(input.ItemId) }));
-            if (module == null)
-                validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
-            if (string.IsNullOrWhiteSpace(input.Name))
-                validationResults.Add(new ValidationResult("Name is mandatory", new List<string> { nameof(input.Name) }));
-
-            if (module != null && !string.IsNullOrWhiteSpace(input.Name))
-            {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
-                if (alreadyExist)
-                    validationResults.Add(new ValidationResult(
-                        module != null
-                            ? $"Reference List with name `{input.Name}` already exists in module `{module.Name}`"
-                            : $"Reference List with name `{input.Name}` already exists"
-                        )
-                    );
-            }
-
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var srcList = item.ForceCastAs<ReferenceList>();
-
-            var listCopy = new ReferenceList();
-            listCopy.Name = input.Name;
-            listCopy.Module = module;
-
-            listCopy.Origin = listCopy;
-
-            var revision = listCopy.EnsureLatestRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-            revision.NoSelectionValue = srcList.Revision?.NoSelectionValue;
-
-            listCopy.Normalize();
-
-            await Repository.InsertAsync(listCopy);
-
-            await CopyItemsAsync(srcList, listCopy);
-
-            return listCopy;
-        }
-
-        private async Task CopyItemsAsync(ReferenceList source, ReferenceList destination) 
-        {
-            var srcItems = await _listItemsRepository.GetAll().Where(i => i.ReferenceListRevision == source.Revision).ToListAsync();
-
-            await CopyItemsAsync(srcItems, null, null, destination);
-        }
-
         private async Task CopyItemsAsync(List<ReferenceListItem> sourceItems, ReferenceListItem? sourceParent, ReferenceListItem? destinationParent, ReferenceList destination)
         {
             var dstRevision = destination.EnsureLatestRevision();
@@ -230,15 +171,6 @@ namespace Shesha.Services.ReferenceLists
             return newVersion;
         }
 
-        public override async Task<ReferenceList> CreateNewVersionAsync(ReferenceList srcList)
-        {
-            var newVersion = await CreateNewVersionWithoutItemsAsync(srcList);
-            
-            await CopyItemsAsync(srcList, newVersion);
-
-            return newVersion;
-        }
-
         public override Task<ReferenceList> ExposeAsync(ReferenceList item, Module module)
         {
             throw new NotImplementedException();
@@ -274,7 +206,7 @@ namespace Shesha.Services.ReferenceLists
             return refList;
         }
 
-        public override Task<ReferenceList> DuplicateAsync(ReferenceList item)
+        protected override Task CopyRevisionPropertiesAsync(ReferenceListRevision source, ReferenceListRevision destination)
         {
             throw new NotImplementedException();
         }
