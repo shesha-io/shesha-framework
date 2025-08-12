@@ -340,42 +340,137 @@
         "_value": ""
       },
       "components": [
+        {
+          "id": "3aIMnm2re1exM1M7pEEur9",
+          "type": "collapsiblePanel",
+          "propertyName": "pnlStyle",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": [],
+          "header": {
+            "id": "3FizvoIoyeq1cZMqAgbDLL",
+            "components": []
+          },
+          "content": {
+            "id": "3y9SNudmMM0Wd1Sc_YI1ng",
+            "components": [
+              {
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+              }
+            ]
+          }
+        }
+      ]
+    },
     {
-      "id": "3aIMnm2re1exM1M7pEEur9",
+      "id": "WJlrXoQpXXzHVvk-VGn-z_radio",
       "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
+      "propertyName": "pnlEvents",
+      "label": "Events",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
       "version": 4,
       "expandIconPosition": "start",
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
-        "id": "3FizvoIoyeq1cZMqAgbDLL",
+        "id": "i8dLAW_jVLivqO6nDxhaD_radio",
         "components": []
       },
       "content": {
-        "id": "3y9SNudmMM0Wd1Sc_YI1ng",
+        "id": "_m7e9WBdpkz4CsCrpVx8d_radio",
         "components": [
           {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+            "id": "26347fb3-4c52-4d24-9fb7-54d266b18ea4_radio",
             "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "3y9SNudmMM0Wd1Sc_YI1ng",
+            "propertyName": "onChange",
+            "label": "On Change",
+            "labelAlign": "right",
+            "parentId": "_m7e9WBdpkz4CsCrpVx8d_radio",
+            "hidden": false,
+            "description": "Enter custom eventhandler on changing of event. (form, value, ...) are exposed",
             "validate": {},
             "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
                 "name": "data",
-                "description": "Form values",
+                "description": "Selected form values",
                 "type": "object"
+              },
+              {
+                "name": "form",
+                "description": "Form instance",
+                "type": "FormInstance"
+              },
+              {
+                "name": "formMode",
+                "description": "The form mode",
+                "type": "'readonly' | 'edit' | 'designer'"
+              },
+              {
+                "name": "globalState",
+                "description": "The global state of the application",
+                "type": "object"
+              },
+              {
+                "name": "http",
+                "description": "axios instance used to make http requests",
+                "type": "object"
+              },
+              {
+                "name": "message",
+                "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+                "type": "object"
+              },
+              {
+                "name": "moment",
+                "description": "The moment.js object",
+                "type": "object"
+              },
+              {
+                "name": "value",
+                "description": "Component current value",
+                "type": "string"
+              },
+              {
+                "name": "setFormData",
+                "description": "A function used to update the form data",
+                "type": "({ values: object, mergeValues: boolean}) => void"
+              },
+              {
+                "name": "setGlobalState",
+                "description": "Setting the global state of the application",
+                "type": "(payload: { key: string, data: any } ) => void"
               }
             ],
             "version": 3,
@@ -383,15 +478,17 @@
             "placeholder": "",
             "wrapInTemplate": true,
             "templateSettings": {
-              "functionName": "getStyle"
+              "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .build();"
           }
         ]
-      }
-    }
-    ]
-  },
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
