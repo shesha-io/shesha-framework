@@ -40,7 +40,8 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
         {(value, onChange) => {
           const customEvent = customDateEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0].target.value, args[1]);
+            const newValue = args[0]?.target?.value;
+            customEvent?.onChange?.(newValue, args[0]);
             if (typeof onChange === 'function')
               onChange(...args);
           };
