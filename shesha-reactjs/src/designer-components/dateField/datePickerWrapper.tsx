@@ -74,7 +74,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
               : !showTime
                 ? newValue.startOf('day')
                 : newValue;
-    const finalMoment = !resolveToUTC ? val?.utc(true) : val.local(true);
+    const finalMoment = resolveToUTC ? val?.utc(true) : val.local(true);
+    console.log('convertValue', { localValue, finalMoment, resolveToUTC });
     return finalMoment.toISOString();
   };
 
