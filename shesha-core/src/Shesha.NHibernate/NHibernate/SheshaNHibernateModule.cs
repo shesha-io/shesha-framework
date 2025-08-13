@@ -11,6 +11,7 @@ using Abp.Reflection;
 using Abp.Threading;
 using Castle.MicroKernel.Registration;
 using NHibernate;
+using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Startup;
 using Shesha.DbActions;

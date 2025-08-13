@@ -1,5 +1,4 @@
-﻿using Abp.Modules;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Shesha.Modules
 {

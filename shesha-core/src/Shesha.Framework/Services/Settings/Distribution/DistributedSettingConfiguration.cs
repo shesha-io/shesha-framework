@@ -1,5 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Distribution;
-using Shesha.Domain;
+using Shesha.Domain.Enums;
 using System.Collections.Generic;
 
 namespace Shesha.Services.Settings.Distribution
@@ -15,9 +15,9 @@ namespace Shesha.Services.Settings.Distribution
         public int OrderIndex { get; set; }
         public string? Category { get; set; }
         public bool IsClientSpecific { get; set; }
-        public SettingAccessMode AccessMode { get; set; }
+        public RefListSettingAccessMode AccessMode { get; set; }
         public bool IsUserSpecific { get; set; }
-        public UserSettingAccessMode ClientAccess { get; set; }
+        public RefListUserSettingAccessMode ClientAccess { get; set; }
 
         public List<DistributedSettingValue> Values { get; set; } = new List<DistributedSettingValue>();
     }

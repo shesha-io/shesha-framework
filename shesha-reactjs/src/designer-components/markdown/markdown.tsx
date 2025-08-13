@@ -56,12 +56,13 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match && SyntaxHighlighter ? (
                 <SyntaxHighlighter
-                  children={String(children).replace(/\n$/, '')}
                   style={dark}
                   language={match[1]}
                   PreTag="div"
                   {...props}
-                />
+                >
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
               ) : (
                 <code className={className} {...props}>
                   {children}

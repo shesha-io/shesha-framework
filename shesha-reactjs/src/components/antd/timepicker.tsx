@@ -15,6 +15,7 @@ export interface TimePickerRangeProps extends Omit<RangePickerProps<Moment>, 'pi
 const TimeRangePicker = React.forwardRef<any, TimePickerRangeProps>((props, ref) => (
     <DatePicker.RangePicker {...props} picker="time" mode={undefined} ref={ref} />
 ));
+TimeRangePicker.displayName = 'TimeRangePicker';
 
 type TimeSteps = Pick<RangePickerProps<Moment>, 'hourStep' | 'minuteStep' | 'secondStep'>;
 

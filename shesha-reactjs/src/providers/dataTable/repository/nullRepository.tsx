@@ -3,6 +3,7 @@ import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
 import { IHasRepository, IRepository, RowsReorderPayload } from "./interfaces";
+import { wrapDisplayName } from "@/utils/react";
 
 export interface IWithNullRepositoryArgs {
     value?: object;
@@ -57,10 +58,10 @@ export const useNullRepository = (args: IWithNullRepositoryArgs): IRepository =>
 export function withNullRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository>, args: IWithNullRepositoryArgs): FC<WrappedProps> {
     const { value } = args;
 
-    return props => {
+    return wrapDisplayName(props => {
         const repository = useNullRepository({ value });
 
         return (<WrappedComponent {...props} repository={repository} />);
-    };
+    }, "withNullRepository");
 };
 

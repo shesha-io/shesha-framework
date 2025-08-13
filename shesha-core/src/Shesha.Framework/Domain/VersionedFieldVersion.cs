@@ -17,7 +17,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Value content
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string Content { get; set; }
 
         /// <summary>

@@ -7,7 +7,6 @@ using Shesha.Attributes;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -28,6 +27,7 @@ namespace Shesha.Bootstrappers
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IRepository<ReferenceList, Guid> _listRepo;
+        private readonly IRepository<ReferenceListRevision, Guid> _listRevisionRepo;
         private readonly IRepository<ReferenceListItem, Guid> _listItemRepo;
         private readonly IModuleManager _moduleManager;
 
@@ -35,14 +35,17 @@ namespace Shesha.Bootstrappers
             ITypeFinder typeFinder,
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<ReferenceList, Guid> listRepo,
+            IRepository<ReferenceListRevision, Guid> listRevisionRepo,
             IRepository<ReferenceListItem, Guid> listItemRepo,
             IModuleManager moduleManager,
             IApplicationStartupSession startupSession,
-            IBootstrapperStartupService bootstrapperStartupService
-        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
             _listRepo = listRepo;
+            _listRevisionRepo = listRevisionRepo;
             _listItemRepo = listItemRepo;
             _moduleManager = moduleManager;
         }
@@ -119,7 +122,7 @@ namespace Shesha.Bootstrappers
             LogInfo($"Bootstrap assembly {assembly.FullName} - finished");
         }
 
-        private async Task ProcessListAsync(Domain.ConfigurationItems.Module module, RefListType list)
+        private async Task ProcessListAsync(Domain.Module module, RefListType list) 
         {
             var listInCode = new List<ListItemInfo>();
             var values = Enum.GetValues(list.Enum);
@@ -178,44 +181,43 @@ namespace Shesha.Bootstrappers
             {
                 LogInfo($"  list in the DB: not found");
 
-                listInDb = new ReferenceList()
-                {
-                    Namespace = list.Attribute.GetNamespace(),
+                listInDb = new ReferenceList() { 
+                    Module = module,
+                    Name = list.Attribute.FullName,
                 };
-                listInDb.SetHardLinkToApplication(true);
 
-                // ToDo: AS - Get Module, Description and Suppress
-                listInDb.Module = module;
-                listInDb.Name = list.Attribute.FullName;
+                var revision = listInDb.EnsureLatestRevision();
+                revision.Namespace = list.Attribute.GetNamespace();
+                revision.SetHardLinkToApplication(true);
+                revision.Label = list.Enum.GetDisplayName();
+                revision.Description = list.Enum.GetDescription();
 
-                listInDb.Label = list.Enum.GetDisplayName();
-                listInDb.Description = list.Enum.GetDescription();
                 listInDb.Suppress = false;
-
-                // ToDo: Temporary
-                listInDb.VersionNo = 1;
-                listInDb.VersionStatus = ConfigurationItemVersionStatus.Live;
 
                 listInDb.Normalize();
 
+                await _listRevisionRepo.InsertAsync(revision);
                 await _listRepo.InsertAsync(listInDb);
+                //await _unitOfWorkManager.Current.SaveChangesAsync();
             }
             else
             {
                 LogInfo($"  list in the DB: found");
 
                 // update list if required
-                if (module != null && listInDb.Module != module || !listInDb.HardLinkToApplication)
+                if (module != null && listInDb.Module != module || listInDb.LatestRevision == null || !listInDb.LatestRevision.HardLinkToApplication)
                 {
                     listInDb.Module = listModule;
-                    listInDb.SetHardLinkToApplication(true);
+                    var revision = listInDb.EnsureLatestRevision();
+                    revision.SetHardLinkToApplication(true);
 
                     await _listRepo.UpdateAsync(listInDb);
                 }
             }
 
+            var latestRevision = listInDb.EnsureLatestRevision();
             var itemsInDb = await _listItemRepo.GetAll()
-                .Where(i => i.ReferenceList == listInDb)
+                .Where(i => i.ReferenceListRevision == latestRevision)
                 .ToListAsync();
 
             LogInfo($"  items in the DB: {itemsInDb.Count()}");
@@ -229,11 +231,11 @@ namespace Shesha.Bootstrappers
                 var newItem = new ReferenceListItem()
                 {
                     ItemValue = item.Value,
-                    Item = item.Name,
-                    Description = item.Description,
+                    Item = item.Name ?? string.Empty,
+                    Description = item.Description ?? string.Empty,
                     OrderIndex = item.OrderIndex,
-                    ReferenceList = listInDb,
-                    Color = item.Color,
+                    ReferenceListRevision = latestRevision,
+                    Color = item.Color ?? string.Empty,
                 };
                 newItem.SetHardLinkToApplication(true);
 
@@ -265,8 +267,9 @@ namespace Shesha.Bootstrappers
 
             foreach (var item in toUpdate)
             {
-                item.ItemInDB.Item = item.UpdatedItemInCode.Name;
+                item.ItemInDB.Item = item.UpdatedItemInCode.Name ?? string.Empty;
                 item.ItemInDB.SetHardLinkToApplication(true);
+
                 await _listItemRepo.InsertOrUpdateAsync(item.ItemInDB);
             }
 

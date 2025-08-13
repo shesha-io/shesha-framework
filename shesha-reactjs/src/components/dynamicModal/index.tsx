@@ -39,7 +39,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       onOk={onOk}
       onCancel={hideForm}
       footer={footer}
-      destroyOnClose
+      destroyOnHidden
       width={isSmall ? '90%' : width}
       maskClosable={false}
       closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility

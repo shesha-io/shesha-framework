@@ -1,5 +1,4 @@
-﻿using Shesha.Domain.ConfigurationItems;
-using System;
+﻿using System;
 
 namespace Shesha.ConfigurationItems.Distribution
 {
@@ -48,26 +47,6 @@ namespace Shesha.ConfigurationItems.Distribution
         /// Front-end application name
         /// </summary>
         public string? FrontEndApplication { get; set; }
-
-        /// <summary>
-        /// Base item. Is used if the current item is inherited from another one
-        /// </summary>
-        public Guid? BaseItem { get; set; }
-
-        /// <summary>
-        /// Version number
-        /// </summary>
-        public int VersionNo { get; set; }
-
-        /// <summary>
-        /// Version status (Draft/In Progress/Live etc.)
-        /// </summary>
-        public ConfigurationItemVersionStatus VersionStatus { get; set; }
-
-        /// <summary>
-        /// Parent version. Note: version may have more than one child versions (e.g. new version was created and then cancelled, in this case a new version should be created in the same parent)
-        /// </summary>
-        public Guid? ParentVersionId { get; set; }
 
         /// <summary>
         /// If true, it means that the item will not be visible to Config or End-users/Admins.

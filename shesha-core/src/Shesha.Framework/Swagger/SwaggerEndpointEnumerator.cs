@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Threading;
 using Shesha.Application.Services;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -43,14 +44,16 @@ namespace Shesha.Swagger
                         var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
                         var entityType = genericInterface.GenericTypeArguments.First();
                         var model = configs.FirstOrDefault(x => x.Namespace == entityType.Namespace.NotNull() && x.ClassName == entityType.Name);
-                        model.NotNull();
+                        if (model == null)
+                            continue;
+
                         var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
                         var crudAttribute = entityType.GetAttributeOrNull<CrudAccessAttribute>();
                         var permission = pmo.Get($"{entityType.FullName}", ShaPermissionedObjectsTypes.Entity);
                         if (entityAttribute?.GenerateApplicationService == GenerateApplicationServiceState.DisableGenerateApplicationService
                             || (permission != null && permission.ActualAccess == RefListPermissionedAccess.Disable)
                             || crudAttribute?.All == RefListPermissionedAccess.Disable
-                            || !model.GenerateAppService)
+                            || !model.Revision.GenerateAppService)
                             continue;
                     }
                     else

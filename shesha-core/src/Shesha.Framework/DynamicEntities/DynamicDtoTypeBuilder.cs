@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Extensions;
@@ -27,7 +28,8 @@ namespace Shesha.DynamicEntities
     public class DynamicDtoTypeBuilder : IEventHandler<EntityChangedEventData<EntityProperty>>, IDynamicDtoTypeBuilder, ITransientDependency
     {
         private readonly IEntityConfigCache _entityConfigCache;
-        private IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityConfigurationStore _entityConfigurationStore;
+
         /// <summary>
         /// Cache of proxy classes
         /// </summary>
@@ -53,9 +55,9 @@ namespace Shesha.DynamicEntities
         }
 
         /// inheritedDoc
-        public async Task<Type> BuildDtoProxyTypeAsync(DynamicDtoTypeBuildingContext context)
+        public Task<Type> BuildDtoProxyTypeAsync(DynamicDtoTypeBuildingContext context)
         {
-            return await CompileResultTypeAsync(context);
+            return CompileResultTypeAsync(context);
         }
 
         public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
@@ -73,7 +75,7 @@ namespace Shesha.DynamicEntities
 
             var hardCodedDtoProperties = type.GetProperties().Select(p => p.Name.ToLower()).ToList();
 
-            var configuredProperties = (await GetEntityPropertiesAsync(entityType)).Where(p => !p.Suppress);
+            var configuredProperties = (await GetEntityPropertiesAsync(entityType)).Where(p => !p.Suppress).ToList();
             foreach (var property in configuredProperties)
             {
                 // skip property if already included into the DTO (hardcoded)
@@ -425,9 +427,10 @@ namespace Shesha.DynamicEntities
             if (eventData.Entity == null)
                 return;
 
-            var entityConfig = eventData.Entity?.EntityConfig;
+            var entityConfig = eventData.Entity.EntityConfigRevision.EntityConfig;
             if (entityConfig != null)
             {
+                // TODO: V1 review take versions into account
                 // remove all variation of Entity cache items
                 var cacheKey = GetTypeCacheKey(entityConfig.FullClassName, false, false);
                 _fullProxyCache.Remove(cacheKey);

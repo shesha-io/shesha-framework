@@ -1,12 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Castle.Core.Logging;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -27,20 +27,24 @@ namespace Shesha.Settings
     public class SettingsBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
+        private readonly IRepository<SettingConfigurationRevision, Guid> _scRevisionRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ISettingDefinitionManager _settingDefinitionManager;
         private readonly ISettingStore _settingStore;
 
-        public SettingsBootstrapper(ISettingDefinitionManager settingDefinitionManager, ISettingStore settingStore, IRepository<SettingConfiguration, Guid> settingConfigurationRepository, 
+        public SettingsBootstrapper(ISettingDefinitionManager settingDefinitionManager, ISettingStore settingStore, IRepository<SettingConfiguration, Guid> settingConfigurationRepository,
+            IRepository<SettingConfigurationRevision, Guid> scRevisionRepository,
             IRepository<Module, Guid> moduleRepository,
             IUnitOfWorkManager unitOfWorkManager,
             IApplicationStartupSession startupSession,
-            IBootstrapperStartupService bootstrapperStartupService
-        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _settingDefinitionManager = settingDefinitionManager;
             _settingStore = settingStore;
             _settingConfigurationRepository = settingConfigurationRepository;
+            _scRevisionRepository = scRevisionRepository;
             _moduleRepository = moduleRepository;
         }
 
@@ -110,15 +114,17 @@ namespace Shesha.Settings
                         ? modules.FirstOrDefault(m => m.Name == definition.ModuleName)
                         : null;
 
-                    config.Label = definition.DisplayName;
-                    config.Description = definition.Description;
-                    config.Category = definition.Category;
-                    config.IsClientSpecific = definition.IsClientSpecific;
-                    config.IsUserSpecific = definition.IsUserSpecific;
-                    config.EditorFormModule = definition.EditForm?.Module;
-                    config.EditorFormName = definition.EditForm?.Name;
+                    var revision = config.EnsureLatestRevision();
+                    revision.Label = definition.DisplayName;
+                    revision.Description = definition.Description;
+                    revision.Category = definition.Category;
+                    revision.IsClientSpecific = definition.IsClientSpecific;
+                    revision.IsUserSpecific = definition.IsUserSpecific;
+                    revision.EditorFormModule = definition.EditForm?.Module;
+                    revision.EditorFormName = definition.EditForm?.Name;
 
-                    await _settingConfigurationRepository.UpdateAsync(config);
+                    await _scRevisionRepository.InsertOrUpdateAsync(revision);
+                    await _settingConfigurationRepository.UpdateAsync(config);                    
                 }
             }
         }

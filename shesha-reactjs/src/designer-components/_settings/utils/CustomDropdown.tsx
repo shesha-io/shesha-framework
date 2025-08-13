@@ -85,7 +85,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             onChange={onChange}
             defaultValue={defaultValue}
             placeholder={placeholder}
-            dropdownRender={(menu) => (
+            popupRender={(menu) => (
                 <>
                     {menu}
                     {renderCustomOptionInput()}

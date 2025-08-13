@@ -13,7 +13,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration export
     /// </summary>
-    public class FormConfigurationExport: IFormConfigurationExport, ITransientDependency
+    public class FormConfigurationExport: ConfigurableItemExportBase<FormConfiguration, FormConfigurationRevision, DistributedFormConfiguration>, IFormConfigurationExport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -37,7 +37,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item) 
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item) 
         {
             if (!(item is FormConfiguration form))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(FormConfiguration)}, actual: {item.GetType().FullName}");
@@ -54,20 +54,17 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 ModuleName = form.Module?.Name,
                 ItemType = form.ItemType,
 
-                Label = form.Label,
-                Description = form.Description,
                 OriginId = form.Origin?.Id,
-                BaseItem = form.BaseItem?.Id,
-                VersionNo = form.VersionNo,
-                VersionStatus = form.VersionStatus,
-                ParentVersionId = form.ParentVersion?.Id,
                 Suppress = form.Suppress,
 
                 // form specific properties
-                Markup = form.Markup,
-                ModelType = form.ModelType,
-                TemplateId = form.Template?.Id,
-                IsTemplate = form.IsTemplate,
+                Label = form.Revision.Label,
+                Description = form.Revision.Description,
+                Markup = form.Revision.Markup,
+                ModelType = form.Revision.ModelType,
+                //TemplateId = form.Revision.Template?.Id,
+                IsTemplate = form.Revision.IsTemplate,
+
                 Access = permission?.Access,
                 Permissions = permission?.Permissions,
             };

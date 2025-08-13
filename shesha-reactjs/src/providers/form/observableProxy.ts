@@ -52,8 +52,8 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
     };
 
     constructor(accessors: ProxyPropertiesAccessors<T>) {
-        this._propAccessors = new Map<string, ValueAccessor>();
         this._touchedProps = new Set<string>();
+        this._propAccessors = new Map<string, ValueAccessor>();
         this.refreshAccessors(accessors);
 
         return new Proxy(this, {

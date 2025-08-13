@@ -1,9 +1,9 @@
 ﻿using Shesha.Domain.Attributes;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
+    /*
     [DiscriminatorValue(RoleAppointmentTypeName)]
     [JoinedProperty("Core_RoleAppointmentTypeConfigs")]
     [Entity(TypeShortAlias = "Shesha.Core.RoleAppointmentTypeConfig")]
@@ -32,4 +32,5 @@ namespace Shesha.Domain
         public virtual FormConfiguration RoleAppointmentDetailsForm { get; set; }
         public virtual FormConfiguration RoleAppointmentListItemForm { get; set; }
     }
+    */
 }

@@ -10,6 +10,8 @@ export interface IPermissionAutocompleteProps {
   size?: SizeType;
 }
 
+const dropdownStyles = { popup: { root: { maxHeight: '50%', overflow: 'auto' } } };
+
 export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) => {
 
   const { onChange, value, readOnly, size } = props;
@@ -32,8 +34,8 @@ export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) 
       searchValue={searchText}
       disabled={readOnly}
       size={size}
-      dropdownStyle={{ maxHeight: '50%', overflow: 'auto' }}
-      dropdownRender={_ => (
+      styles={dropdownStyles}
+      popupRender={_ => (
 
         <PermissionsTree
           formComponentId={''}

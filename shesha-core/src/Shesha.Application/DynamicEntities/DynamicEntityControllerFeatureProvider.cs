@@ -47,6 +47,10 @@ namespace Shesha.DynamicEntities
                 {
                     try
                     {
+                        var revision = entityConfig.LatestRevision;
+                        if (entityConfig.Revision == null)
+                            continue;
+
                         var entityConfiguration = entityConfigurationStore.GetOrNull($"{entityConfig.FullClassName}");
                         var entityType = entityConfiguration?.EntityType;
                         if (entityType == null) 
@@ -59,11 +63,11 @@ namespace Shesha.DynamicEntities
                             appServiceType = DynamicAppServiceHelper.MakeApplicationServiceType(entityType);
                             if (appServiceType == null)
                                 continue;
-                            if (entityConfig.Source == Domain.Enums.MetadataSourceType.UserDefined)
+                            if (revision.Source == Domain.Enums.MetadataSourceType.UserDefined)
                                 _logger.Warn($"Create AppServices for dynamic entity: {entityConfig.FullClassName} - {appServiceType.Name}");
                         }
                         else
-                            if (entityConfig.Source == Domain.Enums.MetadataSourceType.UserDefined)
+                            if (revision.Source == Domain.Enums.MetadataSourceType.UserDefined)
                                 _logger.Warn($"AppServices for dynamic entity: {entityConfig.FullClassName} is already exist {entityConfiguration?.ApplicationServiceType?.Name}");
 
                         var controllerName = MvcHelper.GetControllerName(appServiceType);

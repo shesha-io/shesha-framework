@@ -1,0 +1,36 @@
+drop view IF EXISTS vw_Core_WorkflowSentItems
+drop view IF EXISTS vw_Core_WorkflowMyItems
+drop view IF EXISTS vw_Core_WorkflowInboxItems
+drop view IF EXISTS vw_Core_WorkflowDraftItems
+drop view IF EXISTS vw_Core_WorkflowLogItems
+
+IF (OBJECT_ID('dbo.FK_Core_WorkflowAssignees_TodoItemId_Core_WorkflowTodoItems_Id', 'F') IS NOT NULL)
+	ALTER TABLE Core_WorkflowAssignees DROP CONSTRAINT FK_Core_WorkflowAssignees_TodoItemId_Core_WorkflowTodoItems_Id;
+IF (OBJECT_ID('dbo.FK_Core_WorkflowHighLevelAssignees_ExecutionLogItemId_Core_WorkflowExecutionLogItems_Id', 'F') IS NOT NULL)
+	ALTER TABLE Core_WorkflowHighLevelAssignees DROP CONSTRAINT FK_Core_WorkflowHighLevelAssignees_ExecutionLogItemId_Core_WorkflowExecutionLogItems_Id;
+IF (OBJECT_ID('dbo.FK_Core_WorkflowAssignees_HighLevelAssigneeId_Core_WorkflowHighLevelAssignees_Id', 'F') IS NOT NULL)
+	ALTER TABLE Core_WorkflowAssignees DROP CONSTRAINT FK_Core_WorkflowAssignees_HighLevelAssigneeId_Core_WorkflowHighLevelAssignees_Id;
+IF (OBJECT_ID('dbo.FK_Core_WorkflowExecutionLogItems_CompletedByHighLevelAssigneeId_Core_WorkflowHighLevelAssignees_Id', 'F') IS NOT NULL)
+	ALTER TABLE Core_WorkflowExecutionLogItems DROP CONSTRAINT FK_Core_WorkflowExecutionLogItems_CompletedByHighLevelAssigneeId_Core_WorkflowHighLevelAssignees_Id
+IF (OBJECT_ID('dbo.FK_Core_WorkflowExecutionLogItems_CompletedByAssigneeId_Core_WorkflowAssignees_Id', 'F') IS NOT NULL)
+	ALTER TABLE Core_WorkflowExecutionLogItems DROP CONSTRAINT FK_Core_WorkflowExecutionLogItems_CompletedByAssigneeId_Core_WorkflowAssignees_Id;
+
+drop table if exists Core_WorkflowTodoItems
+drop table if exists Core_WorkflowMessages
+drop table if exists Core_WorkflowHighLevelAssigneeDependencies
+drop table if exists Core_WorkflowInstanceOwners
+drop table if exists Core_WorkflowScheduledJobs
+drop table if exists Core_WorkflowHighLevelAssignees
+drop table if exists Core_WorkflowAssignees
+drop table if exists Core_WorkflowExecutionLogItems
+drop table if exists Core_WorkflowTasks
+drop table if exists Core_WorkflowInstances
+drop table if exists Core_ProcessableEntityDocuments
+drop table if exists Core_ProcessConfigurationDocumentTemplates
+drop table if exists Core_TestProcesses
+drop table if exists Core_TestProcessConfigurations
+drop table if exists Core_ProcessableEntities
+drop table if exists Core_HumanActivityConfigurations
+drop table if exists Core_ProcessConfigurations
+drop table if exists Core_WorkflowDefinitions
+drop table if exists Core_ConfigurableHumanActivities

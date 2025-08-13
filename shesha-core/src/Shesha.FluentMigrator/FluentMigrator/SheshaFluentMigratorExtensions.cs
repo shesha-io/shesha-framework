@@ -286,10 +286,10 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds TenantId column to a table as not nullable. See <see cref="AbpTenant{TUser}"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrForeignKeyCascadeOrWithColumnSyntax WithTenantIdAsRequired(this ICreateTableWithColumnSyntax table)
+        public static ICreateTableColumnOptionOrForeignKeyCascadeOrWithColumnSyntax WithTenantIdAsRequired(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
         {
             return table
-                .WithColumn(DatabaseConsts.TenantIdColumn).AsInt32().NotNullable().ForeignKey(DatabaseConsts.TenantsTable, DatabaseConsts.IdColumn);
+                .WithColumn(names.OrDefault().TenantIdColumn).AsInt32().NotNullable().ForeignKey(DatabaseConsts.TenantsTable, DatabaseConsts.IdColumn);
         }
 
         /// <summary>

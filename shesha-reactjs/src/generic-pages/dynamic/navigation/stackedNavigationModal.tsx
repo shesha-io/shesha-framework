@@ -42,7 +42,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
         style={maxWidth ? style : {}}
         width={maxWidth ? '100vw' : '80%'}
         styles={{ body: maxWidth ? bodyStyle : {} }}
-        destroyOnClose
+        destroyOnHidden
         centered={false}
         footer={null}
         closable={false}

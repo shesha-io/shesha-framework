@@ -1,11 +1,13 @@
 ﻿using Abp.Domain.Repositories;
 using FluentValidation;
+using Shesha.Domain.Attributes;
+using Shesha.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using System.Threading;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using Shesha.Extensions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -13,24 +15,26 @@ namespace Shesha.Domain
     /// A Front-end App represents the various front-end applications that build off this back-end. 
     /// For example, Admin Portal, Customer Portal, Customer Mobile App would be fairly typical examples.
     /// </summary>
+    [SnakeCaseNaming]
+    [Table("front_end_apps", Schema = "frwk")]
     public class FrontEndApp : FullPowerEntity
     {
         /// <summary>
         /// Unique identifier of the application (key). This key is used for identification of the front-end app
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string AppKey { get; set; }
 
         /// <summary>
         /// Name of the front-end app.
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string Name { get; set; }
 
         /// <summary>
         /// Description of the Front-end application.
         /// </summary>
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
     }
 
     public class FrontEndAppValidator : AbstractValidator<FrontEndApp>

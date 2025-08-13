@@ -4,16 +4,12 @@ using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Elmah;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Swagger;
-using Shesha.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
@@ -83,33 +79,6 @@ namespace Shesha.DynamicEntities
             var res = await _modelConfigurationManager.UpdateAsync(input);
             await RefreshControllersAsync();
             return res;
-        }
-
-        [HttpPost, Route("merge")]
-        public async Task<ModelConfigurationDto?> MergeAsync(MergeConfigurationDto input)
-        {
-            var source = await AsyncQueryableExecuter.FirstOrDefaultAsync(_entityConfigRepository.GetAll().Where(x => x.Id == input.SourceId.ToGuid()));
-            if (source == null)
-                throw new EntityNotFoundException("Source configuration not found");
-            var destination = await AsyncQueryableExecuter.FirstOrDefaultAsync(_entityConfigRepository.GetAll().Where(x => x.Id == input.DestinationId.ToGuid()));
-            if (destination == null)
-                throw new EntityNotFoundException("Destination configuration not found");
-
-            using (var uow = UnitOfWorkManager.Begin())
-            {
-                await _modelConfigurationManager.MergeConfigurationsAsync(source, destination, input.DeleteAfterMerge,
-                    // use deep update if merge from not implemented to implemented application entity
-                    source.Source == MetadataSourceType.ApplicationCode
-                    && destination.Source == MetadataSourceType.ApplicationCode
-                    && _entityConfigurationStore.GetOrNull(source.FullClassName) == null
-                    && _entityConfigurationStore.GetOrNull(destination.FullClassName) != null);
-
-                await uow.CompleteAsync();
-            }
-
-            await RefreshControllersAsync();
-
-            return await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(destination.Namespace.NotNull(), destination.ClassName);
         }
 
         private async Task RefreshControllersAsync()

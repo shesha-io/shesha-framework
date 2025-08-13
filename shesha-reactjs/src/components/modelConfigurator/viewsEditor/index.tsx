@@ -45,8 +45,8 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
 
     return (
         <div>
-            {props.value && props.value.map(item =>
-                <Row className={'ant-form-item-row'}>
+            {props.value && props.value.map((item, index) =>
+                <Row className={'ant-form-item-row'} key={index}>
                     <Col span={6} style={{ textAlign: 'right' }}>
                         <div className='ant-form-item-label'>
                             {item.isStandard

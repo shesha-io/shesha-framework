@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.MultiTenancy;
 using Abp.Reflection;
@@ -7,12 +6,9 @@ using Abp.Runtime.Caching;
 using Microsoft.Extensions.Configuration;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
-using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.FluentMigrator;
 using Shesha.Locks;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using System;
 using System.Collections.Generic;
@@ -205,74 +201,26 @@ namespace Shesha.NHibernate
                     if (_startupDto == null)
                         _startupDto = await appStartup.LogApplicationStartAsync(appStartLogArgs);
 
-                    var bootstrapperStartupService = _ioc.Resolve<IBootstrapperStartupService>();
+                    // find all seeders/bootstrappers and run them
+                    var bootstrapperTypes = _typeFinder.Find(t => typeof(IBootstrapper).IsAssignableFrom(t) && t.IsClass).ToList();
+                    bootstrapperTypes = SortByDependencies(bootstrapperTypes);
 
-                    if (!skipBootstrappers)
+                    var allSkipped = true;
+
+                    foreach (var bootstrapperType in bootstrapperTypes)
                     {
-                        // find all seeders/bootstrappers and run them
-                        var bootstrapperTypes = _typeFinder.Find(t => typeof(IBootstrapper).IsAssignableFrom(t) && t.IsClass).ToList();
-                        bootstrapperTypes = SortByDependencies(bootstrapperTypes);
-
-                        var allSkipped = true;
-
-                        var unitOfWorkManager = _ioc.Resolve<IUnitOfWorkManager>();
-                        using (var mainUnitOfWork = unitOfWorkManager.Begin())
+                        if (_ioc.IsRegistered(bootstrapperType) && _ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
                         {
-                            try
-                            {
-                                foreach (var bootstrapperType in bootstrapperTypes)
-                                {
-                                    var forced = await bootstrapperStartupService.IsForcedAsync(bootstrapperType);
-                                    if (skipBootstrappers && !forced)
-                                    {
-                                        await bootstrapperStartupService.SkipBootstrapperAsync(bootstrapperType, $"Bootstrapper skipped due to configuration (`{SkipBootstrappersSetting}` is {skipBootstrappers})");
-                                        continue;
-                                    }
-                                    if (appStartup.AllAssembliesStayUnchanged && !forced)
-                                    {
-                                        await bootstrapperStartupService.SkipBootstrapperAsync(bootstrapperType, $"Bootstrapper skipped. Previous startup was full, successful and all assemblies stay unchanged");
-                                        continue;
-                                    }
+                            _logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
-                                    allSkipped = false;
+                            allSkipped = !(await bootstrapper.ProcessAsync(false)) && allSkipped;
 
-                                    if (_ioc.IsRegistered(bootstrapperType) && _ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
-                                    {
-                                        _logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
-
-                                        var method = bootstrapperType.GetRequiredMethod(nameof(IBootstrapper.ProcessAsync));
-                                        var unitOfWorkAttribute = method.GetAttributeOrNull<UnitOfWorkAttribute>(true);
-                                        var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
-
-                                        if (useDefaultUnitOfWork)
-                                        {
-                                            var uowManager = _ioc.Resolve<IUnitOfWorkManager>();
-                                            using (var unitOfWork = uowManager.Begin())
-                                            {
-                                                await bootstrapper.ProcessAsync();
-                                                await unitOfWork.CompleteAsync();
-                                            }
-                                        }
-                                        else
-                                            await bootstrapper.ProcessAsync();
-
-                                        _logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
-                                    }
-                                }
-                            }
-                            finally
-                            {
-                                // Need to log bootstrapping startup info
-                                await mainUnitOfWork.CompleteAsync();
-                            }
+                            _logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
                         }
-
-                        if (appStartup.AllAssembliesStayUnchanged && allSkipped)
-                            _logger.Warn($"Bootstrappers skipped. Previous startup was full, successful and all assemblies stay unchanged");
-
                     }
-                    else
-                        _logger.Warn($"Bootstrappers skipped due to configuration (`{SkipBootstrappersSetting}` is {skipBootstrappers})");
+
+                    if (appStartup.AllAssembliesStayUnchanged && allSkipped)
+                        _logger.Warn($"Bootstrappers skipped. Previous startup was full, successful and all assemblies stay unchanged");
 
 
                     await appStartup.StartupSuccessAsync(_startupDto.Id);

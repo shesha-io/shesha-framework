@@ -2,6 +2,8 @@ using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Boxfusion.SheshaFunctionalTests.Common;
 using Boxfusion.SheshaFunctionalTests.Common.Authorization;
+using Boxfusion.SheshaFunctionalTests.ModuleA;
+using Boxfusion.SheshaFunctionalTests.ModuleB;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +15,7 @@ using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Elmah;
 using Shesha.Import;
+using Shesha.Modules;
 using Shesha.Sms.Clickatell;
 using Shesha.Web.FormsDesigner;
 using System;
@@ -32,11 +35,21 @@ namespace Boxfusion.SheshaFunctionalTests
         typeof(SheshaClickatellModule),
         typeof(SheshaFunctionalTestsCommonModule),
         typeof(SheshaElmahModule),
-        typeof(SheshaFunctionalTestsCommonApplicationModule)
+        typeof(SheshaFunctionalTestsCommonApplicationModule),
+        typeof(SheshaFunctionalTestsModuleA),
+        typeof(SheshaFunctionalTestsModuleB)
      )]
-    public class SheshaFunctionalTestsWebCoreModule : AbpModule
+    public class SheshaFunctionalTestsWebCoreModule : SheshaModule
     {
         private readonly IConfigurationRoot _appConfiguration;
+
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Boxfusion.SheshaFunctionalTests.Web")
+        {
+            FriendlyName = "Shesha Functional Tests Web",
+            Publisher = "Boxfusion",
+            Alias = "functionalTestsWeb",
+            Hierarchy = [typeof(SheshaFunctionalTestsModuleA), typeof(SheshaFunctionalTestsModuleB), typeof(SheshaFrameworkModule)],
+        };
 
         /// <summary>
         /// 

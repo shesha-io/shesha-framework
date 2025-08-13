@@ -15,7 +15,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Shesha.Tests.JsonLogic
 {
@@ -39,14 +38,14 @@ namespace Shesha.Tests.JsonLogic
             return expression;
         }
 
-        protected async Task<List<T>> TryFetchDataAsync<T, TId>(string jsonLogicExpression, Func<IQueryable<T>, IQueryable<T>>? prepareQueryable = null, Action<List<T>>? assertions = null) where T : class, IEntity<TId>
+        protected Task<List<T>> TryFetchDataAsync<T, TId>(string jsonLogicExpression, Func<IQueryable<T>, IQueryable<T>>? prepareQueryable = null, Action<List<T>>? assertions = null) where T : class, IEntity<TId>
         {
             var expression = ConvertToExpression<T>(jsonLogicExpression).NotNull();
 
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
-            return await WithUnitOfWorkAsync(async () => {
+            return WithUnitOfWorkAsync(async () => {
                 var query = repository.GetAll().Where(expression);
 
                 if (prepareQueryable != null)

@@ -40,6 +40,7 @@ namespace Shesha.DynamicEntities.Binder
     public class EntityModelBinder : IEntityModelBinder, ITransientDependency
     {
         private readonly IDynamicRepository _dynamicRepository;
+        private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
@@ -50,6 +51,7 @@ namespace Shesha.DynamicEntities.Binder
 
         public EntityModelBinder(
             IDynamicRepository dynamicRepository,
+            IRepository<EntityConfig, Guid> entityConfigRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
@@ -60,6 +62,7 @@ namespace Shesha.DynamicEntities.Binder
             )
         {
             _dynamicRepository = dynamicRepository;
+            _entityConfigRepository = entityConfigRepository;
             _entityPropertyRepository = entityPropertyRepository;
             _metadataProvider = metadataProvider;
             _iocManager = iocManager;
@@ -696,8 +699,10 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace
-                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
+                var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfigRevision.ConfigurationItem.Id);
+
+                var refType = _typeFinder.Find(x => x.Namespace == entityConfig.Namespace
+                && (x.Name == entityConfig.ClassName || x.GetTypeShortAliasOrNull() == entityConfig.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
                 if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 

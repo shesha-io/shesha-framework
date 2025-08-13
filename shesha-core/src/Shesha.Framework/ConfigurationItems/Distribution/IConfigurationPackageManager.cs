@@ -1,5 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Distribution.Models;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain;
 using System.IO;
 using System.Threading.Tasks;
 

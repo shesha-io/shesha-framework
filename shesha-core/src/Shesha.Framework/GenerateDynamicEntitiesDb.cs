@@ -5,6 +5,7 @@ using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.Domain;
 using Shesha.DynamicEntities.DbGenerator;
+using Shesha.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,9 +44,9 @@ namespace Shesha
 
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
-                var configs = _entityConfigRepository.GetAll()
-                    .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && x.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
-                    .ToList();
+                var configs = await _entityConfigRepository.GetAll()
+                    .Where(x => x.LatestRevision.Source == Domain.Enums.MetadataSourceType.UserDefined && x.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+                    .ToListAsync();
 
                 var allCount = configs.Count;
                 var sortedToAdd = configs.Where(x => configs.All(y => x.InheritedFrom != y)).ToList();
@@ -60,14 +61,15 @@ namespace Shesha
                 // check for properties
                 foreach (var config in otherConfigs)
                 {
-                    var properties = _entityPropertyRepository.GetAll()
+                    var properties = await _entityPropertyRepository.GetAll()
                         .Where(x => 
-                            x.EntityConfig == config 
+                            x.EntityConfigRevision.ConfigurationItem.Id == config.Id
                             && !x.CreatedInDb 
                             && (x.InheritedFrom == null || x.InheritedFrom.IsDeleted)
                             && x.ParentProperty == null 
-                            && x.Name != "Id");
-                    foreach (var property in properties.Where(x => !x.CreatedInDb))
+                            && x.Name != "Id")
+                        .ToListAsync();
+                    foreach (var property in properties)
                     {
                         await _dbGenerator.ProcessEntityPropertyAsync(property);
                     }

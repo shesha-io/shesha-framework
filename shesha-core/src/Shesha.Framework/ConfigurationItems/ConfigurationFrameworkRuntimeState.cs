@@ -16,5 +16,10 @@ namespace Shesha.ConfigurationItems
         /// Front-end application
         /// </summary>
         public string? FrontEndApplication { get; set; }
+
+        /// <summary>
+        /// Current module (top level)
+        /// </summary>
+        public string? CurrentModule { get; set; }
     }
 }

@@ -213,9 +213,9 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                                                     level={itemLevel}
                                                     parentItem={item}
                                                     contextAccessor={itemContextAccessor}
-                                                    children={props.children}
                                                     header={headerRenderer}
                                                 >
+                                                    {props.children}
                                                 </ListEditorRenderer>
                                             );
                                         },

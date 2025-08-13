@@ -4,6 +4,7 @@ import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dyn
 import React, { PropsWithChildren, useMemo } from 'react';
 import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IStandardApisProps {
 
@@ -30,13 +31,13 @@ const useStandardApis: DynamicItemsEvaluationHook = (args) => {
 };
 
 const standardApisHoc: DynamicRenderingHoc = (WrappedComponent) => {
-    return props => {
+    return wrapDisplayName(props => {
         const testItems = useMemo<ButtonGroupItemProps[]>(() => {
             return StandardApisItems;
         }, []);
 
         return (<WrappedComponent {...props} items={testItems} />);
-    };
+    }, "standardApisHoc");
 };
 
 export const StandardApis: FC<PropsWithChildren<IStandardApisProps>> = ({ children }) => {

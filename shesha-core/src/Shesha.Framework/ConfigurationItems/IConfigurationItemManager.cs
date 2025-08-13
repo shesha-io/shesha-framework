@@ -1,6 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -10,16 +9,8 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Interface of the Configuration Item Manager
     /// </summary>
-    public interface IConfigurationItemManager<TItem>: IConfigurationItemManager where TItem : ConfigurationItemBase
+    public interface IConfigurationItemManager<TItem>: IConfigurationItemManager where TItem : ConfigurationItem
     {
-        /// <summary>
-        /// Update version status
-        /// </summary>
-        /// <param name="item">Configuration item</param>
-        /// <param name="status">New status</param>
-        /// <returns></returns>
-        Task UpdateStatusAsync(TItem item, ConfigurationItemVersionStatus status);
-
         /// <summary>
         /// Copy configuration item
         /// </summary>
@@ -27,11 +18,6 @@ namespace Shesha.ConfigurationItems
         /// <param name="input">Copy arguments</param>
         /// <returns></returns>
         Task<TItem> CopyAsync(TItem item, CopyItemInput input);
-
-        /// <summary>
-        /// Cancel version
-        /// </summary>
-        Task CancelVersionAsync(TItem item);
 
         /// <summary>
         /// Move item to another module
@@ -52,6 +38,14 @@ namespace Shesha.ConfigurationItems
         /// Map item to details DTO
         /// </summary>
         Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
+
+        /// <summary>
+        /// Expose item to a specified module
+        /// </summary>
+        /// <param name="item">Item to expose</param>
+        /// <param name="module">Module to expose to</param>
+        /// <returns></returns>
+        Task<TItem> ExposeAsync(TItem item, Module module);
     }
 
     public interface IConfigurationItemManager
@@ -62,44 +56,53 @@ namespace Shesha.ConfigurationItems
         Type ItemType { get; }
 
         /// <summary>
-        /// Update version status
-        /// </summary>
-        /// <param name="item">Configuration item</param>
-        /// <param name="status">New status</param>
-        /// <returns></returns>
-        Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status);
-
-        /// <summary>
         /// Copy configuration item
         /// </summary>
         /// <param name="item">Source item to copy</param>
         /// <param name="input">Copy arguments</param>
         /// <returns></returns>
-        Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input);
-
-        /// <summary>
-        /// Cancel version
-        /// </summary>
-        Task CancelVersoinAsync(ConfigurationItemBase item);
+        [Obsolete]
+        Task<ConfigurationItem> CopyAsync(ConfigurationItem item, CopyItemInput input);
 
         /// <summary>
         /// Move item to another module
         /// </summary>
-        Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input);
+        [Obsolete]
+        Task MoveToModuleAsync(ConfigurationItem item, MoveItemToModuleInput input);
 
         /// <summary>
         /// Create new version of the item
         /// </summary>
-        Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item);
+        [Obsolete]
+        Task<ConfigurationItem> CreateNewVersionAsync(ConfigurationItem item);
 
         /// <summary>
         /// Delete all versions of item specified <paramref name="item"/>
         /// </summary>
-        Task DeleteAllVersionsAsync(ConfigurationItemBase item);
+        [Obsolete]
+        Task DeleteAllVersionsAsync(ConfigurationItem item);
 
         /// <summary>
         /// Map item to details DTO
         /// </summary>
-        Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item);
+        Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItem item);
+
+        /// <summary>
+        /// Expose item to a specified module
+        /// </summary>
+        /// <param name="item">Item to expose</param>
+        /// <param name="module">Module to expose to</param>
+        /// <returns></returns>
+        Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module);
+
+        Task<ConfigurationItem> GetItemAsync(string module, string name);
+
+        Task<ConfigurationItem> CreateItemAsync(CreateItemInput input);
+
+        /// <summary>
+        /// Duplicate configuration item
+        /// </summary>
+        /// <param name="item">Source item to duplicate</param>
+        Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item);
     }
 }

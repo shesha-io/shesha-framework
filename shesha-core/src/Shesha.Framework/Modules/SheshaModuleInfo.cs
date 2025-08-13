@@ -1,4 +1,7 @@
-﻿namespace Shesha.Modules
+﻿using System;
+using System.Collections.Generic;
+
+namespace Shesha.Modules
 {
     /// <summary>
     /// Shesha module info
@@ -36,21 +39,24 @@
         public bool IsEditable { get; set; } = true;
 
         /// <summary>
-        /// Is root module
-        /// </summary>
-        public bool IsRootModule { get; set; }
-
-        /// <summary>
         /// Version no
         /// </summary>
         public string VersionNo { get; set; }
 
         public bool UseAssemblyVersion { get; set; }
 
+        /// <summary>
+        /// Configuration items inheritance hierarchy
+        /// </summary>
+        public List<Type> Hierarchy { get; set; }
+
         public SheshaModuleInfo(string name)
         {
             Name = name;
             UseAssemblyVersion = true;
+            Hierarchy = new List<Type>();
+            if (name != SheshaFrameworkModule.ModuleName)
+                Hierarchy.Add(typeof(SheshaFrameworkModule));
         }
 
         public SheshaModuleInfo(string name, string versionNo)

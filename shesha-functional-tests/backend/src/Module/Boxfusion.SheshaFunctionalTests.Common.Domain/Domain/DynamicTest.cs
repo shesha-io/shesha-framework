@@ -1,7 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using Shesha.DynamicEntities.Dtos;
 using Shesha.JsonEntities;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 
         public string Description { get; set; }
 
-        public FormIdFullNameDto FormIdFullName { get; set; }
+        public FormIdentifier FormIdFullName { get; set; }
     }
 
     public class JsonObject: JsonEntity

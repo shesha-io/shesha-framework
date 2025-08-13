@@ -2,6 +2,7 @@
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Reflection;
+using Abp.Threading;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;

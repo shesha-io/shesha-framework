@@ -5,7 +5,6 @@ using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
 using Shesha.ReferenceLists.Dto;
 using Shesha.Services;

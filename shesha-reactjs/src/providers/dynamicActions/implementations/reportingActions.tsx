@@ -5,6 +5,7 @@ import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dyn
 import React, { PropsWithChildren, useMemo } from 'react';
 import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IReportingActionsProps {
 
@@ -30,13 +31,13 @@ const useReportingActions: DynamicItemsEvaluationHook = (args) => {
 };
 
 const reportingActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
-    return props => {
+    return wrapDisplayName(props => {
         const testItems = useMemo<ButtonGroupItemProps[]>(() => {
             return ReportTestItems;
         }, []);
 
         return (<WrappedComponent {...props} items={testItems} hocType={'report'} />);
-    };
+    }, "reportingActionsHoc");
 };
 
 export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = ({ children }) => {

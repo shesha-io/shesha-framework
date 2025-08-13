@@ -57,12 +57,13 @@ namespace Shesha.Services
             await _repository.InsertAsync(entity);
         }
 
-        public async Task<BootstrapperStartup> StartBootstrapperAsync(BootstrapperStartup entity)
+        /*public async Task<BootstrapperStartup> StartBootstrapperAsync(BootstrapperStartup entity)
         {
+            entity = await _repository.GetAsync(entity.Id) ?? await StartBootstrapperAsync(entity.BootstrapperName);
             entity.StartedOn = DateTime.Now;
             entity.Status = BootstrapperStartupStatus.Started;
             return await _repository.InsertOrUpdateAsync(entity);
-        }
+        }*/
 
         public async Task<BootstrapperStartup> StartBootstrapperAsync(string bootstrapperName)
         {
@@ -72,7 +73,9 @@ namespace Shesha.Services
                 ? last
                 : new BootstrapperStartup { CreationTime = DateTime.Now, BootstrapperName = bootstrapperName };
 
-            return await StartBootstrapperAsync(entity);
+            entity.StartedOn = DateTime.Now;
+            entity.Status = BootstrapperStartupStatus.Started;
+            return await _repository.InsertOrUpdateAsync(entity); ;
         }
 
         public async Task<BootstrapperStartup> StartBootstrapperAsync(Type bootstrapper)
@@ -82,6 +85,7 @@ namespace Shesha.Services
 
         public async Task CompleteBootstrapperAsync(BootstrapperStartup entity, string? result = null, BootstrapperStartupContext? context = null)
         {
+            entity = await _repository.GetAsync(entity.Id) ?? await StartBootstrapperAsync(entity.BootstrapperName);
             entity.FinishedOn = DateTime.Now;
             entity.Status = BootstrapperStartupStatus.Completed;
             entity.Result = result;
@@ -91,6 +95,7 @@ namespace Shesha.Services
 
         public async Task FailedBootstrapperAsync(BootstrapperStartup entity, string? result = null, BootstrapperStartupContext? context = null)
         {
+            entity = await _repository.GetAsync(entity.Id) ?? await StartBootstrapperAsync(entity.BootstrapperName);
             entity.FinishedOn = DateTime.Now;
             entity.Status = BootstrapperStartupStatus.Failed;
             entity.Result = result;

@@ -2,11 +2,11 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.ObjectMapping;
+using Castle.Core.Logging;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services;
@@ -35,8 +35,9 @@ namespace Shesha.Permission
             IIocResolver iocResolver,
             IUnitOfWorkManager unitOfWorkManager,
             IApplicationStartupSession startupSession,
-            IBootstrapperStartupService bootstrapperStartupService
-        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _permissionedObjectRepository = permissionedObjectRepository;
             _objectMapper = objectMapper;
@@ -84,7 +85,7 @@ namespace Shesha.Permission
                         if (item == null) continue;
 
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
-                        dbItem.Parent = item.Parent;
+                        dbItem.Parent = item.Parent ?? string.Empty;
                         dbItem.Name = item.Name;
                         if (dbItem.Hardcoded.HasValue && (item.Hardcoded == true || item.Hardcoded != dbItem.Hardcoded))
                         {

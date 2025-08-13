@@ -9,6 +9,10 @@ namespace Shesha.Modules
     /// </summary>
     public abstract class SheshaBaseModule : AbpModule
     {
+        /// <summary>
+        /// Import module configuration
+        /// </summary>
+        /// <returns></returns>
         protected async Task<bool> ImportConfigurationAsync()
         {
             var seeder = IocManager.Resolve<IEmbeddedPackageSeeder>();

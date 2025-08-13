@@ -1,17 +1,19 @@
 import React, { FC } from 'react';
 import { useAppConfigurator } from '@/providers';
-import { Space, Switch, App } from 'antd';
+import { Space, Switch, App, SwitchProps } from 'antd';
 import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { useStyles } from './styles/styles';
 
 export interface IAppEditModeTogglerProps { }
+
+type SwitchOnChange = SwitchProps['onChange'];
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   const { toggleShowInfoBlock, formInfoBlockVisible, softToggleInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
   const { message } = App.useApp();
 
-  const toggleMode = (checked: boolean, event: React.MouseEvent<HTMLButtonElement>) => {
+  const toggleMode: SwitchOnChange = (checked, event) => {
     event.preventDefault();
 
     if (checked) {

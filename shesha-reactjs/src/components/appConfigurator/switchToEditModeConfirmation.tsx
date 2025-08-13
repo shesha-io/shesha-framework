@@ -14,7 +14,7 @@ export const SwitchToEditModeConfirmation: FC<IProps> = () => {
       onCancel={() => toggleEditModeConfirmation(false)}
       onOk={() => switchApplicationMode('edit')}
     >
-      <p>Would you like to leave 'Live Mode' and launch 'Edit Mode'?</p>
+      <p>Would you like to leave &apos;Live Mode&apos; and launch &apos;Edit Mode&apos;?</p>
     </Modal>
   );
 };

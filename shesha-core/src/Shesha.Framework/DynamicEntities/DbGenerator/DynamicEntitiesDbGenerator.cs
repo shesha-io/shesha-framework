@@ -49,7 +49,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 baseConfig = baseConfig.InheritedFrom;
             }
             // if user defined type then use "dynamic" DB schema otherwise use main DB schema
-            await UseSchemaAsync(baseConfig.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic" : "");
+            await UseSchemaAsync(baseConfig.LatestRevision.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic" : "");
             return await UseTableAsync(tableName);
         }
 
@@ -61,7 +61,7 @@ namespace Shesha.DynamicEntities.DbGenerator
             var props = properties 
                 ?? await _entityPropertyRepository.GetAll()
                 // Process only top level properties and not "Id" property
-                .Where(x => x.EntityConfig == entityConfig && x.ParentProperty == null && x.Name != "Id").ToListAsync();
+                .Where(x => x.EntityConfigRevision.ConfigurationItem.Id == entityConfig.Id && x.ParentProperty == null && x.Name != "Id").ToListAsync();
             if (props != null)
             {
                 foreach (var property in props.Where(x => !x.CreatedInDb))
@@ -76,14 +76,14 @@ namespace Shesha.DynamicEntities.DbGenerator
 
         public async Task ProcessEntityPropertyAsync(EntityProperty entityProperty)
         {
-            await UseSchemaAndTableAsync(entityProperty.EntityConfig);
+            await UseSchemaAndTableAsync(entityProperty.EntityConfigRevision.EntityConfig);
             await ProcessEntityPropertyAsync(entityProperty, false);
         }
 
         private async Task ProcessEntityPropertyAsync(EntityProperty entityProperty, bool force)
         {
             var propertyDbType = GetDbColumnType(entityProperty);
-            var columnName = entityProperty.ColumnName.NotNull($"Column name for property {entityProperty.Name} of {entityProperty.EntityConfig.FullClassName} should not be null");
+            var columnName = entityProperty.ColumnName.NotNull($"Column name for property {entityProperty.Name} of {entityProperty.EntityConfigRevision.EntityConfig.FullClassName} should not be null");
 
             // Create many to many table
             if (entityProperty.DataType == DataTypes.Array && entityProperty.DataFormat == ArrayFormats.ManyToManyEntities)
@@ -115,7 +115,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                     if (create)
                     {
                         // ToDo: AS - use naming generator
-                        tableName = $"{entityProperty.EntityConfig.TableName}_{refConfig.TableName}";
+                        tableName = $"{entityProperty.EntityConfigRevision.EntityConfig.TableName}_{refConfig.TableName}";
                         var index = 1;
                         var numberTableName = $"{tableName}_{index++}";
                         while (await _dbActions.IsTableExistsAsync(numberTableName))
@@ -134,7 +134,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 if (create)
                 {
                     var dbMapping = entityProperty.ListConfiguration?.DbMapping.NotNull();
-                    var primaryTable = $"{(entityProperty.EntityConfig.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic." : "")}{entityProperty.EntityConfig.TableName}";
+                    var primaryTable = $"{(entityProperty.EntityConfigRevision.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic." : "")}{entityProperty.EntityConfigRevision.EntityConfig.TableName}";
                     var foreignTable = $"{(refConfig.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic." : "")}{refConfig.TableName}";
 
                     await _dbActions.CreateManyToManyTableAsync(

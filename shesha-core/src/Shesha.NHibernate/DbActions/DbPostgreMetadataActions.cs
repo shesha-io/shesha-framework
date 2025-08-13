@@ -1,8 +1,4 @@
-﻿using Shesha.Domain.ConfigurationItems;
-using Shesha.DynamicEntities.DbGenerator;
-using Shesha.DynamicEntities.Dtos;
-
-namespace Shesha.DbActions
+﻿namespace Shesha.DbActions
 {
     /*public class DbPostgreMetadataActions : IDbMetadataActions
     {

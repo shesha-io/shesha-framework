@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using System;
 
 namespace Shesha.ShaRoleAppointedPersons.Dto
 {
@@ -12,6 +11,5 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
     {
         public Guid RoleId { get; set; }
         public EntityReferenceDto<Guid?> Person { get; set; }
-        public List<EntityReferenceDto<Guid>> Regions { get; set; } = new List<EntityReferenceDto<Guid>>();
     }
 }

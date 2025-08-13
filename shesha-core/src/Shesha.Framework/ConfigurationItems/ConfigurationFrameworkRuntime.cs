@@ -1,6 +1,9 @@
 ﻿using Abp.Dependency;
+using Abp.Modules;
 using Abp.Runtime;
+using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
+using Shesha.Extensions;
 using System;
 
 namespace Shesha.ConfigurationItems
@@ -12,10 +15,14 @@ namespace Shesha.ConfigurationItems
     {
         private const string ScopeKey = "sha-configuration-framework-runtime";
         private readonly IAmbientScopeProvider<ConfigurationFrameworkRuntimeState> _scopeProvider;
+        private readonly IAbpModuleManager _moduleManager;
+        private readonly string _topLevelModule;
 
-        public ConfigurationFrameworkRuntime(IAmbientScopeProvider<ConfigurationFrameworkRuntimeState> scopeProvider)
+        public ConfigurationFrameworkRuntime(IAmbientScopeProvider<ConfigurationFrameworkRuntimeState> scopeProvider, IAbpModuleManager moduleManager)
         {
             _scopeProvider = scopeProvider;
+            _moduleManager = moduleManager;
+            _topLevelModule = moduleManager.GetStartupModuleNameOrDefault();
         }
 
         private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState {
@@ -36,6 +43,13 @@ namespace Shesha.ConfigurationItems
 
         /// inheritedDoc
         public string? FrontEndApplication => State.FrontEndApplication;
+
+        /// inheritedDoc
+        public string CurrentModule => CurrentModuleOrNull ?? throw new TopLevelModuleIsNotDefined();
+
+        public string? CurrentModuleOrNull => !string.IsNullOrWhiteSpace(State.CurrentModule)
+            ? State.CurrentModule
+            : _topLevelModule;
 
         /// inheritedDoc
         public IDisposable BeginScope(Action<ConfigurationFrameworkRuntimeState> initAction)

@@ -1,6 +1,7 @@
 import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { IObjectMetadata } from "@/interfaces";
 import { IMetadata } from "@/interfaces/metadata";
+import { wrapDisplayName } from "@/utils/react";
 import { Skeleton } from "antd";
 import React, { ComponentType, FC } from "react";
 
@@ -32,7 +33,7 @@ const evaluatePromise = <TResult extends IMetadata>(value: TResult | (() => Prom
 };
 
 export function withEnvironment<WrappedProps>(WrappedComponent: ComponentType<WithEnvironment<WrappedProps>>): FC<WithEnvironmentAccessors<WrappedProps>> {
-    return props => {
+    return wrapDisplayName(props => {
         const { availableConstants, resultType } = props;
 
         const state = useAsyncMemo<EnvironmentMetadataState>(() => {
@@ -56,5 +57,5 @@ export function withEnvironment<WrappedProps>(WrappedComponent: ComponentType<Wi
                 resultType={state.resultType}
             />)
             : (<Skeleton loading={true} />);
-    };
+    }, "withEnvironment");
 };

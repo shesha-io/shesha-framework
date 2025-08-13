@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.UI;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
@@ -23,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
-    public class NotificationManager : ConfigurationItemManager<NotificationTypeConfig>, INotificationManager, ITransientDependency
+    public class NotificationManager : ConfigurationItemManager<NotificationTypeConfig, NotificationTypeConfigRevision>, INotificationManager, ITransientDependency
     {
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreference;
@@ -31,13 +29,10 @@ namespace Shesha.Notifications
         private readonly INotificationSettings _notificationSettings;
 
         public NotificationManager(
-            IRepository<NotificationTypeConfig, Guid> repository,
-            IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager,
             IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
             IRepository<UserNotificationPreference, Guid> userNotificationPreference,
             IRepository<NotificationTemplate, Guid> templateRepository,
-            INotificationSettings notificationSettings) : base(repository, moduleRepository, unitOfWorkManager)
+            INotificationSettings notificationSettings) : base()
         {
             _notificationChannelRepository = notificationChannelRepository;
             _userNotificationPreference = userNotificationPreference;
@@ -67,11 +62,12 @@ namespace Shesha.Notifications
                     return defaultChannels;
             }
 
+            var revision = type.Revision;
             // Step 2: Check for Parsed Override Channels
-            if (type.ParsedOverrideChannels.Any())
+            if (revision.ParsedOverrideChannels.Any())
             {
                 var overrideChannels = new List<NotificationChannelConfig>();
-                foreach (var channel in type.ParsedOverrideChannels) 
+                foreach (var channel in revision.ParsedOverrideChannels) 
                 {
                     // TODO: check versioned query
                     var dbChannel = await _notificationChannelRepository.GetAll().Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression())
@@ -97,9 +93,7 @@ namespace Shesha.Notifications
                 return new();
 
             // TODO: check versioned query
-            var liveChannels = _notificationChannelRepository
-                .GetAll()
-                .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);
+            var liveChannels = _notificationChannelRepository.GetAll();
 
             var result = selectedNotifications
                 .SelectMany(identifier => liveChannels
@@ -142,21 +136,22 @@ namespace Shesha.Notifications
                         )
                     );
             }
+            src.NotNull();
 
             validationResults.ThrowValidationExceptionIfAny(L);
 
             var newCopy = new NotificationTypeConfig();
             newCopy.Name = input.Name;
             newCopy.Module = module;
-            newCopy.Description = input.Description;
-            newCopy.Label = input.Label;
 
-            newCopy.VersionNo = 1;
-            newCopy.VersionStatus = ConfigurationItemVersionStatus.Draft;
+            var revision = newCopy.EnsureLatestRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+
             newCopy.Origin = newCopy;
 
             // notification specific props
-            newCopy.CopyNotificationSpecificPropsFrom(src.NotNull());
+            revision.CopyNotificationSpecificPropsFrom(src.Revision);
 
             newCopy.Normalize();
 
@@ -167,8 +162,10 @@ namespace Shesha.Notifications
             return newCopy;
         }
 
-        private async Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
+        private Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
         {
+            throw new NotImplementedException();
+            /*
             var srcItems = await _templateRepository.GetAll().Where(i => i.PartOf == source).ToListAsync();
 
             foreach (var srcItem in srcItems)
@@ -178,6 +175,7 @@ namespace Shesha.Notifications
 
                 await _templateRepository.InsertAsync(dstItem);
             }
+            */
         }        
 
         public async Task<NotificationTypeConfig> CreateNewVersionWithoutDetailsAsync(NotificationTypeConfig src)
@@ -186,16 +184,13 @@ namespace Shesha.Notifications
             newVersion.Origin = src.Origin;
             newVersion.Name = src.Name;
             newVersion.Module = src.Module;
-            newVersion.Description = src.Description;
-            newVersion.Label = src.Label;
-            newVersion.TenantId = src.TenantId;
 
-            newVersion.ParentVersion = src; // set parent version
-            newVersion.VersionNo = src.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
+            var revision = newVersion.EnsureLatestRevision();
+            revision.Description = src.Revision.Description;
+            revision.Label = src.Revision.Label;
 
             // notification specific props
-            newVersion.CopyNotificationSpecificPropsFrom(src);
+            revision.CopyNotificationSpecificPropsFrom(src.Revision);
 
             newVersion.Normalize();
 
@@ -211,6 +206,44 @@ namespace Shesha.Notifications
             await CopyTemplatesAsync(src, newVersion);
 
             return newVersion;
+        }
+
+        public override Task<NotificationTypeConfig> ExposeAsync(NotificationTypeConfig item, Module module)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task<NotificationTypeConfig> CreateItemAsync(CreateItemInput input)
+        {
+            var validationResults = new ValidationResults();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            var notification = new NotificationTypeConfig
+            {
+                Name = input.Name,
+                Module = input.Module,
+                Folder = input.Folder,
+                OrderIndex = input.OrderIndex,
+            };
+            notification.Origin = notification;
+
+            await Repository.InsertAsync(notification);
+
+            var revision = notification.MakeNewRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+
+            await RevisionRepository.InsertAsync(revision);
+
+            return notification;
+        }
+
+        public override Task<NotificationTypeConfig> DuplicateAsync(NotificationTypeConfig item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

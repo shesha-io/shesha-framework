@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
+using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.Extensions;
 using Shesha.Reflection;
@@ -35,8 +36,9 @@ namespace Shesha.Scheduler.Bootstrappers
             IRepository<ScheduledJobTrigger, Guid> triggerRepo,
             IScheduledJobManager jobManager,
             IApplicationStartupSession startupSession,
-            IBootstrapperStartupService bootstrapperStartupService
-        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
             _jobRepo = jobRepo;

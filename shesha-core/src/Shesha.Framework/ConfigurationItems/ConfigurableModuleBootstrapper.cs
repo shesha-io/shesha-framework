@@ -1,14 +1,17 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Modules;
 using Abp.Reflection;
 using Abp.Timing;
+using Castle.Core.Logging;
 using Shesha.Bootstrappers;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.ConfigurationItems.Exceptions;
+using Shesha.ConfigurationItems.New;
+using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Modules;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -27,24 +30,34 @@ namespace Shesha.ConfigurationItems
         private readonly ITypeFinder _typeFinder;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Module, Guid> _moduleRepo;
+        private readonly IRepository<ModuleRelation, Guid> _moduleRelationRepo;
+        private readonly IModuleHierarchyProvider _moduleHierarchyProvider;        
         private readonly IIocManager _iocManager;
         private readonly IApplicationStartupSession _startupSession;
+        private readonly IAbpModuleManager _moduleManager;
 
         public ConfigurableModuleBootstrapper
         (
             ITypeFinder typeFinder,
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Module, Guid> moduleRepo,
+            IRepository<ModuleRelation, Guid> moduleRelationRepo,
+            IModuleHierarchyProvider moduleHierarchyProvider,
             IIocManager iocManager,
             IApplicationStartupSession startupSession,
-            IBootstrapperStartupService bootstrapperStartupService
-        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService)
+            IAbpModuleManager moduleManager,
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
             _unitOfWorkManager = unitOfWorkManager;
             _moduleRepo = moduleRepo;
+            _moduleRelationRepo = moduleRelationRepo;
+            _moduleHierarchyProvider = moduleHierarchyProvider;
             _iocManager = iocManager;
             _startupSession = startupSession;
+            _moduleManager = moduleManager;
         }
 
         [UnitOfWork(IsDisabled = true)]
@@ -55,6 +68,7 @@ namespace Shesha.ConfigurationItems
 
         private async Task<List<ModuleItem>> GetCodeModulesAsync() 
         {
+            var startupModuleName = _moduleManager.GetStartupModuleNameOrDefault();
             var result = new List<ModuleItem>();
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
@@ -86,13 +100,20 @@ namespace Shesha.ConfigurationItems
                                 Description = moduleInfo.Description,
                                 Publisher = moduleInfo.Publisher,
                                 IsEditable = moduleInfo.IsEditable,
-                                IsRootModule = moduleInfo.IsRootModule,
+                                IsRootModule = moduleInfo.Name == startupModuleName,
                                 IsEnabled = true,
 
                                 CurrentVersionNo = version,
                                 FirstInitializedDate = Clock.Now,
                             };
                             await _moduleRepo.InsertAsync(dbModule);
+                        }
+                        else {
+                            if (dbModule.IsDeleted) 
+                            {
+                                dbModule.IsDeleted = false;
+                                await _moduleRepo.UpdateAsync(dbModule);
+                            }
                         }
 
                         result.Add(new ModuleItem
@@ -105,6 +126,22 @@ namespace Shesha.ConfigurationItems
                             Id = dbModule.Id,
                             IsNewModule = isNew,
                         });                        
+                    }
+
+                    // Update startup modules assuming that we have only one startup module per DB
+                    // If we'll need to run multiple back-ends on the same DB we'll have to pass current module in each session
+                    var toUpdateStartupFlag = dbModules.Where(m => m.IsRootModule != (m.Name == startupModuleName)).ToList();
+                    foreach (var module in toUpdateStartupFlag) 
+                    {
+                        module.IsRootModule = module.Name == startupModuleName;
+                        await _moduleRepo.UpdateAsync(module);
+                    }
+
+                    // delete missing modules
+                    var toDelete = dbModules.Where(e => !result.Any(m => m.Id == e.Id)).ToList();
+                    foreach (var module in toDelete) 
+                    {
+                        await _moduleRepo.DeleteAsync(module);                        
                     }
                 }
                 await unitOfWork.CompleteAsync();
@@ -123,6 +160,8 @@ namespace Shesha.ConfigurationItems
                 })
                 .ToList();
 
+            var startupModuleName = _moduleManager.GetStartupModuleNameOrDefault();
+
             foreach (var codeModule in codeModules)
             {
                 using (var unitOfWork = _unitOfWorkManager.Begin()) 
@@ -137,7 +176,7 @@ namespace Shesha.ConfigurationItems
                         dbModule.Description = codeModule.ModuleInfo.Description;
                         dbModule.Publisher = codeModule.ModuleInfo.Publisher;
                         dbModule.IsEditable = codeModule.ModuleInfo.IsEditable;
-                        dbModule.IsRootModule = codeModule.ModuleInfo.IsRootModule;
+                        dbModule.IsRootModule = codeModule.ModuleInfo.Name == startupModuleName;
                         dbModule.CurrentVersionNo = codeModule.Version;
                         dbModule.FirstInitializedDate = dbModule.FirstInitializedDate ?? Clock.Now;
                         await _moduleRepo.UpdateAsync(dbModule);
@@ -164,10 +203,63 @@ namespace Shesha.ConfigurationItems
                         await _moduleRepo.UpdateAsync(dbModule);
                     }
 
+                    // Fill module hierarchy
+                    await FillModuleHierarchyAsync(dbModule);
+
                     await unitOfWork.CompleteAsync();
                 }
             }
         }
+
+        private async Task FillModuleHierarchyAsync(Module module) 
+        {
+            var dbRelations = await _moduleRelationRepo.GetAll().Where(e => e.Module == module).ToListAsync();
+
+            var level = 0;
+            var baseModulesOld = _moduleHierarchyProvider.GetBaseModules(module.Name)
+                .Select(m => new { BaseModule = m, Level = level++ })
+                .ToList();
+
+            level = 0;
+            var baseModules = _moduleHierarchyProvider.GetFullHierarchy(module.Name)
+                .Select(m => new { BaseModule = m, Level = level++ })
+                .ToList();
+
+            foreach (var baseModule in baseModules)
+            {
+                var existingRelation = dbRelations.FirstOrDefault(e => e.BaseModule.Name == baseModule.BaseModule);
+                if (existingRelation != null)
+                {
+                    dbRelations.Remove(existingRelation);
+                    if (existingRelation.Level != baseModule.Level)
+                    {
+                        existingRelation.Level = baseModule.Level;
+                        await _moduleRelationRepo.UpdateAsync(existingRelation);
+                    }
+                }
+                else
+                {
+                    var dbBaseModule = await _moduleRepo.FirstOrDefaultAsync(e => e.Name == baseModule.BaseModule);
+                    if (dbBaseModule == null)
+                        throw new ModuleNotFoundException(baseModule.BaseModule);
+
+                    var relation = new ModuleRelation
+                    {
+                        Module = module,
+                        BaseModule = dbBaseModule,
+                        Level = baseModule.Level,
+                    };
+                    await _moduleRelationRepo.InsertAsync(relation);
+                }
+            }
+
+            // delete outstanding relations
+            foreach (var toDelete in dbRelations) 
+            {
+                await _moduleRelationRepo.DeleteAsync(toDelete);
+            }
+        }
+
         private class ModuleItem
         {
             public Guid Id { get; set; }

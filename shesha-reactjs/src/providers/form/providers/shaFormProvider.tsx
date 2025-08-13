@@ -1,7 +1,8 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef } from "react";
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { IShaFormInstance } from '../store/interfaces';
 import { DelayedUpdateProvider } from "../../delayedUpdateProvider";
 import { ShaFormDataUpdateContext, ShaFormInstanceContext } from "../providers/contexts";
+import { ShaFormSubscriptionType } from "../store/shaFormInstance";
 
 export interface IShaFormProviderProps {
     shaForm: IShaFormInstance;
@@ -50,9 +51,22 @@ const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
     return context;
 };
 
+const useShaFormSubscription = (subscriptionType: ShaFormSubscriptionType) => {
+    const shaForm = useShaFormInstance();
+    const [dummy, forceUpdate] = useState({});
+    useEffect(() => {
+        // Subscribe to changes
+        const unsubscribe = shaForm.subscribe(subscriptionType, () => forceUpdate({}));
+        return unsubscribe; // Cleanup on unmount
+    }, [shaForm, subscriptionType]);
+
+    return dummy;
+};
+
 export {
     FormProviderWithDelayedUpdates as ShaFormProvider,
     useShaFormInstance,
     useShaFormDataUpdate,
     useShaFormRef,
+    useShaFormSubscription,
 };

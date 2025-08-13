@@ -70,7 +70,7 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
                 title={title ?? "Configuration"}
                 onCancel={onCancelClick}
                 onOk={onOkClick}
-                destroyOnClose={true}
+                destroyOnHidden={true}
             >
                 <ItemListConfigurator
                     readOnly={readOnly}

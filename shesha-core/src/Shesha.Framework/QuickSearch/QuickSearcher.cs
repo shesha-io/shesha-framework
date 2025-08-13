@@ -270,7 +270,7 @@ namespace Shesha.QuickSearch
 
             var param = Expression.Parameter(typeof(ReferenceListItem), $"ent{propName}");
 
-            var listIdExpr = Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceList)}.{nameof(ReferenceList.Id)}"), Expression.Constant(refList.Id));
+            var listIdExpr = Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceListRevision)}.{nameof(ReferenceList.Id)}"), Expression.Constant(refList.Id));
 
             var propExpression = ExpressionExtensions.GetMemberExpression(entityExpression, propName);
             var valuePredicateExpr = comparer.Invoke(

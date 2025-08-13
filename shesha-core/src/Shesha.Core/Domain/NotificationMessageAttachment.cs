@@ -9,7 +9,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Name of the file, is used for overriding of the File's name
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string FileName { get; set; }
         
         /// <summary>

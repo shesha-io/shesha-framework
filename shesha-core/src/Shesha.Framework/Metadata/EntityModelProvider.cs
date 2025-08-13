@@ -5,7 +5,6 @@ using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
@@ -36,14 +35,14 @@ namespace Shesha.Metadata
             _metadataProvider = metadataProvider;
         }
 
-        public async Task HandleEventAsync(EntityChangedEventData<EntityProperty> eventData)
+        public Task HandleEventAsync(EntityChangedEventData<EntityProperty> eventData)
         {
-            await Cache.ClearAsync();
+            return Cache.ClearAsync();
         }
 
-        public async Task HandleEventAsync(EntityChangingEventData<ConfigurationItem> eventData)
+        public Task HandleEventAsync(EntityChangingEventData<ConfigurationItem> eventData)
         {
-            await Cache.ClearAsync();
+            return Cache.ClearAsync();
         }
 
         protected async override Task<List<EntityModelDto>> FetchModelsAsync()
@@ -67,12 +66,12 @@ namespace Shesha.Metadata
                     return new EntityModelDto
                     {
                         Suppress = t.Suppress,
-                        Name = t.ClassName,
                         ClassName = t.FullClassName,
+                        Name = t.ClassName,
                         Type = config?.EntityType,
-                        Description = t.Description ?? (config != null && config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
-                        Alias = string.IsNullOrWhiteSpace(t.TypeShortAlias) ? config?.SafeTypeShortAlias : t.TypeShortAlias,
-                        Accessor = t.Accessor,
+                        Description = t.Revision.Description ?? (config != null && config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
+                        Alias = string.IsNullOrWhiteSpace(t.Revision.TypeShortAlias) ? config?.SafeTypeShortAlias : t.Revision.TypeShortAlias,
+                        Accessor = t.Revision.Accessor,
                         ModuleAccessor = t.Module?.Accessor,
                         Md5 = metadata.Md5,
                         ModificationTime = metadata.ChangeTime, // t.LastModificationTime ?? t.CreationTime,

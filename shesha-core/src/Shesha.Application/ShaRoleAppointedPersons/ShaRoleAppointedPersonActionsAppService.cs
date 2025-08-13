@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Validation;
 using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Domain;
@@ -19,17 +18,13 @@ namespace Shesha.ShaRoleAppointedPersons
     public class ShaRoleAppointedPersonActionsAppService : SheshaCrudServiceBase<ShaRoleAppointedPerson, ShaRoleAppointedPersonDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleAppointedPersonDto, ShaRoleAppointedPersonDto>, IShaRoleAppointedPersonAppService
     {
         private readonly IRepository<ShaRole, Guid> _roleRepository;
-        private readonly IRepository<ShaRoleAppointmentEntity, Guid> _appEntityRepository;
         private readonly IRepository<Person, Guid> _personRepository;
-        private readonly IRepository<Area, Guid> _areaRepository;
         private readonly IShaPermissionChecker _shaPermissionChecker;
 
-        public ShaRoleAppointedPersonActionsAppService(IRepository<ShaRoleAppointedPerson, Guid> repository, IRepository<ShaRole, Guid> roleRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository, IRepository<Person, Guid> personRepository, IRepository<Area, Guid> areaRepository, IShaPermissionChecker shaPermissionChecker) : base(repository)
+        public ShaRoleAppointedPersonActionsAppService(IRepository<ShaRoleAppointedPerson, Guid> repository, IRepository<ShaRole, Guid> roleRepository, IRepository<Person, Guid> personRepository, IShaPermissionChecker shaPermissionChecker) : base(repository)
         {
             _roleRepository = roleRepository;
-            _appEntityRepository = appEntityRepository;
             _personRepository = personRepository;
-            _areaRepository = areaRepository;
             _shaPermissionChecker = shaPermissionChecker;
         }
 
@@ -66,11 +61,6 @@ namespace Shesha.ShaRoleAppointedPersons
                 ? await _personRepository.GetAsync(input.Person.Id.Value)
                 : null;
 
-            var regionIds = input.Regions.Select(r => r.Id).ToList();
-            var regions = input.Regions.Any()
-                ? await _areaRepository.GetAll().Where(a => regionIds.Contains(a.Id)).ToListAsync()
-                : new List<Area>();
-
             var validationResults = new List<ValidationResult>();
             if (entity.Role == null)
                 validationResults.Add(new ValidationResult("Role is mandatory"));
@@ -81,33 +71,9 @@ namespace Shesha.ShaRoleAppointedPersons
                 await Repository.GetAll().AnyAsync(a => a.Role == entity.Role && a.Person == entity.Person && a.Id != entity.Id))
                 validationResults.Add(new ValidationResult("Selected person already in the list"));
 
-            // todo: validate regions only for roles with region parameter
-
             validationResults.ThrowValidationExceptionIfAny(L);
 
             await Repository.InsertOrUpdateAsync(entity);
-
-            var regionTypeShortAlias = typeof(Area).GetEntityConfiguration().TypeShortAlias;
-            var linkedRegions = await _appEntityRepository.GetAll().Where(e => e.Appointment == entity && e.EntityTypeAlias == regionTypeShortAlias).ToListAsync();
-            
-            // delete removed ones
-            var linkedRegionsToDelete = linkedRegions.Where(e => e.EntityTypeAlias == regionTypeShortAlias && !regions.Any(r => r.Id.ToString() == e.EntityId)).ToList();
-            foreach (var linkedRegion in linkedRegionsToDelete)
-            {
-                await _appEntityRepository.DeleteAsync(linkedRegion);
-            }
-
-            // add new ones
-            var toAdd = regions.Where(r => !linkedRegions.Any(e => e.EntityTypeAlias == regionTypeShortAlias && e.EntityId == r.Id.ToString())).ToList();
-            foreach (var region in toAdd)
-            {
-                await _appEntityRepository.InsertAsync(new ShaRoleAppointmentEntity
-                {
-                    Appointment = entity,
-                    EntityId = region.Id.ToString(),
-                    EntityTypeAlias = regionTypeShortAlias
-                });
-            }
 
             return entity;
         }

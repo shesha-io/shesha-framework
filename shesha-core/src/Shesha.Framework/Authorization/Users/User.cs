@@ -33,7 +33,7 @@ namespace Shesha.Authorization.Users
         /// Email address of the user.
         /// Email address must be unique for it's tenant.
         /// </summary>
-        [StringLength(MaxEmailAddressLength)]
+        [MaxLength(MaxEmailAddressLength)]
         public override string? EmailAddress { get; set; }         
 
         public override void SetNormalizedNames()
@@ -43,7 +43,7 @@ namespace Shesha.Authorization.Users
         }
 
         [Display(Name = "Authentication Guid")]
-        [StringLength(36)]
+        [MaxLength(36)]
         public virtual string? AuthenticationGuid { get; set; }
 
         [Display(Name = "Authentication Guid Expiry Date")]

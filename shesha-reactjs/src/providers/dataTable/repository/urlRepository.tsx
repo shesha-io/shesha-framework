@@ -21,6 +21,7 @@ import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -107,7 +108,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
 
   const fetch = (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
     // Check if getListUrl is empty then return empty result
-    if (getListUrl === null || getListUrl === undefined) 
+    if (getListUrl === null || getListUrl === undefined)
       return Promise.resolve({ totalRows: 0, totalPages: 1, rows: [], totalRowsBeforeFilter: 0 });
 
     const getDataPayload = convertPayload(payload);
@@ -185,10 +186,10 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
 export function withUrlRepository<WrappedProps>(
   WrappedComponent: ComponentType<WrappedProps & IHasRepository>
 ): FC<WrappedProps> {
-  return (props) => {
+  return wrapDisplayName((props) => {
     const { getDataPath } = props as IHasEntityDataSourceConfig;
     const repository = useUrlRepository({ getListUrl: getDataPath });
 
     return <WrappedComponent {...props} repository={repository} />;
-  };
+  }, "withUrlRepository");
 }

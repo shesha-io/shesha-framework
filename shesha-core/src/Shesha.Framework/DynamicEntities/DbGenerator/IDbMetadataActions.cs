@@ -1,7 +1,4 @@
-﻿using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
-using Shesha.DynamicEntities.Dtos;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.DbGenerator
 {
