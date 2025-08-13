@@ -17,7 +17,7 @@ const Toolbox: FC<IProps> = () => {
   const builderItems = useMemo(() => {
     const dataSources = [...formDs];
 
-    const defaultItems = [{ key: '1', label: 'Widgets', children: <ToolboxComponents /> }];
+    const defaultItems = [{ key: '1', label: 'Components', children: <ToolboxComponents /> }];
 
     if (isEntityMetadata(currentMeta?.metadata))
       dataSources.push({
