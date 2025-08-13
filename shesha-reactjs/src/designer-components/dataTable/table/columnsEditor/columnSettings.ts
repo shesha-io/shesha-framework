@@ -83,7 +83,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "propertyAutocomplete",
                                     "propertyName": "propertiesNames",
-                                    "label": "Properties to fetch",
+                                    "label": "Properties to Fetch",
                                     "labelAlign": "right",
                                     "mode": "multiple"
                                 }
@@ -214,21 +214,21 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "formAutocomplete",
                                     "propertyName": "displayFormId",
-                                    "label": "Display form"
+                                    "label": "Display Form"
                                 },
                                 {
                                     "id": "createFormId1",
                                     "type": "settingsInput",
                                     "inputType": "formAutocomplete",
                                     "propertyName": "createFormId",
-                                    "label": "Create form"
+                                    "label": "Create Form"
                                 },
                                 {
                                     "id": "editFormId1",
                                     "type": "settingsInput",
                                     "inputType": "formAutocomplete",
                                     "propertyName": "editFormId",
-                                    "label": "Edit form"
+                                    "label": "Edit Form"
                                 }
                             ]
                         },
@@ -361,7 +361,6 @@ export const getColumnSettings = (data?: any) => ({
                                     .addSettingsInputRow({
                                         id: 'dimensionsStyleRowHeight',
                                         parentId: 'dimensionsStylePnl',
-                                        inline: true,
                                         hidden: {
                                             _code: "return getSettingValue(data?.columnType) !== 'form';",
                                             _mode: "code",

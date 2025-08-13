@@ -37,7 +37,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   name: 'Checkbox',
   icon: <CheckSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  calculateModel: (model, allData) => ({eventHandlers: getAllEventHandlers(model, allData)}),
+  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
@@ -51,10 +51,9 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
             }
           };
 
-          return model.readOnly 
-            ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} />
-            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />
-          ;
+          return model.readOnly
+            ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle} />
+            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />;
         }}
       </ConfigurableFormItem>
     );

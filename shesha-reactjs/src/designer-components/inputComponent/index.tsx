@@ -116,9 +116,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 variant={variant}
                 className={className}
                 showSearch={showSearch}
-                value={value || defaultValue}
-                style={{ width: props.width ?? "100%" }}
+                value={!value ? defaultValue : value}
                 defaultValue={defaultValue}
+                style={{ width: props.width ?? "100%" }}
                 onChange={onChange}
                 placeholder={placeholder}
                 options={[...(options || [])].map(option => ({ ...option, label: <Icon icon={option.label} size={option.value} styles={styles} hint={tooltip} /> }))}

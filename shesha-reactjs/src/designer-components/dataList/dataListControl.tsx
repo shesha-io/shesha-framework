@@ -45,6 +45,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     noDataIcon,
     allStyles,
     onRowDeleteSuccessAction,
+    orientation = 'vertical',
   } = props;
   const {
     tableData,
@@ -91,11 +92,11 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const data = useDeepCompareMemo(() => {
     return isDesignMode
-      ? props.orientation === 'vertical'
+      ? orientation === 'vertical'
         ? [{}]
         : [{}, {}, {}, {}]
       : tableData;
-  }, [isDesignMode, tableData, props.orientation]);
+  }, [isDesignMode, tableData, orientation]);
 
   // http, moment, setFormData
      const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
@@ -232,7 +233,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
-  if (groupingColumns?.length > 0 && props.orientation === "wrap") {
+  if (groupingColumns?.length > 0 && orientation === "wrap") {
     return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
   }
 

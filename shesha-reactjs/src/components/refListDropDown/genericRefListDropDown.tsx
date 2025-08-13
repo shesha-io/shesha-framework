@@ -127,7 +127,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         showIcon={showIcon}
         showItemName={showItemName}
         solidColor={solidColor}
-        style={displayStyle === 'tags' ? tagStyle : style}
+        tagStyle={tagStyle}
+        style={style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
       />

@@ -23,8 +23,6 @@ import { INote } from '@/providers/notes/contexts';
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
   ownerType: string;
-  ownerIdExpression: string;
-  ownerTypeExpression: string;
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;

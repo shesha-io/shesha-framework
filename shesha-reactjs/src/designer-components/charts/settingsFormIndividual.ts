@@ -3,7 +3,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -338,7 +338,7 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     propertyName: 'timeSeriesFormat',
                                     parentId: dataSettingsId,
-                                    label: 'Time Series Format',
+                                    label: 'Axis Property Time Series Format',
                                     type: 'dropdown',
                                     allowClear: true,
                                     dropdownOptions: [
@@ -349,13 +349,12 @@ export const getSettings = (data: any) => {
                                       { label: 'Day-Month-Year', value: 'day-month-year' },
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
-                                    validate: { required: true },
                                     defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
+                                      _code: 'return !!!getSettingValue(data?.isAxisTimeSeries)',
                                       _mode: 'code',
-                                      _value: false,
+                                      _value: true,
                                     } as any,
                                     width: '50%',
                                   }
@@ -431,7 +430,7 @@ export const getSettings = (data: any) => {
                                 parentId: dataSettingsId,
                                 inline: true,
                                 hidden: {
-                                  _code: 'return !getSettingValue(data?.groupingProperty)',
+                                  _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
@@ -445,7 +444,6 @@ export const getSettings = (data: any) => {
                                     tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
                                     defaultValue: false,
-                                    validate: { required: true },
                                     width: '50%',
                                     jsSetting: true,
                                   },
@@ -468,9 +466,9 @@ export const getSettings = (data: any) => {
                                     defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
-                                      _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                                      _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                                       _mode: 'code',
-                                      _value: false,
+                                      _value: true,
                                     } as any,
                                     width: '50%',
                                   }
@@ -937,7 +935,7 @@ export const getSettings = (data: any) => {
                             id: nanoid(),
                             propertyName: 'timeSeriesFormat',
                             parentId: dataTabId,
-                            label: 'Time Series Format',
+                            label: 'Axis Property Time Series Format',
                             type: 'dropdown',
                             allowClear: true,
                             dropdownOptions: [
@@ -1029,7 +1027,7 @@ export const getSettings = (data: any) => {
                         parentId: dataTabId,
                         inline: true,
                         hidden: {
-                          _code: 'return !getSettingValue(data?.groupingProperty)',
+                          _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                           _mode: 'code',
                           _value: false,
                         } as any,
@@ -1043,7 +1041,6 @@ export const getSettings = (data: any) => {
                             tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                             parentId: dataTabId,
                             defaultValue: false,
-                            validate: { required: false },
                             width: '50%',
                             jsSetting: true,
                           },
@@ -1067,9 +1064,9 @@ export const getSettings = (data: any) => {
                             width: '50%',
                             jsSetting: true,
                             hidden: {
-                              _code: 'return getSettingValue(data?.isGroupingTimeSeries) !== true',
+                              _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                               _mode: 'code',
-                              _value: false,
+                              _value: true,
                             } as any,
                           },
                         ],
@@ -1130,6 +1127,7 @@ export const getSettings = (data: any) => {
                               _value: false,
                             } as any,
                             jsSetting: true,
+                            width: '100%',
                           }
                         ]
                       })
@@ -1239,7 +1237,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'titleFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1301,7 +1299,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'axisLabelFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1373,7 +1371,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'legendFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },
@@ -1435,7 +1433,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'tickFont.weight',
                             hideLabel: true,
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                            dropdownOptions: fontWeights,
+                            dropdownOptions: fontWeightsOptions,
                             width: 100,
                             defaultValue: '400',
                           },

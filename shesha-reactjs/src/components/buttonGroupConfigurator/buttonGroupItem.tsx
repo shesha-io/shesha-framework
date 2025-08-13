@@ -62,11 +62,11 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
 
   const newStyles = {
     ...buttonStyles.dimensionsStyles,
-    ...(['primary', 'default'].includes(item.buttonType) && buttonStyles.borderStyles),
+    ...(['primary', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.borderStyles),
     ...buttonStyles.fontStyles,
-    ...(['dashed', 'default'].includes(item.buttonType) && buttonStyles.backgroundStyles),
-    ...(['primary', 'default', 'dashed'].includes(item.buttonType) && buttonStyles.shadowStyles),
-    ...buttonStyles.jsStyle,
+    ...(['dashed', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.backgroundStyles),
+    ...(['primary', 'default', 'dashed', 'ghost'].includes(item.buttonType) && buttonStyles.shadowStyles),
+    ...(buttonStyles.jsStyle),
     ...buttonStyles.stylingBoxAsCSS,
     justifyContent: buttonStyles.fontStyles.textAlign,
   };
@@ -84,8 +84,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
             block={block}
-            disabled={readOnly}
-            style={{ ...newStyles }}
+            style={{ ...newStyles, ...(readOnly && { cursor: 'not-allowed' }) }}
           >
             {label}
           </Button>

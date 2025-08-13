@@ -6,8 +6,8 @@ import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
 import { EXPOSED_VARIABLES } from './utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { fontTypes } from '../_settings/utils/font/utils';
-import { fontWeights } from '../_settings/utils/font/utils';
-import { textAlign } from '../_settings/utils/font/utils';
+import { fontWeightsOptions } from '../_settings/utils/font/utils';
+import { textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions } from '../_settings/utils/background/utils';
@@ -310,19 +310,11 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         .addSettingsInput({
                                             id: nanoid(),
                                             parentId: styleRouterId,
-                                            propertyName: 'displayStyle',
-                                            label: 'Display Style',
-                                            inputType: 'dropdown',
-                                            dropdownOptions: [
-                                                {
-                                                    value: 'text',
-                                                    label: 'Plain text'
-                                                },
-                                                {
-                                                    value: 'tags',
-                                                    label: 'Tags'
-                                                }
-                                            ]
+                                            propertyName: 'enableStyleOnReadonly',
+                                            label: 'Enable Style On Readonly',
+                                            tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                                            inputType: 'switch',
+                                            jsSetting: true,
                                         })
                                         .addCollapsiblePanel({
                                             id: nanoid(),
@@ -365,7 +357,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
+                                                                dropdownOptions: fontWeightsOptions,
                                                                 width: 100,
                                                             },
                                                             {
@@ -382,7 +374,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                                                 propertyName: 'font.align',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                dropdownOptions: textAlign,
+                                                                dropdownOptions: textAlignOptions,
                                                             },
                                                         ],
                                                     })

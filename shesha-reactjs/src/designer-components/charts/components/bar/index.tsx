@@ -12,7 +12,7 @@ import {
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-import { useGeneratedTitle, useIsSmallScreen } from '../../hooks';
+import { useGeneratedTitle, useIsSmallScreen } from '../../hooks/hooks';
 import { IChartData, IChartDataProps } from '../../model';
 import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
@@ -157,7 +157,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
             if (isSmallScreen && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';
             }
-            return value;
+            return value.toLocaleString();
           }
         },
         grid: {

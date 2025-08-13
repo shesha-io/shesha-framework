@@ -12,6 +12,9 @@ import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
+import { IDateFieldProps } from '../dateField/interfaces';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
@@ -37,6 +40,12 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
     eventHandlers: getAllEventHandlers(model, allData),
   }),
   Factory: ({ model, calculatedModel }) => {
+
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
@@ -48,7 +57,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
           return <TimePickerWrapper
             {...model}
             {...customEvents}
-            style={model.allStyles.fullStyle}
+            style={finalStyle}
             value={value}
             onChange={onChangeInternal}
           />;
@@ -79,7 +88,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-  ,
+    .add<IDateFieldProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): ITimePickerComponentProps => {
 
     return {

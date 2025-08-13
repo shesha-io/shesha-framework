@@ -2,7 +2,7 @@ import { useGet } from '@/hooks';
 import { Alert, Button } from 'antd';
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import { useChartURLData } from './hooks';
+import { useChartURLData } from './hooks/hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getURLChartDataRefetchParams, renderChart } from './utils';

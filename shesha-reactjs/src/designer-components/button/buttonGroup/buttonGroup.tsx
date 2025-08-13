@@ -54,14 +54,14 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
     const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...fontStyles,
         ...dimensionsStyles,
-        ...stylingBoxAsCSS,
         ...(isPrimaryOrDefault && borderStyles),
-        ...((isPrimaryOrDefault || buttonType === 'dashed') && shadowStyles),
-        ...((buttonType === 'default' || buttonType === 'dashed') && backgroundStyles),
+        ...fontStyles,
+        ...(['dashed', 'default'].includes(model.buttonType) && backgroundStyles),
+        ...((isPrimaryOrDefault || model.buttonType === 'dashed') && shadowStyles),
+        ...stylingBoxAsCSS,
         ...jsStyle,
-        justifyContent: model?.font?.align,
+        justifyContent: model.font?.align
     });
 
 
@@ -73,6 +73,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
         <ConfigurableButton
             key={uuid}
             {...props}
+            readOnly={model.readOnly}
             size={size}
             danger={props.danger}
             style={removeNullUndefined({ ...finalStyles })}

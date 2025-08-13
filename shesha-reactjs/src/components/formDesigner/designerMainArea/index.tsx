@@ -30,7 +30,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { styles } = useStyles();
 
     const leftSidebarProps = useMemo(() => 
-      readOnly ? null : { title: 'Builder Widgets', content: () => <Toolbox />, placeholder: 'Builder Widgets' }
+      readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' }
     , [readOnly]);
 
     return (

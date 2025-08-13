@@ -58,6 +58,12 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
 
 export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
 
+export type PropertyInclusionPredicate = (name: string) => boolean;
+
+export interface IEditorAdapter {
+  propertiesFilter: PropertyInclusionPredicate;
+}
+
 export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   /**
    * Type of the component. Must be unique in the project.
@@ -167,6 +173,8 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
   actualModelPropertyFilter?: (name: string) => boolean;
+  
+  editorAdapter?: IEditorAdapter;
 }
 
 export interface SettingsMigrationContext {
@@ -186,7 +194,7 @@ export type SettingsMigrator<TSettings> = (
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components: IToolboxComponent<any>[];
+  components?: IToolboxComponent<any>[];
 }
 
 export interface IToolboxComponents {

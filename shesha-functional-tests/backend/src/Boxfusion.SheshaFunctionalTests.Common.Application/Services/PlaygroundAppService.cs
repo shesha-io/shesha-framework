@@ -64,6 +64,16 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             return "OK";
         }
 
+        public async Task TestJsonWithGenericEntityReferenceAsync(Guid id)
+        {
+            var test = await _testClassRepo.GetAsync(id);
+            if (test.JsonProp is TestJsonWithGenericEntityReference json)
+            {
+                var entity = json.Entity;
+                var person = (Person)json.Entity;
+            }
+        }
+
         public async Task<string?> TestFileVersionUrlAsync(Guid id) 
         {
             var repo = IocManager.Resolve<IRepository<StoredFileVersion, Guid>>();

@@ -8,7 +8,7 @@ import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components';
 import { DEFAULT_FORM_SETTINGS, FormItemProvider, IConfigurableFormComponent, useForm } from '@/providers';
-import { upgradeComponent, useAvailableConstantsData } from '@/providers/form/utils';
+import { upgradeComponent } from '@/providers/form/utils';
 import { getInjectables } from './utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
@@ -16,9 +16,10 @@ import { ITableDataColumn } from '@/providers/dataTable/interfaces';
 import { MultivalueReferenceListCell } from './default/multivalueReferenceListCell';
 import { ReferenceListCell } from './default/referenceListCell';
 import { useCrud } from '@/providers/crudContext';
-import { useDeepCompareMemo } from '@/hooks';
+import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
+import { updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
+import { getEditorAdapter } from '@/components/formComponentSelector';
 import MultiEntityCell from './default/multiEntityCell';
 import FormComponentMemo from '@/components/formDesigner/formComponent';
 import { useStyles } from '../styles/styles';
@@ -66,32 +67,38 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const { styles, cx } = useStyles();
 
   const toolboxComponents = useFormDesignerComponents();
-  const allData = useAvailableConstantsData();
 
   const component = toolboxComponents[customComponent.type];
   const injectables = getInjectables(props);
 
+  const model = useMemo(() =>  upgradeComponent(
+    customComponent.settings,
+    component,
+    DEFAULT_FORM_SETTINGS,
+    { allComponents: { 'component': customComponent.settings }, componentRelations: {} }
+  ), [customComponent.settings]);
+
+  const actualModel = useActualContextData(
+    model, props.readOnly ? true : undefined,
+    { 
+      tableRow: injectables.injectedTableRow,
+    }
+  );
+
   const componentModel: IConfigurableFormComponent  = useDeepCompareMemo(() => {
     // migrate component
-    const model = upgradeComponent(
-      customComponent.settings,
-      component,
-      DEFAULT_FORM_SETTINGS,
-      { allComponents: { 'component': customComponent.settings }, componentRelations: {} }
-    );
-
     let editorModel: IColumnEditorProps = {
-      ...model,
+      ...actualModel,
       ...injectables,
       id: props.columnConfig.columnId,
       type: customComponent.type,
       propertyName: columnConfig.propertyName,
       label: null,
       hideLabel: true,
-      readOnly: model.readOnly === undefined ? props.readOnly : model.readOnly,
+      readOnly: actualModel.readOnly === undefined ? props.readOnly : actualModel.readOnly,
     };
 
-    const adapter = editorAdapters[customComponent.type];
+    const adapter = getEditorAdapter(component);
 
     if (component.linkToModelMetadata && propertyMeta && adapter?.propertiesFilter) {
       editorModel = updateModelExcludeFiltered(editorModel, component.linkToModelMetadata({
@@ -101,7 +108,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     }
 
     return editorModel;
-  }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
+  }, [actualModel, columnConfig, propertyMeta, injectables]);
 
   if (!component) {
     return <div>Component not found</div>;
