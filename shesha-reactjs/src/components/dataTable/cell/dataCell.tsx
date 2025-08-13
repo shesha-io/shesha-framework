@@ -3,7 +3,7 @@ import DateCell from './default/dateCell';
 import DateTimeCell from './default/dateTimeCell';
 import EntityCell from './default/entityCell';
 import NumberCell from './default/numberCell';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components';

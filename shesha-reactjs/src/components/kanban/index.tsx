@@ -103,7 +103,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     const updatedItem = editForm.getFieldsValue();
     updatedItem.id = selectedItem.id;
 
-    updateKanban(updatedItem, urls.updateUrl)
+    await updateKanban(updatedItem, urls.updateUrl)
       .then((resp: any) => {
         if (resp.success) {
           const updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...resp.result } : task));

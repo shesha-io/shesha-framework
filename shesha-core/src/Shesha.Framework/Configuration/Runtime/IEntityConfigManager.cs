@@ -13,13 +13,6 @@ namespace Shesha.Configuration.Runtime
     public interface IEntityConfigManager : IConfigurationItemManager
     {
         /// <summary>
-        /// Create new version of the EntityConfig
-        /// </summary>
-        /// <param name="form">Form configuration</param>
-        /// <returns></returns>
-        Task<EntityConfig> CreateNewVersionAsync(EntityConfig form);
-
-        /// <summary>
         /// Getlist of main data of EntityConfig
         /// </summary>
         /// <param name="query"></param>

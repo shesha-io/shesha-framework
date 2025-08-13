@@ -74,6 +74,7 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
                     isCodegenPending: node.isCodegenPending,
                     isUpdated: node.isUpdated,
                     isExposed: node.isExposed,
+                    isUpdatedByMe: node.isUpdatedByMe,
                 },
             };
             applyIcon(itemNode);

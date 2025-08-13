@@ -9,6 +9,7 @@ import { useCsTree } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { buildNodeContextMenu } from '../../menu-utils';
 import { useStyles } from '../../styles';
+import { useFilteredTreeNodes } from './filter';
 
 export interface IConfigurationTreeProps {
 }
@@ -23,6 +24,7 @@ const DropPositions = {
     Inside: 0,
     After: 1
 };
+type OnTreeKeyDown = TreeProps<TreeNode>['onKeyDown'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
     return isConfigItemTreeNode(node) || isFolderTreeNode(node);
@@ -47,9 +49,11 @@ const allowNodeDrop: AllowDrop = (options): boolean => {
 
 export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
     const cs = useConfigurationStudio();
-    const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand } = useCsTree();
+    const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch } = useCsTree();
     const [contextNode, setContextNode] = useState<TreeNode>(null);
     const { styles } = useStyles();
+
+    const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
     const handleSelect: OnSelectHandler = (_keys, info) => {
         const selectedNode = handleSelect && info.selectedNodes.length === 1
@@ -115,8 +119,11 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
+        setQuickSearch(value);
+    };
 
-        console.log('LOG: onSearchChange', value);
+    const handleKeyDown: OnTreeKeyDown = (e) => {
+        console.log('LOG: key', e.key);
     };
 
     return (
@@ -129,6 +136,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                     <div className={styles.csNavPanelHeader}>
                         <Input.Search
                             placeholder="Search"
+                            value={quickSearch}
                             onChange={onSearchChange}
                             allowClear
                         />
@@ -143,7 +151,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                                 showIcon
                                 switcherIcon={<DownOutlined />}
 
-                                treeData={treeNodes}
+                                //treeData={treeNodes}
+                                treeData={filteredTreeNodes}
                                 blockNode /*required for correct dragging*/
 
                                 draggable={isNodeDraggable}
@@ -155,6 +164,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                                 onSelect={handleSelect}
                                 selectedKeys={selectedKeys}
                                 onExpand={onNodeExpand}
+                                onKeyDown={handleKeyDown}
+                                tabIndex={0}
                             />
                         </Dropdown>
                     </div>

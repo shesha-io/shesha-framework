@@ -414,7 +414,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         }
       />
     );
-  }, [error, retryFetch, theme.application.errorColor]);
+  }, [error, retryFetch]);
 
   // Memoize the loader component
   const loaderComponent = useMemo(() => {
@@ -467,5 +467,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     </div>
   );
 });
+
+ChartControl.displayName = "ChartControl";
 
 export default ChartControl;

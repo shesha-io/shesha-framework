@@ -26,7 +26,7 @@ using Xunit;
 namespace Shesha.Tests.ConfigurationItems
 {
     [Collection(SqlServerCollection.Name)]
-    public class FormConfigurationTests : SheshaNhTestBase
+    public partial class FormConfigurationTests : SheshaNhTestBase
     {
         public FormConfigurationTests(SqlServerFixture fixture) : base(fixture)
         {

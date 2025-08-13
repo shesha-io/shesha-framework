@@ -48,11 +48,11 @@ namespace Shesha.Tests.ModuleHierarchy
                 var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
 
                 // 1. Create Shesha form
-                var sheshaForm1 = await formManager.CreateAsync(new Web.FormsDesigner.Dtos.CreateFormConfigurationDto
-                {
+                var sheshaForm1 = await formManager.CreateItemAsync(new Shesha.ConfigurationItems.Models.CreateItemInput { 
+                    Module = sheshaModule,
                     Name = formName,
-                    ModuleId = sheshaModule.Id,
                 });
+                
                 Assert.NotNull(sheshaForm1);
 
                 // 2. Expose form1 to ModuleA
@@ -111,10 +111,10 @@ namespace Shesha.Tests.ModuleHierarchy
                 var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
 
                 // 1. Create Shesha form
-                var sheshaForm = await formManager.CreateAsync(new Web.FormsDesigner.Dtos.CreateFormConfigurationDto
+                var sheshaForm = await formManager.CreateItemAsync(new Shesha.ConfigurationItems.Models.CreateItemInput
                 {
+                    Module = sheshaModule,
                     Name = formName,
-                    ModuleId = sheshaModule.Id,
                 });
                 Assert.NotNull(sheshaForm);
 
@@ -171,20 +171,20 @@ namespace Shesha.Tests.ModuleHierarchy
                 var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
 
                 // 1. Create Shesha form
-                var sheshaForm = await formManager.CreateAsync(new Web.FormsDesigner.Dtos.CreateFormConfigurationDto
+                var sheshaForm = await formManager.CreateItemAsync(new Shesha.ConfigurationItems.Models.CreateItemInput
                 {
+                    Module = sheshaModule,
                     Name = formName,
-                    ModuleId = sheshaModule.Id,
                 });
                 Assert.NotNull(sheshaForm);
 
                 // 2. Create moduleB form
                 var moduleB = await moduleManager.GetModuleAsync(SheshaTestsModuleB.ModuleName);
-                var moduleBForm = await formManager.CreateAsync(new Web.FormsDesigner.Dtos.CreateFormConfigurationDto
+                var moduleBForm = await formManager.CreateItemAsync(new Shesha.ConfigurationItems.Models.CreateItemInput
                 {
+                    Module = moduleB,
                     Name = formName,
-                    ModuleId = moduleB.Id,
-                });
+                });                
                 Assert.NotNull(moduleBForm);
 
                 await uowManager.Current.SaveChangesAsync();

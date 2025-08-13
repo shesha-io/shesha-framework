@@ -32,8 +32,9 @@ const Page: PageWithLayout<{}> = () => {
 
     const resultType = useMemo<ResultTypeEvaluator>(() => {
         const metadataBuilder = metadataBuilderFactory();
-        return async () => {
-            return metadataBuilder.array("items", async (b) => b.anyObject());
+        return () => {
+            const meta = metadataBuilder.array("items", (b) => Promise.resolve(b.anyObject()));
+            return Promise.resolve(meta);
         };
     }, []);
 

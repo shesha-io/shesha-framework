@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationItems.Exceptions
     {
         public string ItemType { get; private set; }
 
-        public ConfigurationItemManagerNotFoundException(string itemType) : base($"Managers for the ConfigurationItem of type `{itemType}` not found")
+        public ConfigurationItemManagerNotFoundException(string itemType) : base($"Manager for the ConfigurationItem of type `{itemType}` not found")
         {
             ItemType = itemType;
         }

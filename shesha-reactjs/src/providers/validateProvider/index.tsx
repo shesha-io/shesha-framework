@@ -23,7 +23,7 @@ export const ValidateProviderStateContext = createNamedContext<IValidateProvider
     registerChild: () => undefined,
     unRegisterChild: () => undefined,
     registerValidator: () => undefined,
-    validate: async () => undefined,
+    validate: (): Promise<void> => undefined,
   },
   "ValidateProviderStateContext");
 

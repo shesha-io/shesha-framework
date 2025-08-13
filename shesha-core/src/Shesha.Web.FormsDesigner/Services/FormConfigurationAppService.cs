@@ -8,10 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
-using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.New;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -290,20 +288,6 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         /// <summary>
-        /// Create new form configuration
-        /// </summary>
-        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationDto input)
-        {
-            CheckCreatePermission();
-
-            var form = await _formManager.CreateAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(form);
-        }
-
-        /// <summary>
         /// Get form in JSON format
         /// </summary>
         /// <param name="id"></param>
@@ -391,38 +375,6 @@ namespace Shesha.Web.FormsDesigner.Services
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return await MapToEntityDtoAsync(entity);
-        }
-
-        /// <summary>
-        /// Delete form
-        /// </summary>
-        public override Task DeleteAsync(EntityDto<Guid> input)
-        {
-            CheckDeletePermission();
-
-            return _formManager.DeleteAllVersionsAsync(input.Id);
-        }
-
-        /// <summary>
-        /// Move form to another module
-        /// </summary>
-        [HttpPost]
-        public Task MoveToModuleAsync(MoveToModuleInput input)
-        {
-            return _formManager.MoveToModuleAsync(input);
-        }
-
-        /// <summary>
-        /// Copy form
-        /// </summary>
-        [HttpPost]
-        public async Task<FormConfigurationDto> CopyAsync(CopyItemInput input)
-        {
-            var form = await _formManager.CopyAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(form);
         }
 
         #region private methods

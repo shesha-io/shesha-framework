@@ -432,7 +432,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       return {
         ...state,
-        validationErrors: payload ? { ...payload } : null,
+        validationErrors: payload,
       };
     },
 

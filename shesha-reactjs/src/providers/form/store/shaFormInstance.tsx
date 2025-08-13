@@ -321,8 +321,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.parentFormValues = values;
     };
 
-    setValidationErrors = (payload: IFormValidationErrors) => {
-        this.validationErrors = payload ? { ...payload } : null;
+    setValidationErrors = (payload: IFormValidationErrors | undefined) => {
+        this.validationErrors = payload;
         this.forceRootUpdate();
     };
 

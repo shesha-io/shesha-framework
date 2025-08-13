@@ -172,10 +172,10 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             }
         } else {
             const currentValue = model.getValue();
-            if (currentValue !== content){
+            if (currentValue !== content) {
                 // content has been modified - sync model
                 model.setValue(content);
-            }            
+            }
         }
 
         return model;
@@ -253,7 +253,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         initDiagnosticsOptions(monaco);
 
         monaco.editor.registerEditorOpener({
-            async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
+            openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
                 if (!isDevMode)
                     return false;
 

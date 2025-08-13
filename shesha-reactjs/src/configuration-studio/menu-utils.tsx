@@ -111,13 +111,15 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
 };
 
 const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArgs): MenuItemType[] => {
+    if (!node)
+        return [];
     const buildCreateCIMenuItem = (label: string, itemType: string): MenuItemType => {
         return {
             label: label,
             key: itemType,
             icon: getIcon(TreeNodeType.ConfigurationItem, itemType),
-            onClick: () => {
-                configurationStudio.createItemAsync({
+            onClick: async () => {
+                await configurationStudio.createItemAsync({
                     moduleId: node.moduleId,
                     folderId: isFolderTreeNode(node)
                         ? node.id
@@ -141,9 +143,11 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             onClick: () => {
                 configurationStudio.createFolderAsync({
                     moduleId: node.moduleId,
-                    folderId: isModuleTreeNode(node)
-                        ? undefined
-                        : node.id
+                    folderId: isFolderTreeNode(node)
+                        ? node.id
+                        : isConfigItemTreeNode(node)
+                            ? node.parentId
+                            : undefined
                 });
             },
         },
@@ -231,9 +235,12 @@ export const buildNodeContextMenu = (args: BuildNodeMenuArgs): MenuItemType[] =>
 };
 
 export const buildCreateNewMenu = (args: BuildNodeMenuArgs<TreeNode>): MenuItemType[] => {
-    return [
-        ...buildCreateNewItemsMenu(args),
-        getDivider(),
-        ...buildExposeAndImportExportMenu(args),
-    ];
+    console.log('LOG: buildCreateNewMenu');
+    const result = buildCreateNewItemsMenu(args);
+    const serviceItems = buildExposeAndImportExportMenu(args);
+    if (result.length > 0 && serviceItems.length > 0)
+        result.push(getDivider());
+    
+    result.push(...serviceItems);
+    return result;
 };

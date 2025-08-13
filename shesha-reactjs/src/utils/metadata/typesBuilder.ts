@@ -190,11 +190,12 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return this.#makeAsync(typeName, method.isAsync);
     };
 
-    #buildMethodArgumentsAsync = async (method: IMethodMetadata, _typesImporter: TypesImporter): Promise<string> => {
+    #buildMethodArgumentsAsync = (method: IMethodMetadata, _typesImporter: TypesImporter): Promise<string> => {
         // TODO: implement arguments support
-        return method.arguments && method.arguments.length > 0
+        const result = method.arguments && method.arguments.length > 0
             ? 'args: any'
             : '';
+        return Promise.resolve(result);
     };
 
     buildBackEndTypeAsync = async (request: TypeBuildRequest): Promise<string> => {

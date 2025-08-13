@@ -418,19 +418,6 @@ namespace Shesha.Permissions
             return dto;
         }
 
-        public async Task<PermissionedObjectDto?> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string? dstObjectType = null)
-        {
-            var permission = await GetOrNullAsync(srcObjectName, srcObjectType);
-            if (permission != null)
-            {
-                permission.Id = Guid.Empty;
-                permission.Object = dstObjectName;
-                permission.Type = dstObjectType != null ? dstObjectType : permission.Type;
-                return await SetAsync(permission);
-            }
-            return null;
-        }
-
         public async Task<bool> IsActionDescriptorEnabledAsync(ActionDescriptor actionDescriptor)
         {
             if (actionDescriptor is ControllerActionDescriptor descriptor)
