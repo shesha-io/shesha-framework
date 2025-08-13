@@ -45,6 +45,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const isDataTableContext = component?.type === 'datatableContext';
   const isFileList = component?.type === 'attachmentsEditor';
   const isFileUpload = component?.type === 'fileUpload';
+  const isInput = component?.isInput;
   const isPasswordCombo = component?.type === 'passwordCombo';
 
   const {
@@ -69,7 +70,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       ...dimensionsStyles,
       flexBasis: 'auto',
       width: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
-      height: isPasswordCombo ? '' : isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : dimensionsStyles?.height,
+      height: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : isPasswordCombo || isInput ? '' : dimensionsStyles?.height,
     },
     valuePropName: valuePropName,
     initialValue: initialValue,

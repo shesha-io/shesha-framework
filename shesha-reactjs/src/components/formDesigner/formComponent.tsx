@@ -68,12 +68,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       };
     }
 
-    return {
-      dimensions: {
-        width: '100%',
-        height: componentModel.type === 'passwordCombo' ? 'auto' : '100%'
-      }
-    };
+    return null;
   };
 
   const dimensions = getDimensions();

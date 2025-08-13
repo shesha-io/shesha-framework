@@ -112,7 +112,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               success={getEvaluatedSuccessColor()}
               defaultValue={defaultValue}
               gapDegree={gapDegree}
-              style={{...styles, width: '100%', height: 'auto'}}
+              style={{...styles, width: '100%'}}
             />);
         }}
       </ConfigurableFormItem>

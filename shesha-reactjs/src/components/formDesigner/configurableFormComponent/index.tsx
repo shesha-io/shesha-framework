@@ -50,7 +50,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const { formMode } = useShaFormInstance();
+  const { formMode, form } = useShaFormInstance();
   const { activeDevice } = useCanvas();
   
   const component = getToolboxComponent(componentModel?.type);
@@ -58,6 +58,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const isFileList = component?.type === 'attachmentsEditor';
   const isFileUpload = component?.type === 'fileUpload';
   const isPasswordcombo = component?.type === 'passwordCombo';
+  const isInput = component?.isInput;
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles( {...componentModel, ...componentModel?.[activeDevice]});
 
   const desktopConfig = componentModel?.[activeDevice] || {};
@@ -116,7 +117,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     
     return {
       width: '100%',
-      height: isPasswordcombo ? dimensionsStyles?.height : '100%'
+      height: isPasswordcombo || isInput ? dimensionsStyles?.height : '100%'
     };
   };
 
@@ -125,6 +126,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return dimensionsStyles?.width;
   };
 
+  console.log("Form DAta:: ", form);
   const renderComponentModel = useMemo(() => {
     const deviceDimensions = getDeviceDimensions();
     
@@ -150,7 +152,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     if (isPasswordcombo) return 'auto';
     if (isDataTableContext) return '100%';
     if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.height;
-    return dimensionsStyles?.height;
+    return isInput ? 'auto' : dimensionsStyles?.height;
   };
 
   const getDimensionValue = (dimensionType: 'maxWidth' | 'minWidth' | 'maxHeight' | 'minHeight') => {
