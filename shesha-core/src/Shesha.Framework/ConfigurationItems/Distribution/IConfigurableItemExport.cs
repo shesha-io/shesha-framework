@@ -29,7 +29,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// Write item to json
         /// </summary>
         /// <returns></returns>
-        Task WriteToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream);
+        Task WriteItemToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream);
 
         /// <summary>
         /// Check is item can be exported

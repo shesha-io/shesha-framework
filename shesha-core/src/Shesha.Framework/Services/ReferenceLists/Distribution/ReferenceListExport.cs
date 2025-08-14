@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,30 +15,18 @@ namespace Shesha.Services.ReferenceLists.Distribution
     /// </summary>
     public class ReferenceListExport: ConfigurableItemExportBase<ReferenceList, ReferenceListRevision, DistributedReferenceList>, IReferenceListExport, ITransientDependency
     {
-        private readonly IRepository<ReferenceList, Guid> _refListRepo;
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepo;
 
-        public ReferenceListExport(IRepository<ReferenceList, Guid> refListRepo, IRepository<ReferenceListItem, Guid> refListItemRepo)
+        public ReferenceListExport(IRepository<ReferenceListItem, Guid> refListItemRepo)
         {
-            _refListRepo = refListRepo;
             _refListItemRepo = refListItemRepo;
         }
 
         public string ItemType => ReferenceList.ItemTypeName;
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(Guid id) 
+        public override async Task<DistributedReferenceList> ExportAsync(ReferenceList refList) 
         {
-            var item = await _refListRepo.GetAsync(id);
-            return await ExportItemAsync(item);
-        }
-
-        /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item) 
-        {
-            if (!(item is ReferenceList refList))
-                throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(ReferenceList)}, actual: {item.GetType().FullName}");
-
             var result = new DistributedReferenceList
             {
                 Id = refList.Id,
@@ -97,16 +83,6 @@ namespace Shesha.Services.ReferenceLists.Distribution
             dst.Color = src.Color;
             dst.Icon = src.Icon;
             dst.ShortAlias = src.ShortAlias;
-        }
-
-        /// inheritedDoc
-        public async Task WriteToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream)
-        {
-            var json = JsonConvert.SerializeObject(item, Formatting.Indented);
-            using (var writer = new StreamWriter(jsonStream))
-            {
-                await writer.WriteAsync(json);
-            }
         }
     }
 }

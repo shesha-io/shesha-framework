@@ -1,6 +1,5 @@
 ﻿using Abp;
 using Abp.Domain.Repositories;
-using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.New;

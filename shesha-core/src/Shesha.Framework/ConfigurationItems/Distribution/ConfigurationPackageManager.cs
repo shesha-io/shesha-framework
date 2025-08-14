@@ -51,7 +51,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                     using (var entryStream = entry.Open())
                     {
-                        await item.Exporter.WriteToJsonAsync(item.ItemData, entryStream);
+                        await item.Exporter.WriteItemToJsonAsync(item.ItemData, entryStream);
                     }
                 }
             }

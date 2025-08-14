@@ -1,11 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Permissions;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
@@ -30,18 +28,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         public string ItemType => FormConfiguration.ItemTypeName;
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(Guid id) 
+        public override async Task<DistributedFormConfiguration> ExportAsync(FormConfiguration form)
         {
-            var form = await _formConfigRepo.GetAsync(id);
-            return await ExportItemAsync(form);
-        }
-
-        /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item) 
-        {
-            if (!(item is FormConfiguration form))
-                throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(FormConfiguration)}, actual: {item.GetType().FullName}");
-
             var permission = await _permissionedObjectManager.GetOrNullAsync(
                 FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name),
                 ShaPermissionedObjectsTypes.Form
@@ -70,16 +58,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             };
 
             return result;
-        }
-
-        /// inheritedDoc
-        public async Task WriteToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream)
-        {
-            var json = JsonConvert.SerializeObject(item, Formatting.Indented);
-            using (var writer = new StreamWriter(jsonStream))
-            {
-                await writer.WriteAsync(json);
-            }
-        }
+        }        
     }
 }

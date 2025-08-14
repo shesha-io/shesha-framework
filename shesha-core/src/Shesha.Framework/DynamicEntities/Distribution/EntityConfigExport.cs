@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution.Dto;
@@ -9,7 +8,6 @@ using Shesha.Extensions;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,36 +16,23 @@ namespace Shesha.DynamicEntities.Distribution
     /// inheritedDoc
     public class EntityConfigExport : ConfigurableItemExportBase<EntityConfig, EntityConfigRevision, DistributedEntityConfig>, IEntityConfigExport, ITransientDependency
     {
-        private readonly IRepository<EntityConfig, Guid> _entityConfigRepo;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepo;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public string ItemType => EntityConfig.ItemTypeName;
 
         public EntityConfigExport(
-            IRepository<EntityConfig, Guid> entityConfigRepo,
             IRepository<EntityProperty, Guid> entityPropertyRepo,
             IPermissionedObjectManager permissionedObjectManager
         )
         {
-            _entityConfigRepo = entityConfigRepo;
             _entityPropertyRepo = entityPropertyRepo;
             _permissionedObjectManager = permissionedObjectManager;
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(Guid id)
+        public override async Task<DistributedEntityConfig> ExportAsync(EntityConfig entityConfig)
         {
-            var entityConfig = await _entityConfigRepo.GetAsync(id);
-            return await ExportItemAsync(entityConfig);
-        }
-
-        /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item)
-        {
-            if (!(item is EntityConfig entityConfig))
-                throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(EntityConfig)}, actual: {item.GetType().FullName}");
-
             var readRevision = entityConfig.LatestRevision;
             var fullClassName = readRevision.FullClassName;
 
@@ -145,16 +130,6 @@ namespace Shesha.DynamicEntities.Distribution
         private List<EntityViewConfigurationDto> MapViewConfigurations(EntityConfig entityConfig)
         {
             return entityConfig.LatestRevision.ViewConfigurations?.ToList() ?? new();
-        }
-
-        /// inheritedDoc
-        public async Task WriteToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream)
-        {
-            var json = JsonConvert.SerializeObject(item, Formatting.Indented);
-            using (var writer = new StreamWriter(jsonStream))
-            {
-                await writer.WriteAsync(json);
-            }
         }
     }
 }
