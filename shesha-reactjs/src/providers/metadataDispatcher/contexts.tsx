@@ -6,11 +6,16 @@ export interface IGetMetadataPayload {
   dataType: string;
 }
 
-export interface IGetPropertyMetadataPayload {
+export type IGetPropertyMetadataFromMetaPayload = {
+  metadata: IModelMetadata;
+  propertyPath: string;
+};
+
+export type IGetPropertyMetadataPayload = {
   dataType: string;
   modelType: string;
   propertyPath: string;
-}
+};
 
 export interface IGetPropertiesMetadataPayload {
   dataType: string;
@@ -26,6 +31,7 @@ export interface IGetNestedPropertiesPayload {
 export interface IMetadataDispatcher {
   getMetadata: (payload: IGetMetadataPayload) => Promise<IModelMetadata>;
   getPropertyMetadata: (payload: IGetPropertyMetadataPayload) => Promise<IPropertyMetadata>;
+  getPropertyFromMetadata: (payload: IGetPropertyMetadataFromMetaPayload) => Promise<IPropertyMetadata>;
   getPropertiesMetadata: (payload: IGetPropertiesMetadataPayload) => Promise<IDictionary<IPropertyMetadata>>;
   isEntityType: (modelType: string) => Promise<boolean>;
   getContainerProperties: (payload: IGetNestedPropertiesPayload) => Promise<IPropertyMetadata[]>;

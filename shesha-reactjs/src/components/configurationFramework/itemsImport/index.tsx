@@ -1,24 +1,23 @@
-import axios from 'axios';
-import ItemsTree from '../itemsTree';
 import React, { MutableRefObject, useState } from 'react';
 import { appendFormData } from '@/utils/form';
-import { ConfigItemDataNode, ITreeState } from '../models';
 import {
     DeleteOutlined,
     FileZipTwoTone,
     InboxOutlined,
     LoadingOutlined
-    } from '@ant-design/icons';
+} from '@ant-design/icons';
 import { FC } from 'react';
 import { Form, Spin, Upload } from 'antd';
-import { getIndexesList } from '../treeUtils';
-import { IDictionary } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { RcFile } from 'antd/lib/upload/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
-import { useSheshaApplication } from '@/providers';
+import { useHttpClient } from '@/providers';
 import { useStyles } from './styles/styles';
+import { AxiosResponse } from 'axios';
+import { IAbpWrappedResponse } from '@/interfaces/gql';
+import { AnalyzePackageResponse } from './models';
+import { PackageContent } from '../packageContent';
 
 const { Dragger } = Upload;
 
@@ -31,96 +30,17 @@ export interface IConfigurationItemsImportProps {
     importRef?: MutableRefObject<IImportInterface>;
 }
 
-interface IItemInfo {
-    id: string;
-    name: string;
-    label?: string;
-    description?: string;
-    frontEndApplication?: string;
-}
-interface IItemTypeInfo {
-    name: string;
-    items: IItemInfo[];
-}
-interface IModuleInfo {
-    name: string;
-    itemTypes: IItemTypeInfo[];
-}
-interface IPackageInfo {
-    modules: IModuleInfo[];
-}
-
-const packageInfo2TreeState = (pack: IPackageInfo): ITreeState => {
-    const treeNodes: ConfigItemDataNode[] = [];
-    let itemsCount = 0;
-    pack.modules.forEach(module => {
-        const itemTypeNodes = module.itemTypes.map<ConfigItemDataNode>(itemType => {
-            itemsCount += itemType.items.length;
-
-            const itemNodes: ConfigItemDataNode[] = [];
-            const applications: IDictionary<ConfigItemDataNode> = {};
-            
-            itemType.items.forEach(item => {
-                const node = {
-                    key: item.id,
-                    title: item.name,
-                    isLeaf: true,
-                    itemId: item.id
-                };
-                if (item.frontEndApplication) {
-                    let appNode = applications[item.frontEndApplication];
-                    if (!appNode){
-                        appNode = {
-                            key: `${module.name}/${itemType.name}/${item.frontEndApplication}`,
-                            title: item.frontEndApplication,
-                            isLeaf: false,
-                            children: [],
-                        };
-                        applications[item.frontEndApplication] = appNode;
-                        itemNodes.push(appNode);
-                    }
-                    appNode.children.push(node);
-                } else {
-                    itemNodes.push(node);
-                }
-            });
-            return {
-                key: `${module.name}/${itemType.name}`,
-                title: itemType.name,
-                children: itemNodes,
-                isLeaf: false,
-            };
-        });
-
-        const moduleNode: ConfigItemDataNode = {
-            key: module.name ?? '-',
-            title: module.name,
-            children: itemTypeNodes,
-            isLeaf: false,
-        };
-
-
-        treeNodes.push(moduleNode);
-    });
-
-    return {
-        treeNodes: treeNodes,
-        itemsCount: itemsCount,
-        indexes: getIndexesList(treeNodes),
-    };
-};
-
 export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (props) => {
     const { styles, prefixCls } = useStyles();
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const httpClient = useHttpClient();
 
     const [uploadFile, setUploadFile] = useState<UploadFile>(null);
     const [isImporting, setIsImporting] = useState(false);
     const [checkedIds, setCheckedIds] = useState<string[]>([]);
-    const [treeState, setTreeState] = useState<ITreeState>(null);
+    const [packageContent, setPackageContent] = useState<AnalyzePackageResponse>(null);
     const [isPackLoading, setIsPackLoading] = useState(false);
 
-    const onUploadRequest = (payload: RcCustomRequestOptions) => {
+    const onUploadRequest = async (payload: RcCustomRequestOptions): Promise<void> => {
         const formData = new FormData();
         const { file } = payload;
 
@@ -138,27 +58,21 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
         });
 
         setIsPackLoading(true);
-        axios
-            .post(`${backendUrl}/api/services/app/ConfigurationStudio/AnalyzePackage`,
-                formData,
-                {
-                    headers: httpHeaders,
-                }
-            )
-            .then((response: any) => {
-                const packageInfo = response.data.result as IPackageInfo;
 
-                const loadedTreeState = packageInfo2TreeState(packageInfo);
-                setTreeState(loadedTreeState);
+        try {
+            const response = await httpClient.post<FormData, AxiosResponse<IAbpWrappedResponse<AnalyzePackageResponse>>>(`/api/services/app/ConfigurationStudio/AnalyzePackage`, formData);
 
-                payload.onSuccess({});
-                setIsPackLoading(false);
-            })
-            .catch(e => {
-                console.error(e);
-                payload.onError(e);
-                setIsPackLoading(false);
-            });
+            setPackageContent(response.data.success
+                ? response.data.result
+                : undefined
+            );
+            payload.onSuccess({});
+            setIsPackLoading(false);
+        } catch (error) {
+            console.error(error);
+            payload.onError(error);
+            setIsPackLoading(false);
+        }
     };
     const onChangeSelection = (checkedIds: string[]) => {
         setCheckedIds(checkedIds);
@@ -166,7 +80,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
     const onDeleteClick = () => {
         setUploadFile(null);
-        setTreeState(null);
+        setPackageContent(null);
     };
 
     const fileRender = (_originNode, file, _currFileList) => {
@@ -204,13 +118,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
         formData.append('file', uploadFile.originFileObj);
         appendFormData(formData, 'itemsToImport', JSON.stringify(checkedIds));
 
-        return axios
-            .post(`${backendUrl}/api/services/app/ConfigurationStudio/ImportPackage`,
-                formData,
-                {
-                    headers: httpHeaders,
-                }
-            )
+        return httpClient.post(`/api/services/app/ConfigurationStudio/ImportPackage`, formData)
             .then(() => {
                 setIsImporting(false);
             })
@@ -243,14 +151,10 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                     </p>
                     <p className={`${prefixCls}-upload-text`}>Click or drag <strong>.shaconfig</strong> file to this area to upload</p>
                 </Dragger>
-                {treeState && (
-                    <>
-                        <ItemsTree treeState={treeState} onChangeSelection={onChangeSelection} />
-                    </>
+                {packageContent && (
+                    <PackageContent packageState={packageContent} onChangeSelection={onChangeSelection} />
                 )}
             </Form>
         </Spin>
     );
 };
-
-export default ConfigurationItemsImport;

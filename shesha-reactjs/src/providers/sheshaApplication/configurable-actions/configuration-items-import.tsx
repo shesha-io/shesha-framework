@@ -1,4 +1,4 @@
-import ConfigurationItemsImport, { IImportInterface } from '@/components/configurationFramework/itemsImport';
+import { ConfigurationItemsImport, IImportInterface } from '@/components/configurationFramework/itemsImport';
 import React, {
   FC,
   MutableRefObject,
@@ -78,7 +78,7 @@ export const useConfigurationItemsImportAction = () => {
         const modalProps: ICommonModalProps = {
           ...actionArgs,
           id: modalId,
-          title: "Import Configuration Items",
+          title: "Import Configuration",
           width: "60%",
           isVisible: true,
           onClose: (positive, result) => {

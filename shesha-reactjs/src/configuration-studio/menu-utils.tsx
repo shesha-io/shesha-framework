@@ -235,7 +235,6 @@ export const buildNodeContextMenu = (args: BuildNodeMenuArgs): MenuItemType[] =>
 };
 
 export const buildCreateNewMenu = (args: BuildNodeMenuArgs<TreeNode>): MenuItemType[] => {
-    console.log('LOG: buildCreateNewMenu');
     const result = buildCreateNewItemsMenu(args);
     const serviceItems = buildExposeAndImportExportMenu(args);
     if (result.length > 0 && serviceItems.length > 0)

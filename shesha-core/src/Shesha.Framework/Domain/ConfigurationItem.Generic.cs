@@ -73,6 +73,10 @@ namespace Shesha.Domain
         public virtual bool IsExposed { get; protected set; }
 
         public bool HasRevision => Revision != null;
+        public ConfigurationItemRevision? GetLatestRevision()
+        {
+            return LatestRevision;
+        }
 
         /// <summary>
         /// Default constructor

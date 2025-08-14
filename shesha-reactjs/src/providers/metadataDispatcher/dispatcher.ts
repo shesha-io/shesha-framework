@@ -1,5 +1,5 @@
 import { DataTypes, IDictionary, IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from "@/interfaces";
-import { IGetMetadataPayload, IGetNestedPropertiesPayload, IGetPropertiesMetadataPayload, IGetPropertyMetadataPayload, IMetadataDispatcher } from "./contexts";
+import { IGetMetadataPayload, IGetNestedPropertiesPayload, IGetPropertiesMetadataPayload, IGetPropertyMetadataFromMetaPayload, IGetPropertyMetadataPayload, IMetadataDispatcher } from "./contexts";
 import { IModelsDictionary } from "./models";
 import { IEntityMetadataFetcher } from "./entities/models";
 import camelcase from 'camelcase';
@@ -50,7 +50,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
         if (isEntityReferencePropertyMetadata(propMeta))
             return this.getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
-        
+
         if (isEntityReferenceArrayPropertyMetadata(propMeta))
             return this.getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
 
@@ -85,15 +85,15 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
                 const mapProperty = (property: PropertyMetadataDto, prefix: string = ''): IPropertyMetadata => {
                     return {
-                      ...property,
-                      path: property.path,
-                      prefix,
-                      properties: property.properties?.map((child) => mapProperty(child, property.path)),
+                        ...property,
+                        path: property.path,
+                        prefix,
+                        properties: property.properties?.map((child) => mapProperty(child, property.path)),
                     };
-                  };
+                };
 
-                  const url = `/api/services/app/Metadata/Get?${qs.stringify({ container: modelType })}`;
-                  return this.#httpClient.get<MetadataDtoAjaxResponse>(url).then(rawResponse => {
+                const url = `/api/services/app/Metadata/Get?${qs.stringify({ container: modelType })}`;
+                return this.#httpClient.get<MetadataDtoAjaxResponse>(url).then(rawResponse => {
                     const response = rawResponse.data;
                     if (!response.success)
                         throw new Error(`Failed to fetch metadata for model type: '${modelType}'`, { cause: response.error });
@@ -124,29 +124,44 @@ export class MetadataDispatcher implements IMetadataDispatcher {
         return Promise.resolve(null);
     };
 
-    getPropertyMetadata = (payload: IGetPropertyMetadataPayload): Promise<IPropertyMetadata> => {
-        const { dataType, modelType, propertyPath } = payload;
+    getPropertyFromMetadata = async (payload: IGetPropertyMetadataFromMetaPayload): Promise<IPropertyMetadata> => {
+        const { metadata, propertyPath } = payload;
 
         const pathParts = propertyPath.split('.');
         if (pathParts.length === 0) return Promise.reject('Failed to build property path');
 
-        // get container metadata
-        const rootMetaPromise = this.getMetadata({ dataType, modelType: modelType });
         // get first level property and its metadata
         const level1 = pathParts.shift();
-        const level1Promise = rootMetaPromise.then((m) => {
-            const propertyMeta = m && isPropertiesArray(m.properties)
-                ? this.#getPropertyByName(m.properties, level1)
-                : undefined;
-            return propertyMeta;
-        });
+        const level1Promise = metadata && isPropertiesArray(metadata.properties)
+            ? this.#getPropertyByName(metadata.properties, level1)
+            : undefined;
+
+        // Async reduce function
+        const asyncReduce = async (array, callback, initialValue) => {
+            let accumulator = initialValue;
+
+            for (const item of array) {
+                accumulator = await callback(accumulator, item, array);
+            }
+
+            return accumulator;
+        };
 
         // run full chain of properties starting from the first one
-        const result = pathParts.reduce((a, c) => {
-            return a.then((m) => this.#extractNestedProperty(m, c));
+        const result = await asyncReduce(pathParts, async (a, c) => {
+            return await this.#extractNestedProperty(a, c);
         }, level1Promise);
 
         return result;
+    };
+
+
+    getPropertyMetadata = async (payload: IGetPropertyMetadataPayload): Promise<IPropertyMetadata> => {
+        const { dataType, modelType, propertyPath } = payload;
+
+        // get container metadata
+        const metadata = await this.getMetadata({ dataType, modelType });
+        return this.getPropertyFromMetadata({ metadata, propertyPath });
     };
 
     getPropertiesMetadata = (payload: IGetPropertiesMetadataPayload): Promise<IDictionary<IPropertyMetadata>> => {

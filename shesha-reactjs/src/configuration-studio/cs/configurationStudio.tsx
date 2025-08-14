@@ -14,7 +14,7 @@ import ConfigurationItemsExport, { IExportInterface } from "@/components/configu
 import React from "react";
 import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-export";
 import { createManualRef } from "./utils";
-import ConfigurationItemsImport, { IImportInterface } from "@/components/configurationFramework/itemsImport";
+import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
