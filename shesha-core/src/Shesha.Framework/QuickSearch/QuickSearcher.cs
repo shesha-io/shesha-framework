@@ -266,11 +266,13 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private Expression GetCommonRefListExpression(string? module, string name, string propName, string quickSearch, ParameterExpression entityExpression, RefListItemComparer comparer)
         {
-            var refList = _refListHelper.GetReferenceList(new ReferenceListIdentifier(module, name));
+            var refListRevisionId = _refListHelper.GetListRevisionId(new ReferenceListIdentifier(module, name));
 
             var param = Expression.Parameter(typeof(ReferenceListItem), $"ent{propName}");
 
-            var listIdExpr = Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceListRevision)}.{nameof(ReferenceList.Id)}"), Expression.Constant(refList.Id));
+            var listIdExpr = refListRevisionId != null
+                ? Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceListRevision)}.{nameof(ReferenceList.Id)}"), Expression.Constant(refListRevisionId))
+                : Expression.Equal(Expression.Constant(true), Expression.Constant(false));
 
             var propExpression = ExpressionExtensions.GetMemberExpression(entityExpression, propName);
             var valuePredicateExpr = comparer.Invoke(

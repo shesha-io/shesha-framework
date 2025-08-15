@@ -15,29 +15,11 @@ namespace Shesha.DynamicEntities.Distribution
         {
         }
 
-        /// inheritedDoc
-        public override async Task<DistributedPermissionDefinition> ExportAsync(PermissionDefinition item)
+        protected override Task MapCustomPropsAsync(PermissionDefinition item, PermissionDefinitionRevision revision, DistributedPermissionDefinition result)
         {
-            var revision = item.Revision;
+            result.Parent = revision.Parent;
 
-            var result = new DistributedPermissionDefinition
-            {
-                Id = item.Id,
-                Name = item.Name,
-                ModuleName = item.Module?.Name,
-                FrontEndApplication = item.Application?.AppKey,
-                ItemType = item.ItemType,
-                OriginId = item.Origin?.Id,
-                Suppress = item.Suppress,
-                
-                Label = revision.Label,
-                Description = revision.Description,
-
-                // specific properties
-                Parent = revision.Parent,
-            };
-
-            return await Task.FromResult(result);
+            return Task.CompletedTask;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Shesha.ConfigurationItems.Distribution
     public abstract class ConfigurableItemExportBase<TItem, TRevision, TDistributedItem>
         where TItem : ConfigurationItem<TRevision>, new()
         where TRevision : ConfigurationItemRevision, new()
-        where TDistributedItem : DistributedConfigurableItemBase
+        where TDistributedItem : DistributedConfigurableItemBase, new()
     {
         public IRepository<TItem, Guid> Repository { get; set; }
         public IRepository<TRevision, Guid> RevisionRepository { get; set; }
@@ -32,17 +32,40 @@ namespace Shesha.ConfigurationItems.Distribution
         public async Task<DistributedConfigurableItemBase> ExportItemAsync(Guid id)
         {
             var item = await Repository.GetAsync(id);
-            return await ExportAsync(item);
+            return await ExportItemAsync(item);
         }
 
         public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item) 
         {
             var typedItem = CastItem<TItem, ConfigurationItem>(item);
 
-            return await ExportAsync(typedItem);
+            var revision = typedItem.LatestRevision;
+            var distributedItem = GetBaseDistributedItem(typedItem, revision);
+            await MapCustomPropsAsync(typedItem, revision, distributedItem);
+
+            return distributedItem;
         }
 
-        public abstract Task<TDistributedItem> ExportAsync(TItem item);
+        protected abstract Task MapCustomPropsAsync(TItem item, TRevision revision, TDistributedItem result);
+
+        protected TDistributedItem GetBaseDistributedItem(TItem item, TRevision revision)
+        {
+            return new TDistributedItem {
+                Id = item.Id,
+                Name = item.Name,
+                ModuleName = item.Module?.Name,
+                ItemType = item.ItemType,
+                FrontEndApplication = item.Application?.AppKey,
+
+                OriginId = item.Origin?.Id,
+                Suppress = item.Suppress,
+
+                Label = revision.Label,
+                Description = revision.Description,
+            };
+        }
+
+        //public abstract Task<TDistributedItem> ExportAsync(TItem item);
 
         public virtual async Task WriteToJsonAsync(TDistributedItem item, Stream jsonStream)
         {

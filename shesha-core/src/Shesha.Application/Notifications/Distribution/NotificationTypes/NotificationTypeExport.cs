@@ -2,9 +2,11 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes
@@ -23,36 +25,16 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         public string ItemType => NotificationTypeConfig.ItemTypeName;
 
-        public override async Task<DistributedNotificationType> ExportAsync(NotificationTypeConfig item)
+        protected override async Task MapCustomPropsAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType result)
         {
-            var revision = item.Revision;
-
-            var result = new DistributedNotificationType
-            {
-                Id = item.Id,
-                Name = item.Name,
-                ModuleName = item.Module?.Name,
-                FrontEndApplication = item.Application?.AppKey,
-                ItemType = item.ItemType,
-
-                Label = revision.Label,
-                Description = revision.Description,
-                OriginId = item.Origin?.Id,
-                Suppress = item.Suppress,
-            };
             result.CopyNotificationSpecificPropsFrom(revision);
-            result.Templates = await ExportTemplatesAsync(item);
-
-            return await Task.FromResult(result);
+            result.Templates = await ExportTemplatesAsync(revision);
         }
 
-        private Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfig notification)
+        private async Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfigRevision revision)
         {
-            throw new NotImplementedException();
-            /*
-            var templates = await _templateRepo.GetAll().Where(t => t.PartOf == notification).ToListAsync();
+            var templates = await _templateRepo.GetAll().Where(t => t.PartOf == revision).ToListAsync();
             return templates.Select(e => new DistributedNotificationTemplateDto { Id = e.Id }.CopyTemplatePropsFrom(e)).ToList();
-            */
         }
     }
 }

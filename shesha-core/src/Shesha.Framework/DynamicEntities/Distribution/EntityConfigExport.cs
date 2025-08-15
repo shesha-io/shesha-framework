@@ -30,51 +30,32 @@ namespace Shesha.DynamicEntities.Distribution
             _permissionedObjectManager = permissionedObjectManager;
         }
 
-        /// inheritedDoc
-        public override async Task<DistributedEntityConfig> ExportAsync(EntityConfig entityConfig)
+        protected override async Task MapCustomPropsAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig result) 
         {
-            var readRevision = entityConfig.LatestRevision;
-            var fullClassName = readRevision.FullClassName;
+            var fullClassName = revision.FullClassName;
 
-            var result = new DistributedEntityConfig
-            {
-                Id = entityConfig.Id,
-                Name = entityConfig.Name,
-                ModuleName = entityConfig.Module?.Name,
-                FrontEndApplication = entityConfig.Application?.AppKey,
-                ItemType = entityConfig.ItemType,
+            result.TypeShortAlias = revision.TypeShortAlias;
+            result.TableName = revision.TableName;
+            result.ClassName = revision.ClassName;
+            result.Namespace = revision.Namespace;
+            result.DiscriminatorValue = revision.DiscriminatorValue;
+            result.GenerateAppService = revision.GenerateAppService;
+            result.Source = revision.Source;
+            result.EntityConfigType = revision.EntityConfigType;
 
-                Label = readRevision.Label,
-                Description = readRevision.Description,
-                OriginId = entityConfig.Origin?.Id,
-                Suppress = entityConfig.Suppress,
+            result.FriendlyName = revision.FriendlyName;
+            result.PropertiesMD5 = revision.HardcodedPropertiesMD5;
 
-                // entity config specific properties
-                TypeShortAlias = readRevision.TypeShortAlias,
-                TableName = readRevision.TableName,
-                ClassName = readRevision.ClassName,
-                Namespace = readRevision.Namespace,
-                DiscriminatorValue = readRevision.DiscriminatorValue,
-                GenerateAppService = readRevision.GenerateAppService,
-                Source = readRevision.Source,
-                EntityConfigType = readRevision.EntityConfigType,
+            result.ViewConfigurations = MapViewConfigurations(item);
+            result.Properties = await MapPropertiesAsync(item);
 
-                FriendlyName = readRevision.FriendlyName,
-                PropertiesMD5 = readRevision.HardcodedPropertiesMD5,
-
-                ViewConfigurations = MapViewConfigurations(entityConfig),
-                Properties = await MapPropertiesAsync(entityConfig),
-
-                Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}", ShaPermissionedObjectsTypes.Entity),
-                PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Get", ShaPermissionedObjectsTypes.EntityAction),
-                PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Create", ShaPermissionedObjectsTypes.EntityAction),
-                PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Update", ShaPermissionedObjectsTypes.EntityAction),
-                PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction),
-            };
-
-            return result;
+            result.Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}", ShaPermissionedObjectsTypes.Entity);
+            result.PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Get", ShaPermissionedObjectsTypes.EntityAction);
+            result.PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Create", ShaPermissionedObjectsTypes.EntityAction);
+            result.PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Update", ShaPermissionedObjectsTypes.EntityAction);
+            result.PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{fullClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction);
         }
-        
+
         private async Task<List<DistributedEntityConfigProperty>> MapPropertiesAsync(EntityConfig entityConfig)
         {
             var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfigRevision == entityConfig.Revision).ToListAsync();

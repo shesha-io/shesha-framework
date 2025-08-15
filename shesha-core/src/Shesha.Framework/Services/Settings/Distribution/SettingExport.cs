@@ -13,7 +13,7 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting export
     /// </summary>
-    public class SettingExport: ConfigurableItemExportBase<SettingConfiguration, SettingConfigurationRevision, DistributedSettingConfiguration>, ISettingExport, ITransientDependency
+    public class SettingExport : ConfigurableItemExportBase<SettingConfiguration, SettingConfigurationRevision, DistributedSettingConfiguration>, ISettingExport, ITransientDependency
     {
         private readonly IRepository<SettingValue, Guid> _settingValueRepo;
 
@@ -24,37 +24,20 @@ namespace Shesha.Services.Settings.Distribution
 
         public string ItemType => SettingConfiguration.ItemTypeName;
 
-        /// inheritedDoc
-        public override async Task<DistributedSettingConfiguration> ExportAsync(SettingConfiguration settingConfig) 
+        protected override async Task MapCustomPropsAsync(SettingConfiguration item, SettingConfigurationRevision revision, DistributedSettingConfiguration result)
         {
-            var revision = settingConfig.Revision;
-            var result = new DistributedSettingConfiguration
-            {
-                Id = settingConfig.Id,
-                Name = settingConfig.Name,
-                ModuleName = settingConfig.Module?.Name,
-                FrontEndApplication = settingConfig.Application?.AppKey,
-                ItemType = settingConfig.ItemType,
+            // setting configuration specific properties
+            result.DataType = revision.DataType;
+            result.EditorFormName = revision.EditorFormName;
+            result.EditorFormModule = revision.EditorFormModule;
+            result.OrderIndex = revision.OrderIndex;
+            result.Category = revision.Category;
+            result.IsClientSpecific = revision.IsClientSpecific;
+            result.AccessMode = revision.AccessMode;
+            result.ClientAccess = revision.ClientAccess;
+            result.IsUserSpecific = revision.IsUserSpecific;
 
-                Label = revision.Label,
-                Description = revision.Description,
-                OriginId = settingConfig.Origin?.Id,
-                Suppress = settingConfig.Suppress,
-
-                // setting configuration specific properties
-                DataType = revision.DataType,
-                EditorFormName = revision.EditorFormName,
-                EditorFormModule = revision.EditorFormModule,
-                OrderIndex = revision.OrderIndex,
-                Category = revision.Category,
-                IsClientSpecific = revision.IsClientSpecific,
-                AccessMode = revision.AccessMode,
-                ClientAccess = revision.ClientAccess,
-                IsUserSpecific = revision.IsUserSpecific,
-            };
-            result.Values = await ExportSettingValuesAsync(settingConfig);
-
-            return result;
+            result.Values = await ExportSettingValuesAsync(item);
         }
 
         private async Task<List<DistributedSettingValue>> ExportSettingValuesAsync(SettingConfiguration settingConfig)

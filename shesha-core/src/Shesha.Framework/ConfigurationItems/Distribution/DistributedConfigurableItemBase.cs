@@ -22,7 +22,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item name
         /// </summary>
-        public required string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Label of the con
@@ -32,7 +32,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item name
         /// </summary>
-        public required string ItemType { get; set; }
+        public string ItemType { get; set; }
 
         /// <summary>
         /// Item description
@@ -66,12 +66,12 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Additional supporting comments
         /// </summary>
-        public virtual string? Comments { get; set; }
+        public string? Comments { get; set; }
 
         /// <summary>
         /// Hash of the configuration JSON.Allows for easy comparison and search for versions with the same config.
         /// </summary>
-        public virtual string? ConfigHash { get; set; } = string.Empty;
+        public string? ConfigHash { get; set; } = string.Empty;
 
         #endregion
     }

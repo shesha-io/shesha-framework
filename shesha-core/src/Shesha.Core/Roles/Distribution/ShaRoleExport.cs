@@ -16,32 +16,12 @@ namespace Shesha.DynamicEntities.Distribution
         {
         }
 
-        /// inheritedDoc
-        public override async Task<DistributedShaRole> ExportAsync(ShaRole item)
+        protected override Task MapCustomPropsAsync(ShaRole item, ShaRoleRevision revision, DistributedShaRole result)
         {
-            var revision = item.Revision;
-
-            var result = new DistributedShaRole
-            {
-                Id = item.Id,
-                Name = item.Name,
-                ModuleName = item.Module?.Name,
-                FrontEndApplication = item.Application?.AppKey,
-                ItemType = item.ItemType,
-
-                
-                OriginId = item.Origin?.Id,
-                Suppress = item.Suppress,
-
-                Label = revision.Label,
-                Description = revision.Description,
-
-                // specific properties
-                NameSpace = revision.NameSpace,
-                HardLinkToApplication = revision.HardLinkToApplication,
-
-                Permissions = new List<DistributedShaRolePermission>(),
-            };
+            // specific properties
+            result.NameSpace = revision.NameSpace;
+            result.HardLinkToApplication = revision.HardLinkToApplication;
+            result.Permissions = new List<DistributedShaRolePermission>();
 
             foreach (var perm in revision.Permissions)
             {
@@ -52,7 +32,7 @@ namespace Shesha.DynamicEntities.Distribution
                 });
             }
 
-            return await Task.FromResult(result);
+            return Task.CompletedTask;
         }
     }
 }

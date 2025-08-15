@@ -1,10 +1,10 @@
 ﻿using Shesha.Cache;
-using System;
+using static Shesha.Services.ReferenceListHelper;
 
 namespace Shesha.Services.ReferenceLists.Cache
 {
 
-    public interface IReferenceListIdsCacheHolder : ICacheHolder<string, Guid>
+    public interface IReferenceListIdsCacheHolder : ICacheHolder<string, RefListRevisionIds>
     {
     }
 }

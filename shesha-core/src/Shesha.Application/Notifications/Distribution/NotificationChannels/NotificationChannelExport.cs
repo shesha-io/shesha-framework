@@ -17,33 +17,16 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
 
         public string ItemType => NotificationChannelConfig.ItemTypeName;
 
-        public override Task<DistributedNotificationChannel> ExportAsync(NotificationChannelConfig item)
+        protected override Task MapCustomPropsAsync(NotificationChannelConfig item, NotificationChannelConfigRevision revision, DistributedNotificationChannel result)
         {
-            var revision = item.Revision;
+            result.SupportedFormat = revision.SupportedFormat;
+            result.MaxMessageSize = revision.MaxMessageSize;
+            result.SupportedMechanism = revision.SupportedMechanism;
+            result.SenderTypeName = revision.SenderTypeName;
+            result.DefaultPriority = revision.DefaultPriority;
+            result.Status = revision.Status;
 
-            var result = new DistributedNotificationChannel
-            {
-                Id = item.Id,
-                Name = item.Name,
-                ModuleName = item.Module?.Name,
-                FrontEndApplication = item.Application?.AppKey,
-                ItemType = item.ItemType,
-
-                Label = revision.Label,
-                Description = revision.Description,
-                OriginId = item.Origin?.Id,
-                Suppress = item.Suppress,
-
-                // specific properties
-                SupportedFormat = revision.SupportedFormat,
-                MaxMessageSize = revision.MaxMessageSize,
-                SupportedMechanism = revision.SupportedMechanism,
-                SenderTypeName = revision.SenderTypeName,
-                DefaultPriority = revision.DefaultPriority,
-                Status = revision.Status,
-            };
-
-            return Task.FromResult(result);
+            return Task.CompletedTask;
         }
     }
 }

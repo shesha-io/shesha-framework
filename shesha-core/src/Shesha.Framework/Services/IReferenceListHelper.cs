@@ -66,5 +66,15 @@ namespace Shesha.Services
         /// Clear reference list cache
         /// </summary>
         Task ClearCacheAsync();
+
+        /// <summary>
+        /// Get actual ReferenceList revision Id
+        /// </summary>
+        Task<Guid?> GetListRevisionIdAsync(ReferenceListIdentifier refListId);
+
+        /// <summary>
+        /// Get actual ReferenceList revision Id
+        /// </summary>
+        Guid? GetListRevisionId(ReferenceListIdentifier refListId);
     }
 }
