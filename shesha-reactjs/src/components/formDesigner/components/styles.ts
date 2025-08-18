@@ -7,7 +7,8 @@ export const useStyles = createStyles(({ css, cx }, layout) => {
         .ant-form-item-row {
             display: flex !important;
             height: 100%;
-            width: 100%
+            width: 100%;
+            ${layout !== 'vertical' && 'align-items: center'};
         }
 
         .ant-row .ant-form-item-control {

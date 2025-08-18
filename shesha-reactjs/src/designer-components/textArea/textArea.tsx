@@ -95,7 +95,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
         ...finalStyle,
         ...getOverflowStyle(true, false),
         width: '100%',
-        height: '100%',
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model?.showCount ? '16px' : '0px' }
           : {})

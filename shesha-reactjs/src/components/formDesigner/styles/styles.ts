@@ -155,6 +155,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             
             .ant-form-item-row {
                 height: 100% !important;
+                align-items: center;
             }
             
             .ant-form-item-control {

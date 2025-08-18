@@ -28,6 +28,9 @@ import { ComponentProperties } from '../componentPropertiesPanel/componentProper
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useShaFormInstance } from '@/providers';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getComponentTypeInfo } from '../utils/componentTypeUtils';
+import { getComponentDimensions, getDeviceDimensions, getDeviceFlexBasis } from '../utils/dimensionUtils';
+import { createRootContainerStyle } from '../utils/stylingUtils';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -50,15 +53,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const { formMode, form } = useShaFormInstance();
+  const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
   
   const component = getToolboxComponent(componentModel?.type);
-  const isDataTableContext = component?.type === 'datatableContext';
-  const isFileList = component?.type === 'attachmentsEditor';
-  const isFileUpload = component?.type === 'fileUpload';
-  const isPasswordcombo = component?.type === 'passwordCombo';
-  const isInput = component?.isInput;
+  const typeInfo = getComponentTypeInfo(component);
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles( {...componentModel, ...componentModel?.[activeDevice]});
 
   const desktopConfig = componentModel?.[activeDevice] || {};
@@ -101,7 +100,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  const { paddingBottom, paddingTop, paddingRight, paddingLeft, marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
+  const { marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
 
   const renderStylingBox = useMemo(() => {
     return JSON.stringify({
@@ -112,23 +111,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     });
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
-  const getDeviceDimensions = () => {
-    if (isFileList || isFileUpload) return undefined;
-    
-    return {
-      width: '100%',
-      height: isPasswordcombo || isInput ? dimensionsStyles?.height : '100%'
-    };
-  };
+  const componentDimensions = getComponentDimensions(typeInfo, dimensionsStyles, desktopConfig);
 
-  const getDeviceFlexBasis = () => {
-    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.width;
-    return dimensionsStyles?.width;
-  };
 
-  console.log("Form DAta:: ", form);
   const renderComponentModel = useMemo(() => {
-    const deviceDimensions = getDeviceDimensions();
+    const deviceDimensions = getDeviceDimensions(typeInfo, dimensionsStyles);
     
     return {
       ...componentModel,
@@ -137,56 +124,20 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...desktopConfig,
         ...(deviceDimensions && { dimensions: deviceDimensions }),
         stylingBox: renderStylingBox,
-        flexBasis: getDeviceFlexBasis()
+        flexBasis: getDeviceFlexBasis(typeInfo, dimensionsStyles, desktopConfig)
       }
     };
-  }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode]);
+  }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode, typeInfo]);
 
-  const getComponentWidth = () => {
-    if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.width;
-    return dimensionsStyles?.width || 'auto';
-  };
-
-  const getComponentHeight = () => {
-    if (isPasswordcombo) return 'auto';
-    if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.height;
-    return isInput ? 'auto' : dimensionsStyles?.height;
-  };
-
-  const getDimensionValue = (dimensionType: 'maxWidth' | 'minWidth' | 'maxHeight' | 'minHeight') => {
-    if (isDataTableContext) return '100%';
-    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.[dimensionType];
-    return dimensionsStyles?.[dimensionType];
-  };
-
-  const getFlexBasis = () => {
-    if (isFileList || isFileUpload) return desktopConfig?.container?.dimensions?.width;
-    return dimensionsStyles?.maxWidth || dimensionsStyles?.width;
-  };
 
   const rootContainerStyle = useMemo(() => {
-    const baseStyle = {
-      boxSizing: 'border-box' as const,
-    };
-
-    return {
-      ...baseStyle,
-      marginTop,
-      marginBottom: marginBottom || 5,
-      marginLeft,
-      marginRight,
-      ...originalDimensions,
-      width: getComponentWidth(),
-      maxWidth: getDimensionValue('maxWidth'),
-      minWidth: getDimensionValue('minWidth'),
-      height: getComponentHeight(),
-      minHeight: getDimensionValue('minHeight'),
-      maxHeight: getDimensionValue('maxHeight'),
-      flexBasis: getFlexBasis(),
-    };
-  }, [formMode, originalDimensions, hasLabel, marginLeft, marginRight, marginTop, marginBottom, paddingTop, paddingBottom, paddingLeft, paddingRight]);
+    return createRootContainerStyle(
+      componentDimensions,
+      { marginTop, marginBottom: marginBottom || 5, marginLeft, marginRight },
+      originalDimensions,
+      hasLabel
+    );
+  }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
 
   return (
     <div

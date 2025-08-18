@@ -9,6 +9,8 @@ import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useStyles } from './styles';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getComponentTypeInfo } from '../utils/componentTypeUtils';
+import { createFormItemStyle } from '../utils/stylingUtils';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -41,37 +43,25 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-    const component = getToolboxComponent(model.type) as any;
-  const isDataTableContext = component?.type === 'datatableContext';
-  const isFileList = component?.type === 'attachmentsEditor';
-  const isFileUpload = component?.type === 'fileUpload';
-  const isInput = component?.isInput;
-  const isPasswordCombo = component?.type === 'passwordCombo';
+  const component = getToolboxComponent(model.type) as any;
+  const typeInfo = getComponentTypeInfo(component);
 
-  const {
-    marginLeft,
-    marginRight,
-    marginBottom = 5,
-    marginTop,
-  } = stylingBoxAsCSS;
+  const formItemStyle = createFormItemStyle(
+    { width: '', height: '' },
+    stylingBoxAsCSS,
+    dimensionsStyles,
+    formMode,
+    typeInfo,
+    activeDevice,
+    model
+  );
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem, form.settings.layout),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
-    style: {
-      ...(formMode !== 'designer' && {
-        marginLeft,
-        marginRight,
-        marginBottom,
-        marginTop,
-      }),
-      ...dimensionsStyles,
-      flexBasis: 'auto',
-      width: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.width : dimensionsStyles?.width || 'auto',
-      height: isDataTableContext ? '100%' : isFileList || isFileUpload ? model[activeDevice]?.container?.dimensions?.height : isPasswordCombo || isInput ? '' : dimensionsStyles?.height,
-    },
+    style: formItemStyle,
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
