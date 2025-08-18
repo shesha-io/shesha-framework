@@ -28,7 +28,7 @@ using Xunit;
 namespace Shesha.Tests.ConfigurationItems
 {
     [Collection(SqlServerCollection.Name)]
-    public partial class FormConfigurationTests : SheshaNhTestBase
+    public partial class FormConfigurationTests : CiSheshaTestBase
     {
         public FormConfigurationTests(SqlServerFixture fixture) : base(fixture)
         {
@@ -47,7 +47,6 @@ namespace Shesha.Tests.ConfigurationItems
             await moduleRepository.InsertAsync(module);
 
             var formConfig1 = await MockFormConfigurationAsync(c => {
-                // TODO: V1 review
                 c.LatestRevision.ModelType = "-ModelType";
                 c.LatestRevision.Markup = "{ components: [], settings: {} }";
                 c.Name = "test-form";
@@ -75,37 +74,40 @@ namespace Shesha.Tests.ConfigurationItems
 
         [Fact]
         public async Task When_Import_Missing_FormAsync() 
-        {
+       {
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-missing-form-module");
             var srcForm = await src.AddFormAsync(c =>
             {
-                // TODO: V1 review
-                c.Revision.ModelType = "test-modelType";
-                c.Revision.Markup = "{ components: [], settings: {} }";
-                c.Name = "test-import-missing-form";
-                c.Revision.Label = "test-label";
-                c.Revision.Description = "test-description";
-
-                // TODO: V1 review
-                //c.VersionNo = 2;
-                //c.SetIsLast(true);
-                //c.VersionStatus = ConfigurationItemVersionStatus.Live;
                 c.Module = srcModule;
+                c.Name = "test-import-missing-form";
+
+                var revision = c.LatestRevision;
+
+                revision.ModelType = "test-modelType";
+                revision.Markup = "{ components: [], settings: {} }";
+                revision.Label = "test-label";
+                revision.Description = "test-description";
+                
                 return Task.CompletedTask;
             }).ConfigureAwait(true);
 
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
+            export.Repository = src.FormRepo;
+            export.RevisionRepository = src.FormRevisionRepo;
+
             var exported = await export.ExportItemAsync(srcForm.Id);
+
+            var uowManager = Resolve<IUnitOfWorkManager>();
+
+            await DeleteFormAsync(srcModule.Name, srcForm.Name);
 
             await base.WithUnitOfWorkAsync((Func<Task>)(async() => {
                 var dstFormRepo = Resolve<IRepository<FormConfiguration, Guid>>();
 
                 var formExistsBeforeImport = await dstFormRepo.GetAll()
                     .Where(f => f.Name == srcForm.Name && f.Module != null && f.Module.Name == srcModule.Name)
-                    // TODO: V1 review
-                    //.OrderByDescending(f => f.VersionNo)
                     .AnyAsync();
                 ShouldBeBooleanExtensions.ShouldBeFalse(formExistsBeforeImport, "Form must not exist before import");
 
@@ -117,6 +119,7 @@ namespace Shesha.Tests.ConfigurationItems
                     CreateModules = true
                 };
                 var imported = await importer.ImportItemAsync((DistributedConfigurableItemBase)exported, importContext) as FormConfiguration;
+                await uowManager.Current.SaveChangesAsync();
                 imported.ShouldNotBeNull();
 
                 var dstModule = srcForm.Module != null
@@ -125,26 +128,18 @@ namespace Shesha.Tests.ConfigurationItems
 
                 var importedFormFromRepo = await dstFormRepo.GetAll()
                     .Where(f => f.Name == srcForm.Name && f.Module == dstModule)
-                    // TODO: V1 review
-                    //.OrderByDescending(f => f.VersionNo)
                     .FirstOrDefaultAsync();
 
-                imported.ShouldBe((FormConfiguration)importedFormFromRepo, "Imported form should be a form with latest version number in the repo");
+                importedFormFromRepo.ShouldNotBeNull("Form should be created in the destination DB");
+                importedFormFromRepo.Name.ShouldBe((string)srcForm.Name);
+                importedFormFromRepo.Module?.Name.ShouldBe((string?)(srcForm.Module?.Name));
 
-                imported.ShouldNotBeNull("Form should be created in the destination DB");
-                imported.Id.ShouldNotBe((Guid)srcForm.Id, "A new Id should be generated for the form during the import");
-                imported.Name.ShouldBe((string)srcForm.Name);
-                ShouldBeStringTestExtensions.ShouldBe(imported.Revision.Label, (string?)srcForm.Revision.Label);
-                ShouldBeStringTestExtensions.ShouldBe(imported.Revision.Description, (string?)srcForm.Revision.Description);
-                imported.Module?.Name.ShouldBe((string?)(srcForm.Module?.Name));
-
-                // TODO: V1 review
-                //imported.VersionNo.ShouldBe(1);
-                //imported.VersionStatus.ShouldBe(srcForm.VersionStatus);
-
-                // TODO: V1 review
-                //imported.Markup.ShouldBe(srcForm.Markup);
-                //imported.ModelType.ShouldBe(srcForm.ModelType);
+                var importedRevision = importedFormFromRepo.LatestRevision;
+                importedRevision.ShouldNotBeNull("Revision should be created during import");
+                ShouldBeStringTestExtensions.ShouldBe(importedRevision.Label, (string?)srcForm.LatestRevision.Label);
+                ShouldBeStringTestExtensions.ShouldBe(importedRevision.Description, (string?)srcForm.LatestRevision.Description);
+                importedRevision.Markup.ShouldBe(srcForm.LatestRevision.Markup);
+                importedRevision.ModelType.ShouldBe(srcForm.LatestRevision.ModelType);
             }));            
         }
 
@@ -154,51 +149,50 @@ namespace Shesha.Tests.ConfigurationItems
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-import-existing-form-module");
             var srcForm = await src.AddFormAsync(c => {
-                // TODO: V1 review
-                c.Revision.ModelType = "test-modelType";
-                c.Revision.Markup = "src-markup";
-                c.Name = "test-import-existing-form";
-                c.Revision.Label = "test-label";
-                c.Revision.Description = "test-description";
-
-                // TODO: V1 review
-                //c.VersionNo = 2;
-                //c.SetIsLast(true);
-                //c.VersionStatus = ConfigurationItemVersionStatus.Live;
                 c.Module = srcModule;
+                c.Name = "test-import-existing-form";
+
+                var revision = c.LatestRevision;
+
+                revision.ModelType = "test-modelType";
+                revision.Markup = "src-markup";
+                revision.Label = "test-label";
+                revision.Description = "test-description";
+                
                 return Task.CompletedTask;
             });
 
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
+            export.Repository = src.FormRepo;
+            export.RevisionRepository = src.FormRevisionRepo;
+
             var exported = await export.ExportItemAsync(srcForm.Id);
 
-            
+            await DeleteFormAsync(srcModule.Name, srcForm.Name);
+
             var dstFormRepo = Resolve<IRepository<FormConfiguration, Guid>>();
+            var dstRevisionRepo = Resolve<IRepository<FormConfigurationRevision, Guid>>();
             var dstModuleRepo = Resolve<IRepository<Module, Guid>>();
             Guid dstFormId = Guid.Empty;
             await WithUnitOfWorkAsync(async() => {
                 var dstModule = await GetOrCreateModuleAsync(dstModuleRepo, srcModule.Name);
 
-                var fc = new FormConfiguration
+                var dstForm = new FormConfiguration
                 {
                     Name = srcForm.Name,
                     Module = dstModule,
-                    
-                    /*
-                    // TODO: V1 review
-                    //VersionNo = 10,
-                    //VersionStatus = ConfigurationItemVersionStatus.Live,
-                     */
                 };
-                fc.LatestRevision = new FormConfigurationRevision { 
-                    ConfigurationItem = fc,
-                    Label = "dst-test-label",
-                    Description = "dst-test-description",
-                    ModelType = "dst-test-modelType",
-                    Markup = "dst-markup",
-                };
-                var dstForm = await dstFormRepo.InsertAsync(fc);
+                await dstFormRepo.InsertAsync(dstForm);
+
+                var revision = dstForm.MakeNewRevision();
+                revision.Label = "dst-test-label";
+                revision.Description = "dst-test-description";
+                revision.ModelType = "dst-test-modelType";
+                revision.Markup = "dst-markup";
+                await dstRevisionRepo.InsertAsync(revision);
+                await dstFormRepo.UpdateAsync(dstForm);
+
                 dstFormId = dstForm.Id;
             });
             dstFormId.ShouldNotBe(Guid.Empty, "Failed to create test form");
@@ -211,7 +205,7 @@ namespace Shesha.Tests.ConfigurationItems
                 };
 
                 var imported = await importer.ImportItemAsync((DistributedConfigurableItemBase)exported, importContext) as FormConfiguration;
-                imported.ShouldNotBeNull();
+                imported.ShouldNotBeNull("Form should be created in the destination DB");
 
                 var dstModule = srcForm.Module != null
                     ? dstModuleRepo.GetAll().FirstOrDefault(m => m.Name == srcForm.Module.Name)
@@ -219,131 +213,20 @@ namespace Shesha.Tests.ConfigurationItems
 
                 var importedFormFromRepo = await dstFormRepo.GetAll()
                     .Where(f => f.Name == srcForm.Name && f.Module == dstModule)
-                    // TODO: V1 review
-                    //.OrderByDescending(f => f.VersionNo)
                     .FirstOrDefaultAsync();
 
                 var dstForm = await dstFormRepo.GetAsync(dstFormId);
 
-                imported.ShouldBe((FormConfiguration)importedFormFromRepo, "Imported form should be a form with latest version number in the repo");
+                imported.ShouldBe(importedFormFromRepo, "Imported form should be fetched from the repo");
 
-                imported.ShouldNotBeNull("Form should be created in the destination DB");
-                imported.Id.ShouldNotBe((Guid)srcForm.Id, "A new Id should be generated for the form during the import");
-                imported.Name.ShouldBe((string)srcForm.Name);
-                ShouldBeStringTestExtensions.ShouldBe(imported.Revision.Label, (string?)srcForm.Revision.Label);
-                ShouldBeStringTestExtensions.ShouldBe(imported.Revision.Description, (string?)srcForm.Revision.Description);
+                imported.Name.ShouldBe(srcForm.Name);
+                ShouldBeStringTestExtensions.ShouldBe(imported.LatestRevision.Label, (string?)srcForm.LatestRevision.Label);
+                ShouldBeStringTestExtensions.ShouldBe(imported.LatestRevision.Description, (string?)srcForm.LatestRevision.Description);
                 imported.Module?.Name.ShouldBe((string?)(srcForm.Module?.Name));
 
-                // TODO: V1 review
-                //imported.VersionNo.ShouldBe(dstForm.VersionNo + 1);
-                //imported.VersionStatus.ShouldBe(srcForm.VersionStatus);
-
-                //// check prevoius version
-                //imported.ParentVersion.ShouldBe(dstForm, $"{nameof(imported.ParentVersion)} should be set to last version of the form in the destination");
-                //dstForm.VersionStatus.ShouldBe(ConfigurationItemVersionStatus.Retired, $"Last version of the form in the destination should be marked as {ConfigurationItemVersionStatus.Retired}");
-
-                // TODO: V1 review
-                //imported.Markup.ShouldBe(srcForm.Markup);
-                //imported.ModelType.ShouldBe(srcForm.ModelType);
+                imported.LatestRevision.Markup.ShouldBe(srcForm.LatestRevision.Markup);
+                imported.LatestRevision.ModelType.ShouldBe(srcForm.LatestRevision.ModelType);
             }));            
-        }
-
-        [Fact]
-        public async Task When_Import_Existing_Form_As_DraftAsync()
-        {
-            var src = PrepareImportContext();
-            var srcModule = await src.GetOrCreateModuleAsync("test-import-existing-form-as-draft-module");
-            var srcForm = await src.AddFormAsync(c => {
-                // TODO: V1 review
-                //c.ModelType = "test-modelType";
-                //c.Markup = "src-markup";
-                c.Name = "test-import-existing-form-as-draft";
-                c.Module = srcModule;
-
-                c.LatestRevision.Label = "test-label";
-                c.LatestRevision.Description = "test-description";
-
-                // TODO: V1 review
-                //c.VersionNo = 2;
-                //c.SetIsLast(true);
-                //c.VersionStatus = ConfigurationItemVersionStatus.Live;                
-                return Task.CompletedTask;
-            });
-
-            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
-            var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
-            var exported = await export.ExportItemAsync(srcForm.Id);
-
-            var dstFormRepo = Resolve<IRepository<FormConfiguration, Guid>>();
-            var dstModuleRepo = Resolve<IRepository<Module, Guid>>();
-            Guid dstFormId = Guid.Empty;
-            await WithUnitOfWorkAsync(async () => {
-                var dstModule = await GetOrCreateModuleAsync(dstModuleRepo, srcModule.Name);
-
-                var fc = new FormConfiguration
-                {
-                    Name = srcForm.Name,
-                    // TODO: V1 review
-                    //VersionNo = 10,
-                    //VersionStatus = ConfigurationItemVersionStatus.Live,
-                    Module = dstModule,
-                };
-                fc.LatestRevision = new FormConfigurationRevision { 
-                    ConfigurationItem = fc,
-                    Label = "dst-test-label",
-                    Description = "dst-test-description",
-                    ModelType = "dst-test-modelType",
-                    Markup = "dst-markup",
-                };
-                var dstForm = await dstFormRepo.InsertAsync(fc);
-                dstFormId = dstForm.Id;
-            });
-            dstFormId.ShouldNotBe(Guid.Empty, "Failed to create test form");
-            
-            await base.WithUnitOfWorkAsync((Func<Task>)(async() => {
-                var importer = Resolve<FormConfigurationImport>();
-
-                var importContext = new PackageImportContext()
-                {
-                    CreateModules = true,
-                    ImportStatusAs = ConfigurationItemVersionStatus.Draft,
-                };
-                var imported = await importer.ImportItemAsync(exported, importContext) as FormConfiguration;
-                imported.ShouldNotBeNull();
-
-                var dstModule = srcForm.Module != null
-                    ? await dstModuleRepo.GetAll().FirstOrDefaultAsync(m => m.Name == srcForm.Module.Name)
-                    : null;
-
-                var importedFormFromRepo = await dstFormRepo.GetAll()
-                    .Where(f => f.Name == srcForm.Name && f.Module == dstModule)
-                    // TODO: V1 review
-                    //.OrderByDescending(f => f.VersionNo)
-                    .FirstOrDefaultAsync();
-
-                var dstForm = await dstFormRepo.GetAsync(dstFormId);
-
-                imported.ShouldBe(importedFormFromRepo, "Imported form should be a form with latest version number in the repo");
-
-                imported.ShouldNotBeNull("Form should be created in the destination DB");
-                imported.Id.ShouldNotBe(srcForm.Id, "A new Id should be generated for the form during the import");
-                imported.Name.ShouldBe(srcForm.Name);
-                ShouldBeStringTestExtensions.ShouldBe(imported.Revision.Label, (string?)srcForm.Revision.Label);
-                ShouldBeStringTestExtensions.ShouldBe(imported.Revision.Description, (string?)srcForm.Revision.Description);
-                imported.Module?.Name.ShouldBe(srcForm.Module?.Name);
-
-                // TODO: V1 review
-                //imported.VersionNo.ShouldBe(dstForm.VersionNo + 1);
-                //imported.VersionStatus.ShouldBe(ConfigurationItemVersionStatus.Draft);
-
-                //// check prevoius version
-                //imported.ParentVersion.ShouldBe(dstForm, $"{nameof(imported.ParentVersion)} should be set to last version of the form in the destination");
-                //dstForm.VersionStatus.ShouldBe(ConfigurationItemVersionStatus.Live, $"Status of existing form should remain Live");
-
-                // TODO: V1 review
-                //imported.Markup.ShouldBe(srcForm.Markup);
-                //imported.ModelType.ShouldBe(srcForm.ModelType);
-            }));
         }
 
         [Fact]
@@ -366,7 +249,6 @@ namespace Shesha.Tests.ConfigurationItems
 
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
-            
             export.Repository = src.FormRepo;
             export.RevisionRepository = src.FormRevisionRepo;
 
