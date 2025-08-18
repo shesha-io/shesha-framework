@@ -54,7 +54,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const { styles } = useStyles();
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
@@ -78,9 +78,23 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   };
 
+
+  const showDeleteConfirmation = () => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile();
+      }
+    });
+  };
+
   const onDeleteClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-    deleteFile();
+    showDeleteConfirmation();
   };
 
   const fileControls = () => {
