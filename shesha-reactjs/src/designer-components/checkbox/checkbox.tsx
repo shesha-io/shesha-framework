@@ -18,6 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { useStyles } from './styles';
 
 interface ICheckboxComponentCalulatedValues {
   eventHandlers?: IEventHandlers<any>;
@@ -39,6 +40,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+    const { styles } = useStyles({ style: model.allStyles.fullStyle });
+
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
@@ -53,7 +56,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
 
           return model.readOnly
             ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} style={model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle} />
-            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={{...model.allStyles.fullStyle}} checked={value} {...events} />;
+            : <Checkbox className={styles.checkbox} disabled={model.readOnly} checked={value} {...events} />;
         }}
       </ConfigurableFormItem>
     );
