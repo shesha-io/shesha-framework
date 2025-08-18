@@ -25,7 +25,7 @@ export const getComponentDimensions = (
   dimensionsStyles: any,
   desktopConfig: any
 ): ComponentDimensions => {
-  const { isDataTableContext, isFileComponent, isPasswordCombo, isInput } = typeInfo;
+  const { isDataTableContext, isFileComponent, isInput } = typeInfo;
 
   const width = isDataTableContext 
     ? '100%' 
@@ -33,9 +33,7 @@ export const getComponentDimensions = (
       ? desktopConfig?.container?.dimensions?.width 
       : dimensionsStyles?.width || 'auto';
 
-  const height = isPasswordCombo 
-    ? 'auto' 
-    : isDataTableContext 
+  const height = isDataTableContext 
       ? '100%' 
       : isFileComponent 
         ? desktopConfig?.container?.dimensions?.height 
@@ -68,13 +66,13 @@ export const getDeviceDimensions = (
   typeInfo: ComponentTypeInfo,
   dimensionsStyles: any
 ) => {
-  const { isFileComponent, isPasswordCombo, isInput } = typeInfo;
+  const { isFileComponent, isInput } = typeInfo;
   
   if (isFileComponent) return undefined;
   
   return {
     width: '100%',
-    height: isPasswordCombo || isInput ? dimensionsStyles?.height : '100%'
+    height: isInput ? dimensionsStyles?.height : '100%'
   };
 };
 

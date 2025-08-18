@@ -134,8 +134,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return createRootContainerStyle(
       componentDimensions,
       { marginTop, marginBottom: marginBottom || 5, marginLeft, marginRight },
-      originalDimensions,
-      hasLabel
+      originalDimensions
     );
   }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
 

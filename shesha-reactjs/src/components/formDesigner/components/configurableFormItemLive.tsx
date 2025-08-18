@@ -47,10 +47,9 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const typeInfo = getComponentTypeInfo(component);
 
   const formItemStyle = createFormItemStyle(
-    { width: '', height: '' },
     stylingBoxAsCSS,
-    dimensionsStyles,
     formMode,
+    dimensionsStyles,
     typeInfo,
     activeDevice,
     model

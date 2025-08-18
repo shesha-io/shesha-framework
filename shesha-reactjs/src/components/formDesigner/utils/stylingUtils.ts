@@ -1,3 +1,4 @@
+import React from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
 import { ComponentDimensions } from './dimensionUtils';
 
@@ -16,7 +17,6 @@ export const createRootContainerStyle = (
   dimensions: ComponentDimensions,
   stylingBox: StyleConfig,
   originalDimensions: any,
-  hasLabel?: boolean
 ) => {
   const {
     marginTop,
@@ -47,10 +47,9 @@ export const createRootContainerStyle = (
 };
 
 export const createFormItemStyle = (
-  dimensions: ComponentDimensions,
   stylingBox: StyleConfig,
-  dimensionsStyles: any,
   formMode: string,
+  dimensionsStyles: React.CSSProperties,
   typeInfo: ComponentTypeInfo,
   activeDevice: string,
   model: any
