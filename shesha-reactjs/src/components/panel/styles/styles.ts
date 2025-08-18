@@ -109,7 +109,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
-      height: 100%;
+    }
+
+    > .ant-collapse-item-active {
+        height: 100%;
     }
    
     > .ant-collapse-item > .ant-collapse-content {
