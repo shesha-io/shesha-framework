@@ -65,7 +65,7 @@ namespace Shesha.ReferenceLists
 
             var dto = ObjectMapper.Map<ReferenceListWithItemsDto>(refList);
 
-            var items = await _refListHelper.GetItemsAsync(refList.Id);
+            var items = await _refListHelper.GetRevisionItemsAsync(refList.Revision.Id);
             dto.Items = items.Select(item => ObjectMapper.Map<ReferenceListItemDto>(item)).ToList();
 
             var json = JsonConvert.SerializeObject(dto);

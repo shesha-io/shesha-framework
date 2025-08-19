@@ -119,7 +119,7 @@ namespace Shesha.Services
             var revisionId = await GetListRevisionIdAsync(refListId);
 
             return revisionId != null 
-                ? await _listItemsCache.GetAsync(revisionId.Value, GetItemsAsync)
+                ? await _listItemsCache.GetAsync(revisionId.Value, GetRevisionItemsAsync)
                 : new ();
         }
 
@@ -144,7 +144,7 @@ namespace Shesha.Services
             return itemDtos;
         }
 
-        public async Task<List<ReferenceListItemDto>> GetItemsAsync(Guid revisionId)
+        public async Task<List<ReferenceListItemDto>> GetRevisionItemsAsync(Guid revisionId)
         {
             var items = await _itemsRepository.GetAll()
                 .Where(e => e.ReferenceListRevision.Id == revisionId)
