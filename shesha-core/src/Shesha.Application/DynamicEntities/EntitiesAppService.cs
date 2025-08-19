@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.ObjectMapping;
+using Abp.UI;
 using GraphQL;
 using GraphQL.Execution;
 using Microsoft.AspNetCore.Mvc;
@@ -249,6 +250,12 @@ namespace Shesha.DynamicEntities
             var property = ReflectionHelper.GetProperty(entityConfig.EntityType, input.PropertyName, true);
             if (property == null)
                 throw new ArgumentException($"Property `{input.PropertyName}` not found in the type `{input.EntityType}`");
+
+            if (input.Items.Any(i => i.OrderIndex == null))
+                throw new UserFriendlyException("Items should use valid non empty order indexes");
+
+            if (input.Items.All(i => i.OrderIndex == 0))
+                throw new UserFriendlyException("Reordering is not available for enon ordered items");
 
             var reordererType = typeof(IEntityReorderer<,,>).MakeGenericType(entityConfig.EntityType, entityConfig.IdType, property.PropertyType.GetUnderlyingTypeIfNullable());
             var reorderer = IocManager.Resolve(reordererType) as IEntityReorderer;

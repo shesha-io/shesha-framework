@@ -660,20 +660,23 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return repository && repository.supportsGrouping && repository?.supportsGrouping({ sortMode });
   }, [repository, sortMode]);
 
-  const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
+  const handleRowsReordered = async (payload: OnRowsReorderedArgs): Promise<void> => {
     const repository = store.getRepository();
-    if (!repository) return Promise.reject('Repository is not specified');
+    if (!repository)
+      throw new Error('Repository is not specified');
 
     const supported = repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy });
-    if (supported === true) {
-      const reorderPayload: RowsReorderPayload = {
-        ...payload,
-        propertyName: strictSortBy,
-        customReorderEndpoint: customReorderEndpoint,
-      };
+    if (supported !== true)
+      throw new Error(typeof supported === 'string' ? supported : 'Reordering is not supported');
 
-      return repository.reorder(reorderPayload);
-    } else return Promise.reject(typeof supported === 'string' ? supported : 'Reordering is not supported');
+
+    const reorderPayload: RowsReorderPayload = {
+      ...payload,
+      propertyName: strictSortBy,
+      customReorderEndpoint: customReorderEndpoint,
+    };
+
+    await repository.reorder(reorderPayload);
   };
 
   const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing) => {
