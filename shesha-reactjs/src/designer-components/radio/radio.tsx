@@ -6,13 +6,14 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IRadioProps } from './utils';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useFormData } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -32,10 +33,23 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     const { style, ...restProps } = model;
 
     const { data: formData } = useFormData();
+    const allData = useAvailableConstantsData();
 
     return (
       <ConfigurableFormItem model={restProps}>
-        {(value, onChange) => <RadioGroup {...restProps} style={getStyle(style, formData)} value={value} onChange={onChange} />}
+        {(value, onChange) => {
+          const customEvent = customOnChangeValueEventHandler(model, allData);
+          const onChangeInternal = (...args: any[]) => {
+            const newValue = args[0]?.target?.value;
+            customEvent?.onChange?.(newValue);
+            if (typeof onChange === 'function')
+              onChange(...args);
+          };
+
+          return (
+            <RadioGroup {...restProps} style={getStyle(style, formData)} value={value} onChange={onChangeInternal} />
+          );
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -57,18 +71,18 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
     .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
-    .add<IEnhancedRadioProps>(5, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IEnhancedRadioProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IEnhancedRadioProps>(6, (prev) => {
       const styles: IInputStyles = {
         style: prev.style
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
   linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
-    
+
     return {
       ...model,
       dataSourceType: isRefList ? 'referenceList' : 'values',
