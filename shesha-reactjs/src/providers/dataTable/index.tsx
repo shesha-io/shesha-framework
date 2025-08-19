@@ -204,7 +204,7 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
   }
   const filter = getFilter(state);
 
-  if (state.strictSortBy){
+  if (state.sortMode === 'strict' && state.strictSortBy){
     if (!dataColumns.find(column => column.propertyName === state.strictSortBy))
       dataColumns.push({
         propertyName: state.strictSortBy, 
