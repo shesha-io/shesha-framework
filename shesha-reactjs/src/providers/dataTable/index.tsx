@@ -199,7 +199,7 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
 
   const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
 
-  if (dataColumns?.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
+  if (dataColumns.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
     state.groupingColumns.forEach(groupColumn => {
       if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)) {
         dataColumns.push(groupColumn);
@@ -207,6 +207,21 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
     });
   }
   const filter = getFilter(state);
+
+  if (state.strictSortBy){
+    if (!dataColumns.find(column => column.propertyName === state.strictSortBy))
+      dataColumns.push({
+        propertyName: state.strictSortBy, 
+        propertiesToFetch: [state.strictSortBy],
+        dataType: 'number',
+        columnType: 'data',
+        accessor: state.strictSortBy,
+        header: '',
+        isVisible: false,
+        isFilterable: false,
+        isSortable: false
+      });
+  }
 
   getTableFormColumns(state.columns).forEach(col => dataColumns.push(col));
 

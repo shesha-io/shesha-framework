@@ -111,6 +111,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         justify-content: center;
         height: 100%;
       }
+      .anticon svg{
+        margin-top: 3px !important;
+      }
 
       .${shaTable} {
         border-spacing: 0;
