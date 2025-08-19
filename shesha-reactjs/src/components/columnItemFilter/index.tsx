@@ -40,7 +40,7 @@ const { RangePicker: DateRangePicker } = DatePicker;
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   date: ['equals', 'between', 'before', 'after'],
-  datetime: ['equals', 'between', 'before', 'after'],
+  'date-time': ['equals', 'between', 'before', 'after'],
   time: ['equals', 'between', 'before', 'after'],
   number: ['lessThan', 'greaterThan', 'equals', 'between'],
   string: ['contains', 'startsWith', 'endsWith', 'equals'],

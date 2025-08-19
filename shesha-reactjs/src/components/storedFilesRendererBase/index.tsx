@@ -106,7 +106,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     hideFileName: hideFileName && listType === 'thumbnail', isDragger, gap: addPx(gap), styles: jsSstyles
   });
 
-  const { message, notification } = App.useApp();
+  const { message, notification, modal } = App.useApp();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
@@ -172,6 +172,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return getFileIcon(type);
   };
 
+
+  const showDeleteConfirmation = (file: UploadFile) => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile(file.uid);
+      }
+    });
+  };
+
   const props: DraggerProps = {
     name: '',
     accept: allowedFileTypes?.join(','),
@@ -190,7 +204,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     },
     onRemove(file) {
-      deleteFile(file.uid);
+      showDeleteConfirmation(file);
+      return false; // Prevent default removal behavior
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
@@ -231,7 +246,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     iconRender,
   };
-
 
   const renderUploadContent = () => {
     return (
