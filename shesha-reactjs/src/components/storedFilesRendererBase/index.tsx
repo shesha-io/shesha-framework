@@ -172,6 +172,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return getFileIcon(type);
   };
 
+
+  const showDeleteConfirmation = (file: UploadFile) => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile(file.uid);
+      }
+    });
+  };
+
   const props: DraggerProps = {
     name: '',
     accept: allowedFileTypes?.join(','),
@@ -231,20 +245,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       showDownloadIcon: true,
     },
     iconRender,
-  };
-
-
-  const showDeleteConfirmation = (file: UploadFile) => {
-    modal.confirm({
-      title: 'Delete Attachment',
-      content: 'Are you sure you want to delete this attachment?',
-      okText: 'Yes',
-      cancelText: 'Cancel',
-      okType: 'danger',
-      onOk: () => {
-        deleteFile(file.uid);
-      }
-    });
   };
 
   const renderUploadContent = () => {
