@@ -8,6 +8,7 @@ import _ from 'lodash';
 import ShaDivider from '@/components/shaDivider';
 import classNames from 'classnames';
 import { useStyles } from './styles/index.style';
+import { useAuth } from '@/providers';
 
 const { Paragraph } = Typography;
 
@@ -71,6 +72,8 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   const textRef = useRef(null);
   const { styles } = useStyles();
   const { notification } = App.useApp();
+  const auth = useAuth();
+  const userId = auth?.loginInfo?.personId;
 
   useEffect(() => {
     if (!isPostingNotes && newComments) {
@@ -290,7 +293,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
             }))}
             renderItem={({ postedBy, id, content, postedDate, noteText, author, creationTime }) => (
               <div className={styles.commentItemBody}>
-                {allowDelete && editingId !== id && (
+                {allowDelete && editingId !== id && author?.id === userId && (
                   <Popconfirm
                     title="Delete Note"
                     description="Are you sure you want to delete this note?"
@@ -312,7 +315,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
                     <DeleteOutlined className={styles.deleteIcon} />
                   </Popconfirm>
                 )}
-                {allowEdit && editingId !== id && (
+                {allowEdit && editingId !== id && author?.id === userId && (
                   <EditOutlined
                     className={styles.editIcon}
                     onClick={() => handleEditClick({ id, noteText, author, creationTime } as INote)}
