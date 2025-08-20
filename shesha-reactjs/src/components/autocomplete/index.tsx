@@ -56,7 +56,64 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selected = useRef<Array<any>>([]);
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
+  const [tableData, setTableData] = useState<any[]>([]);
+  const [fullData, setFullData] = useState<any[]>([]); 
+  const [searchText, setSearchText] = useState("");
 
+
+// Generic merge helper: preserves uniqueness by a key, new items on top
+const mergeUniqueItems = (
+  oldArr: any[] = [],
+  newArr: any[] = [],
+  key: string = "value" // can be 'id', 'value', or any property
+) => {
+  const map = new Map();
+
+  // first insert new items (so they appear on top)
+  newArr.forEach(item => {
+    const itemKey = item[key] ?? JSON.stringify(item);
+    map.set(itemKey, item);
+  });
+
+  // then insert old items only if not already in map
+  oldArr.forEach(item => {
+    const itemKey = item[key] ?? JSON.stringify(item);
+    if (!map.has(itemKey)) {
+      map.set(itemKey, item);
+    }
+  });
+
+  return Array.from(map.values());
+};
+
+
+useEffect(() => {
+  if (!source?.tableData) return;
+
+  setFullData(prev =>
+    mergeUniqueItems(
+      prev,
+      source.tableData,
+      source.tableData.length > 0 && 'id' in source.tableData[0] ? "id" : "value"
+    )
+  );
+}, [source?.tableData]);
+
+
+
+// whenever searchText changes, filter fullData → tableData
+useEffect(() => {
+  if (!searchText) {
+    setTableData(fullData); // reset to full data if no search or cleared search
+  } else {
+    const filtered = fullData.filter(item =>
+      item.displayText.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setTableData(filtered);
+  }
+}, [searchText, fullData]);
+
+  
   const keys = useMemo(() => {
     const res = props.value
       ? Array.isArray(props.value)
@@ -124,6 +181,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     }, 200);
 
   const handleSearch = (searchText: string) => {
+    setSearchText(searchText);
     if (props.allowFreeText)
       setAutocompleteText(searchText);
     debouncedSearch(searchText);
@@ -192,7 +250,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [autocompleteText, source.tableData]);
 
   const list = useMemo(() => {
-    const list = source?.tableData
+    const list = tableData
       // filter already selected items to avoid duplicate keys in options
       ?.filter((x) => !keys.find((y) => isEqual(y, keyValueFunc(outcomeValueFunc(x, allData), allData))))
       ?? [];
@@ -217,7 +275,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       {props.dataSourceType === 'entitiesList' && source?.totalRows > 7
         && <Select.Option value='total' key='total' disabled={true}>{`Total found: ${source?.totalRows} ...`}</Select.Option>}
     </>;
-  }, [selected.current, source?.tableData, props.grouping]);
+  }, [selected.current, tableData, props.grouping]);
 
   const title = useMemo(() => {
     return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
@@ -279,6 +337,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       filterOption={false}
       onSearch={handleSearch}
       onChange={handleChange}
+      onClear={() => {setSearchText("")}}
       allowClear={allowClear}
       loading={source?.isInProgress?.fetchTableData || loadingValues}
       placeholder={props.placeholder}
