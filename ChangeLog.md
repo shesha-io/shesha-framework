@@ -1,6 +1,10 @@
 # Release Notes
 💪 Enhancements
-- GenericEntityReferences support for JsonEntity
+- Added `onChange` event for `Radio buttons`
+- Added warning message for delete action for `File` and `FileList`
+- Added options for `DataTable` filtration using `DateTime`
+- Edit/Delete `Notes` only by author 
 
 🐞 Bug Fixes
-- Fixed support of custom column names in SoftDelete filter for one-to-may relations
+- Fixed Error When Reordering Rows in Datatable Context Component
+- Fixed Time Picker Displays Incorrect Time
