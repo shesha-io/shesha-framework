@@ -1,7 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
+import { fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
@@ -177,7 +177,7 @@ export const getSettings = (data: any) => {
                             .addCollapsiblePanel({
                                 id: nanoid(),
                                 propertyName: 'pnlFontStyle',
-                                label: 'Font',
+                                label: 'Check Mark',
                                 labelAlign: 'right',
                                 parentId: styleRouterId,
                                 ghost: true,
@@ -192,14 +192,6 @@ export const getSettings = (data: any) => {
                                             inline: true,
                                             propertyName: 'font',
                                             inputs: [
-                                                {
-                                                    type: 'dropdown',
-                                                    id: nanoid(),
-                                                    label: 'Family',
-                                                    propertyName: 'font.type',
-                                                    hideLabel: true,
-                                                    dropdownOptions: fontTypes,
-                                                },
                                                 {
                                                     type: 'numberField',
                                                     id: nanoid(),
@@ -224,16 +216,7 @@ export const getSettings = (data: any) => {
                                                     label: 'Color',
                                                     hideLabel: true,
                                                     propertyName: 'font.color',
-                                                },
-                                                {
-                                                    type: 'dropdown',
-                                                    id: nanoid(),
-                                                    label: 'Align',
-                                                    propertyName: 'font.align',
-                                                    hideLabel: true,
-                                                    width: 60,
-                                                    dropdownOptions: textAlignOptions,
-                                                },
+                                                }
                                             ],
                                         })
                                         .toJson()
