@@ -215,7 +215,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .${shaDesignerToolbarRight} {
                 float: right;
                 .${prefixCls}-btn {
-                margin-left: 2px;
+                    margin-left: 2px;
+                    border-radius: 4px;
                 }
             }
 
