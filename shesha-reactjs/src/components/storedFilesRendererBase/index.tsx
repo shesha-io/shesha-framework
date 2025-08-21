@@ -106,16 +106,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const model = rest;
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
 
   const { styles } = useStyles({
     containerStyles: {
       ...containerDimensionsStyles,
-      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
+      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles?.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles?.height),
       ...containerJsStyle, ...stylingBoxAsCSS,
     },
     style: enableStyleOnReadonly && disabled ?
-      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } : { ...model?.allStyles?.fullStyle }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+      { ...model?.allStyles?.dimensionsStyles, ...model?.allStyles?.fontStyles } : { ...model?.allStyles?.fullStyle }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
 
