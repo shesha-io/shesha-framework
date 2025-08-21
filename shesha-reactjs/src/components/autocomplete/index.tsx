@@ -56,65 +56,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selected = useRef<Array<any>>([]);
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
-  const [tableData, setTableData] = useState<any[]>([]);
-  const [fullData, setFullData] = useState<any[]>([]); 
-  const [searchText, setSearchText] = useState("");
 
-
-// Generic merge helper: preserves uniqueness by a key, new items on top
-const mergeUniqueItems = (
-  oldArr: any[] = [],
-  newArr: any[] = [],
-  key: string = "value" // can be 'id', 'value', or any property
-) => {
-  const map = new Map();
-
-  // first insert new items (so they appear on top)
-  newArr.forEach(item => {
-    const itemKey = item[key] ?? JSON.stringify(item);
-    map.set(itemKey, item);
-  });
-
-  // then insert old items only if not already in map
-  oldArr.forEach(item => {
-    const itemKey = item[key] ?? JSON.stringify(item);
-    if (!map.has(itemKey)) {
-      map.set(itemKey, item);
-    }
-  });
-  return Array.from(map.values());
-};
-
-
-useEffect(() => {
-  if (!Array.isArray(source?.tableData)) return;
- setFullData((prev) =>
-    mergeUniqueItems(
-      prev,
-      source.tableData,
-      keyPropName
-    )
-  );
-}, [source?.tableData, keyPropName]);
-
-
-
-// whenever searchText changes, filter fullData → tableData
-useEffect(() => {
- const term = (searchText ?? '').trim().toLowerCase();
-  if (!term) {
-   setTableData(fullData);
-    return;
-  }
- const filtered = fullData.filter((item) => {
- const rawLabel = getValueByPropertyName(item, displayPropName);
-   const label = String(rawLabel ?? '').toLowerCase();
-   return label.includes(term);
-  });
-  setTableData(filtered);
-}, [searchText, fullData, displayPropName]);
-
-  
   const keys = useMemo(() => {
     const res = props.value
       ? Array.isArray(props.value)
@@ -182,7 +124,6 @@ useEffect(() => {
     }, 200);
 
   const handleSearch = (searchText: string) => {
-    setSearchText(searchText);
     if (props.allowFreeText)
       setAutocompleteText(searchText);
     debouncedSearch(searchText);
@@ -251,7 +192,7 @@ useEffect(() => {
   }, [autocompleteText, source.tableData]);
 
   const list = useMemo(() => {
-    const list = tableData
+    const list = source?.tableData
       // filter already selected items to avoid duplicate keys in options
       ?.filter((x) => !keys.find((y) => isEqual(y, keyValueFunc(outcomeValueFunc(x, allData), allData))))
       ?? [];
@@ -276,7 +217,7 @@ useEffect(() => {
       {props.dataSourceType === 'entitiesList' && source?.totalRows > 7
         && <Select.Option value='total' key='total' disabled={true}>{`Total found: ${source?.totalRows} ...`}</Select.Option>}
     </>;
-  }, [selected.current, tableData, props.grouping]);
+  }, [selected.current, source?.tableData, props.grouping]);
 
   const title = useMemo(() => {
     return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
@@ -338,7 +279,6 @@ useEffect(() => {
       filterOption={false}
       onSearch={handleSearch}
       onChange={handleChange}
-      onClear={() => handleSearch('')}
       allowClear={allowClear}
       loading={source?.isInProgress?.fetchTableData || loadingValues}
       placeholder={props.placeholder}
