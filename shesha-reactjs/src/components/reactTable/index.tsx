@@ -11,7 +11,7 @@ import {
   Column,
 } from 'react-table';
 import { LoadingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Spin, Tooltip } from 'antd';
+import { App, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
 import { IReactTableProps, OnRowsReorderedArgs } from './interfaces';
 import { nanoid } from '@/utils/uuid';
@@ -28,6 +28,9 @@ import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
 import { EmptyState } from '..';
+import { ErrorDetails } from '@/utils/configurationFramework/actions';
+import axios from 'axios';
+import { isAxiosResponse } from '@/interfaces/ajaxResponse';
 
 interface IReactTableState {
   allRows: any[];
@@ -87,6 +90,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     allRows: data,
     allColumns: columns,
   });
+  const { notification } = App.useApp();
 
   const [activeCell, setActiveCell] = useState();
   const [allowExpandedView, setAllowExpandedView] = useState<Boolean>(false);
@@ -96,7 +100,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { setDragState } = useDataTableStore();
 
-  const shaForm = useShaFormInstance();
+  const shaForm = useShaFormInstance(false);
 
   const { allColumns, allRows } = componentState;
 
@@ -305,7 +309,17 @@ export const ReactTable: FC<IReactTableProps> = ({
             setComponentState((prev) => ({ ...prev, allRows: orderedItems }));
           },
         };
-        onRowsReordered(payload);
+
+        onRowsReordered(payload).catch((error) => {
+          const unwrappedError = axios.isAxiosError(error) && isAxiosResponse(error.response) && error.response.data?.error
+            ? error.response.data.error
+            : error;
+          notification.error({
+            message: 'Sorry! An error occurred.',
+            icon: null,
+            description: <ErrorDetails showDetails error={unwrappedError} />,
+          });
+        });
       }
     }
   };

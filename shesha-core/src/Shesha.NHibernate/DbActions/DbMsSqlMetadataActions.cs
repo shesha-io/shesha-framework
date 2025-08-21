@@ -90,25 +90,25 @@ CREATE TABLE {tableName} (
             await session
                 .CreateSQLQuery(@$"
 CREATE TABLE {TableName} (
-[Id] [uniqueidentifier] NOT NULL,
-[CreationTime] [datetime] NOT NULL,
-[CreatorUserId] [bigint] NULL,
-[LastModificationTime] [datetime] NULL,
-[LastModifierUserId] [bigint] NULL,
-[IsDeleted] [bit] NOT NULL,
-[DeletionTime] [datetime] NULL,
-[DeleterUserId] [bigint] NULL,
-[Frwk_Discriminator] [nvarchar](100) NOT NULL,
-[TenantId] [int] NULL,
-CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED (Id ASC))")
+[{NC("Id")}] [uniqueidentifier] NOT NULL,
+[{NC("CreationTime")}] [datetime] NOT NULL,
+[{NC("CreatorUserId")}] [bigint] NULL,
+[{NC("LastModificationTime")}] [datetime] NULL,
+[{NC("LastModifierUserId")}] [bigint] NULL,
+[{NC("IsDeleted")}] [bit] NOT NULL,
+[{NC("DeletionTime")}] [datetime] NULL,
+[{NC("DeleterUserId")}] [bigint] NULL,
+[{NC("Frwk_Discriminator")}] [nvarchar](100) NOT NULL,
+[{NC("TenantId")}] [int] NULL,
+CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED ({NC("Id")} ASC))")
                 .ExecuteUpdateAsync();
 
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [DF_{CurrentTable}_CreationTime] DEFAULT (getdate()) FOR [CreationTime]")
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [{NC($"DF_{CurrentTable}_CreationTime")}] DEFAULT (getdate()) FOR [{NC("CreationTime")}]")
                 .ExecuteUpdateAsync();
 
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [DF_{CurrentTable}_IsDeleted] DEFAULT ((0)) FOR [IsDeleted]")
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [{NC($"DF_{CurrentTable}_IsDeleted")}] DEFAULT ((0)) FOR [{NC("IsDeleted")}]")
                 .ExecuteUpdateAsync();
         }
 
@@ -128,7 +128,7 @@ CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED (Id ASC))")
                 .CreateSQLQuery($"ALTER TABLE {TableName} ADD {CurrentColumn} uniqueidentifier Null")
                 .ExecuteUpdateAsync();
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName} WITH CHECK ADD CONSTRAINT [FK_{CurrentTable}_{CurrentColumn}_{primaryTable}] FOREIGN KEY([{CurrentColumn}]) REFERENCES {primaryTableName} ({primaryColumnName})")
+                .CreateSQLQuery($"ALTER TABLE {TableName} WITH CHECK ADD CONSTRAINT [{NC($"FK_{CurrentTable}_{CurrentColumn}_{primaryTable}")}] FOREIGN KEY([{CurrentColumn}]) REFERENCES {primaryTableName} ({primaryColumnName})")
                 .ExecuteUpdateAsync();
         }
 

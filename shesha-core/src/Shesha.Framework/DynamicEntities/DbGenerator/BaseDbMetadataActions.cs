@@ -2,6 +2,7 @@
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.DbGenerator
@@ -27,6 +28,12 @@ namespace Shesha.DynamicEntities.DbGenerator
         )
         {
             _unitOfWorkManager = unitOfWorkManager;
+        }
+
+        // ToDO: AS V1 - use name conventions
+        protected virtual string NC(string text)
+        {
+            return text.ToSnakeCase();
         }
 
         public virtual async Task<IDbMetadataActions> UseSchemaAsync(string schemaName, bool created = false)

@@ -19,6 +19,14 @@ namespace Shesha.ConfigurationItems.Distribution
         Task<ConfigurationItemsPackage> ReadPackageAsync(Stream stream, ReadPackageContext context);
 
         /// <summary>
+        /// Analyze package
+        /// </summary>
+        /// <param name="stream">Stream that contains package content</param>
+        /// <param name="context">Package reading context</param>
+        /// <returns></returns>
+        Task<AnalyzePackageResponse> AnalyzePackageAsync(Stream stream, ReadPackageContext context);
+
+        /// <summary>
         /// Import package
         /// </summary>
         /// <returns></returns>

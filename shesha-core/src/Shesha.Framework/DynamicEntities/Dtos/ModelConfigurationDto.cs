@@ -17,6 +17,8 @@ namespace Shesha.DynamicEntities.Dtos
         public bool CreatedInDb { get; set; }
 
         public string? DiscriminatorValue { get; set; }
+        
+        public string? SchemaName { get; set; }
         public string? TableName { get; set; }
 
         // ToDo: AS - review if InheritedFrom can be nullable

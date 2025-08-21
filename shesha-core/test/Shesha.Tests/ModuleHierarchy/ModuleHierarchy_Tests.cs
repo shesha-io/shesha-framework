@@ -11,7 +11,7 @@ using Xunit;
 namespace Shesha.Tests.ModuleHierarchy
 {
     [Collection(LocalSqlServerCollection.Name)]
-    public partial class ModuleHierarchy_Tests : SheshaNhTestBase
+    public partial class ModuleHierarchy_Tests : CiSheshaTestBase
     {
         public ModuleHierarchy_Tests(LocalSqlServerFixture fixture) : base(fixture)
         {
@@ -39,7 +39,7 @@ namespace Shesha.Tests.ModuleHierarchy
 
             var formName = "form-case1";
 
-            await DeleteFormIfExistsAsync(formName);
+            await DeleteFormFromAllModulesAsync(formName);
 
             var uowManager = Resolve<IUnitOfWorkManager>();
             
@@ -102,7 +102,7 @@ namespace Shesha.Tests.ModuleHierarchy
 
             var formName = "form-case2";
 
-            await DeleteFormIfExistsAsync(formName);
+            await DeleteFormFromAllModulesAsync(formName);
 
             var uowManager = Resolve<IUnitOfWorkManager>();
 
@@ -162,7 +162,7 @@ namespace Shesha.Tests.ModuleHierarchy
 
             var formName = "form-case3";
 
-            await DeleteFormIfExistsAsync(formName);
+            await DeleteFormFromAllModulesAsync(formName);
 
             var uowManager = Resolve<IUnitOfWorkManager>();
 

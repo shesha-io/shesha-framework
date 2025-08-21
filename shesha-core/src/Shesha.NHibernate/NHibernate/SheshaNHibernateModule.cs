@@ -11,7 +11,6 @@ using Abp.Reflection;
 using Abp.Threading;
 using Castle.MicroKernel.Registration;
 using NHibernate;
-using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Startup;
 using Shesha.DbActions;
@@ -21,17 +20,16 @@ using Shesha.FluentMigrator;
 using Shesha.Generators;
 using Shesha.NHibernate.Configuration;
 using Shesha.NHibernate.Interceptors;
-using Shesha.NHibernate.MsSql;
-using Shesha.NHibernate.PostgreSql;
 using Shesha.NHibernate.Repositories;
 using Shesha.NHibernate.Uow;
+using Shesha.Reflection;
 using System;
 using System.Reflection;
 
 namespace Shesha.NHibernate
 {
     [DependsOn(
-        typeof(AbpKernelModule), 
+        typeof(AbpKernelModule),
         typeof(AbpAspNetCoreModule),
         typeof(AbpAutoMapperModule),
         typeof(SheshaFrameworkModule)
@@ -55,6 +53,12 @@ namespace Shesha.NHibernate
 
         private IDatabaseSeeder? _databaseSeeder;
 
+        /// inheritedDoc
+        public SheshaNHibernateModule(IAssemblyFinder assembleFinder)
+        {
+            _assembleFinder = assembleFinder;
+        }
+
         public override void PreInitialize()
         {
             IocManager.Register<IShaNHibernateModuleConfiguration, ShaNHibernateModuleConfiguration>();
@@ -73,7 +77,7 @@ namespace Shesha.NHibernate
 
             if (!SkipDbContextRegistration)
             {
-                if (config.DatabaseType == DbmsType.NotSpecified) 
+                if (config.DatabaseType == DbmsType.NotSpecified)
                 {
                     // backward compatibility
                     config.UseMsSql();
@@ -136,23 +140,15 @@ namespace Shesha.NHibernate
         /// inheritedDoc
         public override void PostInitialize()
         {
-            if (_databaseSeeder != null)
-            {
-                var prev = Configuration.EntityHistory.IsEnabled;
-                Configuration.EntityHistory.IsEnabled = false;
-                AsyncHelper.RunSync(() => _databaseSeeder.BootstrapDatabaseAsync());
-                Configuration.EntityHistory.IsEnabled = prev;
-            }
+            var prev = Configuration.EntityHistory.IsEnabled;
+            Configuration.EntityHistory.IsEnabled = false;
+            AsyncHelper.RunSync(() => _databaseSeeder.NotNull().BootstrapDatabaseAsync());
+            Configuration.EntityHistory.IsEnabled = prev;
 
-            if (_databaseSeeder == null)
-            {
-                _databaseSeeder?.Dispose();
-                _databaseSeeder = new DatabaseSeeder(Logger, IocManager);
-            }
-            AsyncHelper.RunSync(() => _databaseSeeder.InitDataFromDatabaseAsync());
+            AsyncHelper.RunSync(() => _databaseSeeder.NotNull().InitDataFromDatabaseAsync());
         }
 
-        private void FreeSessionFactory() 
+        private void FreeSessionFactory()
         {
             if (_sessionFactory != null)
             {
@@ -173,37 +169,10 @@ namespace Shesha.NHibernate
             _databaseSeeder?.Dispose();
         }
 
-        private IDbmsSpecificConfigurationProvider GetConfigProvider(DbmsType dbmsType) 
-        {
-            switch (dbmsType) 
-            {
-                case DbmsType.SQLServer:
-                    return new MsSqlConfigurationProvider();
-                case DbmsType.PostgreSQL:
-                    return new PostgreSqlConfigurationProvider();
-                default:
-                    throw new NotSupportedException($"DBMS Type '{dbmsType}' not supported");
-            }
-        }
-
-        /// inheritedDoc
-        public SheshaNHibernateModule(IAssemblyFinder assembleFinder, ITypeFinder typeFinder)
-        {
-            _assembleFinder = assembleFinder;
-        }
-
         /// <inheritdoc/>
         public override void Shutdown()
         {
             FreeSessionFactory();
-        }
-
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
         }
     }
 }

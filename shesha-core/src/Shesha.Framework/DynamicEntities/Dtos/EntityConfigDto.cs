@@ -22,6 +22,9 @@ namespace Shesha.DynamicEntities.Dtos
         public string? FriendlyName { get; set; }
         [MaxLength(100)]
         public string? TypeShortAlias { get; set; }
+
+        [MaxLength(255)]
+        public string? SchemaName { get; set; }
         [MaxLength(255)]
         public string? TableName { get; set; }
         [MaxLength(500)]

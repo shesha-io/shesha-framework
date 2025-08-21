@@ -92,7 +92,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           const values = Array.isArray(props.value) ? props.value : [props.value];
           selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
-        if (loadingValues && source?.tableData?.length) {
+        if (loadingValues) {
           setLoadingIndicator(false);
           setLoadingValues(false);
           selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));

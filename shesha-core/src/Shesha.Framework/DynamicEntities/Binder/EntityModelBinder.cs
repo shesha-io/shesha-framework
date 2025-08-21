@@ -702,8 +702,8 @@ namespace Shesha.DynamicEntities.Binder
                 var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfigRevision.ConfigurationItem.Id);
 
                 var refType = _typeFinder.Find(x => x.Namespace == entityConfig.Namespace
-                && (x.Name == entityConfig.ClassName || x.GetTypeShortAliasOrNull() == entityConfig.ClassName))
-                .FirstOrDefault();
+                    && (x.Name == entityConfig.ClassName || x.GetTypeShortAliasOrNull() == entityConfig.ClassName))
+                    .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
                 if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 
                     continue;

@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Reflection;
+using Shesha.DynamicEntities.EntityTypeBuilder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,9 @@ namespace Shesha.DynamicEntities.TypeFinder
 
         public List<Assembly> GetDynamicEntityAssemblies()
         {
-            // ToDo: AlexS - use generic Dynamic namespaces
+            // ToDo: AS - use generic Dynamic namespaces
             return AppDomain.CurrentDomain.GetAssemblies()
-                .Where(x => x.IsDynamic && (x.FullName?.Contains("ShaDynamic") ?? false))
+                .Where(x => x.IsDynamic && (x.FullName?.Contains(DynamicEntityTypeBuilder.SheshaDynamicNamespace) ?? false))
                 .ToList();
         }
 

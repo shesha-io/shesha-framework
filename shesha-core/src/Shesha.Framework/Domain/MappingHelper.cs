@@ -193,7 +193,7 @@ namespace Shesha.Domain
 
         public static string GetColumnName(EntityProperty propertyConfig, IModuleList moduleList)
         {
-            // ToDo: AS - use correct nameConventions
+            // ToDo: AS V1 - use correct nameConventions
 
             var suffix = propertyConfig.DataType == DataTypes.EntityReference || propertyConfig.DataType == DataTypes.File
                 ? "Id"

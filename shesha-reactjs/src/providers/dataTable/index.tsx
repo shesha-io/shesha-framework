@@ -94,6 +94,7 @@ import {
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { dataTableContextCode } from '@/publicJsApis';
 import { DataTypes, IObjectMetadata } from '@/index';
+import { IModelMetadata } from '@/interfaces/metadata';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -149,6 +150,7 @@ interface IHasDataSourceType {
 export interface IHasFormDataSourceConfig {
   propertyName: string;
   getFieldValue?: (propertyName: string) => object[];
+  metadata?: IModelMetadata;
   onChange?: (...args: any[]) => void;
 }
 interface IUrlDataSourceConfig {
@@ -197,7 +199,7 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
 
   const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
 
-  if (dataColumns?.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
+  if (dataColumns.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
     state.groupingColumns.forEach(groupColumn => {
       if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)) {
         dataColumns.push(groupColumn);
@@ -205,6 +207,21 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
     });
   }
   const filter = getFilter(state);
+
+  if (state.sortMode === 'strict' && state.strictSortBy){
+    if (!dataColumns.find(column => column.propertyName === state.strictSortBy))
+      dataColumns.push({
+        propertyName: state.strictSortBy, 
+        propertiesToFetch: [state.strictSortBy],
+        dataType: 'number',
+        columnType: 'data',
+        accessor: state.strictSortBy,
+        header: '',
+        isVisible: false,
+        isFilterable: false,
+        isSortable: false
+      });
+  }
 
   getTableFormColumns(state.columns).forEach(col => dataColumns.push(col));
 

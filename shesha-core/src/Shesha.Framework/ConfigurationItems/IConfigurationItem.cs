@@ -37,6 +37,11 @@ namespace Shesha.ConfigurationItems
         /// If true, indicated that item has at least one revision
         /// </summary>
         bool HasRevision { get; }
+
+        /// <summary>
+        /// Most recent revision. Is used for performance boosting
+        /// </summary>
+        ConfigurationItemRevision? GetLatestRevision();
     }
 
 

@@ -65,6 +65,7 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .WithColumn("discriminator_value").AsString(255).Nullable()
                 .WithColumn("entity_config_type_lkp").AsInt64().Nullable()
                 .WithColumn("namespace").AsString(500).Nullable()
+                .WithColumn("schema_name").AsString(255).Nullable()
                 .WithColumn("table_name").AsString(255).Nullable()
                 .WithColumn("id_column").AsString(255).Nullable()
                 .WithColumn("created_in_db").AsBoolean().Nullable();

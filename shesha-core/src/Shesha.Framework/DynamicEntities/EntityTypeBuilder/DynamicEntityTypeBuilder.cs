@@ -33,6 +33,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
     /// </summary>
     public class DynamicEntityTypeBuilder : IDynamicEntityTypeBuilder, ISingletonDependency
     {
+        public const string SheshaDynamicNamespace = "ShaDynamic";
+
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepo;
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
@@ -130,7 +132,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             foreach (var moduleGroup in configsModules)
             {
                 // get Namespace from the first config since all configs on the group from the one Module
-                var assembluNamespace = moduleGroup.FirstOrDefault()?.Namespace ?? "ShaDynamic"; // module.Key?.Name ?? "ShaDynamic";
+                var assembluNamespace = moduleGroup.FirstOrDefault()?.Namespace ?? SheshaDynamicNamespace; // module.Key?.Name ?? DynamicEntityTypeBuilder.SheshaDynamicNamespace;
                 var prevs = assemblies
                     .Where(x => x.IsDynamic && (x.FullName?.Contains(assembluNamespace) ?? false))
                     .ToList();
@@ -159,11 +161,17 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     assemblyBuilder.SetCustomAttribute(assemblyAttributeBuilder);
 
                     // Set table prefix
-                    var tablePrefix =
-                        MappingHelper.GetTablePrefix((_moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == module.Name)?.ModuleType.Assembly).NotNull())
-                        ?? module.Name;
+                    // ToDo: AS V1 - get correct prefix from name conventions
+                    var schemaName = module != null
+                        ? MappingHelper.GetTablePrefix((_moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == module.Name)?.Assembly).NotNull())
+                        : null;
+                    schemaName = schemaName.IsNullOrEmpty()
+                        ? (module?.Accessor).IsNullOrEmpty()
+                            ? module?.Name.ToCamelCase()
+                            : module?.Accessor
+                        : schemaName;
                     var tablePrefixAttribute = typeof(TablePrefixAttribute).GetConstructor(new Type[] { typeof(string) });
-                    var tablePrefixAttributeBuilder = new CustomAttributeBuilder(tablePrefixAttribute.NotNull(), new object[] { tablePrefix });
+                    var tablePrefixAttributeBuilder = new CustomAttributeBuilder(tablePrefixAttribute.NotNull(), new object[] { schemaName.NotNull() });
                     assemblyBuilder.SetCustomAttribute(tablePrefixAttributeBuilder);
                 }
 
@@ -241,10 +249,17 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
             // Class Attributes
             // Set Table
-            SetAttribute(typeBuilder, typeof(TableAttribute), [$"dynamic.{entityConfig.TableName.NotNull()}"]);
+            SetAttribute(
+                typeBuilder, 
+                typeof(TableAttribute), 
+                [entityConfig.TableName.NotNull()], 
+                new Dictionary<string, object?> {{ "Schema", entityConfig.SchemaName}}
+            );
             // Set Discriminator
             SetAttribute(typeBuilder, typeof(DiscriminatorAttribute), []);
             SetAttribute(typeBuilder, typeof(DiscriminatorValueAttribute), [entityConfig.DiscriminatorValue.NotNull()]);
+            // Set name convention
+            SetAttribute(typeBuilder, typeof(SnakeCaseNamingAttribute), []);
 
             var typeBuilderType = new EntityTypeBuilderType()
             {
@@ -257,12 +272,26 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             return typeBuilderType;
         }
 
-        private void SetAttribute(TypeBuilder builder, Type attributeType, object[] arguments)
+        private void SetAttribute(TypeBuilder builder, Type attributeType, object[] arguments, Dictionary<string, object?>? properties = null)
         {
             var argTypes = arguments.Select(x => x.GetType()).ToArray();
             var attribute = attributeType.GetConstructor(argTypes);
-            var attributeBuilder = new CustomAttributeBuilder(attribute.NotNull(), arguments);
-            builder.SetCustomAttribute(attributeBuilder);
+            if (properties?.Count > 0)
+            {
+                var props = properties
+                    .Select(x => x.Value != null ? attributeType.GetProperty(x.Key).NotNull() : null)
+                    .Where(x => x != null)
+                    .Select(x => x.NotNull())
+                    .ToArray();
+                var values = properties.Values.Where(x => x != null).ToArray();
+                var attributeBuilder = new CustomAttributeBuilder(attribute.NotNull(), arguments, props, values);
+                builder.SetCustomAttribute(attributeBuilder);
+            }
+            else
+            {
+                var attributeBuilder = new CustomAttributeBuilder(attribute.NotNull(), arguments);
+                builder.SetCustomAttribute(attributeBuilder);
+            }
         }
 
         public Type CreateType(EntityTypeBuilderType typeBuilderType, List<EntityProperty>? properties, EntityTypeBuilderContext context)

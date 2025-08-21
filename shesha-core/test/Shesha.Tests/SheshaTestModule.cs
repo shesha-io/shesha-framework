@@ -67,7 +67,7 @@ namespace Shesha.Tests
             var dbFixture = IocManager.IsRegistered<IDatabaseFixture>()
                 ? IocManager.Resolve<IDatabaseFixture>()
                 : null;
-            if (dbFixture != null && false)
+            if (dbFixture != null)
             {
                 nhConfig.UseDbms(c => dbFixture.DbmsType, c => dbFixture.ConnectionString);
             }

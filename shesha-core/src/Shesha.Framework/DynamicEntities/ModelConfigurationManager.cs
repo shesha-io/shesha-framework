@@ -4,6 +4,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Domain.Uow;
+using Abp.Reflection;
 using Abp.Runtime.Caching;
 using AutoMapper;
 using Shesha.Configuration.MappingMetadata;
@@ -13,6 +14,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.DbGenerator;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.DynamicEntities.Exceptions;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
@@ -66,6 +68,7 @@ namespace Shesha.DynamicEntities
         private readonly IModelConfigsCacheHolder _modelConfigsCacheHolder;
         private readonly IModuleList _moduleList;
         private readonly IDynamicEntitiesDbGenerator _dbGenerator;
+        private readonly IAssemblyFinder _assemblyFinder;
 
         private readonly IMapper _propertyCopy;
 
@@ -84,7 +87,8 @@ namespace Shesha.DynamicEntities
             IModelConfigsCacheHolder modelConfigsCacheHolder,
             IUnitOfWorkManager unitOfWorkManager,
             IModuleList moduleList,
-            IDynamicEntitiesDbGenerator dbGenerator
+            IDynamicEntitiesDbGenerator dbGenerator,
+            IAssemblyFinder assemblyFinder
             )
         {
             _entityConfigRepository = entityConfigRepository;
@@ -101,6 +105,7 @@ namespace Shesha.DynamicEntities
             _unitOfWorkManager = unitOfWorkManager;
             _moduleList = moduleList;
             _dbGenerator = dbGenerator;
+            _assemblyFinder = assemblyFinder;
 
             var propertyCopyMapping = new MapperConfiguration(cfg =>
             {
@@ -195,16 +200,21 @@ namespace Shesha.DynamicEntities
                 InheritedFrom = inheritedFrom,
             };
 
-            // ToDo: AS - get active module
+            var module = input.ModuleId != null ? await _moduleRepository.GetAsync(input.ModuleId.Value) : null;
 
-            var module = await _moduleRepository.GetAsync(input.ModuleId ?? Guid.Empty);
+            var dynamicNamespace = (module?.Accessor).IsNullOrEmpty() ? DynamicEntityTypeBuilder.SheshaDynamicNamespace : $"{module?.Accessor}.{DynamicEntityTypeBuilder.SheshaDynamicNamespace}";
+            var discriminatorValue = (module?.Accessor).IsNullOrEmpty() ? input.Name : $"{dynamicNamespace}.{input.Name}";
 
-            var dynamicNamespace = (module?.Name).IsNullOrEmpty() ? "ShaDynamic" : $"{module?.Name}.ShaDynamic";
-            var discriminatorValue = $"{dynamicNamespace}.{input.Name}";
-
-            var tablePrefix = module != null
+            // ToDo: AS V1 - get correct prefix from name conventions
+            var schemaName = module != null
                 ? MappingHelper.GetTablePrefix((_moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == module.Name)?.Assembly).NotNull())
-                : $"dynamic.{module?.Name.Replace(".", "_")}_{input.Name}";
+                : null;
+            schemaName = schemaName.IsNullOrEmpty() 
+                ? (module?.Accessor).IsNullOrEmpty()
+                    ? module?.Name.ToCamelCase()
+                    : module?.Accessor
+                : schemaName;
+            schemaName = schemaName.NotNull().TrimEnd('_');
 
             var modelDto = new ModelConfigurationDto
             {
@@ -212,7 +222,9 @@ namespace Shesha.DynamicEntities
                 InheritedFromClassName = inheritedFrom?.ClassName,
                 InheritedFromNamespace = inheritedFrom?.Namespace,
 
-                TableName = inheritedFrom?.TableName ?? $"{tablePrefix}{input.Name}",
+                // ToDo: AS - use name conventions
+                SchemaName = schemaName.ToSnakeCase(),
+                TableName = inheritedFrom?.TableName ?? input.Name.ToSnakeCase(),
                 DiscriminatorValue = discriminatorValue,
 
                 ClassName = input.Name,
@@ -259,6 +271,7 @@ namespace Shesha.DynamicEntities
             if (isNew)
             {
                 entityConfig.DiscriminatorValue = input.DiscriminatorValue;
+                entityConfig.SchemaName = input.SchemaName;
                 entityConfig.TableName = input.TableName;
                 entityConfig.Name = input.Name;
                 entityConfig.ClassName = input.ClassName;
@@ -451,11 +464,12 @@ namespace Shesha.DynamicEntities
                     parentProperty?.Properties.Add(dbProp);
                 }
 
+                // ToDo: AS V1 - use name conventions
                 // use ColumnName only for root properties (nested proprties is always stored as Json and must not mapped to DB)
                 dbProp.ColumnName = parentProperty == null
                     ? dbProp.CreatedInDb // update only if the property is not created in DB yet
                         ? dbProp.ColumnName
-                        : inputProp.ColumnName ?? MappingHelper.GetColumnName(dbProp, _moduleList)
+                        : inputProp.ColumnName ?? MappingHelper.GetColumnName(dbProp, _moduleList).ToSnakeCase()
                     : null;
 
                 dbProp.SortOrder = sortOrder++;

@@ -48,8 +48,7 @@ namespace Shesha.DynamicEntities.DbGenerator
             {
                 baseConfig = baseConfig.InheritedFrom;
             }
-            // if user defined type then use "dynamic" DB schema otherwise use main DB schema
-            await UseSchemaAsync(baseConfig.LatestRevision.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic" : "");
+            await UseSchemaAsync(entityConfig.SchemaName ?? "");
             return await UseTableAsync(tableName);
         }
 
@@ -89,7 +88,8 @@ namespace Shesha.DynamicEntities.DbGenerator
             if (entityProperty.DataType == DataTypes.Array && entityProperty.DataFormat == ArrayFormats.ManyToManyEntities)
             {
                 // if user defined type then use "dynamic" DB schema otherwise use main DB schema
-                var schema = entityProperty.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic_ref" : "ref";
+                //var schema = entityProperty.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic_ref" : "ref";
+                var schema = entityProperty.EntityConfigRevision.EntityConfig.SchemaName ?? "";
                 await UseSchemaAsync(schema);
                 var tableName = entityProperty.ListConfiguration?.DbMapping?.ManyToManyTableName;
                 var refConfig = (await _entityConfigCache.GetDynamicSafeEntityConfigAsync(entityProperty.EntityType.NotNull())).NotNull();
@@ -134,8 +134,10 @@ namespace Shesha.DynamicEntities.DbGenerator
                 if (create)
                 {
                     var dbMapping = entityProperty.ListConfiguration?.DbMapping.NotNull();
-                    var primaryTable = $"{(entityProperty.EntityConfigRevision.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic." : "")}{entityProperty.EntityConfigRevision.EntityConfig.TableName}";
-                    var foreignTable = $"{(refConfig.Source == Domain.Enums.MetadataSourceType.UserDefined ? "dynamic." : "")}{refConfig.TableName}";
+                    var primarySchema = entityProperty.EntityConfigRevision.EntityConfig.SchemaName.IsNullOrEmpty() ? "" : $"{entityProperty.EntityConfigRevision.EntityConfig.SchemaName}.";
+                    var primaryTable = $"{primarySchema}{entityProperty.EntityConfigRevision.EntityConfig.TableName}";
+                    var foreignSchema = refConfig.SchemaName.IsNullOrEmpty() ? "" : $"{refConfig.SchemaName}.";
+                    var foreignTable = $"{foreignSchema}{refConfig.TableName}";
 
                     await _dbActions.CreateManyToManyTableAsync(
                         (dbMapping?.ManyToManyTableName).NotNull(),

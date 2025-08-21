@@ -1,25 +1,28 @@
 import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
 import { ProperyDataType } from '@/interfaces/metadata';
-import { 
+import {
   IConfigurableColumnsProps,
-  IFormColumnsProps,
   isActionColumnProps,
-  isDataColumnProps 
+  isCrudOperationsColumnProps,
+  isDataColumnProps,
+  isFormColumnProps,
+  isRendererColumnProps
 } from '@/providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
-import { 
-  ColumnSorting, 
+import {
+  ColumnSorting,
   DataTableColumnDto,
   IColumnSorting,
-  isDataColumn, 
-  isFormColumn, 
-  IStoredFilter, 
-  ITableActionColumn, 
-  ITableColumn, 
-  ITableDataColumn, 
-  ITableFilter, 
-  ITableFormColumn, 
+  isDataColumn,
+  isFormColumn,
+  IStoredFilter,
+  ITableActionColumn,
+  ITableColumn,
+  ITableDataColumn,
+  ITableFilter,
+  ITableFormColumn,
+  ITableRendererColumn,
   SortDirection
 } from './interfaces';
 
@@ -218,7 +221,7 @@ export const prepareColumn = (
       id: column.propertyName,
       accessor: camelcaseDotNotation(column?.propertyName),
       propertyName: column.propertyName,
-      
+
       propertiesToFetch: column.propertyName,
       isEnitty: srvColumn?.dataType === 'entity',
 
@@ -254,28 +257,34 @@ export const prepareColumn = (
     return actionColumn;
   }
 
-  if (column.columnType === 'crud-operations') {
+  if (isFormColumnProps(column)) {
+    return {
+      ...baseProps,
+      accessor: '',
+      propertiesToFetch: column.propertiesNames,
+      propertiesNames: column.propertiesNames,
+
+      displayFormId: column.displayFormId,
+      createFormId: column.createFormId,
+      editFormId: column.editFormId,
+
+      minHeight: column.minHeight,
+    } as ITableFormColumn;
+  }
+
+  if (isRendererColumnProps(column)) {
+    const rendererColumn: ITableRendererColumn = {
+      ...baseProps,
+      renderCell: column.renderCell,
+    };
+    return rendererColumn;
+  }
+
+  if (isCrudOperationsColumnProps(column)) {
     return {
       ...baseProps,
     };
   }
-
-  if (column.columnType === 'form') {
-    const col = column as IFormColumnsProps;
-    return {
-      ...baseProps,
-      accessor: '',
-      propertiesToFetch: col.propertiesNames,
-      propertiesNames: col.propertiesNames,
-
-      displayFormId: col.displayFormId,
-      createFormId: col.createFormId,
-      editFormId: col.editFormId,
-
-      minHeight: col.minHeight,
-    } as ITableFormColumn;
-  }
-
 
   return null;
 };

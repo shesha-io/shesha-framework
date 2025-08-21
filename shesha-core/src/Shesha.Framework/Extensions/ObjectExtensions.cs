@@ -136,7 +136,7 @@ namespace Shesha.Extensions
 
         public static T? GetFullCopyViaJson<T>(this T? obj)
         {
-            return obj.GetFullCopyViaJson();
+            return GetFullCopyViaJson<T>(obj as object);
         }
 
     }

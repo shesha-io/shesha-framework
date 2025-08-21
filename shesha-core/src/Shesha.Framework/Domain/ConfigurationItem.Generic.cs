@@ -66,6 +66,10 @@ namespace Shesha.Domain
         }
 
         public bool HasRevision => Revision != null;
+        public ConfigurationItemRevision? GetLatestRevision()
+        {
+            return LatestRevision;
+        }
 
         /// <summary>
         /// Default constructor

@@ -87,7 +87,7 @@ namespace Shesha.NHibernate.Configuration
 
             var assembliesWithEntities = _assembleFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
-                .Where(a => a.GetTypes().Any(t => !MappingHelper.IsProxy(t) && MappingHelper.IsEntity(t)))
+                .Where(a => a.GetCustomAttribute<TablePrefixAttribute>() != null || a.GetTypes().Any(t => !MappingHelper.IsProxy(t) && MappingHelper.IsEntity(t)))
                 .ToList();
             assembliesWithEntities.AddRange(_shaTypeFinder.GetDynamicEntityAssemblies());
             foreach (var assembly in assembliesWithEntities)

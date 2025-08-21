@@ -41,6 +41,9 @@ namespace Shesha.Domain
         public virtual string? IdColumn { get; set; }
 
         [MaxLength(255)]
+        public virtual string? SchemaName { get; set; }
+
+        [MaxLength(255)]
         public virtual string? TableName { get; set; }
 
         [MaxLength(500)]

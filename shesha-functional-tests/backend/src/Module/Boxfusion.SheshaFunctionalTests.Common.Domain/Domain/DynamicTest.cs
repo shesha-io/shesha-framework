@@ -54,8 +54,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 
         public virtual StoredFile File { get; set; }
 
-        [ManyToMany(true)]
-        public virtual IList<Person> Persons { get; set; } = new List<Person>();
+        //[ManyToMany(true)]
+        //public virtual IList<Person> Persons { get; set; } = new List<Person>();
 
         [DynamicManyToOne(nameof(Parent))]
         public virtual IList<DynamicTestApp> Children { get; set; } = new List<DynamicTestApp>();
