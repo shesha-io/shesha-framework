@@ -374,10 +374,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
+                    display: none;
                 }
             
                 .${shaComponent} {
                     min-height: 30px;
+                }
+                
+                > div {
+                    > div {
+                        min-height: 85vh; 
+                    } 
                 }
             }
         }
