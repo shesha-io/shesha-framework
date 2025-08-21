@@ -121,19 +121,9 @@ namespace Shesha.ConfigurationStudio
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
 
-            var prevOrderIndex = request.PrevItemId.HasValue
-                ? await ItemRepo.GetAll().Where(e => e.Id == request.PrevItemId.Value).Select(e => e.OrderIndex).FirstOrDefaultAsync()
-                : (double?)null;
-
-            var orderIndex = prevOrderIndex.HasValue
-                ? await GetOrderIndexForInsertAfterAsync(request.ModuleId, request.FolderId, prevOrderIndex.Value)
-                : await GetOrderIndexForInsertAsync(request.ModuleId, request.FolderId);
-
             var item = await manager.CreateItemAsync(new ConfigurationItems.Models.CreateItemInput() {
                 Module = module,
                 Folder = folder,
-                OrderIndex = orderIndex,
-
                 Name = request.Name,
             });
 

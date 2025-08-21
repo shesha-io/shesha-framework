@@ -58,11 +58,6 @@ namespace Shesha.Domain
         public virtual ConfigurationItemFolder? Folder { get; set; }
 
         /// <summary>
-        /// Order index, is used for sorting in the tree
-        /// </summary>
-        public virtual double? OrderIndex { get; set; }
-
-        /// <summary>
         /// Surface Status: Visible(config item is visible but not overriden); Overridden
         /// </summary>
         public virtual RefListSurfaceStatus? SurfaceStatus { get; set; }

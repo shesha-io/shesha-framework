@@ -4,6 +4,7 @@ import React from 'react';
 import { PageWithLayout } from '@/interfaces';
 import { DemoForm } from './demoForm';
 import KeyboardTree from './tree';
+import FileTree from './fileTree';
 
 const treeData = [
   {
@@ -25,16 +26,19 @@ const treeData = [
 ];
 
 const Page: PageWithLayout<{}> = () => {
-    return (
-        <KeyboardTree treeData={treeData} />
-    );
-    const initialValues = {
-        name: 'John Doe',
-        email: 'john@example.com',
-        description: 'Initial description',
-    };
+  return (
+    <FileTree/>
+  );
+  return (
+    <KeyboardTree treeData={treeData} />
+  );
+  const initialValues = {
+    name: 'John Doe',
+    email: 'john@example.com',
+    description: 'Initial description',
+  };
 
-    return <DemoForm initialValues={initialValues} />;
+  return <DemoForm initialValues={initialValues} />;
 };
 
 export default Page;

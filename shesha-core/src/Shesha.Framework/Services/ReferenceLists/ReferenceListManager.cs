@@ -189,7 +189,6 @@ namespace Shesha.Services.ReferenceLists
                 Name = input.Name,
                 Module = input.Module,
                 Folder = input.Folder,
-                OrderIndex = input.OrderIndex,
             };
             refList.Origin = refList;
 

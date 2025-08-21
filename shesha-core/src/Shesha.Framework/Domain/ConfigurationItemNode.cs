@@ -22,9 +22,5 @@ namespace Shesha.Domain
         /// Item type (form/reflist etc.)
         /// </summary>
         public virtual int NodeType { get; set; }
-        /// <summary>
-        /// Order index, is used for sorting in the tree
-        /// </summary>
-        public virtual double OrderIndex { get; set; }
     }
 }

@@ -59,7 +59,7 @@ namespace Shesha.Permissions
             IRepository<Module, Guid> moduleReporsitory,
             IIocResolver iocResolver,
             IRelationsCacheHolder relationsCacheHolder,
-            IPermissionedObjectsCacheHolder permissionedObjectsCacheHolder            
+            IPermissionedObjectsCacheHolder permissionedObjectsCacheHolder
         )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
@@ -108,7 +108,7 @@ namespace Shesha.Permissions
                 .WhereIf(!string.IsNullOrEmpty(type?.Trim()), x => x.Type == type)
                 .WhereIf(!withHidden, x => !x.Hidden)
                 .ToListAsync();
-            
+
             var root = (await rootItems.SelectAsync(async x => await GetCacheOrDtoAsync(x)))
                 .OrderBy(x => x.Name)
                 .ToList();
@@ -184,10 +184,10 @@ namespace Shesha.Permissions
         public List<string> GetActualPermissions(string objectName, string objectType, bool useInherited = true)
         {
             var obj = Get(objectName, objectType);
-            return (obj != null 
+            return (obj != null
                 ? useInherited
                     ? obj.ActualPermissions
-                    : obj.Permissions 
+                    : obj.Permissions
                 : null) ?? new List<string>();
         }
 
@@ -308,7 +308,7 @@ namespace Shesha.Permissions
             var dbObj = InternalCreate(objectName, objectType, inheritedFromName);
             await _permissionedObjectRepository.InsertAsync(dbObj);
             var obj = await GetDtoOrNullAsync(dbObj, true, true);
-            
+
             return obj.NotNull();
         }
 
@@ -406,7 +406,7 @@ namespace Shesha.Permissions
             // ToDo: AS - check permission names exist
             var obj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
 
-            if (obj == null) 
+            if (obj == null)
                 return null;
 
             obj.Permissions = string.Join(",", permissions ?? new List<string>());
@@ -415,6 +415,19 @@ namespace Shesha.Permissions
 
             var dto = await GetDtoOrNullAsync(obj);
             return dto;
+        }
+
+        public async Task<PermissionedObjectDto?> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string? dstObjectType = null)
+        {
+            var permission = await GetOrNullAsync(srcObjectName, srcObjectType);
+            if (permission != null)
+            {
+                permission.Id = Guid.Empty;
+                permission.Object = dstObjectName;
+                permission.Type = dstObjectType != null ? dstObjectType : permission.Type;
+                return await SetAsync(permission);
+            }
+            return null;
         }
 
         public async Task<bool> IsActionDescriptorEnabledAsync(ActionDescriptor actionDescriptor)
@@ -449,11 +462,11 @@ namespace Shesha.Permissions
             PermissionedObjectRelations relation;
             if (_relationsCache.TryGetValue(key, out relation))
             {
-                foreach(var childKey in relation.Children)
+                foreach (var childKey in relation.Children)
                 {
                     RemoveCache(childKey);
                 }
-            };
+            }
         }
 
         private void RemoveCache(string objectName, string? objectType, string? parentName)
@@ -479,7 +492,7 @@ namespace Shesha.Permissions
                 {
                     RemoveCache(childKey);
                 }
-            };
+            }
         }
 
         public void HandleEvent(EntityChangedEventData<PermissionedObject> eventData)

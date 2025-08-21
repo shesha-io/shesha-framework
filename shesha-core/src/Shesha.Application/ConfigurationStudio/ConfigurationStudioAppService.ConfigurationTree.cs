@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Repositories;
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationStudio.Dtos;
 using Shesha.Domain;
@@ -25,7 +24,7 @@ namespace Shesha.ConfigurationStudio
         [HttpGet]
         public async Task<List<FlatTreeNode>> GetFlatTreeAsync(long? rootNodeId = null)
         {
-            var treeNodes = await TreeNodeRepository.GetAll().OrderBy(e => e.ModuleId).ThenBy(e => e.ParentId).ThenBy(e => e.OrderIndex)
+            var treeNodes = await TreeNodeRepository.GetAll().OrderBy(e => e.ParentId).ThenBy(e => e.NodeType == Domain.Enums.ConfigurationItemTreeNodeType.Item ? 1 : 0).ThenBy(e => e.Name)
                 .Select(e => new FlatTreeNode { 
                     Id = e.Id,
                     ParentId = e.ParentId,
@@ -55,18 +54,10 @@ namespace Shesha.ConfigurationStudio
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
 
-            var orderIndex = await GetOrderIndexForInsertAsync(request.ModuleId, request.FolderId);
-            /*
-            var prevOrderIndex = request.PrevItemId.HasValue
-                ? await ItemRepo.GetAll().Where(e => e.Id == request.PrevItemId.Value).Select(e => e.OrderIndex).FirstOrDefaultAsync()
-                : (double?)null;
-            */
-
             var folder = new ConfigurationItemFolder { 
                 Module = module,
                 Name = request.Name,
                 Parent = parentFolder,
-                //OrderIndex = orderIndex,
             };
             await FolderRepository.InsertAsync(folder);
 
@@ -122,29 +113,6 @@ namespace Shesha.ConfigurationStudio
             return await NodeRepository.GetAll().Where(e => e.Id == id).FirstOrDefaultAsync();
         }
 
-        private async Task<double> GetOrderIndexForInsertAsync(Guid moduleId, Guid? folderId)
-        {
-            var firstNode = await NodeRepository.GetAll().Where(e => e.ModuleId == moduleId && e.FolderId == folderId).OrderBy(e => e.OrderIndex).FirstOrDefaultAsync();
-            return firstNode != null
-                ? firstNode.OrderIndex - 10
-                : 0;
-        }
-
-        private async Task<double> GetOrderIndexForInsertBeforeAsync(Guid moduleId, Guid? folderId, double orderIndex)
-        {
-            var prevNode = await NodeRepository.GetAll().Where(e => e.ModuleId == moduleId && e.FolderId == folderId && e.OrderIndex < orderIndex).OrderByDescending(e => e.OrderIndex).FirstOrDefaultAsync();
-            return prevNode != null
-                ? prevNode.OrderIndex + (orderIndex - prevNode.OrderIndex) / 2
-                : orderIndex - 10;
-        }
-        private async Task<double> GetOrderIndexForInsertAfterAsync(Guid moduleId, Guid? folderId, double orderIndex)
-        {
-            var nextNode = await NodeRepository.GetAll().Where(e => e.ModuleId == moduleId && e.FolderId == folderId && e.OrderIndex > orderIndex).OrderBy(e => e.OrderIndex).FirstOrDefaultAsync();
-            return nextNode != null
-                ? orderIndex + (nextNode.OrderIndex - orderIndex) / 2
-                : orderIndex + 10;
-        }
-
         public async Task MoveNodeToFolderAsync(MoveNodeToFolderRequest input) 
         {
             var newParentFolder = input.FolderId != null
@@ -158,10 +126,6 @@ namespace Shesha.ConfigurationStudio
                         var folder = await FolderRepository.GetAsync(input.NodeId);
 
                         await MoveFolderAsync(newParentFolder, folder);
-
-                        // update order index
-                        var orderIndex = await GetOrderIndexForInsertAsync(folder.Module.Id, newParentFolder?.Id);
-                        folder.OrderIndex = orderIndex;
                         await FolderRepository.UpdateAsync(folder);
 
                         break;
@@ -170,10 +134,6 @@ namespace Shesha.ConfigurationStudio
                     {
                         var item = await ItemRepo.GetAsync(input.NodeId);
                         await MoveConfigurationItemAsync(newParentFolder, item);
-                        
-                        // update order index
-                        var orderIndex = await GetOrderIndexForInsertAsync(item.Module.NotNull().Id, newParentFolder?.Id);
-                        item.OrderIndex = orderIndex;
                         await ItemRepo.UpdateAsync(item);
 
                         break;
@@ -201,16 +161,12 @@ namespace Shesha.ConfigurationStudio
                         {
                             case ReorderNodeRequest.DropPositionType.Before:
                                 {
-                                    var newOrderIndex = await GetOrderIndexForInsertBeforeAsync(dropNode.ModuleId, newParentFolder?.Id, dropNode.OrderIndex);
-                                    folder.OrderIndex = newOrderIndex;
                                     folder.Parent = newParentFolder;
                                     await FolderRepository.UpdateAsync(folder);
                                     break;
                                 }
                             case ReorderNodeRequest.DropPositionType.After:
                                 {
-                                    var newOrderIndex = await GetOrderIndexForInsertAfterAsync(dropNode.ModuleId, newParentFolder?.Id, dropNode.OrderIndex);
-                                    folder.OrderIndex = newOrderIndex;
                                     folder.Parent = newParentFolder;
                                     await FolderRepository.UpdateAsync(folder);
                                     break;
@@ -234,16 +190,12 @@ namespace Shesha.ConfigurationStudio
                         {
                             case ReorderNodeRequest.DropPositionType.Before:
                                 {
-                                    var newOrderIndex = await GetOrderIndexForInsertBeforeAsync(dropNode.ModuleId, newParentFolder?.Id, dropNode.OrderIndex);
-                                    item.OrderIndex = newOrderIndex;
                                     item.Folder = newParentFolder;
                                     await ItemRepo.UpdateAsync(item);
                                     break;
                                 }
                             case ReorderNodeRequest.DropPositionType.After:
                                 {
-                                    var newOrderIndex = await GetOrderIndexForInsertAfterAsync(dropNode.ModuleId, newParentFolder?.Id, dropNode.OrderIndex);
-                                    item.OrderIndex = newOrderIndex;
                                     item.Folder = newParentFolder;
                                     await ItemRepo.UpdateAsync(item);
                                     break;

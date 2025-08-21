@@ -22,7 +22,6 @@ namespace Shesha.Web.FormsDesigner.Services
     public class FormManager : ConfigurationItemManager<FormConfiguration, FormConfigurationRevision>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
-        private readonly IModuleManager _moduleManager;
         
         public FormManager(
             IPermissionedObjectManager permissionedObjectManager,
@@ -31,7 +30,6 @@ namespace Shesha.Web.FormsDesigner.Services
         ) : base()
         {
             _permissionedObjectManager = permissionedObjectManager;
-            _moduleManager = moduleManager;
         }
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
@@ -116,7 +114,6 @@ namespace Shesha.Web.FormsDesigner.Services
                 Name = input.Name,
                 Module = input.Module,
                 Folder = input.Folder,
-                OrderIndex = input.OrderIndex,
             };
             form.Origin = form;
 
@@ -142,6 +139,15 @@ namespace Shesha.Web.FormsDesigner.Services
             destination.IsTemplate = source.IsTemplate;
 
             return Task.CompletedTask;
+        }
+
+        protected override async Task AfterItemDuplicatedAsync(FormConfiguration item, FormConfiguration duplicate)
+        {
+            await _permissionedObjectManager.CopyAsync(
+                GetFormPermissionedObjectName(item.Module?.Name, item.Name),
+                GetFormPermissionedObjectName(duplicate.Module?.Name, duplicate.Name),
+                ShaPermissionedObjectsTypes.Form
+            );
         }
     }
 }

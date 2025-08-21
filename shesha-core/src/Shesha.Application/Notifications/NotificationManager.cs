@@ -147,7 +147,6 @@ namespace Shesha.Notifications
                 Name = input.Name,
                 Module = input.Module,
                 Folder = input.Folder,
-                OrderIndex = input.OrderIndex,
             };
             notification.Origin = notification;
 

@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,15 +30,11 @@ namespace Shesha.Domain
         /// <summary>
         /// Node type (module/folder/item)
         /// </summary>
-        public virtual int NodeType { get; set; }
+        public virtual ConfigurationItemTreeNodeType NodeType { get; set; }
         /// <summary>
         /// Item type (form/reflist etc.)
         /// </summary>
         public virtual string? ItemType { get; set; }
-        /// <summary>
-        /// Order index, is used for sorting in the tree
-        /// </summary>
-        public virtual double OrderIndex { get; set; }
 
         public virtual bool IsCodeBased { get; set; }
         public virtual bool IsCodegenPending { get; set; }

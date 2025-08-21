@@ -23,6 +23,7 @@ export type TreeNode = DataNode & {
     parentId?: string;
     moduleId: string;
     name: string;
+    label: string;
     nodeType: TreeNodeType;
 };
 

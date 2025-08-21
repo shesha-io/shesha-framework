@@ -30,6 +30,7 @@ export const ConfigurationItemMenu: FC<IConfigurationItemMenuProps> = () => {
                     nodeType: TreeNodeType.ConfigurationItem,
                     itemType: activeDoc.itemType,
                     name: activeDoc.label,
+                    label: activeDoc.label,
                     moduleId: undefined,
                     flags: activeDoc.flags,
                 }

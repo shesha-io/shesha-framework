@@ -108,7 +108,14 @@ namespace Shesha.ConfigurationItems
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
+            await AfterItemDuplicatedAsync(item, duplicate);
+
             return duplicate;
+        }
+
+        protected virtual Task AfterItemDuplicatedAsync(TItem item, TItem duplicate)
+        {
+            return Task.CompletedTask;
         }
 
         protected virtual Task CopyItemPropertiesAsync(TItem source, TItem destination)

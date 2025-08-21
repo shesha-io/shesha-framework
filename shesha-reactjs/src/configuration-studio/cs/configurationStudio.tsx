@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { FormFullName, HttpClientApi } from "@/providers";
-import { moveTreeNodeAsync, MoveNodePayload, reorderTreeNodeAsync, ReorderNodePayload, fetchFlatTreeAsync, deleteFolderAsync, fetchItemTypesAsync, deleteConfigurationItemAsync, duplicateItemAsync } from "../apis";
+import { moveTreeNodeAsync, MoveNodePayload, fetchFlatTreeAsync, deleteFolderAsync, fetchItemTypesAsync, deleteConfigurationItemAsync, duplicateItemAsync } from "../apis";
 import { ConfigItemTreeNode, FolderTreeNode, ForceRenderFunc, IDocumentInstance, isConfigItemTreeNode, ItemTypeDefinition, TreeNode, TreeNodeType } from "../models";
 import { IErrorInfo } from "@/interfaces";
 import { DocumentDefinition, DocumentDefinitions, CIDocument, DocumentBase, StoredDocumentInfo } from "../models";
@@ -94,7 +94,7 @@ export interface IConfigurationStudio {
 
     loadTreeAndDocsAsync: () => Promise<void>;
     moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;
-    reorderTreeNodeAsync: (payload: ReorderNodePayload) => Promise<void>;
+    getTreeNodeById: (itemId: string) => TreeNode | undefined;
     subscribe(type: CsSubscriptionType, callback: () => void): () => void;
 
     //#region selection and tabs
@@ -495,7 +495,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
             // const normalizedStack = replaceAllSourceUrls(stack);
             //console.log(`%c[cs]`, 'color: blue; font-weight: bold', ...args, `\n${normalizedStack}`);
 
-            // eslint-disable-next-line no-console
             console.trace(`%c[cs]`, 'color: blue; font-weight: bold', ...args);
         }
     };
@@ -585,10 +584,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     moveTreeNodeAsync = async (payload: MoveNodePayload): Promise<void> => {
         await moveTreeNodeAsync(this.httpClient, payload);
-    };
-
-    reorderTreeNodeAsync = async (payload: ReorderNodePayload): Promise<void> => {
-        await reorderTreeNodeAsync(this.httpClient, payload);
     };
 
     //#region crud operations

@@ -37,8 +37,7 @@ with foldersCte as (
 		f.id,
 		f.module_id as parent_id,
 		f.module_id,
-		f.name,
-		f.order_index
+		f.name
 	from
 		frwk.configuration_item_folders f
 	where
@@ -51,8 +50,7 @@ with foldersCte as (
 		f.id,
 		f.parent_id,
 		f.module_id,
-		f.name,
-		f.order_index
+		f.name
 	from
 		frwk.configuration_item_folders f
 		inner join foldersCte c ON f.parent_id = c.id
@@ -65,8 +63,7 @@ with foldersCte as (
 		m.id as module_id,
 		m.name,
 		cast (m.friendly_name as varchar(300)) as label,
-		1 /*module*/ as node_type,
-		cast(0.0 as float) as order_index
+		1 /*module*/ as node_type
 	from
 		frwk.modules m
 	where
@@ -82,8 +79,7 @@ with foldersCte as (
 		f.module_id,
 		f.name,
 		cast (f.name as varchar(300)) as label,
-		3 /*folder*/ as node_type,
-		f.order_index
+		3 /*folder*/ as node_type
 	from
 		foldersCte f
 		inner join modulesCte c ON f.module_id = c.id
@@ -96,7 +92,6 @@ with foldersCte as (
 		tn.label,
 		tn.node_type,
 		cast(null as nvarchar(50)) as item_type,
-		tn.order_index,
 		cast (0 as bit) as is_exposed,
 		cast (0 as bit) as is_code_based,
 		cast (0 as bit) as is_updated,
@@ -115,7 +110,6 @@ with foldersCte as (
 		cast(ci.name as varchar(300)) as label,
 		2 /*configuration item*/ as node_type,
 		ci.item_type,
-		ci.order_index,
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
@@ -138,7 +132,6 @@ with foldersCte as (
 		cast(ci.name as varchar(300)) as label,
 		2 /*configuration item*/ as node_type,
 		ci.item_type,
-		ci.order_index,
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
@@ -158,7 +151,6 @@ select
 	label,
 	node_type,
 	item_type,
-	order_index,
 	is_exposed,
 	is_code_based,
 	is_updated,

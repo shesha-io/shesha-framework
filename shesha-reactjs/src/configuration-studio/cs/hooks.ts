@@ -22,6 +22,7 @@ export const useCsSubscription = (subscriptionType: CsSubscriptionType) => {
 
 export type UseCsTreeResponse = {
     readonly treeNodes?: TreeNode[];
+    readonly getTreeNodeById: (itemId: string) => TreeNode | undefined;
     readonly treeLoadingState: ProcessingState;
     loadTreeAsync: () => Promise<void>;
 
@@ -38,6 +39,7 @@ export const useCsTree = (): UseCsTreeResponse => {
 
     return {
         treeNodes: cs.treeNodes,
+        getTreeNodeById: cs.getTreeNodeById,
         loadTreeAsync: cs.loadTreeAndDocsAsync,
         treeLoadingState: cs.treeLoadingState,
         quickSearch: cs.quickSearch,

@@ -37,14 +37,19 @@ const applyIcon = (node: TreeNode): void => {
     };
 };
 
+const renderNodeTitle = (node: TreeNode): ReactNode => {
+    return node.label ?? node.name;
+};
+
 export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
     const baseProps: TreeNode = {
         id: node.id,
         parentId: node.parentId,
         key: node.id,
         name: node.name,
+        label: node.label,
         nodeType: node.nodeType,
-        title: node.label ?? node.name,
+        title: renderNodeTitle,
         moduleId: node.moduleId,
     };
 

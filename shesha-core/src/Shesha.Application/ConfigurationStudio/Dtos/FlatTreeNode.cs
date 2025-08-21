@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shesha.Domain.Enums;
+using System;
 
 namespace Shesha.ConfigurationStudio.Dtos
 {
@@ -12,7 +13,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         public Guid ModuleId { get; set; }
         public string Name { get; set; }
         public string Label { get; set; }
-        public int NodeType { get; set; }
+        public ConfigurationItemTreeNodeType NodeType { get; set; }
         public string? ItemType { get; set; }
 
         public bool IsCodeBased { get; set; }
