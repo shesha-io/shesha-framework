@@ -101,9 +101,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     initialValues: undefined
   };
 
-  // console.log('FormProvider: shaForm settings changed', props.shaForm.formData);
-  // console.log('FormProvider: settings changed', props.shaForm.settings);
-
   return (
     <FormStateContext.Provider value={realState}>
       <FormActionsContext.Provider value={configurableFormActions}>

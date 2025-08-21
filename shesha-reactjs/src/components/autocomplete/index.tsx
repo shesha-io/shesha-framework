@@ -338,7 +338,7 @@ useEffect(() => {
       filterOption={false}
       onSearch={handleSearch}
       onChange={handleChange}
-      onClear={() => setSearchText('')}
+      onClear={() => handleSearch('')}
       allowClear={allowClear}
       loading={source?.isInProgress?.fetchTableData || loadingValues}
       placeholder={props.placeholder}
