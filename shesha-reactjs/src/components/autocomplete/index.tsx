@@ -82,36 +82,37 @@ const mergeUniqueItems = (
       map.set(itemKey, item);
     }
   });
-
   return Array.from(map.values());
 };
 
 
 useEffect(() => {
-  if (!source?.tableData) return;
-
-  setFullData(prev =>
+  if (!Array.isArray(source?.tableData)) return;
+ setFullData((prev) =>
     mergeUniqueItems(
       prev,
       source.tableData,
-      source.tableData.length > 0 && 'id' in source.tableData[0] ? "id" : "value"
+      keyPropName
     )
   );
-}, [source?.tableData]);
+}, [source?.tableData, keyPropName]);
 
 
 
 // whenever searchText changes, filter fullData → tableData
 useEffect(() => {
-  if (!searchText) {
-    setTableData(fullData); // reset to full data if no search or cleared search
-  } else {
-    const filtered = fullData.filter(item =>
-      item.displayText.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setTableData(filtered);
+ const term = (searchText ?? '').trim().toLowerCase();
+  if (!term) {
+   setTableData(fullData);
+    return;
   }
-}, [searchText, fullData]);
+ const filtered = fullData.filter((item) => {
+ const rawLabel = getValueByPropertyName(item, displayPropName);
+   const label = String(rawLabel ?? '').toLowerCase();
+   return label.includes(term);
+  });
+  setTableData(filtered);
+}, [searchText, fullData, displayPropName]);
 
   
   const keys = useMemo(() => {
@@ -337,7 +338,7 @@ useEffect(() => {
       filterOption={false}
       onSearch={handleSearch}
       onChange={handleChange}
-      onClear={() => {setSearchText("")}}
+      onClear={() => setSearchText('')}
       allowClear={allowClear}
       loading={source?.isInProgress?.fetchTableData || loadingValues}
       placeholder={props.placeholder}
