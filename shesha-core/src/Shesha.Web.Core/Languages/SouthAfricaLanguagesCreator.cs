@@ -43,7 +43,7 @@ namespace Shesha.Languages
             };
         }
 
-        public async Task ProcessAsync(bool force)
+        public async Task<bool> ProcessAsync(bool force)
         {
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
@@ -56,6 +56,7 @@ namespace Shesha.Languages
                 }
                 await unitOfWork.CompleteAsync();
             }
+            return true;
         }
         private async Task AddLanguageIfNotExistsAsync(ApplicationLanguage language)
         {

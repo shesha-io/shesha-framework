@@ -32,9 +32,7 @@ namespace Shesha.Swagger
             var permissioned = new List<TypeInfo>();
             using (var uow = uowManager.Begin())
             {
-                List<string> disabledEntities = GetEntityWithDisabledAppServices();
-                var entityConfigs = StaticContext.IocManager.Resolve<IRepository<EntityConfig, Guid>>();
-                var configs = entityConfigs.GetAllList();
+                var disabledEntities = GetEntityWithDisabledAppServices();
 
                 foreach (var service in types)
                 {
