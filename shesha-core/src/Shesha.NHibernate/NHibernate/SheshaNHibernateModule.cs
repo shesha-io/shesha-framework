@@ -5,6 +5,7 @@ using Abp.AutoMapper;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Uow;
+using Abp.Events.Bus;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Reflection;
@@ -23,6 +24,7 @@ using Shesha.NHibernate.Interceptors;
 using Shesha.NHibernate.Repositories;
 using Shesha.NHibernate.Uow;
 using Shesha.Reflection;
+using Shesha.Warmup;
 using System;
 using System.Reflection;
 
@@ -146,6 +148,9 @@ namespace Shesha.NHibernate
             Configuration.EntityHistory.IsEnabled = prev;
 
             AsyncHelper.RunSync(() => _databaseSeeder.NotNull().InitDataFromDatabaseAsync());
+
+            var eventBus = IocManager.Resolve<IEventBus>();
+            eventBus.Trigger<DatabaseInitializedEventData>(this, new());
         }
 
         private void FreeSessionFactory()
