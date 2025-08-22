@@ -215,7 +215,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .${shaDesignerToolbarRight} {
                 float: right;
                 .${prefixCls}-btn {
-                margin-left: 2px;
+                    margin-left: 2px;
+                    border-radius: 4px;
                 }
             }
 
@@ -270,6 +271,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     background-color: chartreuse;
                     color: #f50;
                 }
+            }
+            
+            .ant-tabs-tab, .ant-tabs-nav-operations {
+                height: 30px;
             }
         
             .${prefixCls}-collapse-item {
@@ -375,12 +380,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .${shaComponent} {
                     min-height: 30px;
                 }
-            }
-
-            > div {
+                
                 > div {
-                    min-height: 85vh; 
-                } 
+                    > div {
+                        min-height: 85vh; 
+                    } 
+                }
             }
         }
 
