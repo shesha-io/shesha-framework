@@ -10,6 +10,8 @@ import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
+import { Button, Space, Tooltip } from 'antd';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
 export interface IDesignerMainAreaProps {
 }
@@ -26,7 +28,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const formSettings = useFormDesignerStateSelector(state => state.formSettings);
     const formMode = useFormDesignerStateSelector(state => state.formMode);
     const { antdForm: form } = useShaFormInstance();
-    const { designerWidth, zoom } = useCanvas();
+    const { zoom, setCanvasZoom } = useCanvas();
     const { styles } = useStyles();
 
     const leftSidebarProps = useMemo(() => 
@@ -52,7 +54,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                     </SidebarContainer>
                 )}
             >
-                <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
+                <div style={{ width: 'calc(100vw - 55px - 16px)', background: 'teal', zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
                     <ConditionalWrap
                         condition={Boolean(formSettings?.modelType)}
                         wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
@@ -61,15 +63,23 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                             <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'} 
                                 description='Form designer'
                             >
-                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
+                                <div>
+                                    <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
                                     {isDebug && (
                                         <DebugPanel />
                                     )}
                                 </ConfigurableFormRenderer>
+                                </div>
+                                
                             </DataContextProvider>
                         </ParentProvider>
                     </ConditionalWrap>
-
+                    <div>
+                    <Space style={{position: 'fixed', bottom: 50}}>
+                        <Tooltip title={`${zoom}%`}><Button icon={<MinusOutlined/>} title='Zoom out' onClick={()=> setCanvasZoom(zoom - 5)}/></Tooltip>
+                        <Tooltip title={`${zoom}%`}><Button icon={<PlusOutlined/>} title='Zoom in' onClick={()=> setCanvasZoom(zoom + 5)}/></Tooltip>
+                    </Space>
+                    </div>
                 </div>
             </ConditionalWrap>
         </div>
