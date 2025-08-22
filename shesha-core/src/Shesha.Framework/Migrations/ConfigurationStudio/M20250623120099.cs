@@ -191,19 +191,20 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .WithColumn("description").AsStringMax().Nullable()
                 .WithColumn("name").AsString(100);
 
-            Execute.Sql("create unique index uq_frwk_front_end_apps_name on frwk.front_end_apps(app_key) where is_deleted=0");
+            IfDatabase("SqlServer").Execute.Sql("create unique index uq_frwk_front_end_apps_name on frwk.front_end_apps(app_key) where is_deleted=0");
+            IfDatabase("PostgreSql").Execute.Sql("create unique index uq_frwk_front_end_apps_name on frwk.front_end_apps(app_key) where is_deleted=false");
 
             // Shesha.Domain.ConfigurationItem
             Alter.Table("configuration_items").InSchema("frwk")
                 .AddColumn("application_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_application_id", "frwk", "front_end_apps", "id").Indexed()
                 .AddColumn("exposed_from_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_exposed_from_revision_id", "frwk", "configuration_item_revisions", "id").Indexed()
                 .AddColumn("folder_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_folder_id", "frwk", "configuration_item_folders", "id").Indexed()
-                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_module_id", "frwk", "modules", "Id").Indexed()
+                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_module_id", "frwk", "modules", "id").Indexed()
                 .AddColumn("origin_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_origin_id", "frwk", "configuration_items", "id").Indexed();
 
             // Shesha.Domain.ConfigurationItemFolder
             Alter.Table("configuration_item_folders").InSchema("frwk")
-                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_item_folders_module_id", "frwk", "modules", "Id").Indexed()
+                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_item_folders_module_id", "frwk", "modules", "id").Indexed()
                 .AddColumn("parent_id").AsGuid().Nullable().ForeignKey("fk_configuration_item_folders_parent_id", "frwk", "configuration_item_folders", "id").Indexed();
 
             // Shesha.Domain.ConfigurationItemRevision

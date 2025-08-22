@@ -10,10 +10,10 @@ using Xunit;
 
 namespace Shesha.Tests.ModuleHierarchy
 {
-    [Collection(LocalSqlServerCollection.Name)]
+    [Collection(SqlServerCollection.Name)]
     public partial class ModuleHierarchy_Tests : CiSheshaTestBase
     {
-        public ModuleHierarchy_Tests(LocalSqlServerFixture fixture) : base(fixture)
+        public ModuleHierarchy_Tests(SqlServerFixture fixture) : base(fixture)
         {
         }
 

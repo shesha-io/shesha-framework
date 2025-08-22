@@ -3,7 +3,6 @@ using Shesha.ConfigurationItems;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
