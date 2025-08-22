@@ -1,4 +1,5 @@
-﻿using Abp.Runtime.Validation;
+﻿using Abp.Collections.Extensions;
+using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
@@ -22,18 +23,21 @@ namespace Shesha.Metadata
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
         private readonly IMetadataProvider _metadataProvider;
         private readonly IEnumerable<IModelProvider> _modelProviders;
+        private readonly EntityModelProvider _entityModelProvider;
 
         public MetadataAppService(
             IEntityConfigurationStore entityConfigurationStore,
             IHardcodeMetadataProvider hardcodeMetadataProvider,
             IMetadataProvider metadataProvider,
-            IEnumerable<IModelProvider> modelProviders
+            IEnumerable<IModelProvider> modelProviders,
+            EntityModelProvider entityModelProvider
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
             _hardcodeMetadataProvider = hardcodeMetadataProvider;
             _metadataProvider = metadataProvider;
             _modelProviders = modelProviders;
+            _entityModelProvider = entityModelProvider;
         }
 
         private async Task<List<ModelDto>> GetAllModelsAsync()
@@ -61,28 +65,18 @@ namespace Shesha.Metadata
         {
             return await GetContainerTypeOrNullAsync(container) ?? throw new MetadataOfTypeNotFoundException(container);
         }
-        
 
-        [HttpGet]
-        public Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
-        {
-            // note: temporary return only entities
-            return EntityTypeAutocompleteAsync(term, selectedValue);
-        }
-
-        /// inheritedDoc
-        [HttpGet]
-        public async Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue)
+        private List<AutocompleteItemDto> FilterModels(List<ModelDto> models, string? term, string? selectedValue)
         {
             var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
-            var models = await GetAllModelsAsync();
-
             var entities = isPreselection
                 ? models.Where(e => e.ClassName == selectedValue || e.Alias == selectedValue).ToList()
                 : models
-                .Where(e => (string.IsNullOrWhiteSpace(term) ||
+                .Where(e => (
+                    string.IsNullOrWhiteSpace(term) ||
                     !string.IsNullOrWhiteSpace(e.Alias) && e.Alias.Contains(term, StringComparison.InvariantCultureIgnoreCase) ||
-                    e.ClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase))  && !e.ClassName.Contains("AspNetCore"))
+                    e.ClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase)) && !e.ClassName.Contains("AspNetCore")
+                )
                 .OrderBy(e => e.ClassName)
                 .Take(10)
                 .ToList();
@@ -90,7 +84,7 @@ namespace Shesha.Metadata
             var result = entities
                 .Select(e => new AutocompleteItemDto
                 {
-                    DisplayText = e.ClassName,
+                    DisplayText = $"{e.Name} ({e.ClassName})",
                     Value = !string.IsNullOrWhiteSpace(e.Alias)
                         ? e.Alias
                         : e.ClassName
@@ -98,6 +92,39 @@ namespace Shesha.Metadata
                 .ToList();
 
             return result;
+        }
+
+        [HttpGet]
+        public async Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
+        {
+            var models = await GetAllModelsAsync();
+            return FilterModels(models, term, selectedValue);
+        }
+
+        /// inheritedDoc
+        [HttpGet]
+        public async Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue, string? baseClass)
+        {
+            var models = await _entityModelProvider.GetModelsAsync();
+            var baseEntity = baseClass.IsNullOrEmpty() ? null : models.FirstOrDefault(x => x.Type?.FullName == baseClass || x.Alias == baseClass || x.Accessor == baseClass);
+            var list = models
+                .Where(x => x.Type.IsEntityType())
+                .WhereIf(baseEntity != null, x => x.Type != null && x.Type.IsAssignableTo(baseEntity?.Type))
+                .ToList<ModelDto>();
+            return FilterModels(list, term, selectedValue);
+        }
+
+        /// inheritedDoc
+        [HttpGet]
+        public async Task<List<AutocompleteItemDto>> JsonEntityTypeAutocompleteAsync(string? term, string? selectedValue, string? baseClass)
+        {
+            var models = await _entityModelProvider.GetModelsAsync();
+            var baseEntity = baseClass.IsNullOrEmpty() ? null : models.FirstOrDefault(x => x.Type?.FullName == baseClass || x.Alias == baseClass || x.Accessor == baseClass);
+            var list = models
+                .Where(x => x.Type.IsJsonEntityType())
+                .WhereIf(baseEntity != null, x => x.Type != null && x.Type.IsAssignableTo(baseEntity?.Type))
+                .ToList<ModelDto>();
+            return FilterModels(list, term, selectedValue);
         }
 
         /// inheritedDoc
@@ -134,7 +161,7 @@ namespace Shesha.Metadata
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");
             
             var containerType = await GetContainerTypeAsync(container);
-            var properties = await _metadataProvider.GetPropertiesAsync(containerType, container);
+            var properties = await _metadataProvider.GetPropertiesAsync(containerType);
             return properties;
         }
 
@@ -147,7 +174,7 @@ namespace Shesha.Metadata
 
             var containerType = await GetContainerTypeAsync(container);
 
-            return await _metadataProvider.GetAsync(containerType, container);
+            return await _metadataProvider.GetAsync(containerType);
         }
 
         /// <summary>

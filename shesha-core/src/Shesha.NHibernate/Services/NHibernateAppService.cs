@@ -11,6 +11,7 @@ using NHibernate;
 using NHibernate.Type;
 using Shesha.CodeGeneration;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.Migrations;
 using Shesha.Mvc;
@@ -58,7 +59,7 @@ namespace Shesha.Services
         {
             try
             {
-                var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+                var typeFinder = StaticContext.IocManager.Resolve<IShaTypeFinder>();
                 var migrationGenerator = StaticContext.IocManager.Resolve<IMigrationGenerator>();
 
                 var types = typeFinder.FindAll().Where(t => t.IsEntityType()
@@ -110,7 +111,7 @@ namespace Shesha.Services
         [DontWrapResult]
         public void TestEntity(string entityType) 
         {
-            var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+            var typeFinder = StaticContext.IocManager.Resolve<IShaTypeFinder>();
             var type = typeFinder.Find(t => t.FullName == entityType).Single();
             TryFetch(type, e => 
             {

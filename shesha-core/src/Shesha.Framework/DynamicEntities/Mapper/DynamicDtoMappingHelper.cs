@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
@@ -43,10 +44,10 @@ namespace Shesha.DynamicEntities.Mapper
             return $"{@namespace}.{name}";
         }
 
-        private string GetCacheKey(EntityConfigRevision entityConfigRevision)
+        private string GetCacheKey(EntityConfig entityConfig)
         {
             // TODO: V1 review cache should take versions into account
-            return GetCacheKey(entityConfigRevision.Namespace, entityConfigRevision.ClassName);
+            return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
         }
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
@@ -54,7 +55,7 @@ namespace Shesha.DynamicEntities.Mapper
             if (eventData.Entity?.EntityConfigRevision == null)
                 return;
 
-            var cacheKey = GetCacheKey(eventData.Entity.EntityConfigRevision);
+            var cacheKey = GetCacheKey(eventData.Entity.EntityConfigRevision.EntityConfig);
             _internalCache.Remove(cacheKey);
         }
 

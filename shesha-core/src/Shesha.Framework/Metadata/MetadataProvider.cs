@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
+using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
@@ -57,26 +58,24 @@ namespace Shesha.Metadata
                 : null;
         }
 
-        // ToDo: support Dynamic entities
-        public async Task<MetadataDto> GetAsync(Type? containerType, string containerName = "")
+        // ToDo: AS - support Dynamic entities
+        public async Task<MetadataDto> GetAsync(Type containerType)
         {
-            var isEntity = containerType != null && containerType.IsEntityType();
-            var isJsonEntity = containerType != null && containerType.IsJsonEntityType();
+            var isEntity = containerType.IsEntityType();
+            var isJsonEntity = containerType.IsJsonEntityType();
 
-            var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
+            var (changeTime, properties) = await GetPropertiesInternalAsync(containerType);
 
             var dto = new MetadataDto
             {
                 DataType = isEntity 
                     ? DataTypes.EntityReference 
-                    : isJsonEntity
-                        ? DataTypes.ObjectReference
-                        : DataTypes.Object,// todo: check other types
+                    : DataTypes.Object,
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
-                ClassName = containerType?.GetRequiredFullName() ?? containerName,
+                ClassName = containerType.GetRequiredFullName(),
                 ChangeTime = changeTime,
             };
 
@@ -119,7 +118,6 @@ namespace Shesha.Metadata
                         switch (dt.DataType)
                         {
                             case DataTypes.Object:
-                            case DataTypes.ObjectReference:
                                 return assemblies.Contains(type.Assembly);
                             case DataTypes.Array:
                                 {
@@ -248,27 +246,23 @@ namespace Shesha.Metadata
             return Task.FromResult(dtos);
         }
 
-        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType, string containerName)
+        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType)
         {
-            var (date, properties) = await GetPropertiesInternalAsync(containerType, containerName);
+            var (_, properties) = await GetPropertiesInternalAsync(containerType);
             return properties;
         }
 
-        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type? containerType, string containerName)
+        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type containerType)
         {
-            var metadataContext = containerType != null
-                ? new MetadataContext(containerType)
-                : new MetadataContext();
+            var metadataContext = new MetadataContext(containerType);
 
-            var hardCodedProps = containerType == null
-                ? new List<PropertyMetadataDto>()
-                : containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var hardCodedProps = containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Select(p => _hardcodeMetadataProvider.GetPropertyMetadata(p, metadataContext))
                     .OrderBy(e => e.Path)
                     .ToList();
 
             var result = new List<PropertyMetadataDto>();
-            var modelConfig = await _modelConfigurationProvider.GetModelConfigurationOrNullAsync(containerType?.Namespace ?? "Dynamic", containerType?.Name ?? containerName, hardCodedProps);
+            var modelConfig = await _modelConfigurationProvider.GetCachedModelConfigurationOrNullAsync(containerType.Namespace.NotNull(), containerType.Name, hardCodedProps);
             // try to get data-driven configuration
             if (modelConfig != null)
             {
@@ -281,6 +275,7 @@ namespace Shesha.Metadata
                         idx = p.SortOrder.HasValue ? p.SortOrder.Value : idx + 1;
 
                         var prop = _mapper.Map<PropertyMetadataDto>(p);
+                        prop.ContainerType = containerType.FullName ?? "";
                         prop.EnumType = hardCodedProp?.EnumType;
                         prop.IsNullable = hardCodedProp?.IsNullable ?? false;
                         prop.OrderIndex = idx;

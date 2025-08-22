@@ -30,8 +30,8 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
     const makeNewItem = (items: IModelItem[]): IModelItem => {
         return {
             id: nanoid(),
-            name: `New Property ${(items ?? []).length + 1}`,
-            label: '',
+            name: `NewProperty${(items ?? []).length + 1}`,
+            label: `New Property ${(items ?? []).length + 1}`,
         };
     };
 

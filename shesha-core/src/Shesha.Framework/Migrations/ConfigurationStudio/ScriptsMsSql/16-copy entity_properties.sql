@@ -33,7 +33,11 @@ INSERT INTO frwk.entity_properties
            ,validation_message
            ,entity_config_revision_id
            ,items_type_id
-           ,parent_property_id)
+           ,parent_property_id
+           ,created_in_db
+           ,column_name
+           ,list_configuration
+           ,formatting)
 SELECT 
 	Id
     ,CreationTime
@@ -70,4 +74,8 @@ SELECT
 	,EntityConfigId
     ,ItemsTypeId      
     ,ParentPropertyId
+    ,CreatedInDb
+    ,ColumnName
+    ,ListConfiguration
+    ,Formatting
 FROM Frwk_EntityProperties		   

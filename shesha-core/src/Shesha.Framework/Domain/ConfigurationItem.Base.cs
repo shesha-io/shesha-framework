@@ -74,6 +74,14 @@ namespace Shesha.Domain
         [Display(Name = "Exposed From Revision", Description = "Is used when configuration item is exposed from base module")]
         public virtual ConfigurationItemRevision? ExposedFromRevision { get; set; }
 
+        public virtual bool IsCodeBased { get; set; }
+        public virtual bool IsCodegenPending { get; set; }
+        public virtual Guid? LatestImportedRevisionId { get; set; }
+        [ReadonlyProperty]
+        public virtual bool IsUpdated { get; protected set; }
+        [ReadonlyProperty]
+        public virtual bool IsExposed { get; protected set; }
+
         public virtual void Normalize()
         {
             // If Origin is not specified - add self reference

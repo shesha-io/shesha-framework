@@ -46,7 +46,7 @@ namespace Shesha.DynamicEntities.Distribution
         {
             await MapPropertiesAsync(item, distributedItem.Properties);
             
-            var key = _modelConfigsCacheHolder.GetCacheKey(revision.Namespace, revision.ClassName);
+            var key = _modelConfigsCacheHolder.GetCacheKey(item.Namespace, item.ClassName);
             await _modelConfigsCache.RemoveAsync(key);
         }
 
@@ -96,18 +96,18 @@ namespace Shesha.DynamicEntities.Distribution
         {
             // TODO: review comparison
             var equals = revision.TypeShortAlias == distributedItem.TypeShortAlias &&
-                revision.ClassName == distributedItem.ClassName &&
-                revision.Namespace == distributedItem.Namespace &&
-                revision.DiscriminatorValue == distributedItem.DiscriminatorValue &&
+                item.ClassName == distributedItem.ClassName &&
+                item.Namespace == distributedItem.Namespace &&
+                item.DiscriminatorValue == distributedItem.DiscriminatorValue &&
+                item.TableName == distributedItem.TableName &&
+                item.EntityConfigType == item.EntityConfigType &&
+
                 revision.Source == distributedItem.Source &&
-                revision.EntityConfigType == distributedItem.EntityConfigType &&
 
                 revision.GenerateAppService == distributedItem.GenerateAppService &&
-                revision.FriendlyName == distributedItem.FriendlyName &&
-                revision.HardcodedPropertiesMD5 == distributedItem.PropertiesMD5 &&
+                revision.HardcodedPropertiesMD5 == distributedItem.PropertiesMD5;
                 // TODO: implement 
                 //revision.ViewConfigurations == distributedItem.ViewConfigurations.ToList() &&
-                revision.TableName == distributedItem.TableName;
 
             return Task.FromResult(equals);
         }
@@ -115,18 +115,18 @@ namespace Shesha.DynamicEntities.Distribution
         protected override async Task MapCustomPropsToItemAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig distributedItem)
         {
             // entity config specific properties
+            item.ClassName = distributedItem.ClassName;
+            item.Namespace = distributedItem.Namespace;
+            item.DiscriminatorValue = distributedItem.DiscriminatorValue;
+            item.TableName = distributedItem.TableName;
+            item.EntityConfigType = distributedItem.EntityConfigType;
+
             revision.TypeShortAlias = distributedItem.TypeShortAlias;
-            revision.ClassName = distributedItem.ClassName;
-            revision.Namespace = distributedItem.Namespace;
-            revision.DiscriminatorValue = distributedItem.DiscriminatorValue;
             revision.Source = distributedItem.Source;
-            revision.EntityConfigType = distributedItem.EntityConfigType;
 
             revision.GenerateAppService = distributedItem.GenerateAppService;
-            revision.FriendlyName = distributedItem.FriendlyName;
             revision.HardcodedPropertiesMD5 = distributedItem.PropertiesMD5;
             revision.ViewConfigurations = distributedItem.ViewConfigurations.ToList();
-            revision.TableName = distributedItem.TableName;
 
             if (distributedItem.Permission != null)
             {

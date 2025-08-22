@@ -47,7 +47,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
             return true;
 
         return isPropertyMetadata(property) && 
-            (property.dataType === propertyMetadata.dataType || property.dataType === DataTypes.entityReference || property.dataType === DataTypes.objectReference  || property.dataType === DataTypes.object);
+            (property.dataType === propertyMetadata.dataType || property.dataType === DataTypes.entityReference || property.dataType === DataTypes.object);
     };
 
     const isPropertySelectable = (property: IPropertyItem) => {

@@ -108,7 +108,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   hidden: false,
                   dataSourceType: 'url',
                   validate: { required: true },
-                  dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                  dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                   settingsValidationErrors: [],
                   useRawValues: true,
                   width: '100%',

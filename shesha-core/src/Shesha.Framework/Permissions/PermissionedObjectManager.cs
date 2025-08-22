@@ -397,6 +397,7 @@ namespace Shesha.Permissions
             var newObj = await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
 
             var dto = await GetDtoOrNullAsync(newObj, true, true);
+            await SetCacheAsync(permissionedObject, new CacheItemWrapper<PermissionedObjectDto>(permissionedObject, dto));
             return dto.NotNull();
         }
 
@@ -469,7 +470,7 @@ namespace Shesha.Permissions
             }
         }
 
-        private void RemoveCache(string objectName, string? objectType, string? parentName)
+        private void RemoveCache(string? objectName, string? objectType, string? parentName)
         {
             var key = "";
             var pkey = GetCacheKey(objectName, objectType);

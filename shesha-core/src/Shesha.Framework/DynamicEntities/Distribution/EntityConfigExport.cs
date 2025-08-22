@@ -30,20 +30,20 @@ namespace Shesha.DynamicEntities.Distribution
             _permissionedObjectManager = permissionedObjectManager;
         }
 
-        protected override async Task MapCustomPropsAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig result) 
+        protected override async Task MapCustomPropsAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig result)
         {
-            var fullClassName = revision.FullClassName;
+            var fullClassName = item.FullClassName;
 
             result.TypeShortAlias = revision.TypeShortAlias;
-            result.TableName = revision.TableName;
-            result.ClassName = revision.ClassName;
-            result.Namespace = revision.Namespace;
-            result.DiscriminatorValue = revision.DiscriminatorValue;
+            result.SchemaName = item.SchemaName;
+            result.TableName = item.TableName;
+            result.ClassName = item.ClassName;
+            result.Namespace = item.Namespace;
+            result.DiscriminatorValue = item.DiscriminatorValue;
             result.GenerateAppService = revision.GenerateAppService;
             result.Source = revision.Source;
-            result.EntityConfigType = revision.EntityConfigType;
+            result.EntityConfigType = item.EntityConfigType;
 
-            result.FriendlyName = revision.FriendlyName;
             result.PropertiesMD5 = revision.HardcodedPropertiesMD5;
 
             result.ViewConfigurations = MapViewConfigurations(item);

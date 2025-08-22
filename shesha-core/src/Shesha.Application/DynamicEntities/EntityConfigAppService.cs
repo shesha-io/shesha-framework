@@ -22,7 +22,7 @@ namespace Shesha.DynamicEntities;
 
 public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, EntityConfigDto, Guid>, IEntityConfigAppService
 {
-    private readonly EntityConfigurationStore _entityConfigurationStore;
+    private readonly IEntityConfigurationStore _entityConfigurationStore;
     private readonly IEntityConfigManager _entityConfigManager;
     private readonly IRepository<EntityProperty, Guid> _propertyRepository;
     private readonly ITypeFinder _typeFinder;
@@ -30,7 +30,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
     public EntityConfigAppService(
         IRepository<EntityConfig, Guid> repository,
-        EntityConfigurationStore entityConfigurationStore,
+        IEntityConfigurationStore entityConfigurationStore,
         IEntityConfigManager entityConfigManager,
         ITypeFinder typeFinder,
         IRepository<ConfigurationItem, Guid> configItemRepository,

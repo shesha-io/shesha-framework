@@ -14,10 +14,17 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class EntityConfigDto: EntityDto<Guid>, IConfigurationItemDto
     {
+        public virtual bool CreatedInDb { get; set; }
+
+        public string? IdColumn { get; set; }
+
         [MaxLength(255)]
         public string? FriendlyName { get; set; }
         [MaxLength(100)]
         public string? TypeShortAlias { get; set; }
+
+        [MaxLength(255)]
+        public string? SchemaName { get; set; }
         [MaxLength(255)]
         public string? TableName { get; set; }
         [MaxLength(500)]
@@ -27,14 +34,17 @@ namespace Shesha.DynamicEntities.Dtos
         [MaxLength(255)]
         public string? DiscriminatorValue { get; set; }
 
+        public string? InheritedFromId { get; set; }
+        public string? InheritedFrom { get; set; }
+
         /// <summary>
         /// Source of the entity (code/user)
         /// </summary>
         public MetadataSourceType? Source { get; set; }
 
-        public virtual EntityConfigTypes? EntityConfigType { get; set; }
+        public EntityConfigTypes? EntityConfigType { get; set; }
 
-        public virtual bool GenerateAppService { get; set; }
+        public bool GenerateAppService { get; set; }
 
         // From ConfigurationItem
         public bool Suppress { get; set; }
@@ -47,6 +57,7 @@ namespace Shesha.DynamicEntities.Dtos
             Source != MetadataSourceType.UserDefined
             && StaticContext.IocManager.Resolve<IEntityConfigurationStore>().GetOrNull(FullClassName) == null;
 
+        // ToDo: AS - review getting FullClassName
         [JsonIgnore]
         public virtual string FullClassName => $"{Namespace}.{ClassName}";
 

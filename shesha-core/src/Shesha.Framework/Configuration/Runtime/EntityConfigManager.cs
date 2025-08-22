@@ -34,20 +34,22 @@ namespace Shesha.Configuration.Runtime
                 .Select(x => new EntityConfigDto()
                 {
                     Id = x.Id,
-                    
-                    ClassName = x.Revision.ClassName,
-                    FriendlyName = x.Revision.FriendlyName,
+                    Suppress = x.Suppress,
+
+                    Name = x.Name,
+                    Module = x.Module!.Name,
+
+                    ClassName = x.ClassName,
+                    TableName = x.TableName,
+                    Namespace = x.Namespace,
+                    DiscriminatorValue = x.DiscriminatorValue,
+
+                    EntityConfigType = x.EntityConfigType,
+
                     Label = x.Revision.Label,
                     TypeShortAlias = x.Revision.TypeShortAlias,
-                    TableName = x.Revision.TableName,
-                    Namespace = x.Revision.Namespace,
-                    DiscriminatorValue = x.Revision.DiscriminatorValue,
 
                     Source = x.Revision.Source,
-                    EntityConfigType = x.Revision.EntityConfigType,
-                    Suppress = x.Suppress,
-                    Module = x.Module!.Name,
-                    Name = x.Name,
                 }).ToListAsync();
 
             return implemented ?? false
@@ -62,28 +64,28 @@ namespace Shesha.Configuration.Runtime
             dest.Application = src.Application;
             dest.ItemType = src.ItemType;
 
+            dest.ClassName = src.ClassName;
+            dest.Namespace = src.Namespace;
+            dest.DiscriminatorValue = src.DiscriminatorValue;
+            dest.TableName = src.TableName;
+
             dest.Origin = src.Origin;
+
+            dest.EntityConfigType = src.EntityConfigType;
+            dest.Suppress = src.Suppress;
 
             var revision = dest.EnsureLatestRevision();
             var srcRevision = src.Revision;
             revision.Label = srcRevision.Label;
             revision.Description = srcRevision.Description;
 
-            dest.Suppress = src.Suppress;
-
             // entity config specific properties
             revision.TypeShortAlias = srcRevision.TypeShortAlias;
-            revision.ClassName = srcRevision.ClassName;
-            revision.Namespace = srcRevision.Namespace;
-            revision.DiscriminatorValue = srcRevision.DiscriminatorValue;
             revision.Source = srcRevision.Source;
-            revision.EntityConfigType = srcRevision.EntityConfigType;
 
             revision.GenerateAppService = srcRevision.GenerateAppService;
-            revision.FriendlyName = srcRevision.FriendlyName;
             revision.HardcodedPropertiesMD5 = srcRevision.HardcodedPropertiesMD5;
             revision.ViewConfigurations = srcRevision.ViewConfigurations.ToList();
-            revision.TableName = srcRevision.TableName;
 
             return dest;
         }

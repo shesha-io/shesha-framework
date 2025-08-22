@@ -4,6 +4,7 @@ using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.Reflection;
 using Abp.Timing;
+using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.New;
@@ -24,7 +25,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Configurable modules bootstrapper
     /// </summary>
-    public class ConfigurableModuleBootstrapper : IBootstrapper, ITransientDependency
+    public class ConfigurableModuleBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -44,8 +45,10 @@ namespace Shesha.ConfigurationItems
             IModuleHierarchyProvider moduleHierarchyProvider,
             IIocManager iocManager,
             IApplicationStartupSession startupSession,
-            IAbpModuleManager moduleManager
-        )
+            IAbpModuleManager moduleManager,
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
             _unitOfWorkManager = unitOfWorkManager;
@@ -58,7 +61,7 @@ namespace Shesha.ConfigurationItems
         }
 
         [UnitOfWork(IsDisabled = true)]
-        public async Task ProcessAsync(bool force)
+        protected override async Task ProcessInternalAsync()
         {
             await DoProcessAsync();
         }
@@ -151,7 +154,7 @@ namespace Shesha.ConfigurationItems
             var codeModules = await GetCodeModulesAsync();
             var allSubModules = _typeFinder
                 .Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
-                .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
+                .Where(x => ForceUpdate || !_startupSession.AssemblyStaysUnchanged(x.Assembly))
                 .Select(t => {
                     return _iocManager.Resolve(t).ForceCastAs<ISheshaSubmodule>();
                 })

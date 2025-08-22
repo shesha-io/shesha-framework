@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { IToolboxComponent } from "@/interfaces";
+import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
 import { SettingOutlined } from "@ant-design/icons";
 import { SettingInput } from './settingsInput';
 import { ISettingsInputProps } from './interfaces';
 
-const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
+const SettingsInput: IToolboxComponent<ISettingsInputProps & IConfigurableFormComponent> = {
     type: 'settingsInput',
     isInput: true,
     isOutput: true,

@@ -1,7 +1,11 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using Newtonsoft.Json.Linq;
+using Shesha.Domain;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace Shesha.DynamicEntities.Dtos
@@ -11,6 +15,10 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class ModelPropertyDto : EntityDto<string>
     {
+        public string? ColumnName { get; set; }
+        public bool CreatedInDb { get; set; }
+        public Guid? InheritedFromId { get; set; }
+
         /// <summary>
         /// Property Name
         /// </summary>
@@ -42,6 +50,11 @@ namespace Shesha.DynamicEntities.Dtos
         public string? EntityType { get; set; }
 
         /// <summary>
+        /// Entity type. Aplicable for entity references
+        /// </summary>
+        public string? BaseEntityType { get; set; }
+
+        /// <summary>
         /// Module the entity belongs to. Aplicable for entity references
         /// </summary>
         public string? EntityModule { get; set; }
@@ -59,12 +72,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Reference list name
         /// </summary>
-        public string? ReferenceListName { get; set; }
-
-        /// <summary>
-        /// Reference list module
-        /// </summary>
-        public string? ReferenceListModule { get; set; }
+        public ReferenceListIdentifier? ReferenceListId { get; set; }
 
         /// <summary>
         /// Source type (ApplicationCode = 1, UserDefined = 2)
@@ -75,6 +83,13 @@ namespace Shesha.DynamicEntities.Dtos
         /// Default sort order
         /// </summary>
         public int? SortOrder { get; set; }
+
+        /// <summary>
+        /// Items type (applicable for arrays)
+        /// </summary>
+        public ModelPropertyDto? ItemsType { get; set; }
+
+        public bool IsItemsType { get; set; }
 
         /// <summary>
         /// Child properties, applicable for complex data types (e.g. object, array)
@@ -178,5 +193,25 @@ namespace Shesha.DynamicEntities.Dtos
         /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
         /// </summary>
         public bool? CascadeDeleteUnreferencedHardcoded { get; set; }
+
+        /// <summary>
+        /// List configuration and DB mapping
+        /// </summary>
+        public EntityPropertyListConfiguration? ListConfiguration { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        public JObject? Formatting { get; set; }
+
+        /// <summary>
+        /// If this property is child of another property
+        /// </summary>
+        public bool? IsChildProperty { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {DataType} ({DataFormat})";
+        }
     }
 }

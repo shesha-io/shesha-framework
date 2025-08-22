@@ -3,11 +3,13 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
 using Castle.Core.Logging;
+using Shesha.Attributes;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -20,19 +22,14 @@ using System.Threading.Tasks;
 
 namespace Shesha.Bootstrappers
 {
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
-    public class ReferenceListBootstrapper : IBootstrapper, ITransientDependency
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
+    public class ReferenceListBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<ReferenceList, Guid> _listRepo;
         private readonly IRepository<ReferenceListRevision, Guid> _listRevisionRepo;
         private readonly IRepository<ReferenceListItem, Guid> _listItemRepo;
         private readonly IModuleManager _moduleManager;
-        private readonly IApplicationStartupSession _startupSession;
-
-
-        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public ReferenceListBootstrapper(
             ITypeFinder typeFinder,
@@ -41,22 +38,22 @@ namespace Shesha.Bootstrappers
             IRepository<ReferenceListRevision, Guid> listRevisionRepo,
             IRepository<ReferenceListItem, Guid> listItemRepo,
             IModuleManager moduleManager,
-            IApplicationStartupSession startupSession
-        )
+            IApplicationStartupSession startupSession,
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
-            _unitOfWorkManager = unitOfWorkManager;
             _listRepo = listRepo;
             _listRevisionRepo = listRevisionRepo;
             _listItemRepo = listItemRepo;
             _moduleManager = moduleManager;
-            _startupSession = startupSession;
         }
 
         [UnitOfWork(IsDisabled = true)]
-        public async Task ProcessAsync(bool force)
+        protected override async Task ProcessInternalAsync()
         {
-            Logger.Warn("Bootstrap reference lists");
+            LogInfo("Bootstrap reference lists");
 
             var grouppedLists = _typeFinder
                 .Find(type => type != null && type.IsPublic && type.IsEnum && type.HasAttribute<ReferenceListAttribute>())
@@ -68,22 +65,25 @@ namespace Shesha.Bootstrappers
                 })
                 .ToList();
 
-            if (!grouppedLists.Any()) 
+            if (!grouppedLists.Any())
             {
-                Logger.Warn($"Reference lists to bootstrap not found");
+                LogInfo($"Reference lists to bootstrap not found");
                 return;
             }
 
             var all = grouppedLists.Count();
-            Logger.Warn($"Found {all} assemblies to bootstrap");
-            grouppedLists = grouppedLists.Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly)).ToList();
-            Logger.Warn($"{all - grouppedLists.Count()} assemblies skipped as unchanged");
-
-            foreach (var group in grouppedLists) 
+            LogInfo($"Found {all} assemblies to bootstrap");
+            if (!ForceUpdate)
             {
-                using (var unitOfWork = _unitOfWorkManager.Begin())
+                grouppedLists = grouppedLists.Where(x => !StartupSession.AssemblyStaysUnchanged(x.Assembly)).ToList();
+                LogInfo($"{all - grouppedLists.Count()} assemblies skipped as unchanged");
+            }
+
+            foreach (var group in grouppedLists)
+            {
+                using (var unitOfWork = UnitOfWorkManager.Begin())
                 {
-                    using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                    using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
                         await ProcessAssemblyAsync(group.Assembly, group.Lists);
                     }
@@ -91,13 +91,13 @@ namespace Shesha.Bootstrappers
                 }
             }
 
-            Logger.Warn("Bootstrap reference lists finished successfully");
+            LogInfo("Bootstrap reference lists finished successfully");
         }
 
-        private async Task ProcessAssemblyAsync(Assembly assembly, List<RefListType> lists) 
+        private async Task ProcessAssemblyAsync(Assembly assembly, List<RefListType> lists)
         {
-            Logger.Warn($"Bootstrap assembly {assembly.FullName}");
-            
+            LogInfo($"Bootstrap assembly {assembly.FullName}");
+
             var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
             if (module == null)
                 return;
@@ -105,13 +105,13 @@ namespace Shesha.Bootstrappers
             var listNo = 1;
             foreach (var list in lists)
             {
-                Logger.Info($"process list {listNo}/{lists.Count()}: '{list.Enum.FullName}'");
+                LogInfo($"process list {listNo}/{lists.Count()}: '{list.Enum.FullName}'");
 
                 try
                 {
                     await ProcessListAsync(module, list);
-                    
-                    Logger.Info($"process list {listNo++}/{lists.Count()}: '{list.Enum.FullName}' - finished");
+
+                    LogInfo($"process list {listNo++}/{lists.Count()}: '{list.Enum.FullName}' - finished");
                 }
                 catch (Exception e)
                 {
@@ -119,7 +119,7 @@ namespace Shesha.Bootstrappers
                 }
             }
 
-            Logger.Warn($"Bootstrap assembly {assembly.FullName} - finished");
+            LogInfo($"Bootstrap assembly {assembly.FullName} - finished");
         }
 
         private async Task ProcessListAsync(Domain.Module module, RefListType list) 
@@ -127,7 +127,7 @@ namespace Shesha.Bootstrappers
             var listInCode = new List<ListItemInfo>();
             var values = Enum.GetValues(list.Enum);
 
-            Logger.Info($"  number of items in code: {values.Length}");
+            LogInfo($"  number of items in code: {values.Length}");
 
             foreach (var value in values)
             {
@@ -179,7 +179,7 @@ namespace Shesha.Bootstrappers
 
             if (listInDb == null)
             {
-                Logger.Info($"  list in the DB: not found");
+                LogInfo($"  list in the DB: not found");
 
                 listInDb = new ReferenceList() { 
                     Module = module,
@@ -202,7 +202,7 @@ namespace Shesha.Bootstrappers
             }
             else
             {
-                Logger.Info($"  list in the DB: found");
+                LogInfo($"  list in the DB: found");
 
                 // update list if required
                 if (module != null && listInDb.Module != module || listInDb.LatestRevision == null || !listInDb.LatestRevision.HardLinkToApplication)
@@ -220,11 +220,11 @@ namespace Shesha.Bootstrappers
                 .Where(i => i.ReferenceListRevision == latestRevision)
                 .ToListAsync();
 
-            Logger.Info($"  items in the DB: {itemsInDb.Count()}");
+            LogInfo($"  items in the DB: {itemsInDb.Count()}");
 
             var toAdd = listInCode.Where(i => !itemsInDb.Any(iv => iv.ItemValue == i.Value)).ToList();
 
-            Logger.Info($"  items to add: {toAdd.Count()}");
+            LogInfo($"  items to add: {toAdd.Count()}");
 
             foreach (var item in toAdd)
             {
@@ -243,14 +243,15 @@ namespace Shesha.Bootstrappers
             }
 
             var toInactivate = itemsInDb.Where(ldb => ldb.HardLinkToApplication && !listInCode.Any(i => i.Value == ldb.ItemValue)).ToList();
-            Logger.Info($"  items to delete: {toInactivate.Count()}");
+            LogInfo($"  items to delete: {toInactivate.Count()}");
 
             foreach (var item in toInactivate)
             {
                 await _listItemRepo.DeleteAsync(item);
             }
 
-            var toUpdate = itemsInDb.Select(idb => {
+            var toUpdate = itemsInDb.Select(idb =>
+            {
                 var updatedItemInCode = listInCode.FirstOrDefault(i => i.Value == idb.ItemValue && (i.Name != idb.Item || !idb.HardLinkToApplication));
                 return updatedItemInCode != null
                 ? new
@@ -262,7 +263,7 @@ namespace Shesha.Bootstrappers
             })
                 .WhereNotNull()
                 .ToList();
-            Logger.Info($"  items to update: {toUpdate.Count()}");
+            LogInfo($"  items to update: {toUpdate.Count()}");
 
             foreach (var item in toUpdate)
             {
@@ -274,10 +275,10 @@ namespace Shesha.Bootstrappers
 
             await _listRepo.InsertOrUpdateAsync(listInDb);
 
-            await _unitOfWorkManager.Current.SaveChangesAsync();
+            await UnitOfWorkManager.Current.SaveChangesAsync();
         }
 
-        private class RefListType 
+        private class RefListType
         {
             public Assembly Assembly { get; set; }
             public Type Enum { get; set; }

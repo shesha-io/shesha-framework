@@ -8,8 +8,8 @@ import { evaluateString, useShaFormInstance } from '@/index';
 import { useStyles } from '../inputComponent/styles';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 
-export interface ISettingsInputRowProps extends Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'>, IInputRowProps {
-
+export interface ISettingsInputRowProps extends Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'>, IInputRowProps {
+    id?: string;
 }
 
 export interface IInputRowProps {
@@ -36,7 +36,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
                 <SettingInput key={i + props.label}
                     {...props}
                     hidden={isHidden as boolean}
-                    readOnly={readOnly}
+                    readOnly={props.readOnly || readOnly}
                     inline={inline}
                     width={width} />
             );
@@ -45,7 +45,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
     </div>;
 };
 
-const SettingsInputRow: IToolboxComponent<ISettingsInputRowProps> = {
+const SettingsInputRow: IToolboxComponent<ISettingsInputRowProps & IConfigurableFormComponent> = {
     type: 'settingsInputRow',
     isInput: true,
     isOutput: true,

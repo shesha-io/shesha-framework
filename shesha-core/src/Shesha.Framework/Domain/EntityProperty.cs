@@ -1,6 +1,8 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using Newtonsoft.Json.Linq;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -17,8 +19,21 @@ namespace Shesha.Domain
     [Table("entity_properties", Schema = "frwk")]
     public class EntityProperty: FullAuditedEntity<Guid>
     {
+        public virtual bool CreatedInDb { get; set; }
+
         /// <summary>
         /// Entity Config Revision
+        /// Name of column in the DB
+        /// </summary>
+        public virtual string? ColumnName { get; set; }
+
+        /// <summary>
+        /// If Inherited from other property
+        /// </summary>
+        public virtual EntityProperty? InheritedFrom { get; set; }
+
+        /// <summary>
+        /// Owner entity config
         /// </summary>
         public required virtual EntityConfigRevision EntityConfigRevision { get; set; }
 
@@ -68,7 +83,7 @@ namespace Shesha.Domain
         /// </summary>
         [MaxLength(300)]
         public virtual string? ReferenceListModule { get; set; }
-        
+
         /// <summary>
         /// Source of the property (code/user)
         /// </summary>
@@ -171,5 +186,22 @@ namespace Shesha.Domain
         /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
         /// </summary>
         public virtual bool CascadeDeleteUnreferenced { get; set; }
+
+        /// <summary>
+        /// List configuration and DB mapping
+        /// </summary>
+        [SaveAsJson]
+        public virtual EntityPropertyListConfiguration? ListConfiguration { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        [SaveAsJson]
+        public virtual JObject? Formatting { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {DataType} ({DataFormat} {EntityType})";
+        }
     }
 }

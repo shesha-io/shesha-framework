@@ -7,6 +7,8 @@ export type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
  * Indicate the source of the entity/property metadata
  */
 export type MetadataSourceType = 1 | 2;
+export const MetadataSourceTypeApplication = 1 as MetadataSourceType;
+export const MetadataSourceTypeUseDefined = 2 as MetadataSourceType;
 
 export interface PermissionedObjectDto {
   id?: string;
@@ -31,10 +33,49 @@ export interface PermissionedObjectDto {
   } | null;
 }
 
+export interface INumberFormatting {
+  showThousandsSeparator?: boolean;
+  customFormat?: string | null;
+}
+
+export interface IIntegerFormatting extends INumberFormatting {
+}
+
+export interface IDecimalFormatting extends INumberFormatting {
+  numDecimalPlaces?: number | null;
+  showAsPercentage?: boolean;
+}
+
+export interface IFloatFormatting extends INumberFormatting {
+}
+
+export interface IEntityPropertyListDbMapping
+{
+    manyToManyTableName?: string | null;
+    manyToManyKeyColumnName?: string | null;
+    manyToManyChildColumnName?: string | null;
+    manyToManyInversePropertyName?: string | null;
+}
+
+export type EntityPropertyListMappingType = "many-to-many" | "many-to-one";
+
+export interface IEntityPropertyListConfiguration{
+  mappingType?: EntityPropertyListMappingType;
+  foreignProperty?: string | null;
+  dbMapping?: IEntityPropertyListDbMapping;
+}
+
 /**
  * Model property DTO
  */
 export interface ModelPropertyDto {
+
+  columnName?: string | null;
+  createdInDb?: boolean;
+  inheritedFromId?: string | null;
+
+  listConfiguration?: IEntityPropertyListConfiguration;
+
   id?: string | null;
   /**
    * Property Name
@@ -154,6 +195,8 @@ export interface ModelPropertyDto {
    * Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
    */
   cascadeDeleteUnreferencedHardcoded?: boolean;
+
+  formatting?: INumberFormatting | IIntegerFormatting | IDecimalFormatting | IFloatFormatting;
 }
 
 /**

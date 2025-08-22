@@ -101,6 +101,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const attributes = {
     'data-sha-c-id': `${componentModel.id}`,
     'data-sha-c-name': `${componentModel.componentName}`,
+    'data-sha-c-property-name': `${componentModel.propertyName}`,
     'data-sha-c-type': `${componentModel.type}`,
   };
 

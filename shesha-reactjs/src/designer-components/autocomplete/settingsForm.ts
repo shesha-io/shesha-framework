@@ -192,6 +192,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                         valueName: 'value',
                                         valueTitle: 'Value',
                                         mode: 'dialog',
+                                        jsSetting: true,
                                         version: 2
                                     })
                                     .toJson()
@@ -227,7 +228,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 dataSourceType: 'url',
                                                 validate: {},
                                                 jsSetting: true,
-                                                dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                                                dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                                                 useRawValues: true
                                             }
                                         ]
@@ -468,8 +469,17 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                 parentId: dataTabId,
                                                 label: "Key Property Name",
                                                 propertyName: "keyPropName",
-                                                type: "textField",
-                                                size: "small",
+                                                tooltip: 'Name of the property that will be used as key in the autocomplete. Live empty to use the default value`s evaluator.',
+                                                modelType: {
+                                                    _code: 'return getSettingValue(data?.entityType);',
+                                                    _mode: 'code',
+                                                    _value: false
+                                                } as any,
+                                                isDynamic: false,
+                                                autoFillProps: false,
+                                                settingsValidationErrors: [],
+                                                type: 'propertyAutocomplete',
+                                                size: 'small',
                                                 jsSetting: true,
                                             }
                                         ]

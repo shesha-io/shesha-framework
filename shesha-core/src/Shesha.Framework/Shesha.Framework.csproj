@@ -43,7 +43,8 @@
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\01-copy modules.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\02-configuration_items.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\03-configuration_item_revisions.sql" />
-        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\04-entity_config_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\04_0-entity_configs.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\04_1-entity_config_revisions.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\05-form_configuration_revisions.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\06-notification_channel_revisions.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\07-permission_definition_revisions.sql" />
@@ -100,7 +101,8 @@
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\01-copy modules.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\02-configuration_items.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\03-configuration_item_revisions.sql" />
-        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\04-entity_config_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\04_0-entity_configs.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\04_1-entity_config_revisions.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\05-form_configuration_revisions.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\06-notification_channel_revisions.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\07-permission_definition_revisions.sql" />

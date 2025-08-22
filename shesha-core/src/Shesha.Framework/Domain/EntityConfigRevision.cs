@@ -1,6 +1,7 @@
 ﻿using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,31 +21,13 @@ namespace Shesha.Domain
         /// </summary>
         public EntityConfigRevision()
         {
-            // set to user-defined by default, `ApplicationCode` is used in the bootstrapper only
-            Source = MetadataSourceType.UserDefined;
-
-            EntityConfigType = EntityConfigTypes.Class;
         }
+
+        [NotMapped]
+        public virtual EntityConfig EntityConfig => ConfigurationItem.ForceCastAs<EntityConfig>();
 
         [MaxLength(100)]
         public virtual string? TypeShortAlias { get; set; }
-
-        [MaxLength(255)]
-        public virtual string? TableName { get; set; }
-
-        [MaxLength(500)]
-        public virtual string ClassName { get; set; }
-        [MaxLength(500)]
-        public virtual string? Namespace { get; set; }
-        [MaxLength(255)]
-        public virtual string? DiscriminatorValue { get; set; }
-
-        /// <summary>
-        /// User-friendly entity name
-        /// </summary>
-        [EntityDisplayName]
-        [MaxLength(255)]
-        public virtual string? FriendlyName { get; set; }
 
         /// <summary>
         /// MD5 hash of the hardcoded properties, is used for performance optimization of the bootstrapper
@@ -64,15 +47,10 @@ namespace Shesha.Domain
         /// </summary>
         public virtual bool GenerateAppService { get; set; }
 
-        [NotMapped]
-        public virtual string FullClassName => $"{Namespace}.{ClassName}";
-
         /// <summary>
         /// Source of the entity (code/user)
         /// </summary>
-        public virtual MetadataSourceType? Source { get; set; }
-
-        public virtual EntityConfigTypes? EntityConfigType { get; set; }
+        public virtual MetadataSourceType? Source { get; set; } = MetadataSourceType.UserDefined; // set to user-defined by default, `ApplicationCode` is used in the bootstrapper only
 
         /// <summary>
         /// Code identifier that can be used in the client-side code to reference current module

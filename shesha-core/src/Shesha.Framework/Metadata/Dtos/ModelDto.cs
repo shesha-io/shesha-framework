@@ -7,6 +7,7 @@ namespace Shesha.Metadata.Dtos
     /// </summary>
     public class ModelDto
     {
+        public string Name { get; set; }
         public string ClassName { get; set; }
         public string? Alias { get; set; }
         public string? Description { get; set; }

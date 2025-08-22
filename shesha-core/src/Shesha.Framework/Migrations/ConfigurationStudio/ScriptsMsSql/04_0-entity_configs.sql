@@ -1,31 +1,24 @@
-INSERT INTO frwk.entity_config_revisions
+INSERT INTO frwk.entity_configs
            (id
-           ,accessor
            ,class_name
            ,discriminator_value
            ,entity_config_type_lkp
-           ,friendly_name
-           ,generate_app_service
-           ,properties_md5
            ,namespace
-           ,source_lkp
            ,table_name
-           ,type_short_alias
-           ,view_configurations)
+		   ,id_column
+		   ,created_in_db
+		   ,inherited_from_id
+		   )
 select 
 	cio.Id
-	,ec.Accessor
 	,ec.ClassName
 	,ec.DiscriminatorValue
 	,ec.EntityConfigTypeLkp
-	,ec.FriendlyName
-	,ec.GenerateAppService
-	,ec.PropertiesMD5
 	,ec.Namespace
-	,ec.SourceLkp
 	,ec.TableName
-	,ec.TypeShortAlias
-	,ec.ViewConfigurations
+	,ec.IdColumn
+	,ec.CreatedInDb
+	,ec.InheritedFromId
 from
 	Frwk_ConfigurationItems cio
 	inner join Frwk_EntityConfigs ec on cio.Id = ec.Id
