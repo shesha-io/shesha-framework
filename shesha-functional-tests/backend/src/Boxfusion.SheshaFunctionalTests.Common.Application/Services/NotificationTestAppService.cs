@@ -56,7 +56,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Body = type.Description ?? string.Empty
             };
 
-            var files = await _storedFileRepository.GetAllIncluding().Where(x => x.Owner.Id == notification.SchoolId).ToListAsync();
+            List<StoredFile> files = new List<StoredFile>();
+
+            if (notification.SchoolId != null)
+            {
+                files = await _storedFileRepository.GetAllIncluding()
+                    .Where(x => x.Owner.Id == notification.SchoolId)
+                    .ToListAsync();
+            }
 
             var attachments = files.Select(x => new NotificationAttachmentDto()
             {
@@ -86,7 +93,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 null,
                 channel
             );
-        }
+         }
         public async Task BulkPublishAsync(BulkNotificationDto notification)
         {
             if (notification.Type == null)
@@ -103,7 +110,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Name = "Test Name",
             };
 
-            var files = await _storedFileRepository.GetAllIncluding().Where(x => x.Owner.Id == notification.SchoolId).ToListAsync();
+            List<StoredFile> files = new List<StoredFile>();
+
+            if (notification.SchoolId != null)
+            {
+                files = await _storedFileRepository.GetAllIncluding()
+                    .Where(x => x.Owner.Id == notification.SchoolId)
+                    .ToListAsync();
+            }
 
             var attachments = files.Select(x => new NotificationAttachmentDto()
             {
