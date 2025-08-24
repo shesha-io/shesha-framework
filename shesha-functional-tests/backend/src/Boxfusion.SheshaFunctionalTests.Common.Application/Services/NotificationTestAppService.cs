@@ -49,10 +49,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Body = type.Description
             };
 
-            // Get attachments only if recipient is provided
-            var files = recipientPerson != null
-                ? await _storedFileService.GetAttachmentsAsync(recipientPerson)
-                : null;
+            List<StoredFile> files = new List<StoredFile>();
+
+            if (notification.SchoolId != null)
+            {
+                files = await _storedFileRepository.GetAllIncluding()
+                    .Where(x => x.Owner.Id == notification.SchoolId)
+                    .ToListAsync();
+            }
 
             var attachments = files?.Select(x => new NotificationAttachmentDto()
             {
@@ -81,7 +85,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 null,
                 channel
             );
-        }
+         }
         public async Task BulkPublishAsync(BulkNotificationDto notification)
         {
             if (notification.Type == null)
@@ -97,6 +101,22 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = "Test Name",
             };
+
+            List<StoredFile> files = new List<StoredFile>();
+
+            if (notification.SchoolId != null)
+            {
+                files = await _storedFileRepository.GetAllIncluding()
+                    .Where(x => x.Owner.Id == notification.SchoolId)
+                    .ToListAsync();
+            }
+
+            var attachments = files.Select(x => new NotificationAttachmentDto()
+            {
+                FileName = x.FileName,
+                StoredFileId = x.Id,
+            }).ToList();
+
             // Get the current person
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
