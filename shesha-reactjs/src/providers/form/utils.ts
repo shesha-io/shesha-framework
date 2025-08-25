@@ -315,13 +315,13 @@ const getSettingValue = (
   allData: any,
   calcFunction: (setting: IPropertySetting, allData: any) => any,
   parentReadOnly: boolean = undefined,
-  propertyFilter?: (name: string) => boolean,
+  propertyFilter?: (name: string, value: any) => boolean,
   processedObjects?: any[]
 ) => {
   if (!processedObjects)
     processedObjects = [];
 
-  if (!value || typeof propertyFilter === 'function' && !propertyFilter(propertyName))
+  if (!value || typeof propertyFilter === 'function' && !propertyFilter(propertyName, value))
     return value;
 
   if (typeof value === 'object'
@@ -401,7 +401,7 @@ export const getActualModel = <T>(
   model: T,
   allData: any,
   parentReadOnly: boolean = undefined,
-  propertyFilter?: (name: string) => boolean,
+  propertyFilter?: (name: string, value: any) => boolean,
   processedObjects?: any[]
 ): T => {
   if (!processedObjects)
