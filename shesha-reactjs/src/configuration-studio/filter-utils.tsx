@@ -37,10 +37,8 @@ const replaceWithHighLight = (str: string, searchStr: string, replacement: (valu
 export const getTitleWithHighlight = (node: TreeNode, searchString?: string): ReactNode | undefined => {
   if (!searchString)
     return undefined;
-  if (typeof (node.title) !== 'string')
-    return undefined;
 
-  const strTitle = node.title as string;
+  const strTitle = node.name;
   const index = strTitle.toLowerCase().indexOf(searchString.toLowerCase());
   if (index <= -1)
     return undefined;

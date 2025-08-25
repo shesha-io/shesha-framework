@@ -179,7 +179,7 @@ from
 ");
 
             IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE VIEW frwk.vw_configuration_items_tree_nodes AS
-WITH RECURSIVE foldersCte AS (
+WITH RECURSIVE folders_cte AS (
     SELECT
         f.id,
         f.module_id AS parent_id,
@@ -200,16 +200,16 @@ WITH RECURSIVE foldersCte AS (
         f.name
     FROM
         frwk.configuration_item_folders f
-        INNER JOIN foldersCte c ON f.parent_id = c.id
+        INNER JOIN folders_cte c ON f.parent_id = c.id
     WHERE
         f.is_deleted = FALSE
 ), 
-modulesCte AS (
+modules_cte AS (
     SELECT
         m.id,
         NULL::uuid AS parent_id,
         m.id AS module_id,
-        m.name::VARCHAR(300),
+        m.name::VARCHAR(300) AS name,
         CAST(m.friendly_name AS VARCHAR(300)) AS label,
         1 AS node_type /*module*/
     FROM
@@ -225,12 +225,12 @@ modulesCte AS (
         f.id,
         f.parent_id,
         f.module_id,
-        f.name::VARCHAR(300),
+        f.name::VARCHAR(300) AS name,
         CAST(f.name AS VARCHAR(300)) AS label,
         3 AS node_type /*folder*/
     FROM
-        foldersCte f
-        INNER JOIN modulesCte c ON f.module_id = c.id
+        folders_cte f
+        INNER JOIN modules_cte c ON f.module_id = c.id
 ), 
 -- finalCte cannot be recursive because it references modulesCte in non-recursive term
 tree_nodes AS (
@@ -240,15 +240,18 @@ tree_nodes AS (
         tn.module_id,
         tn.name AS name,
         tn.label,
+        null::varchar as description,
         tn.node_type,
         NULL::VARCHAR(50) AS item_type,
 		false as is_exposed,
 		false as is_code_based,
 		false as is_updated,
 		false as is_codegen_pending,
-		cast (null as bigint) as last_modifier_user_id
+		null::bigint as last_modifier_user_id,
+		null::varchar as last_modifier_user,
+		null::timestamp last_modification_time
     FROM
-        modulesCte tn
+        modules_cte tn
 ),
 configuration_items_data AS (
     -- Configuration items with no folder (directly under module)
@@ -257,17 +260,22 @@ configuration_items_data AS (
         ci.module_id AS parent_id,
         ci.module_id,
         ci.name::VARCHAR(300) AS name,
-        ci.name::VARCHAR(300) AS label,
+        cast(rev.label as varchar(300)) as label,
+		cast(rev.description as varchar) as description,
         2 AS node_type, /*configuration item*/
         ci.item_type,
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
 		ci.is_codegen_pending,
-		ci.last_modifier_user_id
+		ci.last_modifier_user_id,
+		modified_by.""UserName"" as last_modifier_user,
+		ci.last_modification_time
     FROM
         frwk.configuration_items ci
         INNER JOIN tree_nodes c ON ci.module_id = c.id AND c.node_type = 1 /*module*/
+        inner join frwk.configuration_item_revisions rev on rev.id = ci.latest_revision_id
+		left join ""AbpUsers"" modified_by on modified_by.""Id"" = ci.last_modifier_user_id
     WHERE
         ci.folder_id IS NULL
         AND ci.is_deleted = FALSE
@@ -280,17 +288,22 @@ configuration_items_data AS (
         ci.folder_id AS parent_id,
         ci.module_id,
         ci.name::VARCHAR(300) AS name,
-        ci.name::VARCHAR(300) AS label,
+        cast(rev.label as varchar(300)) as label,
+		cast(rev.description as varchar) as description,
         2 AS node_type, /*configuration item*/
         ci.item_type,
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
 		ci.is_codegen_pending,
-		ci.last_modifier_user_id
+		ci.last_modifier_user_id,
+		modified_by.""UserName"" as last_modifier_user,
+		ci.last_modification_time
     FROM
         frwk.configuration_items ci
         INNER JOIN tree_nodes c ON ci.folder_id = c.id AND c.node_type = 3 /*folder*/
+        inner join frwk.configuration_item_revisions rev on rev.id = ci.latest_revision_id
+		left join ""AbpUsers"" modified_by on modified_by.""Id"" = ci.last_modifier_user_id
     WHERE
         ci.is_deleted = FALSE
 )

@@ -24,12 +24,16 @@ export type TreeNode = DataNode & {
     moduleId: string;
     name: string;
     label: string;
+    description?: string;
     nodeType: TreeNodeType;
 };
 
 export type ConfigItemTreeNode = TreeNode & {
     itemType: string;
     flags: DocumentFlags;
+    lastModifierUser?: string;
+    lastModificationTime?: string;
+    baseModule?: string;
 };
 
 export type NodeWithChilds = {
@@ -50,6 +54,10 @@ export type FlatTreeNode = DocumentFlags & {
     label: string;
     nodeType: number;
     itemType?: string;
+    description?: string;
+    lastModifierUser?: string;
+    lastModificationTime?: string;
+    baseModule?: string;
 };
 
 export const isTreeNode = (node: DataNode): node is TreeNode => {

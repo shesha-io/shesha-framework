@@ -33,12 +33,16 @@ namespace Shesha.ConfigurationStudio
                     ItemType = e.ItemType,
                     Name = e.Name,
                     Label = e.Label,
+                    Description = e.Description,
 
                     IsCodeBased = e.IsCodeBased,
                     IsCodegenPending = e.IsCodegenPending,
                     IsUpdated = e.IsUpdated,
                     IsExposed = e.IsExposed,
                     IsUpdatedByMe = e.LastModifierUserId != null && e.LastModifierUserId == AbpSession.UserId,
+                    LastModifierUser = e.LastModifierUser,
+                    LastModificationTime = e.LastModificationTime,
+                    BaseModule = e.BaseModule,
                 })
                 .ToListAsync();
             return treeNodes;

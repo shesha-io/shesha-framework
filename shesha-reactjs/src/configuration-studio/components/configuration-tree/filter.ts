@@ -1,5 +1,6 @@
 import { getTitleWithHighlight } from "@/configuration-studio/filter-utils";
 import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from "@/configuration-studio/models";
+import { renderCsTreeNode } from "@/configuration-studio/tree-utils";
 import { useMemo } from "react";
 
 const emptyNodes = [];
@@ -17,7 +18,12 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch: string)
                     if (quickSearch) {
                         const newTitle = getTitleWithHighlight(node, quickSearch);
                         if (newTitle)
-                            result.push({ ...node, title: newTitle });
+                            result.push({
+                                ...node,
+                                title: (data: TreeNode) => {
+                                    return renderCsTreeNode(data, newTitle);
+                                }
+                            });
                     } else
                         result.push(node);
                 }

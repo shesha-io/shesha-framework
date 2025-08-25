@@ -318,6 +318,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             return definition.documentInstanceFactory({
                 itemId: d.itemId,
                 label: node.name,
+                flags: node.flags,
             });
         })
             .filter(d => Boolean(d));

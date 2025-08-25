@@ -13,12 +13,17 @@ export const QuickInfoIcons: FC<IQuickInfoIconsProps> = () => {
 
     const activeDoc = useActiveDoc();
     if (!activeDoc)
-        return undefined;
+        return <>no active doc</>;
+
+    if (!activeDoc.flags)
+        return <>no flags</>;
+    
+        //return undefined;
 
     return (
         <div className={styles.csQuickInfoIcons}>
             {activeDoc.flags?.isExposed && <Tooltip title="Configuration originally defined in a base module which has been exposed"><BranchesOutlined /></Tooltip>}
-            {activeDoc.flags?.isCodeBased && <Tooltip title="Configuration is code based or has a corresponding code based portion "><CodeOutlined /></Tooltip>}
+            {activeDoc.flags?.isCodeBased && <Tooltip title="Configuration is code based or has a corresponding code based portion"><CodeOutlined /></Tooltip>}
             {activeDoc.flags?.isCodegenPending && <Tooltip title="Corresponding code based configuration has not been updated"><ExclamationCircleOutlined style={{ color: theme.colorError }} /></Tooltip>}
             {activeDoc.flags?.isUpdated && <Tooltip title="Current version has manual changes (i.e. is not a version that was imported via package)"><EditOutlined /></Tooltip>}
         </div>
