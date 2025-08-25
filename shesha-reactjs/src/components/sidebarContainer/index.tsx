@@ -10,6 +10,7 @@ import { getPanelSizes } from './utilis';
 import { Button, Checkbox, Space, Tooltip } from 'antd';
 import { ExpandOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useCanvas } from '@/index';
+import { calculateAutoZoom } from './canvasUtils';
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
@@ -38,8 +39,13 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
     setCurrentSizes(newSizes.sizes);
-    setCanvasWidth(autoWidth ? `calc(${newSizes.sizes[1]}vw - 55px - 4%)` : `calc(100vw - 55px)`, designerDevice);
-    setCanvasZoom(autoWidth ? 100 : zoom);
+    setCanvasWidth(`calc(100vw)`, designerDevice);
+    setCanvasZoom(autoWidth ? calculateAutoZoom({isOpenLeft,isOpenRight, leftSidebarProps,rightSidebarProps, allowFullCollapse, currentZoom: zoom, options: {
+      noPanelsOpenZoom: 100,
+      onePanelOpenZoom: 84,
+      bothPanelsOpenZoom: 65,
+
+    }}) : zoom);
   }, [isOpenRight, isOpenLeft, autoWidth]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
@@ -94,15 +100,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div className={styles.sidebarContainerMainAreaBody} style={{ width: designerWidth, zoom: `${ autoWidth ? '100%' : zoom}%`, overflow: 'auto', margin: '0 auto' }}>{children}</div>
+          <div className={styles.sidebarContainerMainAreaBody} style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>{children}</div>
           <div>
               <Space style={{position: 'fixed', bottom: 50 }}>
                 <Tooltip title={`${zoom}%`}><Button type={autoWidth ? 'primary' : 'default'} icon={<ExpandOutlined/>} title='Auto' onClick={()=> {
                     setAutoWidth(!autoWidth);
                   }}/>
                 </Tooltip>
-                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<MinusOutlined/>} title='Zoom out' onClick={()=> setCanvasZoom(zoom - 5)}/></Tooltip>
-                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<PlusOutlined/>} title='Zoom in' onClick={()=> setCanvasZoom(zoom + 5)}/></Tooltip>
+                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<MinusOutlined/>} title='Zoom out' onClick={()=> setCanvasZoom(zoom - 1)}/></Tooltip>
+                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<PlusOutlined/>} title='Zoom in' onClick={()=> setCanvasZoom(zoom + 1)}/></Tooltip>
               </Space>
             </div>
         </div>
