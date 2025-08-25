@@ -206,7 +206,7 @@ export const getSettings = () => {
                       label: 'Allowed File Types',
                       type: 'editableTagGroupProps',
                       description: 'File types that can be accepted.',
-                      tooltip: "The file typeName should consist a dot before the name .png",
+                      tooltip: "The file typeName should consist a dot before the name, for example: .png",
 
                     },
                   ],
