@@ -7,6 +7,9 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
+import { Button, Checkbox, Space, Tooltip } from 'antd';
+import { ExpandOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { useCanvas } from '@/index';
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
@@ -27,14 +30,17 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
-
+  const [autoWidth, setAutoWidth] = useState(true);
+  const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth } = useCanvas();
 
   const [currentSizes, setCurrentSizes] = useState([]);
 
   useEffect(() => {
     const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
     setCurrentSizes(newSizes.sizes);
-  }, [isOpenRight, isOpenLeft]);
+    setCanvasWidth(autoWidth ? `calc(${newSizes.sizes[1]}vw - 55px - 4%)` : `calc(100vw - 55px)`, designerDevice);
+    setCanvasZoom(autoWidth ? 100 : zoom);
+  }, [isOpenRight, isOpenLeft, autoWidth]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
@@ -53,7 +59,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       />
     ) : null;
   };
-
+  
   return (
     <div className={styles.sidebarContainer}>
       {header && (
@@ -71,6 +77,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         dragInterval={12}
         direction="horizontal"
         cursor="col-resize"
+        onDragEnd={(sizes => setCurrentSizes(sizes))}
         className={classNames(styles.sidebarContainerBody)}
       >
         {renderSidebar('left')}
@@ -87,9 +94,18 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div className={styles.sidebarContainerMainAreaBody}>{children}</div>
+          <div className={styles.sidebarContainerMainAreaBody} style={{ width: designerWidth, zoom: `${ autoWidth ? '100%' : zoom}%`, overflow: 'auto', margin: '0 auto' }}>{children}</div>
+          <div>
+              <Space style={{position: 'fixed', bottom: 50 }}>
+                <Tooltip title={`${zoom}%`}><Button type={autoWidth ? 'primary' : 'default'} icon={<ExpandOutlined/>} title='Auto' onClick={()=> {
+                    setAutoWidth(!autoWidth);
+                  }}/>
+                </Tooltip>
+                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<MinusOutlined/>} title='Zoom out' onClick={()=> setCanvasZoom(zoom - 5)}/></Tooltip>
+                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<PlusOutlined/>} title='Zoom in' onClick={()=> setCanvasZoom(zoom + 5)}/></Tooltip>
+              </Space>
+            </div>
         </div>
-
         {renderSidebar('right')}
       </SizableColumns>
     </div>

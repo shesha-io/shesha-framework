@@ -1,6 +1,6 @@
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { DataContextProvider, MetadataProvider, useCanvas, useShaFormInstance } from '@/providers';
+import { DataContextProvider, MetadataProvider, useShaFormInstance } from '@/providers';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo } from 'react';
@@ -10,8 +10,6 @@ import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
-import { Button, Space, Tooltip } from 'antd';
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
 export interface IDesignerMainAreaProps {
 }
@@ -28,7 +26,6 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const formSettings = useFormDesignerStateSelector(state => state.formSettings);
     const formMode = useFormDesignerStateSelector(state => state.formMode);
     const { antdForm: form } = useShaFormInstance();
-    const { zoom, setCanvasZoom } = useCanvas();
     const { styles } = useStyles();
 
     const leftSidebarProps = useMemo(() => 
@@ -54,7 +51,6 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                     </SidebarContainer>
                 )}
             >
-                <div style={{ width: 'calc(100vw - 55px - 16px)', background: 'teal', zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
                     <ConditionalWrap
                         condition={Boolean(formSettings?.modelType)}
                         wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
@@ -74,13 +70,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                             </DataContextProvider>
                         </ParentProvider>
                     </ConditionalWrap>
-                    <div>
-                    <Space style={{position: 'fixed', bottom: 50}}>
-                        <Tooltip title={`${zoom}%`}><Button icon={<MinusOutlined/>} title='Zoom out' onClick={()=> setCanvasZoom(zoom - 5)}/></Tooltip>
-                        <Tooltip title={`${zoom}%`}><Button icon={<PlusOutlined/>} title='Zoom in' onClick={()=> setCanvasZoom(zoom + 5)}/></Tooltip>
-                    </Space>
-                    </div>
-                </div>
+                   
             </ConditionalWrap>
         </div>
     );
