@@ -28,7 +28,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const formMode = useFormDesignerStateSelector(state => state.formMode);
     const { antdForm: form } = useShaFormInstance();
     const { designerWidth, zoom } = useCanvas();
-    const shaForm = useShaFormInstance()
+    const shaForm = useShaFormInstance();
     const { styles } = useStyles();
 
     useEffect(()=>{
@@ -38,7 +38,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                 formSettings: formSettings,
             });
         }
-    },[formSettings])
+    },[formSettings, shaForm]);
 
     const leftSidebarProps = useMemo(() => 
       readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' }
