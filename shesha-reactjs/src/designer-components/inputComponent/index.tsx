@@ -75,7 +75,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         wrapInTemplate: props.wrapInTemplate ?? true,
         value: value,
         onChange: onChange,
-        templateSettings: { functionName: functionName },
+        templateSettings: props.templateSettings ?? { functionName: functionName  },
         exposedVariables: defaultExposedVariables
     };
 
