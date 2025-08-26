@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const leftSidebarWidth = "550px";
   const sidebarBtnHeight = "35px";
 
