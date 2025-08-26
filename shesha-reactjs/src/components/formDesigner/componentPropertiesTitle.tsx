@@ -8,9 +8,12 @@ export interface IProps {}
 
 export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
   const selectedComponentId = useFormDesignerStateSelector(x => x.selectedComponentId);
+  const formFlatMarkup = useFormDesignerStateSelector(x => x.formFlatMarkup);
   const readOnly = useFormDesignerStateSelector(x => x.readOnly);
   const { deleteComponent, duplicateComponent } = useFormDesignerActions();
   const { styles } = useStyles();
+
+  const componentLabel = formFlatMarkup?.allComponents[selectedComponentId]?.label ?? 'Properties';
 
   const onDeleteClick = () => {
     if (!readOnly)
@@ -23,7 +26,7 @@ export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
 
   return (
     <div className={styles.componentPropertiesActions}>
-      Properties
+      {componentLabel}
       {selectedComponentId && !readOnly && (
         <div className="action-buttons">
           <Button
