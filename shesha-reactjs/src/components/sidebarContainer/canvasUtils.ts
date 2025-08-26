@@ -28,14 +28,9 @@ export function widthRelativeToCanvas(width: string | number, canvasWidth: strin
   return trimmed;
 }
 
-/**
- * Utility to normalize numeric widths to px strings while passing through CSS strings untouched.
- */
-export function toCssWidth(value: string | number): string {
-  return typeof value === 'number' ? `${value}px` : String(value).trim();
-}
-
+import { useCallback, useEffect, useRef } from 'react';
 import { ISidebarProps } from './models';
+import { IDeviceTypes } from '@/providers/canvas/contexts';
 
 export interface IAutoZoomOptions {
   // Calibration zoom levels for different panel states
@@ -59,13 +54,14 @@ export interface IAutoZoomParams {
   rightSidebarProps?: ISidebarProps;
   allowFullCollapse?: boolean;
   currentZoom: number;
+  designerDevice?: IDeviceTypes;
   options?: IAutoZoomOptions;
 }
 
-const DEFAULT_OPTIONS: Required<IAutoZoomOptions> = {
+export const DEFAULT_OPTIONS: Required<IAutoZoomOptions> = {
   // Calibrated zoom levels based on user feedback
-  bothPanelsOpenZoom: 60,   // Both panels open - 60% zoom is perfect
-  onePanelOpenZoom: 75,     // One panel open - 75% zoom is perfect  
+  bothPanelsOpenZoom: 65,   // Both panels open - 60% zoom is perfect
+  onePanelOpenZoom: 74,     // One panel open - 75% zoom is perfect  
   noPanelsOpenZoom: 95,     // No panels open - 95% zoom is perfect
   useCalibration: true,     // Use calibrated values by default
   minZoom: 25,
@@ -91,7 +87,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     rightSidebarProps,
     allowFullCollapse,
     currentZoom,
-    options = {}
+    options = {},
+    designerDevice
   } = params;
 
   const opts = { ...DEFAULT_OPTIONS, ...options };
@@ -186,112 +183,72 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   return optimalZoom;
 }
 
-/**
- * Gets debug information about the auto-zoom calculation
- */
-export function getAutoZoomDebugInfo(params: IAutoZoomParams): any {
-  const {
-    isOpenLeft,
-    isOpenRight,
-    leftSidebarProps,
-    rightSidebarProps,
-    allowFullCollapse,
-    currentZoom,
-    options = {}
-  } = params;
+export const usePinchZoom = (
+  onZoomChange: (zoom: number) => void,
+  currentZoom: number,
+  minZoom: number = 10,
+  maxZoom: number = 200,
+  isAutoWidth: boolean = false
+) => {
+  const elementRef = useRef<HTMLDivElement>(null);
+  const lastDistance = useRef<number>(0);
+  const initialZoom = useRef<number>(currentZoom);
 
-  const opts = { ...DEFAULT_OPTIONS, ...options };
-  const leftOpen = leftSidebarProps && (leftSidebarProps.open || isOpenLeft);
-  const rightOpen = rightSidebarProps && (rightSidebarProps.open || isOpenRight);
-  
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
-  
-  let panelState = 'none';
-  if (leftOpen && rightOpen) {
-    panelState = 'both';
-  } else if (leftOpen || rightOpen) {
-    panelState = 'one';
-  }
+  const getDistance = useCallback((touches: TouchList) => {
+    const touch1 = touches[0];
+    const touch2 = touches[1];
+    return Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) +
+      Math.pow(touch2.clientY - touch1.clientY, 2)
+    );
+  }, []);
 
-  const optimalZoom = calculateAutoZoom(params);
-
-  let debugInfo: any = {
-    mode: opts.useCalibration ? 'calibration' : 'dynamic',
-    panelState,
-    screenWidth,
-    screenHeight,
-    optimalZoom,
-    panelStates: {
-      leftOpen,
-      rightOpen,
-      leftPanelExists: !!leftSidebarProps,
-      rightPanelExists: !!rightSidebarProps,
-      allowFullCollapse
-    },
-    options: opts
-  };
-
-  if (opts.useCalibration) {
-    const referenceWidth = 1920;
-    const scaleFactor = screenWidth / referenceWidth;
-    let baseZoom: number;
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    if (isAutoWidth || e.touches.length !== 2) return;
     
-    if (leftOpen && rightOpen) {
-      baseZoom = opts.bothPanelsOpenZoom;
-    } else if (leftOpen || rightOpen) {
-      baseZoom = opts.onePanelOpenZoom;
-    } else {
-      baseZoom = opts.noPanelsOpenZoom;
-    }
+    e.preventDefault();
+    lastDistance.current = getDistance(e.touches);
+    initialZoom.current = currentZoom;
+  }, [getDistance, currentZoom, isAutoWidth]);
 
-    debugInfo.calibration = {
-      baseZoom,
-      referenceWidth,
-      scaleFactor,
-      adjustedZoom: baseZoom * Math.sqrt(scaleFactor)
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (isAutoWidth || e.touches.length !== 2) return;
+
+    e.preventDefault();
+    const currentDistance = getDistance(e.touches);
+    
+    if (lastDistance.current > 0) {
+      const scale = currentDistance / lastDistance.current;
+      const newZoom = Math.max(minZoom, Math.min(maxZoom, initialZoom.current * scale));
+      onZoomChange(Math.round(newZoom));
+    }
+  }, [getDistance, onZoomChange, minZoom, maxZoom, isAutoWidth]);
+
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (isAutoWidth || !e.ctrlKey) return;
+
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -5 : 5;
+    const newZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
+    onZoomChange(newZoom);
+  }, [onZoomChange, currentZoom, minZoom, maxZoom, isAutoWidth]);
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    if (e.touches.length < 2) {
+      lastDistance.current = 0;
+    }
+  }, []);
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+    
+    element.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      element.removeEventListener('wheel', handleWheel);
     };
-  } else {
-    // Dynamic calculation debug info
-    let availableWidth = screenWidth;
-    const leftSidebarWidth = 550;
-    
-    if (!allowFullCollapse) {
-      if (leftSidebarProps) {
-        const leftPanelSize = leftOpen ? leftSidebarWidth : 35;
-        availableWidth -= leftPanelSize;
-      }
-      if (rightSidebarProps) {
-        const rightPanelSize = rightOpen ? leftSidebarWidth : 35;
-        availableWidth -= rightPanelSize;
-      }
-    }
-    
-    availableWidth -= opts.paddingOffset;
-    const availableHeight = screenHeight - opts.toolbarHeight;
-    
-    const mainAreaElement = document.querySelector('.sidebar-container-main-area-body');
-    let contentWidth = 800;
-    let contentHeight = 600;
-    
-    if (mainAreaElement) {
-      const rect = mainAreaElement.getBoundingClientRect();
-      contentWidth = Math.max(rect.width / (currentZoom / 100), 800);
-      contentHeight = Math.max(rect.height / (currentZoom / 100), 600);
-    }
-    
-    const widthZoomRatio = (availableWidth / contentWidth) * 100;
-    const heightZoomRatio = (availableHeight / contentHeight) * 100;
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd, handleWheel]);
 
-    debugInfo.dynamic = {
-      availableWidth,
-      availableHeight,
-      contentWidth,
-      contentHeight,
-      widthZoomRatio,
-      heightZoomRatio
-    };
-  }
-
-  return debugInfo;
-}
+  return elementRef;
+};

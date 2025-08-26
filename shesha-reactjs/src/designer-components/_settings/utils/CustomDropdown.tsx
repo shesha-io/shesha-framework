@@ -15,6 +15,7 @@ interface CustomDropdownProps {
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
     placeholder?: string;
+    optionFilterProp?: string
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({

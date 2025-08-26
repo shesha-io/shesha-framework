@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo, useCallback } from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
@@ -7,10 +7,8 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { Button, Checkbox, Space, Tooltip } from 'antd';
-import { ExpandOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useCanvas } from '@/index';
-import { calculateAutoZoom } from './canvasUtils';
+import { calculateAutoZoom, usePinchZoom, DEFAULT_OPTIONS } from './canvasUtils';
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
@@ -31,22 +29,36 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
-  const [autoWidth, setAutoWidth] = useState(true);
-  const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth } = useCanvas();
+  const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
 
   const [currentSizes, setCurrentSizes] = useState([]);
+
+  const handleZoomChange = useCallback((newZoom: number) => {
+    console.log("Zooming")
+    setCanvasZoom(newZoom);
+  }, [setCanvasZoom]);
+
+  const canvasRef = usePinchZoom(
+    handleZoomChange,
+    zoom,
+    25,
+    200,
+    autoZoom
+  );
 
   useEffect(() => {
     const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
     setCurrentSizes(newSizes.sizes);
-    setCanvasWidth(`calc(100vw)`, designerDevice);
-    setCanvasZoom(autoWidth ? calculateAutoZoom({isOpenLeft,isOpenRight, leftSidebarProps,rightSidebarProps, allowFullCollapse, currentZoom: zoom, options: {
-      noPanelsOpenZoom: 100,
-      onePanelOpenZoom: 84,
-      bothPanelsOpenZoom: 65,
-
-    }}) : zoom);
-  }, [isOpenRight, isOpenLeft, autoWidth]);
+    setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
+    setCanvasZoom(autoZoom ? calculateAutoZoom({
+      designerDevice, isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, currentZoom: zoom, options: {
+        ...DEFAULT_OPTIONS,
+        bothPanelsOpenZoom: designerDevice === 'desktop' ? 65 : designerDevice === 'tablet' ? 75 : 100,   // Both panels open - 60% zoom is perfect
+        onePanelOpenZoom: designerDevice === 'desktop' ? 85 : designerDevice === 'tablet' ? 85 : 100,     // One panel open - 75% zoom is perfect  
+        noPanelsOpenZoom: designerDevice === 'desktop' ? 100 : designerDevice === 'tablet' ? 100 : 120,
+      }
+    }) : zoom);
+  }, [isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
@@ -65,13 +77,12 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       />
     ) : null;
   };
-  
+
   return (
     <div className={styles.sidebarContainer}>
       {header && (
         <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>
       )}
-
       <SizableColumns
         sizes={currentSizes}
         expandToMin={false}
@@ -100,17 +111,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div className={styles.sidebarContainerMainAreaBody} style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>{children}</div>
-          <div>
-              <Space style={{position: 'fixed', bottom: 50 }}>
-                <Tooltip title={`${zoom}%`}><Button type={autoWidth ? 'primary' : 'default'} icon={<ExpandOutlined/>} title='Auto' onClick={()=> {
-                    setAutoWidth(!autoWidth);
-                  }}/>
-                </Tooltip>
-                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<MinusOutlined/>} title='Zoom out' onClick={()=> setCanvasZoom(zoom - 1)}/></Tooltip>
-                <Tooltip title={`${zoom}%`}><Button disabled={autoWidth} type='default' icon={<PlusOutlined/>} title='Zoom in' onClick={()=> setCanvasZoom(zoom + 1)}/></Tooltip>
-              </Space>
-            </div>
+          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>{children}</div>
         </div>
         {renderSidebar('right')}
       </SizableColumns>

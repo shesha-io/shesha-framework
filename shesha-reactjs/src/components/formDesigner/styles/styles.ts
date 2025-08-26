@@ -175,6 +175,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             background: white;
             padding: 8px 12px 0px 12px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
 
             .${formName} {
@@ -234,6 +235,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .radio-group {
                     display: flex;
                     flex-direction: row;
+                    justifyCoontent: center;
                     .radio-button {
                         display: flex;
                         justify-content: center;
