@@ -312,7 +312,15 @@ export const getSettings = (data: IDateFieldProps) => {
                                         type: "textField",
                                         defaultValue: "DD/MM/YYYY",
                                         parentId: dataTabId,
-                                    }, {
+                                    },
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataTabId,
+                                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
                                         id: nanoid(),
                                         propertyName: 'timeFormat',
                                         label: 'Time Format',
@@ -321,9 +329,13 @@ export const getSettings = (data: IDateFieldProps) => {
                                         type: "textField",
                                         defaultValue: "HH:mm:ss",
                                         parentId: dataTabId,
-                                    },
+                                hidden: {
+                                    _code: 'return  !getSettingValue(data?.showTime);',
+                                     _mode: 'code',
+                                    _value: false
+                                    } as any,  
+                                },
                                 ]
-
                             })
 
                             .addSettingsInputRow({

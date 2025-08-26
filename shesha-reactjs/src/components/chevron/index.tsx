@@ -41,13 +41,13 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
         const newStyles: CSSProperties = {
             backgroundColor: props.itemValue === value ? getColor(colorSource) : fadeColor(getColor(colorSource), 70),
             clipPath: 'polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 5% 50%, 0% 0%)',
-            textAlign: 'center',
             cursor: 'pointer',
             outline: 'none',
             width: addPx(width) ?? '150px',
             height: addPx(height) ?? '35px',
             borderRadius: '0px',
-            ...fontStyles
+            ...fontStyles,
+            
         };
 
         return !props.hidden && (
@@ -56,7 +56,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
                     key={uuid}
                     {...props}
                     icon={showIcons ? props.icon : null}
-                    style={{...newStyles, ...stylingBoxCSS}}
+                    style={{...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign}}
                     readOnly={props.readOnly}
                     buttonType='text'
                     form={form}

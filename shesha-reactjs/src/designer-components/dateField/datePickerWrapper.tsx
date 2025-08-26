@@ -53,8 +53,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-
-  const { styles } = useStyles({ fullStyles: finalStyle });
+  const fullStyles = { ...allStyles?.fullStyle || {} };
+  const { styles } = useStyles({ fullStyles });
 
   const { formData } = useForm();
 
@@ -74,7 +74,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
               : !showTime
                 ? newValue.startOf('day')
                 : newValue;
-    const finalMoment = !resolveToUTC ? val?.utc(true) : val.local(true);
+    const finalMoment = resolveToUTC ? val?.utc(true) : val.local(true);
     return finalMoment.toISOString();
   };
 
@@ -128,10 +128,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     handleDatePickerChange(newDate, newDate.format(pickerFormat));
   };
-
-
-
-  const handleOnOk = (value: moment.Moment | null) => handleDatePickerChange(value, value?.format(pickerFormat));
 
   const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
   const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
@@ -214,7 +210,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         disabled={readOnly}
-        style={finalStyle}
+        style={allStyles.fullStyle}
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
       />
@@ -232,7 +228,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabledTime={disabledTime(props, formData, globalState)}
       onChange={handleDatePickerChange}
-      onOk={handleOnOk}
       variant={hideBorder ? 'borderless' : undefined}
       showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
       showNow={showNow}

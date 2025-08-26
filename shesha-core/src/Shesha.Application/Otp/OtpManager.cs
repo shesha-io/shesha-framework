@@ -217,6 +217,8 @@ namespace Shesha.Otp
 
                         var body = bodyTemplate.Replace("{{token}}", otp.Pin);
                         body = body.Replace("{{userid}}", otp.RecipientId);
+                        body = body.Replace("{{operationId}}", otp.OperationId.ToString());
+                        body = body.Replace("{{isRegistration}}", otp.ActionType == "EmailRegistration" ? "true" : "false");
                         await _emailSender.SendAsync(otp.SendTo, subjectTemplate, body, true);
                         break;
                     }

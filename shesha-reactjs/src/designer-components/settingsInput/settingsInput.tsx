@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import FormItem from "../_settings/components/formItem";
 import { InputComponent } from '../inputComponent';
 import { ISettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { MetadataProvider } from '@/providers';
-import { evaluateString, useShaFormInstance } from '@/index';
+import { evaluateString, IToolboxComponent, useShaFormInstance } from '@/index';
+import { useSettingsComponents } from '@/providers';
+
+export interface ISettingsComponent extends IToolboxComponent {
+  settingsComponent?: React.FC<any>;
+  component?: ComponentType<any>;
+}
+
+export interface ISettingsComponentGroup {
+  name: string;
+  components: ISettingsComponent[];
+}
+
 
 export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, hideLabel, propertyName: property, type,
     buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden, width,
     size, inline, validate, modelType, ...rest }) => {
     const { formData } = useShaFormInstance();
+    const settingsComponents = useSettingsComponents();
+    
+    const customComponent = settingsComponents.find(c => c.type === type);
+    const CustomComponent = customComponent?.component;
 
     const evaluatedModelType = typeof modelType === 'string' ? evaluateString(modelType, { data: formData }) : modelType;
     const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
@@ -29,7 +45,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                     layout='vertical'
                     jsSetting={type === 'codeEditor' || rest.inputType === 'codeEditor' ? false : jsSetting}
                     readOnly={readOnly}>
-                    {children || <InputComponent size={size ?? 'small'}
+                    {children || CustomComponent ? <CustomComponent{...rest} /> : <InputComponent size={size ?? 'small'}
                         label={label}
                         type={rest.inputType || type}
                         dropdownOptions={dropdownOptions}

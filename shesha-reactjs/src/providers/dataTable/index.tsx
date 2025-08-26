@@ -137,6 +137,8 @@ interface IDataTableProviderBaseProps {
    * Custom reorder endpoint
    */
   customReorderEndpoint?: string;
+
+  needToRegisterContext?: boolean;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -195,7 +197,7 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
 
   const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
 
-  if (dataColumns?.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
+  if (dataColumns.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
     state.groupingColumns.forEach(groupColumn => {
       if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)) {
         dataColumns.push(groupColumn);
@@ -203,6 +205,21 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
     });
   }
   const filter = getFilter(state);
+
+  if (state.sortMode === 'strict' && state.strictSortBy){
+    if (!dataColumns.find(column => column.propertyName === state.strictSortBy))
+      dataColumns.push({
+        propertyName: state.strictSortBy, 
+        propertiesToFetch: [state.strictSortBy],
+        dataType: 'number',
+        columnType: 'data',
+        accessor: state.strictSortBy,
+        header: '',
+        isVisible: false,
+        isFilterable: false,
+        isSortable: false
+      });
+  }
 
   getTableFormColumns(state.columns).forEach(col => dataColumns.push(col));
 
@@ -253,6 +270,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     allowReordering = false,
     permanentFilter,
     customReorderEndpoint,
+    needToRegisterContext = true
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -806,24 +824,32 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   /* Data Context section */
 
+  if (needToRegisterContext)
+    return (
+      <DataContextBinder
+        id={'ctx_' + props.userConfigId}
+        name={props.actionOwnerName}
+        description={`Table context for ${props.actionOwnerName}`}
+        type='control'
+        data={state}
+        api={actions}
+        onChangeData={contextOnChangeData}
+        metadata={contextMetadata}
+      >
+        <DataTableStateContext.Provider value={state}>
+          <DataTableActionsContext.Provider value={actions}>
+            {children}
+          </DataTableActionsContext.Provider>
+        </DataTableStateContext.Provider>
+      </DataContextBinder>
+    );
 
   return (
-    <DataContextBinder
-      id={'ctx_' + props.userConfigId}
-      name={props.actionOwnerName}
-      description={`Table context for ${props.actionOwnerName}`}
-      type='control'
-      data={state}
-      api={actions}
-      onChangeData={contextOnChangeData}
-      metadata={contextMetadata}
-    >
-      <DataTableStateContext.Provider value={state}>
-        <DataTableActionsContext.Provider value={actions}>
-          {children}
-        </DataTableActionsContext.Provider>
-      </DataTableStateContext.Provider>
-    </DataContextBinder>
+    <DataTableStateContext.Provider value={state}>
+      <DataTableActionsContext.Provider value={actions}>
+        {children}
+      </DataTableActionsContext.Provider>
+    </DataTableStateContext.Provider>
   );
 };
 

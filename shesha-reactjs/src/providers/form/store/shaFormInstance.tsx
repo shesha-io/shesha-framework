@@ -131,6 +131,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     getFormData = () => {
         return this.#form.formData;
     };
+    setValidationErrors = (payload: IFormValidationErrors) => {
+        this.#form.setValidationErrors(payload);
+    };
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
     };
@@ -704,6 +707,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 metadataDispatcher: metadataDispatcher,
             });
             const accessors = wrapConstantsData({
+                topContextId: 'full',
                 fullContext,
                 shaForm: instance,
                 queryStringGetter: getQueryParams,
