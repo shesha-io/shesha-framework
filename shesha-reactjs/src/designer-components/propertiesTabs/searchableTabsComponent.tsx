@@ -16,7 +16,6 @@ interface SearchableTabsProps {
 const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
-    const [hasVisibleTabs, setHasVisibleTabs] = useState(false);
     const [activeTabKey, setActiveTabKey] = useState('1');
     const searchRefs = useRef(new Map());
     const { styles } = useStyles();
