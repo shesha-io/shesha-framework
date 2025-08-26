@@ -77,7 +77,6 @@ namespace Shesha.ConfigurationItems
                 Application = item.Application,
                 Folder = item.Folder,
                 Name = newName,
-                // OrderIndex = !!!
             };
             await CopyItemPropertiesAsync(item, duplicate);
 
@@ -93,10 +92,7 @@ namespace Shesha.ConfigurationItems
             var duplicateRevision = duplicate.MakeNewRevision();
 
             // copy base properties
-            duplicateRevision.Description = sourceRevision.Description;
-            duplicateRevision.Label = sourceRevision.Label;
-
-            // TODO: map revision properties            
+            await CopyRevisionPropertiesBaseAsync(sourceRevision, duplicateRevision);
             await CopyRevisionPropertiesAsync(sourceRevision, duplicateRevision);
 
             duplicateRevision.CreatedByImport = null;
@@ -125,7 +121,7 @@ namespace Shesha.ConfigurationItems
 
         /// <summary>
         /// Copy value of custom properties from <paramref name="source"/> to <paramref name="destination"/> revision.
-        /// Is used in Duplicate operation
+        /// Is used in Duplicate and Expose operations
         /// </summary>
         /// <param name="source">Source revision to copy custom properties from</param>
         /// <param name="destination">Destination revision to copy custom properties to</param>
@@ -136,8 +132,36 @@ namespace Shesha.ConfigurationItems
         public abstract Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
 
         /// inheritedDoc
-        public abstract Task<TItem> ExposeAsync(TItem item, Module module);
-        
+        public virtual async Task<TItem> ExposeAsync(TItem item, Module module)
+        {
+            var srcRevision = item.LatestRevision;
+
+            var exposedConfig = new TItem
+            {
+                Name = item.Name,
+                Module = module,
+                ExposedFrom = item,
+                ExposedFromRevision = srcRevision,
+                SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
+            };
+            await CopyItemPropertiesAsync(item, exposedConfig);
+            await Repository.InsertAsync(exposedConfig);
+
+            var exposedRevision = exposedConfig.MakeNewRevision();
+
+            await CopyRevisionPropertiesBaseAsync(srcRevision, exposedRevision);
+            await CopyRevisionPropertiesAsync(srcRevision, exposedRevision);
+            exposedRevision.VersionNo = 1;
+            exposedRevision.VersionName = null;
+
+            await RevisionRepository.InsertAsync(exposedRevision);
+            await Repository.UpdateAsync(exposedConfig);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            return exposedConfig;
+        }
+
         public async Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item)
         {
             return await DuplicateAsync((TItem)item);
@@ -184,6 +208,16 @@ namespace Shesha.ConfigurationItems
         public Task<bool> ItemExistsAsync(string name, Module module)
         {
             return Repository.GetAll().AnyAsync(e => e.Name == name && e.Module == module);
+        }
+
+        protected Task CopyRevisionPropertiesBaseAsync(TRevision srcRevision, TRevision dstRevision)
+        {
+            dstRevision.Label = srcRevision.Label;
+            dstRevision.Description = srcRevision.Description;
+            dstRevision.Comments = srcRevision.Comments;
+            dstRevision.ConfigHash = srcRevision.ConfigHash;
+
+            return Task.CompletedTask;
         }
     }
 }

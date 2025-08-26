@@ -34,7 +34,8 @@ namespace Shesha.ConfigurationItems
         private readonly IModuleHierarchyProvider _moduleHierarchyProvider;        
         private readonly IIocManager _iocManager;
         private readonly IApplicationStartupSession _startupSession;
-        private readonly IAbpModuleManager _moduleManager;
+        private readonly IAbpModuleManager _abpModuleManager;
+        private readonly IModuleManager _moduleManager;
 
         public ConfigurableModuleBootstrapper
         (
@@ -45,7 +46,8 @@ namespace Shesha.ConfigurationItems
             IModuleHierarchyProvider moduleHierarchyProvider,
             IIocManager iocManager,
             IApplicationStartupSession startupSession,
-            IAbpModuleManager moduleManager,
+            IAbpModuleManager abpModuleManager,
+            IModuleManager moduleManager,
             IBootstrapperStartupService bootstrapperStartupService,
             ILogger logger
         ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
@@ -57,6 +59,7 @@ namespace Shesha.ConfigurationItems
             _moduleHierarchyProvider = moduleHierarchyProvider;
             _iocManager = iocManager;
             _startupSession = startupSession;
+            _abpModuleManager = abpModuleManager;
             _moduleManager = moduleManager;
         }
 
@@ -68,16 +71,14 @@ namespace Shesha.ConfigurationItems
 
         private async Task<List<ModuleItem>> GetCodeModulesAsync() 
         {
-            var startupModuleName = _moduleManager.GetStartupModuleNameOrDefault();
+            var startupModuleName = _abpModuleManager.GetStartupModuleNameOrDefault();
             var result = new List<ModuleItem>();
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
                 using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
                     var dbModules = await _moduleRepo.GetAll().ToListAsync();
-                    var moduleTypes = _typeFinder
-                        .Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type))
-                        .ToList();
+                    var moduleTypes = _moduleManager.GetModuleTypes();
                     foreach (var type in moduleTypes) 
                     {
                         var instance = _iocManager.Resolve(type).ForceCastAs<SheshaModule>();
@@ -160,7 +161,7 @@ namespace Shesha.ConfigurationItems
                 })
                 .ToList();
 
-            var startupModuleName = _moduleManager.GetStartupModuleNameOrDefault();
+            var startupModuleName = _abpModuleManager.GetStartupModuleNameOrDefault();
 
             foreach (var codeModule in codeModules)
             {

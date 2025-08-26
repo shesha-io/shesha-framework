@@ -108,32 +108,6 @@ namespace Shesha.Notifications
             return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
-        public async Task<NotificationTypeConfig> CreateNewVersionWithoutDetailsAsync(NotificationTypeConfig src)
-        {
-            var newVersion = new NotificationTypeConfig();
-            newVersion.Origin = src.Origin;
-            newVersion.Name = src.Name;
-            newVersion.Module = src.Module;
-
-            var revision = newVersion.EnsureLatestRevision();
-            revision.Description = src.Revision.Description;
-            revision.Label = src.Revision.Label;
-
-            // notification specific props
-            revision.CopyNotificationSpecificPropsFrom(src.Revision);
-
-            newVersion.Normalize();
-
-            await Repository.InsertAsync(newVersion);
-
-            return newVersion;
-        }
-
-        public override Task<NotificationTypeConfig> ExposeAsync(NotificationTypeConfig item, Module module)
-        {
-            throw new NotImplementedException();
-        }
-
         public override async Task<NotificationTypeConfig> CreateItemAsync(CreateItemInput input)
         {
             var validationResults = new ValidationResults();
@@ -161,9 +135,29 @@ namespace Shesha.Notifications
             return notification;
         }
 
-        protected override Task CopyRevisionPropertiesAsync(NotificationTypeConfigRevision source, NotificationTypeConfigRevision destination)
+        protected override async Task CopyRevisionPropertiesAsync(NotificationTypeConfigRevision source, NotificationTypeConfigRevision destination)
         {
-            throw new NotImplementedException();
+            destination.Disable = source.Disable;
+            destination.CanOptOut = source.CanOptOut;
+            destination.Category = source.Category;
+            destination.OverrideChannels = source.OverrideChannels;
+            destination.IsTimeSensitive = source.IsTimeSensitive;
+            destination.AllowAttachments = source.AllowAttachments;
+
+            await CopyTemplatesAsync(source, destination);
+        }
+
+        private async Task CopyTemplatesAsync(NotificationTypeConfigRevision source, NotificationTypeConfigRevision destination)
+        {
+            var srcItems = await _templateRepository.GetAll().Where(i => i.PartOf == source).ToListAsync();
+
+            foreach (var srcItem in srcItems)
+            {
+                var dstItem = srcItem.Clone();
+                dstItem.PartOf = destination;
+
+                await _templateRepository.InsertAsync(dstItem);
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Shesha.Metadata.Dtos
         public string ClassName { get; set; }
         public string? Alias { get; set; }
         public string? Description { get; set; }
-        public Type? Type { get; set; }
+        public Type Type { get; set; }
         public  bool Suppress { get; set; }
     }
 }

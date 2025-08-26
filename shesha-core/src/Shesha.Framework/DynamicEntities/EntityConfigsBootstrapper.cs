@@ -11,12 +11,10 @@ using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
-using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -121,12 +119,14 @@ namespace Shesha.DynamicEntities
             {
                 var config = _entityConfigurationStore.Get(t);
                 var codeProperties = _metadataProvider.GetProperties(t);
+                var moduleName = t.GetConfigurableModuleName();
 
                 return new
                 {
                     Config = config,
                     Properties = codeProperties,
                     PropertiesMD5 = PropertyMetadataDto.GetPropertiesMD5(codeProperties),
+                    ModuleName = moduleName,
                 };
             }).ToList();
 
@@ -138,6 +138,7 @@ namespace Shesha.DynamicEntities
                     var code = entitiesConfigs.FirstOrDefault(c =>
                         c.Config.EntityType.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase)
                         && string.Equals(c.Config.EntityType.Namespace, ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
+                        && c.ModuleName == ec.Module?.Name
                     );
                     return new { 
                         db = ec,
@@ -221,8 +222,8 @@ namespace Shesha.DynamicEntities
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
-                if (config.db.LatestRevision.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
-                if (config.db.LatestRevision.HardcodedPropertiesMD5 != config.code.PropertiesMD5 
+                if (revision.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
+                if (revision.HardcodedPropertiesMD5 != config.code.PropertiesMD5 
                     || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null))
                     || ForceUpdate)
                     await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);

@@ -56,7 +56,6 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 revision.Disable == distributedItem.Disable &&
                 revision.CanOptOut == distributedItem.CanOptOut &&
                 revision.Category == distributedItem.Category &&
-                revision.OrderIndex == distributedItem.OrderIndex &&
                 revision.OverrideChannels == distributedItem.OverrideChannels;
 
             if (!equals)

@@ -49,53 +49,6 @@ namespace Shesha.Web.FormsDesigner.Services
             return Task.FromResult<IConfigurationItemDto>(ObjectMapper.Map<FormConfigurationDto>(item));
         }
 
-        public override async Task<FormConfiguration> ExposeAsync(FormConfiguration item, Module module)
-        {
-            var srcRevision = item.LatestRevision;
-
-            var exposedConfig = new FormConfiguration { 
-                Name = item.Name,
-                Module = module,
-                ExposedFrom = item,
-                ExposedFromRevision = srcRevision,
-                SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
-            };
-            await Repository.InsertAsync(exposedConfig);
-
-            var exposedRevision = exposedConfig.MakeNewRevision();
-
-            await MapRevisionAsync(srcRevision, exposedRevision);
-            exposedRevision.VersionNo = 1;
-            exposedRevision.VersionName = null;            
-
-            await RevisionRepository.InsertAsync(exposedRevision);
-            await Repository.UpdateAsync(exposedConfig);
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            return exposedConfig;
-        }
-
-        
-        private async Task MapRevisionAsync(FormConfigurationRevision srcRevision, FormConfigurationRevision dstRevision) 
-        {
-            await MapRevisionBaseAsync(srcRevision, dstRevision);
-
-            dstRevision.Markup = srcRevision.Markup;
-            dstRevision.ModelType = srcRevision.ModelType;
-            dstRevision.IsTemplate = srcRevision.IsTemplate;
-        }
-
-        private Task MapRevisionBaseAsync(ConfigurationItemRevision srcRevision, ConfigurationItemRevision dstRevision) 
-        {
-            dstRevision.Label = srcRevision.Label;
-            dstRevision.Description = srcRevision.Description;
-            dstRevision.Comments = srcRevision.Comments;
-            dstRevision.ConfigHash = srcRevision.ConfigHash;
-
-            return Task.CompletedTask;
-        }
-
         public override async Task<FormConfiguration> CreateItemAsync(CreateItemInput input)
         {
             var validationResults = new ValidationResults();

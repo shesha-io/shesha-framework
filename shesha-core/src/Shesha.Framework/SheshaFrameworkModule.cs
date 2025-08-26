@@ -107,6 +107,7 @@ namespace Shesha
                 .RegisterConfigurableItemImport<ReferenceList, IReferenceListImport, ReferenceListImport>();
 
             IocManager
+                .RegisterConfigurableItemManager<EntityConfig, IEntityConfigManager, EntityConfigManager>()
                 .RegisterConfigurableItemExport<EntityConfig, IEntityConfigExport, EntityConfigExport>()
                 .RegisterConfigurableItemImport<EntityConfig, IEntityConfigImport, EntityConfigImport>();
 

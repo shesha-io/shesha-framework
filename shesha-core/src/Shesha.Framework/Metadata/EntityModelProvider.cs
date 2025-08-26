@@ -68,13 +68,13 @@ namespace Shesha.Metadata
                         Suppress = t.Suppress,
                         ClassName = t.FullClassName,
                         Name = t.ClassName,
-                        Type = config?.EntityType,
-                        Description = t.Revision.Description ?? (config != null && config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
-                        Alias = string.IsNullOrWhiteSpace(t.Revision.TypeShortAlias) ? config?.SafeTypeShortAlias : t.Revision.TypeShortAlias,
+                        Type = config.EntityType,
+                        Description = t.Revision.Description ?? (config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
+                        Alias = string.IsNullOrWhiteSpace(t.Revision.TypeShortAlias) ? config.SafeTypeShortAlias : t.Revision.TypeShortAlias,
                         Accessor = t.Revision.Accessor,
                         ModuleAccessor = t.Module?.Accessor,
                         Md5 = metadata.Md5,
-                        ModificationTime = metadata.ChangeTime, // t.LastModificationTime ?? t.CreationTime,
+                        ModificationTime = metadata.ChangeTime,
                         Metadata = metadata,
                     };
                 }))

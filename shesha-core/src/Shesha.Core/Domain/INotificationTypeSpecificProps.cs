@@ -25,11 +25,6 @@ namespace Shesha.Domain
         public string Category { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public int OrderIndex { get; set; }
-
-        /// <summary>
         /// List of NotificationChannelConfigs
         /// </summary>
         [MaxLength(int.MaxValue)]

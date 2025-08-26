@@ -26,10 +26,6 @@ namespace Shesha.Domain
         /// 
         /// </summary>
         public virtual string Category { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual int OrderIndex { get; set; }
 
         /// <summary>
         /// Serialized JSON string representing override channels.

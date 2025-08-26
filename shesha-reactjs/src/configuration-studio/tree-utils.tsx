@@ -39,7 +39,7 @@ const applyIcon = (node: TreeNode): void => {
 };
 
 export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): ReactNode => {
-    return <CsTreeNode node={node}>{displayText ?? (node.label ?? node.name)}</CsTreeNode>;
+    return <CsTreeNode node={node}>{displayText ?? node.name}</CsTreeNode>;
 };
 
 export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {

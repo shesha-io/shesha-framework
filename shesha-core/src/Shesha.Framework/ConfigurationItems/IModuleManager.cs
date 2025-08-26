@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Shesha.Modules;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Module = Shesha.Domain.Module;
@@ -10,12 +12,21 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public interface IModuleManager
     {
+        /*
+        /// <summary>
+        /// Get existing module by alias
+        /// </summary>
+        /// <param name="moduleAlias">Module alias</param>
+        /// <returns></returns>
+        Task<Module> GetModuleByAliasOrNullAsync(string moduleAlias);
+        */
+
         /// <summary>
         /// Get existing module or create it if missing
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        Task<Module> GetOrCreateModuleAsync(string moduleName);
+        Task<Module?> GetOrCreateModuleAsync(string moduleName);
 
 
         /// <summary>
@@ -52,5 +63,17 @@ namespace Shesha.ConfigurationItems
         /// <param name="assembly"></param>
         /// <returns></returns>
         Task<Module?> GetOrCreateModuleAsync(Assembly assembly);
+
+        /// <summary>
+        /// Get module types
+        /// </summary>
+        /// <returns></returns>
+        List<Type> GetModuleTypes();
+
+        /// <summary>
+        /// Get modules information
+        /// </summary>
+        /// <returns></returns>
+        List<SheshaModuleInfo> GetModuleInfos();
     }
 }

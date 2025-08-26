@@ -201,11 +201,6 @@ namespace Shesha.Services.Settings
             await _cacheHolder.Cache.RemoveAsync(cacheKey);
         }
 
-        public override Task<SettingConfiguration> ExposeAsync(SettingConfiguration item, Module module)
-        {
-            throw new NotImplementedException();
-        }
-
         public override Task<SettingConfiguration> CreateItemAsync(CreateItemInput input)
         {
             throw new NotImplementedException();
@@ -213,7 +208,18 @@ namespace Shesha.Services.Settings
 
         protected override Task CopyRevisionPropertiesAsync(SettingConfigurationRevision source, SettingConfigurationRevision destination)
         {
-            throw new NotImplementedException();
+            destination.DataType = source.DataType;
+            destination.DataFormat = source.DataFormat;
+            destination.EditorFormName = source.EditorFormName;
+            destination.EditorFormModule = source.EditorFormModule;
+            destination.OrderIndex = source.OrderIndex;
+            destination.Category = source.Category;
+            destination.IsClientSpecific = source.IsClientSpecific;
+            destination.AccessMode = source.AccessMode;
+            destination.IsUserSpecific = source.IsUserSpecific;
+            destination.ClientAccess = source.ClientAccess;
+
+            return Task.CompletedTask;
         }
 
         private class CacheKeyArgs

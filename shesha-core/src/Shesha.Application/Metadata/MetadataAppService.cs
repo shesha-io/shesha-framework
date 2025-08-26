@@ -4,12 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
-using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -22,48 +20,19 @@ namespace Shesha.Metadata
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
         private readonly IMetadataProvider _metadataProvider;
-        private readonly IEnumerable<IModelProvider> _modelProviders;
         private readonly EntityModelProvider _entityModelProvider;
 
         public MetadataAppService(
             IEntityConfigurationStore entityConfigurationStore,
             IHardcodeMetadataProvider hardcodeMetadataProvider,
             IMetadataProvider metadataProvider,
-            IEnumerable<IModelProvider> modelProviders,
             EntityModelProvider entityModelProvider
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
             _hardcodeMetadataProvider = hardcodeMetadataProvider;
             _metadataProvider = metadataProvider;
-            _modelProviders = modelProviders;
             _entityModelProvider = entityModelProvider;
-        }
-
-        private async Task<List<ModelDto>> GetAllModelsAsync()
-        {
-            var models = new List<ModelDto>();
-            foreach (var provider in _modelProviders)
-            {
-                models.AddRange(await provider.GetModelsAsync());
-            }
-            return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
-        }
-
-        private async Task<Type?> GetContainerTypeOrNullAsync(string container)
-        {
-            var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
-
-            if (models.Count() > 1)
-                throw new DuplicateModelsException(models);
-
-            return models.FirstOrDefault()?.Type;
-        }
-
-        private async Task<Type> GetContainerTypeAsync(string container) 
-        {
-            return await GetContainerTypeOrNullAsync(container) ?? throw new MetadataOfTypeNotFoundException(container);
         }
 
         private List<AutocompleteItemDto> FilterModels(List<ModelDto> models, string? term, string? selectedValue)
@@ -97,7 +66,7 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
         {
-            var models = await GetAllModelsAsync();
+            var models = await _metadataProvider.GetAllModelsAsync();
             return FilterModels(models, term, selectedValue);
         }
 
@@ -134,7 +103,7 @@ namespace Shesha.Metadata
             if (string.IsNullOrWhiteSpace(container))
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");
 
-            var containerType = await GetContainerTypeOrNullAsync(container);
+            var containerType = await _metadataProvider.GetContainerTypeOrNullAsync(null, container);
 
             if (containerType == null)
                 return new List<PropertyMetadataDto>();
@@ -160,7 +129,7 @@ namespace Shesha.Metadata
             if (string.IsNullOrWhiteSpace(container))
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");
             
-            var containerType = await GetContainerTypeAsync(container);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType);
             return properties;
         }
@@ -172,7 +141,7 @@ namespace Shesha.Metadata
             if (string.IsNullOrWhiteSpace(container))
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");
 
-            var containerType = await GetContainerTypeAsync(container);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
 
             return await _metadataProvider.GetAsync(containerType);
         }
@@ -188,19 +157,6 @@ namespace Shesha.Metadata
                 throw new EntityTypeNotFoundException(entityType);
 
             return await _metadataProvider.GetSpecificationsAsync(entityConfig.EntityType);
-        }
-
-        private class ModelDtoTypeComparer : IEqualityComparer<ModelDto>
-        {
-            bool IEqualityComparer<ModelDto>.Equals(ModelDto? x, ModelDto? y)
-            {
-                return x != null && y != null && x.ClassName == y.ClassName || x == null && y == null;
-            }
-
-            int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
-            {
-                return obj.GetHashCode();
-            }
         }
     }
 }

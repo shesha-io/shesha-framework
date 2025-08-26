@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
-using Shesha.Domain;
+using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.DynamicEntities;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
@@ -26,7 +27,7 @@ namespace Shesha.Metadata
     /// <summary>
     /// Metadata provider
     /// </summary>
-    public class MetadataProvider: IMetadataProvider, ITransientDependency
+    public class MetadataProvider : IMetadataProvider, ITransientDependency
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IActionDescriptorCollectionProvider? _actionDescriptorCollectionProvider;
@@ -35,6 +36,7 @@ namespace Shesha.Metadata
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
         private readonly IObjectMapper _mapper;
         private readonly IAssemblyFinder _assemblyFinder;
+        private readonly IIocResolver _iocResolver;
 
         public MetadataProvider(
             IEntityConfigurationStore entityConfigurationStore,
@@ -53,6 +55,7 @@ namespace Shesha.Metadata
             _mapper = mapper;
             _assemblyFinder = assemblyFinder;
 
+            _iocResolver = iocResolver;
             _actionDescriptorCollectionProvider = iocResolver.IsRegistered<IActionDescriptorCollectionProvider>()
                 ? iocResolver.Resolve<IActionDescriptorCollectionProvider>()
                 : null;
@@ -308,6 +311,62 @@ namespace Shesha.Metadata
             dto.Md5 = "";
             var json = JsonSerializer.Serialize(dto);
             dto.Md5 = json.ToMd5Fingerprint();
+        }
+
+        public async Task<MetadataDto> GetAsync(string? moduleName, string container)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(container, nameof(container));
+
+            var containerType = await GetContainerTypeAsync(moduleName, container);
+
+            return await GetAsync(containerType);
+        }
+
+        public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
+        {
+            var allModels = await GetAllModelsAsync();
+            var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
+            if (!string.IsNullOrWhiteSpace(moduleName))
+                models = models.Where(m => m.Type.GetConfigurableModuleName() == moduleName).ToList();
+
+            if (models.Count() > 1)
+                throw new DuplicateModelsException(models);
+
+            return models.FirstOrDefault()?.Type;
+        }
+
+        public async Task<Type> GetContainerTypeAsync(string? moduleName, string container) 
+        {
+            var type = await GetContainerTypeOrNullAsync(moduleName, container);
+            if (type == null)
+                throw new MetadataOfTypeNotFoundException(container);
+            return type;
+            //return await GetContainerTypeOrNullAsync(moduleName, container) ?? 
+        }
+
+        public async Task<List<ModelDto>> GetAllModelsAsync()
+        {
+            var models = new List<ModelDto>();
+
+            var modelProviders = _iocResolver.ResolveAll<IModelProvider>();
+            foreach (var provider in modelProviders)
+            {
+                models.AddRange(await provider.GetModelsAsync());
+            }
+            return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
+        }
+
+        private class ModelDtoTypeComparer : IEqualityComparer<ModelDto>
+        {
+            bool IEqualityComparer<ModelDto>.Equals(ModelDto? x, ModelDto? y)
+            {
+                return x != null && y != null && x.ClassName == y.ClassName || x == null && y == null;
+            }
+
+            int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
+            {
+                return obj.GetHashCode();
+            }
         }
     }
 }
