@@ -7,12 +7,19 @@ interface ITextTheme {
   link?: string;
 }
 
+interface IPanelsTheme {
+  divider?: string;
+  label?: string;
+  text?: string;
+}
+
 export interface IConfigurableTheme {
   application?: Theme;
   sidebar?: 'dark' | 'light';
   sidebarBackground?: string;
   layoutBackground?: string;
   text?: ITextTheme;
+  designerPanels: IPanelsTheme;
   labelSpan?: number;
   componentSpan?: number;
 }
@@ -48,6 +55,11 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
       secondary: '#00000073',
       link: '',
     },
+    designerPanels: {
+      divider: '#dddddd',
+      label: '#2f4f4f',
+      text: '#141414'
+    }
   },
   prefixCls: 'antd',
   iconPrefixCls: 'antdicon',

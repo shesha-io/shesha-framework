@@ -1,17 +1,14 @@
 import { IStyleType } from "@/providers";
+import { THEME_CONTEXT_INITIAL_STATE } from "@/providers/theme/contexts";
+
 
 export const getHeaderStyles = (): IStyleType => (
     {
         font: {
-            color: "darkslategray",
+            color: THEME_CONTEXT_INITIAL_STATE.theme?.designerPanels?.label,
             size: 14,
             weight: "500",
-            align: "left",
-            type: "Segoe UI"
-        },
-        background: {
-            type: "color",
-            color: "#fff"
+            align: "left"
         },
         dimensions: {
             width: "auto",
@@ -31,7 +28,7 @@ export const getHeaderStyles = (): IStyleType => (
                 bottom: {
                     width: "2px",
                     style: "solid",
-                    color: "#d9d9d9"
+                    color: THEME_CONTEXT_INITIAL_STATE?.theme?.designerPanels?.divider
                 },
                 left: {}
             },
