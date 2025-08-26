@@ -195,6 +195,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   if (range) {
     return (
+      <div style={{marginRight: 1}} >
       <RangePicker
         onCalendarChange={(dates) => {
           if (dates && showTime && !defaultToMidnight) handleCalendarRangeChange(dates);
@@ -214,6 +215,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
       />
+      </div>
     );
   }
 
@@ -223,6 +225,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   }
 
   return (
+    <div style={{marginRight: 1}} >
     <DatePicker
       className={styles.dateField}
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
@@ -241,5 +244,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       value={momentValue}
       allowClear
     />
+    </div>
   );
 };
