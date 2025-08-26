@@ -28,33 +28,12 @@ const validateColumns = (columns: IColumnProps[]) => {
 
   const totalFlex = columns.reduce((sum, col) => sum + (col.flex || 0), 0);
 
-  if (totalFlex > 24) {
-    console.warn(`Columns component: Total flex value (${totalFlex}) exceeds 24. Normalizing columns to prevent overflow.`);
-
-    // Calculate normalized values
-    const normalizedColumns = columns.map(col => ({
-      ...col,
-      flex: Math.floor((col.flex || 0) * 24 / totalFlex)
-    }));
-
-    // Distribute remaining flex to avoid underfill
-    const normalizedTotal = normalizedColumns.reduce((sum, col) => sum + col.flex, 0);
-    const remainder = 24 - normalizedTotal;
-
-    // Add remainder to columns with the highest original flex values
-    if (remainder > 0) {
-      const sortedIndices = columns
-        .map((col, index) => ({ index, flex: col.flex || 0 }))
-        .sort((a, b) => b.flex - a.flex)
-        .slice(0, remainder);
-
-      sortedIndices.forEach(({ index }) => {
-        normalizedColumns[index].flex += 1;
-      });
-    }
-
-    return normalizedColumns;
+  // If total is exactly 24 or less, no normalization needed
+  if (totalFlex <= 24) {
+    return columns;
   }
+
+  console.warn(`Columns component: Total flex value (${totalFlex}) exceeds 24. Columns will wrap to new rows.`);
 
   return columns;
 };
