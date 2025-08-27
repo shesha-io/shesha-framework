@@ -8,7 +8,7 @@ import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
 import { useCanvas } from '@/index';
-import { calculateAutoZoom, usePinchZoom, DEFAULT_OPTIONS } from './canvasUtils';
+import { calculateAutoZoom, usePinchZoom } from './canvasUtils';
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;

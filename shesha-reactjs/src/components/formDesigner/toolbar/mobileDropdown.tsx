@@ -2,11 +2,12 @@ import React, { FC } from 'react';
 import { Select, Tooltip } from 'antd';
 import { useCanvas } from '@/providers';
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
+import CustomDropdown from '@/designer-components/_settings/utils/CustomDropdown';
 
 export interface IPreviewButtonProps { }
 
 export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
-  const { setCanvasWidth } = useCanvas();
+  const { setCanvasWidth, designerWidth } = useCanvas();
 
   const options = [
     {
@@ -45,18 +46,19 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
   ];
 
   return (
-    <Select
-      showSearch
+    <CustomDropdown
       placeholder="Select a device"
       optionFilterProp="label"
       defaultValue={'1024px'}
       style={{ width: '120px' }}
       size='small'
+      customTooltip='Add a custom screen size e.g "1440px".'
       popupMatchSelectWidth={false}
       onChange={(val) => {
         const value = parseInt(val, 10);
         setCanvasWidth(value, value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
       }}
+      value={designerWidth}
       labelRender={({ label, value }) => {
         const option = options.find(opt => opt.value === value);
         return <Tooltip title={value}>{option?.icon} {label}</Tooltip>
