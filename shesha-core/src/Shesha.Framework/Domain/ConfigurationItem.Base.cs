@@ -89,13 +89,6 @@ namespace Shesha.Domain
                 Origin = this;
         }
         
-        /*
-        [ReadonlyProperty]
-        public virtual Guid? ActiveRevisionId { get; protected set; }
-        [ReadonlyProperty]
-        public virtual Guid? LatestRevisionId { get; protected set; }
-        */
-
         public override string ToString()
         {
             return Module != null

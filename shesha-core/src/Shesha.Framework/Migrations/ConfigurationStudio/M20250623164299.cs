@@ -178,6 +178,7 @@ from
 	finalCte
 ");
 
+            IfDatabase("PostgreSql").Execute.Sql(@"drop view if exists frwk.vw_configuration_items_tree_nodes");
             IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE VIEW frwk.vw_configuration_items_tree_nodes AS
 WITH RECURSIVE folders_cte AS (
     SELECT
