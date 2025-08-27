@@ -31,7 +31,11 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
 
-  const [currentSizes, setCurrentSizes] = useState([]);
+  const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
+
+  const handleDragSizesChange = useCallback((sizes: number[]) => {
+    setCurrentSizes(sizes as any);
+  }, []);
 
   const handleZoomChange = useCallback((newZoom: number) => {
     setCanvasZoom(newZoom);
@@ -46,9 +50,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   );
 
   useEffect(() => {
-    const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
-    setCurrentSizes(newSizes.sizes);
-    console.log("Sizes::", newSizes)
     setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
     setCanvasZoom(autoZoom ? calculateAutoZoom({
       designerWidth, isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, currentZoom: zoom, options: {
@@ -60,6 +61,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     }) : zoom);
   }, [isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth]);
 
+  useEffect(()=>{
+    setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes)
+  },[isOpenRight, isOpenLeft])
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
   );
@@ -88,13 +92,14 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         expandToMin={false}
         minSize={sizes?.minSizes}
         maxSize={sizes?.maxSizes}
+        onDrag={handleDragSizesChange}
+        onDragEnd={handleDragSizesChange}
         gutterSize={8}
         gutterAlign="center"
         snapOffset={5}
         dragInterval={12}
         direction="horizontal"
         cursor="col-resize"
-        onDragEnd={(sizes => setCurrentSizes(sizes))}
         className={classNames(styles.sidebarContainerBody)}
       >
         {renderSidebar('left')}
