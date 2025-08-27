@@ -3,13 +3,14 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider, MetadataProvider, useShaFormInstance } from '@/providers';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useEffect } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
+
 
 export interface IDesignerMainAreaProps {
 }
@@ -26,7 +27,17 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const formSettings = useFormDesignerStateSelector(state => state.formSettings);
     const formMode = useFormDesignerStateSelector(state => state.formMode);
     const { antdForm: form } = useShaFormInstance();
+    const shaForm = useShaFormInstance();
     const { styles } = useStyles();
+
+    useEffect(()=>{
+        if(shaForm) {
+            shaForm.applyMarkupAsync({
+                formFlatMarkup: shaForm.flatStructure,
+                formSettings: formSettings,
+            });
+        }
+    },[formSettings, shaForm]);
 
     const leftSidebarProps = useMemo(() => 
       readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' }

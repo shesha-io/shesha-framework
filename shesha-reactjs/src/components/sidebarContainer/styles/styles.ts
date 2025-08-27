@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const leftSidebarWidth = "550px";
   const sidebarBtnHeight = "35px";
 
@@ -79,7 +79,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
               align-items: center;
               padding: 0 ${sheshaStyles.paddingLG}px;
               font-weight: 500;
-              font-size: 16px;
+              font-size: 14px;
             }
     
             .${sidebarHeaderBtn} {

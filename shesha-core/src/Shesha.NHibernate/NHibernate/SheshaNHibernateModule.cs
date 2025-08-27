@@ -5,6 +5,7 @@ using Abp.Authorization.Users;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Uow;
+using Abp.Events.Bus;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Reflection;
@@ -33,6 +34,7 @@ using Shesha.NHibernate.Uow;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Startup;
+using Shesha.Warmup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -362,6 +364,12 @@ namespace Shesha.NHibernate
                 // update the DB seeding time
                 await cache.SetAsync(seedDbFinishedOnKey, initializationStart, TimeSpan.FromMinutes(10));
             });
+
+            if (initializedByCurrentInstance) 
+            {
+                var eventBus = ioc.Resolve<IEventBus>();
+                await eventBus.TriggerAsync<DatabaseInitializedEventData>(this, new());
+            }
 
             Logger.Warn(initializedByCurrentInstance 
                 ? "Database initialization finished" : 
