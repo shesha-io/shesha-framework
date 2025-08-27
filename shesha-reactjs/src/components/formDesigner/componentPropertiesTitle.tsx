@@ -13,7 +13,7 @@ export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
   const { deleteComponent, duplicateComponent } = useFormDesignerActions();
   const { styles } = useStyles();
 
-  const componentLabel = formFlatMarkup?.allComponents[selectedComponentId]?.label ?? 'Properties';
+  const componentLabel = formFlatMarkup?.allComponents?.[selectedComponentId]?.label ?? 'Properties';
 
   const onDeleteClick = () => {
     if (!readOnly)
