@@ -173,7 +173,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
-  actualModelPropertyFilter?: (name: string) => boolean;
+  actualModelPropertyFilter?: (name: string, value: any) => boolean;
   
   editorAdapter?: IEditorAdapter;
 }
