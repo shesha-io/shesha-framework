@@ -30,6 +30,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
+  const isSidebarCollapsed = localStorage.getItem('SIDEBAR_COLLAPSE') === 'true';
+
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
@@ -51,8 +53,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   useEffect(() => {
     setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-    setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes}) : zoom);
-  }, [isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes]);
+    setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSidebarCollapsed}) : zoom);
+  }, [isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSidebarCollapsed]);
   
 
   useEffect(()=>{
