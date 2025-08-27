@@ -86,6 +86,7 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
                 lastModifierUser: node.lastModifierUser,
                 lastModificationTime: node.lastModificationTime,
                 baseModule: node.baseModule,
+                moduleName: "",
             };
             applyIcon(itemNode);
             return itemNode;

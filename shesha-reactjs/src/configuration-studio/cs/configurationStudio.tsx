@@ -319,6 +319,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
             return definition.documentInstanceFactory({
                 itemId: d.itemId,
                 label: node.name,
+                moduleId: node.moduleId,
+                moduleName: node.moduleName,                
                 flags: node.flags,
             });
         })
@@ -368,6 +370,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const newDocument = definition.documentInstanceFactory({
             itemId: node.id,
             label: node.name,
+            moduleId: node.moduleId,
+            moduleName: node.moduleName,
             flags: node.flags,
         });
 
@@ -562,6 +566,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
             // Second pass: build hierarchy
             flatTreeNodes.forEach(node => {
                 const currentNode = treeNodeMap.get(node.id)!;
+
+                if (node.moduleId && isConfigItemTreeNode(currentNode))
+                    currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
 
                 if (node.parentId !== null) {
                     const parent = treeNodeMap.get(node.parentId);

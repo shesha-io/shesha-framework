@@ -12,9 +12,14 @@ export const TabLabel: FC<ITabLabelProps> = ({ doc, onContextMenu }) => {
         ? getIcon(TreeNodeType.ConfigurationItem, doc.itemType)
         : undefined;
 
+    const title = isCIDocument(doc)
+        ? `${doc.moduleName}/${doc.label}` 
+        : undefined;
+
     return (
         <div
             onContextMenu={onContextMenu}
+            title={title}
         >
             {icon}
             <span>{doc.label}</span>

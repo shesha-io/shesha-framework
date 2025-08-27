@@ -30,6 +30,6 @@ export const FormDocumentDefinition: DocumentDefinition = {
         );
     },
     documentInstanceFactory: (args) => {
-        return new DocumentInstance(FormDocumentDefinition, FormDocumentDefinition.documentType, args.itemId, args.label, args.flags);
+        return new DocumentInstance({ ...args, itemType: FormDocumentDefinition.documentType, definition: FormDocumentDefinition });
     }
 };

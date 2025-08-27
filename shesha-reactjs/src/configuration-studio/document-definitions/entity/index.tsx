@@ -33,6 +33,6 @@ export const EntityDocumentDefinition: DocumentDefinition = {
       );
   },
   documentInstanceFactory: (args) => {
-      return new DocumentInstance(EntityDocumentDefinition, EntityDocumentDefinition.documentType, args.itemId, args.label, args.flags);
+      return new DocumentInstance({ ...args, itemType: EntityDocumentDefinition.documentType, definition: EntityDocumentDefinition });
   }
 };
