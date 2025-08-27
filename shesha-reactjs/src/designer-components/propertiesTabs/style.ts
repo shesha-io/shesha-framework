@@ -8,12 +8,9 @@ export const useStyles = createStyles(({ css, cx }) => {
 
   const content = cx(css`
     .ant-tabs-tab, .ant-tabs-nav-operations {
-      height: 24px;
+      height: 30px;
     }
     
-    .ant-tabs-nav {
-      margin-bottom: 0px;
-    }
     .ant-tabs-tab {
       --ant-tabs-card-padding-sm: 0 8px;
     }

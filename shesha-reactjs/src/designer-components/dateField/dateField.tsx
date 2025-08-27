@@ -9,6 +9,7 @@ import { useAvailableConstantsData, validateConfigurableComponentSettings } from
 import { IDateFieldProps } from './interfaces';
 import {
   DATE_TIME_FORMATS,
+  defaultStyles,
 } from './utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -16,7 +17,7 @@ import { DatePickerWrapper } from './datePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from '../textField/utils';
+
 
 const DateField: IToolboxComponent<IDateFieldProps> = {
   type: 'dateField',

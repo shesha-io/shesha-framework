@@ -75,7 +75,13 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 ? newValue.startOf('day')
                 : newValue;
     const finalMoment = resolveToUTC ? val?.utc(true) : val.local(true);
-    return finalMoment.toISOString();
+    if (resolveToUTC) {
+      // Always store UTC in ISO
+      return finalMoment.toISOString();
+    } else {
+      // Return ISO-like string in *local* time
+      return finalMoment.format(pickerFormat);
+    }
   };
 
   const handleDatePickerChange = (localValue: any | null, dateString: string) => {
@@ -195,6 +201,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   if (range) {
     return (
+      <div style={{marginRight: 1}} >
       <RangePicker
         onCalendarChange={(dates) => {
           if (dates && showTime && !defaultToMidnight) handleCalendarRangeChange(dates);
@@ -214,6 +221,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
       />
+      </div>
     );
   }
 
@@ -223,6 +231,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   }
 
   return (
+    <div style={{marginRight: 1}} >
     <DatePicker
       className={styles.dateField}
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
@@ -241,5 +250,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       value={momentValue}
       allowClear
     />
+    </div>
   );
 };
