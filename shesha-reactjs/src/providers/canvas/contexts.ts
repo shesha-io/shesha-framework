@@ -25,7 +25,7 @@ export interface ICanvasActionsContext {
 
 export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
   zoom: 100,
-  autoZoom: false,
+  autoZoom: true,
   designerDevice: 'desktop',
 };
 
