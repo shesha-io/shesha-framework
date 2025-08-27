@@ -33,6 +33,7 @@ export type ConfigItemTreeNode = TreeNode & {
     flags: DocumentFlags;
     lastModifierUser?: string;
     lastModificationTime?: string;
+    moduleName: string;
     baseModule?: string;
 };
 
@@ -131,6 +132,8 @@ export type CIDocument = DocumentBase & {
     loadingState: LoadingStatus;
     isHistoryVisible: boolean;
     flags?: DocumentFlags;
+    moduleId: string;
+    moduleName: string;
 };
 
 export const isCIDocument = (doc: StoredDocumentInfo): doc is CIDocument => {
@@ -158,6 +161,8 @@ export interface IDocumentInstance extends CIDocument {
 export type DocumentInstanceFactoryArgs = {
     itemId: string;
     label: string;
+    moduleId: string;
+    moduleName: string;
     flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;

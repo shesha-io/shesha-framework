@@ -1,5 +1,5 @@
 import { HttpClientApi, useHttpClient } from "@/providers";
-import { FlatTreeNode, ItemTypeBackendDefinition, TreeNode } from "./models";
+import { FlatTreeNode, isConfigItemTreeNode, ItemTypeBackendDefinition, TreeNode } from "./models";
 import { IAjaxResponse } from "@/interfaces";
 import { IAbpWrappedResponse } from "@/interfaces/gql";
 import { AxiosResponse } from "axios";
@@ -72,6 +72,9 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
         // Second pass: build hierarchy
         flatTreeNodes.forEach(node => {
             const currentNode = treeNodeMap.get(node.id)!;
+
+            if (node.moduleId && isConfigItemTreeNode(currentNode))
+                currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
 
             if (node.parentId !== null) {
                 const parent = treeNodeMap.get(node.parentId);

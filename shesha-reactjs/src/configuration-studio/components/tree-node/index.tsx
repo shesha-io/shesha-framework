@@ -3,6 +3,8 @@ import { isConfigItemTreeNode, TreeNode } from '@/configuration-studio/models';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { Popover, Typography } from 'antd';
 import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { NodeIndicator } from './nodeIndicators';
+import { gray } from '@ant-design/colors';
 
 const { Text } = Typography;
 
@@ -31,6 +33,8 @@ const LabelValue: FC<LabelValueProps> = ({ data }) => {
     );
 };
 
+const GRAY_OUT_STYLE = { color: gray.primary };
+
 export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
     const isDevMode = useIsDevMode();
 
@@ -56,6 +60,10 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
         return result;
     }, [node, isDevMode]);
 
+    const nodeStyle = isConfigItemTreeNode(node) && !node.flags.isUpdated
+        ? GRAY_OUT_STYLE
+        : undefined;
+
     return items.length > 0
         ? (
             <Popover
@@ -67,8 +75,8 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
                 trigger='hover'
                 mouseEnterDelay={0.3}
             >
-                {children}
+                <span style={nodeStyle}>{children} <NodeIndicator node={node} /></span>
             </Popover>
         )
-        : <>{children}</>;
+        : <span style={nodeStyle}>{children} <NodeIndicator node={node} /></span>;
 };

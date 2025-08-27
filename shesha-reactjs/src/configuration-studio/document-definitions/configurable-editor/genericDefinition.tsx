@@ -32,7 +32,7 @@ export const getUnknownDocumentDefinition = (itemType: string): DocumentDefiniti
         Editor: EditorNotAvailable,
         Toolbar: EmptyComponent,
         documentInstanceFactory: (args) => {
-            return new DocumentInstance(definition, itemType, args.itemId, args.label, args.flags);
+            return new DocumentInstance({ ...args, itemType, definition });
         }
     };
     return definition;
@@ -89,7 +89,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
             );
         },
         documentInstanceFactory: (args) => {
-            return new DocumentInstance(definition, itemType, args.itemId, args.label, args.flags);
+            return new DocumentInstance({ ...args, definition, itemType });
         }
     };
     return definition;

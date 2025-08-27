@@ -3,53 +3,53 @@ import { mergeWith } from "lodash";
 import moment from "moment";
 
 export const jsonSafeParse = (value: any, defaultValue?: any): any => {
-  try {
-    return !value ? (defaultValue ?? value) : typeof value === "string" ? JSON.parse(value) : value;
-  } catch {
-    return value;
-  }
+    try {
+        return !value ? (defaultValue ?? value) : typeof value === "string" ? JSON.parse(value) : value;
+    } catch {
+        return value;
+    }
 };
 
 export const unproxyValue = (value: any) => {
-  return value && Boolean(value['getAccessorValue']) ? value.getAccessorValue() : value;
+    return value && Boolean(value['getAccessorValue']) ? value.getAccessorValue() : value;
 };
 
 export const deepMergeValues = (target: any, source: any) => {
-  return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
-      // handle null
-      if (srcValue === null) {
-          // reset field to null
-          obj[key] = null;
-          return undefined;
-      }
+    return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
+        // handle null
+        if (srcValue === null) {
+            // reset field to null
+            obj[key] = null;
+            return undefined;
+        }
 
-      // handle undefined
-      if (srcValue === undefined) {
-          // reset field to undefined
-          obj[key] = undefined;
-          return undefined;
-      }
+        // handle undefined
+        if (srcValue === undefined) {
+            // reset field to undefined
+            obj[key] = undefined;
+            return undefined;
+        }
 
-      // handle arrays
-      if (Array.isArray(srcValue)) {
-          // save array as is without merging
-          return srcValue;
-      }
-    
-      //handle moemnt objects
-      if (moment.isMoment(srcValue)) {
-          // save moment object without merging
-          return srcValue;
-      }
+        // handle arrays
+        if (Array.isArray(srcValue)) {
+            // save array as is without merging
+            return srcValue;
+        }
 
-      // handle objects
-      if (typeof objValue === "object" && typeof srcValue === "object") {
-          // make a copy of merged objects
-          return deepMergeValues(objValue, srcValue);
-      }
+        //handle moemnt objects
+        if (moment.isMoment(srcValue)) {
+            // save moment object without merging
+            return srcValue;
+        }
 
-      return undefined;
-  });
+        // handle objects
+        if (typeof objValue === "object" && typeof srcValue === "object") {
+            // make a copy of merged objects
+            return deepMergeValues(objValue, srcValue);
+        }
+
+        return undefined;
+    });
 };
 
 export const getValueByPropertyName = (data: any, propertyName: string): any => {
@@ -104,4 +104,25 @@ export const removeUndefinedProps = <T extends object>(value: T): Partial<T> => 
     return value
         ? cleanDeep(value, { undefinedValues: true })
         : value;
+};
+
+export const pickProps = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
+    return keys.reduce((acc, key) => {
+        if (obj[key] !== undefined) {
+            acc[key] = obj[key];
+        }
+        return acc;
+    }, {} as Pick<T, K>);
+};
+
+export const mapProps = <T extends object, K extends keyof T>(
+    source: T,
+    target: Partial<T>,
+    properties: K[]
+): void => {
+    properties.forEach(prop => {
+        if (source[prop] !== undefined) {
+            target[prop] = source[prop];
+        }
+    });
 };

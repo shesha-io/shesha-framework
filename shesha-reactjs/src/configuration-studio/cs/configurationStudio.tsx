@@ -83,7 +83,7 @@ export interface IConfigurationStudio {
     readonly treeExpandedKeys: React.Key[];
     readonly treeSelectedKeys: React.Key[];
     readonly treeSelectedNode?: TreeNode;
-    readonly treeSelectedItemNode?: ConfigItemTreeNode;    
+    readonly treeSelectedItemNode?: ConfigItemTreeNode;
 
     readonly itemTypes: ItemTypeDefinition[];
     toolbarRef?: MutableRefObject<any>;
@@ -104,7 +104,8 @@ export interface IConfigurationStudio {
     activeDocument?: IDocumentInstance;
 
     openDocById: (docId?: string) => void;
-    removeTabAsync: (docId?: string) => void;
+    closeDocAsync: (docId?: string) => void;
+    closeMultipleDocsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
     //#endregion
 
     //#region crud operations
@@ -234,7 +235,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     get treeSelectedNode(): TreeNode | undefined {
         return this._selectedNodeId
             ? this._treeNodesMap.get(this._selectedNodeId)
-            : undefined;        
+            : undefined;
     };
 
     get treeSelectedItemNode(): ConfigItemTreeNode | undefined {
@@ -318,6 +319,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
             return definition.documentInstanceFactory({
                 itemId: d.itemId,
                 label: node.name,
+                moduleId: node.moduleId,
+                moduleName: node.moduleName,                
                 flags: node.flags,
             });
         })
@@ -367,6 +370,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const newDocument = definition.documentInstanceFactory({
             itemId: node.id,
             label: node.name,
+            moduleId: node.moduleId,
+            moduleName: node.moduleName,
             flags: node.flags,
         });
 
@@ -420,7 +425,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return this.docs.some(t => t.itemId === docId);
     };
 
-    removeTabAsync = async (docId?: string): Promise<void> => {
+    closeDocAsync = async (docId?: string): Promise<void> => {
         if (!this.isDocOpened(docId))
             return;
 
@@ -444,6 +449,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 : undefined;
             if (docToSwitchTo)
                 this.selectTabAsync(docToSwitchTo);
+        }
+    };
+
+    closeMultipleDocsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean): Promise<void> => {
+        // TODO: check for unsaved changes, ask user to confirm
+        const docsToClose = this.docs.filter(predicate);
+        for (const doc of docsToClose) {
+            await this.closeDocAsync(doc.itemId);
         }
     };
 
@@ -553,6 +566,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
             // Second pass: build hierarchy
             flatTreeNodes.forEach(node => {
                 const currentNode = treeNodeMap.get(node.id)!;
+
+                if (node.moduleId && isConfigItemTreeNode(currentNode))
+                    currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
 
                 if (node.parentId !== null) {
                     const parent = treeNodeMap.get(node.parentId);
@@ -681,7 +697,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
 
             if (this.isDocOpened(docId))
-                this.removeTabAsync(docId);
+                this.closeDocAsync(docId);
 
             await this.loadTreeAsync();
         } catch (error) {
