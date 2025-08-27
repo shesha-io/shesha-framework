@@ -1,49 +1,14 @@
 import React, { FC } from 'react';
-import { Select, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { useCanvas } from '@/providers';
-import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import CustomDropdown from '@/designer-components/_settings/utils/CustomDropdown';
+import { screenSizeOptions } from '../utils/svgConstants';
 
 export interface IPreviewButtonProps { }
 
 export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
   const { setCanvasWidth, designerWidth } = useCanvas();
 
-  const options = [
-    {
-      label: 'iPhone SE', value: '375px', icon: <MobileOutlined />
-    },
-    {
-      label: 'iPhone XR/12/13/14', value: '414px', icon: <MobileOutlined />
-    },
-    {
-      label: 'Pixel 5', value: '393px', icon: <MobileOutlined />
-    },
-    {
-      label: 'Samsung Galaxy S8+', value: '360px', icon: <MobileOutlined />
-    },
-    {
-      label: 'iPad Mini', value: '768px', icon: <TabletOutlined />
-    },
-    {
-      label: 'iPad Air/Pro', value: '820px', icon: <TabletOutlined />
-    },
-    {
-      label: 'Surface Duo', value: '540px', icon: <TabletOutlined />
-    },
-    {
-      label: 'Surface Pro 7', value: '912px', icon: <DesktopOutlined />
-    },
-    {
-      label: 'Desktop 1024', value: '1024px', icon: <DesktopOutlined />
-    },
-    {
-      label: 'Desktop 1440', value: '1440px', icon: <DesktopOutlined />
-    },
-    {
-      label: 'Desktop 1920', value: '1920px', icon: <DesktopOutlined />
-    }
-  ];
 
   return (
     <CustomDropdown
@@ -60,11 +25,12 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
       }}
       value={designerWidth}
       labelRender={({ label, value }) => {
-        const option = options.find(opt => opt.value === value);
-        return <Tooltip title={value}>{option?.icon} {label}</Tooltip>
+        const option = screenSizeOptions.find(opt => opt.value === value);
+        const Icon = option?.icon;
+        return <Tooltip title={value}><Icon/> {label}</Tooltip>;
       }
       }
-      options={options}
+      options={screenSizeOptions}
     />
   );
 };

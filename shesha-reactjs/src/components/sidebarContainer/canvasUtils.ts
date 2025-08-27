@@ -109,8 +109,7 @@ export const usePinchZoom = (
   }, []);
 
   useEffect(() => {
-    const element = elementRef.current;
-    if (!element) return () => {};
+    const element = elementRef?.current;
     
     element.addEventListener('wheel', handleWheel, { passive: false });
 

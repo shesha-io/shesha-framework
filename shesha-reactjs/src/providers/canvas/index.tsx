@@ -55,8 +55,8 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
     dispatch(setCanvasZoomAction(zoom));
   };
   const setCanvasAutoZoom = () => {
-    dispatch(SetCanvasAutoZoomAction())
-  }
+    dispatch(SetCanvasAutoZoomAction());
+  };
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const actions ={

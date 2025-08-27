@@ -56,8 +56,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   
 
   useEffect(()=>{
-    setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes)
-  },[isOpenRight, isOpenLeft])
+    setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
+  },[isOpenRight, isOpenLeft]);
+
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
   );
