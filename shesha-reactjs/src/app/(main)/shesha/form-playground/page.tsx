@@ -5,6 +5,7 @@ import { PageWithLayout } from '@/interfaces';
 import { DemoForm } from './demoForm';
 import KeyboardTree from './tree';
 import FileTree from './fileTree';
+import TabContextMenuExample from './tabs';
 
 const treeData = [
   {
@@ -26,6 +27,9 @@ const treeData = [
 ];
 
 const Page: PageWithLayout<{}> = () => {
+  return (
+    <TabContextMenuExample/>
+  );
   return (
     <FileTree/>
   );

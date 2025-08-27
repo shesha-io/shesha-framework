@@ -1,11 +1,10 @@
-import React, { FC, ReactNode, useMemo, useRef } from 'react';
-import { Empty, Tabs, TabsProps } from 'antd';
+import React, { FC, ReactNode, useMemo, useRef, useState } from 'react';
+import { Dropdown, Empty, Tabs, TabsProps } from 'antd';
 import { useCsTabs } from '../cs/hooks';
-import { getIcon } from '../tree-utils';
-import { TreeNodeType } from '../models';
 import { DocumentEditor } from './documentEditor';
-import { isCIDocument } from '../models';
 import { useStyles } from '../styles';
+import { TabLabel } from './tabLabel';
+import { IDocumentInstance } from '../models';
 
 export interface IWorkAreaProps {
 }
@@ -13,31 +12,74 @@ export interface IWorkAreaProps {
 type Tab = TabsProps['items'][number];
 type OnEdit = TabsProps['onEdit'];
 
+type TabContextMenuState = {
+    isVisible: boolean;
+    doc: IDocumentInstance;
+    x: number;
+    y: number;
+};
+
 export const WorkArea: FC<IWorkAreaProps> = () => {
-    const { docs, activeDocId, openDocById, removeTab } = useCsTabs();
+    const { docs, activeDocId, openDocById, closeDoc, closeMultipleDocs } = useCsTabs();
     const { styles } = useStyles();
+    const [contextMenuState, setContextMenuState] = useState<TabContextMenuState>();
 
     // store rendered docs to keep them unchanged after manipulations with opened tabs
     const renderedDocsRef = useRef<Map<string, ReactNode>>(new Map<string, ReactNode>());
     const renderedDocs = renderedDocsRef.current;
 
+    const getContextMenuItems = (doc: IDocumentInstance) => [
+        {
+            key: 'close',
+            label: 'Close',
+            onClick: () => closeDoc(doc.itemId)
+        },
+        {
+            key: 'closeOthers',
+            label: 'Close Others',
+            onClick: () => {
+                closeMultipleDocs((d) => (d !== doc));
+            }
+        },
+        {
+            key: 'closeToTheRight',
+            label: 'Close to the Right',
+            onClick: () => {
+                closeMultipleDocs((_, index) => {
+                    const docIndex = docs.indexOf(doc);
+                    return index > docIndex;                    
+                });
+            }
+        },
+        {
+            key: 'closeAll',
+            label: 'Close All',
+            onClick: () => {
+                closeMultipleDocs(_ => (true));
+            }
+        }
+    ];
+
+    const handleContextMenu = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, doc: IDocumentInstance) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setContextMenuState({ doc, x: e.clientX, y: e.clientY, isVisible: true });
+    };
+
     const treeTabs = useMemo<Tab[]>(() => {
         const result: Tab[] = [];
         const actualDocs = new Set<string>();
-        docs.forEach(t => {
-            const tabContent = renderedDocs.has(t.itemId)
-                ? renderedDocs.get(t.itemId)
-                : <DocumentEditor doc={t} key={t.itemId} />;
+        docs.forEach(doc => {
+            const tabContent = renderedDocs.has(doc.itemId)
+                ? renderedDocs.get(doc.itemId)
+                : <DocumentEditor doc={doc} key={doc.itemId} />;
 
-            renderedDocs.set(t.itemId, tabContent);
-            actualDocs.add(t.itemId);
+            renderedDocs.set(doc.itemId, tabContent);
+            actualDocs.add(doc.itemId);
 
             result.push({
-                key: t.itemId,
-                label: t.label,
-                icon: isCIDocument(t)
-                    ? getIcon(TreeNodeType.ConfigurationItem, t.itemType)
-                    : undefined,
+                key: doc.itemId,
+                label: <TabLabel doc={doc} onContextMenu={(e) => handleContextMenu(e, doc)} />,
                 children: tabContent,
             });
         });
@@ -53,7 +95,7 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
 
     const handleEdit: OnEdit = (e, action) => {
         if (action === 'remove' && typeof (e) === 'string') {
-            removeTab(e);
+            closeDoc(e);
         }
     };
 
@@ -63,15 +105,38 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
         );
 
     return (
-        <Tabs
-            className={styles.csDocTabs}
-            hideAdd
-            type="editable-card"
-            size='small'
-            activeKey={activeDocId}
-            onChange={openDocById}
-            onEdit={handleEdit}
-            items={treeTabs}
-        />
+        <>
+            <Tabs
+                className={styles.csDocTabs}
+                hideAdd
+                type="editable-card"
+                size='small'
+                activeKey={activeDocId}
+                onChange={openDocById}
+                onEdit={handleEdit}
+                items={treeTabs}
+            />
+            {contextMenuState && (
+                <Dropdown
+                    open={contextMenuState.isVisible}
+                    onOpenChange={(visible) => setContextMenuState({ ...contextMenuState, isVisible: visible })}
+                    menu={{
+                        items: getContextMenuItems(contextMenuState.doc)
+                    }}
+                    trigger={['contextMenu']}
+                    align={{ points: ['tl', 'tr'] }}
+                >
+                    <div
+                        style={{
+                            position: 'fixed',
+                            left: contextMenuState.x,
+                            top: contextMenuState.y,
+                            width: 1,
+                            height: 1,
+                        }}
+                    />
+                </Dropdown>
+            )}
+        </>
     );
 };

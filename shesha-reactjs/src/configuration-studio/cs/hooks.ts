@@ -56,7 +56,8 @@ export type UseCsTabsResponse = {
     readonly activeDocId?: string;
     readonly activeDocument?: IDocumentInstance;
     readonly openDocById: (tabId?: string) => void;
-    readonly removeTab: (tabId?: string) => void;
+    readonly closeDoc: (tabId?: string) => void;
+    readonly closeMultipleDocs: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
 };
 export const useCsTabs = (): UseCsTabsResponse => {
     const cs = useConfigurationStudio();
@@ -67,7 +68,8 @@ export const useCsTabs = (): UseCsTabsResponse => {
         activeDocId: cs.activeDocId,
         activeDocument: cs.activeDocument,
         openDocById: cs.openDocById,
-        removeTab: cs.removeTabAsync,
+        closeDoc: cs.closeDocAsync,
+        closeMultipleDocs: cs.closeMultipleDocsAsync,
     };
 };
 
