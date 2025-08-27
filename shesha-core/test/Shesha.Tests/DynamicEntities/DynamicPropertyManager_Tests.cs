@@ -62,7 +62,7 @@ namespace Shesha.Tests.DynamicEntities
                     {
                         new EntityPropertyDto
                         {
-                            Name = "UnitTestDynamicObject", DataType = DataTypes.Object, Source = MetadataSourceType.UserDefined,
+                            Name = "UnitTestDynamicObject", DataType = DataTypes.Object, DataFormat = ObjectFormats.Object, Source = MetadataSourceType.UserDefined,
                             Properties = new List<EntityPropertyDto>()
                             {
                                 new EntityPropertyDto {Name = "UnitTestObjectProperty1", DataType = DataTypes.String, Source = MetadataSourceType.UserDefined},

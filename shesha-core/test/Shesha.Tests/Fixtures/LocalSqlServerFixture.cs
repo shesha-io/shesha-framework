@@ -8,7 +8,7 @@ namespace Shesha.Tests.Fixtures
     {
         public string ConnectionString { get; private set; }
 
-        public DbmsType DbmsType => DbmsType.SQLServer;
+        public DbmsType DbmsType { get; private set; } = DbmsType.SQLServer;
 
         public LocalSqlServerFixture()
         {
@@ -17,6 +17,7 @@ namespace Shesha.Tests.Fixtures
         public Task InitializeAsync()
         {
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            DbmsType = config.GetDbmsType();
             ConnectionString = config.GetRequiredConnectionString("TestDB");
 
             return Task.CompletedTask;

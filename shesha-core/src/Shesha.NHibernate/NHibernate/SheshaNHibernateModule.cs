@@ -104,8 +104,7 @@ namespace Shesha.NHibernate
                     IocManager.IocContainer.Register(Component.For<IDbMetadataActions>().ImplementedBy<DbMsSqlGenerateActions>());
                     break;
                 case DbmsType.PostgreSQL:
-                    // ToDo: AS - add postgre support
-                    //IocManager.IocContainer.Register(Component.For<IDbMetadataActions>().ImplementedBy<DbPostgreMetadataActions>());
+                    IocManager.IocContainer.Register(Component.For<IDbMetadataActions>().ImplementedBy<DbPostgreMetadataActions>());
                     break;
                 default:
                     // backward compatibility
