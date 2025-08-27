@@ -34,7 +34,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [currentSizes, setCurrentSizes] = useState([]);
 
   const handleZoomChange = useCallback((newZoom: number) => {
-    console.log("Zooming")
     setCanvasZoom(newZoom);
   }, [setCanvasZoom]);
 
@@ -49,9 +48,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
     setCurrentSizes(newSizes.sizes);
+    console.log("Sizes::", newSizes)
     setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
     setCanvasZoom(autoZoom ? calculateAutoZoom({
-      designerDevice, isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, currentZoom: zoom, options: {
+      designerWidth, isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, currentZoom: zoom, options: {
         ...DEFAULT_OPTIONS,
         bothPanelsOpenZoom: designerDevice === 'desktop' ? 65 : designerDevice === 'tablet' ? 75 : 100,   // Both panels open - 60% zoom is perfect
         onePanelOpenZoom: designerDevice === 'desktop' ? 85 : designerDevice === 'tablet' ? 85 : 100,     // One panel open - 75% zoom is perfect  

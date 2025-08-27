@@ -54,7 +54,7 @@ export interface IAutoZoomParams {
   rightSidebarProps?: ISidebarProps;
   allowFullCollapse?: boolean;
   currentZoom: number;
-  designerDevice?: IDeviceTypes;
+  designerWidth?: string;
   options?: IAutoZoomOptions;
 }
 
@@ -88,7 +88,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     allowFullCollapse,
     currentZoom,
     options = {},
-    designerDevice
+    designerWidth
   } = params;
 
   const opts = { ...DEFAULT_OPTIONS, ...options };

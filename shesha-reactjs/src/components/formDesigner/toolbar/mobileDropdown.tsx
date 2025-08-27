@@ -1,7 +1,7 @@
-import React, { FC, useState } from 'react';
-import { Select, Space, Button, Input, Divider, Tooltip,  } from 'antd';
+import React, { FC } from 'react';
+import { Select, Tooltip } from 'antd';
 import { useCanvas } from '@/providers';
-import { DesktopOutlined, MobileOutlined, PlusOutlined, QuestionCircleOutlined, TabletOutlined } from '@ant-design/icons';
+import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 
 export interface IPreviewButtonProps { }
 
@@ -27,6 +27,10 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
         {
           value: '1280px',
           label: 'Nest Hub Max',
+        },
+        {
+          value: '1024px',
+          label: 'Laptop Small',
         },
         {
           value: '853px',
@@ -81,23 +85,19 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
       ],
     },
     {
-      label: <span><TabletOutlined/> Tablet</span>,
+      label: <span><TabletOutlined /> Tablet</span>,
       title: 'tablet',
       options: [
-    {
-      value: '768px',
-      label: 'iPad Mini',
-    },
-    {
-      value: '540px',
-      label: 'Surface Duo',
-    },
-    {
-      value: '1024px',
-      label: 'iPad Pro',
-    },
-  ]
-}
+        {
+          value: '540px',
+          label: 'Tablet',
+        },
+        {
+          value: '768px',
+          label: 'iPad Mini',
+        },
+      ]
+    }
   ];
 
   return (
@@ -116,12 +116,12 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
         setCanvasWidth(value, value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
         setDesignerDevice(value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
       }}
-      labelRender={({label})=> {
+      labelRender={({ label, value }) => {
         const icon = isDesktop ? <DesktopOutlined /> :
-        isTablet ? <TabletOutlined /> : <MobileOutlined />
-        return <>{icon} {label}</>
+          isTablet ? <TabletOutlined /> : <MobileOutlined />
+        return <Tooltip title={value}>{icon} {label}</Tooltip>
       }
-    }
+      }
       options={options}
     />
   );
