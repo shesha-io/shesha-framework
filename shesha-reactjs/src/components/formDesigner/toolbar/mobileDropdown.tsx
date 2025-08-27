@@ -6,97 +6,41 @@ import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/ico
 export interface IPreviewButtonProps { }
 
 export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
-  const { setCanvasWidth, setDesignerDevice, designerWidth: width, designerDevice: activeDevice } = useCanvas();
-
-  const isDesktop = parseInt(width) > 1020;
-  const isTablet = parseInt(width) > 425;
+  const { setCanvasWidth } = useCanvas();
 
   const options = [
     {
-      label: (
-        <span>
-          <DesktopOutlined /> Desktop
-        </span>
-      ),
-      title: 'desktop',
-      options: [
-        {
-          value: '1440px',
-          label: 'Desktop'
-        },
-        {
-          value: '1280px',
-          label: 'Nest Hub Max',
-        },
-        {
-          value: '1024px',
-          label: 'Laptop Small',
-        },
-        {
-          value: '853px',
-          label: 'Asus Zenbook Fold',
-        },
-        {
-          value: '912px',
-          label: 'Surface Pro 7',
-        },
-      ],
+      label: 'iPhone SE', value: '375px', icon: <MobileOutlined />
     },
     {
-      label: (
-        <span>
-          <MobileOutlined /> Mobile
-        </span>
-      ),
-      title: 'mobile',
-      options: [
-        {
-          value: '322px',
-          label: 'iPhone 4',
-        },
-        {
-          value: '344px',
-          label: 'Galaxy Z Fold 5',
-        },
-        {
-          value: '360px',
-          label: 'Samsung Galaxy S8+',
-        },
-        {
-          value: '375px',
-          label: 'iPhone SE',
-        },
-        {
-          value: '390px',
-          label: 'iPhone 12 Pro',
-        },
-        {
-          value: '412px',
-          label: 'Samsung Galaxy S20 Ultra',
-        },
-        {
-          value: '414px',
-          label: 'iPhone XR',
-        },
-        {
-          value: '430px',
-          label: 'iPhone 14 Pro Max',
-        },
-      ],
+      label: 'iPhone XR/12/13/14', value: '414px', icon: <MobileOutlined />
     },
     {
-      label: <span><TabletOutlined /> Tablet</span>,
-      title: 'tablet',
-      options: [
-        {
-          value: '540px',
-          label: 'Tablet',
-        },
-        {
-          value: '768px',
-          label: 'iPad Mini',
-        },
-      ]
+      label: 'Pixel 5', value: '393px', icon: <MobileOutlined />
+    },
+    {
+      label: 'Samsung Galaxy S8+', value: '360px', icon: <MobileOutlined />
+    },
+    {
+      label: 'iPad Mini', value: '768px', icon: <TabletOutlined />
+    },
+    {
+      label: 'iPad Air/Pro', value: '820px', icon: <TabletOutlined />
+    },
+    {
+      label: 'Surface Duo', value: '540px', icon: <TabletOutlined />
+    },
+    {
+      label: 'Surface Pro 7', value: '912px', icon: <DesktopOutlined />
+    },
+    {
+      label: 'Desktop 1024', value: '1024px', icon: <DesktopOutlined />
+    },
+    {
+      label: 'Desktop 1440', value: '1440px', icon: <DesktopOutlined />
+    },
+    {
+      label: 'Desktop 1920', value: '1920px', icon: <DesktopOutlined />
     }
   ];
 
@@ -105,21 +49,17 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
       showSearch
       placeholder="Select a device"
       optionFilterProp="label"
-      defaultValue={'428'}
-      value={activeDevice === 'mobile' ? width.toString() : width}
-      // variant='borderless'
+      defaultValue={'1024px'}
       style={{ width: '120px' }}
       size='small'
       popupMatchSelectWidth={false}
       onChange={(val) => {
         const value = parseInt(val, 10);
         setCanvasWidth(value, value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
-        setDesignerDevice(value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
       }}
       labelRender={({ label, value }) => {
-        const icon = isDesktop ? <DesktopOutlined /> :
-          isTablet ? <TabletOutlined /> : <MobileOutlined />
-        return <Tooltip title={value}>{icon} {label}</Tooltip>
+        const option = options.find(opt => opt.value === value);
+        return <Tooltip title={value}>{option?.icon} {label}</Tooltip>
       }
       }
       options={options}

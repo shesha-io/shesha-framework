@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useStyles } from '../styles/styles';
-import { Button, Radio, Space, Tooltip } from 'antd';
-import { DesktopOutlined, ExpandOutlined, MinusOutlined, MobileOutlined, PlusOutlined, TabletOutlined } from '@ant-design/icons';
+import { Button, Space, Tooltip } from 'antd';
+import { ExpandOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useCanvas } from '@/providers';
 import { DEFAULT_OPTIONS } from '@/components/sidebarContainer/canvasUtils';
 import { DeviceOptions } from './mobileDropdown';
@@ -22,8 +22,8 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
           setCanvasAutoZoom();
         }} />
         </Tooltip>
-        <Tooltip title={`${zoom}%`}><Button size='small' disabled={autoZoom} type='text' icon={<MinusOutlined />} title='Zoom out' onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? 5 : 0))} /></Tooltip>
-        <Tooltip title={`${zoom}%`}><Button size='small' disabled={autoZoom} type='text' icon={<PlusOutlined />} title='Zoom in' onClick={() => setCanvasZoom(zoom + (zoom < DEFAULT_OPTIONS.maxZoom ? 5 : 0))} /></Tooltip>
+        <Tooltip title={`${zoom}%`}><Button size='small' disabled={autoZoom} type='text' icon={<MinusOutlined />} title='Zoom out' onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} /></Tooltip>
+        <Tooltip title={`${zoom}%`}><Button size='small' disabled={autoZoom} type='text' icon={<PlusOutlined />} title='Zoom in' onClick={() => setCanvasZoom(zoom + (zoom < DEFAULT_OPTIONS.maxZoom ? 2 : 0))} /></Tooltip>
       </Space>
     </div>
   );
