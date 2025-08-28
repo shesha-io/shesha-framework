@@ -74,6 +74,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         protected override Task MapCustomPropsToItemAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration distributedItem)
         {
+            revision.Label = distributedItem.Label;
+            revision.Description = distributedItem.Description;
             revision.Markup = distributedItem.Markup;
             revision.ModelType = distributedItem.ModelType;
             revision.IsTemplate = distributedItem.IsTemplate;

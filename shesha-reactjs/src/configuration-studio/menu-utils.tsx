@@ -111,6 +111,9 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
 };
 
 const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArgs): MenuItemType[] => {
+    console.log("LOG:: configurationStudio", configurationStudio?.itemTypes)
+    console.log("LOG:: node", node)
+
     const buildCreateCIMenuItem = (label: string, itemType: string): MenuItemType => {
         return {
             label: label,
@@ -118,7 +121,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             icon: getIcon(TreeNodeType.ConfigurationItem, itemType),
             onClick: () => {
                 configurationStudio.createItemAsync({
-                    moduleId: node.moduleId,
+                    moduleId: "8832a5e9-c6f9-41fe-b3e7-1a51042e6044",
                     folderId: isFolderTreeNode(node)
                         ? node.id
                         : isConfigItemTreeNode(node) && node.parentId !== node.moduleId
@@ -151,7 +154,9 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
 
     if (configurationStudio.itemTypes) {
         configurationStudio.itemTypes.forEach((it) => {
+            console.log("LOG:: itemTypee", it);
             if (it.createFormId)
+                console.log("LOG:: createFormId", it.createFormId);
                 result.push(buildCreateCIMenuItem(it.friendlyName, it.itemType));
         });
     }

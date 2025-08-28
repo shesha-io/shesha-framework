@@ -64,15 +64,16 @@ export class FormsApi implements IFormsApi {
 
     const payload = {
       id: templateId,
-      properties: 'markup,generationLogicTypeName',
     };
-    const url = `/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
+
+    const url = `/api/dynamic/Shesha/FormConfigurationRevision/Crud/Get?${qs.stringify(payload)}`;
     return this._httpClient
       .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
       .then(async (response) => {
         const template = response.data.result;
         const markup = template.markup;
 
+        console.log("LOG:: templatte", template);
         const enhancedReplacements = {
           NEW_KEY: nanoid(),
           GEN_KEY: nanoid(),
@@ -89,6 +90,7 @@ export class FormsApi implements IFormsApi {
           // Determine the correct generation logic for this template
           const generationLogic = this._generationLogicFactory.getGenerationLogic(template);
 
+          console.log('LOG:: generationLogic', generationLogic);
           // Process the template using the appropriate generation logic
           const preparedMarkup = await generationLogic.processTemplate(
             markup, 

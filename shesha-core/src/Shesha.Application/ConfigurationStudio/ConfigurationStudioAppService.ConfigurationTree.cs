@@ -114,9 +114,10 @@ namespace Shesha.ConfigurationStudio
 
         private async Task<double> GetOrderIndexForInsertAsync(Guid moduleId, Guid? folderId)
         {
-            var firstNode = await NodeRepository.GetAll().Where(e => e.ModuleId == moduleId && e.FolderId == folderId).OrderBy(e => e.OrderIndex).FirstOrDefaultAsync();
+            var nodes = await NodeRepository.GetAll().Where(e => e.ModuleId == moduleId && e.FolderId == folderId).OrderBy(e => e.OrderIndex).ToListAsync();
+            var firstNode = nodes.FirstOrDefault();
             return firstNode != null
-                ? firstNode.OrderIndex - 10
+                ? nodes.Count + 1
                 : 0;
         }
 

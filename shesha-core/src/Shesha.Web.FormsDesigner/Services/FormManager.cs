@@ -167,7 +167,7 @@ namespace Shesha.Web.FormsDesigner.Services
             revision.Markup = input.Markup ?? "";
             revision.ModelType = input.ModelType;
             revision.IsTemplate = input.IsTemplate;
-            //revision.Template = template;
+            // revision.Template = template;
             revision.GenerationLogicTypeName = input.GenerationLogicTypeName;
             revision.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
             revision.ConfigurationForm = !input.ConfigurationFormName.IsNullOrWhiteSpace() ? new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!) : null;
@@ -301,12 +301,10 @@ namespace Shesha.Web.FormsDesigner.Services
                 validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
             validationResults.ThrowValidationExceptionIfAny(L);
 
-            /* TODO: V1 review. Implement templates processing, combine with new templating engine
             var template = input.TemplateId.HasValue
-                ? await Repository.GetAsync(input.TemplateId.Value)
+                ? await RevisionRepository.GetAsync(input.TemplateId.Value)
                 : null;
-            */
-
+            
             var form = new FormConfiguration {
                 Name = input.Name,
                 Module = input.Module,
@@ -320,8 +318,11 @@ namespace Shesha.Web.FormsDesigner.Services
             var revision = form.MakeNewRevision();
             revision.Description = input.Description;
             revision.Label = input.Label;
-            revision.Markup = string.Empty;
+            revision.Markup = input.Markup ?? string.Empty;
             revision.IsTemplate = false;
+            revision.ModelType = input.ModelType;
+            revision.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            revision.Template = template;
             form.Normalize();
 
             await RevisionRepository.InsertAsync(revision);

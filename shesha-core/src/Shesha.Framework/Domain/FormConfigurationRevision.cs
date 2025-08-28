@@ -23,16 +23,14 @@ namespace Shesha.Domain
         public virtual string? ModelType { get; set; }
 
         /// <summary>
-        /// If true, indeicates that the form is a template
+        /// If true, indicates that the form is a template
         /// </summary>
         public virtual bool IsTemplate { get; set; }
 
-        /*
         /// <summary>
         /// Template that was used for the form creation
         /// </summary>
-        public virtual FormConfiguration? Template { get; set; }
-        */
+        public virtual FormConfigurationRevision? Template { get; set; }
 
         /// <summary>
         /// Form for getting additional configuration options for template
