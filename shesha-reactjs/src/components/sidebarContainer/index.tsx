@@ -16,7 +16,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   header?: ReactNode | (() => ReactNode);
   sideBarWidth?: number;
   allowFullCollapse?: boolean;
-  renderSource: 'modal' | 'designer-page';
+  renderSource?: 'modal' | 'designer-page';
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
