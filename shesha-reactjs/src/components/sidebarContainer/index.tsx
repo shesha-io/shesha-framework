@@ -33,7 +33,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
-  const isSidebarCollapsed = localStorage.getItem('SIDEBAR_COLLAPSE') === 'true';
+  const isSidebarCollapsed =
+    typeof window !== 'undefined' &&
+    localStorage.getItem('SIDEBAR_COLLAPSE') === 'true';
 
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
