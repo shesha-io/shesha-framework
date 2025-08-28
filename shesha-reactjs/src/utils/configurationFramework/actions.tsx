@@ -18,11 +18,12 @@ import { HttpClientApi } from '@/providers';
 
 interface IErrorDetailsProps {
   error: IErrorInfo;
+  showDetails?: boolean;
 }
-export const ErrorDetails: FC<IErrorDetailsProps> = ({ error }) => {
+export const ErrorDetails: FC<IErrorDetailsProps> = ({ error, showDetails = false }) => {
   return (
     <div>
-      {/* <strong>{error.details}</strong> */}
+      {showDetails && error.details && <p>{error.details}</p>}
       <ul>{error.validationErrors?.map((e, i) => <li key={i}>{e.message}</li>)}</ul>
     </div>
   );

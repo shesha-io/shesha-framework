@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const leftSidebarWidth = "550px";
   const sidebarBtnHeight = "35px";
 
@@ -77,20 +77,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
             .sidebar-header-title {
               width: calc(${leftSidebarWidth} - ${sidebarBtnHeight});
-              background: #282828;
               display: none;
               align-items: center;
               padding: 0 ${sheshaStyles.paddingLG}px;
               font-weight: 500;
-              font-size: 16px;
-              color: white;
+              font-size: 14px;
             }
     
             .${sidebarHeaderBtn} {
               height: ${sidebarBtnHeight};
               width: ${sidebarBtnHeight};
-              background: ${token.colorPrimary};
-              color: white;
               display: flex;
               justify-content: center;
               align-items: center;
