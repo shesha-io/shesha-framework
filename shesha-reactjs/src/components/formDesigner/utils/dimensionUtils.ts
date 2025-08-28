@@ -22,34 +22,26 @@ export interface ComponentDimensions {
 
 export const getComponentDimensions = (
   typeInfo: ComponentTypeInfo,
-  dimensionsStyles: any,
-  desktopConfig: any
+  dimensionsStyles: any
 ): ComponentDimensions => {
-  const { isDataTableContext, isFileComponent, isInput } = typeInfo;
+  const { isDataTableContext, isInput } = typeInfo;
 
   const width = isDataTableContext 
     ? '100%' 
-    : isFileComponent 
-      ? desktopConfig?.container?.dimensions?.width 
-      : dimensionsStyles?.width || 'auto';
+    : dimensionsStyles?.width || 'auto';
 
   const height = isDataTableContext 
       ? '100%' 
-      : isFileComponent 
-        ? desktopConfig?.container?.dimensions?.height 
-        : isInput 
+      : isInput 
           ? 'auto' 
           : dimensionsStyles?.height;
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig) => {
     if (isDataTableContext) return '100%';
-    if (isFileComponent) return desktopConfig?.container?.dimensions?.[dimensionType];
     return dimensionsStyles?.[dimensionType];
   };
 
-  const flexBasis = isFileComponent 
-    ? desktopConfig?.container?.dimensions?.width 
-    : dimensionsStyles?.maxWidth || dimensionsStyles?.width;
+  const flexBasis = dimensionsStyles?.maxWidth || dimensionsStyles?.width;
 
   return {
     width,
@@ -66,9 +58,7 @@ export const getDeviceDimensions = (
   typeInfo: ComponentTypeInfo,
   dimensionsStyles: any
 ) => {
-  const { isFileComponent, isInput } = typeInfo;
-  
-  if (isFileComponent) return undefined;
+  const { isInput } = typeInfo;
   
   return {
     width: '100%',
@@ -77,12 +67,7 @@ export const getDeviceDimensions = (
 };
 
 export const getDeviceFlexBasis = (
-  typeInfo: ComponentTypeInfo,
   dimensionsStyles: any,
-  desktopConfig: any
 ) => {
-  const { isFileComponent } = typeInfo;
-  
-  if (isFileComponent) return desktopConfig?.container?.dimensions?.width;
   return dimensionsStyles?.width;
 };

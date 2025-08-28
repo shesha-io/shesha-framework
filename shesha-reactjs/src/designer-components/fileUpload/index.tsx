@@ -20,6 +20,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { containerDefaultStyles, defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
   ownerId: string;
@@ -33,6 +34,7 @@ export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IForm
   listType?: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
+  thumbnail?:IStyleType;
   borderRadius?: number;
   hideFileName?: boolean;
 }
@@ -46,9 +48,11 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 
+    const { dimensionsStyles } = useFormComponentStyles(model?.thumbnail);
+
     const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
+      ...dimensionsStyles,
     } : {...model.allStyles.fullStyle};
 
     // TODO: refactor and implement a generic way for values evaluation
@@ -140,7 +144,10 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         mobile: { ...defaultStyles() },
         tablet: { ...defaultStyles() },
       }))
-      .add<IFileUploadProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
+      .add<IFileUploadProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
+      .add<IFileUploadProps>(8, (prev) => {
+        return { ...prev, desktop: { ...prev.desktop.container, thumbnail: prev.desktop }, mobile: { ...prev.mobile.container, thumbnail: prev.mobile }, tablet: { ...prev.tablet.container, thumbnail: prev.tablet } };
+      }),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

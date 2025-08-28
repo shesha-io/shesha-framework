@@ -50,11 +50,9 @@ export const createFormItemStyle = (
   stylingBox: StyleConfig,
   formMode: string,
   dimensionsStyles: React.CSSProperties,
-  typeInfo: ComponentTypeInfo,
-  activeDevice: string,
-  model: any
+  typeInfo: ComponentTypeInfo
 ) => {
-  const { isDataTableContext, isFileComponent, isInput } = typeInfo;
+  const { isDataTableContext, isInput } = typeInfo;
   const {
     marginLeft,
     marginRight,
@@ -73,14 +71,10 @@ export const createFormItemStyle = (
     flexBasis: 'auto',
     width: isDataTableContext 
       ? '100%' 
-      : isFileComponent 
-        ? model[activeDevice]?.container?.dimensions?.width 
-        : dimensionsStyles?.width || 'auto',
+      : dimensionsStyles?.width || 'auto',
     height: isDataTableContext 
       ? '100%' 
-      : isFileComponent 
-        ? model[activeDevice]?.container?.dimensions?.height 
-        : isInput 
+      : isInput 
           ? '' 
           : dimensionsStyles?.height,
   };

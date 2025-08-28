@@ -1,3 +1,5 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 
-export interface ICheckboxComponentProps extends IConfigurableFormComponent {}
+export interface ICheckboxComponentProps extends IConfigurableFormComponent {
+    box?: IStyleType;
+}

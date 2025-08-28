@@ -231,7 +231,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
       type="link"
       disabled={!showUploadButton}
-      style={{width: '100%', height: '100%'}}
+      style={{width: '100%', height: '100%', textAlign: 'start'}}
     >
       {listType === 'text' ? `(press to upload)` : null}
     </Button>

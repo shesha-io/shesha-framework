@@ -343,7 +343,7 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 label: "Width",
                                 width: 85,
-                                propertyName: "container.dimensions.width",
+                                propertyName: "dimensions.width",
                                 icon: "widthIcon",
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
@@ -353,7 +353,7 @@ export const getSettings = () => {
                                 label: "Min Width",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "container.dimensions.minWidth",
+                                propertyName: "dimensions.minWidth",
                                 icon: "minWidthIcon",
                               },
                               {
@@ -362,7 +362,7 @@ export const getSettings = () => {
                                 label: "Max Width",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "container.dimensions.maxWidth",
+                                propertyName: "dimensions.maxWidth",
                                 icon: "maxWidthIcon",
                               }
                             ]
@@ -378,7 +378,7 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 label: "Height",
                                 width: 85,
-                                propertyName: "container.dimensions.height",
+                                propertyName: "dimensions.height",
                                 icon: "heightIcon",
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
@@ -388,7 +388,7 @@ export const getSettings = () => {
                                 label: "Min Height",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "container.dimensions.minHeight",
+                                propertyName: "dimensions.minHeight",
                                 icon: "minHeightIcon",
                               },
                               {
@@ -397,7 +397,7 @@ export const getSettings = () => {
                                 label: "Max Height",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "container.dimensions.maxHeight",
+                                propertyName: "dimensions.maxHeight",
                                 icon: "maxHeightIcon",
                               }
                             ]
@@ -422,7 +422,7 @@ export const getSettings = () => {
                               id: nanoid(),
                               label: 'Margin Padding',
                               hideLabel: true,
-                              propertyName: 'container.stylingBox',
+                              propertyName: 'stylingBox',
                               parentId: 'containerStylingBoxPanel'
                             })
                             .toJson()
@@ -443,7 +443,7 @@ export const getSettings = () => {
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
-                            propertyName: 'container.style',
+                            propertyName: 'style',
                             hideLabel: false,
                             label: 'Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
@@ -485,7 +485,7 @@ export const getSettings = () => {
                                 type: 'dropdown',
                                 id: nanoid(),
                                 label: 'Family',
-                                propertyName: 'font.type',
+                                propertyName: 'thumbnail.font.type',
                                 hideLabel: true,
                                 dropdownOptions: fontTypes,
                               },
@@ -493,7 +493,7 @@ export const getSettings = () => {
                                 type: 'numberField',
                                 id: nanoid(),
                                 label: 'Size',
-                                propertyName: 'font.size',
+                                propertyName: 'thumbnail.font.size',
                                 hideLabel: true,
                                 width: 50,
                               },
@@ -501,7 +501,7 @@ export const getSettings = () => {
                                 type: 'dropdown',
                                 id: nanoid(),
                                 label: 'Weight',
-                                propertyName: 'font.weight',
+                                propertyName: 'thumbnail.font.weight',
                                 hideLabel: true,
                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
                                 dropdownOptions: fontWeightsOptions,
@@ -512,13 +512,13 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 label: 'Color',
                                 hideLabel: true,
-                                propertyName: 'font.color',
+                                propertyName: 'thumbnail.font.color',
                               },
                               {
                                 type: 'dropdown',
                                 id: nanoid(),
                                 label: 'Align',
-                                propertyName: 'font.align',
+                                propertyName: 'thumbnail.font.align',
                                 hideLabel: true,
                                 width: 60,
                                 dropdownOptions: textAlignOptions,
@@ -527,7 +527,7 @@ export const getSettings = () => {
                           })
                           .addSettingsInput({
                             id: nanoid(),
-                            propertyName: 'primaryColor',
+                            propertyName: 'thumbnail.primaryColor',
                             label: 'Primary Color',
                             inputType: 'colorPicker',
                             jsSetting: true,
@@ -558,7 +558,7 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 label: "Width",
                                 width: 85,
-                                propertyName: "dimensions.width",
+                                propertyName: "thumbnail.dimensions.width",
                                 icon: "widthIcon",
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
@@ -568,7 +568,7 @@ export const getSettings = () => {
                                 label: "Min Width",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.minWidth",
+                                propertyName: "thumbnail.dimensions.minWidth",
                                 icon: "minWidthIcon",
                               },
                               {
@@ -577,7 +577,7 @@ export const getSettings = () => {
                                 label: "Max Width",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.maxWidth",
+                                propertyName: "thumbnail.dimensions.maxWidth",
                                 icon: "maxWidthIcon",
                               }
                             ]
@@ -592,7 +592,7 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 label: "Height",
                                 width: 85,
-                                propertyName: "dimensions.height",
+                                propertyName: "thumbnail.dimensions.height",
                                 icon: "heightIcon",
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
@@ -602,7 +602,7 @@ export const getSettings = () => {
                                 label: "Min Height",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.minHeight",
+                                propertyName: "thumbnail.dimensions.minHeight",
                                 icon: "minHeightIcon",
                               },
                               {
@@ -611,7 +611,7 @@ export const getSettings = () => {
                                 label: "Max Height",
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.maxHeight",
+                                propertyName: "thumbnail.dimensions.maxHeight",
                                 icon: "maxHeightIcon",
                               }
                             ]
@@ -635,12 +635,12 @@ export const getSettings = () => {
                           .addContainer({
                             id: nanoid(),
                             parentId: pnlBorderStyle,
-                            components: getBorderInputs() as any
+                            components: getBorderInputs('thumbnail') as any
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: pnlBorderStyle,
-                            components: getCornerInputs() as any
+                            components: getCornerInputs('thumbnail') as any
                           })
                           .toJson()
                         ]
@@ -664,7 +664,7 @@ export const getSettings = () => {
                               parentId: pnlBackgroundStyle,
                               label: "Type",
                               jsSetting: false,
-                              propertyName: "background.type",
+                              propertyName: "thumbnail.background.type",
                               inputType: "radio",
                               tooltip: "Select a type of background",
                               buttonGroupOptions: [
@@ -702,7 +702,7 @@ export const getSettings = () => {
                                 type: 'colorPicker',
                                 id: nanoid(),
                                 label: "Color",
-                                propertyName: "background.color",
+                                propertyName: "thumbnail.background.color",
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
@@ -714,7 +714,7 @@ export const getSettings = () => {
                               inputs: [{
                                 type: 'multiColorPicker',
                                 id: nanoid(),
-                                propertyName: "background.gradient.colors",
+                                propertyName: "thumbnail.background.gradient.colors",
                                 label: "Colors",
                                 jsSetting: false,
                               }],
@@ -727,7 +727,7 @@ export const getSettings = () => {
                               inputs: [{
                                 type: 'textField',
                                 id: nanoid(),
-                                propertyName: "background.url",
+                                propertyName: "thumbnail.background.url",
                                 jsSetting: false,
                                 label: "URL",
                               }],
@@ -739,7 +739,7 @@ export const getSettings = () => {
                               inputs: [{
                                 type: 'imageUploader',
                                 id: nanoid(),
-                                propertyName: 'background.uploadFile',
+                                propertyName: 'thumbnail.background.uploadFile',
                                 label: "Image",
                                 jsSetting: false,
                               }],
@@ -754,7 +754,7 @@ export const getSettings = () => {
                                   type: 'textField',
                                   id: nanoid(),
                                   jsSetting: false,
-                                  propertyName: "background.storedFile.id",
+                                  propertyName: "thumbnail.background.storedFile.id",
                                   label: "File ID"
                                 }
                               ]
@@ -770,7 +770,7 @@ export const getSettings = () => {
                                   id: nanoid(),
                                   label: "Size",
                                   hideLabel: true,
-                                  propertyName: "background.size",
+                                  propertyName: "thumbnail.background.size",
                                   customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                   dropdownOptions: sizeOptions,
                                 },
@@ -780,7 +780,7 @@ export const getSettings = () => {
                                   label: "Position",
                                   hideLabel: true,
                                   customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
-                                  propertyName: "background.position",
+                                  propertyName: "thumbnail.background.position",
                                   dropdownOptions: positionOptions,
                                 }
                               ]
@@ -793,7 +793,7 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 label: 'Repeat',
                                 hideLabel: true,
-                                propertyName: 'background.repeat',
+                                propertyName: 'thumbnail.background.repeat',
                                 inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
@@ -827,7 +827,7 @@ export const getSettings = () => {
                                 hideLabel: true,
                                 width: 80,
                                 icon: "offsetHorizontalIcon",
-                                propertyName: 'shadow.offsetX',
+                                propertyName: 'thumbnail.shadow.offsetX',
                               },
                               {
                                 type: 'numberField',
@@ -836,7 +836,7 @@ export const getSettings = () => {
                                 hideLabel: true,
                                 width: 80,
                                 icon: 'offsetVerticalIcon',
-                                propertyName: 'shadow.offsetY',
+                                propertyName: 'thumbnail.shadow.offsetY',
                               },
                               {
                                 type: 'numberField',
@@ -845,7 +845,7 @@ export const getSettings = () => {
                                 hideLabel: true,
                                 width: 80,
                                 icon: 'blurIcon',
-                                propertyName: 'shadow.blurRadius',
+                                propertyName: 'thumbnail.shadow.blurRadius',
                               },
                               {
                                 type: 'numberField',
@@ -854,14 +854,14 @@ export const getSettings = () => {
                                 hideLabel: true,
                                 width: 80,
                                 icon: 'spreadIcon',
-                                propertyName: 'shadow.spreadRadius',
+                                propertyName: 'thumbnail.shadow.spreadRadius',
                               },
                               {
                                 type: 'colorPicker',
                                 id: nanoid(),
                                 label: 'Color',
                                 hideLabel: true,
-                                propertyName: 'shadow.color',
+                                propertyName: 'thumbnail.shadow.color',
                               },
                             ],
                           })
@@ -885,7 +885,7 @@ export const getSettings = () => {
                             id: nanoid(),
                             parentId: customStylePnlId,
                             inputType: 'codeEditor',
-                            propertyName: 'style',
+                            propertyName: 'thumbnail.style',
                             hideLabel: false,
                             label: 'Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',

@@ -43,16 +43,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  const component = getToolboxComponent(model.type) as any;
-  const typeInfo = getComponentTypeInfo(component);
-
   const formItemStyle = createFormItemStyle(
     stylingBoxAsCSS,
     formMode,
     dimensionsStyles,
-    typeInfo,
-    activeDevice,
-    model
+    getComponentTypeInfo(model),
   );
 
   const formItemProps: FormItemProps = {

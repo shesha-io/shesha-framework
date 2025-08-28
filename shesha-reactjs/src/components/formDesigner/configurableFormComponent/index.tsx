@@ -111,7 +111,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     });
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
-  const componentDimensions = getComponentDimensions(typeInfo, dimensionsStyles, desktopConfig);
+  const componentDimensions = getComponentDimensions(typeInfo, dimensionsStyles);
 
 
   const renderComponentModel = useMemo(() => {
@@ -124,13 +124,14 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         ...desktopConfig,
         ...(deviceDimensions && { dimensions: deviceDimensions }),
         stylingBox: renderStylingBox,
-        flexBasis: getDeviceFlexBasis(typeInfo, dimensionsStyles, desktopConfig)
+        flexBasis: getDeviceFlexBasis(dimensionsStyles)
       }
     };
   }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode, typeInfo]);
 
 
   const rootContainerStyle = useMemo(() => {
+    console.log("Dims:: ", )
     return createRootContainerStyle(
       componentDimensions,
       { marginTop, marginBottom: marginBottom || 5, marginLeft, marginRight },
