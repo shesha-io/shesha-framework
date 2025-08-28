@@ -33,10 +33,5 @@ namespace Shesha.Domain
         /// Module current folder belongs to
         /// </summary>
         public required virtual Module Module { get; set; }
-
-        /// <summary>
-        /// Order index, is used for sorting in the tree
-        /// </summary>
-        public virtual double OrderIndex { get; set; }
     }
 }

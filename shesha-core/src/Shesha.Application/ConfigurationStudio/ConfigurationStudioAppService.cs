@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.Runtime.Validation;
 using Abp.Timing;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,10 @@ namespace Shesha.ConfigurationStudio
             var folder = request.FolderId != null
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
+
+            if (folder != null && folder.Module != module)
+                throw new AbpValidationException($"Selected folder '{folder.Name}' doesn't belong to module '{module.Name}'");
+
             /* TODO: add validation
              * Validate request: check each items and terminate expose if destination module already contains CI with the same name
              */
@@ -116,21 +121,10 @@ namespace Shesha.ConfigurationStudio
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
 
-            var prevOrderIndex = request.PrevItemId.HasValue
-                ? await ItemRepo.GetAll().Where(e => e.Id == request.PrevItemId.Value).Select(e => e.OrderIndex).FirstOrDefaultAsync()
-                : (double?)null;
-
-            var orderIndex = prevOrderIndex.HasValue
-                ? await GetOrderIndexForInsertAfterAsync(request.ModuleId, request.FolderId, prevOrderIndex.Value)
-                : await GetOrderIndexForInsertAsync(request.ModuleId, request.FolderId);
-
             var item = await manager.CreateItemAsync(new ConfigurationItems.Models.CreateItemInput() {
                 Module = module,
                 Folder = folder,
-                OrderIndex = orderIndex,
-
                 Name = request.Name,
-                ItemType = request.ItemType,
             });
 
             var dto = await manager.MapToDtoAsync(item);

@@ -14,10 +14,8 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './style';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 
-
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
-  const { allowClear = true } = props;
-  const { style = {} } = props;
+  const { allowClear = true, style = {} } = props;
 
   const { styles } = useStyles({ style });
 
@@ -32,7 +30,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
   const keyValueFunc: KayValueFunc = props.keyValueFunc ??
-    ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
+    ((value: any) => getValueByPropertyName(value, keyPropName) ?? value);
   const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ??
     ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] }));
   const filterNotKeysFunc: FilterSelectedFunc = ((value: any) => {
@@ -43,7 +41,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
   const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ??
     // --- For backward compatibility
-    (props.dataSourceType === 'entitiesList'
+    (props.dataSourceType === 'entitiesList' && !props.keyPropName
       ? ((value: any) => ({ id: value.id, _displayName: getValueByPropertyName(value, displayPropName), _className: value._className }))
       // ---
       : ((value: any) => getValueByPropertyName(value, keyPropName) ?? value));
@@ -54,6 +52,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   // init state
   const [open, setOpen] = useState<boolean>(false);
   const [loadingValues, setLoadingValues] = useState<boolean>(false);
+  const [loadingIndicator, setLoadingIndicator] = useState<boolean>(false);
   const selected = useRef<Array<any>>([]);
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
@@ -67,6 +66,11 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     return res;
   }, [props.value]);
 
+  // reset loading state on error
+  useEffect(() => {
+    setLoadingValues(false);
+  }, [source.error]);
+
   // update local store of values details
   useEffect(() => {
     if (props.dataSourceType === 'entitiesList' && props.entityType
@@ -76,30 +80,45 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
-        if (props.dataSourceType === 'entitiesList' && !props.displayValueFunc && !props.displayPropName && hasDisplayName) {
-          setLoadingValues(false);
-          const values = Array.isArray(props.value) ? props.value : [props.value];
-          selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
-          return;
-        }
-      }
-      props.disableRefresh.current = false;
-      if (keys.length) {
+        props.disableRefresh(false);
         const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         if (!loadingValues && !allExist) {
           setLoadingValues(true);
           const selectedFilter = filterKeysFunc(props.value);
           source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
         }
-        if (loadingValues && source?.tableData?.length) {
+        if (props.dataSourceType === 'entitiesList' && hasDisplayName && !loadingValues && !selected.current?.length) {
+          setLoadingIndicator(false);
+          const values = Array.isArray(props.value) ? props.value : [props.value];
+          selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
+        }
+        if (loadingValues) {
+          setLoadingIndicator(false);
           setLoadingValues(false);
           selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
       } else {
+        setLoadingIndicator(false);
         setLoadingValues(false);
       }
     }
   }, [props.value, source?.tableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
+
+  useEffect(() => {
+    if (open) {
+      const selectedValue = selected.current?.length
+        ? selected.current.map((s) => outcomeValueFunc(s, allData))
+        : undefined;
+      const selectedFilter = selectedValue ? filterNotKeysFunc(selectedValue) : null;
+      source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+      source?.performQuickSearch('');
+    }
+  }, [open]);
+
+  const onDropdownVisibleChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    props.disableRefresh(false);
+  };
 
   const debouncedSearch = useDebouncedCallback<(searchText: string, force?: boolean) => void>(
     (searchText, force = false) => {
@@ -188,10 +207,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       const groupProp = props.grouping.propertyName;
       const groups = uniqWith(source?.tableData.map(row => getValueByPropertyName(row, groupProp)), (a, b) => isEqual(a, b));
       const res = <>
-        {groups.map((group, index) => {
+        {groups.map((group, gindex) => {
           const groupTitle = renderGroupTitle(group, groupProp) ?? 'empty';
-          return <Select.OptGroup key={index} label={groupTitle} title={groupTitle}>
-            {list.filter((x) => isEqual(getValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, index))}
+          return <Select.OptGroup key={gindex} label={groupTitle} title={groupTitle}>
+            {list.filter((x) => isEqual(getValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex*1000000 + index))}
           </Select.OptGroup>;
         })}
       </>;
@@ -209,20 +228,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
   }, [selected.current]);
 
-  const onDropdownVisibleChange = (open: boolean) => {
-    if (!open) {
-      setOpen(false);
-    } else {
-      const selectedValue = selected.current?.length
-        ? selected.current.map((s) => outcomeValueFunc(s, allData))
-        : undefined;
-      const selectedFilter = selectedValue ? filterNotKeysFunc(selectedValue) : null;
-      source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
-      setOpen(true);
-    }
-  };
-
-  const shouldShowLoading = keys.length > 0 && loadingValues && selected.current.length === 0;
+  const shouldShowLoading = keys.length > 0 && (loadingIndicator || !props.readOnly && loadingValues);
 
   if (shouldShowLoading) {
     return (
@@ -233,26 +239,31 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
-  if (props.readOnly) {
-    if (!selected.current)
+  if (props.readOnly) {  
+    if (!selected.current || Array.isArray(selected.current) && selected.current.length === 0)
       return null;
     const readonlyValue = props.mode === 'multiple'
-      ? selected.current?.map((x) => ({ label: displayValueFunc(x, allData), value: keyValueFunc(outcomeValueFunc(x, allData), allData) }))
+      ? selected.current?.map((x) => ({ 
+        label: loadingValues ? x?._displayName : displayValueFunc(x, allData), 
+        value: keyValueFunc(outcomeValueFunc(x, allData), allData) 
+      }))
       : {
         id: keyValueFunc(outcomeValueFunc(selected.current[0], allData), allData),
-        _displayName: displayValueFunc(selected.current[0], allData),
+        _displayName: loadingValues ? selected.current[0]?._displayName :  displayValueFunc(selected.current[0], allData),
         _className: selected.current[0]?._className
       };
+
     return (
       <ReadOnlyDisplayFormItem
         value={readonlyValue}
         type={props.mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
         disabled={props.readOnly}
+        style={style}
         quickviewEnabled={props.quickviewEnabled}
         quickviewFormPath={props.quickviewFormPath}
         quickviewDisplayPropertyName={props.quickviewDisplayPropertyName || props.displayPropName}
         quickviewGetEntityUrl={props.quickviewGetEntityUrl}
-        quickviewWidth={props.quickviewWidth ? Number(props.quickviewWidth) : null} // quick fix string value of quickviewWidth (from configurator)
+        quickviewWidth={props.quickviewWidth ?? null} // quick fix string value of quickviewWidth (from configurator)
       />
     );
   }
@@ -293,7 +304,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
 const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
   const { formData } = useShaFormInstance(false) ?? {};
-  const disableRefresh = useRef<boolean>(true);
+  const [disableRefresh, setDisableRefresh] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();
 
@@ -371,12 +382,13 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       standardSorting={props.sorting}
       allowReordering={false}
       permanentFilter={permanentFilter}
-      disableRefresh={disableRefresh.current}
+      disableRefresh={disableRefresh}
+      needToRegisterContext={false}
     >
       <AutocompleteInner
         {...props}
         uid={uid}
-        disableRefresh={disableRefresh}
+        disableRefresh={setDisableRefresh}
         fields={fields}
         onSearch={handleSearch}
       />

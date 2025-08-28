@@ -14,6 +14,7 @@ import {
 } from '@/providers';
 import { useDataSource } from '@/providers/dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
+import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 const getPageSize = (value?: number) => {
   return Boolean(value) ? value : 1147489646 /* get all data */;
@@ -27,6 +28,9 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
     changePageSize,
     modelType,
   } = dataSource;
+
+  // ToDo: AS - need to optimize
+  useShaFormDataUpdate();
 
   const { globalState } = useGlobalState();
   const pageContext = useDataContextManagerActions(false)?.getPageContext();

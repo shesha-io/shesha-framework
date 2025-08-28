@@ -1,6 +1,6 @@
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
-import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '@/designer-components/_settings/utils/font/utils';
 import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
@@ -20,7 +20,7 @@ export const getItemSettings = () => {
     const stylePnlId = nanoid();
     const customStylePnlId = nanoid();
 
-    const entityOrUrl = 'getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url"';
+    const entityOrUrl = 'getSettingValue(data?.itemSubType) == "separator" || getSettingValue(data?.itemSubType) === "dynamic" && (getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url")';
 
     return {
         components: new DesignerToolbarSettings()
@@ -97,7 +97,7 @@ export const getItemSettings = () => {
                                                 _mode: 'code',
                                                 _value: false
                                             } as any,
-                                             inputs: [
+                                            inputs: [
                                                 {
                                                     id: nanoid(),
                                                     type: "textField",
@@ -218,6 +218,11 @@ export const getItemSettings = () => {
                         key: '2',
                         title: 'Appearance',
                         id: appearanceTabId,
+                        hidden: {
+                            _code: 'return getSettingValue(data?.itemSubType) === "dynamic" && (getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Entity" && getSettingValue(data?.dynamicItemsConfiguration?.providerUid) !== "Url")',
+                            _mode: 'code',
+                            _value: false
+                        },
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addSettingsInputRow({
@@ -233,7 +238,7 @@ export const getItemSettings = () => {
                                             type: 'dropdown',
                                             dropdownOptions: buttonTypes,
                                             hidden: {
-                                                _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
+                                                _code: `return ${entityOrUrl};`,
                                                 _mode: 'code',
                                                 _value: false
                                             } as any,
@@ -242,7 +247,7 @@ export const getItemSettings = () => {
                                             id: nanoid(),
                                             type: 'textField',
                                             propertyName: 'dividerWidth',
-                                            label: "thickness",
+                                            label: "Thickness",
                                             hidden: {
                                                 _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
                                                 _mode: 'code',
@@ -270,7 +275,7 @@ export const getItemSettings = () => {
                                     parentId: appearanceTabId,
                                     ghost: true,
                                     hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) === "separator";',
+                                        _code: `return  getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`,
                                         _mode: 'code',
                                         _value: false
                                     } as any,
@@ -307,7 +312,7 @@ export const getItemSettings = () => {
                                                         propertyName: 'font.weight',
                                                         hideLabel: true,
                                                         tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                        dropdownOptions: fontWeights,
+                                                        dropdownOptions: fontWeightsOptions,
                                                         width: 100,
                                                     },
                                                     {
@@ -324,7 +329,7 @@ export const getItemSettings = () => {
                                                         propertyName: 'font.align',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        dropdownOptions: textAlign,
+                                                        dropdownOptions: textAlignOptions,
                                                     },
                                                 ],
                                             })
@@ -454,7 +459,7 @@ export const getItemSettings = () => {
                                     ghost: true,
                                     parentId: appearanceTabId,
                                     collapsible: 'header',
-                                    hidden: { _code: `return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                                    hidden: { _code: `return  ["text", "link", "primary", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
                                     content: {
                                         id: backgroundStylePnlId,
                                         components: [
@@ -706,6 +711,11 @@ export const getItemSettings = () => {
                         key: '3',
                         title: 'Security',
                         id: securityTabId,
+                        hidden: {
+                            _code: `return !${entityOrUrl};`,
+                            _mode: 'code',
+                            _value: false
+                        } as any,
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 id: nanoid(),

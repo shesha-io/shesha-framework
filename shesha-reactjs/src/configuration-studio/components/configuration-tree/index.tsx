@@ -1,63 +1,99 @@
-/* eslint-disable no-console */
 import { Dropdown, Input, MenuProps, Spin, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
-import { MoveNodePayload, ReorderNodePayload } from '../../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isTreeNode, TreeNode } from '../../models';
+import { MoveNodePayload } from '../../apis';
+import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, TreeNode } from '../../models';
 import { DownOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components';
-import { useCsTree } from '../../cs/hooks';
+import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { buildNodeContextMenu } from '../../menu-utils';
 import { useStyles } from '../../styles';
+import { useFilteredTreeNodes } from './filter';
+import { DndPreview } from './dndPreview';
+import { DropPositions } from './models';
 
 export interface IConfigurationTreeProps {
 }
-type OnSelectHandler = TreeProps['onSelect'];
+type OnSelectHandler = TreeProps<TreeNode>['onSelect'];
+type OnClickHandler = TreeProps<TreeNode>['onClick'];
 type IsDraggable = TreeProps<TreeNode>['draggable'];
 type AllowDrop = TreeProps<TreeNode>['allowDrop'];
 type OnDrop = TreeProps<TreeNode>['onDrop'];
 type OnRightClick = TreeProps<TreeNode>['onRightClick'];
 type MenuItems = MenuProps['items'];
-const DropPositions = {
-    Before: -1,
-    Inside: 0,
-    After: 1
-};
+type OnTreeKeyDown = TreeProps<TreeNode>['onKeyDown'];
+type OnDragStart = TreeProps<TreeNode>['onDragStart'];
+type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
     return isConfigItemTreeNode(node) || isFolderTreeNode(node);
 };
+
+const debugDnd = false;
 
 const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: number): boolean => {
     switch (dropPosition) {
         case DropPositions.After:
         case DropPositions.Before:
         default: {
-            return dragNode.moduleId === dropNode.moduleId;
+            return dragNode.moduleId === dropNode.moduleId &&
+                dragNode.parentId !== dropNode.parentId;
         }
-        case DropPositions.Inside: return (isFolderTreeNode(dropNode) || isModuleTreeNode(dropNode)) &&
-            (isFolderTreeNode(dragNode) || isConfigItemTreeNode(dragNode)) &&
-            dragNode.moduleId === dropNode.moduleId;
+        case DropPositions.Inside: {
+            if (!isFolderTreeNode(dropNode) && !isModuleTreeNode(dropNode))
+                return false;
+            if (dragNode.moduleId !== dropNode.moduleId)
+                return false;
+
+            // allow to drop to another parent only
+            return dragNode.parentId !== dropNode.id;
+        }
     }
 };
 
-const allowNodeDrop: AllowDrop = (options): boolean => {
-    return allowDropNode(options.dragNode, options.dropNode, options.dropPosition);
+type DndState = {
+    dragNode: TreeNode;
+    dropNode: TreeNode;
+    dropPosition: number;
+    allowed: boolean;
 };
 
 export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
     const cs = useConfigurationStudio();
-    const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand } = useCsTree();
+    const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
+    const { setIsDragging } = useCsTreeDnd();
     const [contextNode, setContextNode] = useState<TreeNode>(null);
     const { styles } = useStyles();
+    const [dndState, setDndState] = useState<DndState>();
+
+    const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
     const handleSelect: OnSelectHandler = (_keys, info) => {
         const selectedNode = handleSelect && info.selectedNodes.length === 1
             ? info.selectedNodes[0]
             : undefined;
 
-        const node = isTreeNode(selectedNode) ? selectedNode : undefined;
-        cs.selectTreeNode(node);
+        cs.selectTreeNode(selectedNode);
+    };
+    const handleClick: OnClickHandler = (_, node) => {
+        cs.clickTreeNode(node);
+    };
+
+    const getNewFolderId = (dropPosition: number, dropNode: TreeNode): string | undefined => {
+        switch (dropPosition) {
+            case DropPositions.After:
+            case DropPositions.Before: {
+                const dropNodeParent = dropNode.parentId
+                    ? getTreeNodeById(dropNode.parentId)
+                    : undefined;
+
+                return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
+            }
+            default: {
+                return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
+            }
+        }
+        return undefined;
     };
 
     const handleNodeDrop: OnDrop = (info) => {
@@ -74,28 +110,16 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
             return;
         }
 
-        if (info.dropToGap) {
-            const reorderPayload: ReorderNodePayload = {
-                nodeType: dragNode.nodeType,
-                dragNodeId: dragNode.id,
-                dropNodeId: dropNode.id,
-                dropPosition,
-            };
+        const newFolderId = getNewFolderId(dropPosition, dropNode);
 
-            cs.reorderTreeNodeAsync(reorderPayload).then(() => {
-                loadTreeAsync();
-            });
-        } else {
-            const movePayload: MoveNodePayload = {
-                nodeType: dragNode.nodeType,
-                nodeId: dragNode.id,
-                folderId: isFolderTreeNode(dropNode) ? dropNode.id : undefined
-            };
-
-            cs.moveTreeNodeAsync(movePayload).then(() => {
-                loadTreeAsync();
-            });
-        }
+        const movePayload: MoveNodePayload = {
+            nodeType: dragNode.nodeType,
+            nodeId: dragNode.id,
+            folderId: newFolderId,
+        };
+        cs.moveTreeNodeAsync(movePayload).then(() => {
+            loadTreeAsync();
+        });
     };
 
     const handleNodeRightClick: OnRightClick = ({ event, node }) => {
@@ -115,8 +139,32 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
+        setQuickSearch(value);
+    };
 
-        console.log('LOG: onSearchChange', value);
+    const handleDragStart: OnDragStart = () => {
+        setIsDragging(true);
+    };
+
+    const handleDragEnd: OnDragEnd = () => {
+        setIsDragging(false);
+    };
+
+    const handleKeyDown: OnTreeKeyDown = (_e) => {
+        //console.log('LOG: key', e.key);
+    };
+
+    const allowNodeDropWrapper: AllowDrop = ({ dragNode, dropNode, dropPosition }) => {
+        const allowed = allowDropNode(dragNode, dropNode, dropPosition);
+        if (debugDnd) {
+            setDndState({
+                dragNode: dragNode,
+                dropNode: dropNode,
+                dropPosition: dropPosition,
+                allowed
+            });
+        }
+        return allowed;
     };
 
     return (
@@ -129,6 +177,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                     <div className={styles.csNavPanelHeader}>
                         <Input.Search
                             placeholder="Search"
+                            value={quickSearch}
                             onChange={onSearchChange}
                             allowClear
                         />
@@ -143,20 +192,37 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                                 showIcon
                                 switcherIcon={<DownOutlined />}
 
-                                treeData={treeNodes}
+                                treeData={filteredTreeNodes}
                                 blockNode /*required for correct dragging*/
 
                                 draggable={isNodeDraggable}
-                                allowDrop={allowNodeDrop}
+                                allowDrop={allowNodeDropWrapper}
                                 onDrop={handleNodeDrop}
+                                onDragStart={handleDragStart}
+                                onDragEnd={handleDragEnd}
                                 onRightClick={handleNodeRightClick}
                                 expandedKeys={expandedKeys}
 
                                 onSelect={handleSelect}
+                                onClick={handleClick}
                                 selectedKeys={selectedKeys}
                                 onExpand={onNodeExpand}
+                                onKeyDown={handleKeyDown}
+                                tabIndex={0}
                             />
                         </Dropdown>
+                        {debugDnd && (
+                            <div>
+                                {dndState && (
+                                    <DndPreview
+                                        dragNode={dndState.dragNode}
+                                        dropNode={dndState.dropNode}
+                                        dropPosition={dndState.dropPosition}
+                                        allowed={dndState.allowed}
+                                    />
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

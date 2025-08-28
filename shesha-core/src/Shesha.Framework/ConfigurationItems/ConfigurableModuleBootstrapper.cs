@@ -4,9 +4,9 @@ using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.Reflection;
 using Abp.Timing;
+using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems.Exceptions;
-using Shesha.ConfigurationItems.New;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Modules;
@@ -24,7 +24,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Configurable modules bootstrapper
     /// </summary>
-    public class ConfigurableModuleBootstrapper : IBootstrapper, ITransientDependency
+    public class ConfigurableModuleBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -33,7 +33,8 @@ namespace Shesha.ConfigurationItems
         private readonly IModuleHierarchyProvider _moduleHierarchyProvider;        
         private readonly IIocManager _iocManager;
         private readonly IApplicationStartupSession _startupSession;
-        private readonly IAbpModuleManager _moduleManager;
+        private readonly IAbpModuleManager _abpModuleManager;
+        private readonly IModuleManager _moduleManager;
 
         public ConfigurableModuleBootstrapper
         (
@@ -44,8 +45,11 @@ namespace Shesha.ConfigurationItems
             IModuleHierarchyProvider moduleHierarchyProvider,
             IIocManager iocManager,
             IApplicationStartupSession startupSession,
-            IAbpModuleManager moduleManager
-        )
+            IAbpModuleManager abpModuleManager,
+            IModuleManager moduleManager,
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
             _unitOfWorkManager = unitOfWorkManager;
@@ -54,27 +58,26 @@ namespace Shesha.ConfigurationItems
             _moduleHierarchyProvider = moduleHierarchyProvider;
             _iocManager = iocManager;
             _startupSession = startupSession;
+            _abpModuleManager = abpModuleManager;
             _moduleManager = moduleManager;
         }
 
         [UnitOfWork(IsDisabled = true)]
-        public async Task ProcessAsync(bool force)
+        protected override async Task ProcessInternalAsync()
         {
             await DoProcessAsync();
         }
 
         private async Task<List<ModuleItem>> GetCodeModulesAsync() 
         {
-            var startupModuleName = _moduleManager.GetStartupModuleNameOrDefault();
+            var startupModuleName = _abpModuleManager.GetStartupModuleNameOrDefault();
             var result = new List<ModuleItem>();
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
                 using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
                     var dbModules = await _moduleRepo.GetAll().ToListAsync();
-                    var moduleTypes = _typeFinder
-                        .Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type))
-                        .ToList();
+                    var moduleTypes = _moduleManager.GetModuleTypes();
                     foreach (var type in moduleTypes) 
                     {
                         var instance = _iocManager.Resolve(type).ForceCastAs<SheshaModule>();
@@ -151,13 +154,13 @@ namespace Shesha.ConfigurationItems
             var codeModules = await GetCodeModulesAsync();
             var allSubModules = _typeFinder
                 .Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
-                .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
+                .Where(x => ForceUpdate || !_startupSession.AssemblyStaysUnchanged(x.Assembly))
                 .Select(t => {
                     return _iocManager.Resolve(t).ForceCastAs<ISheshaSubmodule>();
                 })
                 .ToList();
 
-            var startupModuleName = _moduleManager.GetStartupModuleNameOrDefault();
+            var startupModuleName = _abpModuleManager.GetStartupModuleNameOrDefault();
 
             foreach (var codeModule in codeModules)
             {

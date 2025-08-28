@@ -68,7 +68,7 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   color?: string;
   backgroundColor?: string;
   level?: LevelType | TypographyFontSize;
-  fontSize?: TypographyFontSize;
+  fontSize?: TypographyFontSize | string | number;
   padding?: TypographyPaddingSize;
   dataType?: 'string' | 'date-time' | 'number' | 'boolean';
   dateFormat?: string;

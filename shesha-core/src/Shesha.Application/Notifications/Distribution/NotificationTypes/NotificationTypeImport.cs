@@ -2,10 +2,12 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes
@@ -47,19 +49,31 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             }
         }
 
-        protected override Task<bool> CustomPropsAreEqualAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType distributedItem)
+        protected override async Task<bool> CustomPropsAreEqualAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType distributedItem)
         {
             var equals = revision.IsTimeSensitive == distributedItem.IsTimeSensitive &&
                 revision.AllowAttachments == distributedItem.AllowAttachments &&
                 revision.Disable == distributedItem.Disable &&
                 revision.CanOptOut == distributedItem.CanOptOut &&
                 revision.Category == distributedItem.Category &&
-                revision.OrderIndex == distributedItem.OrderIndex &&
                 revision.OverrideChannels == distributedItem.OverrideChannels;
 
-            // TODO_V1: compare templates
+            if (!equals)
+                return false;
 
-            return Task.FromResult(equals);
+            // compare templates
+            var templates = await _templateRepo.GetAll().Where(e => e.PartOf == revision).ToListAsync();
+            if (templates.Count() != distributedItem.Templates.Count)
+                return false;
+
+            foreach (var template in templates) 
+            {
+                if (distributedItem.Templates.Any(dt => dt.TitleTemplate == template.TitleTemplate &&
+                    dt.BodyTemplate == template.BodyTemplate &&
+                    dt.MessageFormat == template.MessageFormat))
+                    return false;
+            }
+            return true;
         }
 
         protected override Task MapCustomPropsToItemAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType distributedItem)

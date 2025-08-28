@@ -58,11 +58,6 @@ namespace Shesha.Domain
         public virtual ConfigurationItemFolder? Folder { get; set; }
 
         /// <summary>
-        /// Order index, is used for sorting in the tree
-        /// </summary>
-        public virtual double? OrderIndex { get; set; }
-
-        /// <summary>
         /// Surface Status: Visible(config item is visible but not overriden); Overridden
         /// </summary>
         public virtual RefListSurfaceStatus? SurfaceStatus { get; set; }
@@ -79,6 +74,14 @@ namespace Shesha.Domain
         [Display(Name = "Exposed From Revision", Description = "Is used when configuration item is exposed from base module")]
         public virtual ConfigurationItemRevision? ExposedFromRevision { get; set; }
 
+        public virtual bool IsCodeBased { get; set; }
+        public virtual bool IsCodegenPending { get; set; }
+        public virtual Guid? LatestImportedRevisionId { get; set; }
+        [ReadonlyProperty]
+        public virtual bool IsUpdated { get; protected set; }
+        [ReadonlyProperty]
+        public virtual bool IsExposed { get; protected set; }
+
         public virtual void Normalize()
         {
             // If Origin is not specified - add self reference
@@ -86,13 +89,6 @@ namespace Shesha.Domain
                 Origin = this;
         }
         
-        /*
-        [ReadonlyProperty]
-        public virtual Guid? ActiveRevisionId { get; protected set; }
-        [ReadonlyProperty]
-        public virtual Guid? LatestRevisionId { get; protected set; }
-        */
-
         public override string ToString()
         {
             return Module != null

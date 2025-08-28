@@ -22,9 +22,12 @@ export const useCsSubscription = (subscriptionType: CsSubscriptionType) => {
 
 export type UseCsTreeResponse = {
     readonly treeNodes?: TreeNode[];
+    readonly getTreeNodeById: (itemId: string) => TreeNode | undefined;
     readonly treeLoadingState: ProcessingState;
     loadTreeAsync: () => Promise<void>;
 
+    quickSearch: string;
+    setQuickSearch: (value: string) => void;
     expandedKeys: ExpandedKeys;
     selectedKeys: SeletcedKeys;
     selectedItemNode?: ConfigItemTreeNode;
@@ -36,12 +39,28 @@ export const useCsTree = (): UseCsTreeResponse => {
 
     return {
         treeNodes: cs.treeNodes,
-        loadTreeAsync: cs.loadTreeAsync,
+        getTreeNodeById: cs.getTreeNodeById,
+        loadTreeAsync: cs.loadTreeAndDocsAsync,
         treeLoadingState: cs.treeLoadingState,
+        quickSearch: cs.quickSearch,
+        setQuickSearch: cs.setQuickSearch,
         expandedKeys: cs.treeExpandedKeys,
         selectedKeys: cs.treeSelectedKeys,
         selectedItemNode: cs.treeSelectedItemNode,
         onNodeExpand: cs.onTreeNodeExpand,
+    };
+};
+
+export type UseCsTreeDndResponse = {
+    readonly isDragging: boolean;
+    setIsDragging: (isDragging: boolean) => void;
+};
+export const useCsTreeDnd = (): UseCsTreeDndResponse => {
+    const cs = useConfigurationStudio();
+    useCsSubscription('tree-dnd');
+    return {
+        isDragging: cs.isTreeDragging,
+        setIsDragging: cs.setIsTreeDragging,
     };
 };
 
@@ -50,7 +69,8 @@ export type UseCsTabsResponse = {
     readonly activeDocId?: string;
     readonly activeDocument?: IDocumentInstance;
     readonly openDocById: (tabId?: string) => void;
-    readonly removeTab: (tabId?: string) => void;
+    readonly closeDoc: (tabId?: string) => void;
+    readonly closeMultipleDocs: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
 };
 export const useCsTabs = (): UseCsTabsResponse => {
     const cs = useConfigurationStudio();
@@ -61,7 +81,8 @@ export const useCsTabs = (): UseCsTabsResponse => {
         activeDocId: cs.activeDocId,
         activeDocument: cs.activeDocument,
         openDocById: cs.openDocById,
-        removeTab: cs.removeTabAsync,
+        closeDoc: cs.closeDocAsync,
+        closeMultipleDocs: cs.closeMultipleDocsAsync,
     };
 };
 

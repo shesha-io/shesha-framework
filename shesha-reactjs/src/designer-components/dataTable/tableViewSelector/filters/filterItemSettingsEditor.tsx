@@ -36,7 +36,7 @@ export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ v
             <QueryBuilderProvider metadata={metadata?.metadata}>
                 <Tabs
                     defaultActiveKey="queryBuilderConfigureTab"
-                    destroyInactiveTabPane
+                    destroyOnHidden
                     items={[
                         {
                             key: 'queryBuilderConfigureTab',

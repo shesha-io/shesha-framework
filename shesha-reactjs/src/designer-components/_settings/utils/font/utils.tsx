@@ -70,7 +70,7 @@ export const fontTypes = [
 ];
 
 
-export const fontWeights = [
+export const fontWeightsOptions = [
     { value: '100', label: 'sectionSeparator' },
     { value: '400', label: 'sectionSeparator' },
     { value: '500', label: 'sectionSeparator' },
@@ -78,7 +78,7 @@ export const fontWeights = [
     { value: '900', label: 'sectionSeparator' },
 ];
 
-export const textAlign = [
+export const textAlignOptions = [
     { value: 'left', label: 'AlignLeftOutlined' },
     { value: 'center', label: 'AlignCenterOutlined' },
     { value: 'right', label: 'AlignRightOutlined' },

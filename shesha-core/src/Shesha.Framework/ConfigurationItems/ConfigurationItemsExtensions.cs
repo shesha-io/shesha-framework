@@ -21,6 +21,11 @@ namespace Shesha.ConfigurationItems
             return queryable.Where(new ByNameAndModuleSpecification<TItem>(name, module).ToExpression());
         }
 
+        public static IQueryable<TItem> FilterByApplication<TItem>(this IQueryable<TItem> queryable, string? appKey) where TItem : class, IConfigurationItem, IMayHaveFrontEndApplication
+        {
+            return queryable.Where(new ByApplicationSpecification<TItem>(appKey).ToExpression());
+        }
+
         public static IQueryable<TItem> GetByByFullName<TItem>(this IRepository<TItem, Guid> repository, string? module, string name) where TItem : class, IConfigurationItem 
         {
             return repository.GetAll().FilterByFullName(module, name);

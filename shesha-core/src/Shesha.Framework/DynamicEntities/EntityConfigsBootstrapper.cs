@@ -1,8 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
 using Abp.Reflection;
 using Castle.Core.Logging;
+using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
@@ -18,26 +20,25 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
+
+using Module = Shesha.Domain.Module;
 
 namespace Shesha.DynamicEntities
 {
-    [DependsOnBootstrapper(typeof(ConfigurableModuleBootstrapper))]
-    public class EntityConfigsBootstrapper : IBootstrapper, ITransientDependency
+    [DependsOnTypes(typeof(ConfigurableModuleBootstrapper))]
+    public class EntityConfigsBootstrapper : BootstrapperBase, ITransientDependency
     {
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<EntityConfigRevision, Guid> _entityConfigRevisionRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModuleManager _moduleManager;
-        // todo: remove usage of IEntityConfigurationStore
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
-        private readonly IApplicationStartupSession _startupSession;
 
-        public ILogger Logger { get; set; } = NullLogger.Instance;
+        private List<EntityConfig> _dbAllConfigs;
+        private List<EntityProperty> _dbAllProperties;
 
         public EntityConfigsBootstrapper(
             IRepository<EntityConfig, Guid> entityConfigRepository,
@@ -48,7 +49,10 @@ namespace Shesha.DynamicEntities
             IHardcodeMetadataProvider metadataProvider,
             IModuleManager moduleManager,
             IUnitOfWorkManager unitOfWorkManager,
-            IApplicationStartupSession startupSession)
+            IApplicationStartupSession startupSession,
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _entityConfigRepository = entityConfigRepository;
             _entityConfigRevisionRepository = entityConfigRevisionRepository;
@@ -57,14 +61,12 @@ namespace Shesha.DynamicEntities
             _entityPropertyRepository = entityPropertyRepository;
             _metadataProvider = metadataProvider;
             _moduleManager = moduleManager;
-            _unitOfWorkManager = unitOfWorkManager;
-            _startupSession = startupSession;
         }
 
         [UnitOfWork(IsDisabled = true)]
-        public async Task ProcessAsync(bool force)
+        protected override async Task ProcessInternalAsync()
         {
-            Logger.Warn("Bootstrap entity configs");
+            LogInfo("Bootstrap entity configs");
 
             var assemblies = _assembleFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
@@ -74,169 +76,228 @@ namespace Shesha.DynamicEntities
                 .ToList();
 
             var all = assemblies.Count();
-            Logger.Warn($"Found {all} assemblies to bootstrap");
-            if (!force) 
-            {
-                assemblies = assemblies.Where(x => !_startupSession.AssemblyStaysUnchanged(x)).ToList();
-                Logger.Warn($"{all - assemblies.Count()} assemblies skipped as unchanged");
-            }                
 
-            foreach (var assembly in assemblies)
-            {
-                Logger.Warn($"Bootstrap assembly {assembly.FullName}");
+            var filteredAssemblies = assemblies.Where(x => !StartupSession.AssemblyStaysUnchanged(x)).ToList();
+            if (!ForceUpdate)
+                LogInfo($"{all - filteredAssemblies.Count()} assemblies skipped as unchanged");
 
-                using (var unitOfWork = _unitOfWorkManager.Begin())
+            using (var unitOfWork = UnitOfWorkManager.Begin())
+            {
+                using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
-                    using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
-                    {
-                        await ProcessAssemblyAsync(assembly, force);
-                    }
-                    await unitOfWork.CompleteAsync();
+                    
+                    // ToDo: AS - need to optimize for use only latest revisions
+
+                    _dbAllConfigs = await _entityConfigRepository.GetAllListAsync();
+                    _dbAllProperties = await _entityPropertyRepository.GetAllListAsync();
+
+                    // If need to update inheritance then process all assemblies
+                    var forceUpdate = ForceUpdate || _dbAllConfigs.Where(x => !x.IsDeleted && x.LatestRevision.Source == MetadataSourceType.ApplicationCode).All(x => x.InheritedFrom == null)
+                        // If need to update column names for hardcoded properties
+                        || _dbAllProperties.Where(x => 
+                                !x.IsDeleted 
+                                && x.EntityConfigRevision.EntityConfig.EntityConfigType == EntityConfigTypes.Class 
+                                && x.Source == MetadataSourceType.ApplicationCode
+                            ).All(x => x.ColumnName == null)
+                    ;
+                    var entityTypes = (forceUpdate ? assemblies : filteredAssemblies).SelectMany(x => x.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))).ToList();
+                    await ProcessAsync(entityTypes);
                 }
-                Logger.Warn($"Bootstrap assembly {assembly.FullName} - finished");
+                await unitOfWork.CompleteAsync();
             }
-            Logger.Warn("Bootstrap entity configs finished successfully");
+
+            LogInfo("Bootstrap entity configs finished successfully");
         }
 
-        private async Task ProcessAssemblyAsync(Assembly assembly, bool force)
+        private async Task ProcessAsync(List<Type> entityTypes)
         {
-            var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            var modules = new Dictionary<string, Module?>();
 
-            var entityTypes = assembly.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))
-                .ToList();
+            LogInfo($"Found {entityTypes.Count()} entity types");
 
-            Logger.Info($"{assembly.FullName}: found {entityTypes.Count()} entity types");
-
-            // todo: remove usage of IEntityConfigurationStore
             var entitiesConfigs = entityTypes.Select(t =>
             {
                 var config = _entityConfigurationStore.Get(t);
                 var codeProperties = _metadataProvider.GetProperties(t);
+                var moduleName = t.GetConfigurableModuleName();
 
                 return new
                 {
                     Config = config,
                     Properties = codeProperties,
                     PropertiesMD5 = PropertyMetadataDto.GetPropertiesMD5(codeProperties),
+                    ModuleName = moduleName,
                 };
             }).ToList();
 
-            var dbEntities = await _entityConfigRepository.GetAll().ToListAsync();
+            LogInfo($"Found {_dbAllConfigs.Count()} entity in the DB");
 
-            Logger.Info($"{assembly.FullName}: found {dbEntities.Count()} entity in the DB");
-
-            var configEntities = dbEntities
-                .Select(
-                    ec =>
-                        new
-                        {
-                            db = ec,
-                            code = entitiesConfigs.FirstOrDefault(c => c.Config.EntityType.Name.Equals(ec.LatestRevision.ClassName, StringComparison.InvariantCultureIgnoreCase) &&
-                                string.Equals(c.Config.EntityType.Namespace, ec.LatestRevision.Namespace, StringComparison.InvariantCultureIgnoreCase)
-                            )
-                        })
-                .Select(
-                    ec =>
-                        new
-                        {
-                            db = ec.db,
-                            code = ec.code,
-                            attr = ec.code?.Config.EntityType.GetAttributeOrNull<EntityAttribute>()
-                        }
-                ).ToList();
+            var configEntities = _dbAllConfigs
+                .Select(ec =>
+                {
+                    var code = entitiesConfigs.FirstOrDefault(c =>
+                        c.Config.EntityType.Name.Equals(ec.ClassName, StringComparison.InvariantCultureIgnoreCase)
+                        && string.Equals(c.Config.EntityType.Namespace, ec.Namespace, StringComparison.InvariantCultureIgnoreCase)
+                        && c.ModuleName == ec.Module?.Name
+                    );
+                    return new { 
+                        db = ec,
+                        dbProperties = _dbAllProperties.Where(x => x.EntityConfigRevision == ec.LatestRevision && !x.IsDeleted).ToList(),
+                        code,
+                        attr = code?.Config.EntityType.GetAttributeOrNull<EntityAttribute>(),
+                    };
+                }).ToList();
 
             // Update out-of-date configs
-            var toUpdate = configEntities
+            var toUpdate = ForceUpdate
+                ? configEntities
+                : configEntities
                 .Where(
                     c =>
                         c.code != null &&
-                        (force ||
-                            (c.db.LatestRevision.FriendlyName != c.code.Config.FriendlyName ||
-                            c.db.LatestRevision.TableName != c.code.Config.TableName ||
+                        (
+                            c.db.TableName != c.code.Config.TableName ||
+                            c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
+                            c.db.LatestRevision.Label != c.code.Config.FriendlyName ||
                             c.db.LatestRevision.Accessor != c.code.Config.Accessor ||
                             c.db.LatestRevision.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
-                            c.db.LatestRevision.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
                             c.db.LatestRevision.HardcodedPropertiesMD5 != c.code.PropertiesMD5 ||
-                            c.db.Module != module ||
+
+                            c.dbProperties.Any(x => x.ColumnName == null) ||
+                            c.db.InheritedFrom == null ||
                             c.attr != null
                                 && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
                                 && c.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService ^ c.db.LatestRevision.GenerateAppService
-                            )
                         ))
                 .ToList();
 
-            Logger.Info(toUpdate.Any()
-                ? $"{assembly.FullName}: found {toUpdate.Count()} entities to update"
-                : "{assembly.FullName}: existing entity configs are up to date");
+            LogInfo(toUpdate.Any() ? $"Found {toUpdate.Count()} entities to update" : $"Existing entity configs are up to date");
 
-            var names = toUpdate.Select(x => x.db.Name).ToList();
-            
-            foreach (var config in toUpdate)
+            // Sort by inheritance
+            var allUpdate = toUpdate.Count;
+            var sortedToUpdate = toUpdate.Where(x => toUpdate.All(y => x.code?.Config.EntityType.BaseType?.Name != y.code?.Config.EntityType.Name)).ToList();
+            var nextLevelUpdate = toUpdate.Where(x => sortedToUpdate.Any(y => x.code?.Config.EntityType.BaseType?.Name == y.code?.Config.EntityType.Name)).ToList();
+            while (sortedToUpdate.Count < allUpdate && nextLevelUpdate.Count > 0)
+            {
+                sortedToUpdate.AddRange(nextLevelUpdate);
+                nextLevelUpdate = toUpdate
+                    .Where(x => !sortedToUpdate.Contains(x) && sortedToUpdate.Any(y => x.code?.Config.EntityType.BaseType?.Name == y.code?.Config.EntityType.Name))
+                    .ToList();
+            }
+
+            foreach (var config in sortedToUpdate)
             {
                 var revision = config.db.EnsureLatestRevision();
-                revision.FriendlyName = config.code.NotNull().Config.FriendlyName;
+                revision.Label = config.code.NotNull().Config.FriendlyName;
                 revision.Accessor = config.code.Config.Accessor;
-                revision.TableName = config.code.Config.TableName;
                 revision.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
-                config.db.LatestRevision.DiscriminatorValue = config.code.Config.DiscriminatorValue;
-                
+
+                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.code.Config.EntityType.BaseType?.FullName);
+                config.db.InheritedFrom = inheritedFrom;
+
+                config.db.TableName = config.code.Config.TableName;
+                config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
+                config.db.IsCodeBased = true;
+
                 // restore entity if deleted
                 config.db.IsDeleted = false;
                 config.db.DeletionTime = null;
                 config.db.DeleterUserId = null;
 
-
                 if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
                     revision.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
+
+                var assemblyName = config.code.Config.EntityType.Assembly.FullName ?? "";
+                var module = modules.ContainsKey(assemblyName)
+                    ? modules[assemblyName]
+                    : null;
+                if (module == null && !modules.ContainsKey(assemblyName))
+                {
+                    module = await _moduleManager.GetOrCreateModuleAsync(config.code.Config.EntityType.Assembly);
+                    modules.Add(assemblyName, module);
+                }
 
                 if (config.db.Module != module)
                     config.db.Module = module;
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
-                if (config.db.LatestRevision.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
+                if (revision.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
+                if (revision.HardcodedPropertiesMD5 != config.code.PropertiesMD5 
+                    || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null))
+                    || ForceUpdate)
                     await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
-
             }
 
             // Add news configs
-            var toAdd = entitiesConfigs.Where(c => !dbEntities.Any(ec => ec.LatestRevision.ClassName.Equals(c.Config.EntityType.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                    string.Equals(ec.LatestRevision.Namespace, c.Config.EntityType.Namespace, StringComparison.InvariantCultureIgnoreCase)
+            var toAdd = entitiesConfigs.Where(c => !_dbAllConfigs.Any(ec => ec.ClassName.Equals(c.Config.EntityType.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                    string.Equals(ec.Namespace, c.Config.EntityType.Namespace, StringComparison.InvariantCultureIgnoreCase)
                     ))
                 .ToList();
-            Logger.Info(toUpdate.Any()
-                ? $"{assembly.FullName}: found {toUpdate.Count()} entities to add"
-                : "{assembly.FullName}: new entities not found");
 
-            foreach (var config in toAdd)
+            LogInfo(toAdd.Any() ? $"Found {toAdd.Count()} entities to add" : $"New entities not found");
+
+            // Sort by inheritance
+            var allAdd = toAdd.Count;
+            var sortedToAdd = toAdd.Where(x => toAdd.All(y => x.Config.EntityType.BaseType?.Name != y.Config.EntityType.Name)).ToList();
+            var nextLevelAdd = toAdd.Where(x => sortedToAdd.Any(y => x.Config.EntityType.BaseType?.Name == y.Config.EntityType.Name)).ToList();
+            while (sortedToAdd.Count < allAdd && nextLevelAdd.Count > 0)
+            {
+                sortedToAdd.AddRange(nextLevelAdd);
+                nextLevelAdd = toAdd.Where(x => !sortedToAdd.Contains(x) && sortedToAdd.Any(y => x.Config.EntityType.BaseType?.Name == y.Config.EntityType.Name)).ToList();
+            }
+
+            var addedEntityConfigs = new List<EntityConfig>();
+            foreach (var config in sortedToAdd)
             {
                 var attr = config.Config.EntityType.GetAttributeOrNull<EntityAttribute>();
 
                 var className = config.Config.EntityType.Name;
                 var @namespace = config.Config.EntityType.Namespace;
 
+                var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.Config.EntityType.BaseType?.FullName)
+                    ?? addedEntityConfigs.FirstOrDefault(x => x.FullClassName == config.Config.EntityType.BaseType?.FullName);
+
+                var assemblyName = config.Config.EntityType.Assembly.FullName ?? "";
+                var module = modules.ContainsKey(assemblyName)
+                    ? modules[assemblyName]
+                    : null;
+                if (module == null && !modules.ContainsKey(assemblyName))
+                {
+                    module = await _moduleManager.GetOrCreateModuleAsync(config.Config.EntityType.Assembly);
+                    modules.Add(assemblyName, module);
+                }
+
                 var ec = new EntityConfig()
                 {
+                    IsCodeBased = true,
+                    Name = className,
                     Module = module,
-                    Name = $"{@namespace}.{className}"
-                };
+                    InheritedFrom = inheritedFrom,
+                    ClassName = config.Config.EntityType.Name,
+                    Namespace = @namespace,
+                    TableName = config.Config.TableName,
+                    DiscriminatorValue = config.Config.DiscriminatorValue,
+                    EntityConfigType = MappingHelper.IsJsonEntity(config.Config.EntityType)
+                        ? EntityConfigTypes.Interface
+                        : EntityConfigTypes.Class,
+            };
 
                 var revision = ec.EnsureLatestRevision();
                 revision.Accessor = config.Config.Accessor;
-                revision.EntityConfigType = MappingHelper.IsJsonEntity(config.Config.EntityType)
-                        ? EntityConfigTypes.Interface
-                        : EntityConfigTypes.Class;
                 revision.Source = MetadataSourceType.ApplicationCode;
-                revision.ClassName = config.Config.EntityType.Name;
-                revision.Namespace = @namespace;
-                revision.FriendlyName = config.Config.FriendlyName;
-                revision.Label = revision.FriendlyName ?? className;
+                revision.Label = config.Config.FriendlyName;
                 revision.Description = null;
                 revision.GenerateAppService = attr == null || attr.GenerateApplicationService != GenerateApplicationServiceState.DisableGenerateApplicationService;
                 revision.TypeShortAlias = config.Config.SafeTypeShortAlias;
-                revision.TableName = config.Config.TableName;
-                revision.DiscriminatorValue = config.Config.DiscriminatorValue;
 
+                // ToDo: AS - review                 
+                revision.Source = MetadataSourceType.ApplicationCode;
+
+                // ToDo: AS - Get Description and Suppress
+                //ec.Description = null;
+                
+                // ToDo: AS - review --------------
                 ec.Suppress = false;
                 ec.Normalize();
 
@@ -244,43 +305,206 @@ namespace Shesha.DynamicEntities
                 await _entityConfigRepository.InsertAsync(ec);
 
                 await UpdatePropertiesAsync(ec, config.Config.EntityType, config.Properties, config.PropertiesMD5);
+
+                addedEntityConfigs.Add(ec);
             }
         }
 
+        private async Task<EntityProperty> OverrideChildAsync(EntityProperty property, EntityProperty parentProperty)
+        {
+            var prop = parentProperty.Properties.FirstOrDefault(x => x.Name == property.Name);
+            if (prop == null)
+            {
+                var sortOrder = parentProperty.Properties.Max(x => x.SortOrder);
+
+                prop = new EntityProperty()
+                {
+                    EntityConfigRevision = parentProperty.EntityConfigRevision,
+                    Source = MetadataSourceType.UserDefined,
+                    SortOrder = sortOrder++,
+                    ParentProperty = parentProperty,
+                    Label = property.Label,
+                    Description = property.Description,
+                    InheritedFrom = property,
+                    CreatedInDb = true,
+
+                    Name = property.Name,
+                    Audited = property.Audited,
+                    CascadeCreate = property.CascadeCreate,
+                    CascadeUpdate = property.CascadeUpdate,
+                    CascadeDeleteUnreferenced = property.CascadeDeleteUnreferenced,
+                    DataFormat = property.DataFormat,
+                    DataType = property.DataType,
+                    EntityType = property.EntityType,
+
+                    // ToDo: AS - how to inherite array items type
+                    ItemsType = property.ItemsType,
+
+                    Max = property.Max,
+                    MaxLength = property.MaxLength,
+                    Min = property.Min,
+                    MinLength = property.MinLength,
+
+                    ReadOnly = property.ReadOnly,
+                    ReferenceListModule = property.ReferenceListModule,
+                    ReferenceListName = property.ReferenceListName,
+                    RegExp = property.RegExp,
+                    Required = property.Required,
+                    Suppress = property.Suppress,
+                    ValidationMessage = property.ValidationMessage,
+                    IsFrameworkRelated = property.IsFrameworkRelated,
+                };
+            }
+            else
+            {
+                // ToDo: AS - think how to update inherited nested properties
+            }
+
+            await _entityPropertyRepository.InsertOrUpdateAsync(prop);
+
+            if (property.Properties != null)
+                prop.Properties = (await property.Properties.SelectAsync(async x => await OverrideChildAsync(x, prop))).ToList();
+
+            return prop;
+        }
+
+
+        private async Task OverridePropertyAsync(EntityProperty property)
+        {
+            var propertyEntityConfig = property.EntityConfigRevision.EntityConfig; // ToDo: AS - remove after implementation .FirstOrDefault(x => x.Id == property.EntityConfigRevision.ConfigurationItem.Id).NotNull();
+            // Override properties only for dynamic entities
+            var inherited = _dbAllConfigs.Where(x => x.InheritedFrom?.LatestRevision == property.EntityConfigRevision && x.LatestRevision.Source == MetadataSourceType.UserDefined).ToList();
+
+            foreach (var config in inherited)
+            {
+                var revision = config.EnsureLatestRevision();
+                var prop = _dbAllProperties.FirstOrDefault(x => x.EntityConfigRevision == revision && x.Name == property.Name && x.ParentProperty == null);
+                if (prop == null)
+                {
+                    var sortOrder = _dbAllProperties.Where(x => x.EntityConfigRevision == revision).Max(x => x.SortOrder);
+
+                    prop = new EntityProperty()
+                    {
+                        EntityConfigRevision = revision,
+                        Source = MetadataSourceType.UserDefined,
+                        SortOrder = sortOrder++,
+                        ParentProperty = null,
+                        Label = property.Label,
+                        Description = property.Description,
+                        InheritedFrom = property,
+                        CreatedInDb = true,
+                        ColumnName = property.ColumnName,
+
+                        Name = property.Name,
+                        Audited = property.Audited,
+                        CascadeCreate = property.CascadeCreate,
+                        CascadeUpdate = property.CascadeUpdate,
+                        CascadeDeleteUnreferenced = property.CascadeDeleteUnreferenced,
+                        DataFormat = property.DataFormat,
+                        DataType = property.DataType,
+                        EntityType = property.EntityType,
+
+                        // ToDo: AS - how to inherite array items type
+                        ItemsType = property.ItemsType,
+
+                        Max = property.Max,
+                        MaxLength = property.MaxLength,
+                        Min = property.Min,
+                        MinLength = property.MinLength,
+
+                        ReadOnly = property.ReadOnly,
+                        ReferenceListModule = property.ReferenceListModule,
+                        ReferenceListName = property.ReferenceListName,
+                        RegExp = property.RegExp,
+                        Required = property.Required,
+                        Suppress = property.Suppress,
+                        ValidationMessage = property.ValidationMessage,
+                        IsFrameworkRelated = property.IsFrameworkRelated,
+                    };
+                    await _entityPropertyRepository.InsertAsync(prop);
+                }
+                else
+                {
+                    if (prop.DataType != property.DataType)
+                    {
+                        // ToDo: AS - think how to collect similar problems and show them to the Admin without throwing exceptions
+                        throw new Exception($"Inheritance error from {propertyEntityConfig.FullClassName} {property.Name} ({property.DataType}): {config.FullClassName} has property ({prop.DataType})");
+                    }
+                }
+
+                await OverridePropertyAsync(prop);
+
+                // ToDo: AS - review inheriting nested properties.
+                if (property.Properties != null)
+                    prop.Properties = (await property.Properties.SelectAsync(async x => await OverrideChildAsync(x, prop))).ToList();
+            }
+        }
+
+
         private async Task UpdatePropertiesAsync(
-            EntityConfig entityConfig, List<PropertyMetadataDto> codeProperties, List<EntityProperty> dbProperties, EntityProperty? parentProp = null)
+            Type entityType, 
+            EntityConfig entityConfig, 
+            List<PropertyMetadataDto> codeProperties, 
+            List<EntityProperty> dbProperties, 
+            EntityProperty? parentProp = null
+        )
         {
             try
             {
+                var revision = entityConfig.EnsureLatestRevision();
+
                 var nextSortOrder = dbProperties.Any()
                     ? dbProperties.Where(p => p.ParentProperty?.Id == parentProp?.Id).Max(p => p.SortOrder) + 1
                     : 0;
                 foreach (var cp in codeProperties)
                 {
+                    // Try to get latest created and not deleted or get latest created and deleted 
                     var dbp = dbProperties.Where(p => p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase) && p.ParentProperty?.Id == parentProp?.Id)
                         .OrderBy(p => !p.IsDeleted ? 0 : 1)
                         .ThenByDescending(p => p.CreationTime)
                         .FirstOrDefault();
+
+                    var inheritedFrom = parentProp == null && entityConfig.InheritedFrom != null
+                        ? _dbAllProperties.Where(p => p.EntityConfigRevision == entityConfig.InheritedFrom.LatestRevision && p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase))
+                            .OrderBy(p => !p.IsDeleted ? 0 : 1)
+                            .ThenByDescending(p => p.CreationTime)
+                            .FirstOrDefault()
+                        : null;
+
+                    // Set column name only for root properties
+                    var property = parentProp == null
+                        ? entityType.GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == cp.Path.ToCamelCase()).NotNull($"Property {cp.Path} not found for type {entityType.FullName}")
+                        : null;
+
                     if (dbp == null)
                     {
                         dbp = new EntityProperty
                         {
-                            EntityConfigRevision = entityConfig.EnsureLatestRevision(),
+                            EntityConfigRevision = revision,
                             Source = MetadataSourceType.ApplicationCode,
                             SortOrder = nextSortOrder++,
                             ParentProperty = parentProp,
                             Label = cp.Label,
                             Description = cp.Description,
+                            // Set column name only for root properties
+                            ColumnName = property != null ? MappingHelper.GetColumnName(property) : null,
+                            InheritedFrom = inheritedFrom,
                         };
                         MapProperty(cp, dbp);
 
                         await _entityPropertyRepository.InsertAsync(dbp);
+                        dbProperties.Add(dbp);
                     }
                     else
                     {
                         MapProperty(cp, dbp);
-                        // update hardcoded part
+                        // Update hardcoded part
                         dbp.Source = MetadataSourceType.ApplicationCode;
+                        // Set column name only for root properties
+                        if (property != null && dbp.ColumnName.IsNullOrEmpty())
+                            dbp.ColumnName = MappingHelper.GetColumnName(property);
+
+                        dbp.InheritedFrom = inheritedFrom;
 
                         // restore property
                         dbp.IsDeleted = false;
@@ -290,12 +514,15 @@ namespace Shesha.DynamicEntities
                         await _entityPropertyRepository.UpdateAsync(dbp);
                     }
 
-                    await UpdateItemsTypeAsync(dbp, cp);
+                    await UpdateItemsTypeAsync(entityType, entityConfig, dbp, cp);
 
                     if (cp.Properties?.Any() ?? false)
                     {
-                        await UpdatePropertiesAsync(entityConfig, cp.Properties, dbProperties, dbp);
+                        await UpdatePropertiesAsync(entityType, entityConfig, cp.Properties, dbp.Properties.ToList(), dbp);
                     }
+
+                    // Check inheritace and override if needed
+                    await OverridePropertyAsync(dbp);
                 }
 
                 var deletedProperties = dbProperties
@@ -323,14 +550,14 @@ namespace Shesha.DynamicEntities
                 var revision = entityConfig.EnsureLatestRevision();
 
                 // todo: handle inactive flag
-                var dbProperties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfigRevision == revision).ToListAsync();
+                var dbProperties = _dbAllProperties.Where(p => p.EntityConfigRevision == revision).ToList();
 
                 var duplicates = codeProperties.GroupBy(p => p.Path.ToCamelCase(), (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
                 if (duplicates.Any())
                 {
                 }
 
-                await UpdatePropertiesAsync(entityConfig, codeProperties, dbProperties);
+                await UpdatePropertiesAsync(entityType, entityConfig, codeProperties, dbProperties);
 
                 // update properties MD5 to prevent unneeded updates in future
                 revision.HardcodedPropertiesMD5 = propertiesMD5;
@@ -343,13 +570,13 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private async Task UpdateItemsTypeAsync(EntityProperty dbp, PropertyMetadataDto cp)
+        private async Task UpdateItemsTypeAsync(Type entityType, EntityConfig entityConfig, EntityProperty dbp, PropertyMetadataDto cp)
         {
             if (dbp.DataType == DataTypes.Array && cp.ItemsType != null)
             {
-                var itemsTypeProp = dbp.ItemsType ?? (dbp.ItemsType = new EntityProperty() { 
+                var itemsTypeProp = dbp.ItemsType ?? new EntityProperty() { 
                     EntityConfigRevision = dbp.EntityConfigRevision,
-                });
+                };
 
                 itemsTypeProp.EntityConfigRevision = dbp.EntityConfigRevision;
                 // keep label and description???
@@ -369,6 +596,15 @@ namespace Shesha.DynamicEntities
 
                 await _entityPropertyRepository.InsertOrUpdateAsync(itemsTypeProp);
 
+                await UpdateItemsTypeAsync(entityType, entityConfig, itemsTypeProp, cp.ItemsType);
+
+                if (cp.ItemsType.Properties?.Any() ?? false)
+                {
+                    await UpdatePropertiesAsync(entityType, entityConfig, cp.ItemsType.Properties, itemsTypeProp.Properties.ToList(), itemsTypeProp);
+                }
+
+                dbp.ItemsType = itemsTypeProp;
+
                 await _entityPropertyRepository.UpdateAsync(dbp);
             }
             else
@@ -379,7 +615,7 @@ namespace Shesha.DynamicEntities
                     await _entityPropertyRepository.DeleteAsync(dbp.ItemsType);
                     dbp.ItemsType = null;
                     await _entityPropertyRepository.UpdateAsync(dbp);
-                }                
+                }
             }
         }
 
@@ -402,7 +638,9 @@ namespace Shesha.DynamicEntities
                 dst.Suppress = !src.IsVisible || dst.Suppress;
 
                 // leave Data Format from DB property if exists because number format is always hardcoded
-                dst.DataFormat = dst.DataFormat.GetDefaultIfEmpty(src.DataFormat);
+                // ToDo: AS - need to review
+                dst.DataFormat = src.DataFormat;
+                //dst.DataFormat = dst.DataFormat.GetDefaultIfEmpty(src.DataFormat);
                 dst.Min = src.Min.GetDefaultIfEmpty(dst.Min);
                 dst.Max = src.Max.GetDefaultIfEmpty(dst.Max);
                 dst.MinLength = src.MinLength.GetDefaultIfEmpty(dst.MinLength);

@@ -24,7 +24,7 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
     const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme) => {
-        const hideBorder = input?.border?.[part]?.style === 'none';
+        const hideBorder = !part?.color || !part?.width || input?.border?.[input.borderType]?.style === 'none';
         if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
         if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
         if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;

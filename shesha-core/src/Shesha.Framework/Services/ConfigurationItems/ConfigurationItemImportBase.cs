@@ -148,14 +148,15 @@ namespace Shesha.Services.ConfigurationItems
                     Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
                     Name = distributedItem.Name,
                 };
+                item.Normalize();
                 await Repository.InsertAsync(item);
             }
             var revision = item.MakeNewRevision();
 
+            await MapStandardPropsToItemAsync(item, revision, distributedItem);
             await MapCustomPropsToItemAsync(item, revision, distributedItem);
 
             revision.CreatedByImport = context.ImportResult;
-            item.Normalize();
 
             await RevisionRepository.InsertAsync(revision);
 
@@ -196,14 +197,14 @@ namespace Shesha.Services.ConfigurationItems
 
         protected abstract Task<bool> CustomPropsAreEqualAsync(TItem item, TRevision revision, TDistributedItem distributedItem);
 
-        protected Task MapToItemAsync(TDistributedItem distributedItem, TItem item, TRevision revision) 
+        protected Task MapStandardPropsToItemAsync(TItem item, TRevision revision, TDistributedItem distributedItem) 
         {
             item.Suppress = distributedItem.Suppress;
 
             revision.Label = distributedItem.Label;
             revision.Description = distributedItem.Description;
 
-            return MapCustomPropsToItemAsync(item, revision, distributedItem);
+            return Task.CompletedTask;
         }
 
         protected abstract Task MapCustomPropsToItemAsync(TItem item, TRevision revision, TDistributedItem distributedItem);

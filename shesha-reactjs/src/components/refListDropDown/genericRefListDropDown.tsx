@@ -27,6 +27,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     getOptionFromFetchedItem,
     incomeValueFunc,
     outcomeValueFunc,
+    filterOption,
     displayStyle,
     tagStyle,
     showIcon,
@@ -51,7 +52,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     localValue: TValue | TValue[],
     allOptions: ISelectOption<TValue>[]
   ): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
-    if (localValue === undefined) return mode === 'multiple' ? [] : undefined;
+    if (localValue === undefined || localValue === null) return mode === 'multiple' ? [] : undefined;
     if (mode === 'multiple') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
@@ -70,12 +71,12 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       .filter((num) => !isNaN(num)); // Remove invalid values
   };
 
-  const disableValue = (item, index) => {
+  const disableValue = (item) => {
     const parsedDisabledValues = parseDisabledValues(disabledValues);
 
     return {
       ...item,
-      disabled: parsedDisabledValues.includes(index),
+      disabled: parsedDisabledValues.includes(item.value),
     };
   };
 
@@ -93,7 +94,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     const selectedItem = wrapValue(value, fetchedItems);
     // Remove items which are already exist in the fetched items.
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
-    const selectedItems = selectedItem
+    const selectedItems = selectedItem !== undefined && selectedItem !== null
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
         (i) => fetchedItems.findIndex((fi) => String(fi.value) === String(i.value)) === -1
       )
@@ -126,7 +127,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         showIcon={showIcon}
         showItemName={showItemName}
         solidColor={solidColor}
-        style={displayStyle === 'tags' ? tagStyle : style}
+        tagStyle={tagStyle}
+        style={style}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
       />
@@ -148,12 +150,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     allowClear,
     loading: refListLoading,
     disabled,
-    filterOption: (input, option) => {
-      if (typeof option?.children === 'string' && typeof input === 'string') {
-        return option?.children?.toLowerCase().indexOf(input?.toLowerCase()) >= 0;
-      }
-      return false;
-    },
+    filterOption: filterOption,
     ...rest,
     onChange: handleChange,
     value: wrapValue(value, options),
@@ -170,7 +167,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return <ReflistTag
           key={option?.value}
           value={option?.value}
-          tooltip={option?.description}
+          description={option?.description}
           color={option?.color}
           icon={option?.icon}
           showIcon={showIcon}
@@ -201,7 +198,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
           const option = options.find((o) => o.value === props.value);
           return <ReflistTag
             value={option?.value}
-            tooltip={option?.description}
+            description={option?.description}
             color={option?.color}
             icon={option?.icon}
             showIcon={showIcon}

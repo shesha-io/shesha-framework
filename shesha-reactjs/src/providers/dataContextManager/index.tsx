@@ -286,7 +286,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       const res = data ?? { lastUpdate: state.lastUpdate, refreshContext: onChangeContextData };
       getDataContexts(topId).forEach(item => {
         if (res[item.name] === undefined) {
-          res[item.name] = getDataContextData(item.id);
+          res[item.name] = item.getFull();
         }
       });
       return res;

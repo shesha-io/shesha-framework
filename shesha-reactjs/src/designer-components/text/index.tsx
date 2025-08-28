@@ -11,7 +11,8 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { DEFAULT_CONTENT_TYPE, defaultStyles } from './utils';
+import { defaultStyles, remToPx } from './utils';
+import { FONT_SIZES } from './models';
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -76,7 +77,16 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
-      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: DEFAULT_CONTENT_TYPE })),
+      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: prev.contentType }))
+      .add<ITextTypographyProps>(5, (prev) => {
+        const fontSizeEntry = FONT_SIZES[prev.fontSize as keyof typeof FONT_SIZES];
+        const rem = fontSizeEntry ? fontSizeEntry.fontSize : prev.fontSize;
+        const px = remToPx(rem);        
+        return {
+          ...prev,
+          desktop: {...prev.desktop, font: {...prev.desktop.font, size: px}},
+        };
+      })
 };
 
 export default TextComponent;

@@ -27,9 +27,9 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
 
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
-      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.borderStyles),
+      ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.borderStyles),
       ...model.allStyles.fontStyles,
-      ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles.backgroundStyles),
+      ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.backgroundStyles),
       ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
       ...model.allStyles.stylingBoxAsCSS,
       ...model.allStyles.jsStyle,

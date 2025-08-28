@@ -14,10 +14,13 @@ namespace Shesha.Migrations.ConfigurationStudio
             Alter.Table("configuration_items").InSchema("frwk")
                 .AddColumn("latest_imported_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_latest_imported_revision_id", "frwk", "configuration_item_revisions", "id").Indexed();
 
-            Execute.Sql("alter table frwk.configuration_items add is_updated as cast((case when latest_imported_revision_id is not null and latest_imported_revision_id = latest_revision_id then 0 else 1 end) as bit) persisted");
-            Execute.Sql("alter table frwk.configuration_items add is_exposed as cast((case when exposed_from_id is not null then 1 else 0 end) as bit) persisted");
+			IfDatabase("SqlServer").Execute.Sql("alter table frwk.configuration_items add is_updated as cast((case when latest_imported_revision_id is not null and latest_imported_revision_id = latest_revision_id then 0 else 1 end) as bit) persisted");
+            IfDatabase("SqlServer").Execute.Sql("alter table frwk.configuration_items add is_exposed as cast((case when exposed_from_id is not null then 1 else 0 end) as bit) persisted");
 
-            Execute.Sql(@"update
+            IfDatabase("PostgreSql").Execute.Sql("alter table frwk.configuration_items add is_updated bool GENERATED ALWAYS as (case when latest_imported_revision_id is not null and latest_imported_revision_id = latest_revision_id then false else true end) stored");
+            IfDatabase("PostgreSql").Execute.Sql("alter table frwk.configuration_items add is_exposed bool GENERATED ALWAYS as (case when exposed_from_id is not null then true else false end) stored");
+
+            IfDatabase("SqlServer").Execute.Sql(@"update
 	frwk.configuration_items
 set
 	latest_imported_revision_id = (
@@ -31,14 +34,28 @@ set
 			and rev.created_by_import_id is not null
 		order by rev.creation_time desc
 	)");
-            Execute.Sql(@"alter view frwk.vw_configuration_items_tree_nodes as 
+            IfDatabase("PostgreSql").Execute.Sql(@"update
+	frwk.configuration_items
+set
+	latest_imported_revision_id = (
+		select 
+			id
+		from
+			frwk.configuration_item_revisions rev
+		where
+			rev.configuration_item_id = frwk.configuration_items.id
+			and rev.created_by_import_id is not null
+		order by rev.creation_time desc
+		limit 1
+	)");
+
+            IfDatabase("SqlServer").Execute.Sql(@"alter view frwk.vw_configuration_items_tree_nodes as 
 with foldersCte as (
 	select
 		f.id,
 		f.module_id as parent_id,
 		f.module_id,
-		f.name,
-		f.order_index
+		f.name
 	from
 		frwk.configuration_item_folders f
 	where
@@ -51,8 +68,7 @@ with foldersCte as (
 		f.id,
 		f.parent_id,
 		f.module_id,
-		f.name,
-		f.order_index
+		f.name
 	from
 		frwk.configuration_item_folders f
 		inner join foldersCte c ON f.parent_id = c.id
@@ -65,8 +81,7 @@ with foldersCte as (
 		m.id as module_id,
 		m.name,
 		cast (m.friendly_name as varchar(300)) as label,
-		1 /*module*/ as node_type,
-		cast(0.0 as float) as order_index
+		1 /*module*/ as node_type
 	from
 		frwk.modules m
 	where
@@ -82,8 +97,7 @@ with foldersCte as (
 		f.module_id,
 		f.name,
 		cast (f.name as varchar(300)) as label,
-		3 /*folder*/ as node_type,
-		f.order_index
+		3 /*folder*/ as node_type
 	from
 		foldersCte f
 		inner join modulesCte c ON f.module_id = c.id
@@ -96,7 +110,6 @@ with foldersCte as (
 		tn.label,
 		tn.node_type,
 		cast(null as nvarchar(50)) as item_type,
-		tn.order_index,
 		cast (0 as bit) as is_exposed,
 		cast (0 as bit) as is_code_based,
 		cast (0 as bit) as is_updated,
@@ -115,7 +128,6 @@ with foldersCte as (
 		cast(ci.name as varchar(300)) as label,
 		2 /*configuration item*/ as node_type,
 		ci.item_type,
-		ci.order_index,
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
@@ -138,7 +150,6 @@ with foldersCte as (
 		cast(ci.name as varchar(300)) as label,
 		2 /*configuration item*/ as node_type,
 		ci.item_type,
-		ci.order_index,
 		ci.is_exposed,
 		ci.is_code_based,
 		ci.is_updated,
@@ -158,7 +169,6 @@ select
 	label,
 	node_type,
 	item_type,
-	order_index,
 	is_exposed,
 	is_code_based,
 	is_updated,
@@ -167,6 +177,187 @@ select
 from 
 	finalCte
 ");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"drop view if exists frwk.vw_configuration_items_tree_nodes");
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE VIEW frwk.vw_configuration_items_tree_nodes AS
+WITH RECURSIVE folders_cte AS (
+    SELECT
+        f.id,
+        f.module_id AS parent_id,
+        f.module_id,
+        f.name
+    FROM
+        frwk.configuration_item_folders f
+    WHERE
+        f.parent_id IS NULL
+        AND f.is_deleted = FALSE
+
+    UNION ALL
+
+    SELECT
+        f.id,
+        f.parent_id,
+        f.module_id,
+        f.name
+    FROM
+        frwk.configuration_item_folders f
+        INNER JOIN folders_cte c ON f.parent_id = c.id
+    WHERE
+        f.is_deleted = FALSE
+), 
+modules_cte AS (
+    SELECT
+        m.id,
+        NULL::uuid AS parent_id,
+        m.id AS module_id,
+        m.name::VARCHAR(300) AS name,
+        CAST(m.friendly_name AS VARCHAR(300)) AS label,
+        1 AS node_type /*module*/
+    FROM
+        frwk.modules m
+    WHERE
+        m.is_deleted = FALSE
+        AND m.is_editable = TRUE
+        AND m.is_enabled = TRUE
+
+    UNION ALL
+
+    SELECT
+        f.id,
+        f.parent_id,
+        f.module_id,
+        f.name::VARCHAR(300) AS name,
+        CAST(f.name AS VARCHAR(300)) AS label,
+        3 AS node_type /*folder*/
+    FROM
+        folders_cte f
+        INNER JOIN modules_cte c ON f.module_id = c.id
+), 
+-- finalCte cannot be recursive because it references modulesCte in non-recursive term
+tree_nodes AS (
+    SELECT 
+        tn.id,
+        tn.parent_id,
+        tn.module_id,
+        tn.name AS name,
+        tn.label,
+        null::varchar as description,
+        tn.node_type,
+        NULL::VARCHAR(50) AS item_type,
+		false as is_exposed,
+		false as is_code_based,
+		false as is_updated,
+		false as is_codegen_pending,
+		null::bigint as last_modifier_user_id,
+		null::varchar as last_modifier_user,
+		null::timestamp last_modification_time
+    FROM
+        modules_cte tn
+),
+configuration_items_data AS (
+    -- Configuration items with no folder (directly under module)
+    SELECT
+        ci.id,
+        ci.module_id AS parent_id,
+        ci.module_id,
+        ci.name::VARCHAR(300) AS name,
+        cast(rev.label as varchar(300)) as label,
+		cast(rev.description as varchar) as description,
+        2 AS node_type, /*configuration item*/
+        ci.item_type,
+		ci.is_exposed,
+		ci.is_code_based,
+		ci.is_updated,
+		ci.is_codegen_pending,
+		ci.last_modifier_user_id,
+		modified_by.""UserName"" as last_modifier_user,
+		ci.last_modification_time
+    FROM
+        frwk.configuration_items ci
+        INNER JOIN tree_nodes c ON ci.module_id = c.id AND c.node_type = 1 /*module*/
+        inner join frwk.configuration_item_revisions rev on rev.id = ci.latest_revision_id
+		left join ""AbpUsers"" modified_by on modified_by.""Id"" = ci.last_modifier_user_id
+    WHERE
+        ci.folder_id IS NULL
+        AND ci.is_deleted = FALSE
+
+    UNION ALL
+
+    -- Configuration items within folders
+    SELECT
+        ci.id,
+        ci.folder_id AS parent_id,
+        ci.module_id,
+        ci.name::VARCHAR(300) AS name,
+        cast(rev.label as varchar(300)) as label,
+		cast(rev.description as varchar) as description,
+        2 AS node_type, /*configuration item*/
+        ci.item_type,
+		ci.is_exposed,
+		ci.is_code_based,
+		ci.is_updated,
+		ci.is_codegen_pending,
+		ci.last_modifier_user_id,
+		modified_by.""UserName"" as last_modifier_user,
+		ci.last_modification_time
+    FROM
+        frwk.configuration_items ci
+        INNER JOIN tree_nodes c ON ci.folder_id = c.id AND c.node_type = 3 /*folder*/
+        inner join frwk.configuration_item_revisions rev on rev.id = ci.latest_revision_id
+		left join ""AbpUsers"" modified_by on modified_by.""Id"" = ci.last_modifier_user_id
+    WHERE
+        ci.is_deleted = FALSE
+)
+-- Combine all the results
+SELECT * FROM tree_nodes
+UNION ALL
+SELECT * FROM configuration_items_data;");
+
+            IfDatabase("SqlServer").Execute.Sql(@"create or alter view frwk.vw_configuration_items_nodes as
+select 
+	 ci.id,
+	 2 /*configuration item*/ as node_type,
+	 ci.module_id,
+	 ci.folder_id
+from
+	frwk.configuration_items ci
+where
+	ci.is_deleted = 0
+
+union all 
+
+select 
+	 f.id,
+	 3 /*folder*/ as node_type,
+	 f.module_id,
+	 f.parent_id as folder_id
+from
+	frwk.configuration_item_folders f
+where
+	f.is_deleted = 0");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"create or replace view frwk.vw_configuration_items_nodes as
+select 
+	 ci.id,
+	 2 /*configuration item*/ as node_type,
+	 ci.module_id,
+	 ci.folder_id
+from
+	frwk.configuration_items ci
+where
+	ci.is_deleted = false
+
+union all 
+
+select 
+	 f.id,
+	 3 /*folder*/ as node_type,
+	 f.module_id,
+	 f.parent_id as folder_id
+from
+	frwk.configuration_item_folders f
+where
+	f.is_deleted = false");
         }
     }
 }

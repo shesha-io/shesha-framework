@@ -23,6 +23,7 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
+import { getOverflowStyle } from '../_settings/utils/overflow/util';
 
 interface IJsonTextAreaProps {
   value?: any;
@@ -51,10 +52,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   calculateModel: (model, allData) => ({
-      defaultValue: model.initialValue
-        ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
-        : undefined,
-      eventHandlers: getAllEventHandlers(model, allData)
+    defaultValue: model.initialValue
+      ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
+      : undefined,
+    eventHandlers: getAllEventHandlers(model, allData)
   }),
   Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles({
@@ -92,6 +93,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
       size: model?.size,
       style: {
         ...finalStyle,
+        ...getOverflowStyle(true, false),
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model?.showCount ? '16px' : '0px' }
           : {})
@@ -109,16 +111,23 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
 
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange({value: args[0].currentTarget.value}, args[0]);
+            customEvents.onChange({ value: args[0].currentTarget.value }, args[0]);
             if (typeof onChange === 'function') onChange(...args);
           };
 
-          return showAsJson 
+          const finalStyle = !model.enableStyleOnReadonly && model.readOnly ?
+            {
+              ...model.allStyles.fontStyles,
+              ...model.allStyles.dimensionsStyles,
+              ...getOverflowStyle(true, false)
+            }
+            : { ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) };
+
+          return showAsJson
             ? <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
-            : model.readOnly 
-              ? <ReadOnlyDisplayFormItem value={value} />
-              : <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal}/>
-          ;
+            : model.readOnly
+              ? <ReadOnlyDisplayFormItem value={value} style={{ padding: 8, ...finalStyle }} type='textArea' />
+              : <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
     );

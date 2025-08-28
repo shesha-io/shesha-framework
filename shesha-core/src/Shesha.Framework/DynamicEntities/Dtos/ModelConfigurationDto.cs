@@ -14,6 +14,18 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class ModelConfigurationDto : EntityDto<Guid>, IConfigurationItemDto
     {
+        public bool CreatedInDb { get; set; }
+
+        public string? DiscriminatorValue { get; set; }
+        
+        public string? SchemaName { get; set; }
+        public string? TableName { get; set; }
+
+        // ToDo: AS - review if InheritedFrom can be nullable
+        public Guid? InheritedFromId { get; set; }
+        public string? InheritedFromClassName { get; set; }
+        public string? InheritedFromNamespace { get; set; }
+
         public string ClassName { get; set; }
         public string Namespace { get; set; }
 
@@ -55,7 +67,7 @@ namespace Shesha.DynamicEntities.Dtos
         {
             var revision = model.Revision;
             var list = new List<EntityViewConfigurationDto>();
-            if (revision != null && revision.EntityConfigType == EntityConfigTypes.Class)
+            if (model.EntityConfigType == EntityConfigTypes.Class)
                 list.AddRange(new List<EntityViewConfigurationDto>()
                 {
                     new EntityViewConfigurationDto { IsStandard = true, Type = "Table", FormId = null },

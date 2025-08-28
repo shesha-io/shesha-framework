@@ -28,6 +28,7 @@ export interface ISortableRowProps {
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
   onMouseOver?: (cellRef?: any, isContentOverflowing?: boolean) => void;
+  onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
   showExpandedView?: boolean;
 }
 

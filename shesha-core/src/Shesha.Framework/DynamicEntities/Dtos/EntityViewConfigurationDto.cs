@@ -21,5 +21,15 @@ namespace Shesha.DynamicEntities.Dtos
         /// Identifier of form to use for current veiew
         /// </summary>
         public FormIdentifier? FormId { get; set; }
+
+        public EntityViewConfigurationDto Clone()
+        {
+            return new EntityViewConfigurationDto
+            {
+                IsStandard = IsStandard,
+                Type = Type,
+                FormId = FormId,
+            };
+        }
     }
 }

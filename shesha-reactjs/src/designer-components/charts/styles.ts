@@ -98,14 +98,60 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     font-weight: bold;
     color: #333;
     margin-top: 30px;
+    
+    /* Make loading text responsive */
+    @media (max-width: 768px) {
+      font-size: 13px;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 12px;
+      margin-top: 15px;
+    }
   `);
 
   // Chart Loader Styles
   const chartLoaderWrapper = cx(`${prefixCls}-chart-loader-wrapper`, css`
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 300px;
+    width: 100%;
+    height: 100%;
+    
+    /* Position cancel button at top right corner */
+    & button {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      z-index: 30;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Make loader responsive */
+    @media (max-width: 768px) {
+      min-height: 200px;
+      
+      & button {
+        top: 4px;
+        right: 4px;
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      min-height: 150px;
+      
+      & button {
+        top: 6px;
+        right: 6px;
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+    }
   `);
 
   const loaderCard = cx(`${prefixCls}-loader-card`, css`
@@ -116,6 +162,19 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     display: flex;
     justify-content: center;
     align-items: center;
+    max-width: 100%;
+    max-height: 100%;
+    
+    /* Make loader card responsive */
+    @media (max-width: 768px) {
+      padding: 15px;
+      border-radius: 6px;
+    }
+    
+    @media (max-width: 480px) {
+      padding: 10px;
+      border-radius: 4px;
+    }
   `);
 
   const barChartContainer = cx(`${prefixCls}-bar-chart-container`, css`
@@ -124,6 +183,21 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     justify-content: center;
     height: 200px;
     gap: 8px;
+    width: 100%;
+    max-width: 300px;
+    
+    /* Make bar chart responsive */
+    @media (max-width: 768px) {
+      height: 150px;
+      gap: 6px;
+      max-width: 250px;
+    }
+    
+    @media (max-width: 480px) {
+      height: 120px;
+      gap: 4px;
+      max-width: 200px;
+    }
   `);
 
   const bar = cx(`${prefixCls}-bar`, css`
@@ -139,6 +213,15 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     &:nth-child(6) { animation-delay: 0.5s; }
     &:nth-child(7) { animation-delay: 0.6s; }
     &:nth-child(8) { animation-delay: 0.7s; }
+    
+    /* Make bars responsive */
+    @media (max-width: 768px) {
+      width: 25px;
+    }
+    
+    @media (max-width: 480px) {
+      width: 20px;
+    }
   `);
 
   const pieLoaderWrapper = cx(`${prefixCls}-pie-loader-wrapper`, css`
@@ -173,6 +256,17 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
       background-color: white;
       border-radius: 50%;
     }
+    
+    /* Make pie loader responsive */
+    @media (max-width: 768px) {
+      width: 120px;
+      height: 120px;
+    }
+    
+    @media (max-width: 480px) {
+      width: 100px;
+      height: 100px;
+    }
   `);
 
   const line = cx(`${prefixCls}-line`, css`
@@ -182,6 +276,15 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     stroke-dasharray: 400;
     stroke-dashoffset: 400;
     animation: ${drawLineAnimation} 2s ease-in-out infinite;
+    
+    /* Make line responsive */
+    @media (max-width: 768px) {
+      stroke-width: 2.5;
+    }
+    
+    @media (max-width: 480px) {
+      stroke-width: 2;
+    }
   `);
 
   const dot = cx(`${prefixCls}-dot`, css`
@@ -213,12 +316,27 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     &:nth-child(7) { animation-delay: 0.75s; }
     &:nth-child(8) { animation-delay: 0.875s; }
   `);
+
+  const loadingContainer = cx(`${prefixCls}-loading-container`, css`
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    overflow: hidden;
+  `);
   
   return {
     responsiveChartContainer,
     chartContainerWithBorder,
     chartContainerNoBorder,
     loadingText,
+    loadingContainer,
     // Chart Loader Styles
     chartLoaderWrapper,
     loaderCard,

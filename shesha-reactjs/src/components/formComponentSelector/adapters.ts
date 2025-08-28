@@ -8,10 +8,8 @@ import NumberComponent from '@/designer-components/numberField/numberField';
 import RefListStatusComponent from '@/designer-components/refListStatus/index';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import { IDictionary } from '@/interfaces';
+import { IDictionary, IEditorAdapter, PropertyInclusionPredicate } from '@/interfaces';
 import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
-
-type PropertyInclusionPredicate = (name: string) => boolean;
 
 export const updateModelExcludeFiltered = (model: any, updatedModel: any, filter: PropertyInclusionPredicate) => {
   Object.keys(updatedModel).forEach((key) => {
@@ -21,10 +19,6 @@ export const updateModelExcludeFiltered = (model: any, updatedModel: any, filter
   });
   return model;
 };
-
-export interface IEditorAdapter {
-  propertiesFilter: PropertyInclusionPredicate;
-}
 
 export const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
   return (name: string) => {
@@ -48,7 +42,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
   [DropdownComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
-      'mode',
       //'referenceListId',
       //'dataSourceType',
       //'valueFormat',

@@ -68,8 +68,9 @@ export const getSettings = () =>
               result.addMetadataBuilder();
               return result.build();
             },
-            resultTypeExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder.metadata();
+            resultTypeExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder.metadata();
+              return Promise.resolve(meta);
             },
             validate: {},
             wrapInTemplate: true
@@ -88,13 +89,15 @@ export const getSettings = () =>
               functionName: 'getResultType',
               useAsyncDeclaration: true
             },
-            availableConstantsExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder.object("constants")
+            availableConstantsExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder.object("constants")
                 .addStandard(["shesha:metadataBuilder", "shesha:form", "shesha:formData"])
                 .build();
+              return Promise.resolve(meta);
             },
-            resultTypeExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder.metadata();
+            resultTypeExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder.metadata();
+              return Promise.resolve(meta);
             },
             validate: {},
             wrapInTemplate: true

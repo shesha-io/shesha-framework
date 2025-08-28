@@ -1,5 +1,5 @@
 import { HttpClientApi, useHttpClient } from "@/providers";
-import { FlatTreeNode, ItemTypeBackendDefinition, TreeNode } from "./models";
+import { FlatTreeNode, isConfigItemTreeNode, ItemTypeBackendDefinition, TreeNode } from "./models";
 import { IAjaxResponse } from "@/interfaces";
 import { IAbpWrappedResponse } from "@/interfaces/gql";
 import { AxiosResponse } from "axios";
@@ -13,25 +13,11 @@ export const CS_URLS = {
     FOLDER_CREATE: '/api/services/app/ConfigurationStudio/CreateFolder',
     FOLDER_DELETE: '/api/services/app/ConfigurationStudio/DeleteFolder',
     MOVE_NODE_TO_FOLDER: '/api/services/app/ConfigurationStudio/MoveNodeToFolder',
-    REORDER_NODE: '/api/services/app/ConfigurationStudio/ReorderNode',
     GET_ITEM_TYPES: '/api/services/app/ConfigurationStudio/GetAvailableItemTypes',
     ITEM_DELETE: '/api/services/app/ConfigurationStudio/DeleteItem',
     ITEM_DUPLICATE: '/api/services/app/ConfigurationStudio/DuplicateItem',
     GET_ITEM_REVISION_HISTORY: '/api/services/app/ConfigurationStudio/GetItemRevisions',
 };
-
-//#region Reorder node
-export type ReorderNodePayload = {
-    nodeType: number;
-    dragNodeId: string;
-    dropNodeId: string;
-    dropPosition: number;
-};
-
-export const reorderTreeNodeAsync = (httpClient: HttpClientApi, payload: ReorderNodePayload): Promise<IAbpWrappedResponse<MoveNodeResponse>> => {
-    return httpClient.post<ReorderNodePayload, AxiosResponse<IAbpWrappedResponse<MoveNodeResponse>>>(CS_URLS.REORDER_NODE, payload).then(response => response.data);
-};
-//#endregion
 
 //#region Move Tree Node
 export type MoveNodePayload = {
@@ -69,22 +55,6 @@ export const fetchFlatTreeAsync = async (httpClient: HttpClientApi): Promise<Fla
     return response.data.result;
 };
 
-export const fetchFlatTreeForExportAsync = async (httpClient: HttpClientApi): Promise<FlatTreeNode[]> => {
-    const response = await httpClient.get<IAjaxResponse<FlatTreeNode[]>>(CS_URLS.GET_FLAT_TREE);
-    return response.data.result;
-};
-
-export const useFlatTreeForExport = () => {
-    const httpClient = useHttpClient();
-
-    const fetcher = useCallback(() => {
-        return fetchFlatTreeForExportAsync(httpClient);
-    }, [httpClient]);
-
-    const url = CS_URLS.GET_FLAT_TREE;
-    return useSWR(url, fetcher, { refreshInterval: 0, revalidateOnFocus: false });
-};
-
 export type TreeState = {
     treeNodeMap: Map<string, TreeNode>;
     treeNodes: TreeNode[];
@@ -103,6 +73,9 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
         flatTreeNodes.forEach(node => {
             const currentNode = treeNodeMap.get(node.id)!;
 
+            if (node.moduleId && isConfigItemTreeNode(currentNode))
+                currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
+
             if (node.parentId !== null) {
                 const parent = treeNodeMap.get(node.parentId);
                 if (parent) {
@@ -118,7 +91,7 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
             treeNodeMap: treeNodeMap,
         };
     } catch (error) {
-        throw new Error('Failed to convert tree', error);
+        throw new Error('Failed to convert tree', { cause: error });
     }
 };
 
@@ -126,7 +99,7 @@ export const useTreeForExport = () => {
     const httpClient = useHttpClient();
 
     const fetcher = useCallback(async (): Promise<TreeState> => {
-        const flatTree = await fetchFlatTreeForExportAsync(httpClient);
+        const flatTree = await fetchFlatTreeAsync(httpClient);
         return convertFlatTreeToExportTree(flatTree);
     }, [httpClient]);
 

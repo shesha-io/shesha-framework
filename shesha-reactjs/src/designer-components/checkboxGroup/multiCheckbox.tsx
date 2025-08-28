@@ -41,6 +41,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     flexWrap: direction === 'vertical' ? 'nowrap' : 'wrap',
     gap: '8px',
   };
+
   return (
     <div
       tabIndex={0}

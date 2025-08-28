@@ -30,11 +30,12 @@ export const Dropdown: FC<IDropdownProps> = ({
     style,
     size,
     showIcon,
-    solidColor = true,
+    solidColor,
     showItemName,
     allowClear = true,
     displayStyle,
-    tagStyle
+    tagStyle,
+    enableStyleOnReadonly
 }) => {
 
     const { styles } = useStyles({ style });
@@ -79,6 +80,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             color: item?.color,
             icon: item?.icon,
             data: item?.data,
+            description: item?.description,
         };
     }, [incomeValueFunc]);
 
@@ -104,8 +106,16 @@ export const Dropdown: FC<IDropdownProps> = ({
             data: outcomeValueFunc(fetchedItem, args),
             color: fetchedItem?.color,
             icon: fetchedItem?.icon,
+            description: fetchedItem?.description,
         };
     }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
+
+    const filterOption = (input, option) => {
+        if (typeof option?.children === 'string' && typeof input === 'string') {
+            return option?.children?.toLowerCase().indexOf(input?.toLowerCase()) >= 0;
+        }
+        return false;
+    };
 
     if (dataSourceType === 'referenceList') {
         return (
@@ -131,8 +141,10 @@ export const Dropdown: FC<IDropdownProps> = ({
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
                 displayStyle={displayStyle}
+                filterOption={filterOption}
                 incomeValueFunc={incomeValueFunc}
                 outcomeValueFunc={outcomeValueFunc}
+                enableStyleOnReadonly={enableStyleOnReadonly}
             />
         );
     }
@@ -151,7 +163,8 @@ export const Dropdown: FC<IDropdownProps> = ({
             showIcon={showIcon}
             solidColor={solidColor}
             showItemName={showItemName}
-            style={displayStyle === 'tags' ? tagStyle : style}
+            tagStyle={tagStyle}
+            style={style}
             dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
             type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
             value={mode === 'multiple' ?
@@ -167,6 +180,8 @@ export const Dropdown: FC<IDropdownProps> = ({
         allowClear,
         onChange,
         value: selectedValue,
+        disabledValues: disabledValues,
+        ignoredValues: ignoredValues,
         defaultValue,
         variant: 'borderless' as 'borderless' | 'filled' | 'outlined',
         disabled: readOnly,
@@ -181,12 +196,14 @@ export const Dropdown: FC<IDropdownProps> = ({
             popupMatchSelectWidth={false}
             style={{ width: 'max-content', height: 'max-content' }}
             placeholder={placeholder}
+            showSearch
+            filterOption={filterOption}
             labelRender={(props) => {
                 const option = options.find((o) => o.value === props.value);
                 return <ReflistTag
                     key={option?.value}
                     value={option?.value}
-                    tooltip={option?.description}
+                    description={option?.description}
                     color={option?.color}
                     icon={option?.icon}
                     showIcon={showIcon}
@@ -208,15 +225,16 @@ export const Dropdown: FC<IDropdownProps> = ({
     return (
         <Select
             {...commonSelectProps}
-            style={{ ...style }}
+            style={style}
             showSearch
+            filterOption={filterOption}
             placeholder={placeholder}
             {...(displayStyle === 'tags' ? {
                 labelRender: (props) => {
                     const option = options.find((o) => o.value === props.value);
                     return <ReflistTag
                         value={option?.value}
-                        tooltip={option?.description}
+                        description={option?.description}
                         color={option?.color}
                         icon={option?.icon}
                         showIcon={showIcon}
@@ -230,7 +248,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             }
         >
             {options?.map(({ value: localValue, label }) => (
-                <Select.Option value={localValue} key={localValue}>
+                <Select.Option value={localValue} key={label}>
                     {label}
                 </Select.Option>
             ))}

@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import {
   ModelConfigurationDto,
   entityConfigDelete,
@@ -9,6 +9,7 @@ import {
 } from '@/apis/modelConfigurations';
 import { useSheshaApplication } from '@/providers';
 import {
+  cancelAction,
   changeModelIdAction,
   createNewAction,
   deleteErrorAction,
@@ -26,7 +27,6 @@ import {
   ModelConfiguratorActionsContext,
   ModelConfiguratorStateContext,
 } from './contexts';
-import { IModelConfiguratorInstance } from './interfaces';
 import modelReducer from './reducer';
 
 export interface IModelConfiguratorProviderPropsBase {
@@ -36,7 +36,6 @@ export interface IModelConfiguratorProviderPropsBase {
 export interface IModelConfiguratorProviderProps {
   id?: string;
   form: FormInstance;
-  configuratorRef?: MutableRefObject<IModelConfiguratorInstance | null>;
 }
 
 const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProviderProps>> = (props) => {
@@ -88,7 +87,9 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   };
 
   const prepareValues = (values: ModelConfigurationDto): ModelConfigurationDto => {
-    return { ...values, id: state.id };
+    return state.id
+      ? { ...values, id: state.id }
+      : { ...values, className: values.name, namespace: values.module };
   };
 
   const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> =>
@@ -116,9 +117,13 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
+  const cancel = () => {
+    dispatch(cancelAction());
+  };
+
   const getModelSettings = () => prepareValues(state.form.getFieldsValue());
 
-  const savePromise: () => Promise<ModelConfigurationDto> = () =>
+  const saveForm: () => Promise<ModelConfigurationDto> = () =>
     new Promise<ModelConfigurationDto>((resolve, reject) => {
       state.form
         .validateFields()
@@ -131,11 +136,11 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         .catch((error) => reject(error));
     });
 
-  const deleteFunc = (values: ModelConfigurationDto): Promise<void> =>
+  const deleteFunc = (): Promise<void> =>
     new Promise<void>((resolve, reject) => {
       dispatch(deleteRequestAction());
 
-      entityConfigDelete({ base: backendUrl, queryParams: { id: values.id }, headers: httpHeaders })
+      entityConfigDelete({ base: backendUrl, queryParams: { id: state.modelConfiguration?.id }, headers: httpHeaders })
         .then(() => {
           dispatch(deleteSuccessAction());
           resolve();
@@ -146,22 +151,6 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
-  const deletePromise: () => Promise<void> = () =>
-    new Promise<void>((resolve, reject) => {
-      deleteFunc(state.modelConfiguration)
-        .then(() => resolve())
-        .catch(() => reject());
-    });
-
-  if (props.configuratorRef) {
-    props.configuratorRef.current = {
-      save: savePromise,
-      changeModelId: changeModelId,
-      createNew: createNew,
-      delete: deletePromise,
-    };
-  }
-
   return (
     <ModelConfiguratorStateContext.Provider value={{ ...state }}>
       <ModelConfiguratorActionsContext.Provider
@@ -169,8 +158,12 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
           changeModelId,
           load,
           save,
+          saveForm,
           submit,
           getModelSettings,
+          cancel,
+          delete: deleteFunc,
+          createNew,
           /* NEW_ACTION_GOES_HERE */
         }}
       >

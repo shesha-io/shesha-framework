@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx, token }, { fontFamily, fontWeight, textAlign, color, fontSize }) => {
     const dropdownContainer = "dropdown-container";
     const suggestionContainer = "suggestion-container";
     const suggestion = "suggestion";
@@ -37,6 +37,16 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 &.highlighted {
                    ${highlightedSuggestion}
                 }
+            }
+        }
+
+         > .ant-input-affix-wrapper {
+          .ant-input {
+            --ant-color-text: ${color} !important;
+            --ant-font-size: ${fontSize} !important;
+            font-weight: ${fontWeight};
+            font-family: ${fontFamily};
+            text-align: ${textAlign};
             }
         }
 `);

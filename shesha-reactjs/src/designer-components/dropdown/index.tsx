@@ -1,7 +1,7 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
@@ -31,7 +31,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   isHidden: false,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList,
   calculateModel: (model, allData) => ({
     eventHandlers: customDropDownEventHandler(model, allData),
     //quick fix not to default to empty string or null while working with multi-mode
@@ -46,6 +46,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
+    const finalStyle = model.enableStyleOnReadonly && model.readOnly ? 
+    { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles } :
+     { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden' 
+
+     };
+
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
@@ -58,12 +64,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
 
           return <Dropdown
             {...model}
-            style={{ ...model.allStyles.fullStyle, overflow: 'hidden' }}
+            style={finalStyle}
             {...customEvent}
             defaultValue={calculatedModel.defaultValue}
             value={value}
             size={model?.size}
-            tagStyle={{ ...tagStyle, justifyContent: tagStyle?.textAlign }}
+            tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
             onChange={onChangeInternal}
           />;
         }}
@@ -141,7 +147,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     }),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
-    const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';
+    const isMultipleRefList = metadata.dataType === DataTypes.array && metadata.dataFormat === ArrayFormats.multivalueReferenceList;
 
     return {
       ...model,

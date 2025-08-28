@@ -17,8 +17,16 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
 
   const style = getAlignmentStyle(props);
 
+  const containerStyle = {
+    ...removeUndefinedProperties(style),
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    boxSizing: 'border-box' as const,
+  };
+
   return (
-    <div style={removeUndefinedProperties(style)}>
+    <div style={containerStyle}>
       {components?.map((model) => {
           return (
             <FormComponent

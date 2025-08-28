@@ -19,7 +19,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 
-interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent {}
+interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent { }
 
 interface IRadioComopnentCalulatedValues {
   eventHandlers: IEventHandlers;
@@ -55,7 +55,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
           return (
             <RadioGroup
               {...restProps}
-              style={model.allStyles.fullStyle}
+              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               value={value}
               defaultValue={model.defaultValue}
               dataSourceUrl={calculatedModel.dataSourceUrl}
@@ -102,9 +102,9 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
       dataSourceType: isRefList ? 'referenceList' : 'values',
       referenceListId: isRefList
         ? {
-            module: metadata.referenceListModule,
-            name: metadata.referenceListName,
-          }
+          module: metadata.referenceListModule,
+          name: metadata.referenceListName,
+        }
         : null,
     };
   },

@@ -1,6 +1,6 @@
 import { getNavigationActionArgumentsByUrl } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
+import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/dialog-arguments';
 import {
     ISidebarButton,
     ISidebarGroup,

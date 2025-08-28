@@ -3,6 +3,7 @@ import { ConfigItemTreeNode, FlatTreeNode, FolderTreeNode, isConfigItemTreeNode,
 import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, MessageOutlined, NotificationOutlined, OrderedListOutlined, ProductOutlined, SafetyOutlined, SettingOutlined, TableOutlined, TeamOutlined } from "@ant-design/icons";
 import React from "react";
 import { TreeNodeProps } from "antd";
+import { CsTreeNode } from "./components/tree-node";
 
 export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
     switch (nodeType) {
@@ -37,15 +38,21 @@ const applyIcon = (node: TreeNode): void => {
     };
 };
 
+export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): ReactNode => {
+    return <CsTreeNode node={node}>{displayText ?? node.name}</CsTreeNode>;
+};
+
 export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
     const baseProps: TreeNode = {
         id: node.id,
         parentId: node.parentId,
         key: node.id,
         name: node.name,
+        label: node.label,
         nodeType: node.nodeType,
-        title: node.label ?? node.name,
+        title: renderCsTreeNode,
         moduleId: node.moduleId,
+        description: node.description,
     };
 
     switch (node.nodeType) {
@@ -74,7 +81,12 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
                     isCodegenPending: node.isCodegenPending,
                     isUpdated: node.isUpdated,
                     isExposed: node.isExposed,
+                    isUpdatedByMe: node.isUpdatedByMe,
                 },
+                lastModifierUser: node.lastModifierUser,
+                lastModificationTime: node.lastModificationTime,
+                baseModule: node.baseModule,
+                moduleName: "",
             };
             applyIcon(itemNode);
             return itemNode;

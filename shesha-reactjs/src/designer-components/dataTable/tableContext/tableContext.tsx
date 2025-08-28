@@ -2,23 +2,23 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import DataTableProvider from '@/providers/dataTable';
 import React, { FC, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components';
-import { evaluateString, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
 import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
 import { SheshaError } from '@/utils/errors';
+import { useActualContextExecution } from '@/hooks';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-    const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
+    const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering } = props;
     const { formMode } = useForm();
     const { data } = useFormData();
 
-    const allData = useAvailableConstantsData();
-    const disableRefresh: boolean = Boolean(props.disableRefresh) ? executeScriptSync(props.disableRefresh, allData) : false;
+    const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
     const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
@@ -55,6 +55,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             allowReordering={evaluateYesNo(allowReordering, formMode)}
             permanentFilter={permanentFilter}
             disableRefresh={disableRefresh}
+            customReorderEndpoint={customReorderEndpoint}
         >
             <ComponentsContainer containerId={id} />
         </DataTableProvider>

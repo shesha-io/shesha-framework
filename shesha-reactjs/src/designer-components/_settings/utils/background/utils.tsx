@@ -1,14 +1,6 @@
 import React from "react";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
 
-
-export const toBase64 = file => new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-});
-
 export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, backendUrl: string, httpHeaders: any) => {
     return (
         propertyName?.storedFile?.id && propertyName?.type === 'storedFile'
@@ -52,7 +44,8 @@ export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSPr
     } else if (input?.type === 'url') {
         style.backgroundImage = `url(${input?.url})`;
     } else if (input?.type === 'image') {
-        style.backgroundImage = `url(${input?.uploadFile})`;
+        const uploadFile = input?.uploadFile;
+        style.backgroundImage = `url(${uploadFile?.url || uploadFile})`;
     } else if (input?.type === 'storedFile') {
         style.backgroundImage = `url(${url})`;
     }

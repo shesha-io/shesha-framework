@@ -27,6 +27,7 @@ export interface ICheckboxGroupProps {
   reducerFunc?: string;
   readOnly?: boolean;
   defaultValue?: any | any[];
+  enableStyleOnReadonly?: boolean;
 }
 
 export const getSpan = (direction: SpaceProps['direction'], size: number) =>

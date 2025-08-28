@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -91,7 +91,7 @@ export const getSettings = () => {
                   ],
                 })
                 .addSettingsInputRow({
-                   id: nanoid(),
+                  id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
                     {
@@ -183,7 +183,7 @@ export const getSettings = () => {
                       label: 'Owner Type',
                       type: 'autocomplete',
                       dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                       useRawValues: true,
                       jsSetting: true,
                     },
@@ -250,6 +250,15 @@ export const getSettings = () => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'enableStyleOnReadonly',
+                        label: 'Enable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -291,7 +300,7 @@ export const getSettings = () => {
                                     propertyName: 'font.weight',
                                     hideLabel: true,
                                     tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeights,
+                                    dropdownOptions: fontWeightsOptions,
                                     width: 100,
                                   },
                                   {
@@ -313,7 +322,7 @@ export const getSettings = () => {
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
-                                    dropdownOptions: textAlign,
+                                    dropdownOptions: textAlignOptions,
                                   },
                                 ],
                               })

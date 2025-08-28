@@ -42,6 +42,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Shesha.Specifications;
+using Shesha.Startup;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -58,7 +59,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
-			services.Configure<IISServerOptions>(options =>
+			services.UseDynamicWebApi();
+
+            services.Configure<IISServerOptions>(options =>
 			{
 				options.AllowSynchronousIO = true;
 			});
@@ -186,7 +189,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			// Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
 			app.UseSwaggerUI(options =>
 			{
-				options.AddEndpointsPerService();
+				options.AddEndpointsPerService(false);
 				//options.SwaggerEndpoint("swagger/v1/swagger.json", "Shesha API V1");​
 				// todo: add documents per module with summary about `service:xxx` endpoints
 				//options.SwaggerEndpoint(baseUrl + "swagger/service:Meter/swagger.json", "Meter API");​

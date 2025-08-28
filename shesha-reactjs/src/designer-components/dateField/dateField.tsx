@@ -1,11 +1,11 @@
 import { CalendarOutlined } from '@ant-design/icons';
-import React, { Fragment} from 'react';
+import React, { Fragment } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
-import {useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDateFieldProps } from './interfaces';
 import {
   DATE_TIME_FORMATS,

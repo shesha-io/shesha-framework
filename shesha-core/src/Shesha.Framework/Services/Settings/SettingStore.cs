@@ -49,12 +49,6 @@ namespace Shesha.Services.Settings
         }
 
         /// inheritedDoc
-        public override Task<SettingConfiguration> CopyAsync(SettingConfiguration item, CopyItemInput input)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        /// inheritedDoc
         public async Task<SettingConfiguration> CreateSettingConfigurationAsync(CreateSettingDefinitionDto input)
         {
             var module = input.ModuleId.HasValue
@@ -103,48 +97,11 @@ namespace Shesha.Services.Settings
         }
 
         /// inheritedDoc
-        public override async Task<SettingConfiguration> CreateNewVersionAsync(SettingConfiguration item)
-        {
-            var newVersion = new SettingConfiguration();
-            newVersion.Origin = item.Origin;
-            newVersion.Name = item.Name;
-            newVersion.Module = item.Module;
-            newVersion.Application = item.Application;
-
-            /*
-             * TODO: V1 review
-            newVersion.Description = item.Description;
-            newVersion.Label = item.Label;
-            newVersion.DataType = item.DataType;
-            newVersion.EditorFormName = item.EditorFormName;
-            newVersion.EditorFormModule = item.EditorFormModule;
-            newVersion.OrderIndex = item.OrderIndex;
-            newVersion.IsClientSpecific = item.IsClientSpecific;
-            newVersion.AccessMode = item.AccessMode;
-            newVersion.Category = item.Category;
-            newVersion.IsUserSpecific = item.IsUserSpecific;
-            newVersion.ClientAccess = item.ClientAccess;
-            newVersion.Normalize();
-            */
-
-            await Repository.InsertAsync(newVersion);
-
-            return newVersion;
-        }
-
-        /// inheritedDoc
         public Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
         {
             return Repository.GetAll()
                 .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
                 .FirstOrDefaultAsync();
-        }
-
-        /// inheritedDoc
-        public override Task<IConfigurationItemDto> MapToDtoAsync(SettingConfiguration item)
-        {
-            var dto = ObjectMapper.Map<SettingDefinitionDto>(item);
-            return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
         /// inheritedDoc
@@ -237,19 +194,20 @@ namespace Shesha.Services.Settings
             await _cacheHolder.Cache.RemoveAsync(cacheKey);
         }
 
-        public override Task<SettingConfiguration> ExposeAsync(SettingConfiguration item, Module module)
+        protected override Task CopyRevisionPropertiesAsync(SettingConfigurationRevision source, SettingConfigurationRevision destination)
         {
-            throw new NotImplementedException();
-        }
+            destination.DataType = source.DataType;
+            destination.DataFormat = source.DataFormat;
+            destination.EditorFormName = source.EditorFormName;
+            destination.EditorFormModule = source.EditorFormModule;
+            destination.OrderIndex = source.OrderIndex;
+            destination.Category = source.Category;
+            destination.IsClientSpecific = source.IsClientSpecific;
+            destination.AccessMode = source.AccessMode;
+            destination.IsUserSpecific = source.IsUserSpecific;
+            destination.ClientAccess = source.ClientAccess;
 
-        public override Task<SettingConfiguration> CreateItemAsync(CreateItemInput input)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<SettingConfiguration> DuplicateAsync(SettingConfiguration item)
-        {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         private class CacheKeyArgs

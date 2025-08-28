@@ -1,14 +1,15 @@
-﻿using Abp.Domain.Uow;
-using Abp.Threading;
+﻿using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Shesha.Application.Services;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
-using Shesha.DynamicEntities;
 using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,15 +25,15 @@ namespace Shesha.Swagger
 
         public IEnumerator<UrlDescriptor> GetEnumerator()
         {
-            var entityConfigs = StaticContext.IocManager.Resolve<IModelConfigurationManager>();
             var pmo = StaticContext.IocManager.Resolve<IPermissionedObjectManager>();
-            var _uowManager = StaticContext.IocManager.Resolve<IUnitOfWorkManager>();
-
+            var uowManager = StaticContext.IocManager.Resolve<IUnitOfWorkManager>();
             var types = SwaggerHelper.ServiceTypesFunc();
 
             var permissioned = new List<TypeInfo>();
-            using (var uow = _uowManager.Begin())
+            using (var uow = uowManager.Begin())
             {
+                var disabledEntities = GetEntityWithDisabledAppServices();
+
                 foreach (var service in types)
                 {
                     if (service.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
@@ -40,9 +41,7 @@ namespace Shesha.Swagger
                         // entity service
                         var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
                         var entityType = genericInterface.GenericTypeArguments.First();
-                        var model = AsyncHelper.RunSync(() => entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
-                        if (model == null)
-                            continue;
+                        var fullName = GetFullName(entityType.Namespace, entityType.Name);
 
                         var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
                         var crudAttribute = entityType.GetAttributeOrNull<CrudAccessAttribute>();
@@ -50,7 +49,7 @@ namespace Shesha.Swagger
                         if (entityAttribute?.GenerateApplicationService == GenerateApplicationServiceState.DisableGenerateApplicationService
                             || (permission != null && permission.ActualAccess == RefListPermissionedAccess.Disable)
                             || crudAttribute?.All == RefListPermissionedAccess.Disable
-                            || !model.GenerateAppService)
+                            || disabledEntities.Contains(fullName))
                             continue;
                     }
                     else
@@ -71,6 +70,24 @@ namespace Shesha.Swagger
                 yield return new UrlDescriptor { Name = serviceName, Url = $"swagger/{SwaggerHelper.GetDocumentNameForService(serviceName)}/swagger.json" };
             }
         }
+
+        private string GetFullName(string? @namespace, string name)
+        {
+            return !string.IsNullOrWhiteSpace(@namespace)
+                ? @namespace + "." + name
+                : name;
+        }
+
+        private List<string> GetEntityWithDisabledAppServices()
+        {
+            var entityConfigRepo = StaticContext.IocManager.Resolve<IRepository<EntityConfig, Guid>>();
+            var entities = entityConfigRepo.GetAll()
+                .Where(e => !e.IsDeleted && e.Revision != null && !e.Revision.GenerateAppService)
+                .Select(e => new { e.ClassName, e.Namespace })
+                .ToList();
+            return entities.Select(e => GetFullName(e.Namespace, e.ClassName)).ToList();
+        }
+
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }

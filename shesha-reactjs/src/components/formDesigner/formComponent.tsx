@@ -8,7 +8,6 @@ import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -22,15 +21,12 @@ export const standartActualModelPropertyFilter = (name: string) => {
   return propertiesToSkip.indexOf(name) === -1;
 };
 
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string) => {
-  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name) : true)
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any) => {
+  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true)
     && propertiesToSkip.indexOf(name) === -1;
 };
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
-
-  useShaFormDataUpdate();
-
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const { isComponentFiltered } = useForm();
@@ -48,7 +44,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     deviceModel,
     undefined,
     undefined,
-    (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name),
+    (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined
   );
 
@@ -105,6 +101,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const attributes = {
     'data-sha-c-id': `${componentModel.id}`,
     'data-sha-c-name': `${componentModel.componentName}`,
+    'data-sha-c-property-name': `${componentModel.propertyName}`,
     'data-sha-c-type': `${componentModel.type}`,
   };
 

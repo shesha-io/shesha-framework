@@ -7,6 +7,7 @@ export interface RowsReorderPayload {
     getOld: () => object[];
     getNew: () => object[];
     applyOrder: (orderedItems: object[]) => void;
+    customReorderEndpoint?: string;
 }
 
 export interface IRepository<TCreateOptions = any, TUpdateOptions = any, TDeleteOptions = any> {

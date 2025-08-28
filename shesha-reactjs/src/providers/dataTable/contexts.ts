@@ -169,6 +169,8 @@ export interface IDataTableStateContext
 
   allowReordering: boolean;
   dragState?: DragState;
+
+  customReorderEndpoint?: string;
 }
 
 export type DragState = 'started' | 'finished' | null;
@@ -267,6 +269,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   selectedRows: [],
   permanentFilter: null,
   allowReordering: false,
+  customReorderEndpoint: null,
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

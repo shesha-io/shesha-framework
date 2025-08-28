@@ -24,8 +24,8 @@ import { App, Button, Spin } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import { innerEntityReferenceButtonBoxStyle, innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
 import { addPx } from '@/utils/style';
+import { useStyles } from './styles/styles';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -102,6 +102,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityId = props.value?.id ?? props.value;
   const entityType = props.entityType ?? props.value?._className;
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
+
+  const {styles, cx} = useStyles();
 
   useEffect(() => {
 
@@ -228,9 +230,11 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const content = useMemo(() => {
     if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
-        <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-          <Spin size="small" />
-          <span style={innerEntityReferenceSpanBoxStyle}> Loading...</span>
+        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>
+            <Spin size="small" className={cx(styles.spin)} />
+            <span className={cx(styles.inlineBlock)}>Loading...</span>
+          </span>
         </Button>
       );
 
@@ -269,23 +273,23 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     return (
-      <Button type="link" onClick={dialogExecute} style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-        <span style={innerEntityReferenceSpanBoxStyle}>{displayTextByType}</span>
+      <Button type="link" onClick={dialogExecute} className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{displayTextByType}</span>
       </Button>
     );
   }, [props.formIdentifier, displayText, entityId, props.disabled, properties.length, displayTextByType, fetched]);
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-        <span style={innerEntityReferenceSpanBoxStyle}>Form identifier is not configured</span>
+      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>Form identifier is not configured</span>
       </Button>
     );
 
   if (!props.value)
     return (
-      <Button type="link" disabled style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-        <span style={innerEntityReferenceSpanBoxStyle}>{displayText}</span>
+      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{displayText}</span>
       </Button>
     );
 

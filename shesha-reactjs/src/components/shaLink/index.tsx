@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useMemo } from 
 import { Button } from 'antd';
 import { FormIdentifier } from '@/interfaces';
 import { useShaRouting } from '@/providers/shaRouting';
-import { innerEntityReferenceButtonBoxStyle, innerEntityReferenceSpanBoxStyle } from '../quickView/utils';
+import { useStyles } from './styles/styles';
 
 export interface IShaLinkProps {
   linkTo?: string;
@@ -36,6 +36,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   disabled,
 }) => {
   const { router, getFormUrl } = useShaRouting();
+  const {styles, cx} = useStyles();
 
   const paramsStr = useMemo(() => {
     if (!params) return undefined;
@@ -59,12 +60,12 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
       type="link"
       onClick={changeRoute}
       href={url}
-      className={className}
-      style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}
+      className={cx(styles.innerEntityReferenceButtonBoxStyle, className)}
+      style={style}
       disabled={disabled}
     >
       {icon}
-      {!!childrenOrDisplayText && <span style={innerEntityReferenceSpanBoxStyle}>{childrenOrDisplayText}</span>}
+      {!!childrenOrDisplayText && <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{childrenOrDisplayText}</span>}
     </Button>
   );
 };

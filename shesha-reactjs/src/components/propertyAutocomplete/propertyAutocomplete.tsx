@@ -183,11 +183,11 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       value={props.value}
       options={state.options}
       style={props.style}
+      styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       onSelect={onSelect}
       onSearch={onSearch}
       notFoundContent="Not found"
-      size={props.size}
-      dropdownStyle={props?.dropdownStyle}
+      size={props.size}      
       popupMatchSelectWidth={false}
       allowClear={allowClear}
     />
@@ -228,7 +228,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       </>
     );
     return (
-      <span key={tag} style={{ display: 'inline-block', marginTop:13 }}>
+      <span key={tag} style={{ display: 'inline-block', marginTop: 13 }}>
         {tagElem}
       </span>
     );
@@ -244,12 +244,11 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           value={multipleValue}
           options={state.options}
           style={props.style}
-          //onChange={setMultipleValue}
+          styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
           onSelect={onSelectMultiple}
           onSearch={onSearchMultiple}
           notFoundContent="Not found"
           size={props.size}
-          dropdownStyle={props?.dropdownStyle}
           popupMatchSelectWidth={false}
         />
         <Button

@@ -46,6 +46,10 @@ namespace Shesha.DynamicEntities
 
         public async Task<IReorderResponse> ReorderAsync(ReorderRequest input, PropertyInfo orderIndexProperty)
         {
+            if (input.Items.Any(i => i.OrderIndex == null) ||
+                input.Items.All(i => i.OrderIndex == 0))
+                throw new ArgumentException("Items must use valid order indexes");
+
             var entityConfig = _entityConfigStore.Get(typeof(T));
             
             var idConverter = System.ComponentModel.TypeDescriptor.GetConverter(typeof(TId));
@@ -58,7 +62,7 @@ namespace Shesha.DynamicEntities
                 
                     return new ReorderingItem<TId, TOrderIndex>
                     {
-                        OrderIndex = convertOrderIndex(item.OrderIndex),
+                        OrderIndex = convertOrderIndex(item.OrderIndex.GetValueOrDefault()),
                         Id = id != null ? (TId)id : throw new Exception($"Failed to convert id = '{item.Id}' to type '{typeof(TId).FullName}'")
                     };
                 })
@@ -71,11 +75,6 @@ namespace Shesha.DynamicEntities
             // Note: SoftDelete should be disabled to speed-up the query and to prevent wrong calculations. We load entitier by Id, so it's safe
             using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
             {
-                var selectExpression = CreateSelectExpression(orderIndexProperty);
-                var dbItems = await _repository.GetAll().Where(ent => ids.Contains(ent.Id))
-                    .Select(selectExpression)
-                    .ToListAsync();
-
                 var numbers = new Stack<TOrderIndex>(passedItems.Select(i => i.OrderIndex).OrderByDescending(o => o));
 
                 var partialType = CreatePartialType(orderIndexProperty.Name, orderIndexProperty.PropertyType);
@@ -83,9 +82,8 @@ namespace Shesha.DynamicEntities
                 {
                     var orderIndex = numbers.Pop();
                     var query = _repository.GetAll().Where(GetFindByIdExpression(passedItem.Id));
-                    query.Update(GetUpdateExpression(partialType, orderIndexProperty.Name, orderIndex));
+                    await query.UpdateAsync(GetUpdateExpression(partialType, orderIndexProperty.Name, orderIndex));
 
-                    //result.Items.Add(new ReorderingItem<TId, TOrderIndex> { Id = passedItem.Id, OrderIndex = orderIndex });
                     result.ReorderedItems[passedItem.Id] = orderIndex;
                 }
             }
@@ -131,29 +129,10 @@ namespace Shesha.DynamicEntities
             var constructor = partialType.GetConstructors().Where(c => c.GetParameters().Any()).Single();
 
             var orderIndexProperty = partialType.GetRequiredProperty(orderIndexPropertyName);
-            var newExpression = Expression.New(constructor, new Expression[] { Expression.Constant(orderIndex) }, orderIndexProperty);
+
+            var newExpression = Expression.New(constructor, new Expression[] { Expression.Constant(orderIndex, orderIndexProperty.PropertyType) }, orderIndexProperty);
 
             var lambda = Expression.Lambda<Func<T, object>>(newExpression, entParam);
-            return lambda;
-        }
-
-        private Expression<Func<T, ReorderingItem<TId, TOrderIndex>>> CreateSelectExpression(PropertyInfo orderIndexProperty)
-        {
-            // input parameter "ent"
-            var entParam = Expression.Parameter(typeof(T), "ent");
-
-            // new statement "new ReorderingItem()"
-            var newExpression = Expression.New(typeof(ReorderingItem<TId, TOrderIndex>));
-
-            var bindings = new MemberBinding[]{
-                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetRequiredProperty(nameof(ReorderingItem<TId, TOrderIndex>.Id)), Expression.Property(entParam, typeof(T).GetRequiredProperty("Id"))),
-                Expression.Bind(typeof(ReorderingItem<TId, TOrderIndex>).GetRequiredProperty(nameof(ReorderingItem<TId, TOrderIndex>.OrderIndex)), Expression.Property(entParam, orderIndexProperty)),
-            };
-            var initExpression = Expression.MemberInit(newExpression, bindings);
-
-            // expression "ent => new Data { Id = ent.Id, OrderIndex = ent.OrderIndex }"
-            var lambda = Expression.Lambda<Func<T, ReorderingItem<TId, TOrderIndex>>>(initExpression, entParam);
-
             return lambda;
         }
 

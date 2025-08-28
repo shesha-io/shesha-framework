@@ -14,7 +14,8 @@ namespace Shesha.Migrations
                 "01-copy modules.sql",
                 "02-configuration_items.sql",
                 "03-configuration_item_revisions.sql",
-                "04-entity_config_revisions.sql",
+                "04_0-entity_configs.sql",
+                "04_1-entity_config_revisions.sql",
                 "05-form_configuration_revisions.sql",
                 "06-notification_channel_revisions.sql",
                 "07-permission_definition_revisions.sql",
@@ -28,8 +29,14 @@ namespace Shesha.Migrations
 
             foreach (var script in scripts) 
             {
-                IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.{script}");
+                ExecuteCsScript(script);
             }
+        }
+
+        private void ExecuteCsScript(string script) 
+        {
+            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.{script}");
+            IfDatabase("PostgreSql").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsPostgreSql.{script}");
         }
     }
 }

@@ -2,6 +2,7 @@
 using Abp.Reflection;
 using Shesha.AutoMapper;
 using Shesha.AutoMapper.Dto;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.Services;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Shesha.DynamicEntities.Mapper
         {
             Converters = new List<ConverterDefinition>();
 
-            var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+            var typeFinder = StaticContext.IocManager.Resolve<IShaTypeFinder>();
 
             var entityTypes = typeFinder.Find(t => t.IsEntityType()).ToList();
             foreach (var entityType in entityTypes)

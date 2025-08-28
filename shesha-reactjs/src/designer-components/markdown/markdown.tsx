@@ -11,17 +11,14 @@ let dark;
 let remarkGfm;
 
 const ReactMarkdown = lazy(async () => {
-  import('remark-gfm').then((module) => {
-    remarkGfm = module?.default;
-  });
+  const remarkGfmModule = await import('remark-gfm');
+  remarkGfm = remarkGfmModule?.default;
 
-  import('react-syntax-highlighter').then((module) => {
-    SyntaxHighlighter = module?.Prism;
-  });
+  const syntaxHighlighterModule = await import('react-syntax-highlighter');
+  SyntaxHighlighter = syntaxHighlighterModule?.Prism;
 
-  import('react-syntax-highlighter/dist/esm/styles/prism').then((module) => {
-    dark = module?.dark;
-  });
+  const darkModule = await import('react-syntax-highlighter/dist/esm/styles/prism');
+  dark = darkModule?.dark;
 
   return import('react-markdown');
 });

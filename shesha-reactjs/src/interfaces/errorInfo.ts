@@ -1,6 +1,6 @@
 export interface IValidationErrorInfo {
   message?: string | null;
-  members?: string | null[] | null;
+  members?: string | string[] | null;
 }
 
 export interface IErrorInfo {

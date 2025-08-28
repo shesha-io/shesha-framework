@@ -4,7 +4,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: IKanbanProps) => {
   // Generate unique IDs for top-level components
@@ -343,7 +343,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             propertyName: 'font.weight',
                                             hideLabel: true,
                                             tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                            dropdownOptions: fontWeights,
+                                            dropdownOptions: fontWeightsOptions,
                                             width: 100,
                                           },
                                           {

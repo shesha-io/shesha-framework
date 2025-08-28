@@ -23,7 +23,7 @@ import { createContext } from 'use-context-selector';
 
 export interface IFormDesignerStateContext {
   toolboxComponentGroups: IToolboxComponentGroup[];
-  validationErrors?: IFormValidationErrors;
+  validationErrors?: IFormValidationErrors | undefined;
 
   selectedComponentId?: string;
   previousSelectedComponentId?: string;

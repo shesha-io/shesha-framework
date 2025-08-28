@@ -12,9 +12,9 @@ import {
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-import { useGeneratedTitle, useIsSmallScreen } from '../../hooks';
+import { useGeneratedTitle, useIsSmallScreen } from '../../hooks/hooks';
 import { IChartData, IChartDataProps } from '../../model';
-import { splitTitleIntoLines } from '../../utils';
+import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
 interface BarChartProps extends IChartDataProps {
   data: IChartData;
@@ -39,7 +39,12 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     stacked,
     dataMode,
     strokeColor,
-    strokeWidth
+    strokeWidth,
+    titleFont,
+    axisLabelFont,
+    legendFont,
+    tickFont,
+    simpleOrPivot
   } = useChartDataStateContext();
   const chartTitle: string = useGeneratedTitle();
   const isSmallScreen = useIsSmallScreen();
@@ -81,23 +86,20 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     },
     plugins: {
       legend: {
-        display: !!showLegend,
+        display: !!showLegend && simpleOrPivot === 'pivot',
         position: isSmallScreen ? 'bottom' : (legendPosition ?? 'top'), // Move legend to bottom on mobile
         labels: {
           boxWidth: isSmallScreen ? 12 : 40,
           padding: isSmallScreen ? 8 : 10,
-          font: {
-            size: isSmallScreen ? 10 : 12,
-          },
+          font: createFontConfig(legendFont, isSmallScreen ? 10 : 12, '400'),
+          color: legendFont?.color || '#000000',
         },
       },
       title: {
         display: !!(showTitle && chartTitle?.length > 0),
         text: splitTitleIntoLines(chartTitle),
-        font: {
-          size: isSmallScreen ? 12 : 16,
-          weight: 'bold',
-        },
+        font: createFontConfig(titleFont, isSmallScreen ? 12 : 16, 'bold'),
+        color: titleFont?.color || '#000000',
         padding: {
           top: isSmallScreen ? 8 : 16,
           bottom: isSmallScreen ? 8 : 16,
@@ -109,10 +111,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         title: {
           display: !!(showXAxisTitle && xProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(axisPropertyLabel, 12, 1) : splitTitleIntoLines((axisPropertyLabel?.trim().length > 0) ? axisPropertyLabel : xProperty, 12, 1),
-          font: {
-            size: isSmallScreen ? 10 : 12,
-            weight: 'bold',
-          },
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
+          color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
             bottom: isSmallScreen ? 4 : 8,
@@ -125,9 +125,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         ticks: {
           maxRotation: 45, // Allow rotation up to 45 degrees
           minRotation: 0,
-          font: {
-            size: isSmallScreen ? 9 : 12,
-          },
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           autoSkip: false, // Show all labels
           maxTicksLimit: undefined, // Remove tick limit
@@ -140,10 +139,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         title: {
           display: !!(showYAxisTitle && yProperty?.trim().length > 0),
           text: dataMode === 'url' ? splitTitleIntoLines(valuePropertyLabel, 10, 1) : splitTitleIntoLines(yTitle, 10, 1),
-          font: {
-            size: isSmallScreen ? 10 : 12,
-            weight: 'bold',
-          },
+          font: createFontConfig(axisLabelFont, isSmallScreen ? 10 : 12, axisLabelFont?.weight || '400'),
+          color: axisLabelFont?.color || '#000000',
           padding: {
             top: isSmallScreen ? 4 : 8,
             bottom: isSmallScreen ? 4 : 8,
@@ -152,16 +149,15 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         display: !!showYAxisScale,
         stacked: stacked,
         ticks: {
-          font: {
-            size: isSmallScreen ? 9 : 12,
-          },
+          font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
+          color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
           callback: function (value) {
             // Format large numbers on mobile
             if (isSmallScreen && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';
             }
-            return value;
+            return value.toLocaleString();
           }
         },
         grid: {

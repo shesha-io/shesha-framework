@@ -36,40 +36,45 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
-  
-    const keyValueFunc: KayValueFunc = useCallback( (value: any, args: any) => {
-      if (model.valueFormat === 'custom' && model.keyValueFunc) 
-        return executeExpression<string>(model.keyValueFunc, {...args, value}, null, null );
-      if (model.valueFormat === 'entityReference') 
+
+    const keyValueFunc: KayValueFunc = useCallback((value: any, args: any) => {
+      if (model.valueFormat === 'custom' && model.keyValueFunc)
+        return executeExpression<string>(model.keyValueFunc, { ...args, value }, null, null);
+      if (model.valueFormat === 'entityReference')
         return value?.id;
-      return typeof(value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
+      return typeof (value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
     }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
     const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
       if (model.valueFormat === 'entityReference')
         return Boolean(item)
-          ? {id: item.id, _displayName: item._displayName || getValueByPropertyName(item, displayPropName), _className: model.entityType}
+          ? { id: item.id, _displayName: item._displayName || getValueByPropertyName(item, displayPropName), _className: model.entityType }
           : null;
       if (model.valueFormat === 'custom' && model.outcomeValueFunc)
-        return executeExpression(model.outcomeValueFunc, {...args, item: item}, null, null );
-      return typeof(item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
+        return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, null);
+      return typeof (item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
     }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, model.entityType]);
 
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.displayValueFunc)
-        return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
-      return getValueByPropertyName(value, displayPropName) || 'unknown'; 
+        return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
+      return getValueByPropertyName(value, displayPropName) || '';
     }, [model.displayValueFunc, displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
       const localValue = value?.length === 1 ? value[0] : value;
       return Array.isArray(localValue)
-        ? { or : localValue.map(x => executeExpression(model.filterKeysFunc, {value: x}, null, null )) }
-        : executeExpression(model.filterKeysFunc, {value: localValue}, null, null );
+        ? { or: localValue.map(x => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
+        : executeExpression(model.filterKeysFunc, { value: localValue }, null, null);
     }, [model.filterKeysFunc]);
 
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
-      <ConfigurableFormItem {...{model}}>
+      <ConfigurableFormItem {...{ model }}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
@@ -86,10 +91,10 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             outcomeValueFunc={outcomeValueFunc}
             displayValueFunc={displayValueFunc}
             filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-            style={model?.allStyles?.fullStyle}
+            style={finalStyle}
             size={model?.size ?? 'middle'}
             value={value}
-            onChange={onChangeInternal} 
+            onChange={onChangeInternal}
             allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
           />;
         }}
@@ -140,15 +145,15 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IAutocompleteComponentProps>(7, (prev) => {
-      return { 
+      return {
         ...prev,
         mode: prev.mode || 'single',
         entityType: prev.entityType || prev['entityTypeShortAlias'],
         valueFormat: prev.dataSourceType === 'entitiesList'
           ? prev['useRawValues'] ? 'simple' : 'entityReference'
           : 'simple',
-        displayPropName: prev.dataSourceType === 'entitiesList' 
-          ? prev['entityDisplayProperty'] 
+        displayPropName: prev.dataSourceType === 'entitiesList'
+          ? prev['entityDisplayProperty']
           : prev['useRawValues']
             ? prev['valuePropName'] || 'displayText'
             : prev['valuePropName'],
@@ -163,13 +168,16 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       dataSourceType: 'entitiesList',
       mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? propMetadata.entityType 
+        ? propMetadata.entityType
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
           ? propMetadata.entityType
           : undefined,
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
-        ? 'entityReference' 
+        ? 'entityReference'
         : 'simple',
+      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter 
+        ? {...propMetadata.formatting?.filter}
+        : null,
     };
   },
   actualModelPropertyFilter: (propName) => propName !== 'queryParams',

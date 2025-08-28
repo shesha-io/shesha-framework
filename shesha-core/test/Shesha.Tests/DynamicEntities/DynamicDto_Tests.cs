@@ -116,6 +116,7 @@ namespace Shesha.Tests.DynamicEntities
                     var nested = new EntityPropertyDto { 
                         Name = supervisorPropName,
                         DataType = DataTypes.Object,
+                        DataFormat = ObjectFormats.Object,
                         Properties = new List<EntityPropertyDto>(),
                     };
                     nested.Properties.Add(new EntityPropertyDto { Name = supervisorFirstNamePropName, DataType = DataTypes.String });

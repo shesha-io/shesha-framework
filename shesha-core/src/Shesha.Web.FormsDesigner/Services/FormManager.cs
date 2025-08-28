@@ -5,18 +5,10 @@ using Abp.Runtime.Session;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Dto.Interfaces;
-using Shesha.Extensions;
 using Shesha.Permissions;
-using Shesha.Reflection;
-using Shesha.Validations;
-using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
@@ -27,9 +19,7 @@ namespace Shesha.Web.FormsDesigner.Services
     public class FormManager : ConfigurationItemManager<FormConfiguration, FormConfigurationRevision>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
-        private readonly IModuleManager _moduleManager;
-        private readonly IRepository<FormConfigurationRevision, Guid> _revisionRepo;
-
+        
         public FormManager(
             IPermissionedObjectManager permissionedObjectManager,
             IModuleManager moduleManager,
@@ -37,8 +27,6 @@ namespace Shesha.Web.FormsDesigner.Services
         ) : base()
         {
             _permissionedObjectManager = permissionedObjectManager;
-            _moduleManager = moduleManager;
-            _revisionRepo = revisionRepo;
         }
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
@@ -81,20 +69,17 @@ namespace Shesha.Web.FormsDesigner.Services
             }
             */
 
-            return newVersion;
-        }
-
         public Task<List<FormConfiguration>> GetAllAsync()
         {
             return Repository.GetAllListAsync();
         }
 
-        /// inheritedDoc
-        public async Task DeleteAllVersionsAsync(Guid id)
+        protected override Task CopyRevisionPropertiesAsync(FormConfigurationRevision source, FormConfigurationRevision destination)
         {
-            var config = await Repository.GetAsync(id);
+            destination.Markup = source.Markup;
+            destination.IsTemplate = source.IsTemplate;
 
-            await Repository.DeleteAsync(f => f.Origin == config.Origin && !f.IsDeleted);
+            return Task.CompletedTask;
         }
 
         /// inheritedDoc
@@ -237,7 +222,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             await _permissionedObjectManager.CopyAsync(
                 GetFormPermissionedObjectName(item.Module?.Name, item.Name),
-                GetFormPermissionedObjectName(form.Module?.Name, form.Name),
+                GetFormPermissionedObjectName(duplicate.Module?.Name, duplicate.Name),
                 ShaPermissionedObjectsTypes.Form
             );
 

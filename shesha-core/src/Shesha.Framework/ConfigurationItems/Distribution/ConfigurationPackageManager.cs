@@ -3,13 +3,16 @@ using Abp.Domain.Repositories;
 using Abp.Timing;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
+using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -48,7 +51,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                     using (var entryStream = entry.Open())
                     {
-                        await item.Exporter.WriteToJsonAsync(item.ItemData, entryStream);
+                        await item.Exporter.WriteItemToJsonAsync(item.ItemData, entryStream);
                     }
                 }
             }
@@ -310,5 +313,89 @@ namespace Shesha.ConfigurationItems.Distribution
             await _importResultRepository.InsertAsync(result);
             return result;
         }
+
+        public async Task<AnalyzePackageResponse> AnalyzePackageAsync(Stream stream, ReadPackageContext context)
+        {
+            using var package = await ReadPackageAsync(stream, context);
+
+            var result = new AnalyzePackageResponse();
+
+            foreach (var item in package.Items)
+            {
+                if (item.Importer == null)
+                    continue;
+
+                using (var jsonStream = item.StreamGetter())
+                {
+                    var srcItemDto = await item.Importer.ReadFromJsonAsync(jsonStream);
+
+                    var dbItem = await _itemsRepository.GetByByFullName(srcItemDto.ModuleName, srcItemDto.Name)
+                        .FilterByApplication(item.ApplicationKey)
+                        .FirstOrDefaultAsync();
+
+                    var isExposed = srcItemDto.BaseModules.Any();
+                    var baseModule = isExposed
+                        ? srcItemDto.BaseModules.FirstOrDefault()
+                        : srcItemDto.ModuleName;
+                    var overrideModule = isExposed
+                        ? srcItemDto.ModuleName
+                        : null;
+
+                    var status = await GetItemStatusAsync(srcItemDto, dbItem, out var description);
+                    var itemDto = new AnalyzePackageResponse.PackageItemDto
+                    {
+                        Id = srcItemDto.Id,
+                        Name = srcItemDto.Name,
+                        Label = srcItemDto.Label,
+                        Description = srcItemDto.Description,
+                        //FrontEndApplication = srcItemDto.FrontEndApplication,
+                        Type = srcItemDto.ItemType,
+
+                        DateUpdated = srcItemDto.DateUpdated,
+                        BaseModule = baseModule.NotNull(),
+                        OverrideModule = overrideModule,
+
+                        Status = status,
+                        StatusDescription = description,
+                    };
+
+                    result.Items.Add(itemDto);
+                }
+            }
+
+            return result;
+        }
+
+        
+        private Task<AnalyzePackageResponse.PackageItemStatus> GetItemStatusAsync(DistributedConfigurableItemBase distributedItem, ConfigurationItem? dbItem, out string? description) 
+        {
+            if (dbItem == null)
+            {
+                description = null;
+                return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.New);
+            }
+            else {
+                if (dbItem is IDistributedConfigurationItem itemWithRevision)
+                {
+                    var revision = itemWithRevision.GetLatestRevision();
+
+                    if (revision != null && !string.IsNullOrWhiteSpace(distributedItem.ConfigHash) && revision.ConfigHash == distributedItem.ConfigHash)
+                    {
+                        description = null;
+                        return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Unchanged);
+                    }
+                    else
+                    {
+                        // TODO: check import errors
+                        description = null;
+                        return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Updated);
+                    }
+                }
+                else {
+                    description = "Unsupported item type";
+                    return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Error);
+                }
+            }                
+        }        
     }
 }

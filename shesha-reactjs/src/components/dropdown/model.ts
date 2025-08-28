@@ -50,4 +50,5 @@ export interface IDropdownProps {
   showItemName?: boolean;
   showIcon?: boolean;
   solidColor?: boolean;
+  enableStyleOnReadonly?: boolean;
 }

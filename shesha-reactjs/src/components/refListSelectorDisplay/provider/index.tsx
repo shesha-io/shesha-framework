@@ -65,8 +65,9 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
-  const storeSettings = async (columnId: string, isCollapsed: boolean) => {
+  const storeSettings = (columnId: string, isCollapsed: boolean): Promise<void> => {
     dispatch(storeSettingsAction({ columnId: columnId, isCollapsed: isCollapsed }));
+    return Promise.resolve();
   };
 
   return (

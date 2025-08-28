@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
 using Shesha.JsonEntities;
@@ -21,7 +22,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// 
         /// </summary>
-        public virtual TestJsonEntity JsonProp { get; set; }
+        public virtual JsonEntity JsonProp { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -42,5 +43,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// </summary>
         [EntityReference(true)]
         public virtual GenericEntityReference SomeGenericProp { get; set; }
+    }
+
+    public class TestJsonWithGenericEntityReference: JsonEntity
+    {
+        public virtual GenericEntityReference Entity { get; set; }
     }
 }

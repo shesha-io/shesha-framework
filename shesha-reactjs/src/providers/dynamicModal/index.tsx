@@ -8,7 +8,7 @@ import {
   IShowConfirmationArguments,
   showConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
-import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm, showDialogArgumentsForm } from './configurable-actions/show-dialog-arguments';
+import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm, showDialogArgumentsForm } from './configurable-actions/dialog-arguments';
 import {
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   DynamicModalActionsContext,
@@ -89,7 +89,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         return argumentsPromise.then(dialogArguments => {
           const parentFormValues = context?.data ?? {};
 
-          const { modalWidth, customWidth, widthUnits } = actionArgs;
+          const { modalWidth, customWidth, widthUnits, showCloseIcon = true } = actionArgs;
 
           return new Promise((resolve, reject) => {
             const modalProps: IModalProps = {
@@ -97,6 +97,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               mode: formMode,
               id: modalId,
               title: actionArgs.modalTitle,
+              showCloseIcon: showCloseIcon,
               width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
               formArguments: dialogArguments,
               parentFormValues: parentFormValues,

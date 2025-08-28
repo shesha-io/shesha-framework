@@ -125,6 +125,15 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'enableStyleOnReadonly',
+                        label: 'Enable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true
+                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlDimensions',

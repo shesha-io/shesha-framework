@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { FormIdentifier } from '@/providers/form/models';
+import { SwitchSize } from 'antd/es/switch';
 
 export interface IReadOnlyDisplayFormItemProps {
   value?: any;
@@ -13,7 +14,8 @@ export interface IReadOnlyDisplayFormItemProps {
   | 'datetime'
   | 'checkbox'
   | 'switch'
-  | 'radiogroup';
+  | 'radiogroup'
+  | 'textArea';
   dropdownDisplayMode?: 'raw' | 'tags';
   showIcon?: boolean;
   solidColor?: boolean;
@@ -27,6 +29,8 @@ export interface IReadOnlyDisplayFormItemProps {
   quickviewFormPath?: FormIdentifier;
   quickviewDisplayPropertyName?: string;
   quickviewGetEntityUrl?: string;
-  quickviewWidth?: number;
+  quickviewWidth?: number | string;
   style?: React.CSSProperties;
+  tagStyle?: React.CSSProperties;
+  size?: SwitchSize;
 }

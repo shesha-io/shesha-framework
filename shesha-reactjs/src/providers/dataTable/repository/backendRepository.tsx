@@ -57,28 +57,28 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     const { backendUrl, httpHeaders, getListUrl, entityType, metadataDispatcher, apiHelper, mutator } = args;
 
     const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
-      const result: string[] = [];
-      columns.forEach(column => {
-        if (!column.propertiesToFetch)
-          return;
-        if (Array.isArray(column.propertiesToFetch)) {
-          column.propertiesToFetch.forEach(p => {
-            if (!!p)
-              result.push(p);
-          });
-        } else {
-          result.push(column.propertiesToFetch);
-          // special handling for entity references: expand properties list to include `id` and `_displayName`
-          if (column.isEnitty) {
-            const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
-            requiredProps.forEach(rp => {
-              if (!result.includes(rp))
-                result.push(rp);
-            });
-          };
-        }
-      });
-      return result;
+        const result: string[] = [];
+        columns.forEach(column => {
+            if (!column.propertiesToFetch)
+                return;
+            if (Array.isArray(column.propertiesToFetch)) {
+                column.propertiesToFetch.forEach(p => {
+                    if (!!p)
+                        result.push(p);
+                });
+            } else {
+                result.push(column.propertiesToFetch);
+                // special handling for entity references: expand properties list to include `id` and `_displayName`
+                if (column.isEnitty) {
+                    const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
+                    requiredProps.forEach(rp => {
+                        if (!result.includes(rp))
+                            result.push(rp);
+                    });
+                };
+            }
+        });
+        return result;
     };
 
     /** Convert common payload to a form that uses the back-end */
@@ -286,9 +286,10 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             });
     };
 
-    const reorder = (payload: RowsReorderPayload) => {
-        const reorderEndpoint = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
-        const reorderUrl = `${backendUrl}${reorderEndpoint}`;
+    const reorder = async (payload: RowsReorderPayload): Promise<void> => {
+        let reorderUrl = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
+        if (payload.customReorderEndpoint?.trim().length > 0)
+            reorderUrl = payload.customReorderEndpoint;
 
         const oldRows = payload.getOld();
         const newRows = payload.getNew();
@@ -307,53 +308,55 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         // optimistic update
         payload.applyOrder(newRows);
 
-        return axios({
-            url: reorderUrl,
-            method: 'PUT',
-            data: reorderPayload,
-            headers: httpHeaders,
-        })
-            .then(response => {
-                const dataResponse = response.data as IResult<EntityReorderResponse>;
-                if (dataResponse) {
-                    const responseItems = dataResponse.result.items;
-                    const orderedRows = newRows.map(row => {
-                        const newOrder = responseItems[row['id']];
-                        return newOrder
-                            ? { ...row, [payload.propertyName]: newOrder }
-                            : row;
-                    });
-                    // real update
-                    payload.applyOrder(orderedRows);
-                }
-                return;
+        try {
+            const response = await axios({
+                url: `${backendUrl}${reorderUrl}`,
+                method: 'PUT',
+                data: reorderPayload,
+                headers: httpHeaders,
             });
+            const dataResponse = response.data as IResult<EntityReorderResponse>;
+            if (dataResponse) {
+                const responseItems = dataResponse.result.items;
+                const orderedRows = newRows.map(row => {
+                    const newOrder = responseItems[row['id']];
+                    return newOrder
+                        ? { ...row, [payload.propertyName]: newOrder }
+                        : row;
+                });
+                // real update
+                payload.applyOrder(orderedRows);
+            }
+        } catch (error) {
+            payload.applyOrder(oldRows);
+            throw error;
+        }        
     };
 
-    const supportsReordering = (args: SupportsReorderingArgs) => {
-        return args.sortMode !== 'strict' || !args.strictSortBy
-            ? '`sortMode` and `strictSortBy` properties are mandatory for the generic reordering functionality'
-            : true;
-    };
+const supportsReordering = (args: SupportsReorderingArgs) => {
+    return args.sortMode !== 'strict' || !args.strictSortBy
+        ? '`sortMode` and `strictSortBy` properties are mandatory for the generic reordering functionality'
+        : true;
+};
 
-    const supportsGrouping = (args: SupportsGroupingArgs) => {
-        return args.sortMode === "standard" && Boolean(entityType);
-    };
+const supportsGrouping = (args: SupportsGroupingArgs) => {
+    return args.sortMode === "standard" && Boolean(entityType);
+};
 
-    const repository: IBackendRepository = {
-        repositoryType: BackendRepositoryType,
-        entityType: args.entityType,
-        fetch,
-        reorder,
-        exportToExcel,
-        prepareColumns,
-        performCreate,
-        performUpdate,
-        performDelete,
-        supportsReordering,
-        supportsGrouping,
-    };
-    return repository;
+const repository: IBackendRepository = {
+    repositoryType: BackendRepositoryType,
+    entityType: args.entityType,
+    fetch,
+    reorder,
+    exportToExcel,
+    prepareColumns,
+    performCreate,
+    performUpdate,
+    performDelete,
+    supportsReordering,
+    supportsGrouping,
+};
+return repository;
 };
 
 export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackendRepository => {

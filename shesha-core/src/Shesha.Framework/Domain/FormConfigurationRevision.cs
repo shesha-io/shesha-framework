@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Shesha.Domain.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
@@ -25,6 +26,7 @@ namespace Shesha.Domain
         /// <summary>
         /// If true, indicates that the form is a template
         /// </summary>
+        [Obsolete("To be removed, discriminator shoul dbe used instead of this property")]
         public virtual bool IsTemplate { get; set; }
 
         /// <summary>

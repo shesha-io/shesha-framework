@@ -44,11 +44,15 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .AddColumn("setting_configuration_id").AsGuid().Nullable().ForeignKey("fk_setting_values_setting_configuration_id", "frwk", "configuration_items", "id").Indexed()
                 .AddColumn("user_id").AsInt64().Nullable().ForeignKey("fk_setting_values_user_id", "", "AbpUsers", "Id").Indexed();
 
-            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.14-copy reflist_items.sql");
-            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.15-copy setting_values.sql");
-            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.16-copy entity_properties.sql");
+            ExecuteCsScript("14-copy reflist_items.sql");
+            ExecuteCsScript("15-copy setting_values.sql");
+            ExecuteCsScript("16-copy entity_properties.sql");
 
             Delete.Table("Frwk_SettingValues");
+            
+            Execute.Sql(@"drop view if exists ""vw_Core_ReferenceListItemvalues""");
+            Execute.Sql(@"drop view if exists ""vw_Core_ReferenceListItemValues""");
+
             Delete.Table("Frwk_ReferenceListItems");
 
             Delete.Table("Frwk_SettingConfigurations");
@@ -67,7 +71,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             Alter.Table("entity_property_values").InSchema("frwk")
                 .AddColumn("entity_property_id").AsGuid().Nullable().ForeignKey("fk_entity_property_values_entity_property_id", "frwk", "entity_properties", "id").Indexed();
 
-            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.17-copy entity_property_values.sql");
+            ExecuteCsScript("17-copy entity_property_values.sql");
 
             Delete.Table("Frwk_EntityPropertyValues");
             Delete.Table("Frwk_EntityProperties");
@@ -80,8 +84,14 @@ namespace Shesha.Migrations.ConfigurationStudio
             Delete.Table("Frwk_ConfigurableComponents");
             Delete.Table("Frwk_EntityVisibility");
 
-            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.18-copy role_appointments.sql");
-            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.19-copy role_permissions.sql");
+            ExecuteCsScript("18-copy role_appointments.sql");
+            ExecuteCsScript("19-copy role_permissions.sql");
+        }
+
+        private void ExecuteCsScript(string script)
+        {
+            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.{script}");
+            IfDatabase("PostgreSql").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsPostgreSql.{script}");
         }
     }
 }

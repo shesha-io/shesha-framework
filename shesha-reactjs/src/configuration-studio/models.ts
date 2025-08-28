@@ -14,6 +14,7 @@ export type DocumentFlags = {
     isCodeBased: boolean;
     isCodegenPending: boolean;
     isUpdated: boolean;
+    isUpdatedByMe: boolean;
     isExposed: boolean;
 };
 
@@ -22,12 +23,18 @@ export type TreeNode = DataNode & {
     parentId?: string;
     moduleId: string;
     name: string;
+    label: string;
+    description?: string;
     nodeType: TreeNodeType;
 };
 
 export type ConfigItemTreeNode = TreeNode & {
     itemType: string;
     flags: DocumentFlags;
+    lastModifierUser?: string;
+    lastModificationTime?: string;
+    moduleName: string;
+    baseModule?: string;
 };
 
 export type NodeWithChilds = {
@@ -48,6 +55,10 @@ export type FlatTreeNode = DocumentFlags & {
     label: string;
     nodeType: number;
     itemType?: string;
+    description?: string;
+    lastModifierUser?: string;
+    lastModificationTime?: string;
+    baseModule?: string;
 };
 
 export const isTreeNode = (node: DataNode): node is TreeNode => {
@@ -65,6 +76,10 @@ export const isFolderTreeNode = (node: DataNode): node is FolderTreeNode => {
 
 export const isModuleTreeNode = (node: DataNode): node is ModuleTreeNode => {
     return isTreeNode(node) && node.nodeType === TreeNodeType.Module;
+};
+
+export const isNodeWithChildren = (node: DataNode): node is ModuleTreeNode | FolderTreeNode  => {
+    return isModuleTreeNode(node) || isFolderTreeNode(node);
 };
 
 export const TREE_NODE_TYPES =
@@ -117,6 +132,8 @@ export type CIDocument = DocumentBase & {
     loadingState: LoadingStatus;
     isHistoryVisible: boolean;
     flags?: DocumentFlags;
+    moduleId: string;
+    moduleName: string;
 };
 
 export const isCIDocument = (doc: StoredDocumentInfo): doc is CIDocument => {
@@ -144,6 +161,8 @@ export interface IDocumentInstance extends CIDocument {
 export type DocumentInstanceFactoryArgs = {
     itemId: string;
     label: string;
+    moduleId: string;
+    moduleName: string;
     flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;

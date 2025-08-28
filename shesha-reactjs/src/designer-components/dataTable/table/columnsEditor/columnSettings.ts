@@ -83,7 +83,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "propertyAutocomplete",
                                     "propertyName": "propertiesNames",
-                                    "label": "Properties to fetch",
+                                    "label": "Properties to Fetch",
                                     "labelAlign": "right",
                                     "mode": "multiple"
                                 }
@@ -108,7 +108,12 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "textArea",
                                     "propertyName": "description",
                                     "label": "Tooltip",
-                                    "labelAlign": "right"
+                                    "labelAlign": "right",
+                                    "hidden": {
+                                        "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                                        "_mode": "code",
+                                        "_value": false
+                                    },
                                 },
                             ]
                         },
@@ -209,21 +214,21 @@ export const getColumnSettings = (data?: any) => ({
                                     "type": "settingsInput",
                                     "inputType": "formAutocomplete",
                                     "propertyName": "displayFormId",
-                                    "label": "Display form"
+                                    "label": "Display Form"
                                 },
                                 {
                                     "id": "createFormId1",
                                     "type": "settingsInput",
                                     "inputType": "formAutocomplete",
                                     "propertyName": "createFormId",
-                                    "label": "Create form"
+                                    "label": "Create Form"
                                 },
                                 {
                                     "id": "editFormId1",
                                     "type": "settingsInput",
                                     "inputType": "formAutocomplete",
                                     "propertyName": "editFormId",
-                                    "label": "Edit form"
+                                    "label": "Edit Form"
                                 }
                             ]
                         },
@@ -265,6 +270,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "inputType": "switch",
                                     "propertyName": "allowSorting",
                                     "label": "Allow Sorting",
+                                    "jsSetting": true
                                 }
                             ]
                         },
@@ -303,7 +309,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "id": "isVisible1",
                                     "type": "switch",
                                     "propertyName": "isVisible",
-                                    "label": "Hide",
+                                    "label": "Visible",
                                     "labelAlign": "right",
                                     "jsSetting": true,
                                 }
@@ -322,7 +328,6 @@ export const getColumnSettings = (data?: any) => ({
                             id: 'dimensionsStyleCollapsiblePanel',
                             propertyName: 'pnlDimensions',
                             label: 'Dimensions',
-                            parentId: 'styleRouter',
                             labelAlign: 'right',
                             ghost: true,
                             collapsible: 'header',
@@ -356,7 +361,6 @@ export const getColumnSettings = (data?: any) => ({
                                     .addSettingsInputRow({
                                         id: 'dimensionsStyleRowHeight',
                                         parentId: 'dimensionsStylePnl',
-                                        inline: true,
                                         hidden: {
                                             _code: "return getSettingValue(data?.columnType) !== 'form';",
                                             _mode: "code",
@@ -384,7 +388,6 @@ export const getColumnSettings = (data?: any) => ({
                             label: 'Background',
                             labelAlign: 'right',
                             ghost: true,
-                            parentId: 'styleRouter',
                             collapsible: 'header',
                             hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                             content: {

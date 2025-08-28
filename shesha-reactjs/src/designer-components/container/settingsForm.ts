@@ -101,6 +101,7 @@ export const getSettings = (data) => {
                 label: 'No Default Styling',
                 parentId: commonTabId,
                 size: 'small',
+                tooltip: 'If checked, the default styles and classes of the container will not be applied.',
                 jsSetting: true,
               })
               .toJson()
@@ -363,8 +364,11 @@ export const getSettings = (data) => {
                                             id: nanoid(),
                                             label: 'Show Advanced',
                                             hideLabel: true,
+                                            tooltip: 'Show advanced settings',
+                                            tooltipAlt: 'Hide advanced settings',
                                             propertyName: 'showAdvanced',
-                                            icon: 'tuneIcon'
+                                            icon: 'tuneIcon',
+                                            iconAlt: 'tuneIcon'
                                           }
                                         ]
                                       })
@@ -502,6 +506,7 @@ export const getSettings = (data) => {
                                       id: nanoid(),
                                       label: 'Align Self',
                                       propertyName: 'alignSelf',
+                                      tooltip: "The align-self CSS property overrides a grid or flex item's align-items value. In Grid, it aligns the item inside the grid area. In Flexbox, it aligns the item on the cross axis.",
                                       dropdownOptions: ALIGN_SELF
                                     },
                                     {
@@ -523,11 +528,7 @@ export const getSettings = (data) => {
                                   id: nanoid(),
                                   label: 'Justify Self',
                                   propertyName: 'justifySelf',
-                                  hidden: {
-                                    _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) === "flex";',
-                                    _mode: 'code',
-                                    _value: false,
-                                  } as any,
+                                  tooltip: "The CSS justify-self property sets the way a box is justified inside its alignment container along the appropriate axis.",
                                   dropdownOptions: JUSTIFY_SELF
                                 })
                                 .toJson()

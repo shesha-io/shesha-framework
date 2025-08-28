@@ -51,7 +51,15 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       textAlign: model?.font?.align,
       color: model?.font?.color,
       fontSize: model?.font?.size,
-      hasSuffix: model?.suffix,
+      padding: {
+        padding: model?.allStyles?.fullStyle?.padding,
+        paddingLeft: model?.allStyles?.fullStyle?.paddingLeft,
+        paddingRight: model?.allStyles?.fullStyle?.paddingRight,
+        paddingTop: model?.allStyles?.fullStyle?.paddingTop,
+        paddingBottom: model?.allStyles?.fullStyle?.paddingBottom,
+      },
+      hasSuffix: model?.suffix || model?.suffixIcon,
+      hasPrefix: model?.prefix || model?.prefixIcon,
     });
 
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
@@ -64,7 +72,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       max: model.max !== undefined ? model.max : Number.MAX_SAFE_INTEGER,
       placeholder: model?.placeholder,
       size: model?.size,
-      style: model.style ? model.allStyles.jsStyle : { width: '100%' },
       step: model?.highPrecision ? model?.stepString : model?.stepNumeric,
       ...calculatedModel.eventHandlers,
       defaultValue: calculatedModel.defaultValue,
@@ -73,23 +80,28 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={suffixStyle} />}</>,
     };
 
+    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
+
     return (
       <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (val: React.ChangeEvent<HTMLInputElement>) => {
-            const newValue = !val ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
+          const onChangeInternal = (val: number | string | null) => {
+            const newValue = val === undefined || val === null ? undefined : model.highPrecision ? val : parseInt(val + '', 10);
             customEvents.onChange(newValue);
             onChange(newValue);
           };
           return model.readOnly
-            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} />
+            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} style={finalStyle} />
             : <InputNumber
               type='number'
               value={value ?? model?.defaultValue}
               {...inputProps}
-              style={model.allStyles.fullStyle}
-              className={`sha-input sha-number-field ${styles.numberField}`}
+              style={{ ...model.allStyles.fullStyle }}
+              className={styles.numberField}
               onChange={onChangeInternal}
             />;
         }}
@@ -117,7 +129,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {

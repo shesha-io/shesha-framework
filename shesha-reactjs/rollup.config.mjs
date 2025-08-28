@@ -63,7 +63,7 @@ export default {
   ],
   plugins: [
     codeAsText(),
-    eslint({ throwOnError: true, include: 'src/**/*.ts{,x}' }),
+    eslint({ throwOnError: true }),
     multi(),
     peerDepsExternal({
       includeDependencies: true,

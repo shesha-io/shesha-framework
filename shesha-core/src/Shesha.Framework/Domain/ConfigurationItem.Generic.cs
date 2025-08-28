@@ -64,15 +64,11 @@ namespace Shesha.Domain
             return LatestRevision;
         }
 
-        public virtual bool IsCodeBased { get; set; }
-        public virtual bool IsCodegenPending { get; set; }
-        public virtual Guid? LatestImportedRevisionId { get; set; }
-        [ReadonlyProperty]
-        public virtual bool IsUpdated { get; protected set; }
-        [ReadonlyProperty]
-        public virtual bool IsExposed { get; protected set; }
-
         public bool HasRevision => Revision != null;
+        public ConfigurationItemRevision? GetLatestRevision()
+        {
+            return LatestRevision;
+        }
 
         /// <summary>
         /// Default constructor

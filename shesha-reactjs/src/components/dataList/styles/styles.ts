@@ -20,6 +20,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         .${prefixCls}-collapse-extra {
             margin: unset !important;
         }
+
+       .ant-collapse>.ant-collapse-item >.ant-collapse-header {
+             margin: 4px !important;
+        }
+
+        .ant-divider-horizontal{
+            min-width: unset !important;
+        }
+
+        .ant-alert {
+            margin: 5px !important;
+        }
     
         .${shaDatalistComponentItemCheckbox} {
             display: flex;

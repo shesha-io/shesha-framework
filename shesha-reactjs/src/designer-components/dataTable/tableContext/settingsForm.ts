@@ -122,7 +122,7 @@ export const getSettings = (data: any) => {
                             hidden: false,
                             dataSourceType: 'url',
                             validate: {},
-                            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                            dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                             settingsValidationErrors: [],
                             jsSetting: true,
                             useRawValues: true,
@@ -513,6 +513,34 @@ export const getSettings = (data: any) => {
                             width: '100%',
                             validate: { required: true },
                             jsSetting: true,
+                          },
+                        ],
+                      })                      
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        inline: true,
+                        hidden: {
+                          _value: false,
+                          _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          _mode: 'code',
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'customReorderEndpoint',
+                            label: 'Custom Reorder Endpoint',
+                            labelAlign: 'right',
+                            parentId: dataTabId,
+                            type: 'endpointsAutocomplete',
+                            description: 'The endpoint to use to reorder data (if not provided, the default endpoint will be used).',
+                            dataSourceType: 'url',
+                            dataSourceUrl: '/api/services/app/Api/Endpoints',
+                            settingsValidationErrors: [],
+                            useRawValues: true,
+                            jsSetting: true,
+                            width: '100%',
+                            placeholder: '',
                           },
                         ],
                       })

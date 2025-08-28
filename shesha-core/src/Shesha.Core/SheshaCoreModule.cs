@@ -13,6 +13,7 @@ using Shesha.DynamicEntities.Distribution;
 using Shesha.Localization;
 using Shesha.Modules;
 using Shesha.MultiTenancy;
+using Shesha.Roles;
 using Shesha.Timing;
 
 namespace Shesha
@@ -46,6 +47,7 @@ namespace Shesha
         public override void Initialize()
         {
             IocManager
+                .RegisterConfigurableItemManager<ShaRole, IShaRoleManager, ShaRoleManager>()
                 .RegisterConfigurableItemExport<ShaRole, IShaRoleExport, ShaRoleExport>()
                 .RegisterConfigurableItemImport<ShaRole, ShaRoleImport, ShaRoleImport>();
 

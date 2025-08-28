@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { IPasswordComponentProps } from './utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -42,6 +42,16 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                 validate: {
                                     required: true,
                                 },
+                                jsSetting: true,
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'repeatPropertyName',
+                                label: 'Repeat Property Name',
+                                parentId: commonTabId,
+                                inputType: 'textField',
+                                size: 'small',
+                                tooltip: 'The name of the property that will be used to repeat the password',
                                 jsSetting: true,
                             })
                             .addLabelConfigurator({
@@ -239,7 +249,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
+                                                                dropdownOptions: fontWeightsOptions,
                                                                 width: 100,
                                                             },
                                                             {
@@ -256,7 +266,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 propertyName: 'font.align',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                dropdownOptions: textAlign,
+                                                                dropdownOptions: textAlignOptions,
                                                             },
                                                         ],
                                                     })

@@ -58,19 +58,25 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .WithColumn("version_no").AsInt32()
                 .WithDiscriminator("frwk_discriminator");
 
+            // Shesha.Domain.EntityConfig
+            Create.Table("entity_configs").InSchema("frwk")
+                .WithIdAsGuid("id")
+                .WithColumn("class_name").AsString(500).Nullable()
+                .WithColumn("discriminator_value").AsString(255).Nullable()
+                .WithColumn("entity_config_type_lkp").AsInt64().Nullable()
+                .WithColumn("namespace").AsString(500).Nullable()
+                .WithColumn("schema_name").AsString(255).Nullable()
+                .WithColumn("table_name").AsString(255).Nullable()
+                .WithColumn("id_column").AsString(255).Nullable()
+                .WithColumn("created_in_db").AsBoolean().Nullable();
+
             // Shesha.Domain.EntityConfigRevision
             Create.Table("entity_config_revisions").InSchema("frwk")
                 .WithIdAsGuid("id")
                 .WithColumn("accessor").AsString(200).Nullable()
-                .WithColumn("class_name").AsString(500).Nullable()
-                .WithColumn("discriminator_value").AsString(255).Nullable()
-                .WithColumn("entity_config_type_lkp").AsInt64().Nullable()
-                .WithColumn("friendly_name").AsString(255).Nullable()
                 .WithColumn("generate_app_service").AsBoolean().Nullable()
                 .WithColumn("properties_md5").AsString(40).Nullable()
-                .WithColumn("namespace").AsString(500).Nullable()
                 .WithColumn("source_lkp").AsInt64().Nullable()
-                .WithColumn("table_name").AsString(255).Nullable()
                 .WithColumn("type_short_alias").AsString(100).Nullable()
                 .WithColumn("view_configurations").AsStringMax().Nullable();
 
@@ -101,7 +107,11 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .WithColumn("sort_order").AsInt32().Nullable()
                 .WithColumn("source_lkp").AsInt64().Nullable()
                 .WithColumn("suppress").AsBoolean()
-                .WithColumn("validation_message").AsStringMax().Nullable();
+                .WithColumn("validation_message").AsStringMax().Nullable()
+                .WithColumn("created_in_db").AsBoolean().Nullable()
+                .WithColumn("column_name").AsString(255).Nullable()
+                .WithColumn("list_configuration").AsStringMax().Nullable()
+                .WithColumn("formatting").AsStringMax().Nullable();
 
             // Shesha.Domain.FormConfigurationRevision
             Create.Table("form_configuration_revisions").InSchema("frwk")
@@ -181,19 +191,20 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .WithColumn("description").AsStringMax().Nullable()
                 .WithColumn("name").AsString(100);
 
-            Execute.Sql("create unique index uq_frwk_front_end_apps_name on frwk.front_end_apps(app_key) where is_deleted=0");
+            IfDatabase("SqlServer").Execute.Sql("create unique index uq_frwk_front_end_apps_name on frwk.front_end_apps(app_key) where is_deleted=0");
+            IfDatabase("PostgreSql").Execute.Sql("create unique index uq_frwk_front_end_apps_name on frwk.front_end_apps(app_key) where is_deleted=false");
 
             // Shesha.Domain.ConfigurationItem
             Alter.Table("configuration_items").InSchema("frwk")
                 .AddColumn("application_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_application_id", "frwk", "front_end_apps", "id").Indexed()
                 .AddColumn("exposed_from_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_exposed_from_revision_id", "frwk", "configuration_item_revisions", "id").Indexed()
                 .AddColumn("folder_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_folder_id", "frwk", "configuration_item_folders", "id").Indexed()
-                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_module_id", "frwk", "modules", "Id").Indexed()
+                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_module_id", "frwk", "modules", "id").Indexed()
                 .AddColumn("origin_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_origin_id", "frwk", "configuration_items", "id").Indexed();
 
             // Shesha.Domain.ConfigurationItemFolder
             Alter.Table("configuration_item_folders").InSchema("frwk")
-                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_item_folders_module_id", "frwk", "modules", "Id").Indexed()
+                .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_configuration_item_folders_module_id", "frwk", "modules", "id").Indexed()
                 .AddColumn("parent_id").AsGuid().Nullable().ForeignKey("fk_configuration_item_folders_parent_id", "frwk", "configuration_item_folders", "id").Indexed();
 
             // Shesha.Domain.ConfigurationItemRevision
@@ -206,8 +217,13 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .AddColumn("active_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_active_revision_id", "frwk", "configuration_item_revisions", "id").Indexed()
                 .AddColumn("latest_revision_id").AsGuid().Nullable().ForeignKey("fk_configuration_items_latest_revision_id", "frwk", "configuration_item_revisions", "id").Indexed();
 
+            // Shesha.Domain.EntityConfig
+            Alter.Table("entity_configs").InSchema("frwk")
+                .AddColumn("inherited_from_id").AsGuid().Nullable().ForeignKey("fk_entity_configs_inherited_from_id", "frwk", "entity_configs", "id").Indexed();
+
             // Shesha.Domain.EntityProperty
             Alter.Table("entity_properties").InSchema("frwk")
+                .AddColumn("inherited_from_id").AsGuid().Nullable().ForeignKey("fk_entity_properties_inherited_from_id", "frwk", "entity_properties", "id").Indexed()
                 .AddColumn("entity_config_revision_id").AsGuid().Nullable().ForeignKey("fk_entity_properties_entity_config_revision_id", "frwk", "configuration_item_revisions", "id").Indexed()
                 .AddColumn("items_type_id").AsGuid().Nullable().ForeignKey("fk_entity_properties_items_type_id", "frwk", "entity_properties", "id").Indexed()
                 .AddColumn("parent_property_id").AsGuid().Nullable().ForeignKey("fk_entity_properties_parent_property_id", "frwk", "entity_properties", "id").Indexed();
@@ -238,6 +254,19 @@ namespace Shesha.Migrations.ConfigurationStudio
             // Shesha.Domain.ShaRoleAppointedPerson
             Alter.Table("role_appointments").InSchema("frwk")
                 .AddColumn("person_id").AsGuid().Nullable().ForeignKey("fk_role_appointments_person_id", "", "Core_Persons", "Id").Indexed();
+            
+            var headerTables = new List<string>{
+                "entity_configs",
+            };
+
+            foreach (var headerTable in headerTables)
+            {
+                Create.ForeignKey($"fk_{headerTable}_ci_id")
+                    .FromTable(headerTable).InSchema("frwk")
+                    .ForeignColumn("id")
+                    .ToTable("configuration_items").InSchema("frwk")
+                    .PrimaryColumn("id");
+            }
 
             var revisionTables = new List<string>{
                 "entity_config_revisions",

@@ -51,25 +51,30 @@ namespace Shesha.Metadata
             var dtos = (await entityConfigs
                 .SelectAsync(async t =>
                 {
-                    var fullClassName = t.Revision.FullClassName;
-                    var config = _entityConfigurationStore.GetOrNull(fullClassName);
+                    var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
 
-                    if (t.Revision.Source == Domain.Enums.MetadataSourceType.ApplicationCode
-                        && (config == null || config.EntityType.FullName != fullClassName /*skip aliases*/))
+                    if (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/)
                         return null;
 
-                    var metadata = await _metadataProvider.GetAsync(config?.EntityType, fullClassName);
+                    var metadata = await _metadataProvider.GetAsync(config.EntityType);
+                    // update module for dynamic entities
+                    if (metadata.Module == null)
+                    {
+                        metadata.Module = t.Module?.Name;
+                        metadata.ModuleAccessor = t.Module?.Accessor;
+                    }
                     return new EntityModelDto
                     {
                         Suppress = t.Suppress,
-                        ClassName = fullClassName,
-                        Type = config?.EntityType,
-                        Description = t.Revision.Description ?? (config != null && config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
-                        Alias = string.IsNullOrWhiteSpace(t.Revision.TypeShortAlias) ? config?.SafeTypeShortAlias : t.Revision.TypeShortAlias,
+                        ClassName = t.FullClassName,
+                        Name = t.ClassName,
+                        Type = config.EntityType,
+                        Description = t.Revision.Description ?? (config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
+                        Alias = string.IsNullOrWhiteSpace(t.Revision.TypeShortAlias) ? config.SafeTypeShortAlias : t.Revision.TypeShortAlias,
                         Accessor = t.Revision.Accessor,
                         ModuleAccessor = t.Module?.Accessor,
                         Md5 = metadata.Md5,
-                        ModificationTime = metadata.ChangeTime, // t.LastModificationTime ?? t.CreationTime,
+                        ModificationTime = metadata.ChangeTime,
                         Metadata = metadata,
                     };
                 }))

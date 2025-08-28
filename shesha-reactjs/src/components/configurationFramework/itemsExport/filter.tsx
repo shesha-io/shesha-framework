@@ -26,18 +26,24 @@ const FilterModeButton = ({ label, mode, filter, onChange }: FilterModeButtonPro
     );
 };
 
-export const ExportFilter: FC<IExportFilterProps> = ({ value, onChange }: IExportFilterProps) => {
+export const ExportFilter: FC<IExportFilterProps> = ({ value: filterValue, onChange: onFilterChange }: IExportFilterProps) => {
     return (
         <Row>
             <Col span={12}>
                 <Space.Compact block>
-                    <FilterModeButton label='Updated' mode='updated' filter={value} onChange={onChange} />
-                    <FilterModeButton label='Updated by Me' mode='updated-by-me' filter={value} onChange={onChange} />
-                    <FilterModeButton label='All' mode='all' filter={value} onChange={onChange} />
+                    <FilterModeButton label='Updated' mode='updated' filter={filterValue} onChange={onFilterChange} />
+                    <FilterModeButton label='Updated by Me' mode='updated-by-me' filter={filterValue} onChange={onFilterChange} />
+                    <FilterModeButton label='All' mode='all' filter={filterValue} onChange={onFilterChange} />
                 </Space.Compact>
             </Col>
             <Col span={12}>
-                <Input.Search placeholder="search" />
+                <Input.Search 
+                    placeholder="search" 
+                    value={filterValue?.quickSearch} 
+                    onChange={(e) => {
+                        const { value } = e.target;
+                        onFilterChange({ ...filterValue, quickSearch: value });
+                    }}/>
             </Col>
         </Row>
     );

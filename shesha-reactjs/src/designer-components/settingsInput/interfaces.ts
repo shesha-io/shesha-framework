@@ -34,7 +34,8 @@ export interface InputType {
     | 'keyInformationBarColumnsList' | 'Password';
 }
 
-export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelValueEditorProps, 'exposedVariables'>, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
+export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelValueEditorProps, 'exposedVariables'>, Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
+    id?: string;
     type: InputType['type'];
     label: string;
     propertyName: string;
@@ -89,6 +90,9 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     inputType?: InputType['type'];
     referenceList?: any;
     filter?: any;
+    displayPropName?: string;
+    keyPropName?: string;
+    fields?: string[];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
     entityType?: string;

@@ -11,80 +11,13 @@ namespace Shesha.Migrations.ConfigurationStudio
             Alter.Column("description").OnTable("configuration_item_folders").InSchema("frwk").AsStringMax().NotNullable().WithDefaultValue(string.Empty);
             Alter.Column("name").OnTable("configuration_item_folders").InSchema("frwk").AsString(300).NotNullable();
 
-            Alter.Column("name").OnTable("modules").InSchema("frwk").AsString(300).NotNullable();
-
-            Create.Column("order_index").OnTable("configuration_items").InSchema("frwk").AsDouble().Nullable();
-            Create.Column("order_index").OnTable("configuration_item_folders").InSchema("frwk").AsDouble().Nullable();
-
-            Execute.Sql(@"with new_order as (
-	select 
-		f.id,
-		f.order_index,
-		row_number() over (partition by f.parent_id order by f.name) new_order_index
-	from 
-		frwk.configuration_item_folders f
-)
-update
-	new_order
-set
-	order_index = new_order_index");
-
-            Execute.Sql(@"with new_order as (
-	select 
-		ci.id,
-		ci.order_index,
-		row_number() over (partition by ci.module_id, ci.folder_id order by ci.name) new_order_index
-	from 
-		frwk.configuration_items ci
-)
-update
-	new_order
-set
-	order_index = new_order_index");
-
-			Execute.Sql(@"create or alter trigger trg_configuration_items_order_index_ai
-ON frwk.configuration_items
-after insert
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    -- Update only rows that were inserted with NULL OrderIndex
-	with new_order as (
-		select 
-			ci.id,
-			ci.order_index,
-			calc.max_order_index + row_number() over (partition by ci.module_id, ci.folder_id order by ci.creation_time) new_order_index
-		from 
-			frwk.configuration_items ci
-			inner join inserted i ON ci.id = i.id and i.order_index is null
-			cross apply (
-				select 
-					isnull(max(existing.order_index), 0) AS max_order_index
-				from 
-					frwk.configuration_items existing
-				where 
-					(existing.module_id = i.module_id or existing.module_id is null and i.module_id is null)
-					and (existing.folder_id = i.folder_id or existing.folder_id is null and i.folder_id is null)
-			) calc
-	)
-	update
-		new_order
-	set
-		order_index = new_order_index;
-END");
-
-            Execute.Sql(@"create unique index uq_configuration_items_order_index on frwk.configuration_items(module_id, folder_id, order_index) where is_deleted=0 and order_index is not null");
-            Execute.Sql(@"create unique index uq_configuration_item_folders_order_index on frwk.configuration_item_folders(module_id, order_index) where is_deleted=0");
-
-            Execute.Sql(@"create or alter view frwk.vw_configuration_items_tree_nodes as 
+            IfDatabase("SqlServer").Execute.Sql(@"create or alter view frwk.vw_configuration_items_tree_nodes as 
 with foldersCte as (
 	select
 		f.id,
 		f.module_id as parent_id,
 		f.module_id,
-		f.name,
-		f.order_index
+		f.name
 	from
 		frwk.configuration_item_folders f
 	where
@@ -97,8 +30,7 @@ with foldersCte as (
 		f.id,
 		f.parent_id,
 		f.module_id,
-		f.name,
-		f.order_index
+		f.name
 	from
 		frwk.configuration_item_folders f
 		inner join foldersCte c ON f.parent_id = c.id
@@ -111,8 +43,7 @@ with foldersCte as (
 		m.id as module_id,
 		m.name,
 		cast (m.friendly_name as varchar(300)) as label,
-		1 /*module*/ as node_type,
-		cast(0.0 as float) as order_index
+		1 /*module*/ as node_type
 	from
 		frwk.modules m
 	where
@@ -128,8 +59,7 @@ with foldersCte as (
 		f.module_id,
 		f.name,
 		cast (f.name as varchar(300)) as label,
-		3 /*folder*/ as node_type,
-		f.order_index
+		3 /*folder*/ as node_type
 	from
 		foldersCte f
 		inner join modulesCte c ON f.module_id = c.id
@@ -141,8 +71,7 @@ with foldersCte as (
 		cast(tn.name as varchar(300)) as name,
 		tn.label,
 		tn.node_type,
-		cast(null as nvarchar(50)) as item_type,
-		tn.order_index
+		cast(null as nvarchar(50)) as item_type
 	from
 		modulesCte tn
 
@@ -155,8 +84,7 @@ with foldersCte as (
 		cast(ci.name as varchar(300)) as name,
 		cast(ci.name as varchar(300)) as label,
 		2 /*configuration item*/ as node_type,
-		ci.item_type,
-		ci.order_index
+		ci.item_type
 	from
 		frwk.configuration_items ci
 		inner join finalCte c on ci.module_id = c.id and c.node_type = 1 /*module*/
@@ -173,8 +101,7 @@ with foldersCte as (
 		cast(ci.name as varchar(300)) as name,
 		cast(ci.name as varchar(300)) as label,
 		2 /*configuration item*/ as node_type,
-		ci.item_type,
-		ci.order_index
+		ci.item_type
 	from
 		frwk.configuration_items ci
 		inner join finalCte c on ci.module_id = c.module_id and ci.folder_id = c.id and c.node_type = 3 /*folder*/
@@ -188,16 +115,121 @@ select
 	name,
 	label,
 	node_type,
-	item_type,
-	order_index
+	item_type
 from 
 	finalCte");
 
-			Execute.Sql(@"create or alter view frwk.vw_configuration_items_nodes as
+            IfDatabase("PostgreSql").Execute.Sql(@"drop view if exists frwk.vw_configuration_items_tree_nodes");
+            IfDatabase("PostgreSql").Execute.Sql(@"CREATE OR REPLACE VIEW frwk.vw_configuration_items_tree_nodes AS
+WITH RECURSIVE foldersCte AS (
+    SELECT
+        f.id,
+        f.module_id AS parent_id,
+        f.module_id,
+        f.name
+    FROM
+        frwk.configuration_item_folders f
+    WHERE
+        f.parent_id IS NULL
+        AND f.is_deleted = FALSE
+
+    UNION ALL
+
+    SELECT
+        f.id,
+        f.parent_id,
+        f.module_id,
+        f.name
+    FROM
+        frwk.configuration_item_folders f
+        INNER JOIN foldersCte c ON f.parent_id = c.id
+    WHERE
+        f.is_deleted = FALSE
+), 
+modulesCte AS (
+    SELECT
+        m.id,
+        NULL::uuid AS parent_id,
+        m.id AS module_id,
+        m.name::VARCHAR(300),
+        CAST(m.friendly_name AS VARCHAR(300)) AS label,
+        1 AS node_type /*module*/
+    FROM
+        frwk.modules m
+    WHERE
+        m.is_deleted = FALSE
+        AND m.is_editable = TRUE
+        AND m.is_enabled = TRUE
+
+    UNION ALL
+
+    SELECT
+        f.id,
+        f.parent_id,
+        f.module_id,
+        f.name::VARCHAR(300),
+        CAST(f.name AS VARCHAR(300)) AS label,
+        3 AS node_type /*folder*/
+    FROM
+        foldersCte f
+        INNER JOIN modulesCte c ON f.module_id = c.id
+), 
+-- finalCte cannot be recursive because it references modulesCte in non-recursive term
+tree_nodes AS (
+    SELECT 
+        tn.id,
+        tn.parent_id,
+        tn.module_id,
+        tn.name AS name,
+        tn.label,
+        tn.node_type,
+        NULL::VARCHAR(50) AS item_type
+    FROM
+        modulesCte tn
+),
+configuration_items_data AS (
+    -- Configuration items with no folder (directly under module)
+    SELECT
+        ci.id,
+        ci.module_id AS parent_id,
+        ci.module_id,
+        ci.name::VARCHAR(300) AS name,
+        ci.name::VARCHAR(300) AS label,
+        2 AS node_type, /*configuration item*/
+        ci.item_type
+    FROM
+        frwk.configuration_items ci
+        INNER JOIN tree_nodes c ON ci.module_id = c.id AND c.node_type = 1 /*module*/
+    WHERE
+        ci.folder_id IS NULL
+        AND ci.is_deleted = FALSE
+
+    UNION ALL
+
+    -- Configuration items within folders
+    SELECT
+        ci.id,
+        ci.folder_id AS parent_id,
+        ci.module_id,
+        ci.name::VARCHAR(300) AS name,
+        ci.name::VARCHAR(300) AS label,
+        2 AS node_type, /*configuration item*/
+        ci.item_type
+    FROM
+        frwk.configuration_items ci
+        INNER JOIN tree_nodes c ON ci.folder_id = c.id AND c.node_type = 3 /*folder*/
+    WHERE
+        ci.is_deleted = FALSE
+)
+-- Combine all the results
+SELECT * FROM tree_nodes
+UNION ALL
+SELECT * FROM configuration_items_data;");
+
+            IfDatabase("SqlServer").Execute.Sql(@"create or alter view frwk.vw_configuration_items_nodes as
 select 
 	 ci.id,
 	 2 /*configuration item*/ as node_type,
-	 ci.order_index,
 	 ci.module_id,
 	 ci.folder_id
 from
@@ -210,13 +242,35 @@ union all
 select 
 	 f.id,
 	 3 /*folder*/ as node_type,
-	 f.order_index,
 	 f.module_id,
 	 f.parent_id as folder_id
 from
 	frwk.configuration_item_folders f
 where
 	f.is_deleted = 0");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"create or replace view frwk.vw_configuration_items_nodes as
+select 
+	 ci.id,
+	 2 /*configuration item*/ as node_type,
+	 ci.module_id,
+	 ci.folder_id
+from
+	frwk.configuration_items ci
+where
+	ci.is_deleted = false
+
+union all 
+
+select 
+	 f.id,
+	 3 /*folder*/ as node_type,
+	 f.module_id,
+	 f.parent_id as folder_id
+from
+	frwk.configuration_item_folders f
+where
+	f.is_deleted = false");
         }
     }
 }

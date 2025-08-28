@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 import { FormFullName, HttpClientApi } from "@/providers";
-import { moveTreeNodeAsync, MoveNodePayload, reorderTreeNodeAsync, ReorderNodePayload, fetchFlatTreeAsync, deleteFolderAsync, fetchItemTypesAsync, deleteConfigurationItemAsync, duplicateItemAsync } from "../apis";
-import { ConfigItemTreeNode, FolderTreeNode, ForceRenderFunc, IDocumentInstance, isConfigItemTreeNode, ItemTypeDefinition, TreeNode, TreeNodeType } from "../models";
+import { moveTreeNodeAsync, MoveNodePayload, fetchFlatTreeAsync, deleteFolderAsync, fetchItemTypesAsync, deleteConfigurationItemAsync, duplicateItemAsync } from "../apis";
+import { ConfigItemTreeNode, FolderTreeNode, ForceRenderFunc, IDocumentInstance, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ItemTypeDefinition, TreeNode, TreeNodeType } from "../models";
 import { IErrorInfo } from "@/interfaces";
 import { DocumentDefinition, DocumentDefinitions, CIDocument, DocumentBase, StoredDocumentInfo } from "../models";
 import { IAsyncStorage } from "../storage";
@@ -13,14 +14,14 @@ import ConfigurationItemsExport, { IExportInterface } from "@/components/configu
 import React from "react";
 import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-export";
 import { createManualRef } from "./utils";
-import ConfigurationItemsImport, { IImportInterface } from "@/components/configurationFramework/itemsImport";
+import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
     status: LoadingStatus;
     hint?: string;
-    error?: IErrorInfo;
+    error?: IErrorInfo | unknown;
 }
 
 type DynamicProperties<K extends string | number | symbol, T> = {
@@ -41,6 +42,7 @@ const STORAGE_KEYS = {
     ACTIVE_DOC_ID: 'activeDocId',
     TREE_EXPANDED_KEYS: 'treeExpandedKeys',
     TREE_SELECTION: 'treeSelection',
+    QUICK_SEARCH: 'quickSearch',
 };
 
 interface CreateItemResponse {
@@ -48,7 +50,7 @@ interface CreateItemResponse {
 };
 
 export type CsSubscription = (cs: IConfigurationStudio) => void;
-export type CsSubscriptionType = 'tree' | 'tabs' | 'doc';
+export type CsSubscriptionType = 'tree' | 'tabs' | 'doc' | 'tree-dnd';
 
 export type CreateFolderArgs = {
     moduleId: string;
@@ -77,29 +79,37 @@ export type ExportPackageArgs = {
 export interface IConfigurationStudio {
     readonly treeNodes?: TreeNode[];
     readonly treeLoadingState: ProcessingState;
+    readonly quickSearch: string;
     readonly treeExpandedKeys: React.Key[];
     readonly treeSelectedKeys: React.Key[];
+    readonly treeSelectedNode?: TreeNode;
     readonly treeSelectedItemNode?: ConfigItemTreeNode;
+    readonly isTreeDragging: boolean;
+    setIsTreeDragging: (isDragging: boolean) => void;
 
     readonly itemTypes: ItemTypeDefinition[];
-    toolbarRef?: MutableRefObject<any>;
+    toolbarRef?: MutableRefObject<HTMLDivElement>;
     setDocumentToolbarRerenderer: (itemId: string, forceRender: ForceRenderFunc) => void;
 
     onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
+    setQuickSearch: (value: string) => void;
 
-    loadTreeAsync: () => Promise<void>;
+    loadTreeAndDocsAsync: () => Promise<void>;
     moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;
-    reorderTreeNodeAsync: (payload: ReorderNodePayload) => Promise<void>;
+    getTreeNodeById: (itemId: string) => TreeNode | undefined;
     subscribe(type: CsSubscriptionType, callback: () => void): () => void;
 
     //#region selection and tabs
     selectTreeNode: (node?: TreeNode) => void;
+    clickTreeNode: (node: TreeNode) => void;
+
     docs: IDocumentInstance[];
     activeDocId?: string;
     activeDocument?: IDocumentInstance;
 
     openDocById: (docId?: string) => void;
-    removeTabAsync: (docId?: string) => void;
+    closeDocAsync: (docId?: string) => void;
+    closeMultipleDocsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
     //#endregion
 
     //#region crud operations
@@ -145,7 +155,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     private storage: IAsyncStorage;
     private subscriptions: Map<CsSubscriptionType, Set<CsSubscription>>;
 
-    toolbarRef?: MutableRefObject<any>;
+    toolbarRef?: MutableRefObject<HTMLDivElement>;
     findDoc = (itemId?: string): IDocumentInstance | undefined => {
         return itemId
             ? this.docs.find(d => d.itemId === itemId)
@@ -162,15 +172,24 @@ export class ConfigurationStudio implements IConfigurationStudio {
     treeLoadingState: ProcessingState;
 
     private _selectedNodeId?: string;
+    private _isTreeDragging: boolean;    
     private _treeNodes: TreeNode[] = [];
     private _treeNodesMap: Map<string, TreeNode> = new Map<string, TreeNode>();
     private _treeExpandedKeys: React.Key[] = [];
+    private _quickSearch: string;
 
     private _documentDefinitions: DocumentDefinitions;
     private _itemTypes: ItemTypeDefinition[];
     private _itemTypesMap: Map<string, ItemTypeDefinition> = new Map<string, ItemTypeDefinition>();
 
-    docs: IDocumentInstance[] = [];
+    //docs: IDocumentInstance[] = [];
+    _docs: IDocumentInstance[] = [];
+    get docs(): IDocumentInstance[] {
+        return this._docs;
+    }
+    set docs(value: IDocumentInstance[]) {
+        this._docs = value;
+    }
     activeDocId?: string;
     private getDocumenById = (id: string): IDocumentInstance | undefined => {
         return id
@@ -194,17 +213,21 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
 
     registerDocumentDefinition = (definition: DocumentDefinition) => {
-        // eslint-disable-next-line no-console
-        console.log('LOG: register definition ✅', definition);
         this._documentDefinitions.set(definition.documentType, definition);
     };
 
     unregisterDocumentDefinition = (definition: DocumentDefinition) => {
-        // eslint-disable-next-line no-console
-        console.log('LOG: unregister definition 🟥', definition);
         this._documentDefinitions.delete(definition.documentType);
     };
 
+    get quickSearch(): string {
+        return this._quickSearch;
+    }
+    setQuickSearch = (value: string) => {
+        this._quickSearch = value;
+        this.saveQuickSearchAsync();
+        this.notifySubscribers(['tree']);
+    };
     get treeExpandedKeys(): React.Key[] {
         return this._treeExpandedKeys;
     };
@@ -214,15 +237,28 @@ export class ConfigurationStudio implements IConfigurationStudio {
             : [];
     };
 
-    get treeSelectedItemNode(): ConfigItemTreeNode | undefined {
-        const node = this._selectedNodeId
+    get treeSelectedNode(): TreeNode | undefined {
+        return this._selectedNodeId
             ? this._treeNodesMap.get(this._selectedNodeId)
             : undefined;
+    };
+
+    get isTreeDragging(): boolean {
+        return this._isTreeDragging;
+    };
+
+    setIsTreeDragging = (value: boolean) => {
+        this._isTreeDragging = value;
+        this.notifySubscribers(['tree-dnd']);
+    };
+
+    get treeSelectedItemNode(): ConfigItemTreeNode | undefined {
+        const node = this.treeSelectedNode;
         return isConfigItemTreeNode(node) ? node : undefined;
     };
 
     private saveTreeExpandedNodesAsync = async () => {
-        this.storage.setAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS, this._treeExpandedKeys);
+        await this.storage.setAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS, this._treeExpandedKeys);
     };
     private saveTreeSelectionAsync = async () => {
         if (this._selectedNodeId)
@@ -230,13 +266,20 @@ export class ConfigurationStudio implements IConfigurationStudio {
         else
             await this.storage.removeAsync(STORAGE_KEYS.TREE_SELECTION);
     };
+    private saveQuickSearchAsync = async () => {
+        await this.storage.setAsync(STORAGE_KEYS.QUICK_SEARCH, this._quickSearch);
+    };
     private loadTreeSelectionAsync = async () => {
         this._selectedNodeId = await this.storage.getAsync(STORAGE_KEYS.TREE_SELECTION);
     };
     private loadTreeExpandedNodesAsync = async () => {
         this._treeExpandedKeys = await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS) ?? [];
     };
+    private loadQuickSearchAsync = async () => {
+        this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH) ?? "";
+    };
     private loadTreeStateAsync = async () => {
+        await this.loadQuickSearchAsync();
         await this.loadTreeExpandedNodesAsync();
         await this.loadTreeSelectionAsync();
     };
@@ -252,13 +295,36 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this.notifySubscribers(['tree']);
     };
 
+    isTreeNodeExpanded = (nodeId: string): boolean => this._treeExpandedKeys.includes(nodeId);
+    toggleTreeNode = (nodeId: string, expanded: boolean): void => {
+        const current = this.isTreeNodeExpanded(nodeId);
+        if (current === expanded)
+            return;
+
+        if (expanded)
+            this._treeExpandedKeys = [...this._treeExpandedKeys, nodeId];
+        else
+            this._treeExpandedKeys = this._treeExpandedKeys.filter(key => key !== nodeId);
+        this.notifySubscribers(['tree']);
+    };
+    expandTreeNode = (nodeId: string): void => {
+        this.toggleTreeNode(nodeId, true);
+    };
+
+    clickTreeNode = (node: TreeNode) => {
+        if (isFolderTreeNode(node) || isModuleTreeNode(node)) {
+            const expanded = this.isTreeNodeExpanded(node.id);
+            this.toggleTreeNode(node.id, !expanded);
+        }
+    };
+
     selectTreeNode = async (node?: TreeNode) => {
         this.log('selectTreeNode', node);
 
         await this.doSelectTreeNodeAsync(node);
 
         if (isConfigItemTreeNode(node) && this.activeDocId !== node.id) {
-            const tab = this.findTabById(node.id);
+            const tab = this.findDocumentById(node.id);
             if (!tab) {
                 // load item, add new tab and select
                 const newTab = await this.createNewTabAsync(node);
@@ -290,6 +356,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
             return definition.documentInstanceFactory({
                 itemId: d.itemId,
                 label: node.name,
+                moduleId: node.moduleId,
+                moduleName: node.moduleName,
+                flags: node.flags,
             });
         })
             .filter(d => Boolean(d));
@@ -313,7 +382,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             label: d.label,
             type: d.type,
         }));
-        this.storage.setAsync(STORAGE_KEYS.OPENED_DOCS, storedData);
+        await this.storage.setAsync(STORAGE_KEYS.OPENED_DOCS, storedData);
     };
     private saveDocSelectionAsync = async () => {
         if (this.activeDocId)
@@ -338,6 +407,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const newDocument = definition.documentInstanceFactory({
             itemId: node.id,
             label: node.name,
+            moduleId: node.moduleId,
+            moduleName: node.moduleName,
             flags: node.flags,
         });
 
@@ -349,7 +420,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return newDocument;
     };
 
-    private findTabById = (tabId: string): DocumentBase | undefined => {
+    private findDocumentById = (tabId: string): DocumentBase | undefined => {
         return this.docs.find(t => t.itemId === tabId);
     };
 
@@ -383,16 +454,47 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     openDocById = async (docId?: string): Promise<void> => {
-        const tab = docId ? this.findTabById(docId) : undefined;
-        await this.selectTabAsync(tab);
+        const doc = docId ? this.findDocumentById(docId) : undefined;
+        await this.selectTabAsync(doc);
     };
 
-    removeTabAsync = async (tabId?: string): Promise<void> => {
+    isDocOpened = (docId: string): boolean => {
+        return this.docs.some(t => t.itemId === docId);
+    };
+
+    closeDocAsync = async (docId?: string): Promise<void> => {
+        if (!this.isDocOpened(docId))
+            return;
+
         // TODO: check for unsaved changes, ask user to confirm
         // TODO: unload document
-        this.docs = this.docs.filter(t => t.itemId !== tabId);
+        const index = this.docs.findIndex(t => t.itemId === docId);
+        const isActive = this.activeDocId === docId;
+
+        this.docs = this.docs.filter(t => t.itemId !== docId);
+
         await this.saveOpenedDocsAsync();
-        this.notifySubscribers(['tabs']);
+        this.notifySubscribers(['tabs', 'doc']);
+
+        // if the document was active - activate next if available
+        if (isActive) {
+            const indexToSwitch = this.docs.length - 1 >= index
+                ? index
+                : index - 1;
+            const docToSwitchTo = indexToSwitch >= 0
+                ? this.docs[indexToSwitch]
+                : undefined;
+            if (docToSwitchTo)
+                this.selectTabAsync(docToSwitchTo);
+        }
+    };
+
+    closeMultipleDocsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean): Promise<void> => {
+        // TODO: check for unsaved changes, ask user to confirm
+        const docsToClose = this.docs.filter(predicate);
+        for (const doc of docsToClose) {
+            await this.closeDocAsync(doc.itemId);
+        }
     };
 
     getDocumentDefinition = (itemType: string): DocumentDefinition | undefined => {
@@ -437,14 +539,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     //#endregion
 
-    log = (...args) => {
+    log = (...args: unknown[]) => {
         if (this.logEnabled) {
-            // Get the stack trace and extract the caller's location
-            // const stack = new Error().stack?.split('\n')[2]?.trim() || '';
-            // const normalizedStack = replaceAllSourceUrls(stack);
-            //console.log(`%c[cs]`, 'color: blue; font-weight: bold', ...args, `\n${normalizedStack}`);
-
-            // eslint-disable-next-line no-console
             console.trace(`%c[cs]`, 'color: blue; font-weight: bold', ...args);
         }
     };
@@ -488,8 +584,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     loadTreeAsync = async () => {
-        this.log('load tree');
-
         this.treeLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
         try {
             const flatTreeNodes = await fetchFlatTreeAsync(this.httpClient);
@@ -505,6 +599,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
             flatTreeNodes.forEach(node => {
                 const currentNode = treeNodeMap.get(node.id)!;
 
+                if (node.moduleId && isConfigItemTreeNode(currentNode))
+                    currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
+
                 if (node.parentId !== null) {
                     const parent = treeNodeMap.get(node.parentId);
                     if (parent) {
@@ -518,25 +615,24 @@ export class ConfigurationStudio implements IConfigurationStudio {
             this._treeNodes = treeNodes;
             this._treeNodesMap = treeNodeMap;
 
-            this.loadTreeStateAsync();
-            this.loadDocsStateAsync();
-
             this.treeLoadingState = { status: 'ready', hint: null, error: null };
         } catch (error) {
             this.treeLoadingState = { status: 'failed', hint: 'Failed to fetch tree', error: error };
         }
 
         this.notifySubscribers(['tree', 'tabs', 'doc']);
+    };
 
-        this.log('CS: load tree - done');
+    loadTreeAndDocsAsync = async () => {
+        await this.loadTreeAsync();
+        this.loadTreeStateAsync();
+        this.loadDocsStateAsync();
+
+        this.notifySubscribers(['tree', 'tabs', 'doc']);
     };
 
     moveTreeNodeAsync = async (payload: MoveNodePayload): Promise<void> => {
         await moveTreeNodeAsync(this.httpClient, payload);
-    };
-
-    reorderTreeNodeAsync = async (payload: ReorderNodePayload): Promise<void> => {
-        await reorderTreeNodeAsync(this.httpClient, payload);
     };
 
     //#region crud operations
@@ -606,15 +702,16 @@ export class ConfigurationStudio implements IConfigurationStudio {
             const treeNode = this._treeNodesMap.get(response.id);
 
             if (treeNode && isConfigItemTreeNode(treeNode)) {
-                if (treeNode.parentId && !(this._treeExpandedKeys.includes(treeNode.parentId))) {
-                    this._treeExpandedKeys.push(treeNode.parentId);
-                    this.notifySubscribers(['tree']);
+                if (treeNode.parentId && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+                    this.expandTreeNode(treeNode.parentId);
                 }
 
                 // load item, add new tab and select
                 const newTab = await this.createNewTabAsync(treeNode);
+
                 // select new tab
-                this.selectTabAsync(newTab);
+                await this.selectTabAsync(newTab);
+                this.notifySubscribers(['tabs']);
             } else
                 console.error(`Tree node not found for a new item with id = '${response.id}'. Item type = '${itemType}'`);
         } else
@@ -626,14 +723,18 @@ export class ConfigurationStudio implements IConfigurationStudio {
         if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
             return;
 
+        const docId = node.id;
         try {
-            await deleteConfigurationItemAsync(this.httpClient, { itemId: node.id });
-            // TODO: change selection, update tabs if required (opened items may be deleted)
+
+            await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
+
+            if (this.isDocOpened(docId))
+                this.closeDocAsync(docId);
+
             await this.loadTreeAsync();
         } catch (error) {
-            console.error(`Failed to delete ${definition.friendlyName} '${node.name}' (id: '${node.id}')`, error);
+            console.error(`Failed to delete ${definition.friendlyName} '${node.name}' (id: '${docId}')`, error);
         }
-
     };
 
     renameItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
@@ -649,7 +750,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 }
             });
 
-            await this.loadTreeAsync();
+            await this.loadTreeAndDocsAsync();
         } catch (error) {
             console.error(`Failed to rename folder '${node.name}' (id: '${node.id}')`, error);
         }
@@ -658,8 +759,31 @@ export class ConfigurationStudio implements IConfigurationStudio {
     duplicateItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
         const definition = this.getItemTypeDefinition(node.itemType);
         try {
-            await duplicateItemAsync(this.httpClient, { itemId: node.id });
+            const response = await duplicateItemAsync(this.httpClient, { itemId: node.id });
+            if (!response.success)
+                return;
+
             await this.loadTreeAsync();
+            const duplicateId = response.result?.itemId;
+
+            if (duplicateId) {
+                const treeNode = this._treeNodesMap.get(duplicateId);
+
+                if (treeNode && isConfigItemTreeNode(treeNode)) {
+                    if (treeNode.parentId && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+                        this.expandTreeNode(treeNode.parentId);
+                    }
+
+                    // load item, add new tab and select
+
+                    const newTab = await this.createNewTabAsync(treeNode);
+                    // select new tab
+                    await this.selectTabAsync(newTab);
+                    this.notifySubscribers(['tabs']);
+                } else
+                    console.error(`Tree node not found for a new item with id = '${duplicateId}'. Item type = '${node.itemType}'`);
+            } else
+                console.error(`Item creation API didn't return expected id of a new item. Item type = '${node.itemType}'`);
         } catch (error) {
             this.showError(`Failed to duplicate ${definition.friendlyName} '${node.name}'`, error);
         }
@@ -747,7 +871,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     //#endregion
 
-    showError = (errorMessage: string, _error?: any) => {
+    showError = (errorMessage: string, _error?: unknown) => {
         this.notificationApi.error({ message: errorMessage });
     };
 
@@ -766,7 +890,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this.log('CS: initialization');
 
         await this.loadItemTypesAsync();
-        await this.loadTreeAsync();
+        await this.loadTreeAndDocsAsync();
 
         this.log('CS: initialization - done');
     };

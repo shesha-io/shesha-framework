@@ -45,5 +45,6 @@ export * from './dataContextProvider';
 export * from './canvas';
 export * from './sourceFileManager/sourcesFolderProvider';
 export * from './chartData';
+export * from './sheshaApplication/hooks/useSettingsComponents';
 
 export { useApplicationContextData, useApplicationContextMetadata };

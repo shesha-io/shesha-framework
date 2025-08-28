@@ -2,7 +2,7 @@
 using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Reflection;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -26,7 +26,7 @@ namespace Shesha.Tests.DomainModel
 
         private List<Type> GetEntityTypesWithoutIgnored() 
         {
-            var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
+            var typeFinder = StaticContext.IocManager.Resolve<IShaTypeFinder>();
 
             var types = typeFinder.FindAll().Where(t => t.IsEntityType()
     && t != typeof(AggregateRoot)

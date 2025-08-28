@@ -78,7 +78,7 @@ export const useConfigurationItemsExportAction = () => {
         const modalProps: ICommonModalProps = {
           ...actionArgs,
           id: modalId,
-          title: "Export Configuration Items",
+          title: "Export Configuration",
           isVisible: true,
           showModalFooter: false,
           width: "60%",

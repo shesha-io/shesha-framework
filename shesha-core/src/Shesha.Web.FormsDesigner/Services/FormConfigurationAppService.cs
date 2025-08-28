@@ -9,11 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
-using Shesha.ConfigurationItems.Models;
-using Shesha.ConfigurationItems.New;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
@@ -150,35 +147,6 @@ namespace Shesha.Web.FormsDesigner.Services
             return result;
         }
 
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<FormConfigurationDto> GetByNameConfigStudioAsync(GetFormByFullNameInput input)
-        {
-            var mode = _cfRuntime.ViewMode;
-
-
-            var resolver = IocManager.Resolve<IConfigurationItemResolver>();
-            var form = await resolver.GetItemAsync<FormConfiguration>(input.Module, input.Name);
-
-            if (form == null)
-                throw new FormNotFoundException(input.Module, input.Name);
-
-            var dto = await MapToEntityDtoAsync(form);
-
-            /*
-            dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
-            */
-            if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
-            {
-                dto.Markup = null;
-                dto.CacheMd5 = "";
-            }
-
-            return dto;
-        }
-
         /// <summary>
         /// Get current form configuration by name
         /// </summary>
@@ -291,20 +259,6 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         /// <summary>
-        /// Create new form configuration
-        /// </summary>
-        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationDto input)
-        {
-            CheckCreatePermission();
-
-            var form = await _formManager.CreateAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(form);
-        }
-
-        /// <summary>
         /// Get form in JSON format
         /// </summary>
         /// <param name="id"></param>
@@ -395,38 +349,6 @@ namespace Shesha.Web.FormsDesigner.Services
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return await MapToEntityDtoAsync(entity);
-        }
-
-        /// <summary>
-        /// Delete form
-        /// </summary>
-        public override Task DeleteAsync(EntityDto<Guid> input)
-        {
-            CheckDeletePermission();
-
-            return _formManager.DeleteAllVersionsAsync(input.Id);
-        }
-
-        /// <summary>
-        /// Move form to another module
-        /// </summary>
-        [HttpPost]
-        public Task MoveToModuleAsync(MoveToModuleInput input)
-        {
-            return _formManager.MoveToModuleAsync(input);
-        }
-
-        /// <summary>
-        /// Copy form
-        /// </summary>
-        [HttpPost]
-        public async Task<FormConfigurationDto> CopyAsync(CopyItemInput input)
-        {
-            var form = await _formManager.CopyAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(form);
         }
 
         #region private methods

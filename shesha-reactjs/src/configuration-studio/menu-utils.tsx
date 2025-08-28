@@ -111,17 +111,16 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
 };
 
 const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArgs): MenuItemType[] => {
-    console.log("LOG:: configurationStudio", configurationStudio?.itemTypes)
-    console.log("LOG:: node", node)
-
+    if (!node)
+        return [];
     const buildCreateCIMenuItem = (label: string, itemType: string): MenuItemType => {
         return {
             label: label,
             key: itemType,
             icon: getIcon(TreeNodeType.ConfigurationItem, itemType),
-            onClick: () => {
-                configurationStudio.createItemAsync({
-                    moduleId: "8832a5e9-c6f9-41fe-b3e7-1a51042e6044",
+            onClick: async () => {
+                await configurationStudio.createItemAsync({
+                    moduleId: node.moduleId,
                     folderId: isFolderTreeNode(node)
                         ? node.id
                         : isConfigItemTreeNode(node) && node.parentId !== node.moduleId
@@ -144,9 +143,11 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             onClick: () => {
                 configurationStudio.createFolderAsync({
                     moduleId: node.moduleId,
-                    folderId: isModuleTreeNode(node)
-                        ? undefined
-                        : node.id
+                    folderId: isFolderTreeNode(node)
+                        ? node.id
+                        : isConfigItemTreeNode(node)
+                            ? node.parentId
+                            : undefined
                 });
             },
         },
@@ -236,9 +237,11 @@ export const buildNodeContextMenu = (args: BuildNodeMenuArgs): MenuItemType[] =>
 };
 
 export const buildCreateNewMenu = (args: BuildNodeMenuArgs<TreeNode>): MenuItemType[] => {
-    return [
-        ...buildCreateNewItemsMenu(args),
-        getDivider(),
-        ...buildExposeAndImportExportMenu(args),
-    ];
+    const result = buildCreateNewItemsMenu(args);
+    const serviceItems = buildExposeAndImportExportMenu(args);
+    if (result.length > 0 && serviceItems.length > 0)
+        result.push(getDivider());
+    
+    result.push(...serviceItems);
+    return result;
 };

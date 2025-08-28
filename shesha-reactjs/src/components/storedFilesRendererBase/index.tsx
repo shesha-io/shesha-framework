@@ -63,6 +63,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   container?: IStyleType;
   primaryColor?: string;
   allStyles?: IFormComponentStyles;
+  enableStyleOnReadonly?: boolean;
+  thumbnail?: IStyleType;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -92,6 +94,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
+  enableStyleOnReadonly = true,
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -111,7 +114,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
       ...containerJsStyle, ...stylingBoxAsCSS,
     },
-    style: model?.allStyles?.fullStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    style: enableStyleOnReadonly && disabled ?
+      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } : { ...model?.allStyles?.fullStyle }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
     primaryColor
   });
 
@@ -158,7 +162,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fetchImages();
   }, [fileList]);
 
-  const handlePreview = async (file: UploadFile) => {
+  const handlePreview = (file: UploadFile) => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
@@ -265,13 +269,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 {'file name'}
               </span>}
           </div>)
-        : (props.disabled
-          ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-          : isDragger ?
-            <Dragger {...props}>
-              <DraggerStub styles={styles} />
-            </Dragger>
-            : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
+        : (props.disabled && fileList.length === 0
+          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
+            {renderUploadContent()}
+          </div>
+          : props.disabled
+            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+            : isDragger ?
+              <Dragger {...props}>
+                <DraggerStub styles={styles} />
+              </Dragger>
+              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)
       }
       {previewImage && (
         <Image

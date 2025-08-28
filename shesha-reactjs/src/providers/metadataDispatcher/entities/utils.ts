@@ -23,12 +23,12 @@ export const getEntityMetadataCacheKey = (id: IEntityTypeIndentifier) => {
     return `${moduleAccessor}/${id.name}`;
 };
 
-const getEntitiesSyncVersion = async (cacheProvider: ICacheProvider): Promise<string> => {
+const getEntitiesSyncVersion = (cacheProvider: ICacheProvider): Promise<string> => {
     const cache = cacheProvider.getCache(CACHE.MISC);
     return cache.getItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME);
 };
 
-const setEntitiesSyncVersion = async (cacheProvider: ICacheProvider, value: string): Promise<string> => {
+const setEntitiesSyncVersion = (cacheProvider: ICacheProvider, value: string): Promise<string> => {
     const cache = cacheProvider.getCache(CACHE.MISC);
     return cache.setItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME, value);
 };
@@ -116,6 +116,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                         }
                     });
                 });
+                //promises.push(metadataCache.removeItem('functionalTests/null'));
                 //console.groupEnd();
                 return Promise.all(promises).then();
             } else {
@@ -132,12 +133,12 @@ export const getEntityMetadata = async (accessor: IEntityTypeIndentifier, contex
     return context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IEntityMetadata>(key);
 };
 
-export const getCachedMetadataByTypeId = async (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
+export const getCachedMetadataByTypeId = (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
     const key = getEntityMetadataCacheKey(typeId);
     return context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IEntityMetadata>(key);
 };
 
-export const getCachedMetadataByClassName = async (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
+export const getCachedMetadataByClassName = (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
     const typeId = context.typesMap.resolve(className);
     if (!typeId) {
         throw new Error(`Failed to resolve type id for class ${className}`);

@@ -21,5 +21,7 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// Folder Name
         /// </summary>
         public string Name { get; set; }
+
+        public Guid? PrevItemId { get; set; }
     }
 }

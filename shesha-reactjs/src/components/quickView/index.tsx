@@ -7,14 +7,11 @@ import { useFormConfiguration } from '@/providers/form/api';
 import { FormIdentifier } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider';
 import { get } from '@/utils/fetchers';
-import { App, Button, Popover, PopoverProps, Spin } from 'antd';
+import { App, Button, Popover, PopoverProps } from 'antd';
 import React, { CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import {
-  getQuickViewInitialValues,
-  innerEntityReferenceButtonBoxStyle,
-  innerEntityReferenceSpanBoxStyle,
-} from './utils';
+import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
+import { useStyles } from './styles/styles';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -48,19 +45,6 @@ export interface IQuickViewProps extends PropsWithChildren {
   emptyText?: string;
 }
 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    md: { span: 8 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    md: { span: 16 },
-    sm: { span: 16 },
-  },
-};
-
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   children,
   entityId,
@@ -87,6 +71,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { notification } = App.useApp();
+  const { styles, cx } = useStyles();
 
   useEffect(() => {
     if (formIdentifier) {
@@ -144,12 +129,12 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   const render = () => {
     if (children) {
-      return <div style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>{children}</div>;
+      return <div className={cx(styles.innerEntityReferenceButtonBoxStyle)}>{children}</div>;
     }
 
     if (displayType === 'icon') {
       return (
-        <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
+        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={style}>
           <ShaIcon iconName={iconName} />
         </Button>
       );
@@ -157,48 +142,49 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
     if (displayType === 'textTitle') {
       return (
-        <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
+        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={style}>
           {textTitle ? (
-            <span style={innerEntityReferenceSpanBoxStyle}>{textTitle}</span>
+            <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{textTitle}</span>
           ) : (
             <>
-              <Spin size="small" />
-              <span style={innerEntityReferenceSpanBoxStyle}>Loading...</span>
+              {loadingBox(cx, styles)}
             </>
           )}
         </Button>
       );
     }
 
+    const ifLoadingStateSuccess = () => loadingState === 'success' ? (
+      <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{formTitle || emptyText}</span>
+    ) : (
+      <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>Quickview not configured properly</span>
+    );
+
     return (
-      <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
+      <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={style}>
         {loadingState === 'loading' ? (
           <>
-            <Spin size="small" />
-            <span style={innerEntityReferenceSpanBoxStyle}>Loading...</span>
+            {loadingBox(cx, styles)}
           </>
-        ) : loadingState === 'success' ? (
-          <span style={innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
-        ) : (
-          <span style={innerEntityReferenceSpanBoxStyle}>Quickview not configured properly</span>
-        )}
+        ) : ifLoadingStateSuccess()}
       </Button>
     );
   };
 
   if (disabled)
     return (
-      <Button disabled type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...style }}>
-        <span style={innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
+      <Button disabled type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={style}>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{formTitle || emptyText}</span>
       </Button>
     );
 
   const title = loadingState === 'error' ? 'Quickview not configured properly' : formTitle;
+
   return (
-    <Popover 
-      overlayInnerStyle={{ width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }} 
-      content={formContent} 
-      title={<div style={{ width, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{title}</div>} 
+    <Popover
+      overlayInnerStyle={{ width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }}
+      content={formContent}
+      title={<div style={{ width, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{title}</div>}
       {...popoverProps}
     >
       {render()}
@@ -209,6 +195,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const { getEntityFormId } = useConfigurationItemsLoader();
   const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier ?? undefined);
+  const { styles, cx } = useStyles();
 
   useEffect(() => {
     if (props.className && !formConfig)
@@ -221,17 +208,15 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
         });
   }, [props.className, props.formType, formConfig]);
 
-  return formConfig ? (
-    <QuickView {...props} formIdentifier={formConfig} />
-  ) : formConfig === undefined ? (
-    <Button type="link" style={{ ...innerEntityReferenceButtonBoxStyle, ...props.style }}>
-      <span style={innerEntityReferenceSpanBoxStyle}>
-        <Spin size="small" /> Loading...
-      </span>
+  const buttonOrPopover = formConfig === undefined ? (
+    <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
+      {loadingBox(cx, styles)}
     </Button>
   ) : (
     <Popover content={'Quickview not configured properly'} title="Quickview not configured properly"></Popover>
   );
+
+  return formConfig ? <QuickView {...props} formIdentifier={formConfig} /> : buttonOrPopover;
 };
 
 export default QuickView;

@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IDateFieldProps } from './interfaces';
@@ -312,7 +312,15 @@ export const getSettings = (data: IDateFieldProps) => {
                                         type: "textField",
                                         defaultValue: "DD/MM/YYYY",
                                         parentId: dataTabId,
-                                    }, {
+                                    },
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: dataTabId,
+                                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
                                         id: nanoid(),
                                         propertyName: 'timeFormat',
                                         label: 'Time Format',
@@ -321,9 +329,13 @@ export const getSettings = (data: IDateFieldProps) => {
                                         type: "textField",
                                         defaultValue: "HH:mm:ss",
                                         parentId: dataTabId,
-                                    },
+                                hidden: {
+                                    _code: 'return  !getSettingValue(data?.showTime);',
+                                     _mode: 'code',
+                                    _value: false
+                                    } as any,  
+                                },
                                 ]
-
                             })
 
                             .addSettingsInputRow({
@@ -445,6 +457,15 @@ export const getSettings = (data: IDateFieldProps) => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            parentId: styleRouterId,
+                                            propertyName: 'enableStyleOnReadonly',
+                                            label: 'Enable Style On Readonly',
+                                            tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                                            inputType: 'switch',
+                                            jsSetting: true,
+                                        })
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'pnlFontStyle',
@@ -485,7 +506,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
+                                                                dropdownOptions: fontWeightsOptions,
                                                                 width: 100,
                                                             },
                                                             {
@@ -502,7 +523,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 propertyName: 'font.align',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                dropdownOptions: textAlign,
+                                                                dropdownOptions: textAlignOptions,
                                                             },
                                                         ],
                                                     })

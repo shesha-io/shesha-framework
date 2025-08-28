@@ -23,7 +23,7 @@ import { useFormManager } from "@/providers/formManager";
 import { IFormDataLoadersContext, useFormDataLoaders } from "../loaders/formDataLoadersProvider";
 import { IFormDataSubmittersContext, useFormDataSubmitters } from "../submitters/formDataSubmittersProvider";
 import { FormInfo } from "../api";
-import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContexts, wrapConstantsData } from "../utils";
+import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContextsNoRefresh, wrapConstantsData } from "../utils";
 import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { Form, FormInstance } from "antd";
 import { IFormApi } from "../formApi";
@@ -130,6 +130,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     };
     getFormData = () => {
         return this.#form.formData;
+    };
+    setValidationErrors = (payload: IFormValidationErrors) => {
+        this.#form.setValidationErrors(payload);
     };
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
@@ -318,8 +321,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.parentFormValues = values;
     };
 
-    setValidationErrors = (payload: IFormValidationErrors) => {
-        this.validationErrors = payload ? { ...payload } : null;
+    setValidationErrors = (payload: IFormValidationErrors | undefined) => {
+        this.validationErrors = payload;
         this.forceRootUpdate();
     };
 
@@ -734,7 +737,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
     const dataLoaders = useFormDataLoaders();
     const dataSubmitters = useFormDataSubmitters();
     const [antdFormInstance] = Form.useForm(antdForm);
-    const fullContext = useAvailableConstantsContexts();
+    const fullContext = useAvailableConstantsContextsNoRefresh();
     const metadataDispatcher = useMetadataDispatcher();
 
     if (!formRef.current) {
@@ -755,6 +758,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 metadataDispatcher: metadataDispatcher,
             });
             const accessors = wrapConstantsData({
+                topContextId: 'full',
                 fullContext,
                 shaForm: instance,
                 queryStringGetter: getQueryParams,

@@ -55,7 +55,6 @@ export const defaultStyles = (prev): IStyleType => {
       minWidth: '0px',
       maxWidth: 'auto'
     },
-    stylingBox: '{"paddingLeft":"15","paddingBottom":"4","paddingTop":"4","paddingRight":"15"}',
     style: prev.style ?? '',
   };
 };

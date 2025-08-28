@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { FormLayout } from 'antd/es/form/Form';
@@ -174,13 +174,6 @@ export const getSettings = () => {
                       type: 'propertyAutocomplete',
                       autoFillProps: false,
                     },
-                    {
-                      id: nanoid(),
-                      propertyName: 'ownerId',
-                      label: 'Owner ID',
-                      type: 'textField',
-                      jsSetting: true,
-                    },
                   ]
                 })
                 .addSettingsInputRow({
@@ -193,8 +186,21 @@ export const getSettings = () => {
                       label: 'Owner Type',
                       type: 'autocomplete',
                       dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                       useRawValues: true,
+                      jsSetting: true,
+                    },
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'ownerId',
+                      label: 'Owner ID',
+                      type: 'textField',
                       jsSetting: true,
                     },
                     {
@@ -284,6 +290,14 @@ export const getSettings = () => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
+                    .addSettingsInput({
+                      id: nanoid(),
+                      inputType: 'switch',
+                      propertyName: 'enableStyleOnReadonly',
+                      label: 'Enable Style On Readonly',
+                      tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                      jsSetting: true,
+                    })
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'pnlFontStyle',
@@ -324,7 +338,7 @@ export const getSettings = () => {
                                 propertyName: 'font.weight',
                                 hideLabel: true,
                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                dropdownOptions: fontWeights,
+                                dropdownOptions: fontWeightsOptions,
                                 width: 100,
                               },
                               {
@@ -341,7 +355,7 @@ export const getSettings = () => {
                                 propertyName: 'font.align',
                                 hideLabel: true,
                                 width: 60,
-                                dropdownOptions: textAlign,
+                                dropdownOptions: textAlignOptions,
                               },
                             ],
                           })

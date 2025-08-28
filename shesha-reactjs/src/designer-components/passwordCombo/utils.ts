@@ -18,6 +18,7 @@ export interface IPasswordComponentProps extends IConfigurableFormComponent, ISt
   hideBorder?: boolean;
   minLength?: number;
   message?: string;
+  repeatPropertyName?: string;
 }
 
 export const confirmModel = (m: IPasswordComponentProps): IPasswordComponentProps => {

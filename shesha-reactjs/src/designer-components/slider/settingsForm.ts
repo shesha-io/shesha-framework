@@ -1,7 +1,7 @@
 import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
- 
+
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -9,7 +9,7 @@ export const getSettings = (data: any) => {
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
- 
+
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
@@ -44,13 +44,13 @@ export const getSettings = (data: any) => {
                 label: 'Label',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 hideLabel: true,
-            })
+              })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
                 inputs: [
                   {
-                    type:'editModeSelector',
+                    type: 'editModeSelector',
                     id: nanoid(),
                     propertyName: 'editMode',
                     label: 'Edit Mode',
@@ -130,6 +130,15 @@ export const getSettings = (data: any) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
+                    .addSettingsInput({
+                      id: nanoid(),
+                      parentId: styleRouterId,
+                      propertyName: 'enableStyleOnReadonly',
+                      label: 'Enable Style On Readonly',
+                      tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                      inputType: 'switch',
+                      jsSetting: true,
+                    })
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'customStyle',

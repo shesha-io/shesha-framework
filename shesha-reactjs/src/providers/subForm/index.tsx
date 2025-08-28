@@ -46,7 +46,8 @@ import { IFormApi } from '../form/formApi';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ISetFormDataPayload } from '../form/contexts';
 import { deepMergeValues, setValueByPropertyName } from '@/utils/object';
-import { ConfigurableItemIdentifierToString, useDataContextManagerActions } from '@/index';
+import { ConfigurableItemIdentifierToString, IAjaxResponseBase, IErrorInfo, useDataContextManagerActions } from '@/index';
+import { AxiosResponse } from 'axios';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -514,7 +515,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       onChangeInternal({});
     },
     submit: function (): void {
-      throw new Error('Function not implemented.');
+      parentFormApi.submit();
     },
     setFormData: function (payload: ISetFormDataPayload): void {
       if (payload.mergeValues) {
@@ -525,6 +526,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     },
     getFormData: function (): any {
       return getSubFormData();
+    },
+    setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
+      parentFormApi.setValidationErrors(payload);
     },
     formSettings: parentFormApi.formSettings,
     formMode: parentFormApi.formMode,

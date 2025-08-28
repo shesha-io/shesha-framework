@@ -43,7 +43,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     tooltip: model.description,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
     labelCol: layout?.labelCol,
-    wrapperCol: hideLabel && model.layout === "horizontal" ? { span: 24 } : layout?.wrapperCol,
+    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     //layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };

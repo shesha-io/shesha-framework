@@ -1,15 +1,13 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
-using Abp.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
+using Shesha.ConfigurationItems;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -22,27 +20,26 @@ namespace Shesha.DynamicEntities;
 
 public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, EntityConfigDto, Guid>, IEntityConfigAppService
 {
-    private readonly EntityConfigurationStore _entityConfigurationStore;
+    private readonly IEntityConfigurationStore _entityConfigurationStore;
     private readonly IEntityConfigManager _entityConfigManager;
-    private readonly IRepository<EntityProperty, Guid> _propertyRepository;
-    private readonly ITypeFinder _typeFinder;
     private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
+    private readonly IRepository<EntityProperty, Guid> _propertyRepository;    
+    private readonly IModuleManager _moduleManager;
 
     public EntityConfigAppService(
         IRepository<EntityConfig, Guid> repository,
-        EntityConfigurationStore entityConfigurationStore,
+        IEntityConfigurationStore entityConfigurationStore,
         IEntityConfigManager entityConfigManager,
-        ITypeFinder typeFinder,
         IRepository<ConfigurationItem, Guid> configItemRepository,
-        IRepository<EntityProperty, Guid> propertyRepository
-
+        IRepository<EntityProperty, Guid> propertyRepository,
+        IModuleManager moduleManager
         ) : base(repository)
     {
         _entityConfigurationStore = entityConfigurationStore;
         _entityConfigManager = entityConfigManager;
-        _typeFinder = typeFinder;
         _configItemRepository = configItemRepository;
         _propertyRepository = propertyRepository;
+        _moduleManager = moduleManager;
     }
 
     public async Task<FormIdentifier?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
@@ -156,7 +153,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     [HttpPost]
     public async Task<SyncAllResponse> SyncClientApiAsync(SyncAllRequest input)
     {
-        var metadataService = IocManager.Resolve<IMetadataAppService>();
+        var metadataService = IocManager.Resolve<IMetadataProvider>();
 
         var entityModelProvider = IocManager.Resolve<IEntityModelProvider>();
         var models = await entityModelProvider.GetModelsAsync();
@@ -221,18 +218,35 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
         // add new modules (which are missing on client)
         var modulesToAdd = groupped.Where(g => !response.Modules.Any(m => m.Accessor == g.Module)).ToList();
-        foreach (var module in modulesToAdd)
+        if (modulesToAdd.Any()) 
         {
-            var responseModule = new ModuleSyncResponse() { Accessor = module.Module, Status = SyncStatus.OutOfDate };
-            response.Modules.Add(responseModule);
+            var moduleInfos = _moduleManager.GetModuleInfos();
 
-            foreach (var entity in module.Entities) 
+            foreach (var module in modulesToAdd)
             {
-                responseModule.Entities.Add(new OutOfDateEntitySyncResponse { 
-                    Accessor = entity.Accessor,
-                    Status = SyncStatus.OutOfDate,
-                    Metadata = await metadataService.GetAsync(entity.ClassName),
-                });
+                var responseModule = new ModuleSyncResponse() { Accessor = module.Module, Status = SyncStatus.OutOfDate };
+                response.Modules.Add(responseModule);
+
+                var moduleInfo = !string.IsNullOrWhiteSpace(module.Module)
+                    ? moduleInfos.First(m => m.GetModuleAccessor() == module.Module)
+                    : null;
+
+                foreach (var entity in module.Entities)
+                {
+                    var entityType = await metadataService.GetContainerTypeOrNullAsync(moduleInfo?.Name, entity.ClassName);
+                    if (entityType != null) 
+                    {
+                        responseModule.Entities.Add(new OutOfDateEntitySyncResponse
+                        {
+                            Accessor = entity.Accessor,
+                            Status = SyncStatus.OutOfDate,
+                            Metadata = await metadataService.GetAsync(entityType),
+                        });
+                    } else 
+                    { 
+                        // TODO: decide how to handle missing entities. Synchronization shouldn't break on missing entities.
+                    }
+                }
             }
         }
 

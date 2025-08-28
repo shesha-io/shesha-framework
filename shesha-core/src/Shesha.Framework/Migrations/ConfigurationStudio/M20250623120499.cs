@@ -8,6 +8,8 @@ namespace Shesha.Migrations.ConfigurationStudio
     {
         public override void Up()
         {
+            Execute.Sql(@"drop view if exists ""vw_Frwk_PermissionedObjectsFull""");
+
             if (Schema.Table("Core_FormConfigurations").Exists())
                 Delete.Table("Core_FormConfigurations");
 
@@ -52,9 +54,15 @@ namespace Shesha.Migrations.ConfigurationStudio
             Alter.Table("permissioned_objects").InSchema("frwk")
                 .AddColumn("module_id").AsGuid().Nullable().ForeignKey("fk_permissioned_objects_module_id", "frwk", "modules", "id").Indexed();
 
-            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.20-copy permissioned_objects.sql");
+            ExecuteCsScript("20-copy permissioned_objects.sql");
 
             Delete.Table("Frwk_PermissionedObjects");            
+        }
+
+        private void ExecuteCsScript(string script)
+        {
+            IfDatabase("SqlServer").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsMsSql.{script}");
+            IfDatabase("PostgreSql").Execute.EmbeddedScript($"Shesha.Migrations.ConfigurationStudio.ScriptsPostgreSql.{script}");
         }
     }
 }

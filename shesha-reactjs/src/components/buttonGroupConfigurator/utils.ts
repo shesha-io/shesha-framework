@@ -18,6 +18,5 @@ export const initialValues = (): any => {
             radius: { all: 8 }
         },
         shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
-        stylingBox: '{"paddingLeft":"15","paddingBottom":"4","paddingTop":"4","paddingRight":"15"}',
     };
 };

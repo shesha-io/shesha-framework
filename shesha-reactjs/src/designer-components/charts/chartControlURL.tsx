@@ -1,8 +1,8 @@
 import { useGet } from '@/hooks';
-import { Alert, Button, Flex } from 'antd';
+import { Alert, Button } from 'antd';
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import { useChartURLData } from './hooks';
+import { useChartURLData } from './hooks/hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getURLChartDataRefetchParams, renderChart } from './utils';
@@ -31,13 +31,14 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }, [url, props.additionalProperties]);
 
   const fetchData = useCallback(() => {
+    // Early return if already fetching or missing required URL
     if (isFetchingRef.current || !transformedUrl || transformedUrl === '') {
       return;
     }
 
     const newController = new AbortController();
     currentControllerRef.current = newController;
-    
+
     // Set up timeout (configurable, default 5 seconds)
     const timeoutId = setTimeout(() => {
       if (currentControllerRef.current) {
@@ -59,46 +60,64 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         }
         setUrlTypeData(data.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
-        newController?.abort("Request completed successfully");
       })
-      .catch((err: any) => {
+      .catch((err: Error) => {
         console.error('Error fetching URL chart data:', err);
+
+        // Check if this is an intentional abort (reset, unmount, user cancellation, or component initialization)
+        const abortMessage = err?.message || '';
+        const isIntentionalAbort = abortMessage.includes('Resetting chart') ||
+          abortMessage.includes('Unmounting chart') ||
+          abortMessage.includes('Request cancelled by user') ||
+          abortMessage.includes('Component initialization');
+
+        if (err?.name === 'AbortError' && isIntentionalAbort) {
+          // Don't set error for intentional aborts - just clean up
+          isFetchingRef.current = false;
+          return;
+        }
+
         // Check if it's a timeout error
         const isTimeoutError = err?.name === 'AbortError' && err?.message?.includes('timeout');
-        
+
         const altErrorMessage = err instanceof Error ? err.message : 'An error occurred while fetching chart data from URL';
-        const errorMessage = isTimeoutError 
+        const errorMessage = isTimeoutError
           ? `Request timed out after ${requestTimeout / 1000} seconds`
           : altErrorMessage;
         setError(errorMessage);
         setIsLoaded(true);
-        newController?.abort(errorMessage);
       })
       .finally(() => {
         isFetchingRef.current = false;
         clearTimeout(timeoutId);
       });
-  }, [transformedUrl, requestTimeout]);
+  }, [transformedUrl, requestTimeout, refetch, setUrlTypeData, setIsLoaded, setError]);
 
   useEffect(() => {
+    // Only fetch data if URL is properly configured
+    if (!transformedUrl || transformedUrl === '') {
+      // If missing URL, just set loaded state without fetching
+      setIsLoaded(true);
+      setError(null);
+      return;
+    }
+
     // Reset loading state when chart properties change
     setIsLoaded(false);
     setError(null);
-    
-    // Abort any ongoing request
-    if (currentControllerRef.current) {
-      currentControllerRef.current.abort("Resetting chart");
-    }
-    isFetchingRef.current = false;
-    
+
     fetchData();
-  }, [transformedUrl, requestTimeout, fetchData]);
+  }, [transformedUrl, requestTimeout]);
 
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
     return () => {
-      if (currentControllerRef.current) {
-        currentControllerRef.current.abort("Unmounting chart");
+      if (currentControllerRef.current && isFetchingRef.current) {
+        try {
+          currentControllerRef.current.abort("Unmounting chart");
+        } catch {
+          // Ignore abort errors during unmount - this is expected behavior
+        }
       }
     };
   }, []);
@@ -152,7 +171,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         }
       />
     );
-  }, [error, fetchData, theme.application.errorColor]);
+  }, [error, theme.application.errorColor]);
 
   const noDataAlert = useMemo(() => {
     if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
@@ -174,49 +193,41 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const loaderComponent = useMemo(() => {
     if (!state.isLoaded) {
       return (
-        <Flex
-          align="center"
-          justify="center"
-          vertical
-          gap={16}
-        >
-          <ChartLoader chartType={chartType} />
-          <div className={cx(styles.loadingText)}>Loading data...</div>
-          <Button 
-            type="default" 
-            size="small"
-            onClick={() => {
-              if (isFetchingRef.current && currentControllerRef.current) {
-                currentControllerRef.current.abort("Cancel button clicked");
-                isFetchingRef.current = false;
-                setError('Request cancelled by user');
-                setIsLoaded(true);
+        <div className={cx(styles.loadingContainer)}>
+          <ChartLoader chartType={chartType} handleCancelClick={() => {
+            if (isFetchingRef.current && currentControllerRef.current) {
+              try {
+                currentControllerRef.current.abort("Request cancelled by user");
+              } catch {
+                // Ignore abort errors during user cancellation - this is expected behavior
               }
-            }}
-          >
-            Cancel
-          </Button>
-        </Flex>
+              isFetchingRef.current = false;
+              setError('Request cancelled by user');
+              setIsLoaded(true);
+            }
+          }}
+          />
+          <div className={cx(styles.loadingText)}>Loading data...</div>
+        </div>
       );
     }
     return null;
-  }, [state.isLoaded, chartType, cx, styles.loadingText, setIsLoaded]);
+  }, [state.isLoaded, chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded]);
 
   // Memoize chart container styles to prevent unnecessary re-renders
   const chartContainerStyle = useMemo(() => ({
     width: '100%',
     height: '100%',
-    minHeight: '400px',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 0,
-    margin: 0
+    margin: 0,
+    overflow: 'hidden'
   }), []);
 
   const chartInnerStyle = useMemo(() => ({
-    flex: 1,
     width: '100%',
     height: '100%',
     position: 'relative' as const,
@@ -224,7 +235,8 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 0,
-    margin: 0
+    margin: 0,
+    overflow: 'hidden'
   }), []);
 
   const hasValidData = useMemo(() => {

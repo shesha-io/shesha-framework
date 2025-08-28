@@ -977,17 +977,17 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public void EntityReference_IsEmpty_Convert_Test()
         {
-            var expression = ConvertToExpression<ShaRolePermission>(@"{
+            var expression = ConvertToExpression<Person>(@"{
   ""and"": [
     {
       ""!"": {
-        ""var"": ""shaRole""
+        ""var"": ""address""
       }
     }
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.ShaRole == null)", expression?.ToInvariantString());
+            Assert.Equal(@"ent => (ent.Address == null)", expression?.ToInvariantString());
         }
 
 
@@ -996,7 +996,7 @@ namespace Shesha.Tests.JsonLogic
     {
       ""=="": [
         {
-          ""var"": ""shaRole""
+          ""var"": ""address""
         },
         null
       ]
@@ -1006,15 +1006,15 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public void EntityReference_IsNull_Convert()
         {
-            var expression = ConvertToExpression<ShaRolePermission>(_entityReference_IsNull_expression);
+            var expression = ConvertToExpression<Person>(_entityReference_IsNull_expression);
 
-            Assert.Equal($@"ent => (ent.ShaRole == null)", expression?.ToInvariantString());
+            Assert.Equal($@"ent => (ent.Address == null)", expression?.ToInvariantString());
         }
 
         [Fact]
         public async Task EntityReference_IsNull_FetchAsync()
         {
-            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_IsNull_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_entityReference_IsNull_expression);
             Assert.NotNull(data);
         }
 
@@ -1023,7 +1023,7 @@ namespace Shesha.Tests.JsonLogic
     {
       ""!="": [
         {
-          ""var"": ""shaRole""
+          ""var"": ""address""
         },
         null
       ]
@@ -1034,15 +1034,15 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public void EntityReference_IsNotNull_Convert()
         {
-            var expression = ConvertToExpression<ShaRolePermission>(_entityReference_IsNotNull_expression);
+            var expression = ConvertToExpression<Person>(_entityReference_IsNotNull_expression);
 
-            Assert.Equal($@"ent => Not((ent.ShaRole == null))", expression?.ToInvariantString());
+            Assert.Equal($@"ent => Not((ent.Address == null))", expression?.ToInvariantString());
         }
 
         [Fact]
         public async Task EntityReference_IsNotNull_FetchAsync()
         {
-            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_IsNotNull_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_entityReference_IsNotNull_expression);
             Assert.NotNull(data);
         }
 
@@ -1053,9 +1053,9 @@ namespace Shesha.Tests.JsonLogic
         private readonly string _complex_expression = @"{
   ""or"": [
     {
-      ""=="": [
+      ""!="": [
         {
-          ""var"": ""ShaRole""
+          ""var"": ""Address""
         },
         ""852c4011-4e94-463a-9e0d-b0054ab88f7d""
       ]
@@ -1065,7 +1065,7 @@ namespace Shesha.Tests.JsonLogic
         {
           "">"": [
             {
-              ""var"": ""ShaRole.LastModificationTime""
+              ""var"": ""Address.LastModificationTime""
             },
             ""2021-04-25T08:13:55.000Z""
           ]
@@ -1073,7 +1073,7 @@ namespace Shesha.Tests.JsonLogic
         {
           ""=="": [
             {
-              ""var"": ""IsGranted""
+              ""var"": ""IsDeleted""
             },
             false
           ]
@@ -1086,15 +1086,15 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public void ComplexExpression_Convert()
         {
-            var expression = ConvertToExpression<ShaRolePermission>(_complex_expression);
+            var expression = ConvertToExpression<Person>(_complex_expression);
 
-            Assert.Equal("ent => ((ent.ShaRole.Id == \"852c4011-4e94-463a-9e0d-b0054ab88f7d\".ToGuid()) OrElse ((ent.ShaRole.LastModificationTime > Convert(04/25/2021 08:13:59, Nullable`1)) AndAlso (ent.IsGranted == False)))", expression?.ToInvariantString());
+            Assert.Equal("ent => (Not((ent.Address.Id == \"852c4011-4e94-463a-9e0d-b0054ab88f7d\".ToGuid())) OrElse ((ent.Address.LastModificationTime > Convert(04/25/2021 08:13:59, Nullable`1)) AndAlso (ent.IsDeleted == False)))", expression?.ToInvariantString());
         }
 
         [Fact]
         public async Task ComplexExpression_FetchAsync()
         {
-            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_complex_expression);
             Assert.NotNull(data);
         }
 
@@ -1105,31 +1105,31 @@ namespace Shesha.Tests.JsonLogic
         [Fact]
         public async Task ComplexExpression_Fetch_SortBy_AscAsync()
         {
-            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression, queryable => 
-                queryable.OrderBy(nameof(ShaRolePermission.Permission))
+            var data = await TryFetchDataAsync<Person, Guid>(_complex_expression, queryable => 
+                queryable.OrderBy(nameof(Person.FirstName))
             );
 
             Assert.NotNull(data);
 
-            data.Should().BeInAscendingOrder(e => e.Permission);
+            data.Should().BeInAscendingOrder(e => e.FirstName);
         }
 
         [Fact]
         public async Task ComplexExpression_Fetch_SortBy_DescAsync()
         {
-            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression, queryable =>
-                queryable.OrderByDescending(nameof(ShaRolePermission.Permission))
+            var data = await TryFetchDataAsync<Person, Guid>(_complex_expression, queryable =>
+                queryable.OrderByDescending(nameof(Person.FirstName))
             );
 
             Assert.NotNull(data);
 
-            data.Should().BeInDescendingOrder(e => e.Permission);
+            data.Should().BeInDescendingOrder(e => e.FirstName);
         }
 
         [Fact]
         public Task ComplexExpression_Fetch_SortBy_NestedEntity_Property_AscAsync()
         {
-            return TryFetchDataAsync<Person, Guid>(_entityReference_Equals_expression, 
+            return TryFetchDataAsync<Person, Guid>(_complex_expression, 
                 queryable => queryable.OrderBy($"{nameof(Person.User)}.{nameof(Person.User.UserName)}"),
                 data => {
                     Assert.NotNull(data);

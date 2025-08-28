@@ -37,6 +37,7 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
       | React.KeyboardEvent<HTMLInputElement>
   ) => {
     event?.stopPropagation();
+    event?.preventDefault();
     if (performQuickSearch) {
       performQuickSearch(value);
     }

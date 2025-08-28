@@ -15,10 +15,6 @@ export interface ShowModalFormArgs extends ShowModalArgs {
     footerButtons?: ModalFooterButtons;
 };
 
-//executor: (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void
-
-
-
 export interface ShowModalContentArgs extends ShowModalArgs {
     footer?: ReactNode;
     content: ReactNode;
@@ -26,7 +22,7 @@ export interface ShowModalContentArgs extends ShowModalArgs {
 
 type ShowModalContentExecutorArgs<T> = {
     resolve: (value: T | PromiseLike<T>) => void;
-    reject: (reason?: any) => void;
+    reject: (reason?: unknown) => void;
     removeModal: () => void;
 };
 export type ShowModalContentExecutor<T> = (args: ShowModalContentExecutorArgs<T>) => ShowModalContentArgs;
@@ -86,7 +82,7 @@ export class ModalApi implements IModalApi {
         const modalId = nanoid();
 
         return new Promise((resolve, reject) => {
-            const modalProps: IModalProps = {
+            const modalProps: IModalProps<TResponse> = {
                 mode: "edit",
                 id: modalId,
                 title: args.title,
@@ -121,8 +117,7 @@ export class ModalApi implements IModalApi {
                 this._removeModal(modalId);
             };
             const modalArgs = executor({ resolve, reject, removeModal });
-            const modalProps: ICommonModalProps = {
-                mode: "edit",
+            const modalProps: IModalWithContentProps<TResponse> = {
                 id: modalId,
                 title: modalArgs.title,
                 content: modalArgs.content,
@@ -130,10 +125,6 @@ export class ModalApi implements IModalApi {
                 isVisible: true,
                 onCancel: () => {
                     reject("Cancelled");
-                },
-                onSubmitted: (values) => {
-                    removeModal();
-                    resolve(values);
                 },
                 onClose: (positive = false, result) => {
                     if (positive)

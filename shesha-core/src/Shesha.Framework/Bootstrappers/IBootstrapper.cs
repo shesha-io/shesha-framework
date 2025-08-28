@@ -11,6 +11,6 @@ namespace Shesha.Bootstrappers
         /// Body of the bootstrapper
         /// </summary>
         /// <returns></returns>
-        Task ProcessAsync(bool force);
+        Task<bool> ProcessAsync(bool force);
     }
 }

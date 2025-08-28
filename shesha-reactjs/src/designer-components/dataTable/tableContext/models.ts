@@ -13,6 +13,7 @@ export interface ITableContextComponentProps extends Omit<IConfigurableFormCompo
     sourceType?: 'Form' | 'Entity' | 'Url';
     entityType?: string;
     endpoint?: string;
+    customReorderEndpoint?: string;
     components?: IConfigurableFormComponent[]; // If isDynamic we wanna
     dataFetchingMode?: DataFetchingMode;
     defaultPageSize?: number;

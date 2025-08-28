@@ -2,14 +2,13 @@ import classNames from 'classnames';
 import React, { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
 import { ContentType, ITextTypographyProps, ITypographyProps } from './models';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
-import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import { BaseType } from 'antd/lib/typography/Base';
 import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
 import { IConfigurableTheme, useTheme } from '@/providers';
 
-const { Paragraph, Text, Title } = Typography;
+const { Paragraph, Title } = Typography;
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
@@ -77,17 +76,16 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     italic: model?.italic,
     type: chosenType,
     style: {
+      padding: 0,
+      margin: 0,
+      ...{
       ...style,
       color: getColorByContentType(contentType, style, theme),
       fontSize: textType === 'title' ? undefined : style?.fontSize,
       justifyContent: style?.textAlign,
-    },
+    }},
   };
 
-  const textProps: TextProps = {
-    ...baseProps,
-    strong: model?.strong,
-  };
   const paragraphProps: ParagraphProps = {
     ...baseProps,
     strong: model?.strong,
@@ -105,22 +103,22 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Text key={`text-${updateKey}`} {...textProps} className={className}>
+      <Paragraph key={`text-${updateKey}`} {...baseProps} className={className}>
         {children}
-      </Text>
+      </Paragraph>
     );
   }
 
   if (textType === 'paragraph') {
     return (
-      <Paragraph key={`paragraph-${updateKey}`} {...paragraphProps} className={className}>
+      <Paragraph key={`paragraph-${updateKey}`} style={{margin: '0px'}}  {...paragraphProps} className={className}>
         {children}
       </Paragraph>
     );
   }
 
   return (
-    <Title key={`title-${updateKey}`} {...titleProps} className={className}>
+    <Title key={`title-${updateKey}`}  {...titleProps}  style={{...titleProps.style, fontSize: ''}} className={className}>
       {children}
     </Title>
   );
