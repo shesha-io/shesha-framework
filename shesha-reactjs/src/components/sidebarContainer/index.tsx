@@ -7,9 +7,8 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { useCanvas, useShaFormInstance } from '@/index';
+import { useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
 import { calculateAutoZoom, usePinchZoom } from './canvasUtils';
-
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
   rightSidebarProps?: ISidebarProps;
@@ -33,10 +32,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
-  const isSidebarCollapsed =
-    typeof window !== 'undefined' &&
-    localStorage.getItem('SIDEBAR_COLLAPSE') === 'true';
+  const { globalVariables} = useSheshaApplication();
 
+  const isSidebarCollapsed = !globalVariables.isSideBarExpanded;
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
