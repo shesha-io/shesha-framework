@@ -22,8 +22,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
                 .ForMember(e => e.Label, m => m.MapFrom(e => e.Revision.Label))
                 .ForMember(e => e.Description, m => m.MapFrom(e => e.Revision.Description))
                 .ForMember(e => e.ModelType, m => m.MapFrom(e => e.Revision.ModelType))
-                .ForMember(e => e.Markup, m => m.MapFrom(e => e.Revision.Markup))
-            ;
+                .ForMember(e => e.Markup, m => m.MapFrom(e => e.Revision.Markup));
         }
     }
 }

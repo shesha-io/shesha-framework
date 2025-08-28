@@ -3,7 +3,7 @@ import { Dropdown, Empty, Tabs, TabsProps } from 'antd';
 import { useCsTabs } from '../cs/hooks';
 import { DocumentEditor } from './documentEditor';
 import { useStyles } from '../styles';
-import { TabLabel } from './tabLabel';
+import { TabLabel } from './tab-label';
 import { IDocumentInstance } from '../models';
 
 export interface IWorkAreaProps {

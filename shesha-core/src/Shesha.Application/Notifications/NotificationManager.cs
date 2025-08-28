@@ -2,16 +2,12 @@
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
-using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Notifications.Configuration;
-using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
-using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,40 +95,6 @@ namespace Shesha.Notifications
                 .ToList();
 
             return result;
-        }
-
-        public override Task<IConfigurationItemDto> MapToDtoAsync(NotificationTypeConfig item)
-        {
-            
-            var dto = ObjectMapper.Map<NotificationTypeConfigDto>(item);
-            return Task.FromResult<IConfigurationItemDto>(dto);
-        }
-
-        public override async Task<NotificationTypeConfig> CreateItemAsync(CreateItemInput input)
-        {
-            var validationResults = new ValidationResults();
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var notification = new NotificationTypeConfig
-            {
-                Name = input.Name,
-                Module = input.Module,
-                Folder = input.Folder,
-            };
-            notification.Origin = notification;
-
-            await Repository.InsertAsync(notification);
-
-            var revision = notification.MakeNewRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-
-            await RevisionRepository.InsertAsync(revision);
-
-            return notification;
         }
 
         protected override async Task CopyRevisionPropertiesAsync(NotificationTypeConfigRevision source, NotificationTypeConfigRevision destination)

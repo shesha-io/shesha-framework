@@ -1,9 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Validations;
@@ -60,12 +58,6 @@ namespace Shesha.Services.ReferenceLists
             return refList;
         }
 
-        public override Task<IConfigurationItemDto> MapToDtoAsync(ReferenceList item)
-        {
-            var dto = ObjectMapper.Map<ReferenceListDto>(item);
-            return Task.FromResult<IConfigurationItemDto>(dto);
-        }
-
         private async Task CopyItemsAsync(ReferenceListRevision source, ReferenceListRevision destination)
         {
             var srcItems = await _listItemsRepository.GetAll().Where(i => i.ReferenceListRevision == source).ToListAsync();
@@ -102,35 +94,6 @@ namespace Shesha.Services.ReferenceLists
                 Icon = source.Icon,
                 ShortAlias = source.ShortAlias,
             };
-        }
-
-        public override async Task<ReferenceList> CreateItemAsync(CreateItemInput input)
-        {
-            var validationResults = new ValidationResults();
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add($"Reference List with name `{input.Name}` already exists in module `{input.Module.Name}`");
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var refList = new ReferenceList
-            {
-                Name = input.Name,
-                Module = input.Module,
-                Folder = input.Folder,
-            };
-            refList.Origin = refList;
-
-            await Repository.InsertAsync(refList);
-
-            var revision = refList.MakeNewRevision();
-
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-            refList.Normalize();
-
-            await RevisionRepository.InsertAsync(revision);
-
-            return refList;
         }
 
         protected override async Task CopyRevisionPropertiesAsync(ReferenceListRevision source, ReferenceListRevision destination)

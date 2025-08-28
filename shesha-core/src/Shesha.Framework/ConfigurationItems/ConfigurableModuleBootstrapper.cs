@@ -7,7 +7,6 @@ using Abp.Timing;
 using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems.Exceptions;
-using Shesha.ConfigurationItems.New;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Modules;

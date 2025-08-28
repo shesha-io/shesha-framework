@@ -8,7 +8,7 @@ import { ConfigurationStudioProvider } from '@/configuration-studio/cs/contexts'
 import { Layout } from 'antd';
 import { useStyles } from './styles';
 import Image from 'next/image';
-import { UserProfileBlock } from './components/userProfileDropdown';
+import { UserProfileBlock } from './components/user-profile-dropdown';
 import { withAuth } from '@/hocs/withAuth';
 import { QuickInfoIcons } from './components/quick-info-icons';
 import { ItemToolbarHolder } from './components/item-toolbar-holder';

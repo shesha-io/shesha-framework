@@ -2,16 +2,10 @@
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Dto.Interfaces;
-using Shesha.Extensions;
 using Shesha.Permissions;
-using Shesha.Validations;
-using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
@@ -42,48 +36,6 @@ namespace Shesha.Web.FormsDesigner.Services
         public Task<List<FormConfiguration>> GetAllAsync()
         {
             return Repository.GetAllListAsync();
-        }
-
-        public override Task<IConfigurationItemDto> MapToDtoAsync(FormConfiguration item)
-        {
-            return Task.FromResult<IConfigurationItemDto>(ObjectMapper.Map<FormConfigurationDto>(item));
-        }
-
-        public override async Task<FormConfiguration> CreateItemAsync(CreateItemInput input)
-        {
-            var validationResults = new ValidationResults();
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            /* TODO: V1 review. Implement templates processing, combine with new templating engine
-            var template = input.TemplateId.HasValue
-                ? await Repository.GetAsync(input.TemplateId.Value)
-                : null;
-            */
-
-            var form = new FormConfiguration {
-                Name = input.Name,
-                Module = input.Module,
-                Folder = input.Folder,
-            };
-            form.Origin = form;
-
-            await Repository.InsertAsync(form);
-
-            var revision = form.MakeNewRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-            revision.Markup = string.Empty;
-            revision.IsTemplate = false;
-            form.Normalize();
-
-            await RevisionRepository.InsertAsync(revision);
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            return form;
         }
 
         protected override Task CopyRevisionPropertiesAsync(FormConfigurationRevision source, FormConfigurationRevision destination)

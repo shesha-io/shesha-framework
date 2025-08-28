@@ -10,7 +10,6 @@ using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
-using Shesha.ConfigurationItems.New;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
@@ -145,35 +144,6 @@ namespace Shesha.Web.FormsDesigner.Services
             }
 
             return result;
-        }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<FormConfigurationDto> GetByNameConfigStudioAsync(GetFormByFullNameInput input)
-        {
-            var mode = _cfRuntime.ViewMode;
-
-
-            var resolver = IocManager.Resolve<IConfigurationItemResolver>();
-            var form = await resolver.GetItemAsync<FormConfiguration>(input.Module, input.Name);
-
-            if (form == null)
-                throw new FormNotFoundException(input.Module, input.Name);
-
-            var dto = await MapToEntityDtoAsync(form);
-
-            /*
-            dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
-            */
-            if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
-            {
-                dto.Markup = null;
-                dto.CacheMd5 = "";
-            }
-
-            return dto;
         }
 
         /// <summary>

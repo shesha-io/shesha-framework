@@ -5,6 +5,7 @@ import { Popover, Typography } from 'antd';
 import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { NodeIndicator } from './nodeIndicators';
 import { gray } from '@ant-design/colors';
+import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
 
 const { Text } = Typography;
 
@@ -37,6 +38,7 @@ const GRAY_OUT_STYLE = { color: gray.primary };
 
 export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
     const isDevMode = useIsDevMode();
+    const { isDragging } = useCsTreeDnd();
 
     const items: LabelValueOrNode[] = useMemo(() => {
         const result: LabelValueOrNode[] = [];
@@ -64,7 +66,7 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
         ? GRAY_OUT_STYLE
         : undefined;
 
-    return items.length > 0
+    return items.length > 0 && !isDragging
         ? (
             <Popover
                 content={
@@ -73,7 +75,8 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
                     </div>
                 }
                 trigger='hover'
-                mouseEnterDelay={0.3}
+                placement="bottomLeft"
+                mouseEnterDelay={0.4}
             >
                 <span style={nodeStyle}>{children} <NodeIndicator node={node} /></span>
             </Popover>

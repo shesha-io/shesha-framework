@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { IDocumentInstance, isCIDocument } from '../models';
 import { useStyles } from '../styles';
-import { DocumentInstanceProvider } from '../documentInstance/provider';
+import { DocumentInstanceProvider } from '../document-instance/provider';
 import { Result } from 'antd';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DocumentToolbar } from './documentToolbar';

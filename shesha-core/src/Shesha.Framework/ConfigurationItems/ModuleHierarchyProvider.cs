@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shesha.ConfigurationItems.New
+namespace Shesha.ConfigurationItems
 {
     /// <summary>
     /// Modules hierarchy provider

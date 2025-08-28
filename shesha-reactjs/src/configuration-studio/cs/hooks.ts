@@ -51,6 +51,19 @@ export const useCsTree = (): UseCsTreeResponse => {
     };
 };
 
+export type UseCsTreeDndResponse = {
+    readonly isDragging: boolean;
+    setIsDragging: (isDragging: boolean) => void;
+};
+export const useCsTreeDnd = (): UseCsTreeDndResponse => {
+    const cs = useConfigurationStudio();
+    useCsSubscription('tree-dnd');
+    return {
+        isDragging: cs.isTreeDragging,
+        setIsDragging: cs.setIsTreeDragging,
+    };
+};
+
 export type UseCsTabsResponse = {
     readonly docs: IDocumentInstance[];
     readonly activeDocId?: string;

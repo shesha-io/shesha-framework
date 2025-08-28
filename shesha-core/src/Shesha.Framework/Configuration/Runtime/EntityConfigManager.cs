@@ -97,16 +97,6 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        public override Task<IConfigurationItemDto> MapToDtoAsync(EntityConfig item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<EntityConfig> CreateItemAsync(CreateItemInput input)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override async Task CopyRevisionPropertiesAsync(EntityConfigRevision source, EntityConfigRevision destination)
         {
             destination.TypeShortAlias = source.TypeShortAlias;

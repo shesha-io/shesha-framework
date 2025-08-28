@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shesha.ConfigurationItems.New
+namespace Shesha.ConfigurationItems
 {
     /// <summary>
     /// Modules hierarchy provider

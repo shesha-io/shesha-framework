@@ -74,6 +74,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                     >.${prefixCls}-tree{
                         height:100%;
                     }
+                    .${prefixCls}-tree-treenode {
+                      .${prefixCls}-tree-draggable-icon {
+                        display: none;
+                      }
+                    }
                 }
             }
         }

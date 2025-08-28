@@ -105,13 +105,6 @@ namespace Shesha.Services.Settings
         }
 
         /// inheritedDoc
-        public override Task<IConfigurationItemDto> MapToDtoAsync(SettingConfiguration item)
-        {
-            var dto = ObjectMapper.Map<SettingDefinitionDto>(item);
-            return Task.FromResult<IConfigurationItemDto>(dto);
-        }
-
-        /// inheritedDoc
         public Task<SettingValue?> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             return WithUnitOfWorkAsync(async () => {
@@ -199,11 +192,6 @@ namespace Shesha.Services.Settings
 
             var cacheKey = GetCacheKey(new CacheKeyArgs(eventData.Entity));
             await _cacheHolder.Cache.RemoveAsync(cacheKey);
-        }
-
-        public override Task<SettingConfiguration> CreateItemAsync(CreateItemInput input)
-        {
-            throw new NotImplementedException();
         }
 
         protected override Task CopyRevisionPropertiesAsync(SettingConfigurationRevision source, SettingConfigurationRevision destination)

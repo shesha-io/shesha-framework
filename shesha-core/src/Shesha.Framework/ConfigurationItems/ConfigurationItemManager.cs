@@ -2,11 +2,12 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
-using Shesha.ConfigurationItems.New;
 using Shesha.Domain;
+using Shesha.Dto;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Validations;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -129,7 +130,22 @@ namespace Shesha.ConfigurationItems
         protected abstract Task CopyRevisionPropertiesAsync(TRevision source, TRevision destination);
 
         /// inheritedDoc
-        public abstract Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
+        public virtual Task<IConfigurationItemDto> MapToDtoAsync(TItem item) 
+        {
+            var revision = item.LatestRevision;
+
+            var dto = new ConfigurationItemDto
+            {
+                Id = item.Id,
+                ModuleId = item.Module?.Id,
+                OriginId = item.Origin?.Id,
+                Module = item.Module?.Name,
+                Name = item.Name,
+                Label = revision.Label,
+                Description = revision.Description,
+            };
+            return Task.FromResult<IConfigurationItemDto>(dto);
+        }
 
         /// inheritedDoc
         public virtual async Task<TItem> ExposeAsync(TItem item, Module module)
@@ -192,7 +208,35 @@ namespace Shesha.ConfigurationItems
             return await Repository.GetAsync(actualItem.ItemId);
         }
 
-        public abstract Task<TItem> CreateItemAsync(CreateItemInput input);
+        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input) 
+        {
+            var validationResults = new ValidationResults();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            var item = new TItem
+            {
+                Name = input.Name,
+                Module = input.Module,
+                Folder = input.Folder,
+            };
+            item.Origin = item;
+
+            await Repository.InsertAsync(item);
+
+            var revision = item.MakeNewRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            item.Normalize();
+
+            await RevisionRepository.InsertAsync(revision);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            return item;
+        }
 
         async Task<ConfigurationItem> IConfigurationItemManager.CreateItemAsync(CreateItemInput input)
         {

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { FormFullName, HttpClientApi } from "@/providers";
 import { moveTreeNodeAsync, MoveNodePayload, fetchFlatTreeAsync, deleteFolderAsync, fetchItemTypesAsync, deleteConfigurationItemAsync, duplicateItemAsync } from "../apis";
-import { ConfigItemTreeNode, FolderTreeNode, ForceRenderFunc, IDocumentInstance, isConfigItemTreeNode, ItemTypeDefinition, TreeNode, TreeNodeType } from "../models";
+import { ConfigItemTreeNode, FolderTreeNode, ForceRenderFunc, IDocumentInstance, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ItemTypeDefinition, TreeNode, TreeNodeType } from "../models";
 import { IErrorInfo } from "@/interfaces";
 import { DocumentDefinition, DocumentDefinitions, CIDocument, DocumentBase, StoredDocumentInfo } from "../models";
 import { IAsyncStorage } from "../storage";
@@ -50,7 +50,7 @@ interface CreateItemResponse {
 };
 
 export type CsSubscription = (cs: IConfigurationStudio) => void;
-export type CsSubscriptionType = 'tree' | 'tabs' | 'doc';
+export type CsSubscriptionType = 'tree' | 'tabs' | 'doc' | 'tree-dnd';
 
 export type CreateFolderArgs = {
     moduleId: string;
@@ -84,6 +84,8 @@ export interface IConfigurationStudio {
     readonly treeSelectedKeys: React.Key[];
     readonly treeSelectedNode?: TreeNode;
     readonly treeSelectedItemNode?: ConfigItemTreeNode;
+    readonly isTreeDragging: boolean;
+    setIsTreeDragging: (isDragging: boolean) => void;
 
     readonly itemTypes: ItemTypeDefinition[];
     toolbarRef?: MutableRefObject<any>;
@@ -99,6 +101,8 @@ export interface IConfigurationStudio {
 
     //#region selection and tabs
     selectTreeNode: (node?: TreeNode) => void;
+    clickTreeNode: (node: TreeNode) => void;
+
     docs: IDocumentInstance[];
     activeDocId?: string;
     activeDocument?: IDocumentInstance;
@@ -168,6 +172,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     treeLoadingState: ProcessingState;
 
     private _selectedNodeId?: string;
+    private _isTreeDragging: boolean;    
     private _treeNodes: TreeNode[] = [];
     private _treeNodesMap: Map<string, TreeNode> = new Map<string, TreeNode>();
     private _treeExpandedKeys: React.Key[] = [];
@@ -238,6 +243,15 @@ export class ConfigurationStudio implements IConfigurationStudio {
             : undefined;
     };
 
+    get isTreeDragging(): boolean {
+        return this._isTreeDragging;
+    };
+
+    setIsTreeDragging = (value: boolean) => {
+        this._isTreeDragging = value;
+        this.notifySubscribers(['tree-dnd']);
+    };
+
     get treeSelectedItemNode(): ConfigItemTreeNode | undefined {
         const node = this.treeSelectedNode;
         return isConfigItemTreeNode(node) ? node : undefined;
@@ -281,6 +295,29 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this.notifySubscribers(['tree']);
     };
 
+    isTreeNodeExpanded = (nodeId: string): boolean => this._treeExpandedKeys.includes(nodeId);
+    toggleTreeNode = (nodeId: string, expanded: boolean): void => {
+        const current = this.isTreeNodeExpanded(nodeId);
+        if (current === expanded)
+            return;
+
+        if (expanded)
+            this._treeExpandedKeys = [...this._treeExpandedKeys, nodeId];
+        else
+            this._treeExpandedKeys = this._treeExpandedKeys.filter(key => key !== nodeId);
+        this.notifySubscribers(['tree']);
+    };
+    expandTreeNode = (nodeId: string): void => {
+        this.toggleTreeNode(nodeId, true);
+    };
+
+    clickTreeNode = (node: TreeNode) => {
+        if (isFolderTreeNode(node) || isModuleTreeNode(node)) {
+            const expanded = this.isTreeNodeExpanded(node.id);
+            this.toggleTreeNode(node.id, !expanded);
+        }
+    };
+
     selectTreeNode = async (node?: TreeNode) => {
         this.log('selectTreeNode', node);
 
@@ -320,7 +357,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 itemId: d.itemId,
                 label: node.name,
                 moduleId: node.moduleId,
-                moduleName: node.moduleName,                
+                moduleName: node.moduleName,
                 flags: node.flags,
             });
         })
@@ -669,9 +706,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
             const treeNode = this._treeNodesMap.get(response.id);
 
             if (treeNode && isConfigItemTreeNode(treeNode)) {
-                if (treeNode.parentId && !(this._treeExpandedKeys.includes(treeNode.parentId))) {
-                    this._treeExpandedKeys.push(treeNode.parentId);
-                    this.notifySubscribers(['tree']);
+                if (treeNode.parentId && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+                    this.expandTreeNode(treeNode.parentId);
                 }
 
                 // load item, add new tab and select
@@ -738,14 +774,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 const treeNode = this._treeNodesMap.get(duplicateId);
 
                 if (treeNode && isConfigItemTreeNode(treeNode)) {
-                    if (treeNode.parentId && !(this._treeExpandedKeys.includes(treeNode.parentId))) {
-                        this._treeExpandedKeys.push(treeNode.parentId);
-                        this.notifySubscribers(['tree']);
+                    if (treeNode.parentId && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+                        this.expandTreeNode(treeNode.parentId);
                     }
 
                     // load item, add new tab and select
-                    const newTab = await this.createNewTabAsync(treeNode);
 
+                    const newTab = await this.createNewTabAsync(treeNode);
                     // select new tab
                     await this.selectTabAsync(newTab);
                     this.notifySubscribers(['tabs']);

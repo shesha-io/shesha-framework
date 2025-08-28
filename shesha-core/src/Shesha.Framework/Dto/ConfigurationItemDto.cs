@@ -8,7 +8,7 @@ namespace Shesha.Dto
     /// <summary>
     /// Base class of ConfigurationItem DTO
     /// </summary>
-    public abstract class ConfigurationItemDto : EntityDto<Guid>, IConfigurationItemDto
+    public class ConfigurationItemDto : EntityDto<Guid>, IConfigurationItemDto
     {
         /// <summary>
         /// Module Id
@@ -43,9 +43,6 @@ namespace Shesha.Dto
         public string Name { get; set; } = string.Empty;
         public string? Label { get; set; }
         public string? Description { get; set; }
-        public bool HardLinkToApplication { get; set; }
-        public string? Namespace { get; set; }
-        public int? NoSelectionValue { get; set; }
         public bool Suppress { get; set; }
     }
 }

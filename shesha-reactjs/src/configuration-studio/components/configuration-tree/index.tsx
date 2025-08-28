@@ -1,10 +1,10 @@
 import { Dropdown, Input, MenuProps, Spin, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isTreeNode, TreeNode } from '../../models';
+import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, TreeNode } from '../../models';
 import { DownOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components';
-import { useCsTree } from '../../cs/hooks';
+import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { buildNodeContextMenu } from '../../menu-utils';
 import { useStyles } from '../../styles';
@@ -14,13 +14,16 @@ import { DropPositions } from './models';
 
 export interface IConfigurationTreeProps {
 }
-type OnSelectHandler = TreeProps['onSelect'];
+type OnSelectHandler = TreeProps<TreeNode>['onSelect'];
+type OnClickHandler = TreeProps<TreeNode>['onClick'];
 type IsDraggable = TreeProps<TreeNode>['draggable'];
 type AllowDrop = TreeProps<TreeNode>['allowDrop'];
 type OnDrop = TreeProps<TreeNode>['onDrop'];
 type OnRightClick = TreeProps<TreeNode>['onRightClick'];
 type MenuItems = MenuProps['items'];
 type OnTreeKeyDown = TreeProps<TreeNode>['onKeyDown'];
+type OnDragStart = TreeProps<TreeNode>['onDragStart'];
+type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
     return isConfigItemTreeNode(node) || isFolderTreeNode(node);
@@ -58,6 +61,7 @@ type DndState = {
 export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
     const cs = useConfigurationStudio();
     const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
+    const { setIsDragging } = useCsTreeDnd();
     const [contextNode, setContextNode] = useState<TreeNode>(null);
     const { styles } = useStyles();
     const [dndState, setDndState] = useState<DndState>();
@@ -69,8 +73,10 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
             ? info.selectedNodes[0]
             : undefined;
 
-        const node = isTreeNode(selectedNode) ? selectedNode : undefined;
-        cs.selectTreeNode(node);
+        cs.selectTreeNode(selectedNode);
+    };
+    const handleClick: OnClickHandler = (_, node) => {
+        cs.clickTreeNode(node);
     };
 
     const getNewFolderId = (dropPosition: number, dropNode: TreeNode): string | undefined => {
@@ -136,6 +142,14 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
         setQuickSearch(value);
     };
 
+    const handleDragStart: OnDragStart = () => {
+        setIsDragging(true);
+    };
+
+    const handleDragEnd: OnDragEnd = () => {
+        setIsDragging(false);
+    };
+
     const handleKeyDown: OnTreeKeyDown = (_e) => {
         //console.log('LOG: key', e.key);
     };
@@ -184,10 +198,13 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                                 draggable={isNodeDraggable}
                                 allowDrop={allowNodeDropWrapper}
                                 onDrop={handleNodeDrop}
+                                onDragStart={handleDragStart}
+                                onDragEnd={handleDragEnd}
                                 onRightClick={handleNodeRightClick}
                                 expandedKeys={expandedKeys}
 
                                 onSelect={handleSelect}
+                                onClick={handleClick}
                                 selectedKeys={selectedKeys}
                                 onExpand={onNodeExpand}
                                 onKeyDown={handleKeyDown}
