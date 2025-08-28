@@ -76,7 +76,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const { theme } = useTheme();
   const uploadDraggerSpanRef = useRef(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
@@ -109,9 +109,22 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   };
 
+  const showDeleteConfirmation = () => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile();
+      }
+    });
+  };
+
   const onDeleteClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-    deleteFile();
+    showDeleteConfirmation();
   };
 
   const onPreview = () => {
