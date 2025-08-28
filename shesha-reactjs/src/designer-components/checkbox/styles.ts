@@ -6,13 +6,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
     const {fontWeight,backgroundImage, backgroundColor, ...rest} = style;
 
     const borderWidthFromWeight = (weight) => {
-        console.log("Weight::", weight);
         switch(weight){
             case '100':
                 return '1px';
             case '400':
                 return '2px';
-
             case '500':
                 return '3px';
             case '700':
