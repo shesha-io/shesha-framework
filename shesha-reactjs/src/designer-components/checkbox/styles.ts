@@ -1,12 +1,12 @@
 import { createStyles } from '@/styles';
 import React from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { style:React.CSSProperties }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { style: React.CSSProperties }) => {
 
-    const {fontWeight,backgroundImage, backgroundColor, ...rest} = style;
+    const { fontWeight, backgroundImage, backgroundColor, ...rest } = style;
 
     const borderWidthFromWeight = (weight) => {
-        switch(weight){
+        switch (weight) {
             case '100':
                 return '1px';
             case '400':
@@ -18,10 +18,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
             case '900':
                 return '5px';
             default:
-                return '2px'
-        }
-        
-    }
+                return '2px';
+        };
+    };
+
     const checkbox = cx("sha-checkbox", css`
       .${prefixCls}-checkbox {
         .${prefixCls}-checkbox-inner {
