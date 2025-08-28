@@ -4,9 +4,9 @@ export type ProcessingState = 'idle' | 'processing' | 'done' | 'failed';
 
 export interface IDocumentEditorState {
     loadingState: ProcessingState;
-    loadingError?: any;
+    loadingError?: unknown;
     savingState: ProcessingState;
-    savingError?: any;
+    savingError?: unknown;
 
     isReadOnly: boolean;
     isModified: boolean;

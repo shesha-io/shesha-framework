@@ -12,17 +12,12 @@ import hooksPlugin from "eslint-plugin-react-hooks";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default [{
+const baseTsConfig = {
     files: [
-        "**/*.ts",
-        "**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.tsx",
     ],
     ignores: [
-        ".next/**/*",
-        "dist/**/*",
-        ".out/**/*",
-        "node_modules/**/*",
-        "example/**/*",
         "src/apis/*",
         "**/__tests__/**/*",
     ],
@@ -265,16 +260,45 @@ export default [{
             markers: ["/"],
         }],
     }
-},
-{
-    files: ['**/*.js', '**/*.mjs'],
-    ...js.configs.recommended,
-    languageOptions: {
-        sourceType: 'module',
-        ecmaVersion: 'latest',
+};
+
+export default [
+    {
+        ...baseTsConfig,
+        files: [
+            "src/**/*.ts",
+            "src/**/*.tsx",
+        ],
+        ignores: [...baseTsConfig.ignores, "src/configuration-studio/**/*"],
     },
-    rules: {
-        '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
-    }
-},
+    {
+        ...baseTsConfig,
+        files: [
+            "src/configuration-studio/**/*.ts",
+            "src/configuration-studio/**/*.tsx",
+        ],
+        rules: {
+            ...baseTsConfig.rules,
+            "@typescript-eslint/no-explicit-any": "error",
+            "react-hooks/exhaustive-deps": "error",
+            "@typescript-eslint/no-unsafe-call": "error",
+            "@typescript-eslint/no-unsafe-member-access": "error",
+            "@typescript-eslint/no-unsafe-argument": "error",
+            "@typescript-eslint/no-unsafe-assignment": "error",
+            "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
+            //"@typescript-eslint/no-unnecessary-condition": "error",
+            "no-unsafe-optional-chaining": "error",
+        },
+    },
+    {
+        files: ['**/*.js', '**/*.mjs'],
+        ...js.configs.recommended,
+        languageOptions: {
+            sourceType: 'module',
+            ecmaVersion: 'latest',
+        },
+        rules: {
+            '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
+        }
+    },
 ];

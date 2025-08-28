@@ -91,7 +91,7 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
             treeNodeMap: treeNodeMap,
         };
     } catch (error) {
-        throw new Error('Failed to convert tree', error);
+        throw new Error('Failed to convert tree', { cause: error });
     }
 };
 

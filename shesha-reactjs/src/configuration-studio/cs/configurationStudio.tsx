@@ -21,7 +21,7 @@ export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
     status: LoadingStatus;
     hint?: string;
-    error?: IErrorInfo;
+    error?: IErrorInfo | unknown;
 }
 
 type DynamicProperties<K extends string | number | symbol, T> = {
@@ -88,7 +88,7 @@ export interface IConfigurationStudio {
     setIsTreeDragging: (isDragging: boolean) => void;
 
     readonly itemTypes: ItemTypeDefinition[];
-    toolbarRef?: MutableRefObject<any>;
+    toolbarRef?: MutableRefObject<HTMLDivElement>;
     setDocumentToolbarRerenderer: (itemId: string, forceRender: ForceRenderFunc) => void;
 
     onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
@@ -155,7 +155,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     private storage: IAsyncStorage;
     private subscriptions: Map<CsSubscriptionType, Set<CsSubscription>>;
 
-    toolbarRef?: MutableRefObject<any>;
+    toolbarRef?: MutableRefObject<HTMLDivElement>;
     findDoc = (itemId?: string): IDocumentInstance | undefined => {
         return itemId
             ? this.docs.find(d => d.itemId === itemId)
@@ -539,13 +539,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     //#endregion
 
-    log = (...args) => {
+    log = (...args: unknown[]) => {
         if (this.logEnabled) {
-            // Get the stack trace and extract the caller's location
-            // const stack = new Error().stack?.split('\n')[2]?.trim() || '';
-            // const normalizedStack = replaceAllSourceUrls(stack);
-            //console.log(`%c[cs]`, 'color: blue; font-weight: bold', ...args, `\n${normalizedStack}`);
-
             console.trace(`%c[cs]`, 'color: blue; font-weight: bold', ...args);
         }
     };
@@ -875,7 +870,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     //#endregion
 
-    showError = (errorMessage: string, _error?: any) => {
+    showError = (errorMessage: string, _error?: unknown) => {
         this.notificationApi.error({ message: errorMessage });
     };
 
