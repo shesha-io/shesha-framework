@@ -7,7 +7,7 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { useCanvas } from '@/index';
+import { useCanvas, useShaFormInstance } from '@/index';
 import { calculateAutoZoom, usePinchZoom } from './canvasUtils';
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
@@ -16,6 +16,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   header?: ReactNode | (() => ReactNode);
   sideBarWidth?: number;
   allowFullCollapse?: boolean;
+  renderSource: 'modal' | 'designer-page';
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -25,7 +26,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
+  renderSource
 }) => {
+  const { formMode } = useShaFormInstance();
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
@@ -53,7 +56,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   useEffect(() => {
     setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-    setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSidebarCollapsed}) : zoom);
+    setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSidebarCollapsed, renderSource}) : zoom);
   }, [isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSidebarCollapsed]);
   
 
@@ -64,6 +67,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
   );
+
+  const isDesigner = formMode === 'designer';
 
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
@@ -113,7 +118,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>{children}</div>
+          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' } : {}}>{children}</div>
         </div>
         {renderSidebar('right')}
       </SizableColumns>

@@ -13,6 +13,7 @@ import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
 
 export interface IDesignerMainAreaProps {
+    renderSource?: "modal" | "designer-page";
 }
 
 const rightSidebarProps = {
@@ -21,7 +22,7 @@ const rightSidebarProps = {
   placeholder: 'Properties',
 };
 
-export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
+export const DesignerMainArea: FC<IDesignerMainAreaProps> = ({ renderSource }) => {
     const isDebug = useFormDesignerStateSelector(state => state.isDebug);
     const readOnly = useFormDesignerStateSelector(state => state.readOnly);
     const formSettings = useFormDesignerStateSelector(state => state.formSettings);
@@ -57,6 +58,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                     <SidebarContainer
                         leftSidebarProps={leftSidebarProps}
                         rightSidebarProps={rightSidebarProps}
+                        renderSource={renderSource}
                     >
                         {children}
                     </SidebarContainer>

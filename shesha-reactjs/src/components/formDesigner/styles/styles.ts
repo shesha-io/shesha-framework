@@ -390,11 +390,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: none;
              }
                 > div:not(.sha-drop-hint) {
-                    height: 100vh;
+                    min-height: 100vh;
                 }
                     
-                > div:not(.sha-drop-hint):not(:has(.sha-component)) {
-                    background: url("${getFormDesignerBackgroundSvg()}") repeat;
+                > .sha-components-container-inner:not(:has(.sha-component)) {
+                    background: url("${getFormDesignerBackgroundSvg()}");
                     background-size: 25vw;
                     background-repeat: no-repeat;
                     background-position: 50% 50%;
