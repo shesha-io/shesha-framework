@@ -16,6 +16,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   sideBarWidth?: number;
   allowFullCollapse?: boolean;
   renderSource?: 'modal' | 'designer-page';
+  canZoom?: boolean;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -25,7 +26,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
-  renderSource
+  renderSource,
+  canZoom = false
 }) => {
   const { formMode } = useShaFormInstance();
   const { styles } = useStyles();
@@ -55,9 +57,11 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   );
 
   useEffect(() => {
-    setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-    setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSidebarCollapsed, renderSource}) : zoom);
-  }, [isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSidebarCollapsed]);
+    if (canZoom) {
+      setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
+      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSidebarCollapsed, renderSource}) : zoom);
+    }
+  }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSidebarCollapsed]);
   
 
   useEffect(()=>{
@@ -118,7 +122,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' } : {}}>{children}</div>
+          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' } : {}}>{children}</div>
         </div>
         {renderSidebar('right')}
       </SizableColumns>

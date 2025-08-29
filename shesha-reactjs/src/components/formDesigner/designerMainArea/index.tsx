@@ -59,6 +59,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = ({ renderSource }) =
                         leftSidebarProps={leftSidebarProps}
                         rightSidebarProps={rightSidebarProps}
                         renderSource={renderSource}
+                        canZoom={true}
                     >
                         {children}
                     </SidebarContainer>
