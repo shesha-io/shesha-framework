@@ -34,7 +34,7 @@ export const DEFAULT_OPTIONS = {
 };
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
-  const { designerWidth = '1024px', sizes = [20, 60, 20], isSidebarCollapsed, renderSource } = params;
+  const { designerWidth = '1024px', sizes = [20, 60, 20], isSidebarCollapsed = true, renderSource } = params;
   const sideMenuWidth = isSidebarCollapsed ? 16 : 206;
   const availableWidthPercent = sizes[1];
   const availableWidth = (availableWidthPercent / 100) * (window.innerWidth - 55 - (renderSource === 'modal' ? 0 : sideMenuWidth));
