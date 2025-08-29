@@ -21,12 +21,12 @@ export const useCsSubscription = (subscriptionType: CsSubscriptionType) => {
 };
 
 export type UseCsTreeResponse = {
-    readonly treeNodes?: TreeNode[];
+    readonly treeNodes: TreeNode[];
     readonly getTreeNodeById: (itemId: string) => TreeNode | undefined;
     readonly treeLoadingState: ProcessingState;
     loadTreeAsync: () => Promise<void>;
 
-    quickSearch: string;
+    quickSearch?: string;
     setQuickSearch: (value: string) => void;
     expandedKeys: ExpandedKeys;
     selectedKeys: SeletcedKeys;

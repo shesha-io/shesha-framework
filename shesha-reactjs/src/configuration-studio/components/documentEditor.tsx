@@ -3,7 +3,6 @@ import { CustomErrorBoundary } from '@/components';
 import { IDocumentInstance, isCIDocument } from '../models';
 import { useStyles } from '../styles';
 import { DocumentInstanceProvider } from '../document-instance/provider';
-import { Result } from 'antd';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DocumentToolbar } from './documentToolbar';
 import { RevisionHistoryDrawer } from './revision-history/drawer';
@@ -19,34 +18,26 @@ export const DocumentEditor: FC<IItemEditorProps> = ({ doc }) => {
         return undefined;
 
     const { definition } = doc;
-    const { Editor, Provider } = definition ?? {};
+    const { Editor, Provider } = definition;
 
-    return Editor
-        ? (
-            <div className={styles.csDocEditor}>
-                <DocumentInstanceProvider documentInstance={doc}>
-                    <CustomErrorBoundary>
-                        <ConditionalWrap
-                            condition={Boolean(Provider)}
-                            wrap={(content) => (
-                                <Provider doc={doc}>
-                                    {content}
-                                </Provider>
-                            )}
-                        >
-                            <DocumentToolbar doc={doc} />
-                            <Editor doc={doc} />
-                            <RevisionHistoryDrawer />
-                        </ConditionalWrap>
-                    </CustomErrorBoundary>
-                </DocumentInstanceProvider>
-            </div>
-        )
-        : (
-            <Result
-                status="500"
-                title="Failed to Open Document"
-                subTitle="The document you are trying to open is not in a recognized format."
-            />
-        );
+    return (
+        <div className={styles.csDocEditor}>
+            <DocumentInstanceProvider documentInstance={doc}>
+                <CustomErrorBoundary>
+                    <ConditionalWrap
+                        condition={Boolean(Provider)}
+                        wrap={(content) => (
+                            <Provider doc={doc}>
+                                {content}
+                            </Provider>
+                        )}
+                    >
+                        <DocumentToolbar doc={doc} />
+                        <Editor doc={doc} />
+                        <RevisionHistoryDrawer />
+                    </ConditionalWrap>
+                </CustomErrorBoundary>
+            </DocumentInstanceProvider>
+        </div>
+    );
 };

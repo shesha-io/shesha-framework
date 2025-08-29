@@ -67,7 +67,6 @@ const ConfigurationStudio: FC<IConfigurationStudioProps> = () => {
                     </Splitter>
                 </Layout.Content>
             </Layout>
-            {false && <ConfigurationItemMenu />}
         </ConfigurationStudioProvider >
     );
 };

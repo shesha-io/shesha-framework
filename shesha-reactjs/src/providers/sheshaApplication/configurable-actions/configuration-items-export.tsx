@@ -14,12 +14,13 @@ import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
 import _ from 'lodash';
+import { isDefined } from '@/configuration-studio/types';
 
 const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
-  exporterRef: MutableRefObject<IExportInterface>;
+  exporterRef: MutableRefObject<IExportInterface | undefined>;
 }
 
 export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
@@ -30,13 +31,16 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
   const onExport = () => {
     setInProgress(true);
 
+    if (!isDefined(exporterRef.current))
+      throw new Error('exporterRef is not defined');
+
     exporterRef.current.exportExecuter().then(() => {
       hideModal();
     }).catch((error) => {
       notification.error({
         message: "Failed to export package",
         icon: null,
-        description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+        description: <ValidationErrors error={error} renderMode="raw" defaultMessage="" />,
       });
       setInProgress(false);
     });

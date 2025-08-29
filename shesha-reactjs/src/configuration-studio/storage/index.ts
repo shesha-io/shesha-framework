@@ -1,8 +1,10 @@
+import { isDefined } from "../types";
+
 type StorageValue = string | number | boolean | object | null;
 
 export interface IAsyncStorage {
-    getAsync<T extends StorageValue>(key: string): Promise<T | null>;
-    setAsync(key: string, value: StorageValue): Promise<void>;
+    getAsync<T extends StorageValue>(key: string): Promise<T | undefined>;
+    setAsync<T extends StorageValue>(key: string, value: T): Promise<void>;
     removeAsync(key: string): Promise<void>;
     clearAsync(): Promise<void>;
     hasAsync(key: string): Promise<boolean>;
@@ -10,7 +12,7 @@ export interface IAsyncStorage {
 }
 
 class AsyncLocalStorage implements IAsyncStorage {
-    private static instance: AsyncLocalStorage;
+    private static instance?: AsyncLocalStorage;
 
     private constructor() {
         //
@@ -23,12 +25,12 @@ class AsyncLocalStorage implements IAsyncStorage {
         return AsyncLocalStorage.instance;
     }
 
-    public getAsync<T extends StorageValue>(key: string): Promise<T | null> {
+    public getAsync<T extends StorageValue>(key: string): Promise<T | undefined> {
         return new Promise((resolve) => {
             try {
                 const item = localStorage.getItem(key);
                 if (item === null) {
-                    resolve(null);
+                    resolve(undefined);
                     return;
                 }
 
@@ -39,15 +41,15 @@ class AsyncLocalStorage implements IAsyncStorage {
                 }
             } catch (error) {
                 console.error(`Error getting item from localStorage: ${error}`);
-                resolve(null);
+                resolve(undefined);
             }
         });
     }
 
-    public setAsync(key: string, value: StorageValue): Promise<void> {
+    public setAsync(key: string, value?: StorageValue): Promise<void> {
         return new Promise((resolve) => {
             try {
-                if (value === null || value === undefined) {
+                if (!isDefined(value)) {
                     this.removeAsync(key).then(resolve);
                     return;
                 }

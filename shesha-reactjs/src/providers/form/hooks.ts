@@ -2,13 +2,13 @@ import { useCallback, useMemo } from 'react';
 import { FormIdentifier, useSheshaApplication } from '..';
 import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import { getToolboxComponents } from './defaults/toolboxComponents';
-import { useFormPersister } from '../formPersisterProvider';
+import { useFormPersisterIfAvailable } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
   const isDevMode = useIsDevMode();
-  const formPersister = useFormPersister(false);
+  const formPersister = useFormPersisterIfAvailable();
 
   const { formId, formProps } = formPersister || {};
 

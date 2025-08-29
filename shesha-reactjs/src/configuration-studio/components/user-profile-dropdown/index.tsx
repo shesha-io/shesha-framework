@@ -33,6 +33,8 @@ export const UserProfileBlock: FC<IUserProfileBlockProps> = () => {
         boxShadow: 'none',
     };
 
+    const userFullName = loginInfo.fullName ?? "Unknown User";
+
     return (
         <Dropdown
             menu={{ items: menuItems }}
@@ -41,8 +43,8 @@ export const UserProfileBlock: FC<IUserProfileBlockProps> = () => {
                 <div style={contentStyle}>
                     <div style={{ padding: "10px" }}>
                         <Space>
-                            <Avatar icon={<UserOutlined />} alt={loginInfo?.fullName} />
-                            <strong>{loginInfo?.fullName}</strong>
+                            <Avatar icon={<UserOutlined />} alt={userFullName} />
+                            <strong>{userFullName}</strong>
                         </Space>
                     </div>
                     <Divider style={{ margin: 0 }} />
@@ -55,7 +57,7 @@ export const UserProfileBlock: FC<IUserProfileBlockProps> = () => {
                 </div>
             )}
         >
-            <Avatar icon={<UserOutlined />} alt={loginInfo?.fullName} />
+            <Avatar icon={<UserOutlined />} alt={userFullName} />
         </Dropdown>
     );
 };

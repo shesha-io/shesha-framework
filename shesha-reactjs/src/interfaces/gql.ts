@@ -44,7 +44,7 @@ export interface ErrorInfo {
 
 export interface AbpWrappedResponse<TData, TError> {
   targetUrl?: string | null;
-  success?: boolean;
+  success: boolean;
   error?: TError;
   unAuthorizedRequest?: boolean;
   __abp?: boolean;

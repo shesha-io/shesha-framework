@@ -11,7 +11,7 @@ export class DocumentInstance implements IDocumentInstance {
     label: string;
     type: DocumentType = 'ci';
     itemType: string;
-    flags?: DocumentFlags;
+    flags: DocumentFlags;
     moduleId: string;
     moduleName: string;
 
@@ -23,15 +23,6 @@ export class DocumentInstance implements IDocumentInstance {
     constructor(args: DocumentInstanceArgs){
         mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
         
-        /*
-        this.definition = definition;
-        this.itemType = itemType;
-        this.itemId = itemId;
-        this.label = label;
-        this.moduleId = moduleId;
-        this.moduleName = moduleName;
-        this.flags = flags;
-        */
         this.isHistoryVisible = false;
     }
     toolbarForceRender?: ForceRenderFunc;

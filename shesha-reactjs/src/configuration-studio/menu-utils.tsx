@@ -4,8 +4,9 @@ import React from "react";
 import { ConfigItemTreeNode, FolderTreeNode, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ModuleTreeNode, TreeNode, TreeNodeType } from "./models";
 import { getIcon } from "./tree-utils";
 import { IConfigurationStudio } from "./cs/configurationStudio";
+import { isDefined } from "./types";
 
-type MenuItemType = MenuProps["items"][number];
+type MenuItemType = NonNullable<MenuProps["items"]>[number];
 
 const getDivider = (): MenuItemType => {
     return {
@@ -18,34 +19,36 @@ export type BuildNodeMenuArgs<TNode extends TreeNode = TreeNode> = {
     node?: TNode;
 };
 
-const buildConfiguraitonItemActionsMenu = (args: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
+const buildConfiguraitonItemActionsMenu = ({ configurationStudio, node }: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
+    if (!node)
+        return [];
     return [
         {
             label: "Rename",
             key: "rename",
             onClick: async () => {
-                await args.configurationStudio.renameItemAsync(args.node);
+                await configurationStudio.renameItemAsync(node);
             },
         },
         {
             label: "Duplicate",
             key: "duplicate",
             onClick: async () => {
-                await args.configurationStudio.duplicateItemAsync(args.node);
+                await configurationStudio.duplicateItemAsync(node);
             },
         },
         {
             label: "Delete",
             key: "delete",
             onClick: async () => {
-                await args.configurationStudio.deleteItemAsync(args.node);
+                await configurationStudio.deleteItemAsync(node);
             },
         },
         {
             label: "Version History",
             key: "versionHistory",
             onClick: async () => {
-                await args.configurationStudio.showRevisionHistoryAsync(args.node);
+                await configurationStudio.showRevisionHistoryAsync(node);
             },
         },
         {
@@ -55,20 +58,22 @@ const buildConfiguraitonItemActionsMenu = (args: BuildNodeMenuArgs<ConfigItemTre
     ];
 };
 
-const buildFolderActionsMenu = (args: BuildNodeMenuArgs<FolderTreeNode>): MenuItemType[] => {
+const buildFolderActionsMenu = ({ configurationStudio, node }: BuildNodeMenuArgs<FolderTreeNode>): MenuItemType[] => {
+    if (!node)
+        return [];
     return [
         {
             label: "Rename",
             key: "rename",
             onClick: async () => {
-                await args.configurationStudio.renameFolderAsync(args.node);
+                await configurationStudio.renameFolderAsync(node);
             },
         },
         {
             label: "Delete",
             key: "delete",
             onClick: async () => {
-                await args.configurationStudio.deleteFolderAsync(args.node);
+                await configurationStudio.deleteFolderAsync(node);
             },
         },
     ];
@@ -77,7 +82,7 @@ const buildFolderActionsMenu = (args: BuildNodeMenuArgs<FolderTreeNode>): MenuIt
 const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: BuildNodeMenuArgs<TreeNode>): MenuItemType[] => {
     if (!isFolderTreeNode(node) && !isModuleTreeNode(node))
         return [];
-    
+
     const moduleId = node.moduleId;
     const folderId = isFolderTreeNode(node) ? node.id : undefined;
 
@@ -123,7 +128,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
                     moduleId: node.moduleId,
                     folderId: isFolderTreeNode(node)
                         ? node.id
-                        : isConfigItemTreeNode(node) && node.parentId !== node.moduleId
+                        : isConfigItemTreeNode(node) && node.parentId !== node.moduleId && isDefined(node.parentId)
                             ? node.parentId
                             : undefined,
                     prevItemId: isConfigItemTreeNode(node)
@@ -145,7 +150,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
                     moduleId: node.moduleId,
                     folderId: isFolderTreeNode(node)
                         ? node.id
-                        : isConfigItemTreeNode(node)
+                        : isConfigItemTreeNode(node) && isDefined(node.parentId)
                             ? node.parentId
                             : undefined
                 });
@@ -153,12 +158,10 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
         },
     ];
 
-    if (configurationStudio.itemTypes) {
-        configurationStudio.itemTypes.forEach((it) => {
-            if (it.createFormId)
-                result.push(buildCreateCIMenuItem(it.friendlyName, it.itemType));
-        });
-    }
+    configurationStudio.itemTypes.forEach((it) => {
+        if (it.createFormId)
+            result.push(buildCreateCIMenuItem(it.friendlyName, it.itemType));
+    });
 
     return result;
 };
@@ -171,24 +174,27 @@ export const buildConfiguraitonItemMenu = (args: BuildNodeMenuArgs<ConfigItemTre
 
 const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
     const { configurationStudio, node } = args;
-    return [
-        {
+    const result: MenuItemType[] = [];
+    if (node)
+        result.push({
             label: "Open",
             key: "open",
             onClick: () => {
                 configurationStudio.openDocById(node.id);
             },
-        },
-        {
-            label: "New",
-            key: "new",
-            children: [
-                ...buildCreateNewItemsMenu(args),
-            ],
-        },
+        });
+    result.push({
+        label: "New",
+        key: "new",
+        children: [
+            ...buildCreateNewItemsMenu(args),
+        ],
+    },
         getDivider(),
-        ...buildConfiguraitonItemActionsMenu(args),
-    ];
+        ...buildConfiguraitonItemActionsMenu(args)
+    );
+
+    return result;
 };
 
 const buildFolderNodeContextMenu = (args: BuildNodeMenuArgs<FolderTreeNode>): MenuItemType[] => {
@@ -239,7 +245,7 @@ export const buildCreateNewMenu = (args: BuildNodeMenuArgs<TreeNode>): MenuItemT
     const serviceItems = buildExposeAndImportExportMenu(args);
     if (result.length > 0 && serviceItems.length > 0)
         result.push(getDivider());
-    
+
     result.push(...serviceItems);
     return result;
 };

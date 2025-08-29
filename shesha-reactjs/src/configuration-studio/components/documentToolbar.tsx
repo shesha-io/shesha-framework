@@ -4,6 +4,7 @@ import { useConfigurationStudio } from '../cs/contexts';
 import { CustomErrorBoundary } from '@/components';
 import { useActiveDoc } from '../cs/hooks';
 import { usePortal } from '@/hooks/usePortal';
+import { isDefined } from '../types';
 
 export interface IDocumentToolbarProps {
     doc: IDocumentInstance;
@@ -12,10 +13,10 @@ export interface IDocumentToolbarProps {
 export const DocumentToolbar: FC<IDocumentToolbarProps> = ({ doc }) => {
     const cs = useConfigurationStudio();
     const activeDoc = useActiveDoc();
-    const Portal = usePortal(cs.toolbarRef.current);
+    const Portal = usePortal(isDefined(cs.toolbarRef) ? cs.toolbarRef.current : null);
 
     const Toolbar = doc.itemId === activeDoc?.itemId
-        ? doc?.definition?.Toolbar
+        ? doc.definition.Toolbar
         : undefined;
 
     const [, forceUpdate] = useState({});

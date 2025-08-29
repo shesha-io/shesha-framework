@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { ConfigurationItemRevision } from './hooks';
 import { DateDisplay } from '@/components';
 import { Col, Row, Typography } from 'antd';
+import { isNullOrWhiteSpace } from '@/configuration-studio/types';
 
 export interface IHistoryItemProps {
     item: ConfigurationItemRevision;
@@ -14,7 +15,7 @@ export const HistoryItem: FC<IHistoryItemProps> = ({ item }) => {
         <div style={{ width: '100%' }}>
             <Row>
                 <Col span={24}>
-                    <Text strong>{item.versionName || item.versionNo}</Text>
+                    <Text strong>{!isNullOrWhiteSpace(item.versionName) ? item.versionName : item.versionNo}</Text>
                 </Col>
             </Row>
             <Row>
@@ -25,7 +26,7 @@ export const HistoryItem: FC<IHistoryItemProps> = ({ item }) => {
                     {item.creatorUserName}
                 </Col>
             </Row>
-            {item.comments && (
+            {!isNullOrWhiteSpace(item.comments) && (
                 <Row>
                     <Col span={24}>
                         <Text type="secondary">{item.comments}</Text>

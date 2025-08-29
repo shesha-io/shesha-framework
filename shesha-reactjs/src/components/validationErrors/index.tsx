@@ -7,7 +7,7 @@ import { useStyles } from './styles/styles';
 import { AxiosResponse } from 'axios';
 
 export interface IValidationErrorsProps extends AlertProps {
-  error: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error;
+  error: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error | unknown;
   renderMode?: 'alert' | 'raw';
   defaultMessage?: string;
 }

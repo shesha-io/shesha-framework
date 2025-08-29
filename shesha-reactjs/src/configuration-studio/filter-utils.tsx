@@ -1,6 +1,7 @@
 import { Typography } from "antd";
 import React, { ReactNode } from "react";
 import { TreeNode } from "./models";
+import { isNullOrWhiteSpace } from "./types";
 
 const { Text } = Typography;
 
@@ -16,7 +17,7 @@ const replaceWithHighLight = (str: string, searchStr: string, replacement: (valu
 
   let index = -1;
   let startIndex = 0;
-  const result = [];
+  const result: ReactNode[] = [];
 
   while ((index = strLower.indexOf(searchStrLower, startIndex)) > -1) {
     if (index > 0)
@@ -35,7 +36,7 @@ const replaceWithHighLight = (str: string, searchStr: string, replacement: (valu
 };
 
 export const getTitleWithHighlight = (node: TreeNode, searchString?: string): ReactNode | undefined => {
-  if (!searchString)
+  if (isNullOrWhiteSpace(searchString))
     return undefined;
 
   const strTitle = node.name;

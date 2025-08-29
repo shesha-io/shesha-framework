@@ -7,6 +7,7 @@ import qs from "qs";
 import { useCallback } from "react";
 import useSWR from "swr";
 import { flatNode2TreeNode } from "./tree-utils";
+import { isDefined } from "@/configuration-studio/types";
 
 export const CS_URLS = {
     GET_FLAT_TREE: '/api/services/app/ConfigurationStudio/GetFlatTree',
@@ -52,7 +53,10 @@ export const deleteFolderAsync = (httpClient: HttpClientApi, payload: DeleteFold
 
 export const fetchFlatTreeAsync = async (httpClient: HttpClientApi): Promise<FlatTreeNode[]> => {
     const response = await httpClient.get<IAjaxResponse<FlatTreeNode[]>>(CS_URLS.GET_FLAT_TREE);
-    return response.data.result;
+    if (response.data.success !== true && !isDefined(response.data.result))
+        throw new Error('Failed to load tree');
+
+    return response.data.result ?? [];
 };
 
 export type TreeState = {
@@ -76,9 +80,10 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
             if (node.moduleId && isConfigItemTreeNode(currentNode))
                 currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
 
-            if (node.parentId !== null) {
+            if (isDefined(node.parentId)) {
                 const parent = treeNodeMap.get(node.parentId);
                 if (parent) {
+                    parent.children ??= [];
                     parent.children.push(currentNode);
                 }
             } else {

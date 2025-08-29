@@ -6,17 +6,17 @@ import useSWR from "swr";
 
 
 export type ConfigurationItemRevision = {
-    label?: string;
-    description?: string;
+    label?: string | null;
+    description?: string | null;
     versionNo: number;
-    versionName?: string;
-    comments?: string;
-    configHash: string;
+    versionName?: string | null;
+    comments?: string | null;
+    configHash: string | null;
     isCompressed: boolean;
     
     creationTime: string;
     creatorUserId?: number;
-    creatorUserName?: string;
+    creatorUserName?: string | null;
 };
 
 export type GetItemRevisionsResponse = {

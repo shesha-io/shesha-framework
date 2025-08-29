@@ -4,6 +4,7 @@ import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, 
 import React from "react";
 import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
+import { isDefined } from "@/configuration-studio/types";
 
 export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
     switch (nodeType) {
@@ -21,7 +22,7 @@ export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: bo
             }
         }
         case TreeNodeType.Folder:
-            return expanded ? <FolderOpenOutlined /> : <FolderOutlined />;
+            return expanded === true ? <FolderOpenOutlined /> : <FolderOutlined />;
         case TreeNodeType.Module:
             return <ProductOutlined />;
         default: return undefined;
@@ -73,6 +74,8 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
             return folderNode;
         }
         case TREE_NODE_TYPES.ConfigurationItem: {
+            if (!isDefined(node.itemType)) 
+                throw new Error("Missing item type in node", { cause: node });
             const itemNode: ConfigItemTreeNode = {
                 ...baseProps,
                 itemType: node.itemType,
