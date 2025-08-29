@@ -19,7 +19,7 @@
   "scripts": {
     "test": "cross-env CI=1 jest --runInBand",
     "test:watch": "jest --watch",
-    "build": "rimraf dist && rollup -c && tsc-alias",
+    "build": "eslint --quiet && rimraf dist && rollup -c && tsc-alias",
     "start": "rollup -c -w",
     "changelog:major": "changelog -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin",
     "changelog:minor": "changelog -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin",
@@ -35,9 +35,9 @@
     "type-check": "tsc --build tsconfig.strictNulls.json"
   },
   "overrides": {
-    "eslint": "^9.14.0",
     "rc-resize-observer": "1.4.0",
-    "stylus": "0.0.1-security"
+    "stylus": "0.0.1-security",
+    "eslint": "$eslint"
   },
   "resolutions": {
     "jodit-react": "4.1.2",
@@ -71,7 +71,6 @@
     "@microsoft/signalr": "^8.0.0",
     "@next/bundle-analyzer": "^14.2.4",
     "@next/eslint-plugin-next": "^14.2.4",
-    "@rollup/plugin-eslint": "^9.0.5",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-multi-entry": "^6.0.1",
     "@rollup/plugin-node-resolve": "^16.0.1",
@@ -105,7 +104,7 @@
     "classnames": "^2.3.1",
     "config": "^3.3.9",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^9.14.0",
+    "eslint": "^9.34.0",
     "eslint-plugin-jsdoc": "^50.4.3",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",

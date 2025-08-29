@@ -8,7 +8,6 @@ import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json' with { type: 'json' };
-import eslint from '@rollup/plugin-eslint';
 import { codeAsText } from "./src/rollup-plugins/codeAsText.js";
 
 export default {
@@ -62,7 +61,6 @@ export default {
   ],
   plugins: [
     codeAsText(),
-    eslint({ throwOnError: true }),
     multi(),
     peerDepsExternal({
       includeDependencies: true,

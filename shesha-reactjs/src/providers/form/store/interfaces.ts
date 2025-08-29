@@ -63,7 +63,7 @@ export interface IDataSubmitContext {
 export type ForceUpdateTrigger = () => void;
 
 export interface IShaFormInstance<Values = any> {
-    applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: any; }): unknown;
+    applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: any }): unknown;
     setDataSubmitContext: (context: IDataSubmitContext) => void;
     setInitialValues: (values: Values) => void;
     setSubmitHandler: (handler: SubmitHandler<Values>) => void;
