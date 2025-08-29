@@ -155,7 +155,7 @@ export const getSettings = () => {
                                                             id: nanoid(),
                                                             type: "propertyAutocomplete",
                                                             propertyName: "dataLoadersSettings.gql.fieldsToFetch",
-                                                            label: "Additional Fields for Fetch",
+                                                            label: "Additional Fields to Fetch",
                                                             mode: "multiple",
                                                             labelAlign: "right",
                                                             hidden: false,
@@ -491,7 +491,7 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 inputType: 'numberField',
                                 propertyName: 'labelCol.span',
-                                label: 'Label span',
+                                label: 'Label Span',
                                 parentId: appearanceTabId,
                                 tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none',
                             })
@@ -499,7 +499,7 @@ export const getSettings = () => {
                                 id: nanoid(),
                                 inputType: 'numberField',
                                 propertyName: 'wrapperCol.span',
-                                label: 'Component span',
+                                label: 'Component Span',
                                 parentId: appearanceTabId,
                                 tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none'
 

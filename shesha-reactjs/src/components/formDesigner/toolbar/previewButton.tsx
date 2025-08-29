@@ -15,12 +15,12 @@ export const PreviewButton: FC<IPreviewButtonProps> = (props) => {
 
     return (
         <Button
+            icon={<EyeOutlined/>}
             onClick={() => {
                 setFormMode(formMode === 'designer' ? 'edit' : 'designer');
                 setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');
             }}
             type={formMode === 'designer' ? 'default' : 'primary'}
-            shape="circle"
             title="Preview"
             size={props.size}
         >

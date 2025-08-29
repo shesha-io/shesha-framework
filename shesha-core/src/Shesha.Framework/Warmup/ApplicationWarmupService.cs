@@ -12,15 +12,20 @@ namespace Shesha.Warmup
     public class ApplicationWarmupService : IAsyncEventHandler<DatabaseInitializedEventData>, ITransientDependency
     {
         private readonly IModelConfigurationManager _entityConfigs;
-        public ILogger Logger = NullLogger.Instance;
+        private readonly SheshaFrameworkModule _frameworkModule;
+        public ILogger Logger = NullLogger.Instance;        
 
-        public ApplicationWarmupService(IModelConfigurationManager entityConfigs)
+        public ApplicationWarmupService(IModelConfigurationManager entityConfigs, SheshaFrameworkModule frameworkModule)
         {
             _entityConfigs = entityConfigs;
+            _frameworkModule = frameworkModule;
         }
 
         public Task HandleEventAsync(DatabaseInitializedEventData eventData)
         {
+            if (_frameworkModule.SkipAppWarmUp)
+                return Task.CompletedTask;
+
             var task = Task.Run(async () =>
             {
                 try

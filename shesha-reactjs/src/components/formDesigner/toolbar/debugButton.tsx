@@ -17,12 +17,10 @@ export const DebugButton: FC<IDebugButtonProps> = () => {
       onClick={() => {
         setDebugMode(!isDebug);
       }}
+      icon={<BugOutlined />}
       title="Debug"
       type="primary"
       ghost={!isDebug}
-      shape="circle"
-    >
-      <BugOutlined />
-    </Button>
+    />
   );
 };
