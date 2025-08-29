@@ -3,7 +3,7 @@ import React, {
     Fragment,
 } from 'react';
 import { filterVisibility } from './utils';
-import { getStyle } from '@/providers/form/utils';
+import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import {
     SidebarContainer,
@@ -52,6 +52,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     } = useDataTableStore();
 
     const { totalRows } = useDataTable();
+    const availableConstantsData = useAvailableConstantsData();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
 
@@ -63,10 +64,10 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             ? items
             : items
                 ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
-                .filter(filterVisibility({ data: formData, globalState }));
+                .filter(filterVisibility(availableConstantsData));
 
         registerConfigurableColumns(id, permissibleColumns);
-    }, [items, isDesignMode]);
+    }, [items, isDesignMode, availableConstantsData]);
 
     const renderSidebarContent = () => {
         if (isFiltering) {
