@@ -177,12 +177,11 @@ export const getSettings = (data: any) => {
                             .addCollapsiblePanel({
                                 id: nanoid(),
                                 propertyName: 'pnlFontStyle',
-                                label: 'Font',
+                                label: 'Check Mark',
                                 labelAlign: 'right',
                                 parentId: styleRouterId,
                                 ghost: true,
                                 collapsible: 'header',
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                                 content: {
                                     id: nanoid(),
                                     components: [...new DesignerToolbarSettings()
@@ -193,19 +192,10 @@ export const getSettings = (data: any) => {
                                             propertyName: 'font',
                                             inputs: [
                                                 {
-                                                    type: 'dropdown',
-                                                    id: nanoid(),
-                                                    label: 'Family',
-                                                    propertyName: 'font.type',
-                                                    hideLabel: true,
-                                                    dropdownOptions: fontTypes,
-                                                },
-                                                {
                                                     type: 'numberField',
                                                     id: nanoid(),
                                                     label: 'Size',
                                                     propertyName: 'font.size',
-                                                    hideLabel: true,
                                                     width: 50,
                                                 },
                                                 {
@@ -224,16 +214,7 @@ export const getSettings = (data: any) => {
                                                     label: 'Color',
                                                     hideLabel: true,
                                                     propertyName: 'font.color',
-                                                },
-                                                {
-                                                    type: 'dropdown',
-                                                    id: nanoid(),
-                                                    label: 'Align',
-                                                    propertyName: 'font.align',
-                                                    hideLabel: true,
-                                                    width: 60,
-                                                    dropdownOptions: textAlignOptions,
-                                                },
+                                                }
                                             ],
                                         })
                                         .toJson()
@@ -598,6 +579,106 @@ export const getSettings = (data: any) => {
                                     ]
                                 }
                             })
+                            .addCollapsiblePanel({
+                                id: nanoid(),
+                                propertyName: 'pnlBoxStyle',
+                                label: 'Box Styles',
+                                labelAlign: 'right',
+                                parentId: styleRouterId,
+                                ghost: true,
+                                collapsible: 'header',
+                                content: {
+                                  id: nanoid(),
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                    .addCollapsiblePanel({
+                                      id: nanoid(),
+                                      propertyName: 'pnlDimensions',
+                                      label: 'Dimensions',
+                                      parentId: 'styleRouter',
+                                      labelAlign: 'right',
+                                      ghost: true,
+                                      collapsible: 'header',
+                                      content: {
+                                        id: nanoid(),
+                                        components: [
+                                          ...new DesignerToolbarSettings()
+                                            .addSettingsInputRow({
+                                              id: nanoid(),
+                                              parentId: styleRouterId,
+                                              inline: true,
+                                              inputs: [
+                                                {
+                                                  type: 'textField',
+                                                  id: nanoid(),
+                                                  label: 'Width',
+                                                  width: 85,
+                                                  propertyName: 'box.dimensions.width',
+                                                  icon: 'widthIcon',
+                                                  tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                                },
+                                                {
+                                                  type: 'textField',
+                                                  id: nanoid(),
+                                                  label: 'Min Width',
+                                                  width: 85,
+                                                  hideLabel: true,
+                                                  propertyName: 'box.dimensions.minWidth',
+                                                  icon: 'minWidthIcon',
+                                                },
+                                                {
+                                                  type: 'textField',
+                                                  id: nanoid(),
+                                                  label: 'Max Width',
+                                                  width: 85,
+                                                  hideLabel: true,
+                                                  propertyName: 'box.dimensions.maxWidth',
+                                                  icon: 'maxWidthIcon',
+                                                },
+                                              ],
+                                            })
+                                            .addSettingsInputRow({
+                                              id: nanoid(),
+                                              parentId: styleRouterId,
+                                              inline: true,
+                                              inputs: [
+                                                {
+                                                  type: 'textField',
+                                                  id: nanoid(),
+                                                  label: 'Height',
+                                                  width: 85,
+                                                  propertyName: 'box.dimensions.height',
+                                                  icon: 'heightIcon',
+                                                  tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                                },
+                                                {
+                                                  type: 'textField',
+                                                  id: nanoid(),
+                                                  label: 'Min Height',
+                                                  width: 85,
+                                                  hideLabel: true,
+                                                  propertyName: 'box.dimensions.minHeight',
+                                                  icon: 'minHeightIcon',
+                                                },
+                                                {
+                                                  type: 'textField',
+                                                  id: nanoid(),
+                                                  label: 'Max Height',
+                                                  width: 85,
+                                                  hideLabel: true,
+                                                  propertyName: 'box.dimensions.maxHeight',
+                                                  icon: 'maxHeightIcon',
+                                                },
+                                              ],
+                                            })
+                                            .toJson(),
+                                        ],
+                                      },
+                                    })
+                                      .toJson(),
+                                  ],
+                                },
+                              })
                             .toJson()]
                 }).toJson()]
         },

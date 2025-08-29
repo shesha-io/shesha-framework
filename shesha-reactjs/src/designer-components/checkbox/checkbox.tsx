@@ -18,6 +18,9 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { boxDefaultStyles, defaultStyles } from './utils';
+import { useStyles } from './styles';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 interface ICheckboxComponentCalulatedValues {
   eventHandlers?: IEventHandlers<any>;
@@ -39,6 +42,9 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+    const boxDimensions = useFormComponentStyles(model.box).dimensionsStyles;
+    const {styles} = useStyles({style: {...model.allStyles.fullStyle, ...boxDimensions}});
+
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
@@ -53,7 +59,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
 
           return model.readOnly
             ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle} />
-            : <Checkbox className="sha-checkbox" disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />;
+            : <Checkbox className={styles.checkbox} disabled={model.readOnly} style={model.allStyles.jsStyle} checked={value} {...events} />;
         }}
       </ConfigurableFormItem>
     );
@@ -72,7 +78,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      }),
+      })
+      .add<ICheckboxComponentProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), box: boxDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
 };
 
 export default CheckboxComponent;
