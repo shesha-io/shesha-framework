@@ -3,16 +3,18 @@ import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTable
 import { IDimensionsValue } from "./interfaces";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
+import { widthRelativeToCanvas } from "@/components/sidebarContainer/canvasUtils";
 
-const getDimension = (main: string | number, left: any, right: any) => {
-  return `calc(${addPx(main)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
+const getDimension = (main: string | number, left: any, right: any, canvasWidth?) => {
+  const width = widthRelativeToCanvas(main, canvasWidth);
+  return `calc(${addPx(width)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties): CSSProperties => {
+export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties, canvasWidth?): CSSProperties => {
   return {
     width: dimensions?.width
       ? hasNumber(dimensions.width) ?
-        getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+        getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
         : dimensions.width
       : undefined,
     height: dimensions?.height

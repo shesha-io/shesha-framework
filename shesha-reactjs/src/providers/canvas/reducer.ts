@@ -19,7 +19,7 @@ export default handleActions<ICanvasStateContext, any>(
 
       return {
         ...state,
-        designerWidth: getWidthByDeviceType(deviceType),
+        designerWidth: state.designerWidth ?? getWidthByDeviceType(deviceType),
         designerDevice: deviceType,
         activeDevice: getSmallerDevice(deviceType, state.physicalDevice),
       };
@@ -39,6 +39,13 @@ export default handleActions<ICanvasStateContext, any>(
       return {
         ...state,
         zoom: payload,
+      };
+    },
+    [CanvasConfigActionEnums.SetCanvasAutoZoom]: (state: ICanvasStateContext) => {
+
+      return {
+        ...state,
+        autoZoom: !state.autoZoom,
       };
     },
   },

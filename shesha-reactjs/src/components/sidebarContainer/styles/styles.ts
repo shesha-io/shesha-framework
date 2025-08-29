@@ -23,10 +23,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       overflow-x: hidden;
 
       .${sidebarContainerMainAreaBody}{
-        max-height: 85vh;
         overflow: auto;
         margin: 0 auto;
-       
       }
     
       .${sidebarContainerHeader} {
@@ -39,10 +37,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
+        height: 85vh;
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
-
           &.allow-full-collapse {
             display: none;
           }
