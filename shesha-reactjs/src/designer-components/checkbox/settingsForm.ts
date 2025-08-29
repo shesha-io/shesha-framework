@@ -269,40 +269,6 @@ export const getSettings = (data: any) => {
                                                 }
                                             ]
                                         })
-                                        .addSettingsInputRow({
-                                            id: nanoid(),
-                                            parentId: nanoid(),
-                                            inline: true,
-                                            inputs: [
-                                                {
-                                                    type: 'textField',
-                                                    id: nanoid(),
-                                                    label: "Height",
-                                                    width: 85,
-                                                    propertyName: "dimensions.height",
-                                                    icon: "heightIcon",
-                                                    tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                                },
-                                                {
-                                                    type: 'textField',
-                                                    id: nanoid(),
-                                                    label: "Min Height",
-                                                    width: 85,
-                                                    hideLabel: true,
-                                                    propertyName: "dimensions.minHeight",
-                                                    icon: "minHeightIcon",
-                                                },
-                                                {
-                                                    type: 'textField',
-                                                    id: nanoid(),
-                                                    label: "Max Height",
-                                                    width: 85,
-                                                    hideLabel: true,
-                                                    propertyName: "dimensions.maxHeight",
-                                                    icon: "maxHeightIcon",
-                                                }
-                                            ]
-                                        })
                                         .toJson()
                                     ]
                                 }

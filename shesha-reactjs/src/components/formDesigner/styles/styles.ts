@@ -1,5 +1,6 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
+import { getFormDesignerBackgroundSvg } from '../utils/svgConstants';
 
 const designerClassNames = {
     componentDragHandle: "sha-component-drag-handle",
@@ -207,6 +208,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             background: white;
             padding: 8px 12px 0px 12px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
 
             .${formName} {
@@ -267,6 +269,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .radio-group {
                     display: flex;
                     flex-direction: row;
+                    justifyCoontent: center;
                     .radio-button {
                         display: flex;
                         justify-content: center;
@@ -406,10 +409,27 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
+                    height: 55px;
                 }
             
                 .${shaComponent} {
                     min-height: 30px;
+                }
+            }
+
+            > div {
+             .sha-drop-hint {
+                display: none;
+             }
+                > div:not(.sha-drop-hint) {
+                    min-height: 100vh;
+                }
+                    
+                > .sha-components-container-inner:not(:has(.sha-component)) {
+                    background: url("${getFormDesignerBackgroundSvg()}");
+                    background-size: 25vw;
+                    background-repeat: no-repeat;
+                    background-position: 50% 50%;
                 }
             }
         }
