@@ -259,6 +259,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+
+                .ant-input-number-suffix {
+                 margin-inline-end: 0px;
+                }
             }
             .${shaDesignerCanvasConfig} {
                 display: flex;
