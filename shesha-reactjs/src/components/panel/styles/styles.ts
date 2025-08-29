@@ -36,7 +36,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     backgroundRepeat,
     boxShadow,
     width,
-    height,
     minWidth,
     minHeight,
     maxWidth,
@@ -100,7 +99,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
-
+    height: 100%;
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
@@ -117,12 +116,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     }
    
     > .ant-collapse-item > .ant-collapse-content {
-      width: ${width};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
-      height: ${height};
-      min-height: ${minHeight};
-      max-height: ${maxHeight};
+      height: 100%;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
       background-position: ${backgroundPosition};
@@ -161,12 +155,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
-      width: ${width};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
-      height: ${headerHeight};
-      min-height: ${headerMinHeight};
-      max-height: ${headerMaxHeight};
       border-top: ${accentStyle ?
       `3px` : headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${accentStyle ?
         'var(--primary-color)' : headerBorderTopColor || headerBorderColor};
