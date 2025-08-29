@@ -17,6 +17,7 @@ export const createRootContainerStyle = (
   dimensions: ComponentDimensions,
   stylingBox: StyleConfig,
   originalDimensions: any,
+  isInput
 ) => {
   const {
     marginTop,
@@ -39,9 +40,9 @@ export const createRootContainerStyle = (
     width: dimensions.width,
     maxWidth: dimensions.maxWidth,
     minWidth: dimensions.minWidth,
-    height: dimensions.height,
-    minHeight: dimensions.minHeight,
-    maxHeight: dimensions.maxHeight,
+    height: isInput? 'max-content' : dimensions.height,
+    minHeight: isInput? originalDimensions.minHeight : dimensions.minHeight,
+    maxHeight: isInput? originalDimensions.maxHeight : dimensions.maxHeight,
     flexBasis: dimensions.flexBasis,
   };
 };

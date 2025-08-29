@@ -131,11 +131,11 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
 
   const rootContainerStyle = useMemo(() => {
-    console.log("Dims:: ", )
     return createRootContainerStyle(
       componentDimensions,
       { marginTop, marginBottom: marginBottom || 5, marginLeft, marginRight },
-      originalDimensions
+      originalDimensions,
+      typeInfo.isInput
     );
   }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
 
