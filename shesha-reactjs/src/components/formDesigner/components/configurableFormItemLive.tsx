@@ -6,7 +6,6 @@ import { useCanvas, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
-import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useStyles } from './styles';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getComponentTypeInfo } from '../utils/componentTypeUtils';
@@ -25,7 +24,6 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
-  const getToolboxComponent = useFormDesignerComponentGetter();
   const { activeDevice } = useCanvas();
   const { styles } = useStyles(form.settings.layout);
 
