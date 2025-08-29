@@ -2,10 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "strictNullChecks": true,
+    "strict": true,
+    "noImplicitAny": true,
     "composite": true
   },
   "include": [
     "**/*"
   ],
-  //"rootDir": "./",
 }
