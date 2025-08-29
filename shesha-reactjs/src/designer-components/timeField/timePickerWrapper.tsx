@@ -94,16 +94,16 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   if (range) {
     return (
       <TimeRangePicker
-        {...rest}
         variant={hideBorder ? 'borderless' : undefined}
         onChange={handleRangePicker}
         format={format}
         value={getRangePickerValues(value || defaultValue) as RangeValue}
         {...steps}
-        style={{...style, width: '100%', height: '100%'}}
+        style={style}
         className={styles.shaTimepicker}
         showNow={showNow}
         allowClear={allowClear}
+        {...rest}
         placeholder={[placeholder, placeholder]}
 
       />
@@ -112,17 +112,17 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   return (
     <TimePicker
-      {...rest}
       variant={hideBorder ? 'borderless' : undefined}
       onChange={handleTimePickerChange}
       format={format}
       value={evaluatedValue || (defaultValue && moment(defaultValue))}
       {...steps}
-      style={{...style,  width: '100%', height: '100%'}}
+      style={style}
       className={styles.shaTimepicker}
       placeholder={placeholder}
       showNow={showNow}
       allowClear={allowClear}
+      {...rest}
     />
   );
 };

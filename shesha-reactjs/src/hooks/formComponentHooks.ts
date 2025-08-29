@@ -10,7 +10,6 @@ import {
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
-  useCanvas,
   useDeepCompareMemo,
   useSheshaApplication,
   wrapConstantsData
@@ -177,12 +176,17 @@ export const useFormComponentStyles = <TModel,>(
   model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
-  const { activeDevice } = useCanvas();
-  const componentModel = {...model, ...model?.[activeDevice]};
+  const jsStyle = useActualContextExecution(model?.style, null, {}); // use default style if empty or error
 
-  const jsStyle = useActualContextExecution(componentModel.style, null, {}); // use default style if empty or error
-
-  const { dimensions, border, font, shadow, background, stylingBox, overflow } = componentModel;
+  const {
+    dimensions,
+    border,
+    font,
+    shadow,
+    background,
+    stylingBox,
+    overflow
+  } = model || {};
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
@@ -197,7 +201,7 @@ export const useFormComponentStyles = <TModel,>(
 
   const styligBox = jsonSafeParse(stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, {...styligBox, ...jsStyle}), [dimensions, stylingBox]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -233,7 +237,7 @@ export const useFormComponentStyles = <TModel,>(
       fontWeight: fontStyles.fontWeight || 400,
     }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles]);
 
-  const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, flexBasis: dimensionsStyles.maxWidth || dimensionsStyles.width, ...jsStyle }), [appearanceStyle, jsStyle]);
+  const fullStyle = useDeepCompareMemo(() => ({ ...appearanceStyle, ...jsStyle }), [appearanceStyle, jsStyle]);
 
   const allStyles: IFormComponentStyles = useMemo(() => ({
     stylingBoxAsCSS,

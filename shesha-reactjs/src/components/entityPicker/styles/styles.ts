@@ -17,7 +17,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
     .${pickerInputGroup} {
       .${pickerInputGroupInput} {
         width: calc(100% + ${pickerEllipsisBtnWidth});
-        margin-left: ${pickerEllipsisBtnWidth}
       }
         
       .${pickerInputGroupEllipsis} {
@@ -30,9 +29,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
         }
       }
   
-      > div {
-        height: 100%; 
-      }
     .global-tablefilter {
       padding-right: unset !important;
     }

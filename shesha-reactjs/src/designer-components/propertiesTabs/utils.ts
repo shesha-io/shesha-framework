@@ -6,8 +6,7 @@ export const getHeaderStyles = (): IStyleType => (
             color: "darkslategray",
             size: 14,
             weight: "500",
-            align: "left",
-            type: "Segoe UI"
+            align: "left"
         },
         background: {
             type: "color",
@@ -31,7 +30,7 @@ export const getHeaderStyles = (): IStyleType => (
                 bottom: {
                     width: "2px",
                     style: "solid",
-                    color: "var(--primary-color)"
+                    color: "#d9d9d9"
                 },
                 left: {}
             },

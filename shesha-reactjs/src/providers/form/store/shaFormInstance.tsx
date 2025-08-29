@@ -131,6 +131,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     getFormData = () => {
         return this.#form.formData;
     };
+    setValidationErrors = (payload: IFormValidationErrors) => {
+        this.#form.setValidationErrors(payload);
+    };
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
     };

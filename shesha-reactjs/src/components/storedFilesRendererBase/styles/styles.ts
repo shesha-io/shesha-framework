@@ -28,14 +28,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${layout ? (width) : '100%'};
-    --thumbnail-height: ${layout ? (height) : '100%'};
+    --thumbnail-width: ${layout ? (width ?? '54px') : '100%'};
+    --thumbnail-height: ${layout ? (height ?? '54px') : '100%'};
     --ant-margin-xs: ${gap ?? '8px'} !important;
     --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-lg: ${borderRadius ?? '8px'} !important;
-    --container-width: 100% !important;
-    --container-height: 100% !important;
+    --container-width: ${containerWidth};
     --container-max-width: ${containerMaxWidth};
     --container-min-width: ${containerMinWidth};
     --container-min-height: ${containerMinHeight};
@@ -81,9 +80,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --font-size: ${fontSize ?? '14px'} !important;
       --ant-font-size: ${fontSize ?? '14px'} !important;
       display: flex;
-      width: ${layout ? (width) + ' !important' : ''};
-      height: ${layout ? (height) + ' !important' : ''};
-      ${rest}
+      width: ${layout ? (width ?? '54px') + ' !important' : ''};
+      height: ${layout ? (height ?? '54px') + ' !important' : ''};
 
       :before {
         top: 0;
@@ -104,16 +102,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       box-shadow: ${boxShadow};
       border-radius: ${borderRadius ?? '8px'} !important;
       ${rest}
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-
-      .ant-image {
-        width: ${layout ? (width) + ' !important' : ''};
-        height: ${layout ? (height) + ' !important' : ''};
-      }
 
       img {
+        width: var(--thumbnail-width, 54px) !important;
+        height: var(--thumbnail-height, 54px) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
         object-fit: cover !important;
         display: flex !important;
@@ -133,17 +125,17 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       font-weight: ${fontWeight ?? '400'};
       text-align: ${textAlign ?? 'center'};
       padding: 0 8px !important;
-      width: ${(layout && width)} !important;
+      width: ${(layout && width) ?? '54px'} !important;
       font-size: var(--font-size, 14px) !important;
     }
 
     .ant-upload-list-text {
-      height: var(--container-height) !important;
+      height: calc(var(--container-height) - 32px) !important;
       max-height: calc(var(--container-max-height) - calc(${isDragger ? '0px' : fontSize} * 4)) !important;
-      min-height: var(--container-min-height) !important;
-      width: var(--container-width) !important;
-      max-width: var(--container-max-width) !important;
-      min-width: var(--container-min-width) !important;
+      min-height: calc(var(--container-min-height) - 32px) !important;
+      width: calc(var(--container-width) - 32px) !important;
+      max-width: calc(var(--container-max-width) - 32px) !important;
+      min-width: calc(var(--container-min-width) - 32px) !important;
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -212,8 +204,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         animation: none !important;
         transition: none !important;
       }
-      width: ${layout ? (width) + ' !important' : ''};
-      height: ${layout ? (height) + ' !important' : ''};
+      width: ${layout ? (width ?? '54px') + ' !important' : ''};
+      height: ${layout ? (height ?? '54px') + ' !important' : ''};
     }
 
     .ant-upload-list-item-action {
@@ -230,13 +222,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: center;
       justify-content: center;
       ${rest}
-      width: ${layout ? (width) + ' !important' : ''};
-      height: ${layout ? (height) + ' !important' : ''};
     }
 
     .ant-upload-list-item-name-stub { 
       position: absolute;
-      top: ${height};
+      bottom: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -298,7 +288,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     min-height: var(--container-min-height) !important;
     .${prefixCls}-upload-list {
       display: flex !important;
-      flex-direction: column !important;
+      flex-direction: column-reverse !important;
       flex-wrap: nowrap !important;
       padding: 2px ${borderWidth ?? '2px'} !important;
       height: var(--container-height) !important;

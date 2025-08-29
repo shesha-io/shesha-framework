@@ -84,15 +84,11 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   if (validationErrors?.length) {
     const violations = <ul>{validationErrors?.map((e, i) => <li key={i}>{e.message}</li>)}</ul>;
 
-    return renderValidationErrors({ message: defaultMessage, description: violations, ...rest });
-  }
-
-  if (message) {
-    return renderValidationErrors({ message, ...rest });
+    return renderValidationErrors({ message: message || defaultMessage, description: violations, ...rest });
   }
 
   if (details) {
-    return renderValidationErrors({ message: details, ...rest });
+    return renderValidationErrors({ message: message || defaultMessage, description: details, ...rest });
   }
 
   return renderValidationErrors({ message: DEFAULT_ERROR_MSG, ...rest });

@@ -79,6 +79,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
     font-weight: bold;
   }
   .${(p) => p.theme.prefixCls}-form-item {
+    margin-bottom: 0 !important;
   
     .${(p) => p.theme.prefixCls}-row {
       &.${(p) => p.theme.prefixCls}-form-item-row {

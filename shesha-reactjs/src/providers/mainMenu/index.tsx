@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef, useCallback } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
 import { setItemsAction, setLoadedMenuAction } from './actions';
 import { IConfigurableMainMenu, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { uiReducer } from './reducer';
@@ -16,42 +16,6 @@ export interface MainMenuProviderProps {
   mainMenuConfigKey?: string;
 }
 
-// Deep clone items to prevent mutations
-const deepCloneItems = (items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
-  return items.map(item => {
-    const clonedItem = { ...item };
-    if (isSidebarGroup(clonedItem) && clonedItem.childItems) {
-      clonedItem.childItems = deepCloneItems(clonedItem.childItems);
-    }
-    return clonedItem;
-  });
-};
-
-const getItemsWithFormNavigation = (items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
-  const itemsToCheck: ISidebarMenuItem[] = [];
-
-  const collectItems = (itemList: ISidebarMenuItem[]) => {
-    itemList?.forEach((item) => {
-      if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
-        collectItems(item.childItems);
-        return;
-      }
-
-      if (
-        isNavigationActionConfiguration(item.actionConfiguration)
-        && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
-        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
-      ) {
-        itemsToCheck.push(item);
-      }
-    });
-  };
-
-  collectItems(items);
-  return itemsToCheck;
-};
-
 const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(uiReducer, { ...MAIN_MENU_CONTEXT_INITIAL_STATE });
 
@@ -61,11 +25,9 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
   const { applicationKey, anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
 
-  // Use ref to track the current operation to prevent race conditions
-  const currentOperationId = useRef<number>(0);
   const formPermissionedItems = useRef<ISidebarMenuItem[]>([]);
 
-  const getActualItemsModel = useCallback((items: ISidebarMenuItem[]) => {
+  const getActualItemsModel = (items: ISidebarMenuItem[]) => {
     const actualItems = items.map((item) => {
       var actualItem = getActualModel(item, allData);
       if (isSidebarGroup(actualItem) && actualItem.childItems && actualItem.childItems.length > 0) {
@@ -80,135 +42,97 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     });
 
     return actualItems;
-  }, [allData, anyOfPermissionsGranted]);
+  };
 
-  const updateFormNavigationVisible = useCallback((items: ISidebarMenuItem[], formsPermission: FormPermissionsDto[]) => {
-    const updateItem = (item: ISidebarMenuItem): ISidebarMenuItem => {
-      const updatedItem = { ...item };
+  const updatetFormNamigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
+    if (
+      item.actionConfiguration?.actionOwner === 'shesha.common'
+      && item.actionConfiguration?.actionName === 'Navigate'
+      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+      && item.actionConfiguration?.actionArguments?.formId?.name
+      && item.actionConfiguration?.actionArguments?.formId?.module
+    ) {
+      // form navigation, check form permissions
+      const form = formsPermission.find(x =>
+        x.module === item.actionConfiguration?.actionArguments?.formId?.module
+        && x.name === item.actionConfiguration?.actionArguments?.formId?.name
+      );
+      item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
+    }
+  };
 
-      if (isSidebarGroup(updatedItem) && updatedItem.childItems) {
-        updatedItem.childItems = updatedItem.childItems.map(updateItem);
-        return updatedItem;
+  const getItemsWithFormNavigation = (items: ISidebarMenuItem[]) => {
+    const itemsToCheck = [];
+    items?.forEach((item) => {
+      if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
+        itemsToCheck.concat(getItemsWithFormNavigation(item.childItems));
+        return;
       }
 
       if (
-        updatedItem.actionConfiguration?.actionOwner === 'shesha.common'
-        && updatedItem.actionConfiguration?.actionName === 'Navigate'
-        && updatedItem.actionConfiguration?.actionArguments?.navigationType === 'form'
-        && updatedItem.actionConfiguration?.actionArguments?.formId?.name
-        && updatedItem.actionConfiguration?.actionArguments?.formId?.module
+        isNavigationActionConfiguration(item.actionConfiguration)
+        && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
+        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
       ) {
-        // form navigation, check form permissions
-        const form = formsPermission.find(x =>
-          x.module === updatedItem.actionConfiguration?.actionArguments?.formId?.module
-          && x.name === updatedItem.actionConfiguration?.actionArguments?.formId?.name
-        );
-
-        // Preserve original hidden state OR apply form permission logic
-        // If already hidden, keep it hidden. If not hidden, check form permissions.
-        const shouldHideBasedOnFormPermissions = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
-        updatedItem.hidden = updatedItem.hidden || shouldHideBasedOnFormPermissions;
+        itemsToCheck.push(item);
       }
+    });
 
-      return updatedItem;
-    };
+    return itemsToCheck;
+  };
 
-    return items.map(updateItem);
-  }, [anyOfPermissionsGranted]);
-
-  const processMenuItems = useCallback(async (items: ISidebarMenuItem[], operationId: number) => {
-    // Create a deep clone to prevent mutations during async operations
-    const clonedItems = deepCloneItems(items);
-    const itemsToCheck = getItemsWithFormNavigation(clonedItems);
-
+  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
     if (itemsToCheck.length > 0) {
-      try {
-        const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
-        const result = await formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders });
-
-        // Check if this operation is still current
-        if (currentOperationId.current !== operationId) {
-          return; // This operation was superseded
-        }
-
-        if (result.success) {
-          const updatedItems = updateFormNavigationVisible(clonedItems, result.result);
-          formPermissionedItems.current = updatedItems;
-          dispatch(setItemsAction(getActualItemsModel(updatedItems)));
-        } else {
-          console.error('Form permission check failed:', result.error);
-          // Fallback: use items without form permission checks
-          formPermissionedItems.current = clonedItems;
-          dispatch(setItemsAction(getActualItemsModel(clonedItems)));
-        }
-      } catch (error) {
-        // Check if this operation is still current
-        if (currentOperationId.current !== operationId) {
-          return; // This operation was superseded
-        }
-
-        console.error('Error checking form permissions:', error);
-        // Fallback: use items without form permission checks
-        formPermissionedItems.current = clonedItems;
-        dispatch(setItemsAction(getActualItemsModel(clonedItems)));
-      }
-    } else {
-      // Check if this operation is still current
-      if (currentOperationId.current !== operationId) {
-        return; // This operation was superseded
-      }
-
-      formPermissionedItems.current = clonedItems;
-      dispatch(setItemsAction(getActualItemsModel(clonedItems)));
+      const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
+      formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
+        .then((result) => {
+          if (result.success) {
+            itemsToCheck.forEach((item) => {
+              return updatetFormNamigationVisible(item, result.result);
+            });
+            formPermissionedItems.current = [...items];
+            dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+          } else {
+            console.error(result.error);
+          }
+        });
     }
-  }, [backendUrl, httpHeaders, deepCloneItems, getItemsWithFormNavigation, updateFormNavigationVisible, getActualItemsModel]);
+  };
 
-  const updateMainMenu = useCallback((value: IConfigurableMainMenu) => {
-    // Increment operation ID to cancel any previous operations
-    const operationId = ++currentOperationId.current;
-
+  const updateMainMenu = (value: IConfigurableMainMenu) => {
     const migratorInstance = new Migrator<IConfigurableMainMenu, IConfigurableMainMenu>();
     const fluent = mainMenuMigration(migratorInstance);
     const versionedValue = { ...value } as IHasVersion;
     if (versionedValue.version === undefined)
       versionedValue.version = -1;
-
     const model = fluent.migrator.upgrade(versionedValue, {});
     dispatch(setLoadedMenuAction(model as IConfigurableMainMenu));
 
-    // Process menu items asynchronously
-    if (Array.isArray(model.items)) {
-      processMenuItems(model.items, operationId);
-    } else if (model.items) {
-      processMenuItems([model.items], operationId);
+    const itemsToCheck = getItemsWithFormNavigation(model.items);
+    if (itemsToCheck.length > 0) {
+      getFormPermissions(model.items, itemsToCheck);
+    } else {
+      formPermissionedItems.current = Array.isArray(model.items) ? [...model.items] : [model.items];
+      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
     }
-  }, [processMenuItems]);
+  };
 
-  // Handle allData changes with race condition protection
   useDeepCompareEffect(() => {
-    const operationId = ++currentOperationId.current;
-
-    // Use a small delay to debounce rapid allData changes
-    const timeoutId = setTimeout(() => {
-      if (currentOperationId.current === operationId && formPermissionedItems.current.length > 0) {
-        dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
-      }
-    }, 10);
-
-    return () => clearTimeout(timeoutId);
-  }, [allData, getActualItemsModel]);
+    dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+  }, [allData]);
 
   useEffect(() => {
-    if (loadingState === 'ready' && fetchedMainMenu) {
+    if (loadingState === 'ready') {
       updateMainMenu(fetchedMainMenu);
     }
-  }, [loadingState, auth?.isLoggedIn, fetchedMainMenu, updateMainMenu]);
+  }, [loadingState, auth?.isLoggedIn]);
 
-  const changeMainMenu = useCallback((value: IConfigurableMainMenu) => {
+  const changeMainMenu = (value: IConfigurableMainMenu) => {
     updateMainMenu(value);
-  }, [updateMainMenu]);
+  };
 
-  const saveMainMenu = useCallback((value: IConfigurableMainMenu) => {
+  const saveMainMenu = (value: IConfigurableMainMenu) => {
     return settingsUpdateValue(
       {
         name: 'Shesha.MainMenuSettings',
@@ -222,10 +146,9 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
         return response;
       })
       .catch((error) => {
-        console.error('Error saving main menu:', error);
-        throw error;
+        console.error(error);
       });
-  }, [applicationKey, backendUrl, httpHeaders]);
+  };
 
   return (
     <MainMenuStateContext.Provider value={state}>

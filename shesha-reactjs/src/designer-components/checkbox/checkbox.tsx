@@ -79,7 +79,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), box: boxDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
+      .add<ICheckboxComponentProps>(5, (prev) => ({ ...prev, desktop: { ...defaultStyles(), box: boxDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
 };
 
 export default CheckboxComponent;

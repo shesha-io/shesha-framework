@@ -34,7 +34,7 @@ export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IForm
   listType?: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
-  thumbnail?:IStyleType;
+  thumbnail?: IStyleType;
   borderRadius?: number;
   hideFileName?: boolean;
 }

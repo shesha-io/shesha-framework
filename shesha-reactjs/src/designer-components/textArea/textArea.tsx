@@ -68,7 +68,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
-      width: '100%',
+      width: toSizeCssProp(model.width),
       borderWidth: model.hideBorder ? 0 : model.borderSize,
       borderRadius: model.borderRadius,
       borderStyle: model.borderType,
