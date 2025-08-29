@@ -76,7 +76,7 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
             onChange={setCanvasZoom}
             suffix='%'
           />
-          <Button disabled={autoZoom} style={{ zIndex: 1000 }} type='link' size='small' icon={<PlusOutlined />} onClick={() => setCanvasZoom(zoom + (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} />
+          <Button disabled={autoZoom} type='link' size='small' icon={<PlusOutlined />} onClick={() => setCanvasZoom(zoom + (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} />
         </Space>
       </Space>
     </div>
