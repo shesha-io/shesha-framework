@@ -1,17 +1,16 @@
 "use client";
 
-import React, { FC, use } from 'react';
+import React, { FC } from 'react';
 import { FormIdentifier, DynamicPage } from '@shesha-io/reactjs';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
-  params: Promise<{ path: string[] }>;
-  searchParams: Promise<NodeJS.Dict<string | string[]>>;
+  params: { path: string[] };
+  searchParams: NodeJS.Dict<string | string[]>;
 }
 
 const DynamicPageInternal: FC<PageProps> = (props) => {
-  const params = use(props.params);
-  const searchParams = use(props.searchParams);
+  const { params, searchParams } = props;
 
   // possible values of path:
   // 1. array with one element: [formName]
