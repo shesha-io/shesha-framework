@@ -79,12 +79,11 @@ export const isModuleTreeNode = (node?: DataNode): node is ModuleTreeNode => {
     return isTreeNode(node) && node.nodeType === TreeNodeType.Module;
 };
 
-export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | FolderTreeNode  => {
+export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | FolderTreeNode => {
     return isModuleTreeNode(node) || isFolderTreeNode(node);
 };
 
-export const TREE_NODE_TYPES =
-{
+export const TREE_NODE_TYPES = {
     Module: 1,
     ConfigurationItem: 2,
     Folder: 3,
@@ -145,7 +144,6 @@ export type ItemEditorProps<TDoc extends IDocumentInstance = IDocumentInstance> 
     doc: TDoc;
 };
 export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEditorProps<TDoc>) => ReactNode;
-
 
 export type ItemToolbarProps = {
 

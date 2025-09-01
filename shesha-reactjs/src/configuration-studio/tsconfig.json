@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "strict": true,
     "noImplicitAny": true,
     "composite": true
