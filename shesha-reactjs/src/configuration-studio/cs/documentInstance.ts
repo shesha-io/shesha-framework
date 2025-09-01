@@ -8,15 +8,23 @@ export type DocumentInstanceArgs = DocumentInstanceFactoryArgs & {
 
 export class DocumentInstance implements IDocumentInstance {
     itemId: string;
+
     label: string;
+
     type: DocumentType = 'ci';
+
     itemType: string;
+
     flags: DocumentFlags;
+
     moduleId: string;
+
     moduleName: string;
 
     definition: DocumentDefinition;
+
     loadingState: LoadingStatus;
+
     isHistoryVisible: boolean;
 
     constructor(args: DocumentInstanceArgs){
@@ -24,5 +32,6 @@ export class DocumentInstance implements IDocumentInstance {
 
         this.isHistoryVisible = false;
     }
+
     toolbarForceRender?: ForceRenderFunc;
 }

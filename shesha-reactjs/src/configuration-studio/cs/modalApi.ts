@@ -47,7 +47,9 @@ type ModalApiArguments = {
 
 export class ModalApi implements IModalApi {
     private _createModal: CreateModalType;
+
     private _removeModal: RemoveModalType;
+
     private _antdApi: ModalHookAPI;
 
     constructor(args: ModalApiArguments) {

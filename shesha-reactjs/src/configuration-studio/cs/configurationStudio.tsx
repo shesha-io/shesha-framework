@@ -149,14 +149,21 @@ interface ConfigurationStudioArguments {
 
 export class ConfigurationStudio implements IConfigurationStudio {
     forceRootUpdate: ForceUpdateTrigger;
+
     private logEnabled: boolean;
+
     private httpClient: HttpClientApi;
+
     private modalApi: IModalApi;
+
     private notificationApi: INotificationApi;
+
     private storage: IAsyncStorage;
+
     private subscriptions: Map<CsSubscriptionType, Set<CsSubscription>>;
 
     toolbarRef?: MutableRefObject<HTMLDivElement>;
+
     findDoc = (itemId?: string): IDocumentInstance | undefined => {
         return isDefined(itemId)
             ? this.docs.find((d) => d.itemId === itemId)
@@ -173,29 +180,41 @@ export class ConfigurationStudio implements IConfigurationStudio {
     treeLoadingState: ProcessingState;
 
     private _selectedNodeId?: string;
+
     private _isTreeDragging: boolean;
+
     private _treeNodes: TreeNode[] = [];
+
     private _treeNodesMap: Map<string, TreeNode> = new Map<string, TreeNode>();
+
     private _treeExpandedKeys: React.Key[] = [];
+
     private _quickSearch?: string;
 
     private _documentDefinitions: DocumentDefinitions;
+
     private _itemTypes: ItemTypeDefinition[] = [];
+
     private _itemTypesMap: Map<string, ItemTypeDefinition> = new Map<string, ItemTypeDefinition>();
 
     _docs: IDocumentInstance[] = [];
+
     get docs(): IDocumentInstance[] {
         return this._docs;
     }
+
     set docs(value: IDocumentInstance[]) {
         this._docs = value;
     }
+
     activeDocId?: string;
+
     private getDocumenById = (id: string): IDocumentInstance | undefined => {
         return id
             ? this.docs.find((d) => d.itemId === id)
             : undefined;
     };
+
     get activeDocument(): (IDocumentInstance | undefined) {
         return this.getDocumenById(this.activeDocId);
     };
@@ -223,14 +242,17 @@ export class ConfigurationStudio implements IConfigurationStudio {
     get quickSearch(): string | undefined {
         return this._quickSearch;
     }
+
     setQuickSearch = (value: string) => {
         this._quickSearch = value;
         this.saveQuickSearchAsync();
         this.notifySubscribers(['tree']);
     };
+
     get treeExpandedKeys(): React.Key[] {
         return this._treeExpandedKeys;
     };
+
     get treeSelectedKeys(): React.Key[] {
         return isDefined(this._selectedNodeId)
             ? [this._selectedNodeId]
@@ -260,29 +282,36 @@ export class ConfigurationStudio implements IConfigurationStudio {
     private saveTreeExpandedNodesAsync = async () => {
         await this.storage.setAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS, this._treeExpandedKeys);
     };
+
     private saveTreeSelectionAsync = async () => {
         if (isDefined(this._selectedNodeId))
             await this.storage.setAsync(STORAGE_KEYS.TREE_SELECTION, this._selectedNodeId.toString());
         else
             await this.storage.removeAsync(STORAGE_KEYS.TREE_SELECTION);
     };
+
     private saveQuickSearchAsync = async () => {
         await this.storage.setAsync(STORAGE_KEYS.QUICK_SEARCH, this._quickSearch);
     };
+
     private loadTreeSelectionAsync = async () => {
         this._selectedNodeId = await this.storage.getAsync(STORAGE_KEYS.TREE_SELECTION);
     };
+
     private loadTreeExpandedNodesAsync = async () => {
         this._treeExpandedKeys = await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS) ?? [];
     };
+
     private loadQuickSearchAsync = async () => {
         this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH) ?? "";
     };
+
     private loadTreeStateAsync = async () => {
         await this.loadQuickSearchAsync();
         await this.loadTreeExpandedNodesAsync();
         await this.loadTreeSelectionAsync();
     };
+
     onTreeNodeExpand = (expandedKeys: React.Key[]) => {
         this._treeExpandedKeys = expandedKeys;
         this.saveTreeExpandedNodesAsync();
@@ -296,6 +325,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     isTreeNodeExpanded = (nodeId: string): boolean => this._treeExpandedKeys.includes(nodeId);
+
     toggleTreeNode = (nodeId: string, expanded: boolean): void => {
         const current = this.isTreeNodeExpanded(nodeId);
         if (current === expanded)
@@ -307,6 +337,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             this._treeExpandedKeys = this._treeExpandedKeys.filter((key) => key !== nodeId);
         this.notifySubscribers(['tree']);
     };
+
     expandTreeNode = (nodeId: string): void => {
         this.toggleTreeNode(nodeId, true);
     };
@@ -384,6 +415,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         }));
         await this.storage.setAsync(STORAGE_KEYS.OPENED_DOCS, storedData);
     };
+
     private saveDocSelectionAsync = async () => {
         if (isDefined(this.activeDocId))
             await this.storage.setAsync(STORAGE_KEYS.ACTIVE_DOC_ID, this.activeDocId.toString());
@@ -513,6 +545,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this.subscriptions.set(type, subscriptions);
         return subscriptions;
     };
+
     subscribe(type: CsSubscriptionType, callback: CsSubscription): () => void {
         const callbacks = this.getSubscriptions(type);
         callbacks.add(callback);
@@ -546,6 +579,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     get itemTypes(): ItemTypeDefinition[] {
         return this._itemTypes;
     }
+
     getItemTypeDefinition = (itemType: string): ItemTypeDefinition => {
         const definition = this._itemTypesMap.get(itemType);
         if (!definition)
@@ -821,6 +855,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         });
         await this.loadTreeAsync();
     };
+
     importPackageAsync = async (_args: ImportPackageArgs): Promise<void> => {
         const importerRef = createManualRef<IImportInterface | undefined>(undefined);
 
@@ -844,6 +879,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         if (exported === true)
             await this.loadTreeAsync();
     };
+
     exportPackageAsync = async (_args: ExportPackageArgs): Promise<void> => {
         const exporterRef = createManualRef<IExportInterface | undefined>(undefined);
 
@@ -881,6 +917,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     get selectedNodeId(): string | undefined {
         return this._selectedNodeId;
     };
+
     get treeNodes(): TreeNode[] {
         return this._treeNodes;
     }

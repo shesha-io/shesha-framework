@@ -290,6 +290,11 @@ const csConfig = {
         "@stylistic/semi": "off",
         "@stylistic/quotes": "off",
         "@stylistic/indent": "off",
+        "@stylistic/indent-binary-ops": "off",
+        /* todo: review after development of a standard and integration with auto-formatter
+        "@stylistic/indent": ["error", 2],
+        "@stylistic/indent-binary-ops": ["error", 2],
+        */
         "@stylistic/member-delimiter-style": "off",
         "@stylistic/type-annotation-spacing": "off",
         "@stylistic/arrow-parens": ["error", "always"],
@@ -299,6 +304,7 @@ const csConfig = {
         "@stylistic/comma-dangle": ["error", "always-multiline"],
         "@stylistic/padded-blocks": ["error", "never"],
         "@stylistic/no-multiple-empty-lines": "error",
+        "@stylistic/lines-between-class-members": ["error", "always"],
 
         "react-hooks/exhaustive-deps": "error",
         "no-unsafe-optional-chaining": "error",
@@ -311,17 +317,15 @@ const csConfig = {
         "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
         "@typescript-eslint/no-unnecessary-condition": "error",
         "@typescript-eslint/strict-boolean-expressions": "error",
-        
+
         // enable one by one
-        "@stylistic/indent-binary-ops": "off",
-        "@stylistic/lines-between-class-members": "off",
         "@stylistic/space-before-blocks": "off",
         "@stylistic/eol-last": "off",
-        
+
         "@stylistic/jsx-quotes": "off",
         "@stylistic/jsx-wrap-multilines": "off",
         "@stylistic/jsx-curly-brace-presence": "off",
-        "@stylistic/jsx-tag-spacing": "off",        
+        "@stylistic/jsx-tag-spacing": "off",
     },
 };
 
