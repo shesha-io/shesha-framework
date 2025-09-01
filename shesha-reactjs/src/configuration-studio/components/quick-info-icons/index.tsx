@@ -4,11 +4,7 @@ import { BranchesOutlined, CodeOutlined, EditOutlined, ExclamationCircleOutlined
 import { Tooltip } from 'antd';
 import React, { FC } from 'react';
 
-export interface IQuickInfoIconsProps {
-
-}
-
-export const QuickInfoIcons: FC<IQuickInfoIconsProps> = () => {
+export const QuickInfoIcons: FC = () => {
     const { styles, theme } = useStyles();
 
     const activeDoc = useActiveDoc();

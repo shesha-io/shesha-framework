@@ -3,15 +3,11 @@ import { Avatar, Divider, Dropdown, MenuProps, Space, theme } from 'antd';
 import { LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '@/providers';
 
-export interface IUserProfileBlockProps {
-
-}
-
 const { useToken } = theme;
 
 type MenuItems = MenuProps['items'];
 
-export const UserProfileBlock: FC<IUserProfileBlockProps> = () => {
+export const UserProfileBlock: FC = () => {
     const { loginInfo, logoutUser } = useAuth();
     const { token } = useToken();
 

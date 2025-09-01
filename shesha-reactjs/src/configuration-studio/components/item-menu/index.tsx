@@ -8,13 +8,9 @@ import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps, Space } from 'antd';
 import React, { FC, useMemo } from 'react';
 
-export interface IConfigurationItemMenuProps {
-
-}
-
 type MenuItems = MenuProps["items"];
 
-export const ConfigurationItemMenu: FC<IConfigurationItemMenuProps> = () => {
+export const ConfigurationItemMenu: FC = () => {
     const cs = useConfigurationStudio();
     const activeDoc = useActiveDoc();
 

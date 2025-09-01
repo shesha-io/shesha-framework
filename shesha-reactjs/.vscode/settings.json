@@ -5,12 +5,12 @@
     "eslint.useFlatConfig": true,
     // Use ESLint as the default formatter for JS/TS files
     "[javascript]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-        "editor.formatOnSave": true
+        "editor.defaultFormatter": "vscode.typescript-language-features",
+        "editor.formatOnSave": false
     },
     "[javascriptreact]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-        "editor.formatOnSave": true
+        "editor.defaultFormatter": "vscode.typescript-language-features",
+        "editor.formatOnSave": false
     },
     "[typescript]": {
         "editor.defaultFormatter": "dbaeumer.vscode-eslint",

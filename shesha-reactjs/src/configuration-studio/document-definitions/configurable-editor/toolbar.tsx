@@ -4,9 +4,7 @@ import { Button } from 'antd';
 import React, { FC } from 'react';
 import { useShaFormInstance, useShaFormDataUpdate, useShaFormSubscription } from '@/providers/form/providers/shaFormProvider';
 
-export interface IGenericToolbarProps extends ItemEditorProps {
-
-}
+export type IGenericToolbarProps = ItemEditorProps;
 
 export const GenericToolbar: FC<IGenericToolbarProps> = ({ }) => {
     useShaFormDataUpdate();

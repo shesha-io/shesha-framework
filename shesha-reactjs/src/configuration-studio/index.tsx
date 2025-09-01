@@ -15,11 +15,7 @@ import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
 
-export interface IConfigurationStudioProps {
-
-}
-
-const ConfigurationStudio: FC<IConfigurationStudioProps> = () => {
+const ConfigurationStudio: FC = () => {
     const { styles } = useStyles();
 
     return (

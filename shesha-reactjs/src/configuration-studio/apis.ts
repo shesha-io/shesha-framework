@@ -26,9 +26,7 @@ export type MoveNodePayload = {
     nodeId: string;
     folderId?: string;
 };
-export type MoveNodeResponse = {
-
-};
+export type MoveNodeResponse = void;
 
 export const moveTreeNodeAsync = (httpClient: HttpClientApi, payload: MoveNodePayload): Promise<IAbpWrappedResponse<MoveNodeResponse>> => {
     return httpClient.post<MoveNodePayload, AxiosResponse<IAbpWrappedResponse<MoveNodeResponse>>>(CS_URLS.MOVE_NODE_TO_FOLDER, payload).then((response) => response.data);
@@ -39,9 +37,7 @@ export const moveTreeNodeAsync = (httpClient: HttpClientApi, payload: MoveNodePa
 export type DeleteFolderPayload = {
     folderId: string;
 };
-export type DeleteFolderResponse = {
-
-};
+export type DeleteFolderResponse = void;
 
 export const deleteFolderAsync = (httpClient: HttpClientApi, payload: DeleteFolderPayload): Promise<IAbpWrappedResponse<DeleteFolderResponse>> => {
     const url = `${CS_URLS.FOLDER_DELETE}?${qs.stringify(payload)}`;
@@ -78,7 +74,7 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
             const currentNode = treeNodeMap.get(node.id)!;
 
             if (node.moduleId && isConfigItemTreeNode(currentNode))
-                currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
+                currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name ?? "unknown";
 
             if (isDefined(node.parentId)) {
                 const parent = treeNodeMap.get(node.parentId);
@@ -119,9 +115,7 @@ export const useTreeForExport = () => {
 export type DeleteCIPayload = {
     itemId: string;
 };
-export type DeleteCIResponse = {
-
-};
+export type DeleteCIResponse = void;
 
 export const deleteConfigurationItemAsync = (httpClient: HttpClientApi, payload: DeleteCIPayload): Promise<IAbpWrappedResponse<DeleteCIResponse>> => {
     const url = `${CS_URLS.ITEM_DELETE}?${qs.stringify(payload)}`;

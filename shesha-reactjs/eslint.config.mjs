@@ -56,6 +56,14 @@ const stylisticOverrides = {
     "@stylistic/lines-between-class-members": ["error", "always"],
 };
 
+const typescriptOverrides = {
+    "@typescript-eslint/no-unused-vars": ["error", {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+        ignoreRestSiblings: true,
+    }],
+};
+
 const baseTsConfig = {
     files: [
         "src/**/*.ts",
@@ -141,6 +149,7 @@ const baseTsConfig = {
     rules: {
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
+        //...typescriptEslint.configs.recommended.rules,
         "react/prop-types": ["off"],
         "require-await": "error",
         "no-restricted-imports": ["error", {
@@ -319,6 +328,8 @@ const csConfig = {
     },
     rules: {
         ...baseTsConfig.rules,
+        ...typescriptEslint.configs.recommended.rules,
+        ...typescriptOverrides,
         ...stylistic.configs.recommended.rules,
         ...stylisticOverrides,
 

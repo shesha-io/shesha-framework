@@ -6,9 +6,6 @@ import { useStyles } from '../styles';
 import { TabLabel } from './tab-label';
 import { IDocumentInstance } from '../models';
 
-export interface IWorkAreaProps {
-}
-
 type Tab = TabsProps['items'][number];
 type OnEdit = TabsProps['onEdit'];
 
@@ -19,7 +16,7 @@ type TabContextMenuState = {
     y: number;
 };
 
-export const WorkArea: FC<IWorkAreaProps> = () => {
+export const WorkArea: FC = () => {
     const { docs, activeDocId, openDocById, closeDoc, closeMultipleDocs } = useCsTabs();
     const { styles } = useStyles();
     const [contextMenuState, setContextMenuState] = useState<TabContextMenuState>();

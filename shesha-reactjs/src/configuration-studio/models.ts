@@ -145,10 +145,6 @@ export type ItemEditorProps<TDoc extends IDocumentInstance = IDocumentInstance> 
 };
 export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEditorProps<TDoc>) => ReactNode;
 
-export type ItemToolbarProps = {
-
-};
-
 export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
 export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
 
