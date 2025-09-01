@@ -28,5 +28,5 @@ export const DocumentToolbar: FC<IDocumentToolbarProps> = ({ doc }) => {
                 {Toolbar && <Toolbar doc={doc} key={doc.itemId} />}
             </CustomErrorBoundary>
         </Portal>
-    );    
+    );
 };

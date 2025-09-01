@@ -18,10 +18,10 @@ export class DocumentInstance implements IDocumentInstance {
     definition: DocumentDefinition;
     loadingState: LoadingStatus;
     isHistoryVisible: boolean;
-    
+
     constructor(args: DocumentInstanceArgs){
         mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
-        
+
         this.isHistoryVisible = false;
     }
     toolbarForceRender?: ForceRenderFunc;

@@ -47,7 +47,7 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
             onClick: () => {
                 closeMultipleDocs((_, index) => {
                     const docIndex = docs.indexOf(doc);
-                    return index > docIndex;                    
+                    return index > docIndex;
                 });
             }
         },

@@ -31,7 +31,7 @@ export type UseCsTreeResponse = {
     expandedKeys: ExpandedKeys;
     selectedKeys: SeletcedKeys;
     selectedItemNode?: ConfigItemTreeNode;
-    onNodeExpand: OnTreeExpand;    
+    onNodeExpand: OnTreeExpand;
 };
 export const useCsTree = (): UseCsTreeResponse => {
     const cs = useConfigurationStudio();

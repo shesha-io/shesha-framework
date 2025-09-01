@@ -13,7 +13,7 @@ export type ConfigurationItemRevision = {
     comments?: string | null;
     configHash: string | null;
     isCompressed: boolean;
-    
+
     creationTime: string;
     creatorUserId?: number;
     creatorUserName?: string | null;
