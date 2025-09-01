@@ -6,7 +6,7 @@ import { useStyles } from '../styles';
 import { TabLabel } from './tab-label';
 import { IDocumentInstance } from '../models';
 
-type Tab = TabsProps['items'][number];
+type Tab = Required<TabsProps>['items'][number];
 type OnEdit = TabsProps['onEdit'];
 
 type TabContextMenuState = {

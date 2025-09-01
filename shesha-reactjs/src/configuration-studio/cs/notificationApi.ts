@@ -44,13 +44,13 @@ export class NotificationApi implements INotificationApi {
         this._antdApi = args.antdApi;
     }
 
-    success = (args: ArgsProps) => this._antdApi.success(args);
+    success = (args: ArgsProps): void => this._antdApi.success(args);
 
-    error = (args: ArgsProps) => this._antdApi.error(args);
+    error = (args: ArgsProps): void => this._antdApi.error(args);
 
-    info = (args: ArgsProps) => this._antdApi.info(args);
+    info = (args: ArgsProps): void => this._antdApi.info(args);
 
-    warning = (args: ArgsProps) => this._antdApi.warning(args);
+    warning = (args: ArgsProps): void => this._antdApi.warning(args);
 }
 
 export const useNotificationApi = (): INotificationApi => {

@@ -5,7 +5,7 @@ import { IAbpWrappedResponse } from "@/interfaces/gql";
 import { AxiosResponse } from "axios";
 import qs from "qs";
 import { useCallback } from "react";
-import useSWR from "swr";
+import useSWR, { SWRResponse } from "swr";
 import { flatNode2TreeNode } from "./tree-utils";
 import { isDefined } from "@/configuration-studio/types";
 
@@ -74,7 +74,7 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
             const currentNode = treeNodeMap.get(node.id)!;
 
             if (node.moduleId && isConfigItemTreeNode(currentNode))
-                currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name ?? "unknown";
+                currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name ?? "";
 
             if (isDefined(node.parentId)) {
                 const parent = treeNodeMap.get(node.parentId);
@@ -96,7 +96,7 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
     }
 };
 
-export const useTreeForExport = () => {
+export const useTreeForExport = (): SWRResponse<TreeState, Error> => {
     const httpClient = useHttpClient();
 
     const fetcher = useCallback(async (): Promise<TreeState> => {

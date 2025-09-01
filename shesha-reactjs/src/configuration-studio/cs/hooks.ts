@@ -8,7 +8,7 @@ type ExpandedKeys = TreeProps['expandedKeys'];
 type SeletcedKeys = TreeProps['selectedKeys'];
 type OnTreeExpand = TreeProps['onExpand'];
 
-export const useCsSubscription = (subscriptionType: CsSubscriptionType) => {
+export const useCsSubscription = (subscriptionType: CsSubscriptionType): object => {
     const cs = useConfigurationStudio();
     const [dummy, forceUpdate] = useState({});
     useEffect(() => {

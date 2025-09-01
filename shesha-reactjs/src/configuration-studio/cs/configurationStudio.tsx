@@ -170,7 +170,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             : undefined;
     };
 
-    setDocumentToolbarRerenderer = (itemId: string, forceRender: ForceRenderFunc) => {
+    setDocumentToolbarRerenderer = (itemId: string, forceRender: ForceRenderFunc): void => {
         const doc = this.findDoc(itemId);
         if (!doc)
             return;
@@ -231,11 +231,11 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this._documentDefinitions = new Map<string, DocumentDefinition>();
     }
 
-    registerDocumentDefinition = (definition: DocumentDefinition) => {
+    registerDocumentDefinition = (definition: DocumentDefinition): void => {
         this._documentDefinitions.set(definition.documentType, definition);
     };
 
-    unregisterDocumentDefinition = (definition: DocumentDefinition) => {
+    unregisterDocumentDefinition = (definition: DocumentDefinition): void => {
         this._documentDefinitions.delete(definition.documentType);
     };
 
@@ -243,7 +243,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return this._quickSearch;
     }
 
-    setQuickSearch = (value: string) => {
+    setQuickSearch = (value: string): void => {
         this._quickSearch = value;
         this.saveQuickSearchAsync();
         this.notifySubscribers(['tree']);
@@ -269,7 +269,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return this._isTreeDragging;
     };
 
-    setIsTreeDragging = (value: boolean) => {
+    setIsTreeDragging = (value: boolean): void => {
         this._isTreeDragging = value;
         this.notifySubscribers(['tree-dnd']);
     };
@@ -312,13 +312,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
         await this.loadTreeSelectionAsync();
     };
 
-    onTreeNodeExpand = (expandedKeys: React.Key[]) => {
+    onTreeNodeExpand = (expandedKeys: React.Key[]): void => {
         this._treeExpandedKeys = expandedKeys;
         this.saveTreeExpandedNodesAsync();
         this.notifySubscribers(['tree']);
     };
 
-    doSelectTreeNodeAsync = async (node?: TreeNode) => {
+    doSelectTreeNodeAsync = async (node?: TreeNode): Promise<void> => {
         this._selectedNodeId = node?.key.toString();
         await this.saveTreeSelectionAsync();
         this.notifySubscribers(['tree']);
@@ -342,14 +342,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this.toggleTreeNode(nodeId, true);
     };
 
-    clickTreeNode = (node: TreeNode) => {
+    clickTreeNode = (node: TreeNode): void => {
         if (isFolderTreeNode(node) || isModuleTreeNode(node)) {
             const expanded = this.isTreeNodeExpanded(node.id);
             this.toggleTreeNode(node.id, !expanded);
         }
     };
 
-    selectTreeNode = async (node?: TreeNode) => {
+    selectTreeNode = async (node?: TreeNode): Promise<void> => {
         this.log('selectTreeNode', node);
 
         await this.doSelectTreeNodeAsync(node);
@@ -558,7 +558,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         callbacks.delete(callback);
     }
 
-    notifySubscribers(types: CsSubscriptionType[]) {
+    notifySubscribers(types: CsSubscriptionType[]): void {
         const allSubscriptions = new Set<CsSubscription>();
         types.forEach((type) => {
             const subscriptions = this.getSubscriptions(type);
@@ -570,7 +570,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     //#endregion
 
-    log = (...args: unknown[]) => {
+    log = (...args: unknown[]): void => {
         if (this.logEnabled) {
             console.trace(`%c[cs]`, 'color: blue; font-weight: bold', ...args);
         }
@@ -615,7 +615,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         });
     };
 
-    loadTreeAsync = async () => {
+    loadTreeAsync = async (): Promise<void> => {
         this.treeLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
         try {
             const flatTreeNodes = await fetchFlatTreeAsync(this.httpClient);
@@ -632,7 +632,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 const currentNode = treeNodeMap.get(node.id)!;
 
                 if (node.moduleId && isConfigItemTreeNode(currentNode))
-                    currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name;
+                    currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name ?? "";
 
                 if (isDefined(node.parentId)) {
                     const parent = treeNodeMap.get(node.parentId);
@@ -656,7 +656,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this.notifySubscribers(['tree', 'tabs', 'doc']);
     };
 
-    loadTreeAndDocsAsync = async () => {
+    loadTreeAndDocsAsync = async (): Promise<void> => {
         await this.loadTreeAsync();
         this.loadTreeStateAsync();
         this.loadDocsStateAsync();
@@ -683,7 +683,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         // TODO: select created folder
     };
 
-    deleteFolderAsync = async (node: FolderTreeNode) => {
+    deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
         if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
             return;
 
@@ -696,7 +696,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         }
     };
 
-    renameFolderAsync = async (node: FolderTreeNode) => {
+    renameFolderAsync = async (node: FolderTreeNode): Promise<void> => {
         try {
             await this.modalApi.showModalFormAsync({
                 title: 'Rename Folder',
@@ -906,7 +906,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     //#endregion
 
-    showError = (errorMessage: string, _error?: unknown) => {
+    showError = (errorMessage: string, _error?: unknown): void => {
         this.notificationApi.error({ message: errorMessage });
     };
 
@@ -922,7 +922,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return this._treeNodes;
     }
 
-    init = async () => {
+    init = async (): Promise<void> => {
         this.log('CS: initialization');
 
         await this.loadItemTypesAsync();

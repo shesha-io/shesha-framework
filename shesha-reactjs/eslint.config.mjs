@@ -56,12 +56,79 @@ const stylisticOverrides = {
     "@stylistic/lines-between-class-members": ["error", "always"],
 };
 
+const legacyTypescriptOverrides = {
+    "@typescript-eslint/dot-notation": "off",
+
+    "@typescript-eslint/explicit-function-return-type": ["off", {
+        allowExpressions: false,
+        allowTypedFunctionExpressions: false,
+        allowHigherOrderFunctions: false,
+        allowDirectConstAssertionInArrowFunctions: true,
+        allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+    }],
+
+    "@typescript-eslint/explicit-module-boundary-types": ["off", {
+        allowArgumentsExplicitlyTypedAsAny: true,
+        allowDirectConstAssertionInArrowFunctions: true,
+        allowHigherOrderFunctions: false,
+        allowTypedFunctionExpressions: false,
+    }],
+
+    "@typescript-eslint/indent": "off",
+
+    "@typescript-eslint/naming-convention": ["error", {
+        selector: "variable",
+        format: ["camelCase", "UPPER_CASE", "PascalCase"],
+        leadingUnderscore: "forbid",
+        trailingUnderscore: "forbid",
+    }],
+
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-unused-expressions": "error",
+
+    "@typescript-eslint/no-unused-vars": ["error", {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+        ignoreRestSiblings: true,
+    }],
+
+    "@typescript-eslint/no-use-before-define": ["error", {
+        ignoreTypeReferences: true,
+        classes: false,
+    }],
+
+    "@typescript-eslint/quotes": ["off", "double"],
+
+    "@typescript-eslint/typedef": ["off", {
+        parameter: true,
+        propertyDeclaration: true,
+        variableDeclaration: true,
+    }],
+    // TODO: activate and review code
+    // "@typescript-eslint/no-explicit-any": "error",
+    // "@typescript-eslint/no-unsafe-call": "error",
+    // "@typescript-eslint/no-unsafe-member-access": "error",
+    // "@typescript-eslint/no-unsafe-argument": "error",
+    // "@typescript-eslint/no-unsafe-assignment": "error",
+};
+
 const typescriptOverrides = {
     "@typescript-eslint/no-unused-vars": ["error", {
         varsIgnorePattern: "^_",
         argsIgnorePattern: "^_",
         ignoreRestSiblings: true,
     }],
+
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unsafe-call": "error",
+    "@typescript-eslint/no-unsafe-member-access": "error",
+    "@typescript-eslint/no-unsafe-argument": "error",
+    "@typescript-eslint/no-unsafe-assignment": "error",
+    "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
+    "@typescript-eslint/no-unnecessary-condition": "error",
+    "@typescript-eslint/strict-boolean-expressions": "error",
 };
 
 const baseTsConfig = {
@@ -149,7 +216,6 @@ const baseTsConfig = {
     rules: {
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
-        //...typescriptEslint.configs.recommended.rules,
         "react/prop-types": ["off"],
         "require-await": "error",
         "no-restricted-imports": ["error", {
@@ -179,61 +245,6 @@ const baseTsConfig = {
             ignoreMemberSort: false,
             memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
             allowSeparatedGroups: false,
-        }],
-
-        // TODO: activate and review code
-        // "@typescript-eslint/no-explicit-any": "error",
-        // "@typescript-eslint/no-unsafe-call": "error",
-        // "@typescript-eslint/no-unsafe-member-access": "error",
-        // "@typescript-eslint/no-unsafe-argument": "error",
-        // "@typescript-eslint/no-unsafe-assignment": "error",
-
-        "@typescript-eslint/dot-notation": "off",
-
-        "@typescript-eslint/explicit-function-return-type": ["off", {
-            allowExpressions: false,
-            allowTypedFunctionExpressions: false,
-            allowHigherOrderFunctions: false,
-            allowDirectConstAssertionInArrowFunctions: true,
-            allowConciseArrowFunctionExpressionsStartingWithVoid: true,
-        }],
-
-        "@typescript-eslint/explicit-module-boundary-types": ["off", {
-            allowArgumentsExplicitlyTypedAsAny: true,
-            allowDirectConstAssertionInArrowFunctions: true,
-            allowHigherOrderFunctions: false,
-            allowTypedFunctionExpressions: false,
-        }],
-
-        "@typescript-eslint/indent": "off",
-
-        "@typescript-eslint/naming-convention": ["error", {
-            selector: "variable",
-            format: ["camelCase", "UPPER_CASE", "PascalCase"],
-            leadingUnderscore: "forbid",
-            trailingUnderscore: "forbid",
-        }],
-
-        "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/no-unused-expressions": "error",
-
-        "@typescript-eslint/no-unused-vars": ["error", {
-            varsIgnorePattern: "^_",
-            argsIgnorePattern: "^_",
-            ignoreRestSiblings: true,
-        }],
-
-        "@typescript-eslint/no-use-before-define": ["error", {
-            ignoreTypeReferences: true,
-            classes: false,
-        }],
-
-        "@typescript-eslint/quotes": ["off", "double"],
-
-        "@typescript-eslint/typedef": ["off", {
-            parameter: true,
-            propertyDeclaration: true,
-            variableDeclaration: true,
         }],
 
         "brace-style": ["error", "1tbs"],
@@ -298,20 +309,6 @@ const baseTsConfig = {
         "spaced-comment": ["off", "always", {
             markers: ["/"],
         }],
-
-        "@stylistic/member-delimiter-style": ["error", {
-            multiline: {
-                delimiter: "semi",
-                requireLast: true,
-            },
-
-            singleline: {
-                delimiter: "semi",
-                requireLast: false,
-            },
-        }],
-        "@stylistic/semi": ["error", "always"],
-        "@stylistic/type-annotation-spacing": "error",
     }
 };
 
@@ -335,15 +332,6 @@ const csConfig = {
 
         "react-hooks/exhaustive-deps": "error",
         "no-unsafe-optional-chaining": "error",
-
-        "@typescript-eslint/no-explicit-any": "error",
-        "@typescript-eslint/no-unsafe-call": "error",
-        "@typescript-eslint/no-unsafe-member-access": "error",
-        "@typescript-eslint/no-unsafe-argument": "error",
-        "@typescript-eslint/no-unsafe-assignment": "error",
-        "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
-        "@typescript-eslint/no-unnecessary-condition": "error",
-        "@typescript-eslint/strict-boolean-expressions": "error",
     },
 };
 
@@ -355,6 +343,10 @@ export default [
             "src/**/*.tsx",
         ],
         ignores: [...baseTsConfig.ignores, "src/configuration-studio/**/*"],
+        rules: {
+            ...baseTsConfig.rules,
+            ...legacyTypescriptOverrides,
+        }
     },
     {
         ...csConfig,

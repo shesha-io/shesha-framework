@@ -58,7 +58,7 @@ export class ModalApi implements IModalApi {
         this._antdApi = args.antdApi;
     }
 
-    confirmYesNo = (args: ConfirmArgs) => {
+    confirmYesNo = (args: ConfirmArgs): Promise<boolean> => {
         return new Promise<boolean>((resolve, reject) => {
             this._antdApi.confirm({
                 title: args.title,
