@@ -14,7 +14,7 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
 
         const loop = (data: TreeNode[]): TreeNode[] => {
             const result: TreeNode[] = [];
-            data.forEach(node => {
+            data.forEach((node) => {
                 if (isConfigItemTreeNode(node)) {
                     const newTitle = getTitleWithHighlight(node, quickSearch);
                     if (isDefined(newTitle))

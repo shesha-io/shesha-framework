@@ -44,7 +44,7 @@ export const getTitleWithHighlight = (node: TreeNode, searchString?: string): Re
   if (index <= -1)
     return undefined;
 
-  const parts = replaceWithHighLight(strTitle, searchString, str => (<Text type="success">{str}</Text>));
+  const parts = replaceWithHighLight(strTitle, searchString, (str) => (<Text type="success">{str}</Text>));
   return (
     <>
       {parts.map((part, index) => (

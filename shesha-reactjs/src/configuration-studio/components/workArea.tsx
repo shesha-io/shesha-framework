@@ -55,7 +55,7 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
             key: 'closeAll',
             label: 'Close All',
             onClick: () => {
-                closeMultipleDocs(_ => (true));
+                closeMultipleDocs((_) => (true));
             }
         }
     ];
@@ -69,7 +69,7 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
     const treeTabs = useMemo<Tab[]>(() => {
         const result: Tab[] = [];
         const actualDocs = new Set<string>();
-        docs.forEach(doc => {
+        docs.forEach((doc) => {
             const tabContent = renderedDocs.has(doc.itemId)
                 ? renderedDocs.get(doc.itemId)
                 : <DocumentEditor doc={doc} key={doc.itemId} />;

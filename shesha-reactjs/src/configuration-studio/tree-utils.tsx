@@ -51,7 +51,7 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
         name: node.name,
         label: node.label,
         nodeType: node.nodeType,
-        title: node => isTreeNode(node) ? renderCsTreeNode(node, undefined) : undefined,
+        title: (node) => isTreeNode(node) ? renderCsTreeNode(node, undefined) : undefined,
         moduleId: node.moduleId,
         description: node.description,
     };

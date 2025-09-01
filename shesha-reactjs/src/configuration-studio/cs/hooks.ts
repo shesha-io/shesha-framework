@@ -99,12 +99,12 @@ export const useConfigurationStudioDocumentDefinitions = (definitions: DocumentD
     const cs = useConfigurationStudio();
 
     useEffect(() => {
-        definitions.forEach(definition => {
+        definitions.forEach((definition) => {
             cs.registerDocumentDefinition(definition);
         });
 
         return () => {
-            definitions.forEach(definition => {
+            definitions.forEach((definition) => {
                 cs.unregisterDocumentDefinition(definition);
             });
         };

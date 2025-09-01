@@ -27,7 +27,7 @@ export const useItemRevisionHistory = (itemId: string) => {
     const httpClient = useHttpClient();
 
     const fetcher = useCallback((url: string) => {
-        return httpClient.get<IAjaxResponse<GetItemRevisionsResponse>>(url).then(res => {
+        return httpClient.get<IAjaxResponse<GetItemRevisionsResponse>>(url).then((res) => {
             const result = res.data.result;
 
             return result;

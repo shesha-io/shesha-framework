@@ -309,7 +309,6 @@ const csConfig = {
         
         // enable one by one
         //"@stylistic/spaced-comment": "off",
-        "@stylistic/arrow-parens": "off",
         "@stylistic/eol-last": "off",
         "@stylistic/comma-dangle": "off",
         "@stylistic/padded-blocks": "off",

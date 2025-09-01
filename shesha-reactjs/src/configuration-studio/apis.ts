@@ -31,7 +31,7 @@ export type MoveNodeResponse = {
 };
 
 export const moveTreeNodeAsync = (httpClient: HttpClientApi, payload: MoveNodePayload): Promise<IAbpWrappedResponse<MoveNodeResponse>> => {
-    return httpClient.post<MoveNodePayload, AxiosResponse<IAbpWrappedResponse<MoveNodeResponse>>>(CS_URLS.MOVE_NODE_TO_FOLDER, payload).then(response => response.data);
+    return httpClient.post<MoveNodePayload, AxiosResponse<IAbpWrappedResponse<MoveNodeResponse>>>(CS_URLS.MOVE_NODE_TO_FOLDER, payload).then((response) => response.data);
 };
 //#endregion
 
@@ -45,7 +45,7 @@ export type DeleteFolderResponse = {
 
 export const deleteFolderAsync = (httpClient: HttpClientApi, payload: DeleteFolderPayload): Promise<IAbpWrappedResponse<DeleteFolderResponse>> => {
     const url = `${CS_URLS.FOLDER_DELETE}?${qs.stringify(payload)}`;
-    return httpClient.delete<DeleteFolderPayload, AxiosResponse<IAbpWrappedResponse<DeleteFolderResponse>>>(url).then(response => response.data);
+    return httpClient.delete<DeleteFolderPayload, AxiosResponse<IAbpWrappedResponse<DeleteFolderResponse>>>(url).then((response) => response.data);
 };
 //#endregion
 
@@ -69,12 +69,12 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
         const treeNodes: TreeNode[] = [];
 
         // First pass: create map and shallow copies
-        flatTreeNodes.forEach(node => {
+        flatTreeNodes.forEach((node) => {
             treeNodeMap.set(node.id, flatNode2TreeNode(node));
         });
 
         // Second pass: build hierarchy
-        flatTreeNodes.forEach(node => {
+        flatTreeNodes.forEach((node) => {
             const currentNode = treeNodeMap.get(node.id)!;
 
             if (node.moduleId && isConfigItemTreeNode(currentNode))
@@ -125,7 +125,7 @@ export type DeleteCIResponse = {
 
 export const deleteConfigurationItemAsync = (httpClient: HttpClientApi, payload: DeleteCIPayload): Promise<IAbpWrappedResponse<DeleteCIResponse>> => {
     const url = `${CS_URLS.ITEM_DELETE}?${qs.stringify(payload)}`;
-    return httpClient.delete<DeleteCIPayload, AxiosResponse<IAbpWrappedResponse<DeleteCIResponse>>>(url).then(response => response.data);
+    return httpClient.delete<DeleteCIPayload, AxiosResponse<IAbpWrappedResponse<DeleteCIResponse>>>(url).then((response) => response.data);
 };
 
 //#endregion
@@ -139,7 +139,7 @@ export type DuplicateItemResponse = {
 };
 
 export const duplicateItemAsync = (httpClient: HttpClientApi, payload: DuplicateItemPayload): Promise<IAbpWrappedResponse<DuplicateItemResponse>> => {
-    return httpClient.post<DuplicateItemPayload, AxiosResponse<IAbpWrappedResponse<DuplicateItemResponse>>>(CS_URLS.ITEM_DUPLICATE, payload).then(response => response.data);
+    return httpClient.post<DuplicateItemPayload, AxiosResponse<IAbpWrappedResponse<DuplicateItemResponse>>>(CS_URLS.ITEM_DUPLICATE, payload).then((response) => response.data);
 };
 //#endregion
 

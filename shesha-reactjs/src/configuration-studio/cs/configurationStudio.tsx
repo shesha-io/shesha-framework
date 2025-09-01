@@ -159,7 +159,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     toolbarRef?: MutableRefObject<HTMLDivElement>;
     findDoc = (itemId?: string): IDocumentInstance | undefined => {
         return isDefined(itemId)
-            ? this.docs.find(d => d.itemId === itemId)
+            ? this.docs.find((d) => d.itemId === itemId)
             : undefined;
     };
 
@@ -193,7 +193,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     activeDocId?: string;
     private getDocumenById = (id: string): IDocumentInstance | undefined => {
         return id
-            ? this.docs.find(d => d.itemId === id)
+            ? this.docs.find((d) => d.itemId === id)
             : undefined;
     };
     get activeDocument(): (IDocumentInstance | undefined) {
@@ -304,7 +304,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         if (expanded)
             this._treeExpandedKeys = [...this._treeExpandedKeys, nodeId];
         else
-            this._treeExpandedKeys = this._treeExpandedKeys.filter(key => key !== nodeId);
+            this._treeExpandedKeys = this._treeExpandedKeys.filter((key) => key !== nodeId);
         this.notifySubscribers(['tree']);
     };
     expandTreeNode = (nodeId: string): void => {
@@ -344,7 +344,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const docs = await this.storage.getAsync<StoredDocumentInfo[]>(STORAGE_KEYS.OPENED_DOCS) ?? [];
 
         this.log('Convert restored docs');
-        const mappedDocs = docs.map<IDocumentInstance | undefined>(d => {
+        const mappedDocs = docs.map<IDocumentInstance | undefined>((d) => {
             const node = this.getTreeNodeById(d.itemId);
             if (!isConfigItemTreeNode(node))
                 return undefined;
@@ -361,7 +361,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 flags: node.flags,
             });
         })
-            .filter(d => isDefined(d));
+            .filter((d) => isDefined(d));
 
         this.docs = mappedDocs;
     };
@@ -377,7 +377,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     private saveOpenedDocsAsync = async () => {
-        const storedData = this.docs.map<StoredDocumentInfo>(d => ({
+        const storedData = this.docs.map<StoredDocumentInfo>((d) => ({
             itemId: d.itemId,
             label: d.label,
             type: d.type,
@@ -421,7 +421,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     private findDocumentById = (tabId: string): DocumentBase | undefined => {
-        return this.docs.find(t => t.itemId === tabId);
+        return this.docs.find((t) => t.itemId === tabId);
     };
 
     doSelectTabAsync = async (tab?: DocumentBase): Promise<void> => {
@@ -459,7 +459,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     isDocOpened = (docId: string): boolean => {
-        return this.docs.some(t => t.itemId === docId);
+        return this.docs.some((t) => t.itemId === docId);
     };
 
     closeDocAsync = async (docId?: string): Promise<void> => {
@@ -468,10 +468,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
         // TODO: check for unsaved changes, ask user to confirm
         // TODO: unload document
-        const index = this.docs.findIndex(t => t.itemId === docId);
+        const index = this.docs.findIndex((t) => t.itemId === docId);
         const isActive = this.activeDocId === docId;
 
-        this.docs = this.docs.filter(t => t.itemId !== docId);
+        this.docs = this.docs.filter((t) => t.itemId !== docId);
 
         await this.saveOpenedDocsAsync();
         this.notifySubscribers(['tabs', 'doc']);
@@ -529,12 +529,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     notifySubscribers(types: CsSubscriptionType[]) {
         const allSubscriptions = new Set<CsSubscription>();
-        types.forEach(type => {
+        types.forEach((type) => {
             const subscriptions = this.getSubscriptions(type);
-            subscriptions.forEach(s => allSubscriptions.add(s));
+            subscriptions.forEach((s) => allSubscriptions.add(s));
         });
 
-        allSubscriptions.forEach(s => (s(this)));
+        allSubscriptions.forEach((s) => (s(this)));
     }
 
     //#endregion
@@ -591,12 +591,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
             const treeNodes: TreeNode[] = [];
 
             // First pass: create map and shallow copies
-            flatTreeNodes.forEach(node => {
+            flatTreeNodes.forEach((node) => {
                 treeNodeMap.set(node.id, flatNode2TreeNode(node));
             });
 
             // Second pass: build hierarchy
-            flatTreeNodes.forEach(node => {
+            flatTreeNodes.forEach((node) => {
                 const currentNode = treeNodeMap.get(node.id)!;
 
                 if (node.moduleId && isConfigItemTreeNode(currentNode))
