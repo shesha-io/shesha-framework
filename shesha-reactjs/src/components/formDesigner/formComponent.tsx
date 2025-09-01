@@ -57,17 +57,6 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       };
     }
 
-    if (componentModel.type === 'fileUpload' || componentModel.type === 'attachmentsEditor') {
-      return {
-        container: {
-          dimensions: {
-            width: '100%',
-            height: '100%'
-          }
-        }
-      };
-    }
-
     return null;
   };
 

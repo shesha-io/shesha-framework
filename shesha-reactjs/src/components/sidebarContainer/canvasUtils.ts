@@ -51,7 +51,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   
   const optimalZoom = (availableWidth / canvasWidth) * 100;
   
-  return Math.max(25, Math.min(200, Math.round(optimalZoom)));
+  return Math.max(25, Math.min(200, Math.floor(optimalZoom)));
 }
 
 export const usePinchZoom = (

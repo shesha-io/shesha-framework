@@ -100,6 +100,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
     height: 100%;
+    width: ${width};
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
