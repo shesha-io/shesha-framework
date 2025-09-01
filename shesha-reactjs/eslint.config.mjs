@@ -297,6 +297,7 @@ const csConfig = {
         */
         "@stylistic/member-delimiter-style": "off",
         "@stylistic/type-annotation-spacing": "off",
+        "@stylistic/space-before-blocks": "error",
         "@stylistic/arrow-parens": ["error", "always"],
         "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
         "@stylistic/operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
@@ -319,7 +320,7 @@ const csConfig = {
         "@typescript-eslint/strict-boolean-expressions": "error",
 
         // enable one by one
-        "@stylistic/space-before-blocks": "off",
+        
         "@stylistic/eol-last": "off",
 
         "@stylistic/jsx-quotes": "off",

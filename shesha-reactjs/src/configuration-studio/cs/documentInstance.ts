@@ -27,7 +27,7 @@ export class DocumentInstance implements IDocumentInstance {
 
     isHistoryVisible: boolean;
 
-    constructor(args: DocumentInstanceArgs){
+    constructor(args: DocumentInstanceArgs) {
         mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
 
         this.isHistoryVisible = false;
