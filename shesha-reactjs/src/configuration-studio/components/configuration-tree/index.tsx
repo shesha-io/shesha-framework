@@ -137,7 +137,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
         });
     }, [contextNode, cs]);
 
-    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { value } = e.target;
         setQuickSearch(value);
     };

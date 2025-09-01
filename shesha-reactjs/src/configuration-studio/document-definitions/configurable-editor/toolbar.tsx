@@ -12,7 +12,7 @@ export const GenericToolbar: FC<IGenericToolbarProps> = ({ }) => {
     useShaFormSubscription('data-submit');
     const shaForm = useShaFormInstance();
 
-    const onSaveClick = () => {
+    const onSaveClick = (): void => {
         shaForm.submit();
     };
     return (

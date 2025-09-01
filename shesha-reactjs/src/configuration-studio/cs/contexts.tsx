@@ -17,7 +17,7 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
 
     if (!csRef.current) {
         // Create a new FormStore if not provided
-        const forceReRender = () => {
+        const forceReRender = (): void => {
             forceUpdate({});
         };
 

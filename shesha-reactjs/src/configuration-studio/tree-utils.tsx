@@ -30,7 +30,7 @@ export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: bo
 };
 
 const applyIcon = (node: TreeNode): void => {
-    node.icon = (props: TreeNodeProps) => {
+    node.icon = (props: TreeNodeProps): ReactNode => {
         return getIcon(
             node.nodeType,
             isConfigItemTreeNode(node) ? node.itemType : undefined,

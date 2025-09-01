@@ -103,7 +103,7 @@ export const useConfigurationStudioDocumentDefinitions = (definitions: DocumentD
             cs.registerDocumentDefinition(definition);
         });
 
-        return () => {
+        return (): void => {
             definitions.forEach((definition) => {
                 cs.unregisterDocumentDefinition(definition);
             });

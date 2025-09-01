@@ -26,28 +26,28 @@ const buildConfiguraitonItemActionsMenu = ({ configurationStudio, node }: BuildN
         {
             label: "Rename",
             key: "rename",
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await configurationStudio.renameItemAsync(node);
             },
         },
         {
             label: "Duplicate",
             key: "duplicate",
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await configurationStudio.duplicateItemAsync(node);
             },
         },
         {
             label: "Delete",
             key: "delete",
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await configurationStudio.deleteItemAsync(node);
             },
         },
         {
             label: "Version History",
             key: "versionHistory",
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await configurationStudio.showRevisionHistoryAsync(node);
             },
         },
@@ -65,14 +65,14 @@ const buildFolderActionsMenu = ({ configurationStudio, node }: BuildNodeMenuArgs
         {
             label: "Rename",
             key: "rename",
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await configurationStudio.renameFolderAsync(node);
             },
         },
         {
             label: "Delete",
             key: "delete",
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await configurationStudio.deleteFolderAsync(node);
             },
         },
@@ -91,7 +91,7 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
             label: "Expose Existing",
             key: "expose",
             icon: <BranchesOutlined />,
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await cs.exposeExistingAsync({ moduleId, folderId });
             },
         },
@@ -100,7 +100,7 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
             label: "Import from Package",
             key: "importFromPackage",
             icon: <ImportOutlined />,
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await cs.importPackageAsync({ moduleId, folderId });
             },
         },
@@ -108,7 +108,7 @@ const buildExposeAndImportExportMenu = ({ configurationStudio: cs, node }: Build
             label: "Export to Package",
             key: "exportToPackage",
             icon: <ExportOutlined />,
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await cs.exportPackageAsync({ moduleId, folderId });
             },
         },
@@ -123,7 +123,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             label: label,
             key: itemType,
             icon: getIcon(TreeNodeType.ConfigurationItem, itemType),
-            onClick: async () => {
+            onClick: async (): Promise<void> => {
                 await configurationStudio.createItemAsync({
                     moduleId: node.moduleId,
                     folderId: isFolderTreeNode(node)
@@ -145,7 +145,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
             label: "Folder",
             key: "folder",
             icon: getIcon(TreeNodeType.Folder),
-            onClick: () => {
+            onClick: (): void => {
                 configurationStudio.createFolderAsync({
                     moduleId: node.moduleId,
                     folderId: isFolderTreeNode(node)

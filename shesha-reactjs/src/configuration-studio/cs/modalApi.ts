@@ -113,7 +113,7 @@ export class ModalApi implements IModalApi {
         const modalId = nanoid();
 
         return new Promise((resolve, reject) => {
-            const removeModal = () => {
+            const removeModal = (): void => {
                 this._removeModal(modalId);
             };
             const modalArgs = executor({ resolve, reject, removeModal });

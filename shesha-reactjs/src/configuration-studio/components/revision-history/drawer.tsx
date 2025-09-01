@@ -14,7 +14,7 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
     const cs = useConfigurationStudio();
     const { data, isLoading } = useItemRevisionHistory(doc.itemId);
 
-    const onClose = () => {
+    const onClose = (): void => {
         cs.hideRevisionHistoryAsync(doc.itemId);
     };
 

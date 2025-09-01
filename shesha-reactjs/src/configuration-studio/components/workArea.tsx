@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, useMemo, useRef, useState } from 'react';
-import { Dropdown, Empty, Tabs, TabsProps } from 'antd';
+import { Dropdown, Empty, MenuProps, Tabs, TabsProps } from 'antd';
 import { useCsTabs } from '../cs/hooks';
 import { DocumentEditor } from './documentEditor';
 import { useStyles } from '../styles';
@@ -8,6 +8,7 @@ import { IDocumentInstance } from '../models';
 
 type Tab = Required<TabsProps>['items'][number];
 type OnEdit = TabsProps['onEdit'];
+type MenuItem = Required<MenuProps>['items'][number];
 
 type TabContextMenuState = {
     isVisible: boolean;
@@ -25,23 +26,23 @@ export const WorkArea: FC = () => {
     const renderedDocsRef = useRef<Map<string, ReactNode>>(new Map<string, ReactNode>());
     const renderedDocs = renderedDocsRef.current;
 
-    const getContextMenuItems = (doc: IDocumentInstance) => [
+    const getContextMenuItems = (doc: IDocumentInstance): MenuItem[] => [
         {
             key: 'close',
             label: 'Close',
-            onClick: () => closeDoc(doc.itemId),
+            onClick: (): void => closeDoc(doc.itemId),
         },
         {
             key: 'closeOthers',
             label: 'Close Others',
-            onClick: () => {
+            onClick: (): void => {
                 closeMultipleDocs((d) => (d !== doc));
             },
         },
         {
             key: 'closeToTheRight',
             label: 'Close to the Right',
-            onClick: () => {
+            onClick: (): void => {
                 closeMultipleDocs((_, index) => {
                     const docIndex = docs.indexOf(doc);
                     return index > docIndex;
@@ -51,13 +52,13 @@ export const WorkArea: FC = () => {
         {
             key: 'closeAll',
             label: 'Close All',
-            onClick: () => {
+            onClick: (): void => {
                 closeMultipleDocs((_) => (true));
             },
         },
     ];
 
-    const handleContextMenu = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, doc: IDocumentInstance) => {
+    const handleContextMenu = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, doc: IDocumentInstance): void => {
         e.preventDefault();
         e.stopPropagation();
         setContextMenuState({ doc, x: e.clientX, y: e.clientY, isVisible: true });

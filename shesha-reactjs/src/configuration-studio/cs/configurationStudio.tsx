@@ -279,34 +279,34 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return isConfigItemTreeNode(node) ? node : undefined;
     };
 
-    private saveTreeExpandedNodesAsync = async () => {
+    private saveTreeExpandedNodesAsync = async (): Promise<void> => {
         await this.storage.setAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS, this._treeExpandedKeys);
     };
 
-    private saveTreeSelectionAsync = async () => {
+    private saveTreeSelectionAsync = async (): Promise<void> => {
         if (isDefined(this._selectedNodeId))
             await this.storage.setAsync(STORAGE_KEYS.TREE_SELECTION, this._selectedNodeId.toString());
         else
             await this.storage.removeAsync(STORAGE_KEYS.TREE_SELECTION);
     };
 
-    private saveQuickSearchAsync = async () => {
+    private saveQuickSearchAsync = async (): Promise<void> => {
         await this.storage.setAsync(STORAGE_KEYS.QUICK_SEARCH, this._quickSearch);
     };
 
-    private loadTreeSelectionAsync = async () => {
+    private loadTreeSelectionAsync = async (): Promise<void> => {
         this._selectedNodeId = await this.storage.getAsync(STORAGE_KEYS.TREE_SELECTION);
     };
 
-    private loadTreeExpandedNodesAsync = async () => {
+    private loadTreeExpandedNodesAsync = async (): Promise<void> => {
         this._treeExpandedKeys = await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS) ?? [];
     };
 
-    private loadQuickSearchAsync = async () => {
+    private loadQuickSearchAsync = async (): Promise<void> => {
         this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH) ?? "";
     };
 
-    private loadTreeStateAsync = async () => {
+    private loadTreeStateAsync = async (): Promise<void> => {
         await this.loadQuickSearchAsync();
         await this.loadTreeExpandedNodesAsync();
         await this.loadTreeSelectionAsync();
@@ -407,7 +407,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         await this.loadDocSelectionAsync();
     };
 
-    private saveOpenedDocsAsync = async () => {
+    private saveOpenedDocsAsync = async (): Promise<void> => {
         const storedData = this.docs.map<StoredDocumentInfo>((d) => ({
             itemId: d.itemId,
             label: d.label,
@@ -416,7 +416,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         await this.storage.setAsync(STORAGE_KEYS.OPENED_DOCS, storedData);
     };
 
-    private saveDocSelectionAsync = async () => {
+    private saveDocSelectionAsync = async (): Promise<void> => {
         if (isDefined(this.activeDocId))
             await this.storage.setAsync(STORAGE_KEYS.ACTIVE_DOC_ID, this.activeDocId.toString());
         else
@@ -553,7 +553,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         return () => this.unsubscribe(type, callback);
     }
 
-    private unsubscribe(type: CsSubscriptionType, callback: CsSubscription) {
+    private unsubscribe(type: CsSubscriptionType, callback: CsSubscription): void {
         const callbacks = this.getSubscriptions(type);
         callbacks.delete(callback);
     }
@@ -860,12 +860,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const importerRef = createManualRef<IImportInterface | undefined>(undefined);
 
         const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
-            const hideModal = () => {
+            const hideModal = (): void => {
                 resolve(false);
                 removeModal();
             };
 
-            const onImported = () => {
+            const onImported = (): void => {
                 removeModal();
                 resolve(true);
             };
@@ -884,12 +884,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const exporterRef = createManualRef<IExportInterface | undefined>(undefined);
 
         const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
-            const hideModal = () => {
+            const hideModal = (): void => {
                 resolve(false);
                 removeModal();
             };
 
-            const onExported = () => {
+            const onExported = (): void => {
                 removeModal();
                 resolve(true);
             };
