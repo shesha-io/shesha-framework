@@ -22,7 +22,7 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
                             ...node,
                             title: (data: TreeNode) => {
                                 return renderCsTreeNode(data, newTitle);
-                            }
+                            },
                         });
                 }
 

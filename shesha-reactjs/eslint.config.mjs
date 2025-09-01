@@ -296,6 +296,7 @@ const csConfig = {
         "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
         "@stylistic/operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
         "@stylistic/no-trailing-spaces": "error",
+        "@stylistic/comma-dangle": ["error", "always-multiline"],
 
         "react-hooks/exhaustive-deps": "error",
         "no-unsafe-optional-chaining": "error",
@@ -310,11 +311,8 @@ const csConfig = {
         "@typescript-eslint/strict-boolean-expressions": "error",
         
         // enable one by one
-        "@stylistic/comma-dangle": "off",
         "@stylistic/padded-blocks": "off",
-        
         "@stylistic/indent-binary-ops": "off",
-        
         "@stylistic/no-multiple-empty-lines": "off",
         "@stylistic/lines-between-class-members": "off",
         "@stylistic/space-before-blocks": "off",

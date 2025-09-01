@@ -645,7 +645,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             formArguments: {
                 moduleId: moduleId,
                 folderId: folderId,
-            }
+            },
         });
         await this.loadTreeAsync();
         // TODO: select created folder
@@ -672,7 +672,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 formArguments: {
                     folderId: node.id,
                     name: node.name,
-                }
+                },
             });
 
             await this.loadTreeAsync();
@@ -696,7 +696,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 folderId: folderId,
                 prevItemId: prevItemId,
                 itemType: itemType,
-            }
+            },
         });
         await this.loadTreeAsync();
 
@@ -749,7 +749,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
                 formArguments: {
                     itemId: node.id,
                     name: node.name,
-                }
+                },
             });
 
             await this.loadTreeAndDocsAsync();
@@ -820,7 +820,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             formArguments: {
                 moduleId: moduleId,
                 folderId: folderId,
-            }
+            },
         });
         await this.loadTreeAsync();
     };
@@ -840,7 +840,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             return {
                 title: 'Import Configuration',
                 content: <ConfigurationItemsImport onImported={onImported} importRef={importerRef} />,
-                footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={importerRef} />
+                footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={importerRef} />,
             };
         });
 
@@ -863,7 +863,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             return {
                 title: 'Export Configuration',
                 content: (<ConfigurationItemsExport exportRef={exporterRef} onExported={onExported} />),
-                footer: (<ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />)
+                footer: (<ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />),
             };
         });
 

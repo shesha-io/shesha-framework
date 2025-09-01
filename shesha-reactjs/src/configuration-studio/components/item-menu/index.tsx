@@ -33,7 +33,7 @@ export const ConfigurationItemMenu: FC<IConfigurationItemMenuProps> = () => {
                     moduleId: activeDoc.moduleId,
                     moduleName: activeDoc.moduleName,
                     flags: activeDoc.flags,
-                }
+                },
             })
             : [];
     }, [cs, activeDoc]);

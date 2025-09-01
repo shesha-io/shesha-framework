@@ -10,7 +10,7 @@ type MenuItemType = NonNullable<MenuProps["items"]>[number];
 
 const getDivider = (): MenuItemType => {
     return {
-        type: 'divider'
+        type: 'divider',
     };
 };
 
@@ -134,7 +134,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
                     prevItemId: isConfigItemTreeNode(node)
                         ? node.id
                         : undefined,
-                    itemType: itemType
+                    itemType: itemType,
                 });
             },
         };
@@ -152,7 +152,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
                         ? node.id
                         : isConfigItemTreeNode(node) && isDefined(node.parentId)
                             ? node.parentId
-                            : undefined
+                            : undefined,
                 });
             },
         },

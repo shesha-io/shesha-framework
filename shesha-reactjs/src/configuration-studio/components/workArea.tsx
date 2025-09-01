@@ -32,14 +32,14 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
         {
             key: 'close',
             label: 'Close',
-            onClick: () => closeDoc(doc.itemId)
+            onClick: () => closeDoc(doc.itemId),
         },
         {
             key: 'closeOthers',
             label: 'Close Others',
             onClick: () => {
                 closeMultipleDocs((d) => (d !== doc));
-            }
+            },
         },
         {
             key: 'closeToTheRight',
@@ -49,15 +49,15 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
                     const docIndex = docs.indexOf(doc);
                     return index > docIndex;
                 });
-            }
+            },
         },
         {
             key: 'closeAll',
             label: 'Close All',
             onClick: () => {
                 closeMultipleDocs((_) => (true));
-            }
-        }
+            },
+        },
     ];
 
     const handleContextMenu = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, doc: IDocumentInstance) => {
@@ -121,7 +121,7 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
                     open={contextMenuState.isVisible}
                     onOpenChange={(visible) => setContextMenuState({ ...contextMenuState, isVisible: visible })}
                     menu={{
-                        items: getContextMenuItems(contextMenuState.doc)
+                        items: getContextMenuItems(contextMenuState.doc),
                     }}
                     trigger={['contextMenu']}
                     align={{ points: ['tl', 'tr'] }}

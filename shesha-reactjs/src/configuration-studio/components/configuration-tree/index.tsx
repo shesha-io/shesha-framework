@@ -133,7 +133,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
         return buildNodeContextMenu({
             node: contextNode,
-            configurationStudio: cs
+            configurationStudio: cs,
         });
     }, [contextNode, cs]);
 
@@ -161,7 +161,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                 dragNode: dragNode,
                 dropNode: dropNode,
                 dropPosition: dropPosition,
-                allowed
+                allowed,
             });
         }
         return allowed;

@@ -15,5 +15,5 @@ export const SheshaDocumentDefinitions = [
     PermissionDocumentDefinition,
     ReferenceListDocumentDefinition,
     RoleDocumentDefinition,
-    SettingDocumentDefinition
+    SettingDocumentDefinition,
 ];

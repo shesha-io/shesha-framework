@@ -31,5 +31,5 @@ export const EntityDocumentDefinition: DocumentDefinition = {
   },
   documentInstanceFactory: (args) => {
       return new DocumentInstance({ ...args, itemType: EntityDocumentDefinition.documentType, definition: EntityDocumentDefinition });
-  }
+  },
 };
