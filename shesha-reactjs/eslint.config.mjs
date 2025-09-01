@@ -324,7 +324,6 @@ const csConfig = {
 
         // enable one by one
         "@stylistic/jsx-wrap-multilines": "off",
-        "@stylistic/jsx-tag-spacing": "off",
     },
 };
 

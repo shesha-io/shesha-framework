@@ -11,10 +11,10 @@ export interface IFormToolbarProps {
 export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
     return (
         <div>
-            <FormSettingsButton buttonText=""/>
-            <SaveButton size="small" type="link"/>
-            {!readOnly && (<UndoRedoButtons size="small"/>)}
-            <PreviewButton size="small"/>
+            <FormSettingsButton buttonText="" />
+            <SaveButton size="small" type="link" />
+            {!readOnly && (<UndoRedoButtons size="small" />)}
+            <PreviewButton size="small" />
         </div>
     );
 };
