@@ -320,8 +320,7 @@ const csConfig = {
         "@typescript-eslint/strict-boolean-expressions": "error",
 
         // enable one by one
-        
-        "@stylistic/eol-last": "off",
+        "@stylistic/eol-last": "error",
 
         "@stylistic/jsx-quotes": "off",
         "@stylistic/jsx-wrap-multilines": "off",
