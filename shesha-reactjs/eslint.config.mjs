@@ -297,7 +297,8 @@ const csConfig = {
         /* todo: review after development of a standard and integration with auto-formatter
         "@stylistic/indent": ["error", 2],
         "@stylistic/indent-binary-ops": ["error", 2],
-        */        
+        */
+        "@stylistic/jsx-quotes": ["error", "prefer-double"],
         "@stylistic/eol-last": "error",
         "@stylistic/space-before-blocks": "error",
         "@stylistic/arrow-parens": ["error", "always"],
@@ -322,9 +323,7 @@ const csConfig = {
         "@typescript-eslint/strict-boolean-expressions": "error",
 
         // enable one by one
-        "@stylistic/jsx-quotes": ["error", "prefer-double"],
         "@stylistic/jsx-wrap-multilines": "off",
-        "@stylistic/jsx-curly-brace-presence": "off",
         "@stylistic/jsx-tag-spacing": "off",
     },
 };

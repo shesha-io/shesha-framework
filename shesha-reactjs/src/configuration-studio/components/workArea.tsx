@@ -101,7 +101,7 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
 
     if (treeTabs.length === 0)
         return (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Please select a node to begin editing'} />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a node to begin editing" />
         );
 
     return (
