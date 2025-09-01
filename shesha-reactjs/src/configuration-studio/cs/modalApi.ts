@@ -6,7 +6,7 @@ import { ReactNode, useRef } from "react";
 import { HookAPI as ModalHookAPI } from 'antd/lib/modal/useModal';
 
 export interface ShowModalArgs {
-    title?: string;
+    title?: string | undefined;
 };
 
 export interface ShowModalFormArgs extends ShowModalArgs {

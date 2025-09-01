@@ -21,7 +21,7 @@ import { isDefined, isNullOrWhiteSpace } from "../types";
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
     status: LoadingStatus;
-    hint?: string;
+    hint?: string | undefined;
     error?: IErrorInfo | unknown;
 }
 
@@ -80,11 +80,11 @@ export type ExportPackageArgs = {
 export interface IConfigurationStudio {
     readonly treeNodes: TreeNode[];
     readonly treeLoadingState: ProcessingState;
-    readonly quickSearch?: string;
+    readonly quickSearch: string | undefined;
     readonly treeExpandedKeys: React.Key[];
     readonly treeSelectedKeys: React.Key[];
-    readonly treeSelectedNode?: TreeNode;
-    readonly treeSelectedItemNode?: ConfigItemTreeNode;
+    readonly treeSelectedNode: TreeNode | undefined;
+    readonly treeSelectedItemNode: ConfigItemTreeNode | undefined;
     readonly isTreeDragging: boolean;
     setIsTreeDragging: (isDragging: boolean) => void;
 
@@ -105,8 +105,8 @@ export interface IConfigurationStudio {
     clickTreeNode: (node: TreeNode) => void;
 
     docs: IDocumentInstance[];
-    activeDocId?: string;
-    activeDocument?: IDocumentInstance;
+    activeDocId: string | undefined;
+    activeDocument: IDocumentInstance | undefined;
 
     openDocById: (docId?: string) => void;
     closeDocAsync: (docId?: string) => void;
@@ -132,8 +132,8 @@ export interface IConfigurationStudio {
     //#endregion
 
     //#region document definitions
-    registerDocumentDefinition(definition: DocumentDefinition);
-    unregisterDocumentDefinition(definition: DocumentDefinition);
+    registerDocumentDefinition: (definition: DocumentDefinition) => void;
+    unregisterDocumentDefinition: (definition: DocumentDefinition) => void;
     //#endregion
 }
 
@@ -179,9 +179,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     treeLoadingState: ProcessingState;
 
-    private _selectedNodeId?: string;
+    private _selectedNodeId: string | undefined;
 
-    private _isTreeDragging: boolean;
+    private _isTreeDragging: boolean = false;
 
     private _treeNodes: TreeNode[] = [];
 
@@ -207,7 +207,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         this._docs = value;
     }
 
-    activeDocId?: string;
+    activeDocId: string | undefined;
 
     private getDocumenById = (id: string): IDocumentInstance | undefined => {
         return id
@@ -216,7 +216,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
     };
 
     get activeDocument(): (IDocumentInstance | undefined) {
-        return this.getDocumenById(this.activeDocId);
+        return isDefined(this.activeDocId)
+            ? this.getDocumenById(this.activeDocId)
+            : undefined;
     };
 
     constructor(args: ConfigurationStudioArguments) {
@@ -648,7 +650,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
             this._treeNodes = treeNodes;
             this._treeNodesMap = treeNodeMap;
 
-            this.treeLoadingState = { status: 'ready', hint: null, error: null };
+            this.treeLoadingState = { status: 'ready', hint: undefined, error: null };
         } catch (error) {
             this.treeLoadingState = { status: 'failed', hint: 'Failed to fetch tree', error: error };
         }
@@ -773,6 +775,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
     renameItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
         try {
             const definition = this.getItemTypeDefinition(node.itemType);
+            if (!isDefined(definition.renameFormId))
+                throw new Error("Rename form is not configured for item type '" + node.itemType + "'");
 
             await this.modalApi.showModalFormAsync({
                 title: `Rename ${definition.friendlyName}`,

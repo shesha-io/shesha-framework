@@ -10,7 +10,6 @@ export interface ICreateModelModalProps {
 
 export const CreateModelModal: FC<ICreateModelModalProps> = () => {
 
-  //const [modal, contextHolder] = Modal.useModal();
   const { isCreateNew, save, cancel } = useModelConfigurator();
   const formRef = useShaFormRef();
   const { message } = App.useApp();

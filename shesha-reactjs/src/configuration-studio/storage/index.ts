@@ -4,7 +4,7 @@ type StorageValue = string | number | boolean | object | null;
 
 export interface IAsyncStorage {
     getAsync<T extends StorageValue>(key: string): Promise<T | undefined>;
-    setAsync<T extends StorageValue>(key: string, value: T): Promise<void>;
+    setAsync<T extends StorageValue>(key: string, value: T | undefined): Promise<void>;
     removeAsync(key: string): Promise<void>;
     clearAsync(): Promise<void>;
     hasAsync(key: string): Promise<boolean>;

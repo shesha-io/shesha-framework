@@ -13,7 +13,7 @@ export interface IModalBaseProps {
   /**
    * Title to display on the modal
    */
-  title?: string;
+  title?: string | undefined;
 
   /**
    * Whether the modal is visible

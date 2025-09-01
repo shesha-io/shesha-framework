@@ -110,8 +110,8 @@ export type ItemTypeBackendDefinition = {
 
 export type ItemTypeDefinition = ItemTypeBackendDefinition & {
     // front-end specific
-    editor?: DocumentDefinition;
-    icon?: ReactNode;
+    editor: DocumentDefinition | undefined;
+    icon: ReactNode | undefined;
 };
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
