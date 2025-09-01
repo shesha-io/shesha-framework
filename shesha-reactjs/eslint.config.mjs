@@ -293,6 +293,7 @@ const csConfig = {
         "@stylistic/member-delimiter-style": "off",
         "@stylistic/type-annotation-spacing": "off",
         "@stylistic/arrow-parens": ["error", "always"],
+        "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
 
         "react-hooks/exhaustive-deps": "error",
         "no-unsafe-optional-chaining": "error",
@@ -305,8 +306,9 @@ const csConfig = {
         "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
         "@typescript-eslint/no-unnecessary-condition": "error",
         "@typescript-eslint/strict-boolean-expressions": "error",
+        
         // enable one by one
-        "@stylistic/spaced-comment": "off",
+        //"@stylistic/spaced-comment": "off",
         "@stylistic/arrow-parens": "off",
         "@stylistic/eol-last": "off",
         "@stylistic/comma-dangle": "off",
@@ -314,14 +316,14 @@ const csConfig = {
         "@stylistic/operator-linebreak": "off",
         "@stylistic/indent-binary-ops": "off",
         "@stylistic/no-trailing-spaces": "off",
-        "@stylistic/jsx-quotes": "off",
         "@stylistic/no-multiple-empty-lines": "off",
-        "@stylistic/jsx-wrap-multilines": "off",
-        "@stylistic/jsx-curly-brace-presence": "off",
         "@stylistic/lines-between-class-members": "off",
         "@stylistic/space-before-blocks": "off",
-        "@stylistic/jsx-tag-spacing": "off",
-        "@stylistic/jsx-closing-tag-location": "off",
+        
+        "@stylistic/jsx-quotes": "off",
+        "@stylistic/jsx-wrap-multilines": "off",
+        "@stylistic/jsx-curly-brace-presence": "off",
+        "@stylistic/jsx-tag-spacing": "off",        
     },
 };
 

@@ -19,7 +19,6 @@ export class DocumentInstance implements IDocumentInstance {
     loadingState: LoadingStatus;
     isHistoryVisible: boolean;
     
-    //constructor(definition: DocumentDefinition, itemType: string, itemId: string, label: string, moduleId: string, moduleName: string, flags?: DocumentFlags){
     constructor(args: DocumentInstanceArgs){
         mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
         

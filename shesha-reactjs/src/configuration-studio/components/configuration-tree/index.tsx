@@ -151,7 +151,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     };
 
     const handleKeyDown: OnTreeKeyDown = (_e) => {
-        //console.log('LOG: key', e.key);
+        // nop
     };
 
     const allowNodeDropWrapper: AllowDrop = ({ dragNode, dropNode, dropPosition }) => {
@@ -193,7 +193,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                                 switcherIcon={<DownOutlined />}
 
                                 treeData={filteredTreeNodes}
-                                blockNode /*required for correct dragging*/
+                                blockNode /* required for correct dragging*/
 
                                 draggable={isNodeDraggable}
                                 allowDrop={allowNodeDropWrapper}

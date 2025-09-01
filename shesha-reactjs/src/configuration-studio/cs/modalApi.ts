@@ -148,8 +148,6 @@ export const useModalApi = (): IModalApi => {
             antdApi: modal,
         });
         apiRef.current = instance;
-
-        //instance.init();
     }
 
     return apiRef.current;

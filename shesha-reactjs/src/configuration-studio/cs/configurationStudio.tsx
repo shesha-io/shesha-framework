@@ -183,7 +183,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
     private _itemTypes: ItemTypeDefinition[] = [];
     private _itemTypesMap: Map<string, ItemTypeDefinition> = new Map<string, ItemTypeDefinition>();
 
-    //docs: IDocumentInstance[] = [];
     _docs: IDocumentInstance[] = [];
     get docs(): IDocumentInstance[] {
         return this._docs;

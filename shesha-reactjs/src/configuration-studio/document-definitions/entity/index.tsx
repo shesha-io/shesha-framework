@@ -7,14 +7,11 @@ import { ModelConfiguratorProvider } from "@/index";
 import { Form } from "antd";
 import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
 
-//export const EntityDocumentDefinition: DocumentDefinition = getGenericDefinition(ITEM_TYPES.ENTITY);
-
 export const EntityDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.ENTITY,
   Editor: (_props: ItemEditorProps): ReactNode => {
-      //const { styles } = useMainStyles();
       return (
-          <div /*className={styles.formDesigner}*/>
+          <div>
               <ModelConfiguratorRenderer />
           </div>
       );
