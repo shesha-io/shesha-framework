@@ -70,11 +70,11 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
     return items.length > 0 && !isDragging
         ? (
             <Popover
-                content={
+                content={(
                     <div>
                         {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <React.Fragment key={index}>{item}</React.Fragment>))}
                     </div>
-                }
+                  )}
                 trigger="hover"
                 placement="bottomLeft"
                 mouseEnterDelay={0.4}

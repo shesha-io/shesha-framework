@@ -12,6 +12,50 @@ import hooksPlugin from "eslint-plugin-react-hooks";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const stylisticOverrides = {
+    "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
+    "@stylistic/jsx-indent-props": [
+        'error',
+        4
+        // - 'first' - align with first prop (VS Code-like)
+        // - 2 - 2 space indentation (most common)
+        // - 4 - 4 space indentation  
+        // - 'tab' - use tab characters
+    ],
+    "@stylistic/jsx-one-expression-per-line": "off",
+    "@stylistic/semi": ["error", "always"],
+    "@stylistic/type-annotation-spacing": "error",
+    "@stylistic/quotes": "off",
+    "@stylistic/member-delimiter-style": ["error", {
+        multiline: {
+            delimiter: "semi",
+            requireLast: true,
+        },
+
+        singleline: {
+            delimiter: "semi",
+            requireLast: false,
+        },
+    }],
+    "@stylistic/indent": "off",
+    "@stylistic/indent-binary-ops": "off",
+    /* todo: review after development of a standard and integration with auto-formatter
+    "@stylistic/indent": ["error", 2],
+    "@stylistic/indent-binary-ops": ["error", 2],
+    */
+    "@stylistic/jsx-quotes": ["error", "prefer-double"],
+    "@stylistic/eol-last": "error",
+    "@stylistic/space-before-blocks": "error",
+    "@stylistic/arrow-parens": ["error", "always"],
+    "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
+    "@stylistic/operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
+    "@stylistic/no-trailing-spaces": "error",
+    "@stylistic/comma-dangle": ["error", "always-multiline"],
+    "@stylistic/padded-blocks": ["error", "never"],
+    "@stylistic/no-multiple-empty-lines": "error",
+    "@stylistic/lines-between-class-members": ["error", "always"],
+};
+
 const baseTsConfig = {
     files: [
         "src/**/*.ts",
@@ -276,39 +320,7 @@ const csConfig = {
     rules: {
         ...baseTsConfig.rules,
         ...stylistic.configs.recommended.rules,
-
-        "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
-        "@stylistic/jsx-indent-props": [
-            'error',
-            4
-            // - 'first' - align with first prop (VS Code-like)
-            // - 2 - 2 space indentation (most common)
-            // - 4 - 4 space indentation  
-            // - 'tab' - use tab characters
-        ],
-        "@stylistic/jsx-one-expression-per-line": "off",
-        "@stylistic/semi": "off",
-        "@stylistic/quotes": "off",
-        "@stylistic/member-delimiter-style": "off",
-        "@stylistic/type-annotation-spacing": "off",
-
-        "@stylistic/indent": "off",
-        "@stylistic/indent-binary-ops": "off",
-        /* todo: review after development of a standard and integration with auto-formatter
-        "@stylistic/indent": ["error", 2],
-        "@stylistic/indent-binary-ops": ["error", 2],
-        */
-        "@stylistic/jsx-quotes": ["error", "prefer-double"],
-        "@stylistic/eol-last": "error",
-        "@stylistic/space-before-blocks": "error",
-        "@stylistic/arrow-parens": ["error", "always"],
-        "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
-        "@stylistic/operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
-        "@stylistic/no-trailing-spaces": "error",
-        "@stylistic/comma-dangle": ["error", "always-multiline"],
-        "@stylistic/padded-blocks": ["error", "never"],
-        "@stylistic/no-multiple-empty-lines": "error",
-        "@stylistic/lines-between-class-members": ["error", "always"],
+        ...stylisticOverrides,
 
         "react-hooks/exhaustive-deps": "error",
         "no-unsafe-optional-chaining": "error",
@@ -321,9 +333,6 @@ const csConfig = {
         "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
         "@typescript-eslint/no-unnecessary-condition": "error",
         "@typescript-eslint/strict-boolean-expressions": "error",
-
-        // enable one by one
-        "@stylistic/jsx-wrap-multilines": "off",
     },
 };
 
