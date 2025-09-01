@@ -23,7 +23,7 @@ export interface IAutoZoomParams {
   currentZoom: number;
   designerWidth?: string;
   sizes?: number[];
-  isSidebarCollapsed?: boolean;
+  isSideBarExpanded?: boolean;
   renderSource?: 'modal' | 'designer-page';
 }
 
@@ -34,11 +34,12 @@ export const DEFAULT_OPTIONS = {
 };
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
-  const { designerWidth = '1024px', sizes = [20, 60, 20], isSidebarCollapsed = true, renderSource } = params;
-  const sideMenuWidth = isSidebarCollapsed ? 16 : 206;
+  const { designerWidth = '1024px', sizes = [20, 60, 20], isSideBarExpanded = true, renderSource } = params;
+  const sideMenuWidth = isSideBarExpanded ? 206 : 16;
   const availableWidthPercent = sizes[1];
   const availableWidth = (availableWidthPercent / 100) * (window.innerWidth - 55 - (renderSource === 'modal' ? 0 : sideMenuWidth));
   
+
   let canvasWidth: number;
   if (designerWidth.includes('px')) {
     canvasWidth = parseFloat(designerWidth.replace('px', ''));

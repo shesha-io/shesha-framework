@@ -2,6 +2,7 @@ import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 import { getFormDesignerBackgroundSvg } from '../utils/svgConstants';
 
+
 const designerClassNames = {
     componentDragHandle: "sha-component-drag-handle",
     componentPropertiesActions: "component-properties-actions",
@@ -90,6 +91,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         formName,
         formTitle,
         formNameParent,
+        shaComponentsContainerInner
         //mainArea,
     } = useStyles().styles;
 
@@ -145,38 +147,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             font-size: 14px;
             color: #aaa;
         }
-
-        .${shaComponent} {
-
-            .ant-form-item {
-                --ant-form-item-margin-bottom: 0px !important;
-                height: 100% !important;
-                width: 100% !important;
-            
-            .ant-form-item-row {
-                height: 100% !important;
-                align-items: center;
-            }
-            
-            .ant-form-item-control {
-                height: 100% !important;
-                width: 100% !important;
-            }
-            
-            .ant-form-item-control-input {
-                height: 100% !important;
-                width: 100% !important;
-            }
-            
-            .ant-form-item-control-input-content {
-                height: 100% !important;
-                width: 100% !important;
-            }
-            
-        }
-    
-    }
-
         &.${shaDragging} {
             .${shaForm} {
                 .${componentDragHandle} {
@@ -206,7 +176,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaDesignerToolbar} {
             background: white;
-            padding: 8px 12px 0px 12px;
+            padding: 0px 12px 0px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -235,7 +205,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                margin-top: -10px;
             }
 
             .${shaDesignerToolbarLeft} {
@@ -249,8 +218,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .${shaDesignerToolbarRight} {
                 float: right;
                 .${prefixCls}-btn {
-                    margin-left: 2px;
-                    border-radius: 4px;
+                margin-left: 2px;
                 }
             }
 
@@ -273,7 +241,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .radio-group {
                     display: flex;
                     flex-direction: row;
-                    justifyCoontent: center;
                     .radio-button {
                         display: flex;
                         justify-content: center;
@@ -413,23 +380,21 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
-                    height: 55px;
                 }
             
                 .${shaComponent} {
                     min-height: 30px;
                 }
-            }
 
-            > div {
-             .sha-drop-hint {
-                display: none;
-             }
+                .sha-drop-hint {
+                    display: none;
+                }
+                    
                 > div:not(.sha-drop-hint) {
                     min-height: 100vh;
                 }
                     
-                > .sha-components-container-inner:not(:has(.sha-component)) {
+                > .${shaComponentsContainerInner}:not(:has(.sha-component)) {
                     background: url("${getFormDesignerBackgroundSvg()}");
                     background-size: 25vw;
                     background-repeat: no-repeat;

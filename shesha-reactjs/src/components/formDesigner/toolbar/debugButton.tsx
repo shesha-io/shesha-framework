@@ -20,6 +20,7 @@ export const DebugButton: FC<IDebugButtonProps> = () => {
       icon={<BugOutlined />}
       title="Debug"
       type="primary"
+      size='small'
       ghost={!isDebug}
     />
   );

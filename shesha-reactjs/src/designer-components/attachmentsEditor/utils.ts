@@ -16,12 +16,6 @@ export const defaultStyles = (): IStyleType => {
             storedFile: { id: null },
             uploadFile: null,
         },
-        font: {
-            type: 'Segoe UI',
-            align: 'left',
-            size: 14,
-            weight: '400',
-        },
         shadow: {
             offsetX: 0,
             offsetY: 0,
@@ -41,6 +35,12 @@ export const containerDefaultStyles = (): IStyleType => {
             maxHeight: '140px',
             minWidth: '0px',
             maxWidth: 'auto',
+        },
+        font: {
+            type: 'Segoe UI',
+            align: 'left',
+            size: 14,
+            weight: '400',
         }
     };
 };

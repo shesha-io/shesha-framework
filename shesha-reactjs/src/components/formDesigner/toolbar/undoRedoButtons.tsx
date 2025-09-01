@@ -13,8 +13,8 @@ export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = () => {
     
     return (
         <>
-            <Button key="undo" icon={<UndoOutlined />} onClick={undo} disabled={!canUndo} title="Undo"/>
-            <Button key="redo" icon={<RedoOutlined />} onClick={redo} disabled={!canRedo} title="Redo"/>
+            <Button key="undo" icon={<UndoOutlined />} size='small' onClick={undo} disabled={!canUndo} title="Undo"/>
+            <Button key="redo" icon={<RedoOutlined />} size='small' onClick={redo} disabled={!canRedo} title="Redo"/>
         </>
     );
 };

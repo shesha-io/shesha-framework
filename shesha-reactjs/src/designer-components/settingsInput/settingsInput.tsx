@@ -31,7 +31,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
     const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
     return isHidden ? null :
-        <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
+        <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width, marginBottom: '2px' }}>
             <ConditionalWrap
                 condition={Boolean(modelType)}
                 wrap={content => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}

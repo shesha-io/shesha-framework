@@ -25,7 +25,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
         margin: 0 auto;
-        min-height: 85vh;
+         > div {
+            height: 100%;
+            .ant-spin-nested-loading {
+              height: 100%;
+              .ant-spin-container {
+                height: 100%;
+
+              > form {
+                  height: 100%;
+                }
+              }
+            }
+         }
       }
     
       .${sidebarContainerHeader} {

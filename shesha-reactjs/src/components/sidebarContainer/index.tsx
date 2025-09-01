@@ -36,7 +36,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
   const { globalVariables} = useSheshaApplication();
 
-  const isSidebarCollapsed = !globalVariables.isSideBarExpanded;
+  const isSideBarExpanded = globalVariables.isSideBarExpanded;
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
@@ -59,9 +59,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSidebarCollapsed, renderSource}) : zoom);
+      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSideBarExpanded, renderSource}) : zoom);
     }
-  }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSidebarCollapsed]);
+  }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSideBarExpanded]);
   
 
   useEffect(()=>{
@@ -122,7 +122,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' } : {}}>{children}</div>
+          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto', height: '100%' } : {}}>{children}</div>
         </div>
         {renderSidebar('right')}
       </SizableColumns>

@@ -18,7 +18,7 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = () => {
   
     return (
         <>
-            <Button icon={<SettingOutlined />} title="Settings" onClick={onSettingsClick}/>
+            <Button icon={<SettingOutlined />} title="Settings" size='small' onClick={onSettingsClick}/>
             <FormSettingsEditor
                 readOnly={readOnly}
                 isVisible={settingsVisible}

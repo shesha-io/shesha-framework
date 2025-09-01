@@ -144,6 +144,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
         menu={{ items: saveMenuItems }}
         onClick={onSaveClick}
         type="primary"
+        size='small'
       >
         <SaveOutlined />
       </Dropdown.Button>

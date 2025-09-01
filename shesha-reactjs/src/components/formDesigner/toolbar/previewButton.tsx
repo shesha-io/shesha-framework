@@ -20,6 +20,7 @@ export const PreviewButton: FC<IPreviewButtonProps> = () => {
                 setFormMode(formMode === 'designer' ? 'edit' : 'designer');
                 setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');
             }}
+            size='small'
             type={formMode === 'designer' ? 'default' : 'primary'}
             title="Preview"
             />
