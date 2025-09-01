@@ -19,8 +19,8 @@ export const UserProfileBlock: FC<IUserProfileBlockProps> = () => {
         {
             key: 'logout',
             onClick: logoutUser,
-            label: <>{<LoginOutlined />} Logout</>,
-        }
+            label: <><LoginOutlined /> Logout</>,
+        },
     ];
 
     const contentStyle: React.CSSProperties = {

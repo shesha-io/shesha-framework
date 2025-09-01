@@ -154,18 +154,6 @@ const baseTsConfig = {
 
         "@typescript-eslint/indent": "off",
 
-        "@stylistic/member-delimiter-style": ["error", {
-            multiline: {
-                delimiter: "semi",
-                requireLast: true,
-            },
-
-            singleline: {
-                delimiter: "semi",
-                requireLast: false,
-            },
-        }],
-
         "@typescript-eslint/naming-convention": ["error", {
             selector: "variable",
             format: ["camelCase", "UPPER_CASE", "PascalCase"],
@@ -188,8 +176,6 @@ const baseTsConfig = {
         }],
 
         "@typescript-eslint/quotes": ["off", "double"],
-        "@stylistic/semi": ["error", "always"],
-        "@stylistic/type-annotation-spacing": "error",
 
         "@typescript-eslint/typedef": ["off", {
             parameter: true,
@@ -259,7 +245,67 @@ const baseTsConfig = {
         "spaced-comment": ["off", "always", {
             markers: ["/"],
         }],
+
+        "@stylistic/member-delimiter-style": ["error", {
+            multiline: {
+                delimiter: "semi",
+                requireLast: true,
+            },
+
+            singleline: {
+                delimiter: "semi",
+                requireLast: false,
+            },
+        }],
+        "@stylistic/semi": ["error", "always"],
+        "@stylistic/type-annotation-spacing": "error",
     }
+};
+
+const csConfig = {
+    ...baseTsConfig,
+    files: [
+    ],
+    languageOptions: {
+        ...baseTsConfig.languageOptions,
+        parserOptions: {
+            project: "src/configuration-studio/tsconfig.json",
+            tsconfigRootDir: __dirname,
+        },
+    },
+    rules: {
+        ...baseTsConfig.rules,
+        ...stylistic.configs.recommended.rules,
+
+        "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
+        "@stylistic/jsx-indent-props": [
+            'error',
+            4
+            // - 'first' - align with first prop (VS Code-like)
+            // - 2 - 2 space indentation (most common)
+            // - 4 - 4 space indentation  
+            // - 'tab' - use tab characters
+        ],
+        "@stylistic/jsx-one-expression-per-line": "off",
+        "@stylistic/semi": "off",
+        "@stylistic/quotes": "off",
+        "@stylistic/indent": "off",
+        "@stylistic/member-delimiter-style": "off",
+        "@stylistic/type-annotation-spacing": "off",
+        "@stylistic/arrow-parens": "always",
+
+        "react-hooks/exhaustive-deps": "error",
+        "no-unsafe-optional-chaining": "error",
+
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-unsafe-call": "error",
+        "@typescript-eslint/no-unsafe-member-access": "error",
+        "@typescript-eslint/no-unsafe-argument": "error",
+        "@typescript-eslint/no-unsafe-assignment": "error",
+        "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
+        "@typescript-eslint/no-unnecessary-condition": "error",
+        "@typescript-eslint/strict-boolean-expressions": "error",
+    },
 };
 
 export default [
@@ -272,31 +318,24 @@ export default [
         ignores: [...baseTsConfig.ignores, "src/configuration-studio/**/*"],
     },
     {
-        ...baseTsConfig,
+        ...csConfig,
         files: [
             "src/configuration-studio/**/*.ts",
+        ],
+        rules: {
+            ...csConfig.rules,
+            //'@stylistic/indent': ['error', 2],
+        }
+    },
+    {
+        ...csConfig,
+        files: [
             "src/configuration-studio/**/*.tsx",
         ],
-        languageOptions: {
-            ...baseTsConfig.languageOptions,
-            parserOptions: {
-                project: "src/configuration-studio/tsconfig.json",
-                tsconfigRootDir: __dirname,
-            },
-        },
         rules: {
-            ...baseTsConfig.rules,
-            "@typescript-eslint/no-explicit-any": "error",
-            "react-hooks/exhaustive-deps": "error",
-            "@typescript-eslint/no-unsafe-call": "error",
-            "@typescript-eslint/no-unsafe-member-access": "error",
-            "@typescript-eslint/no-unsafe-argument": "error",
-            "@typescript-eslint/no-unsafe-assignment": "error",
-            "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
-            "no-unsafe-optional-chaining": "error",
-            "@typescript-eslint/strict-boolean-expressions": "error",
-            "@typescript-eslint/no-unnecessary-condition": "error",
-        },
+            ...csConfig.rules,
+            //'@stylistic/indent': ['error', 4],
+        }
     },
     {
         files: ['**/*.js', '**/*.mjs'],
