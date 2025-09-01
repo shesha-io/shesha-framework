@@ -47,7 +47,6 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
 };
 
 export const RevisionHistoryDrawer: FC = () => {
-
     const doc = useActiveDoc();
     return doc
         ? <RevisionHistoryDrawerInner doc={doc} />

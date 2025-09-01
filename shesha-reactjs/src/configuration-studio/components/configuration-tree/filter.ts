@@ -37,7 +37,6 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
 
         const newNodes = loop(treeNodes);
         return newNodes;
-
     }, [treeNodes, quickSearch]);
 
     return filteredTreeNodes;

@@ -397,7 +397,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
     //#region tabs
 
     private createNewTabAsync = async (node: ConfigItemTreeNode): Promise<CIDocument> => {
-
         this.log(`create tab for item '${node.name}'`);
 
         const definition = this.getDocumentDefinition(node.itemType);
@@ -727,7 +726,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
         const docId = node.id;
         try {
-
             await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
 
             if (this.isDocOpened(docId))

@@ -311,7 +311,7 @@ const csConfig = {
         "@typescript-eslint/strict-boolean-expressions": "error",
         
         // enable one by one
-        "@stylistic/padded-blocks": "off",
+        //"@stylistic/padded-blocks": "off",
         "@stylistic/indent-binary-ops": "off",
         "@stylistic/no-multiple-empty-lines": "off",
         "@stylistic/lines-between-class-members": "off",
