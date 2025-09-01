@@ -393,7 +393,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     //#endregion
 
-
     //#region tabs
 
     private createNewTabAsync = async (node: ConfigItemTreeNode): Promise<CIDocument> => {

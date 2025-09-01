@@ -4,7 +4,6 @@ import { useHttpClient } from "@/providers";
 import { useCallback } from "react";
 import useSWR from "swr";
 
-
 export type ConfigurationItemRevision = {
     label?: string | null;
     description?: string | null;

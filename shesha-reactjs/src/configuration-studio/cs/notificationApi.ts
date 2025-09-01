@@ -33,7 +33,6 @@ export interface INotificationApi {
     warning: NotificationFn;
 };
 
-
 type NotificationApiArguments = {
     antdApi: NotificationInstance;
 };
