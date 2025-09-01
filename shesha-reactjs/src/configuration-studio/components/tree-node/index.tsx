@@ -30,7 +30,7 @@ const LabelValue: FC<LabelValueProps> = ({ data }) => {
     return (
         <div>
             <Text strong>{data.label}: </Text>
-            <Text type='secondary'>{data.value}</Text>
+            <Text type="secondary">{data.value}</Text>
         </div>
     );
 };
@@ -75,7 +75,7 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
                         {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <React.Fragment key={index}>{item}</React.Fragment>))}
                     </div>
                 }
-                trigger='hover'
+                trigger="hover"
                 placement="bottomLeft"
                 mouseEnterDelay={0.4}
             >

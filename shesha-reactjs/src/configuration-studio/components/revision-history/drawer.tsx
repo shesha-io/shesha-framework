@@ -28,7 +28,7 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
             getContainer={false}
             maskClosable={false}
             mask={false}
-            size='large'
+            size="large"
         >
             <Spin spinning={isLoading}>
                 <List

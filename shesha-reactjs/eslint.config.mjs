@@ -289,14 +289,16 @@ const csConfig = {
         "@stylistic/jsx-one-expression-per-line": "off",
         "@stylistic/semi": "off",
         "@stylistic/quotes": "off",
+        "@stylistic/member-delimiter-style": "off",
+        "@stylistic/type-annotation-spacing": "off",
+
         "@stylistic/indent": "off",
         "@stylistic/indent-binary-ops": "off",
         /* todo: review after development of a standard and integration with auto-formatter
         "@stylistic/indent": ["error", 2],
         "@stylistic/indent-binary-ops": ["error", 2],
-        */
-        "@stylistic/member-delimiter-style": "off",
-        "@stylistic/type-annotation-spacing": "off",
+        */        
+        "@stylistic/eol-last": "error",
         "@stylistic/space-before-blocks": "error",
         "@stylistic/arrow-parens": ["error", "always"],
         "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
@@ -320,9 +322,7 @@ const csConfig = {
         "@typescript-eslint/strict-boolean-expressions": "error",
 
         // enable one by one
-        "@stylistic/eol-last": "error",
-
-        "@stylistic/jsx-quotes": "off",
+        "@stylistic/jsx-quotes": ["error", "prefer-double"],
         "@stylistic/jsx-wrap-multilines": "off",
         "@stylistic/jsx-curly-brace-presence": "off",
         "@stylistic/jsx-tag-spacing": "off",

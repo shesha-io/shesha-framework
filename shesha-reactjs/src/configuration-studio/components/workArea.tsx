@@ -110,7 +110,7 @@ export const WorkArea: FC<IWorkAreaProps> = () => {
                 className={styles.csDocTabs}
                 hideAdd
                 type="editable-card"
-                size='small'
+                size="small"
                 activeKey={activeDocId}
                 onChange={openDocById}
                 onEdit={handleEdit}

@@ -19,7 +19,7 @@ export const GenericToolbar: FC<IGenericToolbarProps> = ({ }) => {
     };
     return (
         <div>
-            <Button type='link' icon={<SaveOutlined />} onClick={onSaveClick} disabled={!shaForm.isDataModified}>Save</Button>
+            <Button type="link" icon={<SaveOutlined />} onClick={onSaveClick} disabled={!shaForm.isDataModified}>Save</Button>
         </div>
     );
 };

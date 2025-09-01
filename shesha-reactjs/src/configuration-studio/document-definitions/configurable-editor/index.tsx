@@ -13,7 +13,7 @@ export const ConfigurabeleEditor: FC<IConfigurabeleEditorProps> = (props) => {
     const shaForm = useShaFormInstance();
     return (
         <ConfigurableForm
-            formName='cs-editor'
+            formName="cs-editor"
             formId={formId}
             externalShaForm={shaForm}
             form={shaForm.antdForm} // TODO: review V1 split ConfigurableForm into two peaces and remove this property
