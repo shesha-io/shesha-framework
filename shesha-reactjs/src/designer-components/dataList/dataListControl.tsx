@@ -39,6 +39,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     canAddInline,
     canEditInline,
     canDeleteInline,
+    showEditIcons,
     readOnly,
     noDataText = "No Data",
     noDataSecondaryText = "No data is available for this list",
@@ -252,6 +253,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         createFormType={props.createFormType ?? props.formType}
         canAddInline={canAction(canAddInline)}
         canEditInline={canAction(canEditInline)}
+        showEditIcons={showEditIcons}
         canDeleteInline={canAction(canDeleteInline)}
         noDataIcon={noDataIcon}
         noDataSecondaryText={noDataSecondaryText}
