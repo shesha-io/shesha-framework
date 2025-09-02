@@ -82,15 +82,6 @@ export const getSettings = (data: any) => {
                 parentId: commonTabId,
                 inputs: [
                   {
-                    type: 'textField',
-                    id: nanoid(),
-                    propertyName: "initialValue",
-                    parentId: commonTabId,
-                    label: "Default Value",
-                    jsSetting: true,
-                    size: "small",
-                  },
-                  {
                     type: 'switch',
                     id: nanoid(),
                     propertyName: 'passEmptyStringByDefault',
