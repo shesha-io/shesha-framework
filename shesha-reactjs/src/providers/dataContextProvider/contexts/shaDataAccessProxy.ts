@@ -51,7 +51,7 @@ export const CreateDataAccessor = (getData: () => any, setData: (data: any) => v
       },
       ownKeys(target) {
         const data = target.getAccessorValue();
-        return data ? Object.keys(data) : [];
+        return data ? Reflect.ownKeys(data) : [];
       },
       getOwnPropertyDescriptor(target, prop) {
         const propertyName = prop.toString();

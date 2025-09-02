@@ -1,0 +1,44 @@
+INSERT INTO frwk.permissioned_objects
+	(id
+	,creation_time
+	,creator_user_id
+	,last_modification_time
+	,last_modifier_user_id
+	,is_deleted
+	,deletion_time
+	,deleter_user_id
+	,access_lkp
+	,category
+	,description
+	,hardcoded
+	,hidden
+	,md5
+	,name
+	,object
+	,parent
+	,permissions
+	,type
+	,module_id)
+SELECT 
+	Id
+	,CreationTime
+	,CreatorUserId
+	,LastModificationTime
+	,LastModifierUserId
+	,IsDeleted
+	,DeletionTime
+	,DeleterUserId
+	,AccessLkp
+	,Category
+	,Description
+	,Hardcoded
+	,Hidden
+	,coalesce(Md5, '')
+	,Name
+	,Object
+	,coalesce(Parent, '')
+	,Permissions
+	,Type
+	,ModuleId
+FROM 
+	Frwk_PermissionedObjects

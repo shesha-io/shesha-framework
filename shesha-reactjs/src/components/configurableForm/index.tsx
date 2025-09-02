@@ -21,6 +21,7 @@ export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Va
   // TODO: merge with formRef
   shaFormRef?: MutableRefObject<IShaFormInstance>;
   isSettingsForm?: boolean;
+  externalShaForm?: IShaFormInstance<Values>;
 } & SheshaFormProps;
 
 export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
@@ -44,13 +45,16 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     mode = 'readonly',
     actions,
     sections,
+    isActionsOwner,
+    externalShaForm,
   } = props;
   const { switchApplicationMode, configurationItemMode } = useAppConfigurator();
   const app = useSheshaApplication();
 
   const [form] = Form.useForm(props.form);
   const [shaForm] = useShaForm({
-    form: undefined,
+    //form: undefined,
+    form: externalShaForm,
     antdForm: form,
     init: (instance) => {
       instance.setFormMode(props.mode);
@@ -69,9 +73,9 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
 
   useEffect(() => {
     if (formId) {
-      shaForm.initByFormId({ 
-        formId: formId, 
-        configurationItemMode: configurationItemMode, 
+      shaForm.initByFormId({
+        formId: formId,
+        configurationItemMode: configurationItemMode,
         formArguments: formArguments,
         initialValues: initialValues,
       });
@@ -135,12 +139,18 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
               <EditViewMsg persistedFormProps={showFormInfoOverlay ? shaForm.form : undefined} />
             </BlockOverlay>
             <ShaFormProvider shaForm={shaForm}>
-              <ParentProvider model={null} formMode={shaForm.formMode} formFlatMarkup={shaForm.flatStructure} formApi={shaForm.getPublicFormApi()} 
-                name={ConfigurableItemIdentifierToString(formId)} isScope
+              <ParentProvider
+                model={null}
+                formMode={shaForm.formMode}
+                formFlatMarkup={shaForm.flatStructure}
+                formApi={shaForm.getPublicFormApi()}
+                name={ConfigurableItemIdentifierToString(formId)}
+                isScope
               >
                 {markupLoadingState.status === 'ready' && (
                   <FormWithFlatMarkup
                     {...props}
+                    isActionsOwner={isActionsOwner}
                     form={form}
                     initialValues={shaForm.initialValues}
                     formFlatMarkup={shaForm.flatStructure}

@@ -1,38 +1,59 @@
 ﻿using Abp.Dependency;
+using Abp.Events.Bus.Entities;
+using Abp.Events.Bus.Handlers;
 using Abp.Reflection;
+using Abp.Threading;
+using Shesha.Configuration.MappingMetadata;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Configuration.Runtime
 {
     /// <summary>
     /// Entity configuration store
     /// </summary>
-    public class EntityConfigurationStore: IEntityConfigurationStore, ISingletonDependency
+    public class EntityConfigurationStore: IEntityConfigurationStore, ISingletonDependency/*,
+        IAsyncEventHandler<EntityChangedEventData<EntityProperty>>,
+        IAsyncEventHandler<EntityChangedEventData<EntityConfig>>*/
     {
         private readonly Hashtable _entityByTypeShortAlias = new Hashtable();
         private readonly Hashtable _entityByClassName = new Hashtable();
 
         private readonly IDictionary<Type, EntityConfiguration> _entityConfigurations = new Dictionary<Type, EntityConfiguration>();
         private readonly ITypeFinder _typeFinder;
+        private readonly IDynamicEntityTypeBuilder _dynamicEntityTypeBuilder;
+        private readonly IMappingMetadataProvider _mappingMetadataProvider;
+        private readonly IDynamicEntityUpdateHandler _dynamicEntityUpdateHandler;
 
-        public EntityConfigurationStore(ITypeFinder typeFinder)
+        public EntityConfigurationStore(
+            ITypeFinder typeFinder,
+            IDynamicEntityTypeBuilder dynamicEntityTypeBuilder,
+            IMappingMetadataProvider mappingMetadataProvider,
+            IDynamicEntityUpdateHandler dynamicEntityUpdateHandler
+        )
         {
             _typeFinder = typeFinder;
+            _dynamicEntityTypeBuilder = dynamicEntityTypeBuilder;
+            _mappingMetadataProvider = mappingMetadataProvider;
+            _dynamicEntityUpdateHandler = dynamicEntityUpdateHandler;
 
-            Initialise();
+            InitializeHardcoded();
         }
 
-        protected void Initialise()
+        public void InitializeHardcoded(bool resetMapping = true)
         {
             var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType() || t.IsJsonEntityType()) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
-                .Select(t => new { Type = t, TypeShortAlias = t.GetAttributeOrNull<EntityAttribute>()?.TypeShortAlias })
+                .Select(t => new { Type = t, TypeShortAlias = t.GetAttributeOrNull<EntityAttribute>()?.TypeShortAlias ?? "" })
                 .ToList();
 
             // check for duplicates
@@ -49,6 +70,19 @@ namespace Shesha.Configuration.Runtime
                 if (!string.IsNullOrWhiteSpace(entityType.TypeShortAlias))
                     _entityByTypeShortAlias.Add(entityType.TypeShortAlias, entityType.Type);
             }
+
+            if (resetMapping)
+                _mappingMetadataProvider.ResetMapping();
+        }
+
+        public void InitializeDynamic()
+        {
+            var userEntityTypes = _dynamicEntityTypeBuilder.GenerateTypes(this);
+            foreach (var entityType in userEntityTypes)
+                _entityByClassName.Add(entityType.GetRequiredFullName(), entityType);
+            
+            _mappingMetadataProvider.ResetMapping();
+            AsyncHelper.RunSync(async () => await _dynamicEntityUpdateHandler.ProcessAsync());
         }
 
         public string? GetEntityTypeAlias(Type entityType)
@@ -109,5 +143,37 @@ namespace Shesha.Configuration.Runtime
             var config = Get(entityType);
             config.ApplicationServiceType = applicationServiceType;
         }
+
+        public void ReInitialize()
+        {
+            _entityByTypeShortAlias.Clear();
+            _entityByClassName.Clear();
+            _entityConfigurations.Clear();
+            InitializeHardcoded(false);
+            InitializeDynamic();
+        }
+
+
+        /*async Task IAsyncEventHandler<EntityChangedEventData<EntityProperty>>.HandleEventAsync(EntityChangedEventData<EntityProperty> eventData)
+        {
+            return await Task.Run(() =>
+            {
+                _entityByTypeShortAlias.Clear();
+                _entityByClassName.Clear();
+                _entityConfigurations.Clear();
+                Initialize();
+            });
+        }
+
+        Task IAsyncEventHandler<EntityChangedEventData<EntityConfig>>.HandleEventAsync(EntityChangedEventData<EntityConfig> eventData)
+        {
+            return await Task.Run(() =>
+            {
+                _entityByTypeShortAlias.Clear();
+                _entityByClassName.Clear();
+                _entityConfigurations.Clear();
+                Initialize();
+            });
+        }*/
     }
 }

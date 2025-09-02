@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Shesha.ConfigurationItems.Cache
 {
     /// inhertiedDoc
-    public sealed class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache, IAsyncEventHandler<EntityChangedEventData<ConfigurationItemBase>> , ISingletonDependency, IDisposable
+    public sealed class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache, IAsyncEventHandler<EntityChangedEventData<ConfigurationItem>>, IAsyncEventHandler<EntityChangedEventData<ConfigurationItemRevision>>, ISingletonDependency, IDisposable
     {
         private readonly ICacheManager _cacheManager;
         private bool _disposed;
@@ -49,55 +49,55 @@ namespace Shesha.ConfigurationItems.Cache
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP001:Dispose created", Justification = "Caches are disposed as part of main Dispose() mathod")]
-        private async Task<TResult> UsingCacheAsync<TResult>(string itemType, Func<ITypedCache<string, ConfigurationItemCacheItem>, Task<TResult>> actionAsync) 
+        private Task<TResult> UsingCacheAsync<TResult>(string itemType, Func<ITypedCache<string, ConfigurationItemCacheItem>, Task<TResult>> actionAsync) 
         {
             var cache = GetCache(itemType);
-            return await actionAsync.Invoke(cache);
+            return actionAsync.Invoke(cache);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP001:Dispose created", Justification = "Caches are disposed as part of main Dispose() mathod")]
-        private async Task UsingCacheAsync(string itemType, Func<ITypedCache<string, ConfigurationItemCacheItem>, Task> actionAsync)
+        private Task UsingCacheAsync(string itemType, Func<ITypedCache<string, ConfigurationItemCacheItem>, Task> actionAsync)
         {
             var cache = GetCache(itemType);
-            await actionAsync.Invoke(cache);
+            return actionAsync.Invoke(cache);
         }
 
         /// inhertiedDoc
-        public async Task<string?> GetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode)
+        public Task<string?> GetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode)
         {
             var key = GetCacheKey(applicationKey, module, name, mode);
 
-            return await UsingCacheAsync(itemType, async(cache) => {
+            return UsingCacheAsync(itemType, async(cache) => {
                 var value = await cache.TryGetValueAsync(key);
                 return value.HasValue ? value.Value.Md5 : null;
             });
         }
         
         /// inhertiedDoc
-        public async Task<string?> GetCachedMd5Async(string itemType, Guid id)
+        public Task<string?> GetCachedMd5Async(string itemType, Guid id)
         {
             var key = GetCacheKey(id);
 
-            return await UsingCacheAsync(itemType, async (cache) => {
+            return UsingCacheAsync(itemType, async (cache) => {
                 var value = await cache.TryGetValueAsync(key);
                 return value.HasValue ? value.Value.Md5 : null;
             });
         }
 
         /// inhertiedDoc
-        public async Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode, string? md5)
+        public Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode, string? md5)
         {
             var key = GetCacheKey(applicationKey, module, name, mode);
-            await UsingCacheAsync(itemType, async (cache) => {
+            return UsingCacheAsync(itemType, async (cache) => {
                 await cache.SetAsync(key, new ConfigurationItemCacheItem { Md5 = md5 });
             });
         }
 
         /// inhertiedDoc
-        public async Task SetCachedMd5Async(string itemType, Guid id, string md5)
+        public Task SetCachedMd5Async(string itemType, Guid id, string md5)
         {
             var key = GetCacheKey(id);
-            await UsingCacheAsync(itemType, async (cache) => {
+            return UsingCacheAsync(itemType, async (cache) => {
                 await cache.SetAsync(key, new ConfigurationItemCacheItem { Md5 = md5 });
             });
         }
@@ -116,21 +116,6 @@ namespace Shesha.ConfigurationItems.Cache
             return id.ToString();
         }
 
-        public async Task HandleEventAsync(EntityChangedEventData<ConfigurationItemBase> eventData)
-        {
-            var configItem = eventData.Entity;
-
-            if (configItem == null || string.IsNullOrWhiteSpace(configItem.ItemType))
-                return;
-
-            await UsingCacheAsync(configItem.ItemType, async (cache) => {
-                await cache.RemoveAsync(GetCacheKey(configItem.Id));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Live));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Ready));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Latest));
-            });
-        }
-
         public async Task ClearAsync()
         {
             var caches = _cacheManager.GetAllCaches();
@@ -147,6 +132,35 @@ namespace Shesha.ConfigurationItems.Cache
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
+        }
+
+        public async Task HandleEventAsync(EntityChangedEventData<ConfigurationItemRevision> eventData)
+        {
+            var configItem = eventData.Entity?.ConfigurationItem;
+
+            if (configItem == null || string.IsNullOrWhiteSpace(configItem.ItemType))
+                return;
+
+            await ClearCacheForItemAsync(configItem);
+        }
+
+        public async Task HandleEventAsync(EntityChangedEventData<ConfigurationItem> eventData)
+        {
+            var configItem = eventData.Entity;
+
+            if (configItem == null || string.IsNullOrWhiteSpace(configItem.ItemType))
+                return;
+
+            await ClearCacheForItemAsync(configItem);
+        }
+
+        public async Task ClearCacheForItemAsync(ConfigurationItem configItem) 
+        {
+            await UsingCacheAsync(configItem.ItemType, async (cache) => {
+                await cache.RemoveAsync(GetCacheKey(configItem.Id));
+                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Live));
+                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Latest));
+            });
         }
     }
 }

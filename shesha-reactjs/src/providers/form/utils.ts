@@ -363,7 +363,7 @@ const getSettingValue = (
   allData: any,
   calcFunction: (setting: IPropertySetting, allData: any) => any,
   parentReadOnly: boolean = undefined,
-  propertyFilter?: (name: string) => boolean,
+  propertyFilter?: (name: string, value: any) => boolean,
   processedObjects?: any[]
 ) => {
   if (!processedObjects)
@@ -371,7 +371,7 @@ const getSettingValue = (
 
   const unproxiedValue = unproxyValue(value);
 
-  if (!unproxiedValue || typeof propertyFilter === 'function' && !propertyFilter(propertyName))
+  if (!unproxiedValue || typeof propertyFilter === 'function' && !propertyFilter(propertyName, value))
     return value;
 
   if (typeof unproxiedValue === 'object'
@@ -417,7 +417,7 @@ const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting,
 const calcValue = (setting: IPropertySetting, allData: any) => {
   const getSettingValueInScript = (val: any) => getValue(val, allData, calcValue);
   try {
-    if (allData.addAccessor && allData instanceof TouchableProxy) {
+    if (allData.addAccessor && (allData instanceof TouchableProxy || allData instanceof ObservableProxy)) {
       allData.addAccessor('staticValue', () => setting?._value);
       allData.addAccessor('getSettingValue', () => getSettingValueInScript);
     } else {
@@ -452,7 +452,7 @@ export const getActualModel = <T>(
   model: T,
   allData: any,
   parentReadOnly: boolean = undefined,
-  propertyFilter?: (name: string) => boolean,
+  propertyFilter?: (name: string, value: any) => boolean,
   processedObjects?: any[]
 ): T => {
   if (!processedObjects)
@@ -1437,12 +1437,15 @@ export const createComponentModelForDataProperty = (
     toolboxComponent: IToolboxComponent<any>
   ) => IConfigurableFormComponent
 ): IConfigurableFormComponent => {
-  const toolboxComponent = findToolboxComponent(
-    components,
-    (c) =>
-      Boolean(c.dataTypeSupported) &&
-      c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
+  let toolboxComponent = findToolboxComponent(components, c => c.type === propertyMetadata.formatting.defaultEditor );
+  toolboxComponent = toolboxComponent ||
+    findToolboxComponent(
+      components, 
+      c => 
+        Boolean(c.dataTypeSupported) 
+        && c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
   );
+
   if (!Boolean(toolboxComponent)) return null;
 
   // find appropriate toolbox component

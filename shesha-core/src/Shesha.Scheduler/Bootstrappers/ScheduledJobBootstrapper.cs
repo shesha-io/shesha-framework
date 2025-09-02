@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
+using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.Extensions;
 using Shesha.Reflection;
@@ -9,6 +10,7 @@ using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Scheduler.Utilities;
+using Shesha.Services;
 using Shesha.Startup;
 using System;
 using System.Linq;
@@ -19,14 +21,12 @@ namespace Shesha.Scheduler.Bootstrappers
     /// <summary>
     /// Bootstraps scheduled jobs and saves them into the DB
     /// </summary>
-    public class ScheduledJobBootstrapper : IBootstrapper, ITransientDependency
+    public class ScheduledJobBootstrapper : BootstrapperBase, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<ScheduledJob, Guid> _jobRepo;
         private readonly IRepository<ScheduledJobTrigger, Guid> _triggerRepo;
         private readonly IScheduledJobManager _jobManager;
-        private readonly IApplicationStartupSession _startupSession;
 
         public ScheduledJobBootstrapper
         (
@@ -35,20 +35,20 @@ namespace Shesha.Scheduler.Bootstrappers
             IRepository<ScheduledJob, Guid> jobRepo,
             IRepository<ScheduledJobTrigger, Guid> triggerRepo,
             IScheduledJobManager jobManager,
-            IApplicationStartupSession startupSession
-        )
+            IApplicationStartupSession startupSession,
+            IBootstrapperStartupService bootstrapperStartupService,
+            ILogger logger
+        ) : base(unitOfWorkManager, startupSession, bootstrapperStartupService, logger)
         {
             _typeFinder = typeFinder;
-            _unitOfWorkManager = unitOfWorkManager;
             _jobRepo = jobRepo;
             _triggerRepo = triggerRepo;
             _jobManager = jobManager;
-            _startupSession = startupSession;
         }
 
-        public async Task ProcessAsync()
+        protected override async Task ProcessInternalAsync()
         {
-            using (var unitOfWork = _unitOfWorkManager.Begin())
+            using (var unitOfWork = UnitOfWorkManager.Begin())
             {
                 await DoProcessAsync();
                 await unitOfWork.CompleteAsync();
@@ -81,7 +81,7 @@ namespace Shesha.Scheduler.Bootstrappers
             {
                 try
                 {
-                    using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                    using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
                         var existingJob = await _jobRepo.FirstOrDefaultAsync(j => j.Id == jobInfo.Attribute.Uid);
 
@@ -132,7 +132,7 @@ namespace Shesha.Scheduler.Bootstrappers
                         await _triggerRepo.InsertAsync(trigger);
                     }
 
-                    await _unitOfWorkManager.Current.SaveChangesAsync();
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
                 }
                 catch (Exception e)
                 {

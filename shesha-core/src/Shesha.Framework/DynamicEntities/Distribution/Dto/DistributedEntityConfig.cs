@@ -13,6 +13,8 @@ namespace Shesha.DynamicEntities.Distribution.Dto
     {
         public string? FriendlyName { get; set; }
         public string? TypeShortAlias { get; set; }
+        
+        public string? SchemaName { get; set; }
         public string? TableName { get; set; }
         public string ClassName { get; set; }
         public string? Namespace { get; set; }

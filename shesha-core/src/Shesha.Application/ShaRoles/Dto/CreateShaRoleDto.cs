@@ -7,13 +7,13 @@ namespace Shesha.ShaRoles.Dto
     public class CreateShaRoleDto
     {
         [Required]
-        [StringLength(500)]
+        [MaxLength(500)]
         public string Name { get; set; }
 
-        [StringLength(200)]
+        [MaxLength(200)]
         public string? NameSpace { get; set; }
 
-        [StringLength(2000)]
+        [MaxLength(2000)]
         public string? Description { get; set; }
 
         public Guid? Module { get; set; }

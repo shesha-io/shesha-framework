@@ -23,12 +23,10 @@ import { createContext } from 'use-context-selector';
 
 export interface IFormDesignerStateContext {
   toolboxComponentGroups: IToolboxComponentGroup[];
-  validationErrors?: IFormValidationErrors;
+  validationErrors?: IFormValidationErrors | undefined;
 
   selectedComponentId?: string;
-  selectedComponentRef?: MutableRefObject<any>;
   previousSelectedComponentId?: string;
-  previousSelectedComponentRef?: MutableRefObject<any>;
   isDragging: boolean;
   hasDragged: boolean;
   dataSources: IDataSource[];
@@ -88,7 +86,6 @@ export interface IComponentUpdateSettingsValidationPayload {
 
 export interface ISetSelectedComponentPayload {
   id: string;
-  componentRef?: MutableRefObject<any>;
 }
 
 export interface IFormDesignerActionsContext {
@@ -103,7 +100,7 @@ export interface IFormDesignerActionsContext {
   startDragging: () => void;
   endDragging: () => void;
 
-  setSelectedComponent: (id: string, componentRef?: MutableRefObject<any>) => void;
+  setSelectedComponent: (id: string) => void;
 
   setValidationErrors: (payload: IFormValidationErrors) => void;
 

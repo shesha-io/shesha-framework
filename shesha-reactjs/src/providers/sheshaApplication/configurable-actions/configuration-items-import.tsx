@@ -1,4 +1,4 @@
-import ConfigurationItemsImport, { IImportInterface } from '@/components/configurationFramework/itemsImport';
+import { ConfigurationItemsImport, IImportInterface } from '@/components/configurationFramework/itemsImport';
 import React, {
   FC,
   MutableRefObject,
@@ -16,12 +16,12 @@ import { ValidationErrors } from '@/components';
 
 const actionsOwner = 'Configuration Items';
 
-interface IConfigurationItemsExportFooterProps {
+interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
-  importerRef: MutableRefObject<IImportInterface>;
+  importerRef: MutableRefObject<IImportInterface | undefined>;
 }
 
-export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
+export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
   const { hideModal, importerRef: exporterRef } = props;
   const { message, notification } = App.useApp();
@@ -78,7 +78,7 @@ export const useConfigurationItemsImportAction = () => {
         const modalProps: ICommonModalProps = {
           ...actionArgs,
           id: modalId,
-          title: "Import Configuration Items",
+          title: "Import Configuration",
           width: "60%",
           isVisible: true,
           onClose: (positive, result) => {
@@ -90,7 +90,7 @@ export const useConfigurationItemsImportAction = () => {
           },
           showModalFooter: false,
           content: <ConfigurationItemsImport onImported={onImported} importRef={exporterRef} />,
-          footer: <ConfigurationItemsExportFooter hideModal={hideModal} importerRef={exporterRef} />
+          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={exporterRef} />
         };
         createModal({ ...modalProps });
       });

@@ -16,10 +16,13 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
+using Shesha.Modules;
 using Shesha.NHibernate;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
 using Shesha.Tests.Fixtures;
+using Shesha.Tests.ModuleA;
+using Shesha.Tests.ModuleB;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Collections.Generic;
@@ -36,10 +39,21 @@ namespace Shesha.Tests
         typeof(SheshaFormsDesignerModule),
         typeof(SheshaApplicationModule),
         typeof(SheshaFrameworkModule),
-        typeof(SheshaNHibernateModule)        
-        )]
-    public class SheshaTestModule : AbpModule
+        typeof(SheshaNHibernateModule),
+        typeof(SheshaTestsModuleA), 
+        typeof(SheshaTestsModuleB)
+    )]
+    public class SheshaTestModule : SheshaModule
     {
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Shesha.Tests")
+        {
+            FriendlyName = "Shesha Tests",
+            Publisher = "Boxfusion",
+            Alias = "shaTests",
+            Hierarchy = [typeof(SheshaTestsModuleA), typeof(SheshaTestsModuleB), typeof(SheshaFrameworkModule)]
+        };
+
+        public SheshaTestModule(SheshaNHibernateModule nhModule)
         public SheshaTestModule(SheshaNHibernateModule nhModule, SheshaFrameworkModule frwkModule)
         {
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
@@ -55,7 +69,7 @@ namespace Shesha.Tests
             var dbFixture = IocManager.IsRegistered<IDatabaseFixture>()
                 ? IocManager.Resolve<IDatabaseFixture>()
                 : null;
-            if (dbFixture != null /*&& false*/)
+            if (dbFixture != null)
             {
                 nhConfig.UseDbms(c => dbFixture.DbmsType, c => dbFixture.ConnectionString);
             }

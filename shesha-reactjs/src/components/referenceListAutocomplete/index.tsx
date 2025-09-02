@@ -26,7 +26,7 @@ interface IOption {
 
 const baseItemFilter = [
     {
-        "==": [{ "var": "isLast" }, true]
+        "!=": [{ "var": "revision" }, null]
     }
 ];
 const getFilter = (term: string) => {
@@ -46,7 +46,7 @@ const getFilter = (term: string) => {
     return JSON.stringify(filter);
 };
 const REFERENCE_LIST_ENTITY_TYPE = 'Shesha.Framework.ReferenceList';
-const REFERENCE_LIST_PROPERTIES = 'id name module { id name } label description versionNo';
+const REFERENCE_LIST_PROPERTIES = 'id name module { id name } revision { label description versionNo }';
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,
@@ -85,14 +85,16 @@ const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGeneric
 interface IResponseItem {
     id: string;
     name: string;
-    label?: string;
-    description?: string;
-    versionNo?: number;
     module?: {
         id: string;
         name: string;
     };
-}
+    revision: {
+        label?: string;
+        description?: string;
+        versionNo?: number;
+    };
+};
 
 interface IConfigurationItemProps {
     name: string;
@@ -188,9 +190,9 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
                     label: (
                         <RefListLabel
                             name={item.name}
-                            label={item.label}
-                            description={item.description}
-                            versionNo={item.versionNo}
+                            label={item.revision.label}
+                            description={item.revision.description}
+                            versionNo={item.revision.versionNo}
                         />
                     ),
                     value: getDisplayText(item),

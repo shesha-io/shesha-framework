@@ -46,7 +46,8 @@ const Page: PageWithLayout<{}> = () => {
 
     const getFileAsync = async (fileName: string): Promise<FileContentResponse> => {
         const url = `/shesha/playground/api/fileContent?fileName=${fileName}`;
-        return axios.get(url).then(r => r.data);
+        const response = await axios.get(url);
+        return response.data;
     };
 
     const importFormAsync = async (formId: string, markup: string) => {
@@ -107,7 +108,7 @@ const Page: PageWithLayout<{}> = () => {
 
                 console.log(`LOG: form '${item.componentName}' import markup...`);
                 await importFormAsync(formId, fileResponse.content);
-                console.log(`LOG: form '${item.componentName}' import markup - success`);    
+                console.log(`LOG: form '${item.componentName}' import markup - success`);
             } else
                 console.log(`LOG: form '${item.componentName}' fetch markup - failed`);
         }
@@ -118,7 +119,7 @@ const Page: PageWithLayout<{}> = () => {
 
     return (
         <div>
-            <PermissionAutocomplete value={permission} onChange={setPermission} readOnly={false}/>
+            <PermissionAutocomplete value={permission} onChange={setPermission} readOnly={false} />
             <h2>Components with JSON settings: </h2>
             {!data && "Loading..."}
 

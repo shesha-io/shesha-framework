@@ -4,13 +4,14 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
+using Abp.Extensions;
 using Abp.ObjectMapping;
-using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,14 @@ namespace Shesha.DynamicEntities.Cache
 {
     public class EntityConfigCache : IEntityConfigCache, ITransientDependency,
         IEventHandler<EntityChangedEventData<EntityProperty>>,
-        IEventHandler<EntityChangedEventData<EntityConfig>>,
-        IEventHandler<EntityChangingEventData<ConfigurationItem>>
+        IEventHandler<EntityChangedEventData<EntityConfigRevision>>,
+        IEventHandler<EntityChangingEventData<EntityConfigRevision>>
     {
         private readonly IRepository<EntityProperty, Guid> _propertyRepository;
         private readonly IRepository<EntityConfig, Guid> _configReprository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IObjectMapper _mapper;
-        private readonly ITypeFinder _typeFinder;
+        private readonly IShaTypeFinder _typeFinder;
         private readonly ITypedCache<string, EntityConfigCacheItem?> _propertyCache;
 
         public EntityConfigCache(
@@ -35,7 +36,7 @@ namespace Shesha.DynamicEntities.Cache
             IRepository<EntityConfig, Guid> configReprository,
             IUnitOfWorkManager unitOfWorkManager,
             IObjectMapper mapper,
-            ITypeFinder typeFinder,
+            IShaTypeFinder typeFinder,
             IEntityConfigPropertyCacheHolder entityConfigPropertyCacheHolder
             )
         {
@@ -54,6 +55,7 @@ namespace Shesha.DynamicEntities.Cache
 
         private string GetCacheKey(EntityConfig entityConfig)
         {
+            // TODO: V1 review take versions into account
             return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
         }
 
@@ -62,16 +64,33 @@ namespace Shesha.DynamicEntities.Cache
             return $"{@namespace}.{name}";
         }
 
-        private async Task<EntityConfigCacheItem> FetchConfigAsync(Type entityType)
+        private async Task<EntityConfigCacheItem?> FetchConfigAsync(Type entityType)
+        {
+            return await FetchConfigAsync(entityType.Namespace.NotNull(), entityType.Name);
+        }
+        private async Task<EntityConfigCacheItem?> FetchConfigAsync(string classNamespace, string className)
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
+                var conf = await _configReprository.GetAll()
+                    .Where(x => x.ClassName == className && x.Namespace == classNamespace || x.LatestRevision.TypeShortAlias == $"{classNamespace}.{className}")
+                    .FirstOrDefaultAsync();
+
+                // ToDo: AS - get nested properties
+
+                if (conf == null)
+                {
+                    await uow.CompleteAsync();
+                    return null;
+                }
+
+                var revision = conf.LatestRevision;
+
                 var properties = await _propertyRepository.GetAll()
-                    .Where(p => p.EntityConfig.ClassName == entityType.Name && p.EntityConfig.Namespace == entityType.Namespace && p.ParentProperty == null)
+                    .Where(p => p.EntityConfigRevision == revision && p.ParentProperty == null)
                     .ToListAsync();
                 var propertyDtos = properties.Select(p => _mapper.Map<EntityPropertyDto>(p)).ToList();
-
-                var conf = await _configReprository.GetAll().Where(x => x.ClassName == entityType.Name && x.Namespace == entityType.Namespace).FirstOrDefaultAsync();
+                
                 var confDto = _mapper.Map<EntityConfigDto>(conf);
 
                 await uow.CompleteAsync();
@@ -82,6 +101,51 @@ namespace Shesha.DynamicEntities.Cache
                     Properties = propertyDtos
                 };
             }
+        }
+
+        private (string classNamespace, string className) GetNamespaceAndClassName(string entityType)
+        {
+            if (entityType.IsNullOrWhiteSpace())
+                return ("", "");
+            var parts = entityType.Split('.').ToList();
+            var className = parts.Last();
+            parts.RemoveAt(parts.Count - 1);
+            var classNamespace = string.Join('.', parts);
+            return (classNamespace, className);
+        }
+
+        public async Task<EntityConfigDto?> GetDynamicSafeEntityConfigAsync(string entityType)
+        {
+            var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
+            {
+                var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
+                if (eType == null) 
+                {
+                    var (classNamespace, className) = GetNamespaceAndClassName(entityType);
+                    return await FetchConfigAsync(classNamespace, className);
+                }
+                else 
+                    return await FetchConfigAsync(eType);
+            });
+
+            return item?.EntityConfig;
+        }
+
+        public async Task<List<EntityPropertyDto>?> GetDynamicSafeEntityPropertiesAsync(string entityType)
+        {
+            var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
+            {
+                var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
+                if (eType == null)
+                {
+                    var (classNamespace, className) = GetNamespaceAndClassName(entityType);
+                    return await FetchConfigAsync(classNamespace, className);
+                }
+                else
+                    return await FetchConfigAsync(eType);
+            });
+
+            return item?.Properties;
         }
 
         public async Task<EntityConfigDto?> GetEntityConfigAsync(string entityType, bool raiseException = false)
@@ -136,24 +200,30 @@ namespace Shesha.DynamicEntities.Cache
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            if (eventData.Entity?.EntityConfig == null)
+            if (eventData.Entity?.EntityConfigRevision == null)
                 return;
 
-            _propertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
+            _propertyCache.Remove(GetCacheKey((eventData.Entity.EntityConfigRevision.EntityConfig).NotNull()));
         }
 
-        public void HandleEvent(EntityChangingEventData<ConfigurationItem> eventData)
+        public void HandleEvent(EntityChangingEventData<EntityConfig> eventData)
         {
-            var conf = _configReprository.GetAll().FirstOrDefault(x => x.Id == eventData.Entity.Id);
-            if (conf != null)
-            {
-                _propertyCache.Remove(GetCacheKey(conf));
-            };
+            _propertyCache.Remove(GetCacheKey(eventData.Entity));
         }
 
         public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
         {
             _propertyCache.Remove(GetCacheKey(eventData.Entity));
+        }
+
+        public void HandleEvent(EntityChangingEventData<EntityConfigRevision> eventData)
+        {
+            _propertyCache.Remove(GetCacheKey((eventData.Entity.ConfigurationItem as EntityConfig).NotNull()));
+        }
+
+        public void HandleEvent(EntityChangedEventData<EntityConfigRevision> eventData)
+        {
+            _propertyCache.Remove(GetCacheKey((eventData.Entity.ConfigurationItem as EntityConfig).NotNull()));
         }
     }
 }

@@ -8,6 +8,7 @@ import { IFormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { ExpressionCaller, IDataArguments, SubmitCaller } from "../submitters/interfaces";
+import { ShaFormSubscriptionType } from "./shaFormInstance";
 
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
@@ -62,7 +63,7 @@ export interface IDataSubmitContext {
 export type ForceUpdateTrigger = () => void;
 
 export interface IShaFormInstance<Values = any> {
-    applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: any; }): unknown;
+    applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: any }): unknown;
     setDataSubmitContext: (context: IDataSubmitContext) => void;
     setInitialValues: (values: Values) => void;
     setSubmitHandler: (handler: SubmitHandler<Values>) => void;
@@ -93,6 +94,7 @@ export interface IShaFormInstance<Values = any> {
     readonly parentFormValues?: any;
     readonly formArguments?: any;
     readonly formData?: any;
+    readonly isDataModified: boolean;
     readonly formMode: FormMode;
     readonly antdForm: FormInstance;
     readonly defaultApiEndpoints: IEntityEndpoints;
@@ -118,6 +120,7 @@ export interface IShaFormInstance<Values = any> {
     //#endregion
 
     updateData: () => void;
+    subscribe(type: ShaFormSubscriptionType, callback: () => void): () => void;
 }
 
 export interface SubmitRelatedEvents<Values = any> {

@@ -172,7 +172,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       )}
 
       <Space.Compact style={{ width: "100%" }} {...inputGroupProps}>
-        <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} searchValue='' />
+        <Select mode="tags" value={options} tagRender={tagRender} styles={{ popup: { root: {display: 'none'} } }} searchValue='' />
         {isEditable && <Button onClick={onOpenModal} className={styles.childEntityTagAdd} icon={<PlusOutlined />} />}
       </Space.Compact>
     </div>

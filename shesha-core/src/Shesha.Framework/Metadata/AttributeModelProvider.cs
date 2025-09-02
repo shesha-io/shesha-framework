@@ -33,6 +33,7 @@ namespace Shesha.Metadata
 
             var dtos = types.Select(p => new ModelDto
             {
+                Name = p.Name,
                 ClassName = p.GetRequiredFullName(),
                 Type = p,
                 Description = ReflectionHelper.GetDescription(p),

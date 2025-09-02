@@ -331,14 +331,14 @@ namespace Shesha
                         if (brace > 0) innerProps.Add(propList[i]);
                         i++;
                     }
-                    if (propConfig?.EntityType.IsNullOrWhiteSpace() ?? true)
+                    if (propConfig == null 
+                        || propConfig.DataType == DataTypes.EntityReference && propConfig.EntityType.IsNullOrWhiteSpace())
                         sb.Append(prop + " { " + string.Join(" ", innerProps) + " } ");
                     else
                     {
                         sb.Append(prop);
                         // skip Json properties because only whole Json data is allowed to be retrieved
-                        if (propConfig.DataType != DataTypes.ObjectReference
-                            && propConfig.DataType != DataTypes.Object)
+                        if (propConfig.DataType != DataTypes.Object)
                         {
                             sb.Append(" { id ");
                             await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
@@ -367,12 +367,13 @@ namespace Shesha
                 case DataTypes.Array:
                     switch (property.DataFormat)
                     {
-                        case ArrayFormats.ReferenceListItem:
-                        case ArrayFormats.ObjectReference:
-                        case ArrayFormats.Object:
+                        case ArrayFormats.Simple:
+                        case ArrayFormats.ChildObjects:
+                        case ArrayFormats.MultivalueReferenceList:
                             sb.AppendLine(propertyName);
                             break;
                         case ArrayFormats.EntityReference:
+                        case ArrayFormats.ManyToManyEntities:
                             sb.Append(propertyName);
                             sb.AppendLine(" {id _className _displayName} ");
                             break;
@@ -381,6 +382,7 @@ namespace Shesha
                     }
                     break;
                 case DataTypes.EntityReference:
+                case DataTypes.File:
                     if (fullReference || property.EntityType.IsNullOrWhiteSpace())
                     {
                         // GenericEntityReference
@@ -392,8 +394,8 @@ namespace Shesha
                         // EntityReference
                         sb.AppendLine($"{propertyName}: {propertyName}{nameof(IEntity.Id)}");
                     break;
-
-                case DataTypes.Object:
+                // ToDo: AS - remove after implementation
+                /*case DataTypes.Object:
                     {
                         sb.Append(propertyName);
                         sb.AppendLine("{");
@@ -403,7 +405,7 @@ namespace Shesha
                         }
                         sb.AppendLine("}");
                         break;
-                    }
+                    }*/
                 default:
                     sb.AppendLine(propertyName);
                     break;

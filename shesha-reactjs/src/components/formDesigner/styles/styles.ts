@@ -252,7 +252,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .${prefixCls}-tree-switcher-noop {
                     display: none;
                 }
-        
+
+                .ant-tree-list {
+                  padding: 0;
+                }
+
                 .${shaToolboxComponent} {
                     margin: 0;
                     display: flex;
@@ -264,7 +268,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     .${shaComponentTitle} {
                         margin-right: 10px;
                     }
-                 
                 }
         
                 .${siteTreeSearchValue} {

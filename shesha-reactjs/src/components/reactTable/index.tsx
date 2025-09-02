@@ -100,7 +100,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { setDragState } = useDataTableStore();
 
-  const shaForm = useShaFormInstance();
+  const shaForm = useShaFormInstance(false);
 
   const { allColumns, allRows } = componentState;
 

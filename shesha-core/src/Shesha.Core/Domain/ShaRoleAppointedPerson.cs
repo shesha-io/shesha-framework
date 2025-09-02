@@ -5,8 +5,12 @@ namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.ShaRoleAppointedPerson", FriendlyName = "Appointed Person")]
     [DiscriminatorValue((int)ShaRoleAppointmentType.Person)]
+    [SnakeCaseNaming]
     public class ShaRoleAppointedPerson : ShaRoleAppointment
     {
+        /// <summary>
+        /// Appointed person
+        /// </summary>
         public virtual Person? Person { get; set; }
     }
 }

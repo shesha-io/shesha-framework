@@ -1,13 +1,14 @@
 import React, { CSSProperties, FC, useState } from 'react';
 import { ColorPicker as AntdColorPicker } from 'antd';
 import { ColorValueType } from 'antd/es/color-picker/interface';
-import { Color } from 'antd/es/color-picker/color';
+import { AggregationColor } from 'antd/es/color-picker/color';
 import type { ColorPickerProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useTheme, IConfigurableTheme } from '@/index';
 
 type Preset = Required<ColorPickerProps>['presets'][number];
 type ColorFormat = ColorPickerProps['format'];
+type ColorPickerOnChange = ColorPickerProps['onChange'];
 
 export interface IColorPickerProps {
   value?: ColorValueType;
@@ -23,7 +24,7 @@ export interface IColorPickerProps {
   defaultValue?: ColorValueType;
 }
 
-const formatColor = (color: Color, format: ColorFormat) => {
+const formatColor = (color: AggregationColor, format: ColorFormat) => {
   if (!color)
     return null;
 
@@ -66,7 +67,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
   const [format, setFormat] = useState<ColorFormat>('hex');
   const { theme } = useTheme();
 
-  const handleChange = (value: Color) => {
+  const handleChange: ColorPickerOnChange = (value) => {
     const formattedValue = formatColor(value, format);
     onChange(formattedValue);
   };

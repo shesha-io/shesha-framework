@@ -5,10 +5,10 @@ import { SettingOutlined } from '@ant-design/icons';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 
 export interface IFormSettingsButtonProps {
-
+    buttonText?: string;
 }
 
-export const FormSettingsButton: FC<IFormSettingsButtonProps> = () => {
+export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText }) => {
     const [settingsVisible, setSettingsVisible] = useState(false);
     const readOnly = useFormDesignerStateSelector(x => x.readOnly);
 
@@ -18,7 +18,9 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = () => {
   
     return (
         <>
-            <Button icon={<SettingOutlined />} title="Settings" onClick={onSettingsClick}/>
+            <Button icon={<SettingOutlined />} type="link" onClick={onSettingsClick} title='Form Settings'>
+                { buttonText !== undefined ? buttonText : "Settings" }
+            </Button>
             <FormSettingsEditor
                 readOnly={readOnly}
                 isVisible={settingsVisible}

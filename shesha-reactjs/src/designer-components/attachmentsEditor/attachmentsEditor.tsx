@@ -4,7 +4,7 @@ import moment from 'moment';
 import React from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '@/interfaces';
+import { DataTypes, IToolboxComponent } from '@/interfaces';
 import { IStyleType, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
@@ -53,6 +53,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   isInput: true,
   name: 'File list',
   icon: <FolderAddOutlined />,
+  dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === 'attachmentsEditor',
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
     const httpClient = useHttpClient();
@@ -126,6 +127,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   },
   settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  linkToModelMetadata: (model, metadata) => ({...model, ownerId: '{data.id}', ownerType: metadata.containerType, filesCategory: metadata.path}),
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
       return {

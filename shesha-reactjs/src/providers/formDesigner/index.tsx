@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -153,7 +153,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   }, [dispatch]);
 
   const updateComponent = useCallback((payload: IComponentUpdatePayload) => {
-    // ToDo: AS - optimize
+    // ToDo: AS - need to optimize
      if (componentInitialization.current) {
       // Do not trigger an update if first component initialization (reduce unnecessary re-renders)
       componentInitialization.current = false;
@@ -220,23 +220,22 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(UndoableActionCreators.redo());
   }, [dispatch]);
 
-  const setSelectedComponent = useCallback((componentId: string, componentRef?: MutableRefObject<any>) => {
-    if (componentId !== state.present.selectedComponentId ||
-      componentRef !== state.present.selectedComponentRef)
-      dispatch(setSelectedComponentAction({ id: componentId, componentRef }));
+  const setSelectedComponent = useCallback((componentId: string) => {
+    if (componentId !== state.present.selectedComponentId)
+      dispatch(setSelectedComponentAction({ id: componentId }));
       componentInitialization.current = true;
   }, [dispatch]);
 
-  const setPreviousSelectedComponent = useCallback((componentId: string, componentRef?: MutableRefObject<any>) => {
-    dispatch(setPreviousSelectedComponentAction({ id: componentId, componentRef }));
+  const setPreviousSelectedComponent = useCallback((componentId: string) => {
+    dispatch(setPreviousSelectedComponentAction({ id: componentId }));
   }, [dispatch]);
 
   useEffect(() => {
       if (state.present.formMode === 'edit' && state.present.selectedComponentId) {
-        setPreviousSelectedComponent(state.present.selectedComponentId, state.present.selectedComponentRef);
+        setPreviousSelectedComponent(state.present.selectedComponentId);
         setSelectedComponent(null);
       } else if (state.present.formMode === 'designer' && state.present.previousSelectedComponentId) {
-        setSelectedComponent(state.present.previousSelectedComponentId, state.present.previousSelectedComponentRef);
+        setSelectedComponent(state.present.previousSelectedComponentId);
         setPreviousSelectedComponent(null);
       }
   }, [state.present.formMode]);

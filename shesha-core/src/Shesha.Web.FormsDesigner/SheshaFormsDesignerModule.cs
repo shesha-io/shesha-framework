@@ -16,9 +16,9 @@ namespace Shesha.Web.FormsDesigner
     [DependsOn(typeof(AbpAspNetCoreModule))]
     public class SheshaFormsDesignerModule : SheshaSubModule<SheshaFrameworkModule>
     {
-        public override async Task<bool> InitializeConfigurationAsync()
+        public override Task<bool> InitializeConfigurationAsync()
         {
-            return await ImportConfigurationAsync();
+            return ImportConfigurationAsync();
         }
 
         public override void Initialize()
@@ -29,11 +29,6 @@ namespace Shesha.Web.FormsDesigner
                 .RegisterConfigurableItemManager<FormConfiguration, IFormManager, FormManager>()
                 .RegisterConfigurableItemExport<FormConfiguration, IFormConfigurationExport, FormConfigurationExport>()
                 .RegisterConfigurableItemImport<FormConfiguration, IFormConfigurationImport, FormConfigurationImport>();
-
-            IocManager
-                .RegisterConfigurableItemManager<ConfigurableComponent, IConfigurableComponentManager, ConfigurableComponentManager>()
-                .RegisterConfigurableItemExport<ConfigurableComponent, IConfigurableComponentExport, ConfigurableComponentExport>()
-                .RegisterConfigurableItemImport<ConfigurableComponent, IConfigurableComponentImport, ConfigurableComponentImport>();
 
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 

@@ -5,12 +5,20 @@ import { FormIdentifier } from '@/interfaces';
 import { DynamicPage } from '@/generic-pages/dynamic';
 import { notFound } from 'next/navigation';
 
+/*
+interface AsyncPageProps {
+  params: Promise<{ path: string[] }>;
+  searchParams: Promise<NodeJS.Dict<string | string[]>>;
+}
+*/
 interface PageProps {
   params: { path: string[] };
   searchParams: NodeJS.Dict<string | string[]>;
 }
 
 const DynamicPageInternal: FC<PageProps> = (props) => {
+  //const params = use(props.params);
+  //const searchParams = use(props.searchParams);
   const { params, searchParams } = props;
 
   // possible values of path:
@@ -30,11 +38,11 @@ const DynamicPageInternal: FC<PageProps> = (props) => {
     return notFound();
 
   const formId: FormIdentifier = {
-    module: moduleName, 
+    module: moduleName,
     name: formName
   };
 
-  return <DynamicPage {...searchParams} formId={ formId }/>;
+  return <DynamicPage {...searchParams} formId={formId} />;
 };
 
 export default DynamicPageInternal;

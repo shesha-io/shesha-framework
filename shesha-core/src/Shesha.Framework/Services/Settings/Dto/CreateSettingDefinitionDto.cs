@@ -1,4 +1,4 @@
-﻿using Shesha.Domain;
+﻿using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -37,13 +37,13 @@ namespace Shesha.Services.Settings.Dto
         /// <summary>
         /// Data type of the value
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public required string DataType { get; set; }
 
-        [StringLength(200)]
+        [MaxLength(200)]
         public string? EditorFormName { get; set; }
 
-        [StringLength(200)]
+        [MaxLength(200)]
         public string? EditorFormModule { get; set; }
 
         /// <summary>
@@ -59,16 +59,16 @@ namespace Shesha.Services.Settings.Dto
         /// <summary>
         /// Specifies who can access the application setting value via the APIs.
         /// </summary>
-        public SettingAccessMode AccessMode { get; set; }
+        public RefListSettingAccessMode AccessMode { get; set; }
 
         /// <summary>
         /// If true, indicates that this setting should be specific to each of the logged in user
         /// </summary>
-        public virtual bool IsUserSpecific { get; set; }
+        public bool IsUserSpecific { get; set; }
 
         /// <summary>
         /// Indicate the accessibility of this user setting from client applications
         /// </summary>
-        public virtual UserSettingAccessMode ClientAccess { get; set; }
+        public RefListUserSettingAccessMode ClientAccess { get; set; }
     }
 }

@@ -1,19 +1,19 @@
 import React from "react";
-import { 
-  AfterSubmitHandler,
-  ForceUpdateTrigger,
-  FormEvents,
-  IDataSubmitContext,
-  InitByFormIdPayload,
-  InitByMarkupPayload,
-  InitByRawMarkupPayload,
-  IShaFormInstance,
-  LoadFormByIdPayload,
-  OnMarkupLoadedHandler,
-  OnValuesChangeHandler,
-  ProcessingState,
-  SubmitDataPayload,
-  SubmitHandler
+import {
+    AfterSubmitHandler,
+    ForceUpdateTrigger,
+    FormEvents,
+    IDataSubmitContext,
+    InitByFormIdPayload,
+    InitByMarkupPayload,
+    InitByRawMarkupPayload,
+    IShaFormInstance,
+    LoadFormByIdPayload,
+    OnMarkupLoadedHandler,
+    OnValuesChangeHandler,
+    ProcessingState,
+    SubmitDataPayload,
+    SubmitHandler
 } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
 import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
@@ -49,11 +49,11 @@ interface ShaFormInstanceArguments {
 }
 
 interface IPropertiesWithScripts {
-  [index: string]: string;
+    [index: string]: string;
 }
 
 interface IComponentsWithScripts {
-  [index: string]: IPropertiesWithScripts;
+    [index: string]: IPropertiesWithScripts;
 }
 
 // ToDo: AS - add other events
@@ -67,7 +67,7 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
 
     getPropertiesWithScript = (keyword: string): IComponentsWithScripts => {
         const proceed = (addComponent: IPropertiesWithScripts, obj: any, propertyName: string) => {
-            for(const propName in obj) {
+            for (const propName in obj) {
                 if (Object.hasOwn(obj, propName)) {
                     const fullPropName = propertyName ? `${propertyName}.${propName}` : propName;
                     const propValue = obj[propName];
@@ -92,9 +92,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
                 }
             }
         };
-      
+
         const components: IComponentsWithScripts = {};
-        for(const componentId in this.#form.flatStructure.allComponents) {
+        for (const componentId in this.#form.flatStructure.allComponents) {
             if (Object.hasOwn(this.#form.flatStructure.allComponents, componentId)) {
                 const component = this.#form.flatStructure.allComponents[componentId];
                 const addComponent: IPropertiesWithScripts = {};
@@ -160,6 +160,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     }
 };
 
+export type ShaFormSubscription<Values = any> = (cs: IShaFormInstance<Values>) => void;
+export type ShaFormSubscriptionType = 'data' | 'data-loading' | 'data-submit';
+
 class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     private forceRootUpdate: ForceUpdateTrigger;
 
@@ -178,6 +181,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     antdForm: FormInstance;
     formMode: FormMode;
     formData?: any;
+    isDataModified: boolean;
     validationErrors?: IFormValidationErrors;
 
     defaultValues: Values;
@@ -234,7 +238,28 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.forceRootUpdate = args.forceRootUpdate;
         this.events = {};
         this.formData = {};
+        this.isDataModified = false;
+        this.subscriptions = new Map<ShaFormSubscriptionType, ShaFormSubscription<Values>>();
     }
+
+    //#region subscriptions
+
+    private subscriptions: Map<ShaFormSubscriptionType, ShaFormSubscription<Values>>;
+    subscribe(type: ShaFormSubscriptionType, callback: () => void): () => void {
+        this.subscriptions.set(type, callback);
+        return () => this.unsubscribe(type);
+    }
+
+    private unsubscribe(type: ShaFormSubscriptionType) {
+        this.subscriptions.delete(type);
+    }
+
+    notifySubscribers(type: ShaFormSubscriptionType) {
+        const callback = this.subscriptions.get(type);
+        callback?.(this);
+    }
+
+    //#endregion
 
     getDelayedUpdates = () => {
         return this.dataSubmitContext?.getDelayedUpdates() || [];
@@ -255,8 +280,17 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.forceRootUpdate();
     };
 
+    #setIsDataModified = (value: boolean) => {
+        if (this.dataLoadingState.status !== "ready") {
+            return;
+        }
+
+        this.isDataModified = value;
+    };
+
     #setInternalFormData = (values: any) => {
         this.formData = values;
+        this.#setIsDataModified(true);
         if (this.onValuesChange)
             this.onValuesChange(values, values);
         this.events.onValuesUpdate?.({ data: removeGhostKeys({ ...values }) });
@@ -287,8 +321,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.parentFormValues = values;
     };
 
-    setValidationErrors = (payload: IFormValidationErrors) => {
-        this.validationErrors = payload ? { ...payload } : null;
+    setValidationErrors = (payload: IFormValidationErrors | undefined) => {
+        this.validationErrors = payload;
         this.forceRootUpdate();
     };
 
@@ -310,6 +344,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.antdForm.resetFields();
         const values = this.antdForm.getFieldsValue();
         this.#setInternalFormData(values);
+        this.#setIsDataModified(false);
         this.updateData?.();
     };
     getFieldsValue = (): Values => {
@@ -512,6 +547,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.antdForm.setFieldsValue(initialValues);
 
         this.dataLoadingState = { status: 'ready', hint: null, error: null };
+        this.#setIsDataModified(false);
         this.forceRootUpdate();
 
         if (this.events.onAfterDataLoad)
@@ -578,8 +614,9 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         if (!this.useDataLoader) {
             this.log('LOG: loadData', this.useDataLoader);
             this.dataLoadingState = { status: 'ready', hint: null, error: null };
+            this.#setIsDataModified(false);
             this.forceRootUpdate();
-  
+
             return this.initialValues;
         }
 
@@ -601,6 +638,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.formData = data;
             this.antdForm.resetFields();
             this.antdForm.setFieldsValue(data);
+            this.#setIsDataModified(false);
             this.forceRootUpdate();
 
             this.log('LOG: loaded', data);
@@ -608,6 +646,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         }
 
         this.dataLoadingState = { status: 'ready', hint: null, error: null };
+        this.#setIsDataModified(false);
         this.forceRootUpdate();
 
         return this.initialValues;
@@ -627,10 +666,14 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         const { getDelayedUpdates } = this.dataSubmitContext ?? {};
 
         if (this.useDataSubmitter) {
+            this.log('LOG: use data submitter');
             this.dataSubmitState = { status: 'loading', hint: 'Saving data...', error: null };
             this.forceRootUpdate();
 
             try {
+                if (!this.dataSubmitter)
+                    throw new Error('Submit handler is not configured for the form');
+
                 const result = await this.dataSubmitter.submitAsync({
                     formSettings: this.settings,
                     formFlatStructure: this.flatStructure,
@@ -646,23 +689,31 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
                     onSubmitFailed: this.events.onSubmitFailed,
                 });
 
+                this.log('LOG: submitted successfully');
+
                 if (this.onAfterSubmit)
                     this.onAfterSubmit(data, result);
 
                 this.dataSubmitState = { status: 'ready', hint: null };
+                this.#setIsDataModified(false);
+                this.notifySubscribers('data-loading');
                 this.forceRootUpdate();
 
                 return result;
             } catch (error) {
+                this.log('LOG: failed to submit', error);
                 this.dataSubmitState = { status: 'failed', error: error };
                 this.forceRootUpdate();
                 throw error;
             }
         } else {
+            this.log('LOG: use onFinish');
             this.onFinish(data);
 
             if (this.onAfterSubmit)
                 this.onAfterSubmit(data, data);
+
+            this.#setIsDataModified(false);
 
             return Promise.resolve(data);
         }

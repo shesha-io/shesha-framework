@@ -242,8 +242,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       disabled={readOnly}
       options={state.options}
       style={{ minWidth: "150px" }}
-
-      dropdownStyle={props?.dropdownStyle}
+      styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
       allowClear
       onClear={onClear}

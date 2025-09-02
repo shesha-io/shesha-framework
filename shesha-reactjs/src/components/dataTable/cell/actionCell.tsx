@@ -51,7 +51,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     {...evaluationContext.data},
     {...evaluationContext.contexts.appConext},
     {...evaluationContext.contexts.pageContext},
-    {...evaluationContext.contexts.foemContext}
+    {...evaluationContext.contexts.formContext}
   ], "");
 
   return (

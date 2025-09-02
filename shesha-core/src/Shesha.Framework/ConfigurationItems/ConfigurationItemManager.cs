@@ -1,17 +1,14 @@
 ﻿using Abp;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Abp.Runtime.Validation;
+using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Dto;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Validations;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,157 +17,251 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Base class of the Configuration Item Manager
     /// </summary>
-    public abstract class ConfigurationItemManager<TItem> : AbpServiceBase, IConfigurationItemManager<TItem> where TItem : ConfigurationItemBase
+    public abstract class ConfigurationItemManager<TItem, TRevision> : AbpServiceBase, IConfigurationItemManager<TItem>
+        where TItem : ConfigurationItem<TRevision>, new()
+        where TRevision: ConfigurationItemRevision, new()
     {
         /// <summary>
         /// Configurable Item type supported by the current manager
         /// </summary>
         public Type ItemType => typeof(TItem);
 
-        protected IRepository<TItem, Guid> Repository { get; private set; }
-        protected IRepository<Module, Guid> ModuleRepository { get; private set; }
+        private string? _discriminator;
+        public string Discriminator => _discriminator ?? (_discriminator = ConfigurationItemHelper.GetDiscriminator(ItemType));
+        public IRepository<TItem, Guid> Repository { get; set; }
+        public IRepository<TRevision, Guid> RevisionRepository { get; set; }
+        public IRepository<Module, Guid> ModuleRepository { get; set; }
+        public IConfigurationItemHelper ConfigurationItemHelper { get; set; }
+        public IConfigurationFrameworkRuntime CfRuntime { get; set; }
+        public IModuleHierarchyProvider HierarchyProvider { get; set; }
+        public IRepository<ConfigurationItemInheritance, string> InheritanceRepository { get; set; }
 
-        public ConfigurationItemManager(IRepository<TItem, Guid> repository, IRepository<Module, Guid> moduleRepository, IUnitOfWorkManager unitOfWorkManager)
+        public ConfigurationItemManager()
         {
             LocalizationSourceName = SheshaConsts.LocalizationSourceName;
-
-            Repository = repository;
-            ModuleRepository = moduleRepository;
-            UnitOfWorkManager = unitOfWorkManager;
         }
 
-        private Dictionary<ConfigurationItemVersionStatus, List<ConfigurationItemVersionStatus>> AllowedTransition
+        private async Task<string> GenerateItemDuplicateNameAsync(TItem item)
         {
-            get
-            {
-                return new Dictionary<ConfigurationItemVersionStatus, List<ConfigurationItemVersionStatus>>() {
-                    { ConfigurationItemVersionStatus.Ready, new() { ConfigurationItemVersionStatus.Draft } },
-                    { ConfigurationItemVersionStatus.Live, new() { ConfigurationItemVersionStatus.Draft, ConfigurationItemVersionStatus.Ready } },
-                    // TODO: review other transition rules
-                };
-            }
+            // ‘{original file name} – copy’
+            var baseName = $"{item.Name} - copy";
+
+            var existingNames = await Repository.GetAll()
+                .Where(e => e.Name.StartsWith(baseName))
+                .Select(e => e.Name)
+                .ToListAsync();
+
+            var maxCopyNumber = existingNames.Any()
+                ? existingNames.Select(n =>
+                    {
+                        var suffix = n.Replace(baseName, "").Trim();
+                        return string.IsNullOrWhiteSpace(suffix)
+                            ? 1
+                            : int.TryParse(suffix, out  var copyNo)
+                                ? copyNo
+                                : -1;
+                    })
+                    .MaxOrDefault(0)
+                : 0;
+            int? newNumber = maxCopyNumber > 0 
+                ? maxCopyNumber + 1 
+                : null;
+
+            return $"{baseName}{newNumber}";
         }
 
-        public virtual async Task UpdateStatusAsync(TItem item, ConfigurationItemVersionStatus status)
+        public virtual async Task<TItem> DuplicateAsync(TItem item) 
         {
-            if (item.VersionStatus == status)
-                return;
+            var newName = await GenerateItemDuplicateNameAsync(item);
+            var duplicate = new TItem { 
+                Module = item.Module,
+                Application = item.Application,
+                Folder = item.Folder,
+                Name = newName,
+            };
+            await CopyItemPropertiesAsync(item, duplicate);
 
-            if (AllowedTransition.TryGetValue(status, out var transition))
+            duplicate.SurfaceStatus = null;
+            duplicate.ExposedFrom = null;
+            duplicate.ExposedFromRevision = null;
+            duplicate.LatestImportedRevisionId = null;
+
+            duplicate.Normalize();
+            await Repository.InsertAsync(duplicate);
+
+            var sourceRevision = item.LatestRevision;
+            var duplicateRevision = duplicate.MakeNewRevision();
+
+            // copy base properties
+            await CopyRevisionPropertiesBaseAsync(sourceRevision, duplicateRevision);
+            await CopyRevisionPropertiesAsync(sourceRevision, duplicateRevision);
+
+            duplicateRevision.CreatedByImport = null;
+            duplicateRevision.ParentRevision = null;
+            
+            await RevisionRepository.InsertAsync(duplicateRevision);
+
+            await Repository.UpdateAsync(duplicate);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            await AfterItemDuplicatedAsync(item, duplicate);
+
+            return duplicate;
+        }
+
+        protected virtual Task AfterItemDuplicatedAsync(TItem item, TItem duplicate)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task CopyItemPropertiesAsync(TItem source, TItem destination)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Copy value of custom properties from <paramref name="source"/> to <paramref name="destination"/> revision.
+        /// Is used in Duplicate and Expose operations
+        /// </summary>
+        /// <param name="source">Source revision to copy custom properties from</param>
+        /// <param name="destination">Destination revision to copy custom properties to</param>
+        /// <returns></returns>
+        protected abstract Task CopyRevisionPropertiesAsync(TRevision source, TRevision destination);
+
+        /// inheritedDoc
+        public virtual Task<IConfigurationItemDto> MapToDtoAsync(TItem item) 
+        {
+            var revision = item.LatestRevision;
+
+            var dto = new ConfigurationItemDto
             {
-                if (!transition.Contains(item.VersionStatus))
-                    throw new AbpValidationException("Failed to update status", new List<ValidationResult> { new ValidationResult($"Item status cannot be updated from '{item.VersionStatus}' to '{status}'") });
-            }
-
-            // mark previously published version as retired
-            if (status == ConfigurationItemVersionStatus.Live)
-            {
-                var liveVersionsQuery = Repository.GetAll().Where(v => v.Module == item.Module &&
-                    v.Name == item.Name &&
-                    v != item &&
-                    v.VersionStatus == ConfigurationItemVersionStatus.Live);
-                var liveVersions = await liveVersionsQuery.ToListAsync();
-
-                foreach (var version in liveVersions)
-                {
-                    version.VersionStatus = ConfigurationItemVersionStatus.Retired;
-                    await Repository.UpdateAsync(version);
-                }
-
-                await UnitOfWorkManager.Current.SaveChangesAsync();
-            }
-
-            item.VersionStatus = status;
-            await Repository.UpdateAsync(item);
+                Id = item.Id,
+                ModuleId = item.Module?.Id,
+                OriginId = item.Origin?.Id,
+                Module = item.Module?.Name,
+                Name = item.Name,
+                Label = revision.Label,
+                Description = revision.Description,
+            };
+            return Task.FromResult<IConfigurationItemDto>(dto);
         }
 
         /// inheritedDoc
-        public abstract Task<TItem> CopyAsync(TItem item, CopyItemInput input);
-
-        /// inheritedDoc
-        public abstract Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
-
-        /// inheritedDoc
-        public virtual async Task CancelVersionAsync(TItem item)
+        public virtual async Task<TItem> ExposeAsync(TItem item, Module module)
         {
-            item.VersionStatus = ConfigurationItemVersionStatus.Cancelled;
-            await Repository.UpdateAsync(item);
+            var srcRevision = item.LatestRevision;
+
+            var exposedConfig = new TItem
+            {
+                Name = item.Name,
+                Module = module,
+                ExposedFrom = item,
+                ExposedFromRevision = srcRevision,
+                SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
+            };
+            await CopyItemPropertiesAsync(item, exposedConfig);
+            await Repository.InsertAsync(exposedConfig);
+
+            var exposedRevision = exposedConfig.MakeNewRevision();
+
+            await CopyRevisionPropertiesBaseAsync(srcRevision, exposedRevision);
+            await CopyRevisionPropertiesAsync(srcRevision, exposedRevision);
+            exposedRevision.VersionNo = 1;
+            exposedRevision.VersionName = null;
+
+            await RevisionRepository.InsertAsync(exposedRevision);
+            await Repository.UpdateAsync(exposedConfig);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            return exposedConfig;
         }
 
-        /// inheritedDoc
-        public async virtual Task MoveToModuleAsync(TItem item, MoveItemToModuleInput input)
+        public async Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item)
         {
-            var module = await ModuleRepository.GetAsync(input.ModuleId);
+            return await DuplicateAsync((TItem)item);
+        }
 
-            var validationResults = new List<ValidationResult>();
+        public async Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItem item)
+        {
+            return await MapToDtoAsync((TItem)item);
+        }
 
-            // todo: review validation messages, add localization support
-            if (item == null)
-                validationResults.Add(new ValidationResult("Please select an item to move", new List<string> { nameof(input.ItemId) }));
-            if (module == null)
-                validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
-            if (module != null && item != null)
-            {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == item.Name && f != item).AnyAsync();
-                if (alreadyExist)
-                    validationResults.Add(new ValidationResult($"Item with name `{item.Name}` already exists in module `{module.Name}`")
-                    );
-            }
+        public async Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module)
+        {
+            if (await ItemExistsAsync(item.Name, module))
+                throw new ArgumentException($"{item.GetFriendlyClassName()} '{item.Name}' already exists in module '{module.Name}'");
 
+            return await ExposeAsync((TItem)item, module);
+        }
+
+        public async Task<ConfigurationItem> GetItemAsync(string module, string name)
+        {
+            var actualItem = await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
+                .OrderBy(e => e.ModuleLevel)
+                .FirstOrDefaultAsync();
+
+            if (actualItem == null)
+                throw new ConfigurationItemNotFoundException(Discriminator, module, name, null);
+
+            return await Repository.GetAsync(actualItem.ItemId);
+        }
+
+        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input) 
+        {
+            var validationResults = new ValidationResults();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
             validationResults.ThrowValidationExceptionIfAny(L);
 
-            item.NotNull();
-
-            var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == item.Origin);
-            var allVersions = await allVersionsQuery.ToListAsync();
-
-            foreach (var version in allVersions)
+            var item = new TItem
             {
-                version.Module = module;
-                await Repository.UpdateAsync(version);
-            }
+                Name = input.Name,
+                Module = input.Module,
+                Folder = input.Folder,
+            };
+            item.Origin = item;
+
+            await Repository.InsertAsync(item);
+
+            var revision = item.MakeNewRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            item.Normalize();
+
+            await RevisionRepository.InsertAsync(revision);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            return item;
         }
 
-        public abstract Task<TItem> CreateNewVersionAsync(TItem item);
-
-        public virtual async Task DeleteAllVersionsAsync(TItem item)
+        async Task<ConfigurationItem> IConfigurationItemManager.CreateItemAsync(CreateItemInput input)
         {
-            await Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && !f.IsDeleted);
+            return await CreateItemAsync(input);
         }
 
-        public async Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)
+        /// <summary>
+        /// Checks existence of item with name <paramref name="name"/> in a module <paramref name="module"/>
+        /// </summary>
+        /// <param name="name">Item name</param>
+        /// <param name="module">Module</param>
+        /// <returns></returns>
+        public Task<bool> ItemExistsAsync(string name, Module module)
         {
-            await UpdateStatusAsync((TItem)item, status);
+            return Repository.GetAll().AnyAsync(e => e.Name == name && e.Module == module);
         }
 
-        public async Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input)
+        protected Task CopyRevisionPropertiesBaseAsync(TRevision srcRevision, TRevision dstRevision)
         {
-            return await CopyAsync((TItem)item, input) as ConfigurationItemBase;
-        }
+            dstRevision.Label = srcRevision.Label;
+            dstRevision.Description = srcRevision.Description;
+            dstRevision.Comments = srcRevision.Comments;
+            dstRevision.ConfigHash = srcRevision.ConfigHash;
 
-        public async Task CancelVersoinAsync(ConfigurationItemBase item)
-        {
-            await CancelVersionAsync((TItem)item);
-        }
-
-        public async Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input)
-        {
-            await MoveToModuleAsync((TItem)item, input);
-        }
-
-        public async Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item)
-        {
-            return await CreateNewVersionAsync((TItem)item) as ConfigurationItemBase;
-        }
-
-        public async Task DeleteAllVersionsAsync(ConfigurationItemBase item)
-        {
-            await DeleteAllVersionsAsync((TItem)item);
-        }
-
-        public async Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item)
-        {
-            return await MapToDtoAsync((TItem)item) as IConfigurationItemDto;
+            return Task.CompletedTask;
         }
     }
 }

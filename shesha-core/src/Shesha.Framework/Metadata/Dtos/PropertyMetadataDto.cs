@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Shesha.Domain.Enums;
 using Shesha.Utilities;
 using System;
@@ -13,6 +14,12 @@ namespace Shesha.Metadata.Dtos
 {
     public class PropertyMetadataDto
     {
+        public string? ColumnName { get; set; }
+        public bool CreatedInDb { get; set; }
+        public Guid? InheritedFromId { get; set; }
+
+        public string ContainerType { get; set; }
+
         public bool? CascadeCreate { get; set; }
         public bool? CascadeUpdate { get; set; }
         public bool? CascadeDeleteUnreferenced { get; set; }
@@ -39,7 +46,12 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Validation message
         /// </summary>
-        public virtual string? ValidationMessage { get; set; }
+        public string? ValidationMessage { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        public JObject? Formatting { get; set; }
 
         public string Path { get; set; }
         public string? Label { get; set; }
@@ -138,6 +150,11 @@ namespace Shesha.Metadata.Dtos
                 sb.AppendLine();
             }
             return sb.ToString().ToMd5Fingerprint();
+        }
+
+        public override string ToString()
+        {
+            return $"{Path} {DataType} ({DataFormat} {EntityType})";
         }
     }
 }

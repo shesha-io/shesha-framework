@@ -1,7 +1,5 @@
 import HelpTextPopover from '@/components/helpTextPopover';
 import React, { FC } from 'react';
-import StatusTag from '@/components/statusTag';
-import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
 import { getFormFullName } from '@/utils/form';
 import { Space } from 'antd';
 import { useFormPersister } from '@/providers/formPersisterProvider';
@@ -23,7 +21,6 @@ export const DesignerTitle: FC<IDesignerTitleProps> = ({ }) => {
                 </p>
             )}
             <HelpTextPopover content={formProps.description}></HelpTextPopover>
-            <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
         </Space>
     );
 };

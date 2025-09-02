@@ -163,7 +163,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         description={error}
         type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
         action={
-          <Button color={theme.application.errorColor ?? 'red'} onClick={() => {
+          <Button color="danger" onClick={() => {
             fetchData();
           }}>
             Retry

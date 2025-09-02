@@ -1,5 +1,5 @@
 ﻿using Castle.Core.Logging;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain;
 using System;
 using System.Threading;
 

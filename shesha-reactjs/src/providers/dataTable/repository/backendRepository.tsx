@@ -19,6 +19,7 @@ import { IAjaxResponseBase } from "@/interfaces/ajaxResponse";
 import FileSaver from "file-saver";
 import { DataTypes } from "@/interfaces/dataTypes";
 import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
+import { wrapDisplayName } from "@/utils/react";
 
 export interface IWithBackendRepositoryArgs {
     entityType: string;
@@ -379,10 +380,10 @@ export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackend
 };
 
 export function withBackendRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>): FC<WrappedProps> {
-    return props => {
+    return wrapDisplayName(props => {
         const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
 
         const repository = useBackendRepository({ entityType, getListUrl: getDataPath });
         return (<WrappedComponent {...props} repository={repository} modelType={entityType} />);
-    };
+    }, "withBackendRepository");
 };

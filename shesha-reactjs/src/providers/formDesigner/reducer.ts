@@ -432,7 +432,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       return {
         ...state,
-        validationErrors: payload ? { ...payload } : null,
+        validationErrors: payload,
       };
     },
 
@@ -487,7 +487,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       return {
         ...state,
         selectedComponentId: payload.id,
-        selectedComponentRef: payload.componentRef,
       };
     },
 
@@ -500,7 +499,6 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       return {
         ...state,
         previousSelectedComponentId: payload.id,
-        previousSelectedComponentRef: payload.componentRef,
       };
     },
     

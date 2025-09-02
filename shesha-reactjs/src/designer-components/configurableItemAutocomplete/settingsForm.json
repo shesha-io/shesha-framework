@@ -175,7 +175,7 @@
               "single"
             ],
             "validate": {},
-            "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete"
+            "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete"
           },
           {
             "id": "NZAhm49SHOsCTjp99cCInZ41FN4e0F",

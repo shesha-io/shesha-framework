@@ -14,7 +14,6 @@ namespace Shesha.Notifications
             dst.Disable = src.Disable;
             dst.CanOptOut = src.CanOptOut;
             dst.Category = src.Category;
-            dst.OrderIndex = src.OrderIndex;
             dst.OverrideChannels = src.OverrideChannels;
             
             return dst;

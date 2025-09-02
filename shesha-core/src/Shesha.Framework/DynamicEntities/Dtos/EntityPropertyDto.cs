@@ -1,4 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
+using Newtonsoft.Json.Linq;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -10,11 +12,17 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class EntityPropertyDto : EntityDto<Guid>
     {
+        public virtual bool CreatedInDb { get; set; }
+
+        public string? ColumnName { get; set; }
+        public string? InheritedFromId { get; set; }
+        public string? InheritedFrom { get; set; }
 
         /// <summary>
         /// Entity Config Name
         /// </summary>
         public string EntityConfigName { get; set; }
+        public string EntityConfigId { get; set; }
 
         /// <summary>
         /// Property Name
@@ -137,5 +145,14 @@ namespace Shesha.DynamicEntities.Dtos
         /// </summary>
         public bool CascadeDeleteUnreferenced { get; set; }
 
+        /// <summary>
+        /// List configuration and DB mapping
+        /// </summary>
+        public EntityPropertyListConfiguration ListConfiguration { get; set; }
+
+        /// <summary>
+        /// DataType specific formatting
+        /// </summary>
+        public JObject? Formatting { get; set; }
     }
 }

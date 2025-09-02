@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Module = Shesha.Domain.ConfigurationItems.Module;
+using Module = Shesha.Domain.Module;
 
 namespace Shesha.Permissions
 {
@@ -108,7 +108,7 @@ namespace Shesha.Permissions
             var dto = new PermissionedObjectDto()
             {
                 Object = objectName,
-                Parent = parent,
+                Parent = parent ?? string.Empty,
                 ModuleId = module?.Id,
                 Module = module?.Name,
                 Name = name,

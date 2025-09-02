@@ -2,9 +2,8 @@ import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
-import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useForm, useSheshaApplication } from '@/providers';
+import { FormItemProvider, ROOT_COMPONENT_KEY, useForm, useSheshaApplication } from '@/providers';
 import FormInfo from '@/components/configurableForm/formInfo';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { ComponentsContainerSubForm } from './componentsContainerSubForm';
@@ -21,7 +20,6 @@ interface ISubFormProps {
 
 const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { formInfoBlockVisible } = useAppConfigurator();
   const {
     id,
     module,
@@ -32,7 +30,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     propertyName,
     context,
     versionStatus,
-    hasFetchedConfig,
     versionNo,
     description,
     allComponents,
@@ -64,10 +61,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
       },
     });
 
-  const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
-
-  const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
-
   const isLoading = useMemo(() => {
     return Object.values(loading).find((l) => Boolean(l));
   }, [loading]);
@@ -97,7 +90,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
           'data-sha-c-form-name': `${module}/${name}`,
         }}
       >
-        <FormInfo visible={showFormInfo} formProps={persistedFormProps}>
+        <FormInfo visible={false} formProps={persistedFormProps}>
           <div style={{ flex: 1 }} data-name={propertyName}>
             {Object.keys(errors).map((error, index) => (
               <ValidationErrors key={index} error={errors[error]} />

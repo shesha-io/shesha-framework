@@ -13,3 +13,12 @@ export const createNamedContext = <T>(defaultValue: T, displayName: string): Con
     context.displayName = displayName;
     return context;
 };
+
+export const getDisplayName = (WrappedComponent: React.FC): string => {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+};
+
+export const wrapDisplayName = <T extends React.FC = React.FC>(WrappedComponent: T, hocName: string): T => {
+    WrappedComponent.displayName = `${hocName}(${getDisplayName(WrappedComponent)})`;
+    return WrappedComponent;
+};

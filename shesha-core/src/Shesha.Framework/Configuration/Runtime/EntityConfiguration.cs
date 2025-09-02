@@ -80,7 +80,7 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        public string? FriendlyName { get; set; }
+        public string FriendlyName { get; set; }
         public string? Accessor { get; set; }
 
         public string? TableName => MappingMetadata?.TableName;

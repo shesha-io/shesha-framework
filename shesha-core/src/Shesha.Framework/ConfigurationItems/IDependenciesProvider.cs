@@ -25,6 +25,6 @@ namespace Shesha.ConfigurationItems
         /// Get list of referenced configuration items
         /// </summary>
         /// <returns></returns>
-        Task<IList<ConfigurationItemIdentifier>> GetReferencedItemsAsync(ConfigurationItemBase item);
+        Task<IList<ConfigurationItemIdentifier>> GetReferencedItemsAsync(ConfigurationItem item);
     }
 }
