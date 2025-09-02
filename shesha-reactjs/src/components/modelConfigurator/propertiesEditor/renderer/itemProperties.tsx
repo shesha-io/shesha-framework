@@ -53,7 +53,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
           mode="edit"
           markup={markup}
           shaFormRef={formRef}
-          initialValues={componentModel}
+          initialValues={{...componentModel, minLength: componentModel.minLength === 0 || !componentModel.minLength ? "0" : componentModel.minLength}} // to force re-rendering of minLength field when 0 is set
           onValuesChange={debouncedSave}
         />
       </div>
