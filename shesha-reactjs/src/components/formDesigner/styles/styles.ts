@@ -173,6 +173,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-y: auto; 
             overflow-x: hidden; 
             margin-bottom: 1rem;
+
+            span {
+            font-size: 12px;
+            }
         }
         .${shaDesignerToolbar} {
             background: white;
@@ -370,16 +374,21 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         
-        .${designerWorkArea}{
+        .${designerWorkArea} {
             background-color: white;
-            .${shaComponentsContainer} {
+            > .${shaComponentsContainer} {
                 border-radius: 2px;
-            
+                height: 100%;
+
                 .${shaDropHint} {
                     margin: 0;
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
+                }
+
+                > .${shaDropHint} {
+                    display: none;
                 }
             
                 .${shaComponent} {
@@ -387,16 +396,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
 
                 .sha-drop-hint {
-                    display: none;
                 }
-                    
+
                 > div:not(.sha-drop-hint) {
-                    min-height: 100vh;
+                    min-height: 100%;
                 }
                     
-                > .${shaComponentsContainerInner}:not(:has(.sha-component)) {
+                > .${shaComponentsContainerInner}:empty {
                     background: url("${getFormDesignerBackgroundSvg()}");
-                    background-size: 25vw;
+                    background-size: clamp(100px, 25vw, 200px);
                     background-repeat: no-repeat;
                     background-position: 50% 50%;
                 }

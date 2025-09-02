@@ -11,6 +11,10 @@ export const useStyles = createStyles(({ css, cx }) => {
       height: 30px;
     }
     
+    * {
+      font-size: 12px;
+    }
+    
     .ant-tabs-tab {
       --ant-tabs-card-padding-sm: 0 8px;
     }

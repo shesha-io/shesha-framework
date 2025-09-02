@@ -48,7 +48,6 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = ({ renderSource }) =
         <div className={styles.mainArea} style={{
             borderTop: '1px solid #d3d3d3',
             ...(formMode !== 'designer' && {
-                maxHeight: '85vh',
                 overflow: 'auto',
             })
         }}>

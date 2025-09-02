@@ -111,7 +111,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   migrator: (m) => m
     .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ICardComponentProps>(2, (prev) => removeComponents(prev))
-    .add<ICardComponentProps>(3, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } })),
+    .add<ICardComponentProps>(3, (prev) => ({ ...prev, desktop: { ...defaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
 
 };
 
