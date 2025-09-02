@@ -9,7 +9,7 @@
     "build-shesha": "echo \"Build Shesha\" && cd ../../shesha-reactjs && npm install && npm run build && npm pack && shx mv shesha-io-reactjs-*.tgz ../shesha-functional-tests/adminportal/shesha-local.tgz",
     "preinstall": "npm run build-shesha && npm install shesha-local.tgz --force",
     "export": "next export",
-    "start": "cross-env NODE_ENV=production node --max-old-space-size=8192 server.js",
+    "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint src/**/*.ts{,x}",
     "lint-errors": "eslint src/**/*.ts{,x} --quiet",
