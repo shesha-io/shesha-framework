@@ -54,8 +54,10 @@ namespace Shesha.Tests
         };
 
         public SheshaTestModule(SheshaNHibernateModule nhModule)
+        public SheshaTestModule(SheshaNHibernateModule nhModule, SheshaFrameworkModule frwkModule)
         {
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
+            frwkModule.SkipAppWarmUp = true;
         }
 
         public override void PreInitialize()
