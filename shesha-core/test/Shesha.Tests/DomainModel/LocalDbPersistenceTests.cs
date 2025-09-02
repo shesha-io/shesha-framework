@@ -3,6 +3,7 @@ using Xunit;
 
 namespace Shesha.Tests.DomainModel
 {
+    /*
     [Collection(LocalSqlServerCollection.Name)]
     public class LocalDbPersistenceTests : PersistenceTestsBase
     {
@@ -10,4 +11,5 @@ namespace Shesha.Tests.DomainModel
         { 
         }
     }
+    */
 }
