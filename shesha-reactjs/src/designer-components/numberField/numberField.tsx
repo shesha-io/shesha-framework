@@ -1,12 +1,12 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useGlobalState, useMetadata } from '@/providers';
+import { useForm, useFormItem, useGlobalState, useMetadata } from '@/providers';
 import { FormMarkup, IInputStyles } from '@/providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings, getFieldNameFromExpression } from '@/providers/form/utils';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
@@ -31,17 +31,41 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties, []);
 
-    const { formMode, formData } = useForm();
+    const { formMode, formData, form, setFormData } = useForm();
     const { globalState } = useGlobalState();
+    const formItem = useFormItem();
+    const propName = formItem?.namePrefix && !model.initialContext
+      ? formItem.namePrefix + '.' + model.propertyName
+      : model.propertyName;
+    const fieldName = getFieldNameFromExpression(propName);
 
     return (
       <ConfigurableFormItem
         model={model}
-        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : 0}
+        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
+        valuePropName="value"
       >
         {(value, onChange) => {
-          // Coerce null/undefined values to 0
-          const coercedValue = value ?? 0;
+          // Ensure the field is set to 0 immediately if it's null, undefined, or false
+          useEffect(() => {
+            if (value == null || value === false) {
+              // Use both onChange and form.setFieldValue to ensure the value is properly set
+              onChange(0);
+              if (form && fieldName) {
+                form.setFieldValue(fieldName, 0);
+              }
+              // Also update the form data provider directly
+              if (setFormData && propName) {
+                setFormData({
+                  values: { [propName]: 0 },
+                  mergeValues: true
+                });
+              }
+            }
+          }, [value, onChange, form, fieldName, setFormData, propName]);
+
+          // Coerce null/undefined/false values to 0
+          const coercedValue = (value == null || value === false) ? 0 : value;
           
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
