@@ -6,7 +6,7 @@ using System;
 namespace Shesha.Domain
 {
     /// <summary>
-    /// Structured list item
+    /// Structured List Item
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.StructuredListItem", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StructuredListItem : FullAuditedEntity<Guid>

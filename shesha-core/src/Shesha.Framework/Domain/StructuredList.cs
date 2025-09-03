@@ -11,7 +11,6 @@ namespace Shesha.Domain
     [Entity(TypeShortAlias = "Shesha.Framework.StructuredList", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StructuredList : FullPowerChildEntity
     {
-
         /// <summary>
         /// Category. Used to attach more than one links list to the entity.
         /// </summary>
@@ -27,6 +26,5 @@ namespace Shesha.Domain
         /// </summary>
         [NotMapped]
         public virtual StructuredListVersion LastVersion => Versions.FirstOrDefault(v => v.IsLast);
-
     }
 }

@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace Shesha.Domain
 {
+    /// <summary>
+    /// Structured List Version
+    /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.StructuredListVersion", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StructuredListVersion : FullAuditedEntity<Guid>
     {
@@ -37,6 +40,5 @@ namespace Shesha.Domain
         /// Items
         /// </summary>
         public virtual IList<StructuredListItem> Items { get; protected set; }
-
     }
 }
