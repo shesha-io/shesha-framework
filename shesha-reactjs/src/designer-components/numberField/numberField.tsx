@@ -37,16 +37,19 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     return (
       <ConfigurableFormItem
         model={model}
-        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
+        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : 0}
       >
         {(value, onChange) => {
+          // Coerce null/undefined values to 0
+          const coercedValue = value ?? 0;
+          
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
               type="number"
-              value={getNumberFormat(value, getDataProperty(properties, model.propertyName))}
+              value={getNumberFormat(coercedValue, getDataProperty(properties, model.propertyName))}
             />
           ) : (
-            <NumberFieldControl disabled={model.readOnly} model={model} value={value} onChange={onChange} />
+            <NumberFieldControl disabled={model.readOnly} model={model} value={coercedValue} onChange={onChange} />
           );
         }}
       </ConfigurableFormItem>
