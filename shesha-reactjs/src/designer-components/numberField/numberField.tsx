@@ -19,6 +19,54 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
+const NumberFieldInitializer = ({ model }) => {
+  const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
+  const properties = asPropertiesArray(metaProperties, []);
+
+  const { formMode, formData, form, setFormData } = useForm();
+  const { globalState } = useGlobalState();
+  const formItem = useFormItem();
+  const propName = formItem?.namePrefix && !model.initialContext
+    ? formItem.namePrefix + '.' + model.propertyName
+    : model.propertyName;
+  const fieldName = getFieldNameFromExpression(propName);
+
+  useEffect(() => {
+    const currentValue = form?.getFieldValue(fieldName);
+    if (currentValue == null || currentValue === false) {
+      form?.setFieldValue(fieldName, 0);
+      if (setFormData && propName) {
+        setFormData({
+          values: { [propName]: 0 },
+          mergeValues: true
+        });
+      }
+    }
+  }, [form, fieldName, setFormData, propName]);
+
+  return (
+    <ConfigurableFormItem
+      model={model}
+      initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
+      valuePropName="value"
+    >
+      {(value, onChange) => {
+        // Coerce null/undefined/false values to 0
+        const coercedValue = (value == null || value === false) ? 0 : value;
+        
+        return model.readOnly ? (
+          <ReadOnlyDisplayFormItem
+            type="number"
+            value={getNumberFormat(coercedValue, getDataProperty(properties, model.propertyName))}
+          />
+        ) : (
+          <NumberFieldControl disabled={model.readOnly} model={model} value={coercedValue} onChange={onChange} />
+        );
+      }}
+    </ConfigurableFormItem>
+  );
+};
+
 const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   type: 'numberField',
   isInput: true,
@@ -28,56 +76,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   Factory: ({ model }) => {
-    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
-    const properties = asPropertiesArray(metaProperties, []);
-
-    const { formMode, formData, form, setFormData } = useForm();
-    const { globalState } = useGlobalState();
-    const formItem = useFormItem();
-    const propName = formItem?.namePrefix && !model.initialContext
-      ? formItem.namePrefix + '.' + model.propertyName
-      : model.propertyName;
-    const fieldName = getFieldNameFromExpression(propName);
-
-    return (
-      <ConfigurableFormItem
-        model={model}
-        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
-        valuePropName="value"
-      >
-        {(value, onChange) => {
-          // Ensure the field is set to 0 immediately if it's null, undefined, or false
-          useEffect(() => {
-            if (value == null || value === false) {
-              // Use both onChange and form.setFieldValue to ensure the value is properly set
-              onChange(0);
-              if (form && fieldName) {
-                form.setFieldValue(fieldName, 0);
-              }
-              // Also update the form data provider directly
-              if (setFormData && propName) {
-                setFormData({
-                  values: { [propName]: 0 },
-                  mergeValues: true
-                });
-              }
-            }
-          }, [value, onChange, form, fieldName, setFormData, propName]);
-
-          // Coerce null/undefined/false values to 0
-          const coercedValue = (value == null || value === false) ? 0 : value;
-          
-          return model.readOnly ? (
-            <ReadOnlyDisplayFormItem
-              type="number"
-              value={getNumberFormat(coercedValue, getDataProperty(properties, model.propertyName))}
-            />
-          ) : (
-            <NumberFieldControl disabled={model.readOnly} model={model} value={coercedValue} onChange={onChange} />
-          );
-        }}
-      </ConfigurableFormItem>
-    );
+    return <NumberFieldInitializer model={model} />;
   },
   settingsFormMarkup: settingsForm,
   initModel: (model) => ({
