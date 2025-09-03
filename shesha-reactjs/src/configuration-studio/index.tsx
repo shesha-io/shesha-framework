@@ -26,7 +26,7 @@ const ConfigurationStudio: FC = () => {
                 <Layout.Header className={styles.csHeader}>
                     <div className={styles.csHeaderLeft}>
                         <Image
-                            src="/images/favicon.ico"
+                            src="/favicon.ico"
                             alt="Shesha"
                             width={32}
                             height={32}
