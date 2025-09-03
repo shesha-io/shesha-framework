@@ -36,7 +36,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Mandatory items cannot be deleted
         /// </summary>
-        public virtual bool IsMandatory { get; set; }
+        public virtual bool? IsMandatory { get; set; }
 
         /// <summary>
         /// Sort order

@@ -29,7 +29,7 @@ namespace Shesha.Domain
         /// <summary>
         /// True if the version is last. Value of this field is managed by DB triggers.
         /// </summary>
-        public virtual bool IsLast { get; set; }
+        public virtual bool IsLast { get; protected set; }
 
         /// <summary>
         /// List heading (shown before the list items)
