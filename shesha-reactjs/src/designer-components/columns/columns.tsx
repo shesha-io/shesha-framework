@@ -10,7 +10,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
@@ -87,7 +87,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     }
     const styling = jsonSafeParse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const additionalStyles: CSSProperties = removeUndefinedProps({
+    const additionalStyles = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...dimensionsStyles,
       ...borderStyles,
@@ -97,12 +97,30 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
+    // Add padding when border is configured to prevent border from touching components
+    const hasBorder = border && !border.hideBorder && (
+      (border.border?.all?.width && border.border.all.width !== '0px' && border.border.all.width !== 0 && border.border.all.width !== '0') ||
+      (border.border?.top?.width && border.border.top.width !== '0px' && border.border.top.width !== 0 && border.border.top.width !== '0') ||
+      (border.border?.right?.width && border.border.right.width !== '0px' && border.border.right.width !== 0 && border.border.right.width !== '0') ||
+      (border.border?.bottom?.width && border.border.bottom.width !== '0px' && border.border.bottom.width !== 0 && border.border.bottom.width !== '0') ||
+      (border.border?.left?.width && border.border.left.width !== '0px' && border.border.left.width !== 0 && border.border.left.width !== '0')
+    );
+
+
+    const containerPadding = hasBorder ? { 
+      paddingTop: '8px', 
+      paddingLeft: '8px', 
+      paddingRight: '8px', 
+      paddingBottom: '3px' // Reduced to account for form item bottom margin
+    } : {};
+    const boxSizing = hasBorder ? { boxSizing: 'border-box' } : {};
+
     // Validate and normalize columns to prevent overflow
     const validatedColumns = validateColumns(columns);
 
     return (
-      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
-        <Row gutter={[gutterX || 0, gutterY || 0]} style={{ margin: 0, height: 'auto' }}>
+      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
+        <Row gutter={[gutterX || 0, gutterY || 0]}>
           <ParentProvider model={model}>
             {validatedColumns &&
               validatedColumns.map((col, index) => (
@@ -112,8 +130,6 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   offset={col.offset}
                   pull={col.pull}
                   push={col.push}
-                  className="sha-designer-column"
-                  style={{ height: 'auto', minHeight: 'auto' }}
                 >
                   <ComponentsContainer
                     containerId={col.id}
