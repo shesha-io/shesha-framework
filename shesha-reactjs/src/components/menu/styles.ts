@@ -298,7 +298,34 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
 
 export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGlobalStyle`
-  /* Scoped menu styles for horizontalMenu instances */
+  .horizontal-menu-drawer-${(p: GlobalMenuType) => p.menuId}.${(p: GlobalMenuType) => p.theme.prefixCls}-drawer {
+    .${(p: GlobalMenuType) => p.theme.prefixCls}-drawer-content-wrapper,
+    .${(p: GlobalMenuType) => p.theme.prefixCls}-drawer-content {
+      background: ${(p: GlobalMenuType) => p.colors.itemBackground || 'transparent'} !important;
+    }
+
+    .${(p: GlobalMenuType) => p.theme.prefixCls}-drawer-header {
+      background: ${(p: GlobalMenuType) => p.colors.itemBackground || 'transparent'} !important;
+      color: ${(p: GlobalMenuType) => p.colors.itemColor || BLACK_CLR} !important;
+      font-family: ${(p: GlobalMenuType) => p.fontStyles?.fontFamily} !important;
+      font-weight: ${(p: GlobalMenuType) => p.fontStyles?.fontWeight} !important;
+      text-align: ${(p: GlobalMenuType) => p.fontStyles?.textAlign} !important;
+      border-bottom: none !important;
+
+      .${(p: GlobalMenuType) => p.theme.prefixCls}-drawer-title {
+        color: ${(p: GlobalMenuType) => p.colors.itemColor || BLACK_CLR} !important;
+        font-family: ${(p: GlobalMenuType) => p.fontStyles?.fontFamily} !important;
+        font-weight: ${(p: GlobalMenuType) => p.fontStyles?.fontWeight} !important;
+        text-align: ${(p: GlobalMenuType) => p.fontStyles?.textAlign} !important;
+      }
+    }
+
+    .${(p: GlobalMenuType) => p.theme.prefixCls}-drawer-body {
+      background: ${(p: GlobalMenuType) => p.colors.itemBackground || 'transparent'} !important;
+      padding: 0 !important;
+    }
+  }
+
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p.menuId} .${(p: GlobalMenuType) => p.theme.prefixCls}-menu-sub,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p.menuId} .${(p: GlobalMenuType) => p.theme.prefixCls}-menu-inline,
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p.menuId} .${(p: GlobalMenuType) => p.theme.prefixCls}-menu,
@@ -308,7 +335,6 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
     ${(p: GlobalMenuType) => p.styleOnSubMenu};
     
-    /* Default submenu background and colors */
     background: ${(p: GlobalMenuType) => p.colors.itemBackground || 'transparent'} !important;
     border: none !important;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
@@ -336,7 +362,6 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
       }
     }
 
-    /* Parent submenu items (items that have children) */
     .${(p) => p.theme.prefixCls}-menu-submenu {
       .${(p) => p.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p.colors.itemColor || BLACK_CLR} !important;

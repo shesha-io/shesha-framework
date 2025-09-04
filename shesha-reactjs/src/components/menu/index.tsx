@@ -89,7 +89,6 @@ export const LayoutMenu: FC<IProps> = ({
   const executionContext = useAvailableConstantsData();
   const { items } = useMainMenu();
 
-  // Add dynamic dropdown styles for horizontalMenu instances
   useHorizontalMenuDropdownStyles({
     menuId,
     colors,
@@ -189,14 +188,12 @@ export const LayoutMenu: FC<IProps> = ({
       })
     );
 
-    // Add menuId to dropdown menus if this is a horizontalMenu
     if (menuId) {
       const addDropdownClassName = (item: any): any => {
         if (!item) return item;
         
         const newItem = { ...item };
         
-        // Add className to dropdown menus for styling
         if (newItem.children && newItem.children.length > 0) {
           newItem.popupClassName = `horizontal-menu-${menuId}-dropdown`;
           newItem.children = newItem.children.map(addDropdownClassName);

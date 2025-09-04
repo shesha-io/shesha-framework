@@ -82,13 +82,11 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       resetAllFlag: () => {},
     };
 
-    // Extract style values with fallbacks
     const fontSize = model?.font?.size || model?.fontSize || "14";
     const gap = model?.gap || "12";
     const height = model?.height || "6";
     const width = model?.dimensions?.width || model?.width || "500px";
 
-    // Extract colors with fallbacks from both model and background settings
     const colors: ILayoutColor = {
       ...filterObjFromKeys(model, [
         "selectedItemColor",
