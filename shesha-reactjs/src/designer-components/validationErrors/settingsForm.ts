@@ -59,20 +59,6 @@ export const getSettings = (data: any) => {
                   },
                 ],
               })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'switch',
-                    id: nanoid(),
-                    propertyName: 'hidden',
-                    label: 'Hide',
-                    jsSetting: true,
-                    layout: 'horizontal',
-                  },
-                ],
-              })
               .toJson()
             ]
           },
