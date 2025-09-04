@@ -65,6 +65,10 @@ export interface FormConfigurationDto {
    * Cache MD5, is used for client-side caching
    */
   cacheMd5?: string | null;
+  /**
+   * Generation logic type name
+   */
+  generationLogicTypeName?: string | null;
 }
 
 export interface IFormFetcherProps {
