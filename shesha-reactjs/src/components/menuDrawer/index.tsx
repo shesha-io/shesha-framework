@@ -29,12 +29,29 @@ const ShaMenuDrawer: FC<IProps> = ({
   menuId 
 }) => (
   <ShaMenuDrawerStyledWrapper
-    title="Menu List"
+    title=""
     placement={"left"}
     closable={false}
     onClose={onClose}
     open={open}
     className={menuId ? `horizontal-menu-drawer-${menuId}` : undefined}
+    styles={{
+      body: {
+        backgroundColor: colors?.itemBackground || 'transparent',
+        padding: 0,
+      },
+      header: {
+        backgroundColor: colors?.itemBackground || 'transparent',
+        color: colors?.itemColor,
+        fontFamily: fontStyles?.fontFamily,
+        fontWeight: fontStyles?.fontWeight,
+        textAlign: fontStyles?.textAlign as any,
+        borderBottom: 'none',
+      }
+    }}
+    style={{
+      backgroundColor: colors?.itemBackground || 'transparent',
+    }}
   >
     {colors && menuId && (
       <ScopedMenuStyles
@@ -53,6 +70,7 @@ const ShaMenuDrawer: FC<IProps> = ({
         fontFamily: fontStyles?.fontFamily,
         fontWeight: fontStyles?.fontWeight,
         textAlign: fontStyles?.textAlign as any,
+        border: 'none',
       }}
     />
   </ShaMenuDrawerStyledWrapper>

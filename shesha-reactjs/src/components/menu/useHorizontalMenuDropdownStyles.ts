@@ -21,13 +21,11 @@ export const useHorizontalMenuDropdownStyles = ({
 
     const styleId = `horizontal-menu-dropdown-styles-${menuId}`;
     
-    // Remove existing style if it exists
     const existingStyle = document.getElementById(styleId);
     if (existingStyle) {
       existingStyle.remove();
     }
 
-    // Create new style element
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
@@ -94,7 +92,6 @@ export const useHorizontalMenuDropdownStyles = ({
 
     document.head.appendChild(style);
 
-    // Cleanup function to remove the style when component unmounts
     return () => {
       const styleElement = document.getElementById(styleId);
       if (styleElement) {
