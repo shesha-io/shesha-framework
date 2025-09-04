@@ -67,7 +67,8 @@ class DefaultGenerationLogic implements GenerationLogic {
     replacements: Record<string, any>,
   ): Promise<string> {
     // Just apply standard replacements without specialized logic
-    return evaluateString(markup, replacements, true);
+    const result = await Promise.resolve(evaluateString(markup, replacements, true));
+    return result;
   }
   
   supportsTemplate(_template: FormConfigurationDto): boolean {
