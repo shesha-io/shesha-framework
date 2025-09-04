@@ -72,6 +72,12 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataSecondaryText?: string;
   noDataIcon?: string;
   showExpandedView?: boolean;
+  
+  // Row color customization
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -106,6 +112,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onRowSaveSuccessAction: onRowSaveSuccess,
   showExpandedView,
   onRowDeleteSuccessAction,
+  rowBackgroundColor,
+  rowAlternateBackgroundColor,
+  rowHoverBackgroundColor,
+  rowSelectedBackgroundColor,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -711,6 +721,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onResizedChange: onResizedChange,
 
     showExpandedView,
+    
+    rowBackgroundColor,
+    rowAlternateBackgroundColor,
+    rowHoverBackgroundColor,
+    rowSelectedBackgroundColor,
   };
 
   return (

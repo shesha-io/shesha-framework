@@ -85,6 +85,11 @@ export const ReactTable: FC<IReactTableProps> = ({
   onRowsRendering,
   onRowsReordered,
   showExpandedView,
+  
+  rowBackgroundColor,
+  rowAlternateBackgroundColor,
+  rowHoverBackgroundColor,
+  rowSelectedBackgroundColor,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -96,7 +101,12 @@ export const ReactTable: FC<IReactTableProps> = ({
   const [allowExpandedView, setAllowExpandedView] = useState<Boolean>(false);
   const [isCellContentOverflowing, setIsCellContentOverflowing] = useState<Boolean>(false);
   const { styles } = useStyles();
-  const { styles: mainStyles } = useMainStyles();
+  const { styles: mainStyles } = useMainStyles({
+    rowBackgroundColor,
+    rowAlternateBackgroundColor,
+    rowHoverBackgroundColor,
+    rowSelectedBackgroundColor,
+  });
 
   const { setDragState } = useDataTableStore();
 
