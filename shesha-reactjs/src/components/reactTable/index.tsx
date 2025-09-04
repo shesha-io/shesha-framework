@@ -52,6 +52,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   onFetchData,
   onSelectRow,
   onRowDoubleClick,
+  onRowClick,
+  onRowHover,
   onResizedChange,
   onSelectedIdsChanged,
   onMultiRowSelect,
@@ -514,6 +516,8 @@ export const ReactTable: FC<IReactTableProps> = ({
         prepareRow={prepareRow}
         onClick={handleSelectRow}
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
+        onRowClick={onRowClick ? () => onRowClick(rowIndex, row.original) : undefined}
+        onRowHover={onRowHover ? () => onRowHover(rowIndex, row.original) : undefined}
         row={row}
         showExpandedView={showExpandedView}
         index={rowIndex}

@@ -20,6 +20,13 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   noDataIcon?: string;
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
   
+  // Row interaction events
+  onRowClick?: IConfigurableActionConfiguration;
+  onRowDoubleClick?: IConfigurableActionConfiguration;
+  onRowHover?: IConfigurableActionConfiguration;
+  onRowSelect?: IConfigurableActionConfiguration;
+  onSelectionChange?: IConfigurableActionConfiguration;
+  
   striped?: boolean;
   hoverHighlight?: boolean;
   stickyHeader?: boolean;
