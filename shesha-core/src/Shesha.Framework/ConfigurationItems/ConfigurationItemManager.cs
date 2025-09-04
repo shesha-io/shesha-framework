@@ -226,6 +226,19 @@ namespace Shesha.ConfigurationItems
             return item;
         }
 
+        /// <summary>
+        /// Override this method in derived classes to handle additional properties from CreateItemInput
+        /// </summary>
+        /// <param name="input">The create item input containing additional properties</param>
+        /// <param name="item">The newly created configuration item</param>
+        /// <param name="revision">The newly created revision</param>
+        /// <returns></returns>
+        protected virtual Task HandleAdditionalPropertiesAsync(CreateItemInput input, TItem item, TRevision revision)
+        {
+            // Base implementation does nothing - derived classes can override
+            return Task.CompletedTask;
+        }
+
         async Task<ConfigurationItem> IConfigurationItemManager.CreateItemAsync(CreateItemInput input)
         {
             return await CreateItemAsync(input);

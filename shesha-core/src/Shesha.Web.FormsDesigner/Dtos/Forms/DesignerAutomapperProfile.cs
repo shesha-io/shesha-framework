@@ -14,7 +14,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
             CreateMap<FormConfiguration, FormConfigurationDto>()
                 .ForMember(e => e.ModuleId, m => m.MapFrom(e => e.Module != null ? e.Module.Id : (Guid?)null))
                 .ForMember(e => e.OriginId, m => m.MapFrom(e => e.Origin != null ? e.Origin.Id : (Guid?)null))
-                .ForMember(e => e.Module, m => m.MapFrom(e => e.Module != null ? e.Module.Name: null))
+                .ForMember(e => e.Module, m => m.MapFrom(e => e.Module != null ? e.Module.Name : null))
                 .ForMember(e => e.Name, m => m.MapFrom(e => e.Name))
                 .ForMember(e => e.Suppress, m => m.MapFrom(e => e.Suppress))
                 .ForMember(e => e.Label, m => m.MapFrom(e => e.Label))

@@ -1,5 +1,5 @@
 import { FormFullName, useDynamicModals } from "@/providers";
-import { IModalProps, IModalWithContentProps } from "@/providers/dynamicModal/models";
+import { IModalProps, IModalWithContentProps, ModalFooterButtons } from "@/providers/dynamicModal/models";
 import { nanoid } from "@/utils/uuid";
 import { App } from "antd";
 import { ReactNode, useRef } from "react";
