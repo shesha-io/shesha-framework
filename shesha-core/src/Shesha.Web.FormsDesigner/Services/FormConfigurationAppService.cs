@@ -341,7 +341,10 @@ namespace Shesha.Web.FormsDesigner.Services
             revision.Description = input.Description;
             revision.Markup = input.Markup;
             revision.ModelType = input.ModelType;
-
+            revision.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
+            revision.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            revision.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            revision.PlaceholderIcon = input.PlaceholderIcon;
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return await MapToEntityDtoAsync(entity);

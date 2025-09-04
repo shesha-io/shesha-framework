@@ -72,5 +72,30 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// Cache MD5, is used for client-side caching
         /// </summary>
         public string? CacheMd5 { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual Guid? TemplateId { get; set; }
+
+        /// <summary>
+        /// Form for getting additional configuration options for template
+        /// </summary>
+        public FormIdentifier? ConfigurationForm { get; set; }
+
+        /// <summary>
+        /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator
+        /// </summary>
+        public string GenerationLogicTypeName { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string GenerationLogicExtensionJson { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PlaceholderIcon { get; set; }
     }
 }

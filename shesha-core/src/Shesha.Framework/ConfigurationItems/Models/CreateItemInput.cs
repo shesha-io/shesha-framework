@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain;
+using System;
 
 namespace Shesha.ConfigurationItems.Models
 {
@@ -11,7 +12,11 @@ namespace Shesha.ConfigurationItems.Models
         public ConfigurationItemFolder? Folder { get; set; }
         public double? OrderIndex { get; set; }
         public string Name { get; set; }
-        public string Label { get; set; }
+        public string? Label { get; set; }
         public string? Description { get; set; }
+        public string? Markup { get; set; }
+        public string? GenerationLogicExtensionJson { get; set; }
+        public string? ModelType { get; set; }
+        public Guid? TemplateId { get; set; }
     }
 }

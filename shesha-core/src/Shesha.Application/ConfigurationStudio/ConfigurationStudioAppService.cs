@@ -125,6 +125,12 @@ namespace Shesha.ConfigurationStudio
                 Module = module,
                 Folder = folder,
                 Name = request.Name,
+                Description = request.Description,
+                Label = request.Label,
+                Markup = request.Markup,
+                ModelType = request.ModelType,
+                GenerationLogicExtensionJson = request.GenerationLogicExtensionJson,
+                TemplateId = request.TemplateId,
             });
 
             var dto = await manager.MapToDtoAsync(item);

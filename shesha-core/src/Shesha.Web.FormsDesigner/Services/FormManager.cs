@@ -1,11 +1,15 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
+using NHibernate.Linq;
 using Shesha.ConfigurationItems;
+using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Permissions;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
@@ -36,6 +40,43 @@ namespace Shesha.Web.FormsDesigner.Services
         public Task<List<FormConfiguration>> GetAllAsync()
         {
             return Repository.GetAllListAsync();
+        }
+
+        public override async Task<FormConfiguration> CreateItemAsync(CreateItemInput input)
+        {
+            var validationResults = new ValidationResults();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            var template = input.TemplateId.HasValue
+                ? await RevisionRepository.GetAsync(input.TemplateId.Value)
+                : null;
+
+            var form = new FormConfiguration
+            {
+                Name = input.Name,
+                Module = input.Module,
+                Folder = input.Folder,
+            };
+            form.Origin = form;
+
+            await Repository.InsertAsync(form);
+
+            var revision = form.MakeNewRevision();
+            revision.Description = input.Description;
+            revision.Label = input.Label;
+            revision.Markup = input.Markup ?? string.Empty;
+            revision.IsTemplate = false;
+            revision.ModelType = input.ModelType;
+            revision.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            revision.Template = template;
+            form.Normalize();
+
+            await RevisionRepository.InsertAsync(revision);
+
+            return form;
         }
 
         protected override Task CopyRevisionPropertiesAsync(FormConfigurationRevision source, FormConfigurationRevision destination)
