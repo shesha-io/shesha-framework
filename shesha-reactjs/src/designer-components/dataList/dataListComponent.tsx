@@ -43,7 +43,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         canDeleteInline: 'no',
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
-        dblClickActionConfiguration: prev['actionConfiguration']
+        dblClickActionConfiguration: prev['actionConfiguration'],
+        showEditIcons: true,
         
       };
     })
