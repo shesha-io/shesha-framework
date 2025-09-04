@@ -166,6 +166,12 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                     noDataSecondaryText={props.noDataSecondaryText}
                     noDataIcon={props.noDataIcon}
                     showExpandedView={props.showExpandedView}
+                    // Row interaction events
+                    onRowClick={props.onRowClick}
+                    onRowDoubleClick={props.onRowDoubleClick}
+                    onRowHover={props.onRowHover}
+                    onRowSelect={props.onRowSelect}
+                    onSelectionChange={props.onSelectionChange}
                 />
             </div>
         </SidebarContainer>

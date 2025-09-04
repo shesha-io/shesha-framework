@@ -116,6 +116,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
+  // Row interaction events
+  onRowClick,
+  onRowDoubleClick,
+  onRowHover,
+  onRowSelect,
+  onSelectionChange,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -164,8 +170,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (setSelectedRow) {
       const rowId = row?.id;
       const currentId = store.selectedRow?.id;
-      if (rowId !== currentId) setSelectedRow(index, row);
-      else setSelectedRow(null, null);
+      if (rowId !== currentId) {
+        setSelectedRow(index, row);
+        // Execute custom onRowSelect event
+        if (handleRowSelect) {
+          handleRowSelect(index, row);
+        }
+      } else {
+        setSelectedRow(null, null);
+      }
     }
   };
 
@@ -175,7 +188,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
       onSelectedIdsChanged(selectedIds);
     }
-  }, [selectedIds]);
+  }, [selectedIds, previousIds]);
 
   useEffect(() => {
     if (!isFetchingTableData && tableData?.length && onFetchDataSuccess) {
@@ -226,6 +239,149 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const { backendUrl } = useSheshaApplication();
   const httpClient = useHttpClient();
+
+  const handleRowClick = useMemo(() => {
+    if (!onRowClick?.actionName) return undefined;
+    
+    return (rowIndex: number, row: any) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      
+      try {
+        executeAction({
+          actionConfiguration: onRowClick,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row click action:', error);
+      }
+    };
+  }, [onRowClick, formData, globalState, httpClient]);
+
+  const handleRowDoubleClick = useMemo(() => {
+    if (!onRowDoubleClick?.actionName) return undefined;
+    
+    return (row: any, rowIndex: number) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      
+      try {
+        executeAction({
+          actionConfiguration: onRowDoubleClick,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row double-click action:', error);
+      }
+    };
+  }, [onRowDoubleClick, formData, globalState, httpClient]);
+
+  const handleRowHover = useMemo(() => {
+    if (!onRowHover?.actionName) return undefined;
+    
+    return (rowIndex: number, row: any) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      
+      try {
+        executeAction({
+          actionConfiguration: onRowHover,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row hover action:', error);
+      }
+    };
+  }, [onRowHover, formData, globalState, httpClient]);
+
+  const handleRowSelect = useMemo(() => {
+    if (!onRowSelect?.actionName) return undefined;
+    
+    return (rowIndex: number, row: any) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      
+      try {
+        executeAction({
+          actionConfiguration: onRowSelect,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row select action:', error);
+      }
+    };
+  }, [onRowSelect, formData, globalState, httpClient]);
+
+  const handleSelectionChange = useMemo(() => {
+    if (!onSelectionChange?.actionName) return undefined;
+    
+    return (selectedIds: string[]) => {
+      const evaluationContext = {
+        selectedIds,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      
+      try {
+        executeAction({
+          actionConfiguration: onSelectionChange,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing selection change action:', error);
+      }
+    };
+  }, [onSelectionChange, formData, globalState, httpClient]);
+
+  const combinedDblClickHandler = useMemo(() => {
+    return (rowData: any, rowIndex: number) => {
+      if (dblClickHandler) {
+        if (typeof dblClickHandler === 'function') {
+          dblClickHandler(rowData, rowIndex);
+        }
+      }
+      if (handleRowDoubleClick) {
+        handleRowDoubleClick(rowData, rowIndex);
+      }
+    };
+  }, [dblClickHandler, handleRowDoubleClick]);
+
+  useEffect(() => {
+    if (handleSelectionChange && selectedIds?.length !== previousIds?.length) {
+      handleSelectionChange(selectedIds);
+    }
+  }, [selectedIds, handleSelectionChange, previousIds]);
 
   const toolboxComponents = useFormDesignerComponents();
   const shaForm = useShaFormInstance(false);
@@ -464,6 +620,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowDeleteSuccessAction, httpClient]);
 
+
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
@@ -675,7 +832,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     useMultiSelect,
     freezeHeaders,
     onSelectRow: onSelectRowLocal,
-    onRowDoubleClick: dblClickHandler,
+    onRowDoubleClick: combinedDblClickHandler,
     onSelectedIdsChanged: changeSelectedIds,
     onMultiRowSelect,
     onSort, // Update it so that you can pass it as param. Quick fix for now
@@ -726,6 +883,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowAlternateBackgroundColor,
     rowHoverBackgroundColor,
     rowSelectedBackgroundColor,
+    
+    // Custom event handlers
+    onRowClick: handleRowClick,
+    onRowHover: handleRowHover,
   };
 
   return (

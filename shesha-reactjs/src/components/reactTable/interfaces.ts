@@ -160,6 +160,16 @@ export interface IReactTableProps extends ITableRowDragProps {
   onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
 
   /**
+   * A callback for clicking the rows
+   */
+  onRowClick?: (rowIndex: number, row: any) => void;
+
+  /**
+   * A callback for hovering over the rows
+   */
+  onRowHover?: (rowIndex: number, row: any) => void;
+
+  /**
    * A callback for when ids are selected. Required if useMultiSelect is true
    */
   onSelectedIdsChanged?: (ids: string[]) => void;
