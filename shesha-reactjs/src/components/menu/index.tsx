@@ -29,7 +29,8 @@ import ShaMenuDrawer from "../menuDrawer";
 import { ILayoutColor } from "./model";
 import OverflowedIndicator, { getMutatedMenuItem } from "./overflowedIndicator";
 import { ScrollControls } from "./scrolls";
-import { GlobalMenuStyles, useStyles } from "./styles";
+import { GlobalMenuStyles, ScopedMenuStyles, useStyles } from "./styles";
+import { useHorizontalMenuDropdownStyles } from "./useHorizontalMenuDropdownStyles";
 
 interface IProps {
   colors?: ILayoutColor;
@@ -42,6 +43,7 @@ interface IProps {
   styleOnSubMenu?: React.CSSProperties;
   width?: string;
   fontStyles?: React.CSSProperties;
+  menuId?: string;
 }
 
 const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
@@ -50,6 +52,7 @@ const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
 
 export const LayoutMenu: FC<IProps> = ({
   colors,
+  fontSize,
   overflow,
   padding,
   style,
@@ -57,11 +60,13 @@ export const LayoutMenu: FC<IProps> = ({
   styleOnSelected,
   styleOnSubMenu,
   width,
-  fontStyles
+  fontStyles,
+  menuId
 }) => {
   const isScrolling = overflow === "scroll";
   const { styles } = useStyles({
     colors,
+    fontSize,
     isScrolling,
     padding,
     styleOnHover: convertJsonToCss(styleOnHover),
@@ -83,6 +88,14 @@ export const LayoutMenu: FC<IProps> = ({
   const { executeAction } = useConfigurableActionDispatcher();
   const executionContext = useAvailableConstantsData();
   const { items } = useMainMenu();
+
+  // Add dynamic dropdown styles for horizontalMenu instances
+  useHorizontalMenuDropdownStyles({
+    menuId,
+    colors,
+    fontStyles,
+    styleOnSubMenu
+  });
 
   const [openedKeys, setOpenedKeys] = useLocalStorage(
     "openedSidebarKeys",
@@ -138,7 +151,7 @@ export const LayoutMenu: FC<IProps> = ({
   };
 
   const menuItems = useDeepCompareMemo(() => {
-    return (items ?? []).map((item) =>
+    const processedItems = (items ?? []).map((item) =>
       sidebarMenuItemToMenuItem({
         item: getMutatedMenuItem(item),
         onButtonClick,
@@ -175,7 +188,28 @@ export const LayoutMenu: FC<IProps> = ({
         },
       })
     );
-  }, [items, executionContext]);
+
+    // Add menuId to dropdown menus if this is a horizontalMenu
+    if (menuId) {
+      const addDropdownClassName = (item: any): any => {
+        if (!item) return item;
+        
+        const newItem = { ...item };
+        
+        // Add className to dropdown menus for styling
+        if (newItem.children && newItem.children.length > 0) {
+          newItem.popupClassName = `horizontal-menu-${menuId}-dropdown`;
+          newItem.children = newItem.children.map(addDropdownClassName);
+        }
+        
+        return newItem;
+      };
+
+      return processedItems.map(addDropdownClassName);
+    }
+
+    return processedItems;
+  }, [items, executionContext, menuId]);
 
   if (menuItems.length === 0) return null;
 
@@ -189,18 +223,40 @@ export const LayoutMenu: FC<IProps> = ({
     return (
       <Fragment>
         <Button type="link" icon={<MenuOutlined />} onClick={onClick} />
-        <ShaMenuDrawer items={menuItems} open={open} onClose={onClose} />
+        <ShaMenuDrawer 
+          items={menuItems} 
+          open={open} 
+          onClose={onClose}
+          colors={colors}
+          fontStyles={fontStyles}
+          styleOnSubMenu={styleOnSubMenu}
+          menuId={menuId}
+        />
       </Fragment>
     );
 
   return (
     <div className={styles.menuContainer}>
-      <GlobalMenuStyles
-        colors={colors}
-        styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
-      />
+      {menuId ? (
+        <ScopedMenuStyles
+          colors={colors}
+          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          fontStyles={fontStyles}
+          menuId={menuId}
+        />
+      ) : (
+        <GlobalMenuStyles
+          colors={colors}
+          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          fontStyles={fontStyles}
+        />
+      )}
       <div
-        className={classNames(styles.menuWrapper, styles.menuWrapperScroll)}
+        className={classNames(
+          styles.menuWrapper, 
+          styles.menuWrapperScroll,
+          menuId ? `horizontal-menu-${menuId}` : undefined
+        )}
         ref={menuWrapperRef}
       >
         <Menu
