@@ -1,5 +1,5 @@
 import { FormFullName, useDynamicModals } from "@/providers";
-import { IModalProps, IModalWithContentProps } from "@/providers/dynamicModal/models";
+import { IModalProps, IModalWithContentProps, ModalFooterButtons } from "@/providers/dynamicModal/models";
 import { nanoid } from "@/utils/uuid";
 import { App } from "antd";
 import { ReactNode, useRef } from "react";
@@ -12,6 +12,7 @@ export interface ShowModalArgs {
 export interface ShowModalFormArgs extends ShowModalArgs {
     formId: FormFullName;
     formArguments?: object;
+    footerButtons?: ModalFooterButtons;
 };
 
 export interface ShowModalContentArgs extends ShowModalArgs {
@@ -87,6 +88,7 @@ export class ModalApi implements IModalApi {
                 title: args.title,
                 formId: args.formId,
                 formArguments: args.formArguments,
+                footerButtons: args.footerButtons,
                 isVisible: true,
                 onCancel: () => {
                     reject("Cancelled");
