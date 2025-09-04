@@ -12,8 +12,9 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IApplicationContext } from '..';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
+import { AxiosResponse } from 'axios';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -48,7 +49,6 @@ export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISett
 
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   model: TModel;
-  componentRef: MutableRefObject<any>;
   children?: JSX.Element;
   calculatedModel?: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
@@ -173,7 +173,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
-  actualModelPropertyFilter?: (name: string) => boolean;
+  actualModelPropertyFilter?: (name: string, value: any) => boolean;
   
   editorAdapter?: IEditorAdapter;
 }
@@ -216,7 +216,7 @@ export interface IAsyncValidationError {
   message: string;
 }
 
-export interface IFormValidationErrors { }
+export type IFormValidationErrors = string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error;
 
 export { type ConfigurableFormInstance };
 

@@ -27,14 +27,10 @@ export const getSettings = () => {
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 id: nanoid(),
-                                inputType: 'autocomplete',
+                                inputType: 'typeAutoComplete',
                                 propertyName: 'modelType',
                                 label: 'Model Type',
                                 parentId: dataTabId,
-                                dataSourceType: 'url',
-                                dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                                useRawValues: true,
-                                mode: ['single'],
                             })
                             .addCollapsiblePanel({
                                 id: nanoid(),

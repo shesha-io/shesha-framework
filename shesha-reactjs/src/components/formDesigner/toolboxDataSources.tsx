@@ -8,8 +8,6 @@ import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
 import { useStyles } from './styles/styles';
 
-const { Panel } = Collapse;
-
 export interface IToolboxDataSourcesProps {
   dataSources: IDataSource[];
 }
@@ -61,11 +59,12 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
   };
   return (
     <>
-      <SearchBox value={searchText} onChange={setSearchText} placeholder="Search data properties" />
-
-      {datasourcesWithVisible.length > 0 && (
-        <Collapse activeKey={openedKeys} onChange={onCollapseChange}>
-          {datasourcesWithVisible.map((ds, dsIndex) => {
+      <div className={styles.shaToolboxComponents}>
+        <SearchBox value={searchText} onChange={setSearchText} placeholder="Search data properties" />
+        <Collapse 
+          activeKey={openedKeys} 
+          onChange={onCollapseChange}
+          items={datasourcesWithVisible.map((ds, dsIndex) => {
             const visibleItems = ds.visibleItems;
             const shortName = getClassNameFromFullName(ds.datasource.name);
 
@@ -75,22 +74,23 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
               </Tooltip>
             );
       
-            return visibleItems.length === 0 ? null : (
-              <Panel header={header} key={dsIndex.toString()} className={styles.shaToolboxPanel}>
-                <div className={styles.shaToolboxPanelItems} >
-                <DataSourceTree
-                  items={visibleItems}
-                  searchText={searchText}
-                  defaultExpandAll={(searchText ?? '') !== ''}
+            return visibleItems.length === 0 
+              ? null 
+              : {
+                key: dsIndex.toString(),
+                label: header,
+                children: (
+                  <DataSourceTree
+                    items={visibleItems}
+                    searchText={searchText}
+                    defaultExpandAll={(searchText ?? '') !== ''}
 
-                />
-                </div>
-
-              </Panel>
-            );
-          })}
-        </Collapse>
-      )}
+                  />
+              )};
+          }).filter(item => Boolean(item))
+          }
+        />
+      </div>
 
       {datasourcesWithVisible.length === 0 && (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />

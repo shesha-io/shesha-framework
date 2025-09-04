@@ -3,7 +3,7 @@ import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
 
 /**
- * Status of the Shesha.Domain.ConfigurationItems.ConfigurationItem
+ * Status of the Shesha.Domain.ConfigurationItem
  */
 export type ConfigurationItemVersionStatus = 1 | 2 | 3 | 4 | 5;
 

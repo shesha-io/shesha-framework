@@ -11,7 +11,6 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
-import { useTheme } from '@/providers/theme';
 
 const chartInnerStyle = {
   width: '100%',
@@ -51,8 +50,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
-  const { theme } = useTheme();
-  // Optimize state initialization with lazy initial state
+    // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
@@ -410,13 +408,13 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         description={error}
         type={"error"}
         action={
-          <Button color={theme.application.errorColor ?? 'red'} size="small" onClick={retryFetch}>
+          <Button color="danger" size="small" onClick={retryFetch}>
             Retry
           </Button>
         }
       />
     );
-  }, [error, retryFetch, theme.application.errorColor]);
+  }, [error, retryFetch]);
 
   // Memoize the loader component
   const loaderComponent = useMemo(() => {
@@ -469,5 +467,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     </div>
   );
 });
+
+ChartControl.displayName = "ChartControl";
 
 export default ChartControl;

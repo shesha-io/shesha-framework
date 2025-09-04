@@ -5,11 +5,9 @@ using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
 using Shesha.ReferenceLists.Dto;
 using Shesha.Services;
-using Shesha.Services.ReferenceLists;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Services.ReferenceLists.Exceptions;
 using Shesha.Utilities;
@@ -22,24 +20,18 @@ namespace Shesha.ReferenceLists
 {
     public class ReferenceListAppService : SheshaCrudServiceBase<ReferenceList, ReferenceListDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateReferenceListDto, UpdateReferenceListDto, GetReferenceListByIdInput>
     {
-        private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IReferenceListHelper _refListHelper;
-        private readonly IReferenceListManager _refListManager;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
 
         public ReferenceListAppService(
             IRepository<ReferenceList, Guid> repository,
             IReferenceListHelper refListHelper, 
-            IReferenceListManager refListManager,
-            IRepository<Module, Guid> moduleRepository,
             IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache
             ) : base(repository)
         {
             _refListHelper = refListHelper;
-            _refListManager = refListManager;
-            _moduleRepository = moduleRepository;
             _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
         }
@@ -66,7 +58,7 @@ namespace Shesha.ReferenceLists
 
             var dto = ObjectMapper.Map<ReferenceListWithItemsDto>(refList);
 
-            var items = await _refListHelper.GetItemsAsync(refList.Id);
+            var items = await _refListHelper.GetRevisionItemsAsync(refList.Revision.Id);
             dto.Items = items.Select(item => ObjectMapper.Map<ReferenceListItemDto>(item)).ToList();
 
             var json = JsonConvert.SerializeObject(dto);
@@ -93,44 +85,6 @@ namespace Shesha.ReferenceLists
         public async Task ClearCacheFullAsync() 
         {
             await _refListHelper.ClearCacheAsync();
-        }
-
-        /// <summary>
-        /// Update reference list
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public override async Task<ReferenceListDto> UpdateAsync(UpdateReferenceListDto input)
-        {
-            CheckUpdatePermission();
-
-            var entity = await GetEntityByIdAsync(input.Id);
-
-            await _refListManager.UpdateAsync(entity, input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            var module = input.ModuleId.HasValue
-                ? await _moduleRepository.GetAsync(input.ModuleId.Value)
-                : null;
-
-            await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, module?.Name, input.Name, _cfRuntime.ViewMode, null);
-
-            return MapToEntityDto(entity);
-        }
-
-        /// <summary>
-        /// Create reference list
-        /// </summary>
-        public override async Task<ReferenceListDto> CreateAsync(CreateReferenceListDto input)
-        {
-            CheckCreatePermission();
-
-            var refList = await _refListManager.CreateAsync(input);
-            
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return MapToEntityDto(refList);
         }
 
         #region private methods

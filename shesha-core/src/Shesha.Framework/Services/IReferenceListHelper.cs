@@ -26,11 +26,9 @@ namespace Shesha.Services
         ReferenceList GetReferenceList(ReferenceListIdentifier refListId);
 
         /// <summary>
-        /// Get items by id (Guid) of the <see cref="ReferenceList"/>
+        /// Get items by id (Guid) of the <see cref="ReferenceListRevision"/>
         /// </summary>
-        /// <param name="listId"></param>
-        /// <returns></returns>
-        Task<List<ReferenceListItemDto>> GetItemsAsync(Guid listId);
+        Task<List<ReferenceListItemDto>> GetRevisionItemsAsync(Guid revisionId);
 
         /// <summary>
         /// Get items by full identifier of the <see cref="ReferenceList"/>
@@ -66,5 +64,15 @@ namespace Shesha.Services
         /// Clear reference list cache
         /// </summary>
         Task ClearCacheAsync();
+
+        /// <summary>
+        /// Get actual ReferenceList revision Id
+        /// </summary>
+        Task<Guid?> GetListRevisionIdAsync(ReferenceListIdentifier refListId);
+
+        /// <summary>
+        /// Get actual ReferenceList revision Id
+        /// </summary>
+        Guid? GetListRevisionId(ReferenceListIdentifier refListId);
     }
 }

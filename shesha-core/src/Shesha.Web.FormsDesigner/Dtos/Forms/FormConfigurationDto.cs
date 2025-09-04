@@ -1,5 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
 using System;
@@ -62,11 +62,6 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// </summary>
         public bool IsLastVersion { get; set; }
 
-        /// <summary>
-        /// Version status
-        /// </summary>
-        public ConfigurationItemVersionStatus VersionStatus { get; set; }
-        
         public bool Suppress { get; set; }
 
         public RefListPermissionedAccess? Access { get; set; }

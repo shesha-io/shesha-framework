@@ -88,7 +88,8 @@ namespace Shesha.Tests
         public virtual void Dispose()
         {
             AbpBootstrapper.Dispose();
-            LocalIocManager.Dispose();
+            if (_ownIocManager != null)
+                _ownIocManager.Dispose();
         }
 
         /// <summary>

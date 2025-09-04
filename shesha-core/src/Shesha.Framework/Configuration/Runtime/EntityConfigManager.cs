@@ -1,11 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -17,18 +15,13 @@ using System.Threading.Tasks;
 namespace Shesha.Configuration.Runtime
 {
     /// inheritedDoc
-    public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
+    public class EntityConfigManager : ConfigurationItemManager<EntityConfig, EntityConfigRevision>, IEntityConfigManager, ITransientDependency
     {
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
-        public EntityConfigManager(
-            IRepository<EntityConfig, Guid> repository,
-            IRepository<EntityProperty, Guid> propertyConfigRepo,
-            IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager            
-        ) : base(repository, moduleRepository, unitOfWorkManager)
+        public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {
             _propertyConfigRepo = propertyConfigRepo;
         }
@@ -41,20 +34,22 @@ namespace Shesha.Configuration.Runtime
                 .Select(x => new EntityConfigDto()
                 {
                     Id = x.Id,
+                    Suppress = x.Suppress,
+
+                    Name = x.Name,
+                    Module = x.Module!.Name,
+
                     ClassName = x.ClassName,
-                    FriendlyName = x.FriendlyName,
-                    TypeShortAlias = x.TypeShortAlias,
                     TableName = x.TableName,
                     Namespace = x.Namespace,
                     DiscriminatorValue = x.DiscriminatorValue,
-                    Source = x.Source,
-                    EntityConfigType = x.EntityConfigType,
-                    Suppress = x.Suppress,
-                    Module = x.Module!.Name,
-                    Name = x.Name,
-                    Label = x.Label,
 
-                    VersionStatus = x.VersionStatus,
+                    EntityConfigType = x.EntityConfigType,
+
+                    Label = x.Revision.Label,
+                    TypeShortAlias = x.Revision.TypeShortAlias,
+
+                    Source = x.Revision.Source,
                 }).ToListAsync();
 
             return implemented ?? false
@@ -62,110 +57,67 @@ namespace Shesha.Configuration.Runtime
                 : result;
         }
 
-        public override async Task<EntityConfig> CreateNewVersionAsync(EntityConfig item)
+        protected async Task CopyPropertiesAsync(EntityConfigRevision source, EntityConfigRevision destination)
         {
-            // todo: check business rules
-
-            var newVersion =new EntityConfig();
-
-            MapEntityConfig(item, newVersion);
-
-            newVersion.ParentVersion = item; // set parent version
-            newVersion.VersionNo = item.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
-
-            await Repository.InsertAsync(newVersion);
-
-            await MapPropertiesAsync(item, newVersion);
-
-            return newVersion;
-        }
-
-        protected EntityConfig MapEntityConfig(EntityConfig src, EntityConfig dest)
-        {
-            dest.Name = src.Name;
-            dest.Module = src.Module;
-            dest.Application = src.Application;
-            dest.ItemType = src.ItemType;
-
-            dest.Origin = src.Origin;
-            dest.BaseItem = src.BaseItem;
-            dest.ParentVersion = src.ParentVersion;
-
-            dest.Label = src.Label;
-            dest.Description = src.Description;
-            dest.VersionNo = src.VersionNo;
-            dest.VersionStatus = src.VersionStatus;
-            dest.Suppress = src.Suppress;
-
-            // entity config specific properties
-            dest.FriendlyName = src.FriendlyName;
-            dest.TypeShortAlias = src.TypeShortAlias;
-            dest.TableName = src.TableName;
-            dest.ClassName = src.ClassName;
-            dest.Namespace = src.Namespace;
-            dest.DiscriminatorValue = src.DiscriminatorValue;
-            dest.GenerateAppService = src.GenerateAppService;
-            dest.Source = src.Source;
-            dest.EntityConfigType = src.EntityConfigType;
-            dest.HardcodedPropertiesMD5 = src.HardcodedPropertiesMD5;
-
-            dest.ViewConfigurations = src.ViewConfigurations.ToList();
-
-            return dest;
-        }
-
-        protected async Task MapPropertiesAsync(
-            EntityConfig srcItem,
-            EntityConfig item
-        )
-        {
-            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == srcItem);
+            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfigRevision == source);
             foreach (var src in properties)
             {
-                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty { 
-                        EntityConfig = item,
-                        Name = src.Name,
-                        DataType = src.DataType
-                    };
+                var property = new EntityProperty 
+                { 
+                    EntityConfigRevision = destination,
+                    Name = src.Name,
+                    DataType = src.DataType
+                };
 
-                dbItem.Label = src.Label;
-                dbItem.Description = src.Description;
-                dbItem.DataType = src.DataType;
-                dbItem.DataFormat = src.DataFormat;
-                dbItem.EntityType = src.EntityType;
-                dbItem.ReferenceListName = src.ReferenceListName;
-                dbItem.ReferenceListModule = src.ReferenceListModule;
-                dbItem.IsFrameworkRelated = src.IsFrameworkRelated;
+                property.Label = src.Label;
+                property.Description = src.Description;
+                property.DataType = src.DataType;
+                property.DataFormat = src.DataFormat;
+                property.EntityType = src.EntityType;
+                property.ReferenceListName = src.ReferenceListName;
+                property.ReferenceListModule = src.ReferenceListModule;
+                property.IsFrameworkRelated = src.IsFrameworkRelated;
 
-                dbItem.Min = src.Min;
-                dbItem.Max = src.Max;
-                dbItem.MinLength = src.MinLength;
-                dbItem.MaxLength = src.MaxLength;
-                dbItem.Suppress = src.Suppress;
-                dbItem.Audited = src.Audited;
-                dbItem.Required = src.Required;
-                dbItem.ReadOnly = src.ReadOnly;
-                dbItem.RegExp = src.RegExp;
-                dbItem.ValidationMessage = src.ValidationMessage;
+                property.Min = src.Min;
+                property.Max = src.Max;
+                property.MinLength = src.MinLength;
+                property.MaxLength = src.MaxLength;
+                property.Suppress = src.Suppress;
+                property.Audited = src.Audited;
+                property.Required = src.Required;
+                property.ReadOnly = src.ReadOnly;
+                property.RegExp = src.RegExp;
+                property.ValidationMessage = src.ValidationMessage;
 
-                dbItem.CascadeCreate = src.CascadeCreate;
-                dbItem.CascadeUpdate = src.CascadeUpdate;
-                dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+                property.CascadeCreate = src.CascadeCreate;
+                property.CascadeUpdate = src.CascadeUpdate;
+                property.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
-                await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
+                await _propertyConfigRepo.InsertOrUpdateAsync(property);
             }
         }
 
-        public override Task<EntityConfig> CopyAsync(EntityConfig item, CopyItemInput input)
+        protected override async Task CopyRevisionPropertiesAsync(EntityConfigRevision source, EntityConfigRevision destination)
         {
-            throw new NotImplementedException();
+            destination.TypeShortAlias = source.TypeShortAlias;
+            destination.HardcodedPropertiesMD5 = source.HardcodedPropertiesMD5;
+            destination.ViewConfigurations = source.ViewConfigurations.Select(v => v.Clone()).ToList();
+            destination.GenerateAppService = source.GenerateAppService;
+            destination.Source = source.Source;
+            destination.Accessor = source.Accessor;
+
+            await CopyPropertiesAsync(source, destination);
         }
 
-        public override Task<IConfigurationItemDto> MapToDtoAsync(EntityConfig item)
+        protected override Task CopyItemPropertiesAsync(EntityConfig source, EntityConfig destination)
         {
-            throw new NotImplementedException();
+            destination.ClassName = source.ClassName;
+            destination.Namespace = source.Namespace;
+            destination.DiscriminatorValue = source.DiscriminatorValue;
+            destination.TableName = source.TableName;
+            destination.EntityConfigType = source.EntityConfigType;
+
+            return Task.CompletedTask;
         }
     }
 }

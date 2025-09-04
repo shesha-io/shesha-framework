@@ -3,12 +3,13 @@ using Abp.Hangfire;
 using Abp.Hangfire.Configuration;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
+using Shesha.Modules;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
     [DependsOn(typeof(SheshaFunctionalTestsWebCoreModule),
         typeof(AbpHangfireAspNetCoreModule))]
-    public class SheshaWebHostModule: AbpModule
+    public class SheshaWebHostModule: SheshaSubModule<SheshaFunctionalTestsWebCoreModule>
     {
         public override void Initialize()
         {

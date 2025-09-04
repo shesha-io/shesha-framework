@@ -18,8 +18,8 @@ export const FormsDesignerPage: PageWithLayout<IFormsDesignerPagePageProps> = (p
   );
 };
 
-FormsDesignerPage['getInitialProps'] = async () => {
+FormsDesignerPage['getInitialProps'] = () => {
   resetServerContext(); // required for Drag&Drop
 
-  return {};
+  return Promise.resolve({});
 };

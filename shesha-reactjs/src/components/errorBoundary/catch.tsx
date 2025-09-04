@@ -9,6 +9,7 @@ export default function Catch<Props extends {}>(
   component: ErrorHandlingComponent<Props>,
   errorHandler?: ErrorHandler
 ): React.ComponentType<Props> {
+  // eslint-disable-next-line react/display-name
   return class extends React.Component<Props, ErrorState> {
     
     public static getDerivedStateFromError(error: Error) {

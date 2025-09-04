@@ -35,8 +35,10 @@ import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 import { IRadioOption, ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { IImageFieldProps } from '@/designer-components/image/image';
+import { nanoid } from '@/utils/uuid';
 
-interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
+interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'id' | 'hidden' | 'type'> {
+  id?: string;
   hidden?: boolean | IPropertySetting;
   jsSetting?: boolean;
   labelAlignOptions?: IRadioOption[];
@@ -281,6 +283,7 @@ export class DesignerToolbarSettings<T> {
   public addSettingsInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
     const obj = typeof props !== 'function' ? props : props(this.data);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    obj.id = obj.id ?? nanoid();
     return this.addProperty(obj, 'settingsInputRow');
   }
 
@@ -295,6 +298,7 @@ export class DesignerToolbarSettings<T> {
 
     this.form.push({
       ...obj,
+      id: obj.id ?? nanoid(),
       type,
       hidden: obj?.hidden as any,
       version: typeof (obj?.version) === 'number'

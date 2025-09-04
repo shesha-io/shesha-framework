@@ -2,11 +2,9 @@ import React, { useMemo, useState, useEffect } from 'react';
 import useStyles from '../../styles';
 import { TChartType } from '../../model';
 import { Button } from 'antd';
-import { useTheme } from '@/providers/theme';
 
 const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick?: () => void }) => {
   const { styles, cx } = useStyles();
-  const { theme } = useTheme();
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
     height: typeof window !== 'undefined' ? window.innerHeight : 768
@@ -175,7 +173,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
       {renderLoader()}
       {handleCancelClick && (
       <Button
-          color={theme.application.errorColor ?? 'red'}
+          color="danger"
           size="small"
           onClick={handleCancelClick}
         >

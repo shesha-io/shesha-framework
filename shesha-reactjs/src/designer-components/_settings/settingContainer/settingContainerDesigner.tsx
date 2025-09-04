@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useMemo } from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';
@@ -29,8 +29,6 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
 
     const { readOnly, hasDragged } = useFormDesignerState();
     const { addComponent, startDragging, endDragging } = useFormDesignerActions();
-
-    const componentRef = useRef(null);
 
     const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
@@ -103,7 +101,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
                     className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
                     style={{ ...style, ...incomingStyle }}
                 >
-                  {component?.id && <ConfigurableFormComponentDesigner componentModel={component} componentRef={componentRef} />}
+                  {component?.id && <ConfigurableFormComponentDesigner componentModel={component} />}
                 </ReactSortable>
             </>
         </ConditionalWrap>

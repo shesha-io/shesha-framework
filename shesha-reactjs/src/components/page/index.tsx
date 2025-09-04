@@ -82,8 +82,8 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
 
         <Show when={!!breadcrumbItems?.length}>
           <Breadcrumb className="sha-page-breadcrumb">
-            {breadcrumbItems?.map(({ text, link }) => (
-              <Breadcrumb.Item>{link ? <a href={link}>{text}</a> : text}</Breadcrumb.Item>
+            {breadcrumbItems?.map(({ text, link }, index) => (
+              <Breadcrumb.Item key={index}>{link ? <a href={link}>{text}</a> : text}</Breadcrumb.Item>
             ))}
           </Breadcrumb>
         </Show>

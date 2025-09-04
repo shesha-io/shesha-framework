@@ -1,45 +1,35 @@
 import React, { FC } from 'react';
-import { Tag, Tooltip } from 'antd';
-import { QuestionCircleOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import { usePropertiesEditor } from '../provider';
-import DragHandle from './dragHandle';
+import { Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { getIconByDataType } from '@/utils/metadata';
-import ShaIcon from '@/components/shaIcon';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
-import classNames from 'classnames';
+import PropertyWrapper from './propertyWrapper';
 
 export interface IProps extends IModelItem {
   index: number[];
+  parent?: IModelItem;
 }
 
 export const ArrayEntityProperty: FC<IProps> = props => {
-  const { selectedItemId, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const icon = getIconByDataType(props.dataType);
+  const icon = getIconByDataType(props.dataType, props.dataFormat);
 
-  const listType = props.properties?.length > 0
-    ? props.properties[0].entityType
-    : null;
+  const itemsType = props.properties?.find(p => p.isItemsType);
+  const listType = itemsType?.entityType;
+  const listIcon = itemsType ? getIconByDataType(itemsType.dataType, itemsType.dataFormat) : null;
 
   return (
-    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
-      <div className={styles.shaToolbarItemHeader}>
-        <DragHandle id={props.id} />
-        {props.suppress && <span><EyeInvisibleOutlined /> </span>}
-        {icon && <ShaIcon iconName={icon} />}
-        <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}: <i>Array{'<' + (listType ?? 'undefined') + '>'}</i></span>
-        {props.description && (
-          <Tooltip title={props.description}>
-            <QuestionCircleOutlined className={styles.shaHelpIcon} />
-          </Tooltip>
-        )}
-        <div className={styles.shaToolbarItemControls}>
-          <Tag>App</Tag>
-        </div>
-      </div>
-    </div>
+    <PropertyWrapper {...props}>
+      {icon}<span> </span>{listIcon}
+      <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}: <i>List of {`<${listType ?? 'undefined'}>`}</i></span>
+      {props.description && (
+        <Tooltip title={props.description}>
+          <QuestionCircleOutlined className={styles.shaHelpIcon} />
+        </Tooltip>
+      )}
+    </PropertyWrapper>
   );
 };
 

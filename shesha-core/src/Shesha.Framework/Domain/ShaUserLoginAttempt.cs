@@ -48,7 +48,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Tenancy name.
         /// </summary>
-        [StringLength(MaxTenancyNameLength)]
+        [MaxLength(MaxTenancyNameLength)]
         public virtual string? TenancyName { get; set; }
 
         /// <summary>
@@ -59,25 +59,25 @@ namespace Shesha.Domain
         /// <summary>
         /// User name or email address
         /// </summary>
-        [StringLength(MaxUserNameOrEmailAddressLength)]
+        [MaxLength(MaxUserNameOrEmailAddressLength)]
         public virtual string UserNameOrEmailAddress { get; set; }
 
         /// <summary>
         /// IP address of the client.
         /// </summary>
-        [StringLength(MaxClientIpAddressLength)]
+        [MaxLength(MaxClientIpAddressLength)]
         public virtual string ClientIpAddress { get; set; }
 
         /// <summary>
         /// Name (generally computer name) of the client.
         /// </summary>
-        [StringLength(MaxClientNameLength)]
+        [MaxLength(MaxClientNameLength)]
         public virtual string ClientName { get; set; }
 
         /// <summary>
         /// Browser information if this method is called in a web request.
         /// </summary>
-        [StringLength(MaxBrowserInfoLength)]
+        [MaxLength(MaxBrowserInfoLength)]
         public virtual string BrowserInfo { get; set; }
 
         /// <summary>
@@ -95,9 +95,9 @@ namespace Shesha.Domain
             CreationTime = Clock.Now;
         }
 
-        [StringLength(20)]
+        [MaxLength(20)]
         public virtual string? IMEI { get; set; }
-        [StringLength(255)]
+        [MaxLength(255)]
         public virtual string? DeviceName { get; set; }
 
         public virtual int? LoginAttemptNumber { get; set; }

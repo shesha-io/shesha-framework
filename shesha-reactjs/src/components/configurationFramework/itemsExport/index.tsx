@@ -1,30 +1,26 @@
-import * as RestfulShesha from '@/utils/fetchers';
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import React, { MutableRefObject, useEffect, useState } from 'react';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import React, { MutableRefObject, useMemo, useState } from 'react';
 import { FC } from 'react';
 import {
+  Button,
+  Card,
+  Empty,
   Form,
-  Select,
+  Result,
   Skeleton,
   Spin,
-  Switch
+  Switch,
+  Tree,
 } from 'antd';
-import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
 import { getFileNameFromResponse } from '@/utils/fetchers';
-import { getIndexesList } from '../treeUtils';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import { ItemsTree } from '../itemsTree';
 import { useSheshaApplication } from '@/providers';
-import {
-  ConfigurationItemDto,
-  IModule,
-  IConfigurationItem,
-  ModulesDictionary,
-  ConfigItemDataNode,
-  ITreeState,
-} from '../models';
+import { EMPTY_FILTER, FilterState } from './models';
+import { ExportFilter } from './filter';
+import { useTreeForExport } from '@/configuration-studio/apis';
+import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from '@/configuration-studio/models';
+import { DownOutlined } from '@ant-design/icons';
+import { getTitleWithHighlight } from '@/configuration-studio/filter-utils';
 
 export interface IExportInterface {
   exportExecuter: () => Promise<any>;
@@ -34,192 +30,55 @@ export interface IExportInterface {
 
 export interface IConfigurationItemsExportProps {
   onExported?: () => void;
-  exportRef: MutableRefObject<IExportInterface>;
+  exportRef: MutableRefObject<IExportInterface | undefined>;
 }
-
-interface IGetConfigItemsPayload extends IGenericGetAllPayload {
-  versionSelectionMode: string;
-}
-
-type VerionSelectionMode = 'live' | 'ready' | 'latest';
 
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const [versionsMode, setVersionsMode] = useState<VerionSelectionMode>('live');
+  const [filterState, setFilterState] = useState<FilterState>(EMPTY_FILTER);
   const [exportDependencies, setExportDependencies] = useState<boolean>(true);
 
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [exportInProgress, setExportInProgress] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { data: treeData, error, isLoading, mutate: refreshTree } = useTreeForExport();
 
-  const [treeState, setTreeState] = useState<ITreeState>(null);
+  const treeNodes = treeData?.treeNodes;
+  const filteredTreeNodes = useMemo<TreeNode[] | undefined>(() => {
+    if (!treeNodes)
+      return undefined;
 
-  const getItemFilterByMode = (mode: VerionSelectionMode): object => {
-    switch (mode) {
-      case 'live':
-        return { '==': [{ var: 'versionStatus' }, ConfigurationItemVersionStatus.Live] };
-      case 'ready':
-        return {
-          and: [
-            { '==': [{ var: 'isLast' }, true] },
-            {
-              in: [
-                { var: 'versionStatus' },
-                [ConfigurationItemVersionStatus.Live, ConfigurationItemVersionStatus.Ready],
-              ],
-            },
-          ],
-        };
-      case 'latest':
-        return {
-          and: [
-            { '==': [{ var: 'isLast' }, true] },
-            {
-              in: [
-                { var: 'versionStatus' },
-                [
-                  ConfigurationItemVersionStatus.Live,
-                  ConfigurationItemVersionStatus.Ready,
-                  ConfigurationItemVersionStatus.Draft,
-                ],
-              ],
-            },
-          ],
-        };
-    }
-    return null;
-  };
-  const getListFetcherQueryParams = (mode: VerionSelectionMode): IGetConfigItemsPayload => {
-    const filterByMode = getItemFilterByMode(mode);
-    const finalFilter = filterByMode;
+    const { quickSearch, mode } = filterState;
 
-    return {
-      skipCount: 0,
-      maxResultCount: -1,
-      entityType: 'Shesha.Domain.ConfigurationItems.ConfigurationItem',
-      properties: 'id name module { id name description } application { id appKey name } itemType label description',
-      filter: JSON.stringify(finalFilter),
-      versionSelectionMode: versionsMode,
-      sorting: 'module.name, name',
-    };
-  };
-
-  const applyItems = (allItems: ConfigurationItemDto[]) => {
-    if (!allItems) {
-      setTreeState(null);
-      return;
-    }
-
-    const modules: ModulesDictionary = {};
-    allItems.forEach((item) => {
-      const itemModule = item.module ?? { id: null, name: LEGACY_ITEMS_MODULE_NAME };
-      let moduleContainer: IModule = modules[itemModule.id];
-      if (!moduleContainer) {
-        moduleContainer = { id: itemModule.id, name: itemModule.name, description: itemModule.description, itemTypes: {} };
-        modules[itemModule.id] = moduleContainer;
-      }
-      let itemType = moduleContainer.itemTypes[item.itemType];
-      if (!itemType) {
-        itemType = { name: item.itemType, items: [], applications: {} };
-        moduleContainer.itemTypes[itemType.name] = itemType;
-      }
-
-      const configurationItem: IConfigurationItem = {
-        id: item.id,
-        name: item.name,
-        label: item.label,
-        description: item.description,
-      };
-
-      if (item.application && item.application.appKey) {
-        let applicationNode = itemType.applications[item.application.appKey];
-        if (!applicationNode) {
-          applicationNode = {
-            appKey: item.application.appKey,
-            name: item.application.name,
-            items: [],
-            //id: item.application.id,
-          };
-          itemType.applications[item.application.appKey] = applicationNode;
-        }
-        applicationNode.items.push(configurationItem);
-      } else {
-        itemType.items.push(configurationItem);
-      }
-    });
-
-    let treeNodes: ConfigItemDataNode[] = [];
-
-    for (const moduleName in modules) {
-      if (!modules.hasOwnProperty(moduleName)) continue;
-      const moduleContainer = modules[moduleName];
-      const moduleNode: ConfigItemDataNode = {
-        key: moduleContainer.id ?? '-',
-        title: moduleContainer.name,
-        children: [],
-        isLeaf: false,
-      };
-      treeNodes.push(moduleNode);
-
-      for (const itName in moduleContainer.itemTypes) {
-        if (!moduleContainer.itemTypes.hasOwnProperty(itName)) continue;
-        const itemType = moduleContainer.itemTypes[itName];
-        if (itemType) {
-          const itemTypeNode: ConfigItemDataNode = {
-            key: `${moduleContainer.id}/${itemType.name}`,
-            title: itemType.name,
-            children: [],
-            isLeaf: false,
-          };
-          moduleNode.children.push(itemTypeNode);
-
-          for (const appKey in itemType.applications) {
-            if (!itemType.applications.hasOwnProperty(appKey)) continue;
-            const application = itemType.applications[appKey];
-
-            const appNode: ConfigItemDataNode = {
-              key: `${moduleContainer.id}/${itemType.name}/${application.appKey}`,
-              title: application.appKey,
-              isLeaf: false,
-              children: application.items.map<ConfigItemDataNode>((item) => ({
-                key: item.id,
-                title: item.name,
-                isLeaf: true,
-                itemId: item.id,
-              })),
-            };
-            itemTypeNode.children.push(appNode);
+    const loop = (data: TreeNode[]): TreeNode[] => {
+      const result: TreeNode[] = [];
+      data.forEach(node => {
+        if (isConfigItemTreeNode(node)) {
+          const filterPassed = mode === 'all'
+            || mode === 'updated' && node.flags.isUpdated
+            || mode === 'updated-by-me' && node.flags.isUpdatedByMe;
+          if (filterPassed) {
+            if (quickSearch) {
+              const newTitle = getTitleWithHighlight(node, quickSearch);
+              if (newTitle)
+                result.push({ ...node, title: newTitle });
+            } else
+              result.push(node);
           }
-          const nonAppItems = itemType.items.map<ConfigItemDataNode>((item) => ({
-            key: item.id,
-            title: item.name,
-            isLeaf: true,
-            itemId: item.id,
-          }));
-          itemTypeNode.children.push(...nonAppItems);
-          //itemTypeNode.children = itemType.items.map<ConfigItemDataNode>(item => ({ key: item.id, title: item.name, isLeaf: true, itemId: item.id }));
         }
-      }
-      moduleNode.children = moduleNode.children.sort((a, b) => (a.title < b.title ? -1 : a.title === b.title ? 0 : 1));
-    }
-    treeNodes = treeNodes.sort((a, b) => (a.key === '-' ? -1 : b.key === '-' ? 1 : a < b ? -1 : 1));
 
-    const dataIndexes = getIndexesList(treeNodes);
+        if (isNodeWithChildren(node)) {
+          const nodeChildren = loop(node.children);
+          if (nodeChildren.length > 0)
+            result.push({ ...node, children: nodeChildren });
+        }
+      });
+      return result;
+    };
 
-    setTreeState({ treeNodes: treeNodes, indexes: dataIndexes, itemsCount: allItems.length });
-  };
+    const newNodes = loop(treeNodes);
+    return newNodes;
 
-  useEffect(() => {
-    setIsLoading(true);
-    RestfulShesha.get<IAbpWrappedGetEntityListResponse<ConfigurationItemDto>, any, IGenericGetAllPayload, void>(
-      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-      getListFetcherQueryParams(versionsMode),
-      { base: backendUrl, headers: httpHeaders }
-    ).then((response) => {
-      applyItems(response.result.items);
-      setIsLoading(false);
-    });
-  }, [versionsMode]);
+  }, [treeNodes, filterState]);
 
   const getExportFilter = () => {
     return { in: [{ var: 'id' }, checkedIds] };
@@ -227,7 +86,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
   const exportExecuter = () => {
     const filter = getExportFilter();
-    const exportUrl = `${backendUrl}/api/services/app/ConfigurationItem/ExportPackage`;
+    const exportUrl = `${backendUrl}/api/services/app/ConfigurationStudio/ExportPackage`;
+
 
     setExportInProgress(true);
     return axios({
@@ -236,7 +96,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       data: {
         filter: JSON.stringify(filter),
         exportDependencies: exportDependencies,
-        versionSelectionMode: versionsMode,
+        //versionSelectionMode: itemSelectionMode,
       },
       responseType: 'blob', // important
       headers: httpHeaders,
@@ -260,41 +120,54 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       exportInProgress: exportInProgress,
     };
 
-  const onChangeSelection = (checkedIds: string[]) => {
+  const onRefreshClick = () => {
+    refreshTree();
+  };
+
+  const onCheck = (checkedIds: string[]) => {
     setCheckedIds(checkedIds);
   };
 
   return (
     <Spin spinning={exportInProgress} tip="Exporting...">
       <Form>
-        <Form.Item label="Versions to include">
-          <Select
-            value={versionsMode}
-            onChange={setVersionsMode}
-            options={[
-              {
-                value: 'live',
-                label: 'Live',
-              },
-              {
-                value: 'ready',
-                label: 'Ready',
-              },
-              {
-                value: 'latest',
-                label: 'Latest',
-              },
-            ]}
+        <Form.Item label="Filter by">
+          <ExportFilter value={filterState} onChange={setFilterState} />
+        </Form.Item>
+        {error && (
+          <Result
+            status="500"
+            title="500"
+            subTitle="Sorry, something went wrong."
+            extra={<Button type="primary" onClick={onRefreshClick}>Refresh</Button>}
           />
-        </Form.Item>
-        <Form.Item label="Include all dependencies">
-          <Switch checked={exportDependencies} onChange={setExportDependencies}></Switch>
-        </Form.Item>
+        )}
         <Skeleton loading={isLoading}>
-          {treeState && (
-            <>
-              <ItemsTree treeState={treeState} onChangeSelection={onChangeSelection} />
-            </>
+          {filteredTreeNodes && (
+            filteredTreeNodes.length > 0
+              ? (
+                <>
+                  <Card
+                    styles={{ body: { padding: 0, maxHeight: '70vh', overflowY: 'auto' } }}
+                  >
+                    <Tree<TreeNode>
+                      showLine
+                      checkable
+                      showIcon
+                      switcherIcon={<DownOutlined />}
+                      treeData={filteredTreeNodes}
+                      onCheck={onCheck}
+                      checkedKeys={checkedIds}
+                    />
+                  </Card>
+                  <Form.Item label="Include dependencies">
+                    <Switch checked={exportDependencies} onChange={setExportDependencies}></Switch>
+                  </Form.Item>
+                </>
+              )
+              : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No items found" />
+              )
           )}
         </Skeleton>
       </Form>

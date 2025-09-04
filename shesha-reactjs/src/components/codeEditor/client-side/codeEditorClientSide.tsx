@@ -14,11 +14,11 @@ import { Button } from "antd";
 import { FileOutlined } from "@ant-design/icons";
 import { SizableColumns } from "@/components/sizableColumns";
 import { FileTree } from "./fileTree/fileTree";
-import { useLocalStorage } from "@/hooks";
 import { buildCodeEditorEnvironmentAsync } from "./codeFiles";
 import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { CodeEditorLoadingProgressor } from "../loadingProgressor";
 import { Environment } from "@/publicJsApis/metadataBuilder";
+import { useIsDevMode } from "@/hooks/useIsDevMode";
 
 // you can change the source of the monaco files
 loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs', } });
@@ -105,7 +105,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const { styles } = useStyles();
     const [activePane, setActivePane] = useState(null);
     const [internalReadOnly, setInternalReadOnly] = useState(false);
-    const [isDevMode] = useLocalStorage('application.isDevMode', false);
+    const isDevMode = useIsDevMode();
 
     const { getMetadata } = useMetadataDispatcher();
 
@@ -172,10 +172,10 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             }
         } else {
             const currentValue = model.getValue();
-            if (currentValue !== content){
+            if (currentValue !== content) {
                 // content has been modified - sync model
                 model.setValue(content);
-            }            
+            }
         }
 
         return model;
@@ -253,7 +253,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         initDiagnosticsOptions(monaco);
 
         monaco.editor.registerEditorOpener({
-            async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
+            openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
                 if (!isDevMode)
                     return false;
 

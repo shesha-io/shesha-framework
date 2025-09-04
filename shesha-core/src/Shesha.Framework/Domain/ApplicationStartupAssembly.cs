@@ -15,11 +15,11 @@ namespace Shesha.Domain
     {
         public required virtual string FileName { get; set; }
         public virtual string? FilePath { get; set; }
-        [StringLength(50)]
+        [MaxLength(50)]
         public required virtual string FileMD5 { get; set; }
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? FileVersion { get; set; }
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string? ProductVersion { get; set; }
         public required virtual ApplicationStartup ApplicationStartup { get; set; }
     }

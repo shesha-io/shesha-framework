@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 namespace Shesha.DynamicEntities.Binder
 {
+    [DebuggerStepThrough]
     public class EntityModelBindingContext
     {
         /// <summary>

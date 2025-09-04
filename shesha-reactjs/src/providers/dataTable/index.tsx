@@ -94,6 +94,7 @@ import {
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { dataTableContextCode } from '@/publicJsApis';
 import { DataTypes, IObjectMetadata } from '@/index';
+import { IModelMetadata } from '@/interfaces/metadata';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -149,6 +150,7 @@ interface IHasDataSourceType {
 export interface IHasFormDataSourceConfig {
   propertyName: string;
   getFieldValue?: (propertyName: string) => object[];
+  metadata?: IModelMetadata;
   onChange?: (...args: any[]) => void;
 }
 interface IUrlDataSourceConfig {

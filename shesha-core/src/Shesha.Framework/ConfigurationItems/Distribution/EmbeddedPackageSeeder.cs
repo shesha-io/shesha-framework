@@ -2,7 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.ConfigurationItems.Distribution.Models;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Utilities;
 using System;
@@ -81,7 +81,6 @@ namespace Shesha.ConfigurationItems.Distribution
                             var packageImportContext = new PackageImportContext()
                             {
                                 CancellationToken = context.CancellationToken,
-                                ImportStatusAs = ConfigurationItemVersionStatus.Live,
                                 CreateFrontEndApplications = true,
                                 CreateModules = false,
                                 Logger = context.Logger,

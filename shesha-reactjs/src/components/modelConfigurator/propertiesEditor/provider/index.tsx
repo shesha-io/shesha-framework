@@ -46,6 +46,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     });
   }
   */
+
   const dispatchAndFire = (action: Action<any>) => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(action);

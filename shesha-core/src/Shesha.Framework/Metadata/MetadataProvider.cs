@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
+using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.DynamicEntities;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
@@ -25,7 +27,7 @@ namespace Shesha.Metadata
     /// <summary>
     /// Metadata provider
     /// </summary>
-    public class MetadataProvider: IMetadataProvider, ITransientDependency
+    public class MetadataProvider : IMetadataProvider, ITransientDependency
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IActionDescriptorCollectionProvider? _actionDescriptorCollectionProvider;
@@ -34,6 +36,7 @@ namespace Shesha.Metadata
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
         private readonly IObjectMapper _mapper;
         private readonly IAssemblyFinder _assemblyFinder;
+        private readonly IIocResolver _iocResolver;
 
         public MetadataProvider(
             IEntityConfigurationStore entityConfigurationStore,
@@ -52,31 +55,30 @@ namespace Shesha.Metadata
             _mapper = mapper;
             _assemblyFinder = assemblyFinder;
 
+            _iocResolver = iocResolver;
             _actionDescriptorCollectionProvider = iocResolver.IsRegistered<IActionDescriptorCollectionProvider>()
                 ? iocResolver.Resolve<IActionDescriptorCollectionProvider>()
                 : null;
         }
 
-        // ToDo: support Dynamic entities
-        public async Task<MetadataDto> GetAsync(Type? containerType, string containerName = "")
+        // ToDo: AS - support Dynamic entities
+        public async Task<MetadataDto> GetAsync(Type containerType)
         {
-            var isEntity = containerType != null && containerType.IsEntityType();
-            var isJsonEntity = containerType != null && containerType.IsJsonEntityType();
+            var isEntity = containerType.IsEntityType();
+            var isJsonEntity = containerType.IsJsonEntityType();
 
-            var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
+            var (changeTime, properties) = await GetPropertiesInternalAsync(containerType);
 
             var dto = new MetadataDto
             {
                 DataType = isEntity 
                     ? DataTypes.EntityReference 
-                    : isJsonEntity
-                        ? DataTypes.ObjectReference
-                        : DataTypes.Object,// todo: check other types
+                    : DataTypes.Object,
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
-                ClassName = containerType?.GetRequiredFullName() ?? containerName,
+                ClassName = containerType.GetRequiredFullName(),
                 ChangeTime = changeTime,
             };
 
@@ -119,7 +121,6 @@ namespace Shesha.Metadata
                         switch (dt.DataType)
                         {
                             case DataTypes.Object:
-                            case DataTypes.ObjectReference:
                                 return assemblies.Contains(type.Assembly);
                             case DataTypes.Array:
                                 {
@@ -248,27 +249,23 @@ namespace Shesha.Metadata
             return Task.FromResult(dtos);
         }
 
-        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType, string containerName)
+        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType)
         {
-            var (date, properties) = await GetPropertiesInternalAsync(containerType, containerName);
+            var (_, properties) = await GetPropertiesInternalAsync(containerType);
             return properties;
         }
 
-        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type? containerType, string containerName)
+        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type containerType)
         {
-            var metadataContext = containerType != null
-                ? new MetadataContext(containerType)
-                : new MetadataContext();
+            var metadataContext = new MetadataContext(containerType);
 
-            var hardCodedProps = containerType == null
-                ? new List<PropertyMetadataDto>()
-                : containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var hardCodedProps = containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Select(p => _hardcodeMetadataProvider.GetPropertyMetadata(p, metadataContext))
                     .OrderBy(e => e.Path)
                     .ToList();
 
             var result = new List<PropertyMetadataDto>();
-            var modelConfig = await _modelConfigurationProvider.GetModelConfigurationOrNullAsync(containerType?.Namespace ?? "Dynamic", containerType?.Name ?? containerName, hardCodedProps);
+            var modelConfig = await _modelConfigurationProvider.GetCachedModelConfigurationOrNullAsync(containerType.Namespace.NotNull(), containerType.Name, hardCodedProps);
             // try to get data-driven configuration
             if (modelConfig != null)
             {
@@ -281,6 +278,7 @@ namespace Shesha.Metadata
                         idx = p.SortOrder.HasValue ? p.SortOrder.Value : idx + 1;
 
                         var prop = _mapper.Map<PropertyMetadataDto>(p);
+                        prop.ContainerType = containerType.FullName ?? "";
                         prop.EnumType = hardCodedProp?.EnumType;
                         prop.IsNullable = hardCodedProp?.IsNullable ?? false;
                         prop.OrderIndex = idx;
@@ -313,6 +311,62 @@ namespace Shesha.Metadata
             dto.Md5 = "";
             var json = JsonSerializer.Serialize(dto);
             dto.Md5 = json.ToMd5Fingerprint();
+        }
+
+        public async Task<MetadataDto> GetAsync(string? moduleName, string container)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(container, nameof(container));
+
+            var containerType = await GetContainerTypeAsync(moduleName, container);
+
+            return await GetAsync(containerType);
+        }
+
+        public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
+        {
+            var allModels = await GetAllModelsAsync();
+            var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
+            if (!string.IsNullOrWhiteSpace(moduleName))
+                models = models.Where(m => m.Type.GetConfigurableModuleName() == moduleName).ToList();
+
+            if (models.Count() > 1)
+                throw new DuplicateModelsException(models);
+
+            return models.FirstOrDefault()?.Type;
+        }
+
+        public async Task<Type> GetContainerTypeAsync(string? moduleName, string container) 
+        {
+            var type = await GetContainerTypeOrNullAsync(moduleName, container);
+            if (type == null)
+                throw new MetadataOfTypeNotFoundException(container);
+            return type;
+            //return await GetContainerTypeOrNullAsync(moduleName, container) ?? 
+        }
+
+        public async Task<List<ModelDto>> GetAllModelsAsync()
+        {
+            var models = new List<ModelDto>();
+
+            var modelProviders = _iocResolver.ResolveAll<IModelProvider>();
+            foreach (var provider in modelProviders)
+            {
+                models.AddRange(await provider.GetModelsAsync());
+            }
+            return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
+        }
+
+        private class ModelDtoTypeComparer : IEqualityComparer<ModelDto>
+        {
+            bool IEqualityComparer<ModelDto>.Equals(ModelDto? x, ModelDto? y)
+            {
+                return x != null && y != null && x.ClassName == y.ClassName || x == null && y == null;
+            }
+
+            int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
+            {
+                return obj.GetHashCode();
+            }
         }
     }
 }

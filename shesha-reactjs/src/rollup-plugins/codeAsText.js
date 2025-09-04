@@ -52,7 +52,7 @@ function codeAsText() {
 
         try {
           stats = fs.statSync(source);
-        } catch (e) {
+        } catch (_e) {
           return null;
         }
 

@@ -12,36 +12,26 @@ namespace Shesha.DynamicEntities
     public interface IModelConfigurationManager
     {
         /// <summary>
-        /// Merge entity configurations
+        /// Get model configuration
         /// </summary>
-        /// <param name="source">Source configuration</param>
-        /// <param name="destination">Destination configuration</param>
-        /// <param name="deleteAfterMerge">Delete source configuration after merge</param>
-        /// <param name="deepUpdate">Set to true to update all references from the source class name to the destination class name (properties, JsonEntities, etc)</param>
-        /// <returns></returns>
-        Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate);
+        Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto> GetModelConfigurationAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null);
-
-        /// <summary>
-        /// Get model configuration
-        /// </summary>
-        Task<ModelConfigurationDto> GetModelConfigurationAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Create model configuration
         /// </summary>
         /// <param name="input">Model configuration Dto</param>
         /// <returns></returns>
-        Task<ModelConfigurationDto> CreateAsync(ModelConfigurationDto input);
+        Task<ModelConfigurationDto> CreateAsync(ModelConfigurationCreateDto input);
 
         /// <summary>
         /// Update model configuration

@@ -15,6 +15,7 @@ import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-
 import { defaultContainerStyles, defaultStyles } from './utils';
 import { ConfigurableFormItem } from '@/components';
 import { useStyles } from './styles/styles';
+import { isPropertySettings } from '@/designer-components/_settings/utils';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -28,7 +29,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         <ButtonGroup {...model} styles={{...model.allStyles.fullStyle, width: '100%', height: '100%'}} form={form} />
       </ConfigurableFormItem>;
   },
-  actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
+  actualModelPropertyFilter: (name, value) => name !== 'items' || isPropertySettings(value), // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
     .add<IButtonGroupComponentProps>(0, (prev) => {
       return {

@@ -174,12 +174,13 @@ export const getSettings = (data: any) =>
             templateSettings: {
               functionName: 'onChange'
             },
-            availableConstantsExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder
+            availableConstantsExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder
                 .object("constants")
                 .addAllStandard()
                 .addObject("value", "Component current value", undefined)
                 .build();
+              return Promise.resolve(meta);
             },
           }).toJson()
         ]
@@ -207,11 +208,12 @@ export const getSettings = (data: any) =>
             templateSettings: {
               functionName: 'getStyle'
             },
-            availableConstantsExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder
+            availableConstantsExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder
                 .object("constants")
                 .addStandard(["shesha:formData", "shesha:globalState"])
                 .build();
+              return Promise.resolve(meta);
             },
           }).toJson()
         ]

@@ -1,20 +1,23 @@
-﻿using Shesha.Utilities;
-
-namespace Shesha.Domain.Conventions
+﻿namespace Shesha.Domain.Conventions
 {
     /// <summary>
     /// Default naming conventions
     /// </summary>
     public class DefaultNamingConventions : INamingConventions
     {
+        /// inheritedDoc
+        public string? DbNamesExpression => null;
+
+        /// inheritedDoc
         public string GetColumnName(string prefix, string propertyName, string? suffix)
         {
             return $"{prefix}{propertyName}{suffix}";
         }
 
-        public string GetTableName(string className)
+        /// inheritedDoc
+        public string GetTableName(string prefix, string className)
         {
-            return className.ToSnakeCase();
+            return $"{prefix}{className}";
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using FluentMigrator.Builders;
@@ -12,9 +6,6 @@ using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Infrastructure;
 using FluentMigrator.Model;
-using FluentMigrator.Runner.Conventions;
-using NHibernate.Mapping;
-using NHibernate.Type;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
@@ -23,6 +14,12 @@ using Shesha.Migrations;
 using Shesha.NHibernate.Maps;
 using Shesha.Reflection;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace Shesha.CodeGeneration
 {
@@ -184,9 +181,7 @@ namespace Shesha.CodeGeneration
 
             var properties = entityType.GetProperties(flags)
                 .Where(p => NhMappingHelper.IsPersistentProperty(p) &&
-                            (!typeof(System.Collections.IEnumerable)
-                                 .IsAssignableFrom(p.PropertyType) /*skip enumerables except strings*/ ||
-                             p.PropertyType == typeof(string)))
+                            (!typeof(System.Collections.IEnumerable).IsAssignableFrom(p.PropertyType) /*skip enumerables except strings*/ || p.PropertyType == typeof(string) || p.HasAttribute<SaveAsJsonAttribute>()))
                 .ToList();
             if (declaredOnly && entityType.BaseType != null)
             {
@@ -232,8 +227,8 @@ namespace Shesha.CodeGeneration
                     allProps.Remove(idProp);
                 }
             }
-            
-            var customProps = ProcessFrameworkColumns(sb, allProps, statement)
+
+            var customProps = ProcessFrameworkColumns(entityType, sb, allProps, statement)
                 .OrderBy(p => p.Name)
                 .ToList();
             
@@ -336,11 +331,15 @@ namespace Shesha.CodeGeneration
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsInt64)}()");
                     }
+                    else if (property.HasAttribute<SaveAsJsonAttribute>()) 
+                    {
+                        sb.Append($@".{nameof(SheshaFluentMigratorExtensions.AsStringMax)}()");
+                    }
                     else
                         throw new NotSupportedException($"unsupported property type: '{property.PropertyType.FullName}'");
 
                     if (property.PropertyType.IsNullableType() 
-                        || property.PropertyType == typeof(string)
+                        || property.PropertyType == typeof(string) && property.IsNullable()
                         || property.DeclaringType?.BaseType != null && property.DeclaringType.BaseType.IsEntityType() /*property declared in the subclass*/)
                         sb.Append($@".{nameof(IColumnOptionSyntax<IFluentSyntax, IFluentSyntax>.Nullable)}()");
                 }
@@ -376,11 +375,7 @@ namespace Shesha.CodeGeneration
         /// <summary>
         /// Process framework helpers and return list of unprocessed properties
         /// </summary>
-        /// <param name="sb"></param>
-        /// <param name="properties"></param>
-        /// <param name="statement"></param>
-        /// <returns></returns>
-        private static List<PropertyInfo> ProcessFrameworkColumns(StringBuilder sb, List<PropertyInfo> properties, DdlStatement statement)
+        private static List<PropertyInfo> ProcessFrameworkColumns(Type entityType, StringBuilder sb, List<PropertyInfo> properties, DdlStatement statement)
         {
             var helpers = new Dictionary<string, List<string>>()
             {
@@ -430,13 +425,15 @@ namespace Shesha.CodeGeneration
                 }
             };
 
+            var objectNamesExpression = MappingHelper.GetDbNamesExpression(entityType);
+
             foreach (var helper in helpers)
             {
                 if (helper.Value.All(propName => properties.Any(p => p.Name == propName)))
                 {
                     // apply helper
                     sb.AppendLine();
-                    sb.Append($@"                .{helper.Key}()");
+                    sb.Append($@"                .{helper.Key}({objectNamesExpression})");
                     
                     // filter properties
                     properties = properties.Where(p => !helper.Value.Contains(p.Name)).ToList();
@@ -460,7 +457,7 @@ namespace Shesha.CodeGeneration
 
                     // apply helper
                     sb.AppendLine();
-                    sb.Append($@"                .{helper}()");
+                    sb.Append($@"                .{helper}({objectNamesExpression})");
                 }
             }
 

@@ -6,7 +6,7 @@ export interface FileContentResponse {
     content?: string;
 }
 
-export const GET = async (request: NextRequest) => {
+export const GET = (request: NextRequest) => {
     const searchParams = request.nextUrl.searchParams;
     const fileName = searchParams.get('fileName');
 

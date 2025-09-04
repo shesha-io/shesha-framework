@@ -1,4 +1,4 @@
-import { createNamedContext } from "@/utils/react";
+import { createNamedContext, wrapDisplayName } from "@/utils/react";
 import React, { ComponentType, FC, PropsWithChildren, useContext, useEffect, useState } from "react";
 
 export interface IBindingProviderStateContext {
@@ -8,18 +8,18 @@ export interface IBindingProviderStateContext {
 
 export const BindingProviderStateContext = createNamedContext<IBindingProviderStateContext>({}, "BindingProviderStateContext");
 
-export interface IBindingProviderProps  {
+export interface IBindingProviderProps {
     valuePropName?: string;
     value?: any;
-    onChange?:  (...args: any[]) => void;
+    onChange?: (...args: any[]) => void;
 }
 
-const BindingProvider: FC<PropsWithChildren<IBindingProviderProps>> = ({valuePropName = 'value', onChange, children, ...props}) => {
+const BindingProvider: FC<PropsWithChildren<IBindingProviderProps>> = ({ valuePropName = 'value', onChange, children, ...props }) => {
     const value = props[valuePropName];
-    const [state, setState] = useState<IBindingProviderStateContext>({value, onChange});
+    const [state, setState] = useState<IBindingProviderStateContext>({ value, onChange });
 
     useEffect(() => {
-        setState({value, onChange});
+        setState({ value, onChange });
     }, [value, onChange]);
 
     return (
@@ -31,25 +31,25 @@ const BindingProvider: FC<PropsWithChildren<IBindingProviderProps>> = ({valuePro
 
 function useBinding(require: boolean = true) {
     const stateContext = useContext(BindingProviderStateContext);
-  
+
     if ((stateContext === undefined) && require)
-      throw new Error('useBinding must be used within a BindingProvider');
+        throw new Error('useBinding must be used within a BindingProvider');
 
     return stateContext;
 }
 
 const withBinding = <P extends object>(
     Component: ComponentType<P>,
-  ): FC<P> => props => {
+): FC<P> => wrapDisplayName(props => {
 
     const { value, onChange } = useBinding() ?? {};
-    const model = {...props} as any;
+    const model = { ...props } as any;
     if (!!onChange) {
         model.onChange = onChange;
         model.value = value;
     }
 
     return <Component {...model} />;
-};
+}, "withBinding");
 
 export { BindingProvider, useBinding, withBinding };

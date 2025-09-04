@@ -26,7 +26,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
     <>
       <SettingsCollapsiblePanel header="Display">
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
-          <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
+          <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
         </SettingsFormItem>
         <SettingsFormItem name="componentName" label="Component Name" required>
           <Input readOnly={readOnly} />

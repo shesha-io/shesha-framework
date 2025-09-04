@@ -76,7 +76,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const { theme } = useTheme();
   const uploadDraggerSpanRef = useRef(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
@@ -109,9 +109,22 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   };
 
+  const showDeleteConfirmation = () => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile();
+      }
+    });
+  };
+
   const onDeleteClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-    deleteFile();
+    showDeleteConfirmation();
   };
 
   const onPreview = () => {
@@ -185,7 +198,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <a title={file.name}>
+        <span title={file.name}>
           <Space>
             <div className="thumbnail-item-name">
               {(listType === 'text' || !hideFileName) && (
@@ -201,7 +214,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               {showTextControls && fileControls(theme.application.primaryColor)}
             </div>
           </Space>
-        </a>
+        </span>
       </div>
     );
   };

@@ -1,7 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
 using System;

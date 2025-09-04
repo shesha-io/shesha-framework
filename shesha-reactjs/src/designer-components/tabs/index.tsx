@@ -84,7 +84,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           className: className,
           forceRender: forceRender,
           animated: animated,
-          destroyInactiveTabPane: destroyInactiveTabPane,
+          destroyOnHidden: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
           disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
           children: (

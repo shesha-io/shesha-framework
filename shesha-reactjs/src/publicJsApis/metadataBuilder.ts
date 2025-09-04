@@ -19,6 +19,7 @@ export interface IObjectMetadataBuilder {
   addString(path: string, label: string): this;
   addNumber(path: string, label: string): this;
   addDate(path: string, label: string): this;
+  addDateTime(path: string, label: string): this;
   addBoolean(path: string, label: string): this;
   addArray(path: string, label: string): this;
   addAny(path: string, label: string): this;

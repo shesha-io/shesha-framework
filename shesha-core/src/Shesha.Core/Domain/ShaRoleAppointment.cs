@@ -10,20 +10,24 @@ namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.ShaRoleAppointment")]
     [Discriminator]
-    public class ShaRoleAppointment : FullAuditedEntity<Guid>, IMayHaveTenant
+    [Table("role_appointments", Schema = "frwk")]
+    [SnakeCaseNaming]
+    public class ShaRoleAppointment : FullAuditedEntity<Guid>
     {
+        /// <summary>
+        /// Role
+        /// </summary>
         public virtual ShaRole? Role { get; set; }
-        public virtual int? TenantId { get; set; }
 
         [EntityReference(true)]
-        public GenericEntityReference PermissionedEntity1 { get; set; }
+        public virtual GenericEntityReference? PermissionedEntity1 { get; set; }
         [EntityReference(true)]
-        public GenericEntityReference PermissionedEntity2 { get; set; }
+        public virtual GenericEntityReference? PermissionedEntity2 { get; set; }
         [EntityReference(true)]
-        public GenericEntityReference PermissionedEntity3 { get; set; }
+        public virtual GenericEntityReference? PermissionedEntity3 { get; set; }
 
         [NotMapped]
-        public IEnumerable<GenericEntityReference> PermissionedEntities
+        public virtual IEnumerable<GenericEntityReference> PermissionedEntities
         {
             get
             {

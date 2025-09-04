@@ -1,4 +1,4 @@
-﻿using Shesha.Domain.ConfigurationItems;
+﻿using Shesha.Domain;
 using System.Threading;
 
 namespace Shesha.ConfigurationItems.Distribution

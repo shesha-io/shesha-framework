@@ -83,6 +83,10 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
         return this.add(DataTypes.date, path, label);
     }
 
+    addDateTime(path: string, label: string) {
+        return this.add(DataTypes.dateTime, path, label);
+    }
+
     addBoolean(path: string, label: string) {
         return this.add(DataTypes.boolean, path, label);
     }

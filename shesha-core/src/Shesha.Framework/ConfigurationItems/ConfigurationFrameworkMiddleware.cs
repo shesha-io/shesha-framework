@@ -13,6 +13,7 @@ namespace Shesha.ConfigurationItems
     {
         public const string ConfigItemModeHeader = "sha-config-item-mode";
         public const string FrontEndApplicationHeader = "sha-frontend-application";
+        public const string TopLevelModuleHeader = "sha-top-level-module";
 
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
 
@@ -27,12 +28,16 @@ namespace Shesha.ConfigurationItems
                 ? context.Request.Headers[FrontEndApplicationHeader].ToString()
                 : null;
 
+            var topLevelModule = context.Request.Headers.ContainsKey(TopLevelModuleHeader)
+                ? context.Request.Headers[TopLevelModuleHeader].ToString()
+                : null;            
+
             context.Request.Headers.TryGetValue(ConfigItemModeHeader, out var modeStr);
             var configItemMode = Enum.TryParse(modeStr, true, out ConfigurationItemViewMode myStatus)
                 ? myStatus
                 : (ConfigurationItemViewMode?)null;
 
-            if (configItemMode.HasValue || !string.IsNullOrEmpty(frontEndApp))
+            if (configItemMode.HasValue || !string.IsNullOrEmpty(frontEndApp) || !string.IsNullOrWhiteSpace(topLevelModule))
             {
                 using (_cfRuntime.BeginScope(a => 
                 {
@@ -43,6 +48,7 @@ namespace Shesha.ConfigurationItems
                     a.FrontEndApplication = string.IsNullOrWhiteSpace(frontEndApp)
                         ? FrontEndAppKeyConsts.SheshaDefaultFrontend 
                         : frontEndApp;
+                    a.CurrentModule = topLevelModule;
                 }))
                 {
                     await next(context);

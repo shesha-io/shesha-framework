@@ -5,6 +5,7 @@ import SearchBox from './searchBox';
 import { useSettingsEditor } from './provider/index';
 import { IFrontEndApplication, ISettingConfiguration } from './provider/models';
 import type { MenuProps } from 'antd';
+import { useDevMode } from '@/hooks/useIsDevMode';
 
 const { Panel } = Collapse;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -41,7 +42,7 @@ const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication
 };
 
 export const SettingsMenu: FC<ISettingsMenuProps> = () => {
-  const [isDevmode, setDevMode] = useLocalStorage('application.isDevMode', false);
+  const [isDevmode, setDevMode] = useDevMode();
 
   const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', {});//['']);
   const [searchText, setSearchText] = useLocalStorage('settings-editor.search', '');

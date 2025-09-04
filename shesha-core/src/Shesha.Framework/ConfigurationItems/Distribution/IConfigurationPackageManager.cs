@@ -1,5 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Distribution.Models;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -17,6 +17,14 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <param name="context"></param>
         /// <returns></returns>
         Task<ConfigurationItemsPackage> ReadPackageAsync(Stream stream, ReadPackageContext context);
+
+        /// <summary>
+        /// Analyze package
+        /// </summary>
+        /// <param name="stream">Stream that contains package content</param>
+        /// <param name="context">Package reading context</param>
+        /// <returns></returns>
+        Task<AnalyzePackageResponse> AnalyzePackageAsync(Stream stream, ReadPackageContext context);
 
         /// <summary>
         /// Import package

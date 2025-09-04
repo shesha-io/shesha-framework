@@ -8,14 +8,14 @@ namespace Shesha.Roles.Dto
     public class RoleEditDto: EntityDto<int>
     {
         [Required]
-        [StringLength(AbpRoleBase.MaxNameLength)]
+        [MaxLength(AbpRoleBase.MaxNameLength)]
         public string Name { get; set; }
 
         [Required]
-        [StringLength(AbpRoleBase.MaxDisplayNameLength)]
+        [MaxLength(AbpRoleBase.MaxDisplayNameLength)]
         public string DisplayName { get; set; }
 
-        [StringLength(Role.MaxDescriptionLength)]
+        [MaxLength(Role.MaxDescriptionLength)]
         public string Description { get; set; }
 
         public bool IsStatic { get; set; }

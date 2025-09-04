@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
@@ -11,7 +11,6 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
-  componentRef?: MutableRefObject<any>;
 }
 
 // skip some properties by default
@@ -22,12 +21,12 @@ export const standartActualModelPropertyFilter = (name: string) => {
   return propertiesToSkip.indexOf(name) === -1;
 };
 
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string) => {
-  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name) : true)
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any) => {
+  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true)
     && propertiesToSkip.indexOf(name) === -1;
 };
 
-const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
+const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const { isComponentFiltered } = useForm();
@@ -68,7 +67,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     deviceModel,
     undefined,
     undefined,
-    (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name),
+    (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined
   );
 
@@ -86,8 +85,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
   const control = useMemo(() => (
-    <toolboxComponent.Factory
-      componentRef={componentRef}
+    <toolboxComponent.Factory 
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}
@@ -126,6 +124,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const attributes = {
     'data-sha-c-id': `${componentModel.id}`,
     'data-sha-c-name': `${componentModel.componentName}`,
+    'data-sha-c-property-name': `${componentModel.propertyName}`,
     'data-sha-c-type': `${componentModel.type}`,
   };
 
@@ -144,10 +143,10 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   );
 };
 
-const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
+const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel }) => {
   return (
     <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} componentId={componentModel.id}>
-      <FormComponent componentModel={componentModel} componentRef={componentRef} />
+      <FormComponent componentModel={componentModel} />
     </CustomErrorBoundary>
   );
 };

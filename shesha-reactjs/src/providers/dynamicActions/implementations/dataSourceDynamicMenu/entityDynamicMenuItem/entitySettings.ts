@@ -17,7 +17,7 @@ export const getSettings = () => {
                         hidden: false,
                         dataSourceType: 'url',
                         validate: {},
-                        dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                        dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                         useRawValues: true
                     },
                     {

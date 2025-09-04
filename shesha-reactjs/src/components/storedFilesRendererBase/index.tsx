@@ -97,7 +97,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   enableStyleOnReadonly = true,
   ...rest
 }) => {
-  const { message, notification } = App.useApp();
+  const { message, notification, modal } = App.useApp();
   const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
@@ -166,7 +166,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fetchImages();
   }, [fileList]);
 
-  const handlePreview = async (file: UploadFile) => {
+  const handlePreview = (file: UploadFile) => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
@@ -188,6 +188,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
+
+  const showDeleteConfirmation = (file) => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile(file.uid);
+      }
+    });
+  };
+
   const props: DraggerProps = {
     name: '',
     accept: allowedFileTypes?.join(','),
@@ -206,7 +220,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     },
     onRemove(file) {
-      deleteFile(file.uid);
+      showDeleteConfirmation(file);
+      return false;
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore

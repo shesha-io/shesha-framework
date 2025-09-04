@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { DataTypes, IObjectMetadata } from "@/interfaces";
 import { useMetadata, useMetadataDispatcher } from "@/providers";
 import { IPropertyMetadata, isEntityMetadata, isPropertiesArray } from "@/interfaces/metadata";
-import { useFormPersister } from "@/providers/formPersisterProvider";
+import { useFormPersisterIfAvailable } from "@/providers/formPersisterProvider";
 import { SheshaCommonContexts } from "@/providers/dataContextManager/models";
 import { useDataContextManagerActions } from "@/providers/dataContextManager";
 import { useMetadataBuilderFactory } from "./hooks";
@@ -34,7 +34,7 @@ export const useGlobalConstants = (): IPropertyMetadata[] => {
 
 export const useFormDataRegistration = (): MetadataBuilderAction => {
     const meta = useMetadata(false);
-    const { formProps } = useFormPersister(false) ?? {};
+    const { formProps } = useFormPersisterIfAvailable() ?? {};
     const { getMetadata } = useMetadataDispatcher();
 
     const formMetadata = meta?.metadata;

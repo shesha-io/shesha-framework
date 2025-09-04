@@ -50,15 +50,3 @@ export type ModulesDictionary = IDictionary<IModule>;
 export interface ConfigItemDataNode extends DataNode {
     itemId?: string;
 }
-
-export interface DataIndex {
-    key: React.Key;
-    title: string;
-}
-
-export interface ITreeState {
-    //modules: ModulesDictionary;
-    treeNodes: ConfigItemDataNode[];
-    indexes: DataIndex[];
-    itemsCount: number;
-}
