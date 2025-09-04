@@ -82,6 +82,7 @@ import { QueryStringParams } from '@/utils/url';
 import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { jsonSafeParse, unproxyValue } from '@/utils/object';
+import { hasNumber } from '@/utils/style';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -1563,25 +1564,37 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): CSSProperties => {
+export const pickStyleFromModel = (model: IConfigurableFormComponent, formItemStylingBox?: CSSProperties): CSSProperties => {
   let style = {};
+  const { top, left, right, bottom } = formItemStylingBox || {};
 
-  if (!args.length) {
-    args = [
+    const padding = [
       'paddingTop',
       'paddingRight',
       'paddingBottom',
-      'paddingLeft',
+      'paddingLeft'
+    ];
+    const margin = [
       'marginTop',
       'marginRight',
       'marginBottom',
       'marginLeft',
     ];
-  }
+
+    const margins = {
+      marginTop: top,
+      marginBottom: bottom,
+      marginLeft: left,
+      marginRight: right
+    };
 
   if (model) {
-    args.forEach((arg) => {
-      if (model[arg]) style = { ...style, [arg]: `${model[arg]}px` };
+    padding.forEach((arg) => {
+      style = { ...style, [arg]: hasNumber(model[arg]) ? `${model[arg]}px` : 'auto' };
+    });
+
+    margin.forEach((arg) => {
+      style = { ...style, [arg]: hasNumber(model[arg]) ? `${model[arg]}px` : margins[arg] || 'auto'};
     });
   }
 

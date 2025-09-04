@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { IInputDirection, IValue } from '../interfaces';
 import { getStyleChangeValue, getStyleValue } from './utils';
 import { getStyleClassName } from '../styles/styles';
+import { useShaFormInstance } from '@/providers';
 
 interface IProps {
   direction: keyof IInputDirection;
@@ -13,6 +14,12 @@ interface IProps {
 }
 
 const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value }) => {
+  const shaForm = useShaFormInstance();
+  const settings = shaForm.settings;
+  const {top, left, right, bottom} = settings?.formItemMargin || {};
+
+  const defaultValue = direction === 'top'? top :
+  direction === 'bottom' ? bottom : direction === 'left' ? left : right;
   const onModifyChange: React.ChangeEventHandler<HTMLInputElement> = ({ target: { value: currentValue } }) => {
     if (currentValue.length < 4) {
       onChange(getStyleChangeValue(type, direction, currentValue, value));
@@ -23,9 +30,10 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value }) =>
     <Input
       className={getStyleClassName(type, direction)}
       onChange={onModifyChange}
-      value={getStyleValue(type, direction, value)}
-      type="number"
+      value={getStyleValue(type, direction, value, defaultValue?.toString())}
+      type='number'
       disabled={readOnly}
+      placeholder='auto'
     />
   );
 };

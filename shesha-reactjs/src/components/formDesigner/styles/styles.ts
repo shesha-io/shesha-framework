@@ -180,7 +180,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaDesignerToolbar} {
             background: white;
-            padding: 0px 12px 0px 12px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;

@@ -22,11 +22,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       width: 100%;
       overflow: hidden;
 
-      .${sidebarContainerMainAreaBody}{
+      .${sidebarContainerMainAreaBody} {
         overflow: auto;
         margin: 0 auto;
          > div {
-            height: 100%;
+          height: -webkit-fill-available;
             .ant-spin-nested-loading {
               height: 100%;
               .ant-spin-container {

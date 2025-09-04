@@ -35,17 +35,8 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const desktopConfig = componentModel?.[activeDevice] || {};
-  const originalStylingBox = JSON.parse(desktopConfig.stylingBox || '{}');
+  const deviceConfig = componentModel?.[activeDevice] || {};
 
-  const renderStylingBox = useMemo(() => {
-    return JSON.stringify({
-      paddingBottom: originalStylingBox.paddingBottom,
-      paddingLeft: originalStylingBox.paddingLeft,
-      paddingRight: originalStylingBox.paddingRight,
-      paddingTop: originalStylingBox.paddingTop
-    });
-  }, [originalStylingBox, desktopConfig.stylingBox]);
 
   const getDimensions = () => {
     const toolboxComponent = getToolboxComponent(componentModel.type);
@@ -63,7 +54,12 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const dimensions = getDimensions();
 
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice], stylingBox: renderStylingBox, ...dimensions }
+    ?
+    {
+      ...componentModel,
+        ...deviceConfig,
+      ...dimensions
+    }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);

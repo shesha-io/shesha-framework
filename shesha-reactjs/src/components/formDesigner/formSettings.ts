@@ -508,6 +508,31 @@ export const getSettings = () => {
                                 tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none'
 
                             })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'numberField',
+                                propertyName: 'formItemMargin.left',
+                                label: 'Margin Left',
+                                parentId: appearanceTabId
+                            }).addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'numberField',
+                                propertyName: 'formItemMargin.top',
+                                label: 'Margin Top',
+                                parentId: appearanceTabId
+                            }).addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'numberField',
+                                propertyName: 'formItemMargin.right',
+                                label: 'Margin Right',
+                                parentId: appearanceTabId
+                            }).addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'numberField',
+                                propertyName: 'formItemMargin.bottom',
+                                label: 'Margin Bottom',
+                                parentId: appearanceTabId
+                            })
                             .toJson()
                         ]
                     },

@@ -21,7 +21,7 @@ export const createRootContainerStyle = (
 ) => {
   const {
     marginTop,
-    marginBottom = 5,
+    marginBottom,
     marginLeft,
     marginRight,
   } = stylingBox;
@@ -32,17 +32,13 @@ export const createRootContainerStyle = (
 
   return {
     ...baseStyle,
-    marginTop,
-    marginBottom,
-    marginLeft,
-    marginRight,
     ...originalDimensions,
-    width: dimensions.width,
-    maxWidth: dimensions.maxWidth,
-    minWidth: dimensions.minWidth,
-    height: isInput? 'max-content' : dimensions.height,
-    minHeight: isInput? originalDimensions.minHeight : dimensions.minHeight,
-    maxHeight: isInput? originalDimensions.maxHeight : dimensions.maxHeight,
+    width: `calc(${dimensions.width} + ${marginLeft} + ${marginRight})`,
+    maxWidth: `calc(${dimensions.maxWidth} + ${marginLeft} + ${marginRight})`,
+    minWidth: `calc(${dimensions.minWidth} + ${marginLeft} + ${marginRight})`,
+    height: isInput? 'max-content' : `calc(${dimensions.height} + ${marginTop} + ${marginBottom})`,
+    minHeight: isInput? originalDimensions.minHeight : `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})`,
+    maxHeight: isInput? originalDimensions.maxHeight : `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})`,
     flexBasis: dimensions.flexBasis,
   };
 };
@@ -57,7 +53,7 @@ export const createFormItemStyle = (
   const {
     marginLeft,
     marginRight,
-    marginBottom = 5,
+    marginBottom,
     marginTop,
   } = stylingBox;
 
@@ -74,7 +70,7 @@ export const createFormItemStyle = (
       ? '100%' 
       : dimensionsStyles?.width || 'auto',
     height: isDataTableContext 
-      ? '100%' 
+      ? '100%'
       : isInput 
           ? '' 
           : dimensionsStyles?.height,

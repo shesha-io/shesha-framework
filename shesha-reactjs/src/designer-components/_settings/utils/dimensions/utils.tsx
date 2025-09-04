@@ -1,46 +1,42 @@
 import React, { CSSProperties } from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
-import { addPx, hasNumber } from "@/utils/style";
+import { addPx } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { widthRelativeToCanvas } from "@/components/sidebarContainer/canvasUtils";
 
-const getDimension = (main: string | number, left: any, right: any, canvasWidth?) => {
-  const width = widthRelativeToCanvas(main, canvasWidth);
-  return `calc(${addPx(width)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
+const getWidth = (main: string | number, canvasWidth?, stylingBox?) => {
+  const { marginLeft, marginRight } = stylingBox || {};
+
+  const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
+  return `calc(${addPx(width)} - ${marginLeft} - ${marginRight})`;
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties, canvasWidth?): CSSProperties => {
+const getHeight = (main: string | number, canvasWidth?) => {
+  const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
+  return `calc(${addPx(width)})`;
+};
+
+export const getDimensionsStyle = (dimensions: IDimensionsValue, canvasWidth?, stylingBox?): CSSProperties => {
+
   return {
     width: dimensions?.width
-      ? hasNumber(dimensions.width) ?
-        getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
-        : dimensions.width
+      ? getWidth(dimensions.width, canvasWidth, stylingBox)
       : undefined,
     height: dimensions?.height
-      ? hasNumber(dimensions.height) ?
-        getDimension(dimensions.height, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-        : dimensions.height
+      ? getWidth(dimensions.height, canvasWidth, stylingBox)
       : undefined,
     minWidth: dimensions?.minWidth
-      ? hasNumber(dimensions.minWidth) ?
-        getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
-        : dimensions.minWidth
+      ? getWidth(dimensions.minWidth, canvasWidth, stylingBox)
       : undefined,
     minHeight: dimensions?.minHeight
-      ? hasNumber(dimensions.minHeight) ?
-        getDimension(dimensions.minHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-        : dimensions.minHeight
+      ? getHeight(dimensions.minHeight, canvasWidth)
       : undefined,
     maxWidth: dimensions?.maxWidth
-      ? hasNumber(dimensions.maxWidth) ?
-        getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
-        : dimensions.maxWidth
+      ? getHeight(dimensions.maxWidth, canvasWidth)
       : undefined,
     maxHeight: dimensions?.maxHeight
-      ? hasNumber(dimensions.maxHeight) ?
-        getDimension(dimensions.maxHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
-        : dimensions.maxHeight
+      ? getHeight(dimensions.maxHeight, canvasWidth)
       : undefined,
   };
 };

@@ -1,3 +1,4 @@
+import React from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
 
 export interface DimensionConfig {
@@ -56,10 +57,12 @@ export const getComponentDimensions = (
 
 export const getDeviceDimensions = (
   typeInfo: ComponentTypeInfo,
-  dimensionsStyles: any
+  dimensionsStyles: any,
+  stylingBox?: React.CSSProperties
 ) => {
   const { isInput } = typeInfo;
-  
+  // const {marginBottom, marginTop, marginLeft, margingRight} = stylingBox;
+
   return {
     width: '100%',
     height: isInput ? dimensionsStyles?.height : '100%'

@@ -22,7 +22,7 @@ import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
 import { Tooltip } from 'antd';
 import { ShaForm, useIsDrawingForm } from '@/providers/form';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerState, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
@@ -53,13 +53,14 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
+  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
   const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
-  
+
   const component = getToolboxComponent(componentModel?.type);
   const typeInfo = getComponentTypeInfo(component);
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles( {...componentModel, ...componentModel?.[activeDevice]});
-
+  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...componentModel, ...componentModel?.[activeDevice] });
+  const { top, left, bottom, right } = formSettings?.formItemMargin || {};
   const desktopConfig = componentModel?.[activeDevice] || {};
   const originalDimensions = dimensionsStyles;
   const originalStylingBox = stylingBoxAsCSS;
@@ -100,40 +101,49 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  const { marginLeft, marginRight, marginBottom, marginTop } = stylingBoxAsCSS;
+  const { marginLeft = left, marginRight = right, marginBottom = bottom, marginTop = top } = stylingBoxAsCSS;
 
-  const renderStylingBox = useMemo(() => {
-    return JSON.stringify({
+  const stylingBoxPadding = useMemo(() => {
+    return {
       paddingBottom: originalStylingBox.paddingBottom,
       paddingLeft: originalStylingBox.paddingLeft,
       paddingRight: originalStylingBox.paddingRight,
       paddingTop: originalStylingBox.paddingTop
-    });
+    };
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
+
+  const stylingBoxMargin = useMemo(() => {
+    return {
+      marginTop: marginTop ? top : marginTop,
+      marginBottom: marginBottom ? bottom : marginBottom,
+       marginLeft: marginLeft ? left : marginLeft,
+        marginRight: marginRight ? right : marginRight
+    };
+  }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
+
+  const paddingStyles = JSON.stringify(stylingBoxPadding);
+  const marginStyles = JSON.stringify(stylingBoxMargin);
 
   const componentDimensions = getComponentDimensions(typeInfo, dimensionsStyles);
 
-
   const renderComponentModel = useMemo(() => {
     const deviceDimensions = getDeviceDimensions(typeInfo, dimensionsStyles);
-    
+
     return {
       ...componentModel,
-      stylingBox: renderStylingBox,
-      [activeDevice]: {
+      ...desktopConfig,
         ...desktopConfig,
         ...(deviceDimensions && { dimensions: deviceDimensions }),
-        stylingBox: renderStylingBox,
+        // ...(formMode === 'designer' ? {stylingBox: paddingStyles} : {stylingBox: JSON.stringify({...stylingBoxPadding, ...stylingBoxMargin})}),
         flexBasis: getDeviceFlexBasis(dimensionsStyles)
-      }
     };
-  }, [componentModel, desktopConfig, renderStylingBox, originalDimensions, formMode, typeInfo]);
 
+  }, [componentModel, desktopConfig, paddingStyles, originalDimensions, formMode, typeInfo]);
 
   const rootContainerStyle = useMemo(() => {
     return createRootContainerStyle(
       componentDimensions,
-      { marginTop, marginBottom: marginBottom || 5, marginLeft, marginRight },
+      {...JSON.parse(marginStyles)},
       originalDimensions,
       typeInfo.isInput
     );
@@ -226,6 +236,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={{...componentModel, }} componentRef={componentRef} />
+    <ComponentRenderer componentModel={{ ...componentModel, }} componentRef={componentRef} />
   );
 };

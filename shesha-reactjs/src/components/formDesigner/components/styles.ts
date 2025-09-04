@@ -5,10 +5,8 @@ export const useStyles = createStyles(({ css, cx }, layout) => {
     const formItem = cx(css`
         --ant-form-item-margin-bottom: 0px !important;
         .ant-form-item-row {
-            display: flex !important;
             height: 100%;
             width: 100%;
-            ${layout !== 'vertical' && 'align-items: center'};
         }
 
         .ant-row .ant-form-item-control {

@@ -2,14 +2,10 @@ import React, { FC, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useCanvas, useFormItem, useShaFormInstance } from '@/providers';
+import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
-import { useStyles } from './styles';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { getComponentTypeInfo } from '../utils/componentTypeUtils';
-import { createFormItemStyle } from '../utils/stylingUtils';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -20,14 +16,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-  const { getPublicFormApi, formMode, form } = useShaFormInstance();
+  const { getPublicFormApi } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
-  const { activeDevice } = useCanvas();
-  const { styles } = useStyles(form.settings.layout);
-
-  const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles(model?.[activeDevice] || model);
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -41,19 +33,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  const formItemStyle = createFormItemStyle(
-    stylingBoxAsCSS,
-    formMode,
-    dimensionsStyles,
-    getComponentTypeInfo(model),
-  );
-
   const formItemProps: FormItemProps = {
-    className: classNames(className, styles.formItem, form.settings.layout),
+    className: classNames(className),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
-    style: formItemStyle,
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
@@ -61,7 +45,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     //layout: model.layout, this property appears to have been removed from the Ant component
-    name: model.context ? undefined : getFieldNameFromExpression(propName),
+    name: model.context ? undefined : getFieldNameFromExpression(propName)
   };
 
   if (typeof children === 'function') {

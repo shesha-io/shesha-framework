@@ -12,6 +12,7 @@ import {
   useAvailableConstantsContextsNoRefresh,
   useCanvas,
   useDeepCompareMemo,
+  useShaFormInstance,
   useSheshaApplication,
   wrapConstantsData
 } from "..";
@@ -26,6 +27,7 @@ import { getBackgroundStyle } from "@/designer-components/_settings/utils/backgr
 import { jsonSafeParse, removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
+import { useFormDesignerStateSelector } from "@/providers/formDesigner";
 
 export function useActualContextData<T = any>(
   model: T,
@@ -177,8 +179,11 @@ export const useFormComponentStyles = <TModel,>(
   model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
+  const shaForm = useShaFormInstance();
   const jsStyle = useActualContextExecution(model?.style, null, {}); // use default style if empty or error
   const {designerWidth} = useCanvas();
+
+  const formItemMargin = shaForm?.settings?.formItemMargin || {};
 
   const {
     dimensions,
@@ -203,12 +208,12 @@ export const useFormComponentStyles = <TModel,>(
 
   const styligBox = jsonSafeParse(stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox, designerWidth), [dimensions, stylingBox, designerWidth]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
+  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox, formItemMargin), [stylingBox]);
   const overflowStyles = useMemo(() => getOverflowStyle(overflow, false), [overflow]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, stylingBoxAsCSS), [dimensions, stylingBox, designerWidth]);
 
   useDeepCompareEffect(() => {
     if (background?.storedFile?.id && background?.type === 'storedFile') {
