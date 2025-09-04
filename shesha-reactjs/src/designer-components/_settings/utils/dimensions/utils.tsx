@@ -5,38 +5,30 @@ import { addPx } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { widthRelativeToCanvas } from "@/components/sidebarContainer/canvasUtils";
 
-const getWidth = (main: string | number, canvasWidth?, stylingBox?) => {
-  const { marginLeft, marginRight } = stylingBox || {};
-
-  const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
-  return `calc(${addPx(width)} - ${marginLeft} - ${marginRight})`;
-};
-
-const getHeight = (main: string | number, canvasWidth?) => {
+const getDimension = (main: string | number, canvasWidth?) => {
   const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
   return `calc(${addPx(width)})`;
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue, canvasWidth?, stylingBox?): CSSProperties => {
-
+export const getDimensionsStyle = (dimensions: IDimensionsValue, canvasWidth?): CSSProperties => {
   return {
     width: dimensions?.width
-      ? getWidth(dimensions.width, canvasWidth, stylingBox)
+      ? getDimension(dimensions.width, canvasWidth)
       : undefined,
     height: dimensions?.height
-      ? getWidth(dimensions.height, canvasWidth, stylingBox)
+      ? getDimension(dimensions.height, canvasWidth)
       : undefined,
     minWidth: dimensions?.minWidth
-      ? getWidth(dimensions.minWidth, canvasWidth, stylingBox)
+      ? getDimension(dimensions.minWidth, canvasWidth)
       : undefined,
     minHeight: dimensions?.minHeight
-      ? getHeight(dimensions.minHeight, canvasWidth)
+      ? getDimension(dimensions.minHeight, canvasWidth)
       : undefined,
     maxWidth: dimensions?.maxWidth
-      ? getHeight(dimensions.maxWidth, canvasWidth)
+      ? getDimension(dimensions.maxWidth, canvasWidth)
       : undefined,
     maxHeight: dimensions?.maxHeight
-      ? getHeight(dimensions.maxHeight, canvasWidth)
+      ? getDimension(dimensions.maxHeight, canvasWidth)
       : undefined,
   };
 };

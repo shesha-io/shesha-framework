@@ -14,17 +14,22 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol,
+  wrapperCol
 }) => {
   const { getPublicFormApi } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
+  const shaForm = useShaFormInstance();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
+  const settings = shaForm.settings;
+  const defaultMargins = settings?.formItemMargin || {};
+  const { top, left, right, bottom } = defaultMargins;
+  const { marginTop = top, marginBottom = bottom, marginRight = right, marginLeft = left } = model?.allStyles?.fullStyle || {};
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
@@ -45,7 +50,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     //layout: model.layout, this property appears to have been removed from the Ant component
-    name: model.context ? undefined : getFieldNameFromExpression(propName)
+    name: model.context ? undefined : getFieldNameFromExpression(propName),
+    style: { marginBottom, marginRight, marginLeft, marginTop}
   };
 
   if (typeof children === 'function') {

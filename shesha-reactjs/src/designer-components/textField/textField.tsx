@@ -42,6 +42,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align, color: model?.font?.color, fontSize: model?.font?.size });
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
+    const zeroMargins = { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0};
+
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
@@ -59,7 +61,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       disabled: model.readOnly,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
-      style: { ...model.allStyles.fullStyle, width: '100%' },
+      style: { ...model.allStyles.fullStyle, width: '100%', ...zeroMargins },
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,

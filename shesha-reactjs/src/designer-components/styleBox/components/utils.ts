@@ -17,8 +17,7 @@ export const getStyleChangeValue = (
   });
 };
 
-export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string, 
-  defaultMargin?:string) => {
-  const v = JSON.parse(value || '{}') as IValue;
-  return addPx((v || {})[`${type}${capitalizeFirstLetter(direction)}`] || defaultMargin ||'');
+export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string, defaultMargin?:string) => {
+  const v = jsonSafeParse(value || '{}') as IValue;
+  return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || defaultMargin || '';
 };

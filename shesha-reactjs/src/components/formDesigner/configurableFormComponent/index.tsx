@@ -187,7 +187,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         height: '100%',
         boxSizing: 'border-box'
       }}>
-        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly}>
+        <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
           <div style={{
             width: '100%',
             height: '100%',
@@ -195,7 +195,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
           }}>
             <FormComponent
               componentModel={renderComponentModel}
-              componentRef={componentRef}
             />
           </div>
         </DragWrapper>

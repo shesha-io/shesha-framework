@@ -27,7 +27,6 @@ import { getBackgroundStyle } from "@/designer-components/_settings/utils/backgr
 import { jsonSafeParse, removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
-import { useFormDesignerStateSelector } from "@/providers/formDesigner";
 
 export function useActualContextData<T = any>(
   model: T,
@@ -213,7 +212,7 @@ export const useFormComponentStyles = <TModel,>(
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox, formItemMargin), [stylingBox]);
   const overflowStyles = useMemo(() => getOverflowStyle(overflow, false), [overflow]);
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, stylingBoxAsCSS), [dimensions, stylingBox, designerWidth]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth), [dimensions, stylingBox, designerWidth]);
 
   useDeepCompareEffect(() => {
     if (background?.storedFile?.id && background?.type === 'storedFile') {

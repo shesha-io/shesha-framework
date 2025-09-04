@@ -80,11 +80,8 @@ export const GlobalSheshaStyles = createGlobalStyle`
     margin: auto;
   }
   .${(p) => p.theme.prefixCls}-form-item {
-    margin-bottom: 0 !important;
-  
     .${(p) => p.theme.prefixCls}-row {
       &.${(p) => p.theme.prefixCls}-form-item-row {
-        // margin-bottom: 5px;
       }
     }
   }
