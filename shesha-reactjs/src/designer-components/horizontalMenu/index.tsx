@@ -102,7 +102,6 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       itemColor: model.font?.color || model.itemColor,
     };
 
-    // Apply styles like textField does
     const finalStyle = useMemo(() => {
       return {
         ...model.allStyles?.fullStyle,
