@@ -94,13 +94,33 @@ const PieChart = ({ data }: IPieChartProps) => {
       legend: {
         display: !!showLegend,
         position: legendPosition ?? 'top',
-        align: 'center',
+        align: (legendPosition === 'left' || legendPosition === 'right') ? 'center' : 'center',
         fullSize: false, // This ensures legend doesn't consume chart space
         labels: {
           boxWidth: 20,
           padding: 10,
           font: createFontConfig(legendFont, 12, '400'),
           color: legendFont?.color || '#000000',
+          usePointStyle: true, // Use point style for better visual consistency
+          generateLabels: function(chart) {
+            const data = chart.data;
+            if (data.labels.length && data.datasets.length) {
+              return data.labels.map((label, i) => {
+                const dataset = data.datasets[0];
+                const value = dataset.data[i];
+                return {
+                  text: String(label), // Ensure label is a string
+                  fillStyle: dataset.backgroundColor[i] || dataset.borderColor,
+                  strokeStyle: dataset.borderColor,
+                  lineWidth: dataset.borderWidth,
+                  pointStyle: 'circle',
+                  hidden: false,
+                  index: i
+                };
+              });
+            }
+            return [];
+          }
         },
       },
       title: {
