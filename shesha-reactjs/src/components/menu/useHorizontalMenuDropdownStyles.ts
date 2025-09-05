@@ -33,7 +33,6 @@ export const useHorizontalMenuDropdownStyles = ({
       .horizontal-menu-${menuId}-dropdown .ant-menu {
         background: ${colors.itemBackground || 'transparent'} !important;
         border: none !important;
-        box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
         font-family: ${fontStyles?.fontFamily} !important;
         font-weight: ${fontStyles?.fontWeight} !important;
         text-align: ${fontStyles?.textAlign} !important;
