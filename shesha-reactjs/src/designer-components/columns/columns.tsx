@@ -107,14 +107,13 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     );
 
 
-    const containerPadding = hasBorder ? { 
-      paddingTop: '8px', 
-      paddingLeft: '8px', 
-      paddingRight: '8px', 
-      paddingBottom: '3px' // Reduced to account for form item bottom margin
-    } : {};
+    const hPad = `${((gutterX || 0) / 2) + 8}px`;
+    const vPadTop = `${((gutterY || 0) / 2) + 8}px`;
+    const vPadBottom = `${((gutterY || 0) / 2) + 3}px`; // keep the reduced bottom margin intent
+    const containerPadding = hasBorder
+      ? { paddingTop: vPadTop, paddingLeft: hPad, paddingRight: hPad, paddingBottom: vPadBottom }
+      : {};
     const boxSizing = hasBorder ? { boxSizing: 'border-box' } : {};
-
     // Validate and normalize columns to prevent overflow
     const validatedColumns = validateColumns(columns);
 
