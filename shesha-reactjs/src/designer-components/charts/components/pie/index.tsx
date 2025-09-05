@@ -107,7 +107,6 @@ const PieChart = ({ data }: IPieChartProps) => {
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, i) => {
                 const dataset = data.datasets[0];
-                const value = dataset.data[i];
                 return {
                   text: String(label), // Ensure label is a string
                   fillStyle: dataset.backgroundColor[i] || dataset.borderColor,
