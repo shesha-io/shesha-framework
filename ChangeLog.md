@@ -1,4 +1,5 @@
 # Release Notes
 
 🐞 Bug Fixes
-- Fixed Data Table 'Customize Columns' JS Option
+- Number component does not allow saving null value
+- Fix export forms problem
