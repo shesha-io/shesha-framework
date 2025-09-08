@@ -2,7 +2,6 @@ import * as RestfulShesha from '@/utils/fetchers';
 import axios from 'axios';
 import FileSaver from 'file-saver';
 import React, { MutableRefObject, useEffect, useState } from 'react';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import { FC } from 'react';
 import {
   Form,
@@ -11,10 +10,10 @@ import {
   Spin,
   Switch
 } from 'antd';
-import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
+import { LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
 import { getFileNameFromResponse } from '@/utils/fetchers';
 import { getIndexesList } from '../treeUtils';
-import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
+import { AbpWrappedResponse, ErrorInfo } from '@/interfaces/gql';
 import { ItemsTree } from '../itemsTree';
 import { useSheshaApplication } from '@/providers';
 import {
@@ -37,11 +36,11 @@ export interface IConfigurationItemsExportProps {
   exportRef: MutableRefObject<IExportInterface>;
 }
 
-interface IGetConfigItemsPayload extends IGenericGetAllPayload {
-  versionSelectionMode: string;
-}
-
 type VerionSelectionMode = 'live' | 'ready' | 'latest';
+
+type GetFlatTreePayload = {
+  mode: number;
+};
 
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -53,55 +52,14 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
   const [isLoading, setIsLoading] = useState(false);
 
   const [treeState, setTreeState] = useState<ITreeState>(null);
-
-  const getItemFilterByMode = (mode: VerionSelectionMode): object => {
-    switch (mode) {
-      case 'live':
-        return { '==': [{ var: 'versionStatus' }, ConfigurationItemVersionStatus.Live] };
-      case 'ready':
-        return {
-          and: [
-            { '==': [{ var: 'isLast' }, true] },
-            {
-              in: [
-                { var: 'versionStatus' },
-                [ConfigurationItemVersionStatus.Live, ConfigurationItemVersionStatus.Ready],
-              ],
-            },
-          ],
-        };
-      case 'latest':
-        return {
-          and: [
-            { '==': [{ var: 'isLast' }, true] },
-            {
-              in: [
-                { var: 'versionStatus' },
-                [
-                  ConfigurationItemVersionStatus.Live,
-                  ConfigurationItemVersionStatus.Ready,
-                  ConfigurationItemVersionStatus.Draft,
-                ],
-              ],
-            },
-          ],
-        };
-    }
-    return null;
-  };
-  const getListFetcherQueryParams = (mode: VerionSelectionMode): IGetConfigItemsPayload => {
-    const filterByMode = getItemFilterByMode(mode);
-    const finalFilter = filterByMode;
-
-    return {
-      skipCount: 0,
-      maxResultCount: -1,
-      entityType: 'Shesha.Domain.ConfigurationItems.ConfigurationItem',
-      properties: 'id name module { id name description } application { id appKey name } itemType label description',
-      filter: JSON.stringify(finalFilter),
-      versionSelectionMode: versionsMode,
-      sorting: 'module.name, name',
-    };
+  
+  const getListFetcherQueryParams = (mode: VerionSelectionMode): GetFlatTreePayload => {
+    switch(mode){
+      default:
+      case 'live': return { mode: 1 };
+      case 'ready': return { mode: 2 };
+      case 'latest': return { mode: 3 };
+    }    
   };
 
   const applyItems = (allItems: ConfigurationItemDto[]) => {
@@ -211,12 +169,12 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
   useEffect(() => {
     setIsLoading(true);
-    RestfulShesha.get<IAbpWrappedGetEntityListResponse<ConfigurationItemDto>, any, IGenericGetAllPayload, void>(
-      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
+    RestfulShesha.get<AbpWrappedResponse<ConfigurationItemDto[], ErrorInfo>, any, GetFlatTreePayload, void>(
+      `/api/services/app/ConfigurationItem/GetExportFlatTree`,
       getListFetcherQueryParams(versionsMode),
       { base: backendUrl, headers: httpHeaders }
     ).then((response) => {
-      applyItems(response.result.items);
+      applyItems(response.result);
       setIsLoading(false);
     });
   }, [versionsMode]);
