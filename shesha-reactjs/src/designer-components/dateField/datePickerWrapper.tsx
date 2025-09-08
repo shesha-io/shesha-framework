@@ -43,6 +43,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     resolveToUTC,
     allStyles,
     enableStyleOnReadonly,
+    onFocusCustom,
+    onBlurCustom,
     ...rest
   } = props;
 
@@ -74,7 +76,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
               : !showTime
                 ? newValue.startOf('day')
                 : newValue;
-    const finalMoment = resolveToUTC ? val?.utc(true) : val.local(true);
+      
+    const finalMoment = resolveToUTC ? val.clone().utc() : val.clone().local();
+    
     if (resolveToUTC) {
       // Always store UTC in ISO
       return finalMoment.toISOString();
@@ -197,8 +201,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     );
   };
 
-
-
   if (range) {
     return (
       <div style={{marginRight: 1}} >
@@ -210,6 +212,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
         disabledTime={disabledTime(props, formData, globalState)}
         onChange={handleRangePicker}
+        onFocus={onFocusCustom}
+        onBlur={onBlurCustom}
         format={pickerFormat}
         value={rangeMomentValue}
         defaultValue={defaultMomentValue}
@@ -242,6 +246,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       showNow={showNow}
       picker={picker}
       format={pickerFormat}
+      onFocus={onFocusCustom}
+      onBlur={onBlurCustom}
       style={allStyles.fullStyle}
       onCalendarChange={(dates) => {
         if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
