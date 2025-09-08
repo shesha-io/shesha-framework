@@ -23,8 +23,7 @@ export const PreviewButton: FC<IPreviewButtonProps> = (props) => {
             type={formMode === 'designer' ? 'default' : 'primary'}
             title="Preview"
             size={props.size}
-        >
-            <EyeOutlined />
-        </Button>
+            shape='circle'
+        />
     );
 };
