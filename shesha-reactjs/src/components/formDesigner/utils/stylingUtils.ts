@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
 import { ComponentDimensions } from './dimensionUtils';
-import { addPx } from '@/utils/style';
+import { addPx, hasNumber } from '@/utils/style';
 
 export interface StyleConfig {
   marginTop?: number | string;
@@ -21,7 +21,6 @@ export const createRootContainerStyle = (
   isInput
 ) => {
 
-
   const baseStyle = {
     boxSizing: 'border-box' as const,
   };
@@ -40,15 +39,17 @@ export const createRootContainerStyle = (
     marginRight,
   } = margins;
 
+  console.log(    "Width:",dimensions.width, hasNumber(dimensions.width) ? `calc(${dimensions.width} + ${marginLeft} + ${marginRight})` : dimensions.width,
+)
   return {
     ...baseStyle,
     ...originalDimensions,
-    width: `calc(${dimensions.width} + ${marginLeft} + ${marginRight})`,
-    maxWidth: `calc(${dimensions.maxWidth} + ${marginLeft} + ${marginRight})`,
-    minWidth: `calc(${dimensions.minWidth} + ${marginLeft} + ${marginRight})`,
-    height: isInput ? 'max-content' : `calc(${dimensions.height} + ${marginTop} + ${marginBottom})`,
-    minHeight: isInput ? originalDimensions.minHeight : `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})`,
-    maxHeight: isInput ? originalDimensions.maxHeight : `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})`,
+    width: hasNumber(dimensions.width) ? `calc(${dimensions.width} + ${marginLeft} + ${marginRight})` : dimensions.width,
+    maxWidth: hasNumber(dimensions.maxWidth) ? `calc(${dimensions.maxWidth} + ${marginLeft} + ${marginRight})` : dimensions.maxWidth,
+    minWidth: hasNumber(dimensions.minWidth) ? `calc(${dimensions.minWidth} + ${marginLeft} + ${marginRight})` : dimensions.minWidth,
+    height: isInput ? 'max-content' : hasNumber(dimensions.height) ? `calc(${dimensions.height} + ${marginTop} + ${marginBottom})` : dimensions.height,
+    minHeight: isInput ? originalDimensions.minHeight : hasNumber(dimensions.minHeight) ? `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})` : dimensions.minHeight,
+    maxHeight: isInput ? originalDimensions.maxHeight : hasNumber(dimensions.maxHeight) ? `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})` : dimensions.maxHeight,
     flexBasis: dimensions.flexBasis,
   };
 };

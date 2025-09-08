@@ -5,7 +5,7 @@ export interface ComponentTypeInfo {
 
 export const getComponentTypeInfo = (component: any): ComponentTypeInfo => {
   const isDataTableContext = component?.type === 'datatableContext';
-  const isInput = component?.isInput;
+  const isInput = component?.isInput || component?.type === 'button';
 
   return {
     isDataTableContext,
