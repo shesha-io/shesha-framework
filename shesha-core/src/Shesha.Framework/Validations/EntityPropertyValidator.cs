@@ -4,6 +4,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.Metadata;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -158,8 +159,11 @@ namespace Shesha.Validations
                     }
                     break;
                 case DataTypes.Number:
-                    var b = double.TryParse(value?.ToString(), out double val);
+                    var stringValue = value?.ToString();
+                    if (string.IsNullOrWhiteSpace(stringValue) && propInfo != null && propInfo.IsNullable())
+                        return true;
 
+                    var b = double.TryParse(stringValue, out double val);
                     if (!b)
                     {
                         validationResult.Add(new ValidationResult($"Property '{friendlyName}' should be in a number format"));

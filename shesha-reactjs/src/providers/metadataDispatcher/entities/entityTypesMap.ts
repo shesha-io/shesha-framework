@@ -5,7 +5,8 @@ type ClassNamesMap = Map<string, IEntityTypeIndentifier>;
 
 export class EntityTypesMap implements IEntityTypesMap {
     #namesMap: ClassNamesMap;
-    constructor(){
+
+    constructor() {
         this.#namesMap = new Map();
     }
 

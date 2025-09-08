@@ -19,7 +19,7 @@ export const useFormByMarkup = (props: GetFormByMarkupPayload): GetFormByMarkupR
     useEffect(() => {
         if (initialLoaderState.current !== 'ready')
             loader.promise.then(() => {
-                setLoader({...loader});
+                setLoader({ ...loader });
             });
     }, []);
 
@@ -42,7 +42,7 @@ export const useFormById = (props: GetFormByIdPayload): GetFormByIdResponse => {
     useEffect(() => {
         if (initialLoaderState.current !== 'ready')
             loader.promise.then(() => {
-                setLoader({...loader});
+                setLoader({ ...loader });
             });
     }, []);
 

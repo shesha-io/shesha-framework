@@ -114,23 +114,23 @@ export interface IInputStyles extends IStyleType {
 };
 
 export type ConfigurableFormComponentTypes =
-  | 'alert'
-  | 'address'
-  | 'toolbar'
-  | 'dropdown'
-  | 'textField'
-  | 'textField'
-  | 'textArea'
-  | 'iconPicker'
-  | 'colorPicker'
-  | 'container'
-  | 'collapsiblePanel'
-  | 'autocomplete'
-  | 'checkbox'
-  | 'numberField'
-  | 'sectionSeparator'
-  | 'queryBuilder'
-  | 'labelValueEditor';
+  | 'alert' |
+  'address' |
+  'toolbar' |
+  'dropdown' |
+  'textField' |
+  'textField' |
+  'textArea' |
+  'iconPicker' |
+  'colorPicker' |
+  'container' |
+  'collapsiblePanel' |
+  'autocomplete' |
+  'checkbox' |
+  'numberField' |
+  'sectionSeparator' |
+  'queryBuilder' |
+  'labelValueEditor';
 
 export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
@@ -346,7 +346,7 @@ export interface ILegacyFormSettings extends IFormSettingsCommon {
   onInitialized?: string;
   onDataLoaded?: string;
   onUpdate?: string;
-  //#endregion 
+  //#endregion
 }
 
 export interface IFormLifecycleSettings {
@@ -355,7 +355,7 @@ export interface IFormLifecycleSettings {
   dataSubmitterType?: string;
   dataSubmittersSettings?: IDictionary<object>;
 
-  //#region lifecycle 
+  //#region lifecycle
   onBeforeDataLoad?: string;
   onAfterDataLoad?: string;
 
@@ -390,9 +390,9 @@ export interface FormMarkupWithSettings {
 }
 export type FormRawMarkup = IConfigurableFormComponent[];
 export type FormMarkup =
-  | FormRawMarkup
-  | FormMarkupWithSettings | ((data: any) => FormRawMarkup
-    | FormMarkupWithSettings);
+  | FormRawMarkup |
+  FormMarkupWithSettings | ((data: any) => FormRawMarkup |
+    FormMarkupWithSettings);
 
 export type FormFullName = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;

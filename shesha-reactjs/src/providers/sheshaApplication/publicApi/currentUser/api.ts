@@ -38,25 +38,32 @@ export interface IInternalCurrentUserApi extends ICurrentUserApi {
 
 export class CurrentUserApi implements IInternalCurrentUserApi {
   readonly #httpClient: HttpClientApi;
+
   #profileInfo: IUserProfileInfo;
+
   #grantedPermissions: GrantedPermissionDto[];
 
   //#region profile data
   get isLoggedIn() {
     return Boolean(this.#profileInfo);
   }
+
   get id() {
     return this.#profileInfo?.id;
   }
+
   get userName() {
     return this.#profileInfo?.userName;
   }
+
   get firstName() {
     return this.#profileInfo?.firstName;
   }
+
   get lastName() {
     return this.#profileInfo?.lastName;
   }
+
   get personId() {
     return this.#profileInfo?.personId;
   }

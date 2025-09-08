@@ -9,7 +9,7 @@ export interface IPersistedFormPayload
 export interface IFetchDataSuccessPayload {
   entityId: string;
 }
-  
+
 export interface IFetchDataErrorPayload {
   error: GetDataError<unknown>;
 }

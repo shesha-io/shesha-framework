@@ -149,10 +149,12 @@ export type AvailableConstantsContext = {
   test: any;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 
-export const toBase64 = file => new Promise<string>((resolve, reject) => {
+const AsyncFunction = Object.getPrototypeOf(async function () {
+  // nop
+}).constructor;
+
+export const toBase64 = (file) => new Promise<string>((resolve, reject) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onload = () => resolve(reader.result as string);
@@ -228,8 +230,8 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
         return fArgs._propAccessors !== undefined
           ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({ n, v: v() && v()['getData'] ? v().getData() : v() }))
           : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v));
-      }
-    }
+      },
+    },
   };
   return result;
 };
@@ -277,7 +279,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     setGlobalState,
     httpClient,
     message,
-    test
+    test,
   } = fullContext;
   const shaFormInstance = shaForm?.getPublicFormApi() ?? closestShaForm;
 
@@ -359,11 +361,11 @@ export const useApplicationContextData = (): ContextGetData => {
 };
 
 const getSettingValue = (
-  propertyName,
+  propertyName: string,
   value: any,
   allData: any,
   calcFunction: (setting: IPropertySetting, allData: any) => any,
-  parentReadOnly: boolean = undefined,
+  parentReadOnly?: boolean,
   propertyFilter?: (name: string, value: any) => boolean,
   processedObjects?: any[]
 ) => {
@@ -375,15 +377,16 @@ const getSettingValue = (
   if (!unproxiedValue || typeof propertyFilter === 'function' && !propertyFilter(propertyName, value))
     return value;
 
-  if (typeof unproxiedValue === 'object'
-    && processedObjects.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
+  if (typeof unproxiedValue === 'object' &&
+    processedObjects.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
   ) {
     // If array - update all items
     if (Array.isArray(unproxiedValue)) {
       const v = unproxiedValue.length === 0
         ? unproxiedValue
         : unproxiedValue.map((x) => {
-          /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
+          // TODO: review and enable rule
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           return getActualModel(x, allData, parentReadOnly, propertyFilter, processedObjects);
         });
       processedObjects.push(v);
@@ -403,7 +406,9 @@ const getSettingValue = (
     }
 
     // update nested objects
-    /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
+
+    // TODO: review and enable rule
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processedObjects);
     processedObjects.push(v);
     return v;
@@ -452,7 +457,7 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
 export const getActualModel = <T>(
   model: T,
   allData: any,
-  parentReadOnly: boolean = undefined,
+  parentReadOnly?: boolean,
   propertyFilter?: (name: string, value: any) => boolean,
   processedObjects?: any[]
 ): T => {
@@ -482,18 +487,18 @@ export const getActualModel = <T>(
 
 export const isCommonContext = (name: string): boolean => {
   const r = RootContexts;
-  return r.filter(i => i === name)?.length > 0;
+  return r.filter((i) => i === name)?.length > 0;
 };
 
 export const getParentReadOnly = (parent: IParentProviderProps, allData: any): boolean =>
-  allData.form?.formMode !== 'designer'
-  && (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
+  allData.form?.formMode !== 'designer' &&
+  (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
 
 export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
   return { ...model, [propertyName]: getSettingValue(propertyName, model[propertyName], allData, calcValue) } as T;
 };
 
-//const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
+// const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
 export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
   if (properties === null)
     return model;
@@ -505,8 +510,8 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
       : Promise.resolve([]);
   return await propsPromise.then(async (props: IPropertyMetadata[]) => {
     for (const key in newModel) {
-      if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
-        const prop = props.find(i => toCamelCase(i.path) === key);
+      if (newModel.hasOwnProperty(key)) { // regexp.test(newModel[key])) {
+        const prop = props.find((i) => toCamelCase(i.path) === key);
         if (prop && (prop.dataType === DataTypes.date || prop.dataType === DataTypes.dateTime))
           newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
         if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
@@ -666,7 +671,7 @@ export const componentsFlatStructureToTree = (
       : undefined;
     const staticContainerIds = [];
     if (ownerDefinition?.customContainerNames) {
-      ownerDefinition.customContainerNames.forEach(sc => {
+      ownerDefinition.customContainerNames.forEach((sc) => {
         const subContainer = ownerComponent[sc];
         if (subContainer) {
           // container with id
@@ -674,7 +679,7 @@ export const componentsFlatStructureToTree = (
             staticContainerIds.push(subContainer.id);
           // container without id (array of components)
           if (Array.isArray(subContainer))
-            subContainer.forEach(c => {
+            subContainer.forEach((c) => {
               if (c.id)
                 staticContainerIds.push(c.id);
             });
@@ -737,12 +742,15 @@ export const upgradeComponentsTree = (
 
 class StaticMustacheTag {
   #value: string;
+
   constructor(value: string) {
     this.#value = value;
   }
+
   toEscapedString() {
     return `{{${this.#value}}}`;
   }
+
   toString() {
     return `{{{${this.#value}}}}`;
   }
@@ -766,7 +774,6 @@ class StaticMustacheTag {
  * @returns {string} evaluated string
  */
 export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
-
   // store moment toString function to get ISO format of datetime
   var toString = moment.prototype.toString;
   moment.prototype.toString = function () {
@@ -774,20 +781,19 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
   };
 
   try {
-
     if (!template || typeof template !== 'string')
       return template;
 
-    const localData: IAnyObject = ! data ? undefined 
+    const localData: IAnyObject = !data ? undefined
       : data instanceof ObservableProxy
-        ? {...data} // unpropsy the observable
+        ? { ...data } // unpropsy the observable
         : data;
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
       var dateFormat = data?.dateFormat;
 
       if (localData) {
-        //adding a function to the data object that will format datetime
+        // adding a function to the data object that will format datetime
 
         localData.dateFormat = function () {
           return function (timestamp, render) {
@@ -951,7 +957,7 @@ export interface IEvaluateComplexStringResult {
  * @returns {string} evaluated string
  */
 
-//newer versions
+// newer versions
 export const evaluateComplexStringWithResult = (
   expression: string,
   mappings: IMatchData[],
@@ -1028,10 +1034,9 @@ export type FunctionExecutor<TResult = any> = (...args: any) => TResult;
 export const getFunctionExecutor = <TResult = any>(
   expression: string,
   expressionArguments: FunctionArgument[]): FunctionExecutor<TResult> => {
-
   if (!expression) throw new Error('Expression must be defined');
 
-  const argumentsList = (expressionArguments ?? []).map(a => a.name).join(", ");
+  const argumentsList = (expressionArguments ?? []).map((a) => a.name).join(", ");
 
   const expressionExecuter = new Function(argumentsList, expression);
   return expressionExecuter as FunctionExecutor<TResult>;
@@ -1438,13 +1443,13 @@ export const createComponentModelForDataProperty = (
     toolboxComponent: IToolboxComponent<any>
   ) => IConfigurableFormComponent
 ): IConfigurableFormComponent => {
-  let toolboxComponent = findToolboxComponent(components, c => c.type === propertyMetadata.formatting.defaultEditor );
+  let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);
   toolboxComponent = toolboxComponent ||
     findToolboxComponent(
-      components, 
-      c => 
-        Boolean(c.dataTypeSupported) 
-        && c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
+      components,
+      (c) =>
+        Boolean(c.dataTypeSupported) &&
+        c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
   );
 
   if (!Boolean(toolboxComponent)) return null;
@@ -1463,7 +1468,7 @@ export const createComponentModelForDataProperty = (
     componentName: fullName,
     label: propertyMetadata.label,
     labelAlign: 'right',
-    //parentId: containerId,
+    // parentId: containerId,
     hidden: false,
     isDynamic: false,
     validate: {},

@@ -7,7 +7,9 @@ export interface IBaseAccessor {
  */
 export class BaseAccessor<TChild = IBaseAccessor, TManager = any> implements IBaseAccessor {
     readonly _accessor: string;
+
     readonly _children: Map<string, TChild>;
+
     readonly _manager: TManager;
 
     createChild(accessor: string): TChild {

@@ -1,11 +1,11 @@
 import {
-  DesignerToolbarSettings
+  DesignerToolbarSettings,
 } from '@/interfaces/toolbarSettings';
 import {
-  FormLayout
+  FormLayout,
 } from 'antd/lib/form/Form';
 import {
-  nanoid
+  nanoid,
 } from '@/utils/uuid';
 import { filterDynamicComponents } from '@/designer-components/propertiesTabs/utils';
 
@@ -16,7 +16,7 @@ export const getSettings = () => {
         id: nanoid(),
         parentId: 'root',
         readOnly: {
-          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
+          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
         } as any,
         inputs: [
           {
@@ -25,7 +25,7 @@ export const getSettings = () => {
             propertyName: 'modalTitle',
             label: 'Title',
             validate: {
-              required: true
+              required: true,
             },
             jsSetting: true,
           },
@@ -35,17 +35,17 @@ export const getSettings = () => {
             propertyName: 'formId',
             label: 'Modal Form',
             validate: {
-              required: true
+              required: true,
             },
             jsSetting: true,
-          }
-        ]
+          },
+        ],
       })
       .addSettingsInputRow({
         id: nanoid(),
         parentId: 'root',
         readOnly: {
-          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
+          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
         } as any,
         inputs: [
           {
@@ -57,13 +57,13 @@ export const getSettings = () => {
               {
                 title: "Edit",
                 value: "edit",
-                icon: "editIcon"
+                icon: "editIcon",
               },
               {
                 title: "Read only",
                 value: "readonly",
-                icon: "readonlyIcon"
-              }
+                icon: "readonlyIcon",
+              },
             ],
             jsSetting: true,
           },
@@ -77,20 +77,20 @@ export const getSettings = () => {
             dropdownOptions: [
               {
                 label: "Small",
-                value: "40%"
+                value: "40%",
               },
               {
                 label: "Medium",
-                value: "60%"
+                value: "60%",
               },
               {
                 label: "Large",
-                value: "80%"
-              }
+                value: "80%",
+              },
             ],
             jsSetting: true,
-          }
-        ]
+          },
+        ],
       })
       .addSettingsInput({
         id: nanoid(),
@@ -103,10 +103,10 @@ export const getSettings = () => {
         wrapInTemplate: true,
         templateSettings: {
           useAsyncDeclaration: true,
-          functionName: 'getArguments'
+          functionName: 'getArguments',
         },
         readOnly: {
-          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
+          _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
         } as any,
       })
       .addCollapsiblePanel({
@@ -125,7 +125,7 @@ export const getSettings = () => {
               id: nanoid(),
               parentId: 'root',
               readOnly: {
-                _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false
+                _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
               } as any,
               inputs: [
                 {
@@ -137,16 +137,16 @@ export const getSettings = () => {
                   dropdownOptions: [
                     {
                       label: "Default",
-                      value: "default"
+                      value: "default",
                     },
                     {
                       label: "Custom",
-                      value: "custom"
+                      value: "custom",
                     },
                     {
                       label: "None",
-                      value: "none"
-                    }
+                      value: "none",
+                    },
                   ],
                   jsSetting: true,
                 },
@@ -156,27 +156,27 @@ export const getSettings = () => {
                   propertyName: 'buttons',
                   label: 'Configure Modal Buttons',
                   hidden: {
-                    _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false
+                    _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false,
                   } as any,
                   jsSetting: true,
-                }
-              ]
+                },
+              ],
             })
-            .toJson()
-          ]
-        }
+            .toJson(),
+          ],
+        },
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: {
-        span: 24
+        span: 24,
       },
       wrapperCol: {
-        span: 24
-      }
-    }
+        span: 24,
+      },
+    },
   };
 };
 

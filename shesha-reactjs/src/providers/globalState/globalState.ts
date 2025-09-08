@@ -3,6 +3,7 @@ import { GlobalStateRerenderTrigger, IGlobalState, ISetStatePayload } from "./co
 
 export class GlobalState implements IGlobalState {
     #forceUpdate: GlobalStateRerenderTrigger;
+
     #state: IAnyObject;
 
     constructor(forceUpdate: GlobalStateRerenderTrigger) {
