@@ -121,12 +121,12 @@ const typescriptOverrides = {
 
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/explicit-function-return-type": [
-      "error",
-      {
-        "allowExpressions": true,
-        "allowHigherOrderFunctions": true,
-        "allowDirectConstAssertionInArrowFunctions": true
-      }
+        "error",
+        {
+            "allowExpressions": true,
+            "allowHigherOrderFunctions": true,
+            "allowDirectConstAssertionInArrowFunctions": true
+        }
     ],
 
     "@typescript-eslint/no-explicit-any": "error",
@@ -320,28 +320,37 @@ const baseTsConfig = {
     }
 };
 
-const csConfig = {
-    ...baseTsConfig,
-    files: [
-    ],
-    languageOptions: {
-        ...baseTsConfig.languageOptions,
-        parserOptions: {
-            project: "src/configuration-studio/tsconfig.json",
-            tsconfigRootDir: __dirname,
+const makeStrictConfig = (path) => {
+    return {
+        ...baseTsConfig,
+        files: [
+            `${path}/**/*.ts`,
+        ],
+        languageOptions: {
+            ...baseTsConfig.languageOptions,
+            parserOptions: {
+                project: `${path}/tsconfig.json`,
+                tsconfigRootDir: __dirname,
+            },
         },
-    },
-    rules: {
-        ...baseTsConfig.rules,
-        ...typescriptEslint.configs.recommended.rules,
-        ...typescriptOverrides,
-        ...stylistic.configs.recommended.rules,
-        ...stylisticOverrides,
+        rules: {
+            ...baseTsConfig.rules,
+            ...typescriptEslint.configs.recommended.rules,
+            ...typescriptOverrides,
+            ...stylistic.configs.recommended.rules,
+            ...stylisticOverrides,
 
-        "react-hooks/exhaustive-deps": "error",
-        "no-unsafe-optional-chaining": "error",
-    },
-};
+            "react-hooks/exhaustive-deps": "error",
+            "no-unsafe-optional-chaining": "error",
+        },
+    };
+}
+const csConfig = makeStrictConfig("src/configuration-studio");
+
+const strictFolders = [
+    "src/configuration-studio",
+    "src/providers"
+];
 
 export default [
     {
@@ -350,32 +359,33 @@ export default [
             "src/**/*.ts",
             "src/**/*.tsx",
         ],
-        ignores: [...baseTsConfig.ignores, "src/configuration-studio/**/*"],
+        ignores: [...baseTsConfig.ignores, ...strictFolders.map(f => `${f}/**/*`)],
         rules: {
             ...baseTsConfig.rules,
             ...legacyTypescriptOverrides,
         }
     },
-    {
-        ...csConfig,
-        files: [
-            "src/configuration-studio/**/*.ts",
-        ],
-        rules: {
-            ...csConfig.rules,
-            //'@stylistic/indent': ['error', 2],
-        }
-    },
-    {
-        ...csConfig,
-        files: [
-            "src/configuration-studio/**/*.tsx",
-        ],
-        rules: {
-            ...csConfig.rules,
-            //'@stylistic/indent': ['error', 4],
-        }
-    },
+    ...strictFolders.map(f => makeStrictConfig(f)),
+    // {
+    //     ...csConfig,
+    //     files: [
+    //         "src/configuration-studio/**/*.ts",
+    //     ],
+    //     rules: {
+    //         ...csConfig.rules,
+    //         //'@stylistic/indent': ['error', 2],
+    //     }
+    // },
+    // {
+    //     ...csConfig,
+    //     files: [
+    //         "src/configuration-studio/**/*.tsx",
+    //     ],
+    //     rules: {
+    //         ...csConfig.rules,
+    //         //'@stylistic/indent': ['error', 4],
+    //     }
+    // },
     {
         files: ['**/*.js', '**/*.mjs'],
         ...js.configs.recommended,
