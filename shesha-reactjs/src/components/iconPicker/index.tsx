@@ -68,6 +68,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   readOnly = false,
   defaultValue,
   iconSize,
+  twoToneColor,
   ...props
 }) => {
   const { styles } = useStyles();
@@ -150,7 +151,7 @@ const IconPicker: FC<IIconPickerProps> = ({
                 className={styles.shaIconPicker}
                 iconName={localSelectedIcon}
                 {...props}
-                style={{ fontSize: iconSize || 24 }}
+                style={{ fontSize: iconSize || 24, color: twoToneColor}}
                 name={localSelectedIcon}
               //title={localSelectedIcon} removed to avoid it conflicting with icon tooltip
               />}
