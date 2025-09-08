@@ -43,7 +43,7 @@ const getRowSelection = (rows: object[], selectedId: string): ISelectionProps =>
   if (!selectedId || !rows || rows.length === 0)
     return null;
 
-  const rowIndex = rows.findIndex(row => row["id"] === selectedId);
+  const rowIndex = rows.findIndex((row) => row["id"] === selectedId);
   return rowIndex > -1
     ? {
       row: rows[rowIndex],
@@ -239,7 +239,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         isFetchingTableData: true,
         // note: don't change standard sorting is it's not used to prevent re-renderings
         // standardSorting: isStandardSortingUsed(state) ? payload.sorting : state.standardSorting,
-        //userSorting
+        // userSorting
         currentPage: payload.currentPage,
       };
 
@@ -490,7 +490,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
       const { payload } = action;
       return {
         ...state,
-        grouping: [...payload]
+        grouping: [...payload],
       };
     },
 
@@ -579,7 +579,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
       const { payload } = action;
 
       const columns = payload.columns
-        .map<ITableDataColumn>(column => ({
+        .map<ITableDataColumn>((column) => ({
           columnType: 'data',
           propertyName: column.propertyName,
 
@@ -603,7 +603,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
           allowInherited: column.allowInherited,
           metadata: column.metadata,
         }))
-        .filter(c => c !== null);
+        .filter((c) => c !== null);
 
       return {
         ...state,

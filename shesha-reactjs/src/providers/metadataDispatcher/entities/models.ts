@@ -23,7 +23,7 @@ export interface SyncAllRequest {
 export type EntityOutOfDateResponse = {
     accessor: string;
     status: Extract<SyncStatus, 'outofdate'>;
-    metadata: MetadataDto; //IEntityMetadata;
+    metadata: MetadataDto; // IEntityMetadata;
 };
 
 export const isEntityOutOfDateResponse = (response: EntitySyncResponse): response is EntityOutOfDateResponse => {

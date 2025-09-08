@@ -6,7 +6,7 @@ import {
   isCrudOperationsColumnProps,
   isDataColumnProps,
   isFormColumnProps,
-  isRendererColumnProps
+  isRendererColumnProps,
 } from '@/providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
@@ -23,7 +23,7 @@ import {
   ITableFilter,
   ITableFormColumn,
   ITableRendererColumn,
-  SortDirection
+  SortDirection,
 } from './interfaces';
 
 // Filters should read properties as camelCase ?:(
@@ -302,7 +302,7 @@ export const getTableDataColumns = (columns: ITableColumn[]): ITableDataColumn[]
 
 export const getTableFormColumns = (columns: ITableColumn[]): ITableDataColumn[] => {
   const result: ITableDataColumn[] = [];
-  columns.forEach(col => {
+  columns.forEach((col) => {
     if (isFormColumn(col))
       result.push(col);
   });
@@ -314,7 +314,7 @@ export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableD
   return isDataColumn(column) ? column : null;
 };
 
-export const isStandardSortingUsed = (state: IDataTableStateContext): Boolean => {
+export const isStandardSortingUsed = (state: IDataTableStateContext): boolean => {
   return state.sortMode === 'standard' && (!state.grouping || state.grouping.length === 0);
 };
 

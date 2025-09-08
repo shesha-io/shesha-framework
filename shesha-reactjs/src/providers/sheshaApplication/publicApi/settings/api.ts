@@ -11,6 +11,7 @@ export interface ISettingsApi {
  */
 export class SettingsApi implements ISettingsApi {
     readonly _modules: Map<string, ISettingsModuleAccessor>;
+
     readonly _settingManager: SettingsManager;
 
     /**
@@ -50,7 +51,7 @@ export class SettingsApi implements ISettingsApi {
                     return true;
                 }
                 return false;
-            }
+            },
         });
     }
 }

@@ -12,7 +12,7 @@ export interface IShaRoutingActionsContext {
   getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string;
 }
 
-export type ShaRouting = IShaRoutingStateContext & IShaRoutingActionsContext;;
+export type ShaRouting = IShaRoutingStateContext & IShaRoutingActionsContext; ;
 
 export const ShaRoutingStateContext = createNamedContext<IShaRoutingStateContext>(undefined, "ShaRoutingStateContext");
 

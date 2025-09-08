@@ -19,11 +19,11 @@ export const CreateStorageProperty = (onChange: () => void, data?: object) => {
             const propertyName = name.toString();
 
             if (propertyName === 'hasOwnProperty')
-                return (prop: string | Symbol) => prop ? propertyName in target.accessor : false;
+                return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
 
             if (propertyName in target.accessor)
-                return typeof target.accessor[propertyName] === 'function' 
-                    ? target.accessor[propertyName].bind(target.accessor) 
+                return typeof target.accessor[propertyName] === 'function'
+                    ? target.accessor[propertyName].bind(target.accessor)
                     : target.accessor[propertyName];
 
             return target.accessor.getFieldValue(propertyName);
@@ -43,7 +43,7 @@ export const CreateStorageProperty = (onChange: () => void, data?: object) => {
             if (target.accessor.getKeys().indexOf(prop.toString()) >= 0)
                 return { enumerable: true, configurable: true, writable: true };
             return undefined;
-        }
+        },
     });
 };
 
@@ -51,10 +51,15 @@ export class StorageProperty implements IStorageProxy {
     readonly accessor: StorageProxyAccessor;
 
     updateOnChange = (onChange: () => void) => this.accessor.updateOnChange(onChange);
+
     setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+
     getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+
     getData = () => this.accessor.getData();
+
     setData = (data: any) => this.accessor.setData(data);
+
     getKeys = () => this.accessor.getKeys();
 
     constructor(onChange: () => void, initialData?: object) {
@@ -66,17 +71,22 @@ export class StorageArrayProperty extends Array implements IStorageProxy {
     readonly accessor: StorageProxyAccessor;
 
     updateOnChange = (onChange: () => void) => this.accessor.updateOnChange(onChange);
+
     setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+
     getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+
     getData = () => this.accessor.getData();
+
     setData = (data: any) => this.accessor.setData(data);
+
     getKeys = () => this.accessor.getKeys();
 
     constructor(onChange: () => void, initialData?: object) {
         super();
         this.accessor = new StorageProxyAccessor(onChange, initialData);
 
-        /*if (Array.isArray(initialData)) {
+        /* if (Array.isArray(initialData)) {
           this[Symbol.iterator] = () => {
             const data = this.accessor.getData() as Array<any>;
             let index = 0;
@@ -112,9 +122,10 @@ export class StorageArrayProperty extends Array implements IStorageProxy {
 
 export class StorageProxyAccessor implements IStorageProxy {
     private _data: any;
+
     private _onChange: () => void;
 
-    updateOnChange (onChange: () => void) {
+    updateOnChange(onChange: () => void) {
       this._onChange = onChange;
     };
 
@@ -125,14 +136,14 @@ export class StorageProxyAccessor implements IStorageProxy {
             return undefined;
         if (propValue === null)
             return null;
-    
+
         if (typeof propValue === 'function')
             return propValue.bind(this._data);
 
         if (typeof propValue === 'object' && propValue) {
             return CreateStorageProperty(this._onChange, propValue);
         }
-    
+
         return propValue;
     };
 
@@ -141,7 +152,7 @@ export class StorageProxyAccessor implements IStorageProxy {
         if (this._onChange)
             this._onChange();
     };
-  
+
     getData() {
         return this._data;
     };

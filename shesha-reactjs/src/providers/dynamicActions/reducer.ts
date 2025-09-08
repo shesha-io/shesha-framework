@@ -10,10 +10,10 @@ const reducer = handleActions<IDynamicActionsStateContext, any>(
   {
     [DynamicActionsActionEnums.TestAction]: (state: IDynamicActionsStateContext, action: ReduxActions.Action<ITestActionPayload>) => {
       const { payload } = action;
-      
+
       return {
         ...state,
-        ...payload
+        ...payload,
       };
     },
   },

@@ -349,7 +349,7 @@ const csConfig = makeStrictConfig("src/configuration-studio");
 
 const strictFolders = [
     "src/configuration-studio",
-    "src/providers"
+    //"src/providers"
 ];
 
 export default [

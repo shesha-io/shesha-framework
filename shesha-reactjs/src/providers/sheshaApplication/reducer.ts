@@ -54,18 +54,18 @@ export default handleActions<ISheshaApplicationStateContext, any>(
 
       const registrations = { ...state.formDesignerComponentRegistrations, [payload.owner]: payload.components };
       const componentGroups: IToolboxComponentGroup[] = [];
-      for(const key in registrations){
-        if (registrations.hasOwnProperty(key) && registrations[key]) 
+      for (const key in registrations) {
+        if (registrations.hasOwnProperty(key) && registrations[key])
           componentGroups.push(...registrations[key]);
       }
-      
+
       return {
         ...state,
         formDesignerComponentRegistrations: registrations,
         formDesignerComponentGroups: componentGroups,
       };
     },
-    
+
   },
 
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE

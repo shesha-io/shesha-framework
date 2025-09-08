@@ -29,7 +29,7 @@ type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
  */
 export interface IFormApi<Values = any> {
   /**
-   * Add deferred update data to `data` object 
+   * Add deferred update data to `data` object
    * @param data model data object for updating
    * @returns The deferred update data
    */
@@ -42,7 +42,7 @@ export interface IFormApi<Values = any> {
   setFieldValue: (name: string, value: any) => void;
   /**
    * Set fields value
-   * @param values 
+   * @param values
    */
   setFieldsValue: (values: Values) => void;
   /**
@@ -94,7 +94,7 @@ class PublicFormApiWrapper implements IFormApi {
     this.#form = form;
   }
 
-  addDelayedUpdateData = (data: any): IDelayedUpdateGroup[]  => {
+  addDelayedUpdateData = (data: any): IDelayedUpdateGroup[] => {
     const delayedUpdateData = this.#form?.shaForm?.getDelayedUpdates();
     if (delayedUpdateData?.length > 0)
       data['_delayedUpdate'] = delayedUpdateData;
@@ -104,48 +104,62 @@ class PublicFormApiWrapper implements IFormApi {
   setFieldValue = (name: string, value: any) => {
     this.#form?.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
   };
+
   setFieldsValue = (values: any) => {
     this.#form?.setFormData({ values, mergeValues: true });
   };
+
   clearFieldsValue = () => {
     this.#form?.setFormData({ values: {}, mergeValues: false });
   };
+
   submit = () => {
     this.#form?.form?.submit();
   };
+
   setFormData = (payload: ISetFormDataPayload) => {
     this.#form?.setFormData(payload);
   };
+
   getFormData = () => {
     return this.#form?.formData;
   };
+
   setValidationErrors = (payload: IFormValidationErrors) => {
     this.#form?.shaForm?.setValidationErrors(payload);
   };
+
   get formInstance(): FormInstance<any> {
     // antd form
     return this.#form?.form;
   }
+
   get formSettings(): PublicFormSettings {
     return this.#form?.formSettings ? { modelType: this.#form.formSettings.modelType } : {};
   }
+
   get formMode(): FormMode {
     return this.#form?.formMode;
   }
+
   get data(): any {
     return this.#form?.formData;
   }
+
   get defaultApiEndpoints(): IEntityEndpoints {
     return isEntityMetadata(this.#form?.modelMetadata)
       ? this.#form.modelMetadata.apiEndpoints
       : {};
   }
+
   get initialValues(): any {
     return this.#form?.shaForm?.initialValues;
   }
+
   get parentFormValues(): any {
     return this.#form?.shaForm?.parentFormValues;
   }
+
   get formArguments(): any {
     return this.#form?.shaForm?.formArguments;
   }

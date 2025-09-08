@@ -6,7 +6,7 @@ export enum SettingsActionEnums {
   LoadSettingRequest = 'LOAD_SETTING_REQUEST',
   LoadSettingSuccess = 'LOAD_SETTING_SUCCESS',
   LoadSettingFailed = 'LOAD_SETTING_FAILED',
-  //SetMetadata = 'SET_METADATA',
+  // SetMetadata = 'SET_METADATA',
 }
 
 /* NEW_ACTION_GOES_HERE */

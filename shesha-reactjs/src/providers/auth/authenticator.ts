@@ -43,14 +43,21 @@ export interface AuthenticatorArgs {
 
 export class Authenticator implements IAuthenticator {
   #httpClient: HttpClientApi;
+
   #settings: ISettingsActionsContext;
+
   #router: IRouter;
+
   #rerender: RerenderTrigger;
+
   #onSetRequestHeaders: (headers: IHttpHeaders) => void;
 
   #tokenName: string;
+
   #unauthorizedRedirectUrl: string;
+
   #homePageUrl: string;
+
   #loginInfo: GetCurrentLoginInfoOutput;
 
   state: AuthenticationState;
@@ -58,6 +65,7 @@ export class Authenticator implements IAuthenticator {
   get loginInfo() {
     return this.#loginInfo?.user;
   }
+
   get isLoggedIn() {
     return this.state.status === 'ready' && this.#loginInfo?.user !== null;
   }
@@ -102,9 +110,11 @@ export class Authenticator implements IAuthenticator {
   #getToken = (): IAccessToken | null => {
     return getAccessToken(this.#tokenName);
   };
+
   #saveUserToken = (token: IAccessToken) => {
     saveUserToken(token, this.#tokenName);
   };
+
   #clearAccessToken = () => {
     removeAccessToken(this.#tokenName);
   };

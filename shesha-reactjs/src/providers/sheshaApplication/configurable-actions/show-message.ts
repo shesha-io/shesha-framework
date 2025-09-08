@@ -27,7 +27,7 @@ export const showMessageArgumentsForm = new DesignerToolbarSettings()
     inputType: "dropdown",
     propertyName: 'type',
     label: 'Type',
-    dropdownOptions: messageTypes.map(v => ({
+    dropdownOptions: messageTypes.map((v) => ({
       label: v[0].toUpperCase() + v.slice(1),
       value: v,
       id: v,
@@ -53,10 +53,10 @@ export const useShowMessageAction = () => {
 
       messageApi.open({
         type: type,
-        content: message
+        content: message,
       });
 
       return Promise.resolve(true);
-    }
+    },
   }, [messageApi]);
-};  
+};

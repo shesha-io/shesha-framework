@@ -20,8 +20,8 @@ export interface ISettingPropertyMetadata extends IPropertyMetadata {
  */
 const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]): ISettingPropertyMetadata[] => {
     const result: ISettingPropertyMetadata[] = [];
-    settings.forEach(setting => {
-        let moduleProp = result.find(m => m.path === setting.module.accessor);
+    settings.forEach((setting) => {
+        let moduleProp = result.find((m) => m.path === setting.module.accessor);
         if (!moduleProp) {
             moduleProp = {
                 path: setting.module.accessor,
@@ -35,7 +35,7 @@ const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]):
         if (!isPropertiesArray(moduleProp.properties))
             throw new Error("Something went wrong. Expected array of properties");
 
-        let categoryProp = moduleProp.properties.find(p => p.path === setting.category.accessor) as ISettingPropertyMetadata;
+        let categoryProp = moduleProp.properties.find((p) => p.path === setting.category.accessor) as ISettingPropertyMetadata;
         if (!categoryProp) {
             categoryProp = {
                 path: setting.category.accessor,
@@ -71,7 +71,7 @@ const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]):
  * @return {Promise<IPropertyMetadata[]>} a promise of an array of property metadata
  */
 export const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
-    return SettingsManager.fetchConfigurationsAsync(httpClient).then(res => settingsConfigurationToProperties(res));
+    return SettingsManager.fetchConfigurationsAsync(httpClient).then((res) => settingsConfigurationToProperties(res));
 };
 
 /**
@@ -83,7 +83,7 @@ export const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi):
 const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto[]): TypeDefinition => {
     const apiFile: SourceFile = {
         fileName: "apis/applicationSettingsApi.d.ts",
-        content: ""
+        content: "",
     };
     const result: TypeDefinition = {
         typeName: "ApplicationSettingsApi",
@@ -114,7 +114,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
             throw new Error("Something went wrong. Settings should be an array of properties");
 
         sb.incIndent();
-        property.properties.forEach(prop => {
+        property.properties.forEach((prop) => {
             if ((prop as ISettingPropertyMetadata).settingItemType === 'setting') {
                 if (prop.description)
                     sb.append(`/** ${prop.description} */`);
@@ -134,7 +134,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
     const properties = settingsConfigurationToProperties(settings);
 
     sb.incIndent();
-    properties.forEach(property => {
+    properties.forEach((property) => {
         writeObject(sb, property);
     });
     sb.decIndent();
@@ -154,7 +154,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
  * @return {Promise<TypeDefinition>} A Promise that resolves to the TypeDefinition for the Settings API.
  */
 const fetchSettingsApiTypeDefinition = (httpClient: HttpClientApi): Promise<TypeDefinition> => {
-    return SettingsManager.fetchConfigurationsAsync(httpClient).then(res => settingsConfigurationToTypeDefinition(res));
+    return SettingsManager.fetchConfigurationsAsync(httpClient).then((res) => settingsConfigurationToTypeDefinition(res));
 };
 
 /**

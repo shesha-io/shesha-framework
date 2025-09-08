@@ -18,7 +18,7 @@ export const CreateDataAccessor = (getData: () => any, setData: (data: any) => v
   return new Proxy(property, {
       get(target, name) {
           const propertyName = name.toString();
-          
+
           if (typeof name === 'symbol') {
               const accessorData = target.getAccessorValue();
               const objSymbol = accessorData[name];
@@ -30,11 +30,11 @@ export const CreateDataAccessor = (getData: () => any, setData: (data: any) => v
               return undefined;
 
           if (propertyName === 'hasOwnProperty')
-              return (prop: string | Symbol) => prop ? propertyName in target.accessor : false;
+              return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
 
           if (propertyName in target.accessor)
-              return typeof target.accessor[propertyName] === 'function' 
-                  ? target.accessor[propertyName].bind(target.accessor) 
+              return typeof target.accessor[propertyName] === 'function'
+                  ? target.accessor[propertyName].bind(target.accessor)
                   : target.accessor[propertyName];
 
           return target.accessor.getFieldValue(propertyName);
@@ -59,18 +59,24 @@ export const CreateDataAccessor = (getData: () => any, setData: (data: any) => v
         if (data && propertyName in data)
             return { enumerable: true, configurable: true, writable: true };
         return undefined;
-      }
+      },
   });
 };
 
 
 export class ShaObjectAccessProxy implements IShaDataAccessor {
   readonly accessor: ShaDataAccessor;
+
   setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+
   getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+
   getData = () => this.accessor.getData();
+
   setData = (data: any) => this.accessor.setData(data);
+
   getAccessorValue = () => this.accessor.getAccessorValue();
+
   constructor(getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) {
     this.accessor = new ShaDataAccessor(getData, setData, setFieldValue, propertyName);
   }
@@ -78,11 +84,17 @@ export class ShaObjectAccessProxy implements IShaDataAccessor {
 
 export class ShaArrayAccessProxy extends Array implements IShaDataAccessor {
   readonly accessor: ShaDataAccessor;
+
   setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+
   getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+
   getData = () => this.accessor.getData();
+
   setData = (data: any) => this.accessor.setData(data);
+
   getAccessorValue = () => this.accessor.getAccessorValue();
+
   constructor(getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) {
     super();
     this.accessor = new ShaDataAccessor(getData, setData, setFieldValue, propertyName);
@@ -91,8 +103,11 @@ export class ShaArrayAccessProxy extends Array implements IShaDataAccessor {
 
 export class ShaDataAccessor implements IShaDataAccessor {
   readonly getData: () => any;
+
   readonly setData: (data: any) => void;
+
   readonly _setFieldValue: (propertyName: string, value: any) => void;
+
   readonly propertyName: string;
 
   getFullPropertyName(propertyName: string): string {
@@ -123,7 +138,7 @@ export class ShaDataAccessor implements IShaDataAccessor {
   }
 
   setFieldValue(propertyName: string, value: any) {
-    this._setFieldValue(this.getFullPropertyName(propertyName), value );
+    this._setFieldValue(this.getFullPropertyName(propertyName), value);
   }
 
   constructor(getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) {
@@ -141,7 +156,7 @@ export function GetShaFormDataAccessor(shaInstance: IFormApi): IShaDataAccessor 
 
 export function GetShaContextDataAccessor(onChange: () => void): IShaDataAccessor {
   let data = {};
-  const setFieldValue = (propertyName: string, value: any) => { 
+  const setFieldValue = (propertyName: string, value: any) => {
     setValueByPropertyName(data, propertyName, value);
     if (onChange) onChange();
   };

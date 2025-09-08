@@ -19,13 +19,13 @@ export class CustomLoader implements IFormDataLoader {
 
         try {
             const response = await expressionExecuter(settings.onDataLoad, payload);
-            
+
             loadingCallback?.({ loadingState: 'ready', loaderHint: null });
 
             return response;
         } catch (error) {
             loadingCallback?.({ loadingState: 'failed', error: error });
-            return undefined;    
+            return undefined;
         }
     };
 }

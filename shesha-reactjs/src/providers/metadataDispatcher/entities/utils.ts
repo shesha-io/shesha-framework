@@ -40,7 +40,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
         if (!modulesMap.has(key)) {
             modulesMap.set(key, {
                 accessor: key,
-                entities: []
+                entities: [],
             });
         }
         return modulesMap.get(key);
@@ -49,20 +49,20 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
     const metadataCache = context.cacheProvider.getCache(CACHE.ENTITIES);
 
     const savedVersion = await getEntitiesSyncVersion(context.cacheProvider);
-    if (savedVersion === CURRENT_SYNC_VERSION){
+    if (savedVersion === CURRENT_SYNC_VERSION) {
         await metadataCache.iterate<IEntityMetadata, void>((metadata) => {
             if (!metadata.typeAccessor)
                 return;
             const moduleSync = getModuleSyncRequest(metadata.moduleAccessor);
-            
+
             const aliases = [...(metadata.aliases ?? []), metadata.entityType];
-            aliases.forEach(alias => {
+            aliases.forEach((alias) => {
                 context.typesMap.register(alias, {
                     module: metadata.moduleAccessor,
                     name: metadata.typeAccessor,
                 });
             });
-    
+
             moduleSync.entities.push({
                 accessor: metadata.typeAccessor,
                 md5: metadata.md5,
@@ -75,7 +75,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
     const request: SyncAllRequest = {
         modules: [],
     };
-    modulesMap.forEach(m => request.modules.push(m));
+    modulesMap.forEach((m) => request.modules.push(m));
     return request;
 };
 
@@ -90,8 +90,8 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                 const data = response.data.result;
 
                 const metadataCache = context.cacheProvider.getCache(CACHE.ENTITIES);
-                data.modules.forEach(m => {
-                    m.entities.forEach(e => {
+                data.modules.forEach((m) => {
+                    m.entities.forEach((e) => {
                         const key = getEntityMetadataCacheKey({ module: m.accessor, name: e.accessor });
 
                         if (isEntityOutOfDateResponse(e)) {
@@ -99,7 +99,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                                 ...e.metadata,
                                 entityType: e.metadata.className, // TODO: remove after refactoring
                                 name: e.metadata.className, // TODO: remove after refactoring
-                            };                            
+                            };
 
                             promises.push(metadataCache.setItem(key, meta));
 
@@ -116,8 +116,8 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                         }
                     });
                 });
-                //promises.push(metadataCache.removeItem('functionalTests/null'));
-                //console.groupEnd();
+                // promises.push(metadataCache.removeItem('functionalTests/null'));
+                // console.groupEnd();
                 return Promise.all(promises).then();
             } else {
                 console.error('Failed to sync entities', response.data?.error);
