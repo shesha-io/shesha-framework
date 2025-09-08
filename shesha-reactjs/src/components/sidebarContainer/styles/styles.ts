@@ -25,6 +25,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       .${sidebarContainerMainAreaBody} {
         overflow: auto;
         margin: 0 auto;
+        background: #fff;
+
          > div {
           height: -webkit-fill-available;
             .ant-spin-nested-loading {

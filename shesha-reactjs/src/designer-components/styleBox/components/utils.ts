@@ -1,7 +1,6 @@
 import { capitalizeFirstLetter } from '@/utils/string';
 import { IInputDirection, IValue } from '../interfaces';
 import { jsonSafeParse } from '@/utils/object';
-import { addPx } from '@/utils/style';
 
 export const getStyleChangeValue = (
   type: keyof IValue,

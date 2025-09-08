@@ -128,7 +128,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', minHeight: '100%', ...paddings, background: '#fff' } : { ...paddings, background: '#fff' }}>{children}</div>
+          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', height: '100%', ...paddings } : { ...paddings }}>{children}</div>
         </div>
         {renderSidebar('right')}
       </SizableColumns >

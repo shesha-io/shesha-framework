@@ -398,11 +398,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     min-height: 30px;
                 }
 
-                .sha-drop-hint {
-                }
-
                 > div:not(.sha-drop-hint) {
-                    min-height: 100%;
+                    height: 100%;
                 }
                     
                 > .${shaComponentsContainerInner}:empty {
