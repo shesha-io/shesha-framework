@@ -39,4 +39,6 @@ export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyle
   disabledTimeTemplate?: DisabledDateTemplate;
   disabledTimeFunc?: string;
   additionalStyles?: CSSProperties;
+  onFocusCustom?: any;
+  onBlurCustom?: any;
 }
