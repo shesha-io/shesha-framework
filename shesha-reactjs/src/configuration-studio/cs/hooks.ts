@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import { ConfigItemTreeNode, DocumentDefinition, IDocumentInstance, TreeNode } from "../models";
 import { CsSubscriptionType, ProcessingState } from "./configurationStudio";
-import { useConfigurationStudio } from "./contexts";
+import { useConfigurationStudio, useConfigurationStudioIfAvailable } from "./contexts";
 import { TreeProps } from "antd";
+import { isDefined } from "../types";
 
 type ExpandedKeys = TreeProps['expandedKeys'];
 type SeletcedKeys = TreeProps['selectedKeys'];
 type OnTreeExpand = TreeProps['onExpand'];
 
 export const useCsSubscription = (subscriptionType: CsSubscriptionType): object => {
-    const cs = useConfigurationStudio();
+    const cs = useConfigurationStudioIfAvailable();
+
     const [dummy, forceUpdate] = useState({});
     useEffect(() => {
-        // Subscribe to changes
-        const unsubscribe = cs.subscribe(subscriptionType, () => forceUpdate({}));
-        return unsubscribe; // Cleanup on unmount
+        if (isDefined(cs)) {
+            // Subscribe to changes
+            const unsubscribe = cs.subscribe(subscriptionType, () => forceUpdate({}));
+            return unsubscribe; // Cleanup on unmount
+        } else
+            return undefined;
     }, [cs, subscriptionType]);
 
     return dummy;
@@ -56,11 +61,16 @@ export type UseCsTreeDndResponse = {
     setIsDragging: (isDragging: boolean) => void;
 };
 export const useCsTreeDnd = (): UseCsTreeDndResponse => {
-    const cs = useConfigurationStudio();
+    const cs = useConfigurationStudioIfAvailable();
     useCsSubscription('tree-dnd');
-    return {
+    return cs
+    ? {
         isDragging: cs.isTreeDragging,
         setIsDragging: cs.setIsTreeDragging,
+    }
+    : {
+        isDragging: false,
+        setIsDragging: () => {},
     };
 };
 
