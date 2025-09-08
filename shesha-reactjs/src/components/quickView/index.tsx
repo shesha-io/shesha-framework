@@ -182,9 +182,25 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   return (
     <Popover
-      overlayInnerStyle={{ width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }}
+      overlayStyle={typeof width === 'string' && /%$/.test(width as string) ? { width } : undefined}
+      overlayInnerStyle={
+        typeof width === 'string' && /%$/.test(width as string)
+          ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
+          : { width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
+      }
       content={formContent}
-      title={<div style={{ width, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{title}</div>}
+      title={
+        <div
+          style={{
+            width: typeof width === 'string' && /%$/.test(width as string) ? '100%' : (width as number | string),
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {title}
+        </div>
+      }
       {...popoverProps}
     >
       {render()}
