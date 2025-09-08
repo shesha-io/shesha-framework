@@ -1567,38 +1567,40 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const pickStyleFromModel = (model: IConfigurableFormComponent, formItemStylingBox?: CSSProperties): CSSProperties => {
+export const pickStyleFromModel = (model: IConfigurableFormComponent, formItemStylingBox?: CSSProperties, isInput?: boolean): CSSProperties => {
   let style = {};
   const { top, left, right, bottom } = formItemStylingBox || {};
 
-    const padding = [
-      'paddingTop',
-      'paddingRight',
-      'paddingBottom',
-      'paddingLeft'
-    ];
-    const margin = [
-      'marginTop',
-      'marginRight',
-      'marginBottom',
-      'marginLeft',
-    ];
+  const padding = [
+    'paddingTop',
+    'paddingRight',
+    'paddingBottom',
+    'paddingLeft'
+  ];
 
-    const margins = {
-      marginTop: top,
-      marginBottom: bottom,
-      marginLeft: left,
-      marginRight: right
-    };
+  const margin = [
+    'marginTop',
+    'marginRight',
+    'marginBottom',
+    'marginLeft',
+  ];
+
+  const margins = {
+    marginTop: top,
+    marginBottom: bottom,
+    marginLeft: left,
+    marginRight: right
+  };
 
   if (model) {
     padding.forEach((arg) => {
       style = { ...style, [arg]: hasNumber(model[arg]) ? `${model[arg]}px` : 'auto' };
     });
-
-    margin.forEach((arg) => {
-      style = { ...style, [arg]: hasNumber(model[arg]) ? `${model[arg]}px` : margins[arg] || 'auto'};
-    });
+    if (!isInput) {
+      margin.forEach((arg) => {
+        style = { ...style, [arg]: hasNumber(model[arg]) ? `${model[arg]}px` : margins[arg] || 'auto' };
+      });
+    }
   }
 
   return style;

@@ -128,11 +128,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
     return {
       ...componentModel,
-      ...desktopConfig,
+      [activeDevice]: {
         ...desktopConfig,
-        ...(deviceDimensions && { dimensions: deviceDimensions }),
+      dimensions: deviceDimensions,
+      },
         // ...(formMode === 'designer' ? {stylingBox: paddingStyles} : {stylingBox: JSON.stringify({...stylingBoxPadding, ...stylingBoxMargin})}),
-        flexBasis: getDeviceFlexBasis(dimensionsStyles)
+      flexBasis: getDeviceFlexBasis(dimensionsStyles)
     };
 
   }, [componentModel, desktopConfig, paddingStyles, originalDimensions, formMode, typeInfo]);
@@ -146,6 +147,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     );
   }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
 
+  console.log("Rendered model: ", renderComponentModel);
   return (
     <div
       style={rootContainerStyle}

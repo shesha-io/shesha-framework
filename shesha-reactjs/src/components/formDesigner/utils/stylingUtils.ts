@@ -1,6 +1,7 @@
 import React from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
 import { ComponentDimensions } from './dimensionUtils';
+import { addPx } from '@/utils/style';
 
 export interface StyleConfig {
   marginTop?: number | string;
@@ -19,16 +20,25 @@ export const createRootContainerStyle = (
   originalDimensions: any,
   isInput
 ) => {
+
+
+  const baseStyle = {
+    boxSizing: 'border-box' as const,
+  };
+
+  const margins = {
+    marginTop: addPx(stylingBox?.marginTop || '0px'),
+    marginBottom: addPx(stylingBox?.marginBottom || '0px'),
+    marginLeft: addPx(stylingBox?.marginLeft || '0px'),
+    marginRight: addPx(stylingBox?.marginRight || '0px'),
+  };
+
   const {
     marginTop,
     marginBottom,
     marginLeft,
     marginRight,
-  } = stylingBox;
-
-  const baseStyle = {
-    boxSizing: 'border-box' as const,
-  };
+  } = margins;
 
   return {
     ...baseStyle,
@@ -36,9 +46,9 @@ export const createRootContainerStyle = (
     width: `calc(${dimensions.width} + ${marginLeft} + ${marginRight})`,
     maxWidth: `calc(${dimensions.maxWidth} + ${marginLeft} + ${marginRight})`,
     minWidth: `calc(${dimensions.minWidth} + ${marginLeft} + ${marginRight})`,
-    height: isInput? 'max-content' : `calc(${dimensions.height} + ${marginTop} + ${marginBottom})`,
-    minHeight: isInput? originalDimensions.minHeight : `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})`,
-    maxHeight: isInput? originalDimensions.maxHeight : `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})`,
+    height: isInput ? 'max-content' : `calc(${dimensions.height} + ${marginTop} + ${marginBottom})`,
+    minHeight: isInput ? originalDimensions.minHeight : `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})`,
+    maxHeight: isInput ? originalDimensions.maxHeight : `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})`,
     flexBasis: dimensions.flexBasis,
   };
 };
@@ -66,13 +76,13 @@ export const createFormItemStyle = (
     }),
     ...dimensionsStyles,
     flexBasis: 'auto',
-    width: isDataTableContext 
-      ? '100%' 
-      : dimensionsStyles?.width || 'auto',
-    height: isDataTableContext 
+    width: isDataTableContext
       ? '100%'
-      : isInput 
-          ? '' 
-          : dimensionsStyles?.height,
+      : dimensionsStyles?.width || 'auto',
+    height: isDataTableContext
+      ? '100%'
+      : isInput
+        ? ''
+        : dimensionsStyles?.height,
   };
 };

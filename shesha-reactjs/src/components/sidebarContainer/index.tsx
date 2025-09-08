@@ -34,9 +34,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
-  const { globalVariables} = useSheshaApplication();
+  const { globalVariables } = useSheshaApplication();
 
   const isSideBarExpanded = globalVariables.isSideBarExpanded;
+  const paddings = {
+    paddingTop: '20px',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    paddingBottom: '20px'
+  };
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
@@ -59,14 +65,14 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSideBarExpanded, renderSource}) : zoom);
+      setCanvasZoom(autoZoom ? calculateAutoZoom({ currentZoom: zoom, designerWidth, sizes: currentSizes, isSideBarExpanded, renderSource }) : zoom);
     }
   }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSideBarExpanded]);
-  
 
-  useEffect(()=>{
+
+  useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
-  },[isOpenRight, isOpenLeft]);
+  }, [isOpenRight, isOpenLeft]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
@@ -122,10 +128,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto', height: '100%' } : {}}>{children}</div>
+          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', minHeight: '100%', ...paddings, background: '#fff' } : { ...paddings, background: '#fff' }}>{children}</div>
         </div>
         {renderSidebar('right')}
-      </SizableColumns>
-    </div>
+      </SizableColumns >
+    </div >
   );
 };

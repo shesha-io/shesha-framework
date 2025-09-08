@@ -502,32 +502,44 @@ export const getSettings = () => {
                                 label: 'Component Span',
                                 parentId: appearanceTabId,
                                 tooltip: 'Raster number of cells to occupy, 0 corresponds to display: none'
-
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                inputType: 'numberField',
-                                propertyName: 'formItemMargin.left',
-                                label: 'Margin Left',
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'numberField',
+                                        propertyName: 'formItemMargin.left',
+                                        label: 'Component Margin Left',
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'numberField',
+                                        propertyName: 'formItemMargin.top',
+                                        label: 'Component Margin Top',
+                                        parentId: appearanceTabId
+                                    }
+                                ],
                                 parentId: appearanceTabId
-                            }).addSettingsInput({
+                            })
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                inputType: 'numberField',
-                                propertyName: 'formItemMargin.top',
-                                label: 'Margin Top',
-                                parentId: appearanceTabId
-                            }).addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'numberField',
-                                propertyName: 'formItemMargin.right',
-                                label: 'Margin Right',
-                                parentId: appearanceTabId
-                            }).addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'numberField',
-                                propertyName: 'formItemMargin.bottom',
-                                label: 'Margin Bottom',
-                                parentId: appearanceTabId
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'numberField',
+                                        propertyName: 'formItemMargin.right',
+                                        label: 'Component Margin Right',
+                                        parentId: appearanceTabId
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'numberField',
+                                        propertyName: 'formItemMargin.bottom',
+                                        label: 'Component Margin Bottom',
+                                        parentId: appearanceTabId
+                                    }
+                                ]
                             })
                             .toJson()
                         ]

@@ -20,7 +20,7 @@ export const getDimensionsStyle = (dimensions: IDimensionsValue, canvasWidth?): 
       : undefined,
     minWidth: dimensions?.minWidth
       ? getDimension(dimensions.minWidth, canvasWidth)
-      : undefined,
+      : undefined, 
     minHeight: dimensions?.minHeight
       ? getDimension(dimensions.minHeight, canvasWidth)
       : undefined,

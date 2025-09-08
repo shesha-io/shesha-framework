@@ -1,4 +1,3 @@
-import React from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
 
 export interface DimensionConfig {
@@ -27,15 +26,15 @@ export const getComponentDimensions = (
 ): ComponentDimensions => {
   const { isDataTableContext, isInput } = typeInfo;
 
-  const width = isDataTableContext 
-    ? '100%' 
+  const width = isDataTableContext
+    ? '100%'
     : dimensionsStyles?.width || 'auto';
 
-  const height = isDataTableContext 
-      ? '100%' 
-      : isInput 
-          ? 'auto' 
-          : dimensionsStyles?.height;
+  const height = isDataTableContext
+    ? '100%'
+    : isInput
+      ? 'auto'
+      : dimensionsStyles?.height;
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig) => {
     if (isDataTableContext) return '100%';
@@ -58,7 +57,6 @@ export const getComponentDimensions = (
 export const getDeviceDimensions = (
   typeInfo: ComponentTypeInfo,
   dimensionsStyles: any,
-  stylingBox?: React.CSSProperties
 ) => {
   const { isInput } = typeInfo;
   // const {marginBottom, marginTop, marginLeft, margingRight} = stylingBox;

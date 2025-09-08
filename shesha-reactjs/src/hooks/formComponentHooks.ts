@@ -175,12 +175,13 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
 };
 
 export const useFormComponentStyles = <TModel,>(
-  model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>
+  model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>,
+  isInput?: boolean
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const jsStyle = useActualContextExecution(model?.style, null, {}); // use default style if empty or error
-  const {designerWidth} = useCanvas();
+  const { designerWidth } = useCanvas();
 
   const formItemMargin = shaForm?.settings?.formItemMargin || {};
 
@@ -210,7 +211,7 @@ export const useFormComponentStyles = <TModel,>(
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox, formItemMargin), [stylingBox]);
+  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox, formItemMargin, isInput), [stylingBox]);
   const overflowStyles = useMemo(() => getOverflowStyle(overflow, false), [overflow]);
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth), [dimensions, stylingBox, designerWidth]);
 

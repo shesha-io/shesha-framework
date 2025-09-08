@@ -97,7 +97,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       }
     --primary-color: ${token.colorPrimary};
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
-    ${hasBorder && '--ant-line-width: 0px !important;'}
+    --ant-border-radius-lg: 0px;
+;    ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
     height: 100%;
     width: ${width};
@@ -143,11 +144,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       }
     }
 
-    > .ant-collapse-item > .ant-collapse-header[aria-expanded="false"] {
+    > .ant-collapse-item > .ant-collapse-header {
       border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
     }
     
-    > .ant-collapse-item > .ant-collapse-header[aria-expanded="true"] {
+    > .ant-collapse-item-active > .ant-collapse-header{
       border-radius : ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius ?? '0px'} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius ?? '0px'} 0px 0px !important;
     }
 
@@ -191,13 +192,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       > .ant-collapse-item {
         > .ant-collapse-header {
           --ant-collapse-header-padding: 5px 0px !important;
-          border-bottom-left-radius: unset;
-          border-bottom-right-radius: unset; 
           border: none;
           ${accentStyle && `border-bottom: 2px solid ${token.colorPrimary};`}
           ${accentStyle && `border-top: 3px solid var(--primary-color);`}
           font-weight: ${fontWeight || '500'};
-        
         }
         > .ant-collapse-content {
           border: none;

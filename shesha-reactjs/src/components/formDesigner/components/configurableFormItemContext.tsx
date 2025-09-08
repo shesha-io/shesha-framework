@@ -27,7 +27,6 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
 
   const value = getFieldValue ? getFieldValue(propertyName) : undefined;
 
-  console.log("Form item::", formItemProps)
   return (
     <Form.Item {...formItemProps}>
       <DataBinder
