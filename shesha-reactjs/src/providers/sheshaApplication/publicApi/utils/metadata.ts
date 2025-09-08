@@ -13,13 +13,13 @@ const getUtilsApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefiniti
         "    evaluateString: (template: string, data: any) => string;",
         "}",
     ].join("\n");
-    
+
     return Promise.resolve({
         typeName: "UtilsApi",
         files: [{
             content: userSource,
             fileName: "apis/utilsApi.d.ts",
-        }],        
+        }],
     });
 };
 

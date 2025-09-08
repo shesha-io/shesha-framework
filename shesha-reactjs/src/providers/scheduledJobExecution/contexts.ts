@@ -9,7 +9,7 @@ export type IFlagSucceededFlags = 'getExecutionLog';
 /* NEW_SUCCEEDED_FLAG_GOES_HERE */
 export type IFlagErrorFlags = 'getExecutionLog';
 /* NEW_ERROR_FLAG_GOES_HERE */
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
+export type IFlagActionedFlags = '__DEFAULT__';
 
 export interface IExecutionLogEvent {
   message?: string | null;

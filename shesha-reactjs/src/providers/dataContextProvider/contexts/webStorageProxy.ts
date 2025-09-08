@@ -6,7 +6,9 @@ export type webStorageType = 'localStorage' | 'sessionStorage';
 
 export class WebStorageProxy {
     private _onChangeHandler: () => void;
+
     private _storage: webStorageType;
+
     private _prefix: string;
 
     setItem(key: string, value: any) {
@@ -14,11 +16,13 @@ export class WebStorageProxy {
         if (this._onChangeHandler)
             this._onChangeHandler();
     }
+
     removeItem(key: string) {
         window[this._storage].removeItem(`${this._prefix}${key}`);
         if (this._onChangeHandler)
             this._onChangeHandler();
     }
+
     clear() {
         window[this._storage].clear();
         if (this._onChangeHandler)

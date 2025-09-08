@@ -2,10 +2,10 @@ import { NoteDto } from '@/apis/note';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
 
-export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
-export type IFlagSucceededFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
-export type IFlagErrorFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_ERROR_FLAG_GOES_HERE */;
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
+export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
+export type IFlagSucceededFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
+export type IFlagErrorFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
+export type IFlagActionedFlags = '__DEFAULT__';
 
 export interface INoteSettings {
   ownerId: string;

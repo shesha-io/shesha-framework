@@ -14,7 +14,7 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
         buttonGroupOptions: [
           { icon: 'LinkOutlined', title: 'Url', value: 'url' },
           { icon: 'FormOutlined', title: 'Form', value: 'form' },
-        ]
+        ],
       },
       {
         id: nanoid(),
@@ -25,8 +25,8 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
         validate: { required: true },
         hidden: {
           _mode: 'code',
-          _code: 'return data?.navigationType !== "url"'
-        } as any
+          _code: 'return data?.navigationType !== "url"',
+        } as any,
       },
       {
         id: nanoid(),
@@ -39,10 +39,10 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
         },
         hidden: {
           _mode: 'code',
-          _code: 'return data?.navigationType !== "form"'
-        } as any
-      }
-    ]
+          _code: 'return data?.navigationType !== "form"',
+        } as any,
+      },
+    ],
   })
   .addSettingsInput({
     id: nanoid(),
@@ -53,6 +53,6 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
     parentId: 'root',
     labelTitle: 'Key',
     valueName: 'value',
-    valueTitle: 'Value'
+    valueTitle: 'Value',
   })
   .toJson();

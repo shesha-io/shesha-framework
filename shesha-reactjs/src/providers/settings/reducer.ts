@@ -8,7 +8,7 @@ const reducer = handleActions<ISettingsStateContext, any>(
       state: ISettingsStateContext,
       _action: ReduxActions.Action<ILoadSettingPayload>
     ) => {
-      //const { payload } = action;
+      // const { payload } = action;
 
       return {
         ...state,

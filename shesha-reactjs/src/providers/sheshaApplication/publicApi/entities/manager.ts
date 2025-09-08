@@ -13,7 +13,9 @@ export const ENTITIES_URLS = {
 
 export class EntitiesManager {
     readonly _httpClient: HttpClientApi;
+
     readonly _cacheProvider: ICacheProvider;
+
     readonly _metadataFetcher: IEntityMetadataFetcher;
 
     static #configurationsPromise: Promise<EntityConfigurationDto[]> = undefined;
@@ -93,7 +95,7 @@ export class EntitiesManager {
             return this.#configurationsPromise;
 
         this.#configurationsPromise = httpClient.get<IAjaxResponse<EntityConfigurationDto[]>>(ENTITIES_URLS.GET_CONFIGURATIONS)
-            .then(res => {
+            .then((res) => {
                 const result = res.data.success ? res.data.result : [];
                 return result;
             });

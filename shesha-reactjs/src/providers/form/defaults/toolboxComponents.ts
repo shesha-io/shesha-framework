@@ -164,7 +164,7 @@ export const getToolboxComponents = (
         RefListStatusComponent,
         StatusTag,
         ChevronComponent,
-        KanbanComponent
+        KanbanComponent,
       ],
     },
     {

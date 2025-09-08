@@ -35,7 +35,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
     [ModelActionEnums.LoadRequest]: (state: IModelConfiguratorStateContext) => {
       return {
         ...state,
-        //id: payload
+        // id: payload
       };
     },
 

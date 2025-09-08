@@ -53,10 +53,10 @@ export function notesReducer(
       const { notes } = state;
       const { newNotes } = payload;
       const updatedNote = newNotes as INote;
-      
+
       return {
         ...state,
-        notes: notes.map(note => note.id === updatedNote.id ? updatedNote : note),
+        notes: notes.map((note) => note.id === updatedNote.id ? updatedNote : note),
       };
     }
     case NotesActionEnums.OnNoteRemoved:

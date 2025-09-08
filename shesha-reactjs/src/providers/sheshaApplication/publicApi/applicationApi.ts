@@ -25,12 +25,19 @@ export interface IApplicationApi {
 
 export class ApplicationApi implements IApplicationApi {
   public user: IInternalCurrentUserApi;
+
   public settings: ISettingsApi;
+
   public entities: IEntitiesApi;
+
   public utils: IUtilsApi;
+
   public forms: IFormsApi;
+
   public navigator: INavigatorApi;
+
   readonly #httpClient: HttpClientApi;
+
   readonly #plugins: Map<string, IApplicationPlugin>;
 
   constructor(

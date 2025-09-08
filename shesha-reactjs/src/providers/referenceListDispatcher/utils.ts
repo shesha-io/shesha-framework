@@ -8,6 +8,6 @@ export const getReferenceListFullName = (refListId: IReferenceListIdentifier): s
 
 export const isValidRefListId = (refListId: IReferenceListIdentifier): boolean => {
   return Boolean(
-    refListId && refListId.name /*&& refListId.module note: module can be ampty in legacy reference lists*/
+    refListId && refListId.name /* && refListId.module note: module can be ampty in legacy reference lists*/
   );
 };

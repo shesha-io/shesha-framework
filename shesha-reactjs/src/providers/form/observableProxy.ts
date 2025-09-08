@@ -14,6 +14,7 @@ export type TypedProxy<T> = T & ProxyWithRefresh<T>;
 
 export class ObservableProxy<T> implements ProxyWithRefresh<T> {
     private _touchedProps: Set<string>;
+
     private _propAccessors: Map<string, ValueAccessor<any>>;
 
     getPropertyValue(propName: string): any {
@@ -46,8 +47,8 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
     };
 
     setAdditionalData = (data: any) => {
-      for (let key in data) 
-        if (Object.hasOwn(data, key)) 
+      for (let key in data)
+        if (Object.hasOwn(data, key))
           this.addAccessor(key, () => data[key]);
     };
 
@@ -61,7 +62,7 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
                 const propertyName = name.toString();
 
                 if (propertyName === 'hasOwnProperty')
-                    return (prop: string | Symbol) => {
+                    return (prop: string | symbol) => {
                         return prop
                             ? target._propAccessors.has(prop.toString())
                             : false;
@@ -87,7 +88,7 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
                 return target._propAccessors.has(prop.toString())
                     ? { enumerable: true, configurable: true, writable: false }
                     : undefined;
-            }
+            },
         });
     }
 }
