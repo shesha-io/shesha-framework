@@ -120,7 +120,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     // Add padding when border is configured to prevent border from touching components
     const isValidBorderWidth = (width: string | number | undefined): boolean => {
-      return !!(width && width !== '0px' && width != 0);
+      return !!(width && width !== '0px' && width !== 0);
     };
 
     const hasBorder = border && !border.hideBorder && (
