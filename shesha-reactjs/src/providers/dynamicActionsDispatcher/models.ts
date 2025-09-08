@@ -7,7 +7,7 @@ export interface IProvidersDictionary {
 }
 
 export interface DynamicAction {
-  
+
 }
 
 export interface IHasActions {

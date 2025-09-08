@@ -10,7 +10,7 @@ export interface IDataContextProviderStateContext {
   name: string;
   description?: string;
   type: string;
-  //data?: object;
+  // data?: object;
   parentDataContext?: IDataContextFullInstance | null;
   metadata?: Promise<IModelMetadata>;
 }
@@ -46,9 +46,9 @@ export type DataContextType = 'root' | 'storage' | 'app' | 'page' | 'form' | 'co
 export type ContextGetFieldValue = (name: string) => any;
 export type ContextGetFull = () => IDataContextFull;
 export type ContextGetData = () => any;
-export type ContextSetFieldValue = <T,>(name: string, value: T, refreshContext?: RefreshContext) => void;
+export type ContextSetFieldValue = <T>(name: string, value: T, refreshContext?: RefreshContext) => void;
 export type ContextSetData = (changedData: any, refreshContext?: RefreshContext) => void;
-export type ContextOnChangeData = <T,>(data: T, changedData: any, refreshContext?: RefreshContext) => void;
+export type ContextOnChangeData = <T>(data: T, changedData: any, refreshContext?: RefreshContext) => void;
 export type RefreshContext = () => void;
 
 export function useDataContext(require: boolean = true) {

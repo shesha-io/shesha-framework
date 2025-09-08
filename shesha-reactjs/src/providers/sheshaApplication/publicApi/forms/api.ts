@@ -19,6 +19,7 @@ export interface IFormsApi {
  */
 export class FormsApi implements IFormsApi {
   readonly _formsManager: FormsManager;
+
   readonly _httpClient: HttpClientApi;
 
 

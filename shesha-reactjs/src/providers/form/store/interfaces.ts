@@ -25,7 +25,7 @@ export interface InitByRawMarkupPayload {
     cacheKey?: string;
     formArguments?: any;
     initialValues: any;
-    isSettingsForm?: boolean;        
+    isSettingsForm?: boolean;
 }
 
 export interface InitByMarkupPayload {
@@ -99,7 +99,7 @@ export interface IShaFormInstance<Values = any> {
     readonly antdForm: FormInstance;
     readonly defaultApiEndpoints: IEntityEndpoints;
     readonly modelMetadata?: IModelMetadata;
-    readonly validationErrors?: IFormValidationErrors;    
+    readonly validationErrors?: IFormValidationErrors;
 
     setFormMode: (formMode: FormMode) => void;
     setFormData: (payload: ISetFormDataPayload) => void;

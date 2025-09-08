@@ -10,5 +10,5 @@ export enum DynamicActionsActionEnums {
 
 export const testAction = createAction<ITestActionPayload, ITestActionPayload>(
   DynamicActionsActionEnums.TestAction,
-  p => p
+  (p) => p
 );

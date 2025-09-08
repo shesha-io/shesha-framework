@@ -34,7 +34,7 @@ export function storedFilesReducer(
         ...payload,
       };
 
-    case StoredFileActionEnums.DeleteFileSuccess: 
+    case StoredFileActionEnums.DeleteFileSuccess:
       return {
         ...state,
         fileInfo: null,
@@ -45,7 +45,7 @@ export function storedFilesReducer(
           ...state,
           fileInfo: null,
         };
-      
+
       return state;
     }
     default: {

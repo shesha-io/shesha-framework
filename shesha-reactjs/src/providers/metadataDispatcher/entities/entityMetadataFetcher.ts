@@ -10,8 +10,11 @@ type EntityMetadataByClassNameFetcher = (className: string) => Promise<IEntityMe
 
 export class EntityMetadataFetcher implements IEntityMetadataFetcher {
     #syncPromise: Promise<void>;
+
     #httpClient: HttpClientApi;
+
     #typesMap: IEntityTypesMap;
+
     #cacheProvider: ICacheProvider;
 
     constructor(httpClient: HttpClientApi, cacheProvider: ICacheProvider) {
@@ -30,7 +33,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
     #mapProperty = (property: IPropertyMetadata, byClassNameGetter: EntityMetadataByClassNameFetcher, prefix: string = ''): IPropertyMetadata => {
         const nestedProperties: NestedProperties = isPropertiesArray(property.properties)
             ? property.dataType === DataTypes.entityReference && isIHasEntityType(property)
-                ? () => byClassNameGetter(property.entityType).then(m => m.properties as IPropertyMetadata[])
+                ? () => byClassNameGetter(property.entityType).then((m) => m.properties as IPropertyMetadata[])
                 : property.properties.map((child) => this.#mapProperty(child, byClassNameGetter, property.path))
             : property.properties;
 
@@ -44,7 +47,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
 
     #convertMetadata = (metadata: IEntityMetadata, byClassNameGetter: EntityMetadataByClassNameFetcher): IEntityMetadata => {
         if (isPropertiesArray(metadata?.properties)) {
-            metadata.properties = metadata.properties.map(p => this.#mapProperty(p, byClassNameGetter));
+            metadata.properties = metadata.properties.map((p) => this.#mapProperty(p, byClassNameGetter));
         }
         return metadata;
     };
@@ -65,16 +68,19 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
         this.#syncPromise = this.#syncEntities();
         return this.#syncPromise;
     };
+
     getByClassName = (className: string): Promise<IEntityMetadata> => {
         return this.#ensureSynchronized().then(() => {
-            return getCachedMetadataByClassName(className, this.#syncContext).then(m => this.#convertMetadata(m, this.getByClassName));
+            return getCachedMetadataByClassName(className, this.#syncContext).then((m) => this.#convertMetadata(m, this.getByClassName));
         });
     };
+
     getByTypeId = (typeId: IEntityTypeIndentifier): Promise<IEntityMetadata> => {
         return this.#ensureSynchronized().then(() => {
-            return getCachedMetadataByTypeId(typeId, this.#syncContext).then(m => this.#convertMetadata(m, this.getByClassName));
+            return getCachedMetadataByTypeId(typeId, this.#syncContext).then((m) => this.#convertMetadata(m, this.getByClassName));
         });
     };
+
     isEntity = (className: string): Promise<boolean> => {
         return this.#ensureSynchronized().then(() => {
             const typeId = this.#typesMap.resolve(className);

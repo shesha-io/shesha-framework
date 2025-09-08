@@ -18,7 +18,7 @@ export const getSettings = () => {
                         dataSourceType: 'url',
                         validate: {},
                         dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                        useRawValues: true
+                        useRawValues: true,
                     },
                     {
                         id: nanoid(),
@@ -28,16 +28,16 @@ export const getSettings = () => {
                         labelAlign: 'right',
                         hidden: false,
                         validate: {},
-                        settingsValidationErrors: []
-                    }
-                ]
+                        settingsValidationErrors: [],
+                    },
+                ],
             })
             .addContainer({
                 id: containerId,
                 hidden: {
                     _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
                     _mode: 'code',
-                    _value: false
+                    _value: false,
                 } as any,
                 components: [...new DesignerToolbarSettings()
                     .addSettingsInputRow({
@@ -55,10 +55,10 @@ export const getSettings = () => {
                             modelType: {
                                 _code: 'return getSettingValue(data?.entityTypeShortAlias);',
                                 _mode: 'code',
-                                _value: false
+                                _value: false,
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                        }]
+                        }],
                     })
                     .addSettingsInputRow({
                         id: nanoid(),
@@ -73,12 +73,12 @@ export const getSettings = () => {
                                 placeholder: '',
                                 description: 'Name of the property that should be used for the label of the button.',
                                 validate: {
-                                    required: true
+                                    required: true,
                                 },
                                 modelType: {
                                     _code: 'return getSettingValue(data?.entityTypeShortAlias);',
                                     _mode: 'code',
-                                    _value: false
+                                    _value: false,
                                 } as any,
                                 autoFillProps: false,
                             },
@@ -95,13 +95,13 @@ export const getSettings = () => {
                                 modelType: {
                                     _code: 'return getSettingValue(data?.entityTypeShortAlias);',
                                     _mode: 'code',
-                                    _value: false
+                                    _value: false,
                                 } as any,
-                                autoFillProps: false
-                            }]
+                                autoFillProps: false,
+                            }],
                     })
-                    .toJson()
-                ]
+                    .toJson(),
+                ],
             })
             .addSettingsInputRow({
                 id: nanoid(),
@@ -116,19 +116,19 @@ export const getSettings = () => {
                         validate: {},
                         jsSetting: false,
                         settingsValidationErrors: [],
-                    }
-                ]
+                    },
+                ],
             })
             .toJson(),
         formSettings: {
             layout: 'vertical',
             colon: true,
             labelCol: {
-                span: 24
+                span: 24,
             },
             wrapperCol: {
-                span: 24
+                span: 24,
             },
-        }
+        },
     };
-}; 
+};

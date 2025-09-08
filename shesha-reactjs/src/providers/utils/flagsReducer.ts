@@ -1,6 +1,6 @@
 import camelcase from 'camelcase';
 import { FlagsActionTypes } from '@/enums';
-import { IFlagsState } from '@/interfaces';
+import { IFlagsState, isHasErrorInfo } from '@/interfaces';
 
 //#region Flags
 export const IS_IN_PROGRESS_FLAG = '_REQUEST';
@@ -13,26 +13,26 @@ export const ACTIONED_FLAG = '_ACTION';
 //#endregion
 
 
-export const FLAGS_INITIAL_STATE: IFlagsState<any, any, any, any> = {
+export const FLAGS_INITIAL_STATE: IFlagsState<string, string, string, string> = {
   isInProgress: {},
   succeeded: {},
   error: {},
   actioned: {},
 };
 
-const isThisFlagInAction = (type: string, flag: string) => new RegExp(flag, 'i').test(type);
+const isThisFlagInAction = (type: string, flag: string): boolean => new RegExp(flag, 'i').test(type);
 
-const flagsReducer = <T extends IFlagsState<any, any, any, any> = unknown>(
+const flagsReducer = <T extends IFlagsState<string, string, string, string>>(
   state: T = FLAGS_INITIAL_STATE as T,
-  { type, payload }: ReduxActions.Action<IFlagsState<any, any, any, any>>
-) => {
+  { type, payload }: ReduxActions.Action<IFlagsState<string, string, string, string>>
+): T => {
   const flaggable = /(.*)_(REQUEST|SUCCESS|ERROR|ACTION)/.test(type);
 
   if (flaggable) {
     // ["FETCH_USER_SUCCESS", "FETCH_USER", "SUCCESS", index: 0, input: "FETCH_USER_SUCCESS__F__SA", groups: undefined]
     const actionMatch = /(.*)_(REQUEST|SUCCESS|ERROR|ACTION)/.exec(type);
 
-    const FLAG_ACTION_KEY = camelcase((actionMatch && actionMatch[1]) || ''); //  "FETCH_USER" => fetchUser
+    const FLAG_ACTION_KEY = camelcase(actionMatch != null && actionMatch.length > 1 ? actionMatch[0] : ''); //  "FETCH_USER" => fetchUser
 
     const { isInProgress, succeeded, error, actioned } = state;
 
@@ -58,7 +58,10 @@ const flagsReducer = <T extends IFlagsState<any, any, any, any> = unknown>(
     if (isThisFlagInAction(type, ERROR_FLAG)) {
       currentState = {
         ...state,
-        error: { ...error, [FLAG_ACTION_KEY]: (payload as any)?.errorInfo || true },
+        error: {
+          ...error,
+          [FLAG_ACTION_KEY]: isHasErrorInfo(payload) ? payload.errorInfo : true,
+        },
         isInProgress: { ...isInProgress, [FLAG_ACTION_KEY]: false },
       };
     }
