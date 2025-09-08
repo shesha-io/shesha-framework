@@ -183,7 +183,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
-            return <EditModeSelector readOnly={readOnly} value={value} onChange={onChange} size={size} />;
+            return <EditModeSelector readOnly={readOnly} value={value} defaultValue={defaultValue} onChange={onChange} size={size} />;
         case 'dynamicItemsConfigurator':
             return <DynamicActionsConfigurator editorConfig={{ ...props } as IDynamicActionsConfiguratorComponentProps} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'autocomplete':
