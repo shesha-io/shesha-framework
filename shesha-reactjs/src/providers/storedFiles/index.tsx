@@ -47,7 +47,7 @@ export interface IStoredFilesProviderProps {
 
   // used for requered field validation
   value?: IStoredFile[];
-  onChange?: (value: string) => void;
+  onChange?: (value: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -70,7 +70,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   // used for requered field validation
   onChange,
-  value = null
+  value = []
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -100,7 +100,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { mutate: uploadFileHttp } = useMutate();
 
   useEffect(() => {
-    const val = state.fileList?.length > 0 ? state.fileList : [];
+    const val = state?.fileList?.length > 0 ? state.fileList : [];
       if (typeof onChange === 'function' && value !== val) {
         onChange(val || value);
       };
