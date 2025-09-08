@@ -2,7 +2,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useState } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
@@ -46,7 +46,7 @@ export interface IStoredFilesProviderProps {
   baseUrl?: string;
 
   // used for requered field validation
-  value?: string;
+  value?: IStoredFile[];
   onChange?: (value: string) => void;
 }
 
@@ -100,9 +100,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { mutate: uploadFileHttp } = useMutate();
 
   useEffect(() => {
-    const val = state.fileList?.length > 0 ? 'filled' : null;
-    if (typeof onChange === 'function' && value !== val)
-      onChange(val);
+    const val = state.fileList?.length > 0 ? state.fileList : [];
+      if (typeof onChange === 'function' && value !== val) {
+        onChange(val || value);
+      };
   }, [state.fileList]);
 
   useEffect(() => {
