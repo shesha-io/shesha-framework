@@ -361,7 +361,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
         <SettingsFormItem name="showEditIcons" label="Show edit icon" hidden={model.canEditInline === 'no'} valuePropName="checked">
-            <Switch defaultChecked={true}/>
+            <Switch />
         </SettingsFormItem>
         <SettingsFormItem name="inlineEditMode" label="List edit mode" hidden={model.canEditInline === 'no'}>
           <Select disabled={readOnly} options={inlineEditModes} />
