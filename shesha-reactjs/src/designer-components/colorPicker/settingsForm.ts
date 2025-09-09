@@ -100,7 +100,7 @@ export const getSettings = (data: any) => {
                                 parentId: dataTabId,
                                 jsSetting: true,
                                 description: 'Title shown at the top of the color picker',
-                                placeholder: 'Select color',
+                                placeholder: 'Enter title',
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
