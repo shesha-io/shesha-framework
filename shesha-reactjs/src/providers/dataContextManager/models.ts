@@ -28,7 +28,7 @@ export enum SheshaCommonContexts {
   WebStorageContext = 'webStorage',
   AppContext = 'appContext',
   PageContext = 'pageContext',
-  FormContext = 'formContext'
+  FormContext = 'formContext',
 }
 
 export const DEFAULT_CONTEXT_METADATA = {

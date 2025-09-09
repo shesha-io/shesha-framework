@@ -4,10 +4,12 @@ import { CreateTouchableProperty, IPropertyTouched } from "./touchableProperty";
 
 export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched {
     private _touchedProps: Map<string, any>;
+
     private _propAccessors: Map<string, ValueAccessor<any>>;
+
     private _changed: boolean;
 
-    touched (_propName: string, fullPropName: string, value: any) {
+    touched(_propName: string, fullPropName: string, value: any) {
       this._touchedProps.set(fullPropName, value);
     };
 
@@ -54,7 +56,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
         let changed = false;
 
         this._touchedProps.forEach((value, key) => {
-            if (changed) 
+            if (changed)
                 return;
             const props = key.split('.');
             let prop = props.shift();
@@ -97,8 +99,8 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     };
 
     setAdditionalData = (data: any) => {
-      for (let key in data) 
-        if (Object.hasOwn(data, key)) 
+      for (let key in data)
+        if (Object.hasOwn(data, key))
           this.addAccessor(key, () => data[key]);
     };
 
@@ -113,7 +115,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                 const propertyName = name.toString();
 
                 if (propertyName === 'hasOwnProperty')
-                    return (prop: string | Symbol) => {
+                    return (prop: string | symbol) => {
                         return prop
                             ? target._propAccessors.has(prop.toString())
                             : false;
@@ -139,7 +141,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                 return target._propAccessors.has(prop.toString())
                     ? { enumerable: true, configurable: true, writable: false }
                     : undefined;
-            }
+            },
         });
     }
 ;

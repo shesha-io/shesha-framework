@@ -17,7 +17,6 @@ import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { containerDefaultStyles, defaultStyles } from './utils';
@@ -86,7 +85,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
+      <ConfigurableFormItem model={{ ...model }}>
         {(value, onChange) => {
           return (
             <StoredFilesProvider

@@ -41,6 +41,18 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
+                .addContextPropertyAutocomplete({
+                  id: nanoid(),
+                  propertyName: 'propertyName',
+                  label: 'Property Name',
+                  parentId: commonTabId,
+                  size: 'small',
+                  styledLabel: true,
+                  validate: {
+                    required: true,
+                  },
+                  jsSetting: true,
+                })
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'componentName',

@@ -5,7 +5,7 @@ export enum AppConfiguratorActionEnums {
   SwitchMode = 'SWITCH_MODE',
   ToggleEditModeConfirmation = 'TOGGLE_EDIT_MODE_CONFIRMATION',
   ToggleCloseEditModeConfirmation = 'TOGGLE_CLOSE_EDIT_MODE_CONFIRMATION',
-  SoftToggleInfoBlock = 'SOFT_TOGGLE_INFO_BLOCK'
+  SoftToggleInfoBlock = 'SOFT_TOGGLE_INFO_BLOCK',
 }
 
 export const switchApplicationModeAction = createAction<ApplicationMode, ApplicationMode>(

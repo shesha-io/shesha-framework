@@ -23,13 +23,13 @@ const getNavigatorApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefi
         "    getFormUrl: (formId: FormIdentifier) => string;",
         "}",
     ].join("\n");
-    
+
     return Promise.resolve({
         typeName: "NavigatorApi",
         files: [{
             content: navigatorSource,
             fileName: "apis/navigatorApi.d.ts",
-        }],        
+        }],
     });
 };
 

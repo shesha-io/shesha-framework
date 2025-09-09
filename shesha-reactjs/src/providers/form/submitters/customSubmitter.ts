@@ -27,7 +27,7 @@ export class CustomSubmitter implements IFormDataSubmitter {
 
         try {
             const submitCaller = settings.onSubmitData
-                ? (args: SubmitCallerArgs) => { 
+                ? (args: SubmitCallerArgs) => {
                     return executeScript(settings.onSubmitData, args);
                 }
                 : (args: SubmitCallerArgs): Promise<any> => {

@@ -45,10 +45,10 @@ export interface EntityReorderResponse {
 }
 
 export interface SupportsReorderingArgs {
-    sortMode?: SortMode; 
+    sortMode?: SortMode;
     strictSortBy?: string;
 }
 
 export interface SupportsGroupingArgs {
-    sortMode?: SortMode; 
+    sortMode?: SortMode;
 }

@@ -18,7 +18,7 @@ const getFormsApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefiniti
         files: [{
             content: formsSource,
             fileName: "apis/formsApi.d.ts",
-        }],        
+        }],
     });
 };
 

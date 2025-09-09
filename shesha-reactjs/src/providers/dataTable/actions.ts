@@ -73,22 +73,22 @@ export enum DataTableActionEnums {
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
   DataTableActionEnums.SetSelectedRow,
-  p => p
+  (p) => p
 );
 
 export const setDraggingRowAction = createAction<DragState, DragState>(
   DataTableActionEnums.SetDraggingState,
-  p => p
+  (p) => p
 );
 
 export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Row> | Row>(
   DataTableActionEnums.SetMultiSelectedRow,
-  p => p
+  (p) => p
 );
 
 export const setModelTypeAction = createAction<string, string>(
   DataTableActionEnums.SetModelType,
-  p => p
+  (p) => p
 );
 
 export const fetchTableDataAction = createAction<IGetListDataPayload, IGetListDataPayload>(
@@ -102,7 +102,7 @@ export const fetchTableDataSuccessAction = createAction<ITableDataInternalRespon
 );
 
 export const fetchTableDataErrorAction = createAction(DataTableActionEnums.FetchTableDataError, () => {
-  /*nop*/
+  /* nop*/
 });
 
 export interface ISetRowDataPayload {
@@ -240,7 +240,7 @@ export const changePersistedFiltersToggleAction = createAction<boolean, boolean>
 
 export const setDataFetchingModeAction = createAction<DataFetchingMode, DataFetchingMode>(
   DataTableActionEnums.SetDataFetchingMode,
-  p => p
+  (p) => p
 );
 
 export interface IFetchGroupingColumnsSuccessPayload {
@@ -250,7 +250,7 @@ export interface IFetchGroupingColumnsSuccessPayload {
 export const fetchGroupingColumnsSuccessAction = createAction<
   IFetchGroupingColumnsSuccessPayload,
   IFetchGroupingColumnsSuccessPayload
->(DataTableActionEnums.FetchGroupingColumnsSuccess, p => p);
+>(DataTableActionEnums.FetchGroupingColumnsSuccess, (p) => p);
 
 export interface ISortingSettingsActionPayload {
   sortMode?: SortMode;
@@ -261,9 +261,9 @@ export interface ISortingSettingsActionPayload {
 export const setSortingSettingsAction = createAction<
   ISortingSettingsActionPayload,
   ISortingSettingsActionPayload
->(DataTableActionEnums.SetSortingSettings, p => p);
+>(DataTableActionEnums.SetSortingSettings, (p) => p);
 
 export const setStandardSortingAction = createAction<
   IColumnSorting[],
   IColumnSorting[]
->(DataTableActionEnums.SetStandardSorting, p => p);
+>(DataTableActionEnums.SetStandardSorting, (p) => p);

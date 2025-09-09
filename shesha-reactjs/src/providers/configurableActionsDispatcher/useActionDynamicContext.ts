@@ -7,6 +7,6 @@ export interface UseActionDynamicContextArgs {
 }
 
 
-export const useActionDynamicContext = ({  }: UseActionDynamicContextArgs) => {
+export const useActionDynamicContext = ({ }: UseActionDynamicContextArgs) => {
     //
 };

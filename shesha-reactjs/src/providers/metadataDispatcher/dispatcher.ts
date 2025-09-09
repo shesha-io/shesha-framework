@@ -15,7 +15,9 @@ interface IPropertyPathWithMetadata {
 
 export class MetadataDispatcher implements IMetadataDispatcher {
     #models: IModelsDictionary;
+
     #entityMetaFetcher: IEntityMetadataFetcher;
+
     #httpClient: HttpClientApi;
 
     constructor(entityMetaFetcher: IEntityMetadataFetcher, httpClient: HttpClientApi) {
@@ -32,7 +34,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
     #extractNestedProperty = (mainProperty: IPropertyMetadata, name: string): Promise<IPropertyMetadata> => {
         return isEntityReferencePropertyMetadata(mainProperty)
-            ? this.getMetadata({ dataType: mainProperty.dataType, modelType: mainProperty.entityType }).then(entityMeta => {
+            ? this.getMetadata({ dataType: mainProperty.dataType, modelType: mainProperty.entityType }).then((entityMeta) => {
                 return entityMeta && isPropertiesArray(entityMeta.properties)
                     ? this.#getPropertyByName(entityMeta.properties, name)
                     : undefined;
@@ -79,7 +81,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
         if (loadedModel) return loadedModel;
 
         if (dataType === DataTypes.entityReference || dataType === DataTypes.object || dataType === null) {
-            const promise = this.#entityMetaFetcher.isEntity(modelType).then(isEntity => {
+            const promise = this.#entityMetaFetcher.isEntity(modelType).then((isEntity) => {
                 if (isEntity)
                     return this.#entityMetaFetcher.getByClassName(modelType);
 
@@ -93,12 +95,12 @@ export class MetadataDispatcher implements IMetadataDispatcher {
                 };
 
                 const url = `/api/services/app/Metadata/Get?${qs.stringify({ container: modelType })}`;
-                return this.#httpClient.get<MetadataDtoAjaxResponse>(url).then(rawResponse => {
+                return this.#httpClient.get<MetadataDtoAjaxResponse>(url).then((rawResponse) => {
                     const response = rawResponse.data;
                     if (!response.success)
                         throw new Error(`Failed to fetch metadata for model type: '${modelType}'`, { cause: response.error });
 
-                    const properties = response.result.properties.map<IPropertyMetadata>(p => mapProperty(p));
+                    const properties = response.result.properties.map<IPropertyMetadata>((p) => mapProperty(p));
                     const meta: IModelMetadata = {
                         entityType: modelType,
                         dataType: response.result.dataType,
@@ -167,8 +169,8 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     getPropertiesMetadata = (payload: IGetPropertiesMetadataPayload): Promise<IDictionary<IPropertyMetadata>> => {
         const { dataType, properties, modelType } = payload;
 
-        const promises = properties.map(p => this.getPropertyMetadata({ dataType, modelType: modelType, propertyPath: p })
-            .then<IPropertyPathWithMetadata>(propMeta => ({ path: p, metadata: propMeta }))
+        const promises = properties.map((p) => this.getPropertyMetadata({ dataType, modelType: modelType, propertyPath: p })
+            .then<IPropertyPathWithMetadata>((propMeta) => ({ path: p, metadata: propMeta }))
         );
 
         return Promise.allSettled(promises).then((results) => {
@@ -187,7 +189,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     isEntityType = (modelType: string): Promise<boolean> => {
         if (!modelType) return Promise.resolve(false);
 
-        return this.getMetadata({ dataType: null, modelType: modelType }).then(m => {
+        return this.getMetadata({ dataType: null, modelType: modelType }).then((m) => {
             return m.dataType === DataTypes.entityReference;
         });
     };

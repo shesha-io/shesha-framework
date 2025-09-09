@@ -272,6 +272,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const renderUploadContent = () => {
     return (
+      !disabled &&
       <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
         {listType === 'text' && '(press to upload)'}
       </Button>

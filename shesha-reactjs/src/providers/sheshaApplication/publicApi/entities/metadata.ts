@@ -24,8 +24,8 @@ export interface IEntityPropertyMetadata extends IPropertyMetadata {
  */
 const entitiesConfigurationToProperties = (entityConfigs: EntityConfigurationDto[]): IEntityPropertyMetadata[] => {
     const result: IEntityPropertyMetadata[] = [];
-    entityConfigs.forEach(entityConfig => {
-        let moduleProp = result.find(m => m.path === entityConfig.module.accessor);
+    entityConfigs.forEach((entityConfig) => {
+        let moduleProp = result.find((m) => m.path === entityConfig.module.accessor);
         if (!moduleProp) {
             moduleProp = {
                 path: entityConfig.module.accessor,
@@ -65,7 +65,7 @@ const entitiesConfigurationToProperties = (entityConfigs: EntityConfigurationDto
  * @return {Promise<IPropertyMetadata[]>} A promise that resolves to an array of property metadata objects.
  */
 export const fetchEntitiesApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
-    return EntitiesManager.fetchConfigurationsAsync(httpClient).then(res => entitiesConfigurationToProperties(res));
+    return EntitiesManager.fetchConfigurationsAsync(httpClient).then((res) => entitiesConfigurationToProperties(res));
 };
 
 const BASE_ENTITY_MODULE = "entities/interfaces.ts";
@@ -144,7 +144,7 @@ const sortByPath = <TProp extends IPropertyMetadata = IPropertyMetadata>(arr: TP
 const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfigurationDto[], context: ITypeDefinitionLoadingContext): Promise<TypeDefinition> => {
     const apiFile: SourceFile = {
         fileName: "apis/entitiesApi.d.ts",
-        content: ""
+        content: "",
     };
     const result: TypeDefinition = {
         typeName: "EntitiesApi",
@@ -254,7 +254,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
  * @return {Promise<TypeDefinition>} A promise that resolves to the type definition of the entities API.
  */
 const fetchEntitiesApiTypeDefinition = (context: ITypeDefinitionLoadingContext, httpClient: HttpClientApi): Promise<TypeDefinition> => {
-    return EntitiesManager.fetchConfigurationsAsync(httpClient).then(res => entitiesConfigurationToTypeDefinition(res, context));
+    return EntitiesManager.fetchConfigurationsAsync(httpClient).then((res) => entitiesConfigurationToTypeDefinition(res, context));
 };
 
 /**
