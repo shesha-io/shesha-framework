@@ -20,7 +20,6 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   noDataIcon?: string;
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
   
-  // Row interaction events
   onRowClick?: IConfigurableActionConfiguration;
   onRowDoubleClick?: IConfigurableActionConfiguration;
   onRowHover?: IConfigurableActionConfiguration;
@@ -36,9 +35,6 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
   
-  desktop?: Omit<ICommonContainerProps, 'style'>;
-  tablet?: Omit<ICommonContainerProps, 'style'>;
-  mobile?: Omit<ICommonContainerProps, 'style'>;
   enableStyleOnReadonly?: boolean;
 }
 
