@@ -43,16 +43,19 @@ namespace Shesha.Domain
         /// <summary>
         /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator
         /// </summary>
+        [MaxLength(200)]
         public virtual string? GenerationLogicTypeName { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
+        [MaxLength(int.MaxValue)]
         public virtual string? GenerationLogicExtensionJson { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
+        [MaxLength(100)]
         public virtual string? PlaceholderIcon { get; set; }
     }
 }

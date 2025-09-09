@@ -11,7 +11,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Module id
         /// </summary>
-        public Guid? ModuleId { get; set; }
+        public Guid ModuleId { get; set; }
 
         /// <summary>
         /// Form name

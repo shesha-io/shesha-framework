@@ -7,11 +7,8 @@ import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
 import { nanoid } from "@/utils/uuid";
 import { GenerationLogicFactory } from "./generation-logic/factory";
-import { EntityMetadataHelper } from "./generation-logic/entityMetadataHelper";
-import { MetadataDispatcher } from "@/providers/metadataDispatcher/dispatcher";
-import { EntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/entityMetadataFetcher";
-import { ICache, ICacheProvider } from "@/providers/metadataDispatcher/entities/models";
-import localForage from "localforage";
+import { FormMetadataHelper } from "./generation-logic/formMetadataHelper";
+import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 
 export interface IFormsApi {
   /**
@@ -38,30 +35,20 @@ export class FormsApi implements IFormsApi {
   readonly _httpClient: HttpClientApi;
 
   readonly _generationLogicFactory: GenerationLogicFactory;
-  readonly _entityMetadataHelper: EntityMetadataHelper;
+  readonly _entityMetadataHelper: FormMetadataHelper;
 
-  constructor(httpClient: HttpClientApi) {
+  constructor(httpClient: HttpClientApi, metadataDispatcher: IMetadataDispatcher) {
     this._formsManager = new FormsManager(httpClient);
     this._httpClient = httpClient;
     this._generationLogicFactory = new GenerationLogicFactory();
     
-    // Create a simple cache provider implementation
-    const cacheProvider: ICacheProvider = {
-      getCache: (name: string): ICache => {
-        return localForage.createInstance({ name: name });
-      }
-    };
-    
-    const entityMetadataFetcher = new EntityMetadataFetcher(httpClient, cacheProvider);
-    const metadataDispatcher = new MetadataDispatcher(entityMetadataFetcher, httpClient);
-    
-    this._entityMetadataHelper = new EntityMetadataHelper(metadataDispatcher);
+    this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
   
   prepareTemplateAsync = (templateId: string, replacements: object): Promise<string> => {
     if (!templateId)
-      return Promise.resolve(null);
+      return Promise.resolve('');
 
     const payload = {
       id: templateId,
@@ -72,6 +59,10 @@ export class FormsApi implements IFormsApi {
       .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
       .then(async (response) => {
         const template = response.data.result;
+        if (!template) {
+          return '';
+        }
+        
         const markup = template.markup;
 
         const enhancedReplacements = {
@@ -101,7 +92,7 @@ export class FormsApi implements IFormsApi {
           console.error('Error preparing template markup:', error);
           
           // In case of error, fall back to basic string replacement
-          return evaluateString(markup, enhancedReplacements, true);
+          return evaluateString(markup ?? '', enhancedReplacements, true);
         }
       });
   };

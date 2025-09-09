@@ -14,9 +14,5 @@ namespace Shesha.ConfigurationItems.Models
         public string Name { get; set; }
         public string? Label { get; set; }
         public string? Description { get; set; }
-        public string? Markup { get; set; }
-        public string? GenerationLogicExtensionJson { get; set; }
-        public string? ModelType { get; set; }
-        public Guid? TemplateId { get; set; }
     }
 }

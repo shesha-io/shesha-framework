@@ -1,15 +1,13 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
-using NHibernate.Linq;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Permissions;
-using Shesha.Validations;
+using Shesha.Web.FormsDesigner.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
@@ -42,41 +40,45 @@ namespace Shesha.Web.FormsDesigner.Services
             return Repository.GetAllListAsync();
         }
 
-        public override async Task<FormConfiguration> CreateItemAsync(CreateItemInput input)
+        public async Task<FormConfiguration> CreateFormAsync(CreateFormInput input)
         {
-            var validationResults = new ValidationResults();
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var template = input.TemplateId.HasValue
-                ? await RevisionRepository.GetAsync(input.TemplateId.Value)
-                : null;
-
-            var form = new FormConfiguration
+            // Convert CreateFormInput to base CreateItemInput and let base class handle common logic
+            var baseInput = new CreateItemInput
             {
-                Name = input.Name,
                 Module = input.Module,
                 Folder = input.Folder,
+                OrderIndex = input.OrderIndex,
+                Name = input.Name,
+                Label = input.Label,
+                Description = input.Description
             };
-            form.Origin = form;
 
-            await Repository.InsertAsync(form);
+            // Create a strongly-typed container for form-specific data
+            var template = input.TemplateId.HasValue 
+                ? await RevisionRepository.GetAsync(input.TemplateId.Value)
+                : null;
+                
+            var additionalData = new FormCreationData
+            {
+                FormInput = input,
+                Template = template
+            };
 
-            var revision = form.MakeNewRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-            revision.Markup = input.Markup ?? string.Empty;
-            revision.IsTemplate = false;
-            revision.ModelType = input.ModelType;
-            revision.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
-            revision.Template = template;
-            form.Normalize();
+            // Use the overload that accepts additional data
+            return await base.CreateItemAsync(baseInput, additionalData);
+        }
 
-            await RevisionRepository.InsertAsync(revision);
-
-            return form;
+        protected override Task HandleAdditionalPropertiesAsync(FormConfigurationRevision revision, object additionalData)
+        {
+            if (additionalData is FormCreationData data)
+            {
+                revision.Markup = data.FormInput?.Markup ?? string.Empty;
+                revision.IsTemplate = false;
+                revision.ModelType = data.FormInput?.ModelType;
+                revision.GenerationLogicExtensionJson = data.FormInput?.GenerationLogicExtensionJson;
+                revision.Template = data.Template;
+            }
+            return Task.CompletedTask;
         }
 
         protected override Task CopyRevisionPropertiesAsync(FormConfigurationRevision source, FormConfigurationRevision destination)

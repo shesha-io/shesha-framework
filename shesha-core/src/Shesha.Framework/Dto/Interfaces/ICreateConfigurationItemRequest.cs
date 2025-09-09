@@ -31,35 +31,5 @@ namespace Shesha.Dto.Interfaces
         /// Optional Id of previous Configuration Item. If specified a new item will be inserted after item with the specified <see cref="PrevItemId"/>
         /// </summary>
         public Guid? PrevItemId { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? Markup { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? Label { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? Description { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? GenerationLogicExtensionJson { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? ModelType { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Guid? TemplateId { get; set; }
     }
 }

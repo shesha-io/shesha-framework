@@ -4,8 +4,8 @@ import { evaluateString } from "@/providers/form/utils";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DesignerToolbarSettings, EditMode } from "@/index";
 import { nanoid } from "@/utils/uuid";
-import { EntityMetadataHelper } from "./entityMetadataHelper";
 import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y, ROW_COUNT } from "../constants";
+import { FormMetadataHelper } from "./formMetadataHelper";
 
 export function findContainersWithPlaceholderRecursive(
   token: any,
@@ -70,7 +70,7 @@ export function processBaseMarkup(markup: string, replacements: Record<string, a
 export function addDetailsPanel(
   metadata: PropertyMetadataDto[], 
   markup: any, 
-  metadataHelper: EntityMetadataHelper, 
+  metadataHelper: FormMetadataHelper, 
 ): void {
   const placeholderName = "//*DETAILSPANEL*//";
 
