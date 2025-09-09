@@ -27,12 +27,13 @@ const INIT_STATE: IIdleTimerState = {
   remainingTime: SIXTY,
 };
 
-const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security.AutoLogoffTimeout', module: 'Shesha' };
+const securitySettingsId: ISettingIdentifier = { name: 'Shesha.Security', module: 'Shesha' };
 
 export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
   const { styles } = useStyles();
-  const { value: autoLogoffTimeout } = useSettingValue<number>(autoLogoffTimeoutSettingId);
-  const timeoutSeconds = autoLogoffTimeout ?? 0;
+  const { value: securitySettings } = useSettingValue(securitySettingsId);
+  const timeoutSeconds = securitySettings?.autoLogoffTimeout ?? 0;
+  console.log('securitySettings', securitySettings);
 
   const { logoutUser, loginInfo } = useAuth();
 

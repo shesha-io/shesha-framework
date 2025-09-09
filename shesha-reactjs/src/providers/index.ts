@@ -3,6 +3,7 @@ import { useApplicationContextMetadata } from './sheshaApplication/publicApi/met
 
 export * from './appConfigurator';
 export * from './auth';
+export * from './autoLogout';
 export * from './buttonGroupConfigurator';
 export * from './configurableActionsDispatcher';
 export * from './configurableComponent';
