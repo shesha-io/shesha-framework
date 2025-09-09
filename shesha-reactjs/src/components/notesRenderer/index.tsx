@@ -38,18 +38,23 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
 }) => {
   const { notes, deleteNotes, isInProgress, postNotes, updateNotes } = useNotes();
   const { styles } = useStyles();
-  const prevNotes = useRef(notes);
+ const prevNotes = useRef(notes);
+  const wasPostingNotes = useRef(false);
   const { fetchNotes: isFetchingNotes, postNotes: isPostingNotes } = isInProgress;
 
   useEffect(() => {
-    if (prevNotes.current && notes?.length > prevNotes.current.length) {
-      const newNotes = notes.filter((note) => !prevNotes.current.some((prev) => prev.id === note.id));
-      if (onCreated && newNotes.length > 0) {
-        onCreated(newNotes);
+    if (wasPostingNotes.current && !isPostingNotes) {
+      if (prevNotes.current && notes?.length > prevNotes.current.length) {
+        const newNotes = notes.filter((note) => !prevNotes.current.some((prev) => prev.id === note.id));
+        if (onCreated && newNotes.length > 0) {
+          onCreated(newNotes);
+        }
       }
     }
+    
+    wasPostingNotes.current = isPostingNotes;
     prevNotes.current = notes;
-  }, [notes]);
+  }, [notes, isPostingNotes, onCreated]);
 
   return (
     <div className={styles.shaNotesRenderer}>

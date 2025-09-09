@@ -12,7 +12,7 @@ import {
   IComponentsDictionary,
   IFlatComponentsStructure,
   IFormDto,
-  IFormSettings
+  IFormSettings,
 } from './models';
 import { GetDataError, useGet } from '@/hooks';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
@@ -262,10 +262,10 @@ export const filterDataByOutputComponents = (
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       var component = components[key];
-      if (component.propertyName 
-          && component.type
-          && data.hasOwnProperty(component.propertyName) 
-          && !toolboxComponents[component.type]?.isOutput) {
+      if (component.propertyName &&
+          component.type &&
+          data.hasOwnProperty(component.propertyName) &&
+          !toolboxComponents[component.type]?.isOutput) {
          delete data[component.propertyName];
       }
     }
@@ -278,10 +278,10 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
   const resf = (items: IFieldData[]) => {
     let s = '';
     items.forEach((item) => {
-      if (!(item.property
-          || item.name === 'id'
-          || item.name === '_className'
-          || item.name === '_displayName'
+      if (!(item.property ||
+          item.name === 'id' ||
+          item.name === '_className' ||
+          item.name === '_displayName'
       )) return;
       s += s ? ',' + item.name : item.name;
       if (item.child.length > 0) {

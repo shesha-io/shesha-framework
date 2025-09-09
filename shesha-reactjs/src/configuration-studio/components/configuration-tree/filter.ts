@@ -1,31 +1,29 @@
 import { getTitleWithHighlight } from "@/configuration-studio/filter-utils";
 import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from "@/configuration-studio/models";
 import { renderCsTreeNode } from "@/configuration-studio/tree-utils";
+import { isDefined, isNullOrWhiteSpace } from "@/configuration-studio/types";
 import { useMemo } from "react";
 
 const emptyNodes = [];
-export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch: string): TreeNode[] => {
+export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string): TreeNode[] => {
     const filteredTreeNodes = useMemo<TreeNode[]>(() => {
-        if (!treeNodes || treeNodes.length === 0)
+        if (treeNodes.length === 0)
             return emptyNodes;
-        if (!quickSearch)
+        if (isNullOrWhiteSpace(quickSearch))
             return treeNodes;
 
         const loop = (data: TreeNode[]): TreeNode[] => {
             const result: TreeNode[] = [];
-            data.forEach(node => {
+            data.forEach((node) => {
                 if (isConfigItemTreeNode(node)) {
-                    if (quickSearch) {
-                        const newTitle = getTitleWithHighlight(node, quickSearch);
-                        if (newTitle)
-                            result.push({
-                                ...node,
-                                title: (data: TreeNode) => {
-                                    return renderCsTreeNode(data, newTitle);
-                                }
-                            });
-                    } else
-                        result.push(node);
+                    const newTitle = getTitleWithHighlight(node, quickSearch);
+                    if (isDefined(newTitle))
+                        result.push({
+                            ...node,
+                            title: (data: TreeNode) => {
+                                return renderCsTreeNode(data, newTitle);
+                            },
+                        });
                 }
 
                 if (isNodeWithChildren(node)) {
@@ -39,7 +37,6 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch: string)
 
         const newNodes = loop(treeNodes);
         return newNodes;
-
     }, [treeNodes, quickSearch]);
 
     return filteredTreeNodes;

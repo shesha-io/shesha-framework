@@ -11,8 +11,10 @@ import { useStyles } from '../../styles';
 import { useFilteredTreeNodes } from './filter';
 import { DndPreview } from './dndPreview';
 import { DropPositions } from './models';
+import { isDefined } from '@/configuration-studio/types';
 
 export interface IConfigurationTreeProps {
+    debugDnd?: boolean;
 }
 type OnSelectHandler = TreeProps<TreeNode>['onSelect'];
 type OnClickHandler = TreeProps<TreeNode>['onClick'];
@@ -28,8 +30,6 @@ type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 const isNodeDraggable: IsDraggable = (node): boolean => {
     return isConfigItemTreeNode(node) || isFolderTreeNode(node);
 };
-
-const debugDnd = false;
 
 const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: number): boolean => {
     switch (dropPosition) {
@@ -58,11 +58,11 @@ type DndState = {
     allowed: boolean;
 };
 
-export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
+export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false }) => {
     const cs = useConfigurationStudio();
     const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
     const { setIsDragging } = useCsTreeDnd();
-    const [contextNode, setContextNode] = useState<TreeNode>(null);
+    const [contextNode, setContextNode] = useState<TreeNode | null>(null);
     const { styles } = useStyles();
     const [dndState, setDndState] = useState<DndState>();
 
@@ -83,7 +83,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
         switch (dropPosition) {
             case DropPositions.After:
             case DropPositions.Before: {
-                const dropNodeParent = dropNode.parentId
+                const dropNodeParent = isDefined(dropNode.parentId)
                     ? getTreeNodeById(dropNode.parentId)
                     : undefined;
 
@@ -133,11 +133,11 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
 
         return buildNodeContextMenu({
             node: contextNode,
-            configurationStudio: cs
+            configurationStudio: cs,
         });
     }, [contextNode, cs]);
 
-    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { value } = e.target;
         setQuickSearch(value);
     };
@@ -151,7 +151,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
     };
 
     const handleKeyDown: OnTreeKeyDown = (_e) => {
-        //console.log('LOG: key', e.key);
+        // nop
     };
 
     const allowNodeDropWrapper: AllowDrop = ({ dragNode, dropNode, dropPosition }) => {
@@ -161,7 +161,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                 dragNode: dragNode,
                 dropNode: dropNode,
                 dropPosition: dropPosition,
-                allowed
+                allowed,
             });
         }
         return allowed;
@@ -172,7 +172,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
             spinning={treeLoadingState.status === 'loading'}
             wrapperClassName={styles.csNavPanelSpinner}
         >
-            {treeNodes && (
+            {isDefined(treeNodes) && (
                 <div className={styles.csNavPanelContent}>
                     <div className={styles.csNavPanelHeader}>
                         <Input.Search
@@ -193,7 +193,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = () => {
                                 switcherIcon={<DownOutlined />}
 
                                 treeData={filteredTreeNodes}
-                                blockNode /*required for correct dragging*/
+                                blockNode /* required for correct dragging*/
 
                                 draggable={isNodeDraggable}
                                 allowDrop={allowNodeDropWrapper}

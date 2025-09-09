@@ -1,4 +1,3 @@
-import { DebugButton } from '@/components/formDesigner/toolbar/debugButton';
 import { FormSettingsButton } from '@/components/formDesigner/toolbar/formSettingsButton';
 import { PreviewButton } from '@/components/formDesigner/toolbar/previewButton';
 import { SaveButton } from '@/components/formDesigner/toolbar/saveButton';
@@ -9,14 +8,13 @@ export interface IFormToolbarProps {
     readOnly?: boolean;
 }
 
-export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly }) => {
+export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
     return (
         <div>
-            <FormSettingsButton buttonText=''/>
-            <SaveButton size='small' type='link'/>
-            {!readOnly && (<UndoRedoButtons size='small'/>)}
-            <PreviewButton size='small'/>
-            { false && <DebugButton /> }            
+            <FormSettingsButton buttonText="" />
+            <SaveButton size="small" type="link" />
+            {!readOnly && (<UndoRedoButtons size="small" />)}
+            <PreviewButton size="small" />
         </div>
     );
 };

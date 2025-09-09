@@ -23,6 +23,7 @@ import {
   FormPersisterStateConsumer,
   FormPersisterStateContext,
   IFormPersisterActionsContext,
+  IFormPersisterContext,
   IFormPersisterStateContext,
   ILoadFormPayload,
 } from './contexts';
@@ -142,7 +143,7 @@ function useFormPersisterActions(require: boolean = true) {
   return context;
 }
 
-function useFormPersister(require: boolean = true) {
+const useFormPersisterIfAvailable = (require: boolean = false): IFormPersisterContext | undefined => {
   const actionsContext = useFormPersisterActions(require);
   const stateContext = useFormPersisterState(require);
 
@@ -152,6 +153,8 @@ function useFormPersister(require: boolean = true) {
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
+};
 
-export { FormPersisterStateConsumer as FormPersisterConsumer, FormPersisterProvider, useFormPersister };
+const useFormPersister = (): IFormPersisterContext => useFormPersisterIfAvailable(true)!;
+
+export { FormPersisterStateConsumer as FormPersisterConsumer, FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable };

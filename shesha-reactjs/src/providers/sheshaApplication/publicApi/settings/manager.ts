@@ -22,18 +22,20 @@ export const SETTINGS_URLS = {
 
 export class SettingsManager {
     readonly _httpClient: HttpClientApi;
+
     static #configurationsPromise: Promise<SettingConfigurationDto[]> = undefined;
+
     #modulesMapPromise: Promise<Map<string, ModuleSettingsMap>> = undefined;
 
     resolveSettingAsync = (id: ISettingFullAccessor): Promise<ISettingIdentifier> => {
-        return this.#fetchModulesMapAsync().then(map => {
+        return this.#fetchModulesMapAsync().then((map) => {
             const moduleItem = map.get(id.module);
             if (moduleItem) {
                 const category = moduleItem.categories.get(id.category);
                 if (category) {
-                    return { 
-                        module: moduleItem.name, 
-                        name: category.settings.get(id.name)
+                    return {
+                        module: moduleItem.name,
+                        name: category.settings.get(id.name),
                     };
                 }
             }
@@ -42,24 +44,24 @@ export class SettingsManager {
     };
 
     getValueAsync = <Value = any>(id: ISettingFullAccessor): Promise<Value> => {
-        return this.resolveSettingAsync(id).then(resolvedId => {
+        return this.resolveSettingAsync(id).then((resolvedId) => {
             const url = `${SETTINGS_URLS.GET_VALUE}?${qs.stringify(resolvedId)}`;
             return this._httpClient.get<IAjaxResponse<Value>>(url)
-                .then(res => {
+                .then((res) => {
                     return res.data.success ? res.data.result : undefined;
                 });
         });
     };
 
     setValueAsync = <Value = any>(id: ISettingFullAccessor, value: Value): Promise<void> => {
-        return this.resolveSettingAsync(id).then(resolvedId => {
+        return this.resolveSettingAsync(id).then((resolvedId) => {
             const payload = {
                 module: resolvedId.module,
                 name: resolvedId.name,
                 value: value,
             };
             return this._httpClient.post<IAjaxResponse<void>>(SETTINGS_URLS.SET_VALUE, payload)
-                .then(res => {
+                .then((res) => {
                     if (!res.data.success)
                         throw new Error("Failed to update setting value: " + res.data.error.message);
                 });
@@ -75,7 +77,7 @@ export class SettingsManager {
             return this.#configurationsPromise;
 
         this.#configurationsPromise = httpClient.get<IAjaxResponse<SettingConfigurationDto[]>>(SETTINGS_URLS.GET_CONFIGURATIONS)
-            .then(res => {
+            .then((res) => {
                 const result = res.data.success ? res.data.result : [];
                 return result;
             });
@@ -90,19 +92,19 @@ export class SettingsManager {
         if (this.#modulesMapPromise)
             return this.#modulesMapPromise;
 
-        this.#modulesMapPromise = this.#fetchConfigurationsAsync().then(configs => {
+        this.#modulesMapPromise = this.#fetchConfigurationsAsync().then((configs) => {
             const map = new Map<string, ModuleSettingsMap>();
-            configs.forEach(config => {
+            configs.forEach((config) => {
                 let moduleItem = map.get(config.module.accessor);
                 if (!moduleItem) {
-                    moduleItem = { 
-                        name: config.module.name, 
-                        categories: new Map<string, CategorySettingsMap>() 
+                    moduleItem = {
+                        name: config.module.name,
+                        categories: new Map<string, CategorySettingsMap>(),
                     };
                     map.set(config.module.accessor, moduleItem);
                 }
                 let categoryItem = moduleItem.categories.get(config.category.accessor);
-                if (!categoryItem){
+                if (!categoryItem) {
                     categoryItem = { name: config.category.name, settings: new Map<string, string>() };
                     moduleItem.categories.set(config.category.accessor, categoryItem);
                 }

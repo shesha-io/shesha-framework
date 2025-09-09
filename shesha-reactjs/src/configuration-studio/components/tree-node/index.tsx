@@ -6,6 +6,7 @@ import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { NodeIndicator } from './nodeIndicators';
 import { gray } from '@ant-design/colors';
 import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
+import { isDefined, isNullOrWhiteSpace } from '@/configuration-studio/types';
 
 const { Text } = Typography;
 
@@ -20,7 +21,7 @@ type LabelValueItem = {
 
 type LabelValueOrNode = LabelValueItem | ReactNode;
 
-const isLabelValueItem = (item: LabelValueOrNode): item is LabelValueItem => item && typeof (item['label']) === 'string' && item['value'];
+const isLabelValueItem = (item: LabelValueOrNode): item is LabelValueItem => isDefined(item) && typeof (item['label']) === 'string' && item['value'];
 
 type LabelValueProps = {
     data: LabelValueItem;
@@ -29,7 +30,7 @@ const LabelValue: FC<LabelValueProps> = ({ data }) => {
     return (
         <div>
             <Text strong>{data.label}: </Text>
-            <Text type='secondary'>{data.value}</Text>
+            <Text type="secondary">{data.value}</Text>
         </div>
     );
 };
@@ -50,13 +51,13 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
 
         if (node.flags.isExposed)
             result.push({ label: 'Exposed from', value: node.baseModule });
-        if (node.description)
+        if (!isNullOrWhiteSpace(node.description))
             result.push({ label: 'Description', value: node.description });
         if (node.flags.isUpdated) {
             result.push({ label: 'Has manual changes', value: 'yes' });
         }
 
-        if (node.lastModifierUser && node.lastModificationTime)
+        if (isDefined(node.lastModifierUser) && isDefined(node.lastModificationTime))
             result.push(<div>Last updated by {node.lastModifierUser} on <DateDisplay>{node.lastModificationTime}</DateDisplay></div>);
 
         return result;
@@ -69,12 +70,12 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
     return items.length > 0 && !isDragging
         ? (
             <Popover
-                content={
+                content={(
                     <div>
                         {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <React.Fragment key={index}>{item}</React.Fragment>))}
                     </div>
-                }
-                trigger='hover'
+                  )}
+                trigger="hover"
                 placement="bottomLeft"
                 mouseEnterDelay={0.4}
             >

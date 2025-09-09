@@ -442,7 +442,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       
       return { top, left };
     };
-    
+
     const position = getSmartPosition();
     
     return (
@@ -465,11 +465,8 @@ export const ReactTable: FC<IReactTableProps> = ({
           minWidth: 160,
           maxWidth: Math.min(cellRect?.width || 200, window.innerWidth - 40),
           width: cellRect?.width,
-          backgroundColor: '#fff',
-          border: '1px #dddddd solid',
           borderRadius: 8,
           padding: activeCell !== null && allowExpandedView && 10,
-          boxShadow: '0px 2px 2px 0px rgba(0, 0, 0, .15)',
           top: `${position.top}px`,
           left: `${position.left}px`,
           zIndex: 50,
@@ -477,16 +474,24 @@ export const ReactTable: FC<IReactTableProps> = ({
           pointerEvents: activeCell !== null && allowExpandedView ? 'auto' : 'none',
         }}
       >
-<p
-  style={{
-    wordBreak: 'keep-all',      // Do not break words or URLs
-    whiteSpace: 'normal',       // Allow normal wrapping (but won't break long words)
-    maxWidth: '100%',           // Constrain to container width
-    overflowX: 'auto', 
-  }}
->
-  {cellRef?.current?.innerText}
-</p>
+          <div
+            style={{
+                maxHeight: 300,
+                overflowY: "auto",
+                backgroundColor: "white",
+                padding: 8,
+                border: "1px solid rgba(0,0,0,0.15)",
+                borderRadius: 4,
+                boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
+                display: "inline-block",
+                whiteSpace: "nowrap",
+                overflowX: "auto", 
+                maxWidth: "100vw",  
+                wordBreak: "keep-all",   
+            }}
+          >
+            {cellRef?.current?.innerText}
+          </div>
       </div>
     );
   };

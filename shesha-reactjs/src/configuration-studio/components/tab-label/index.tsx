@@ -13,7 +13,7 @@ export const TabLabel: FC<ITabLabelProps> = ({ doc, onContextMenu }) => {
         : undefined;
 
     const title = isCIDocument(doc)
-        ? `${doc.moduleName}/${doc.label}` 
+        ? `${doc.moduleName}/${doc.label}`
         : undefined;
 
     return (

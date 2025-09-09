@@ -4,9 +4,7 @@ import { Button } from 'antd';
 import React, { FC } from 'react';
 import { useShaFormInstance, useShaFormDataUpdate, useShaFormSubscription } from '@/providers/form/providers/shaFormProvider';
 
-export interface IGenericToolbarProps extends ItemEditorProps {
-
-}
+export type IGenericToolbarProps = ItemEditorProps;
 
 export const GenericToolbar: FC<IGenericToolbarProps> = ({ }) => {
     useShaFormDataUpdate();
@@ -14,12 +12,12 @@ export const GenericToolbar: FC<IGenericToolbarProps> = ({ }) => {
     useShaFormSubscription('data-submit');
     const shaForm = useShaFormInstance();
 
-    const onSaveClick = () => {
+    const onSaveClick = (): void => {
         shaForm.submit();
     };
     return (
         <div>
-            <Button type='link' icon={<SaveOutlined />} onClick={onSaveClick} disabled={!shaForm.isDataModified}>Save</Button>
+            <Button type="link" icon={<SaveOutlined />} onClick={onSaveClick} disabled={!shaForm.isDataModified}>Save</Button>
         </div>
     );
 };

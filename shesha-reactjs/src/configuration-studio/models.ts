@@ -1,6 +1,7 @@
 import { FormFullName } from "@/interfaces";
 import { DataNode } from "antd/lib/tree";
 import { PropsWithChildren, ReactNode } from "react";
+import { isDefined } from "./types";
 
 export type ForceRenderFunc = () => void;
 
@@ -20,7 +21,7 @@ export type DocumentFlags = {
 
 export type TreeNode = DataNode & {
     id: string;
-    parentId?: string;
+    parentId?: string | null;
     moduleId: string;
     name: string;
     label: string;
@@ -49,7 +50,7 @@ export type FolderTreeNode = TreeNode & NodeWithChilds & {
 
 export type FlatTreeNode = DocumentFlags & {
     id: string;
-    parentId?: string;
+    parentId?: string | null;
     moduleId: string;
     name: string;
     label: string;
@@ -61,29 +62,28 @@ export type FlatTreeNode = DocumentFlags & {
     baseModule?: string;
 };
 
-export const isTreeNode = (node: DataNode): node is TreeNode => {
-    const casted = node as TreeNode;
-    return Boolean(casted?.nodeType);
+export const isTreeNode = (node?: DataNode): node is TreeNode => {
+    const casted = node as TreeNode | undefined;
+    return isDefined(casted?.nodeType);
 };
 
-export const isConfigItemTreeNode = (node: DataNode): node is ConfigItemTreeNode => {
+export const isConfigItemTreeNode = (node?: DataNode): node is ConfigItemTreeNode => {
     return isTreeNode(node) && node.nodeType === TreeNodeType.ConfigurationItem;
 };
 
-export const isFolderTreeNode = (node: DataNode): node is FolderTreeNode => {
+export const isFolderTreeNode = (node?: DataNode): node is FolderTreeNode => {
     return isTreeNode(node) && node.nodeType === TreeNodeType.Folder;
 };
 
-export const isModuleTreeNode = (node: DataNode): node is ModuleTreeNode => {
+export const isModuleTreeNode = (node?: DataNode): node is ModuleTreeNode => {
     return isTreeNode(node) && node.nodeType === TreeNodeType.Module;
 };
 
-export const isNodeWithChildren = (node: DataNode): node is ModuleTreeNode | FolderTreeNode  => {
+export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | FolderTreeNode => {
     return isModuleTreeNode(node) || isFolderTreeNode(node);
 };
 
-export const TREE_NODE_TYPES =
-{
+export const TREE_NODE_TYPES = {
     Module: 1,
     ConfigurationItem: 2,
     Folder: 3,
@@ -104,14 +104,14 @@ export type ItemTypeBackendDefinition = {
     itemType: string;
     entityClassName: string;
     friendlyName: string;
-    createFormId: FormFullName;
-    renameFormId: FormFullName;
+    createFormId: FormFullName | null;
+    renameFormId: FormFullName | null;
 };
 
 export type ItemTypeDefinition = ItemTypeBackendDefinition & {
     // front-end specific
-    editor?: DocumentDefinition;
-    icon?: ReactNode;
+    editor: DocumentDefinition | undefined;
+    icon: ReactNode | undefined;
 };
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
@@ -131,24 +131,19 @@ export type CIDocument = DocumentBase & {
     definition: DocumentDefinition;
     loadingState: LoadingStatus;
     isHistoryVisible: boolean;
-    flags?: DocumentFlags;
+    flags: DocumentFlags;
     moduleId: string;
     moduleName: string;
 };
 
-export const isCIDocument = (doc: StoredDocumentInfo): doc is CIDocument => {
-    return doc && doc.type === 'ci';
+export const isCIDocument = (doc?: StoredDocumentInfo): doc is CIDocument => {
+    return isDefined(doc) && doc.type === 'ci';
 };
 
 export type ItemEditorProps<TDoc extends IDocumentInstance = IDocumentInstance> = {
     doc: TDoc;
 };
 export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEditorProps<TDoc>) => ReactNode;
-
-
-export type ItemToolbarProps = {
-
-};
 
 export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
 export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;

@@ -14,7 +14,7 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
     const cs = useConfigurationStudio();
     const { data, isLoading } = useItemRevisionHistory(doc.itemId);
 
-    const onClose = () => {
+    const onClose = (): void => {
         cs.hideRevisionHistoryAsync(doc.itemId);
     };
 
@@ -28,7 +28,7 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
             getContainer={false}
             maskClosable={false}
             mask={false}
-            size='large'
+            size="large"
         >
             <Spin spinning={isLoading}>
                 <List
@@ -47,7 +47,6 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
 };
 
 export const RevisionHistoryDrawer: FC = () => {
-
     const doc = useActiveDoc();
     return doc
         ? <RevisionHistoryDrawerInner doc={doc} />

@@ -8,7 +8,7 @@ export interface IEntityToolbarProps {
 export const EntityToolbar: FC<IEntityToolbarProps> = () => {
     return (
         <div>
-            <ModelConfiguratorToolbar /> 
+            <ModelConfiguratorToolbar />
         </div>
     );
 };

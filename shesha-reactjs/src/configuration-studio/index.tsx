@@ -15,11 +15,7 @@ import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
 
-export interface IConfigurationStudioProps {
-
-}
-
-const ConfigurationStudio: FC<IConfigurationStudioProps> = () => {
+const ConfigurationStudio: FC = () => {
     const { styles } = useStyles();
 
     return (
@@ -30,7 +26,7 @@ const ConfigurationStudio: FC<IConfigurationStudioProps> = () => {
                 <Layout.Header className={styles.csHeader}>
                     <div className={styles.csHeaderLeft}>
                         <Image
-                            src="/images/favicon.ico"
+                            src="/favicon.ico"
                             alt="Shesha"
                             width={32}
                             height={32}
@@ -67,8 +63,7 @@ const ConfigurationStudio: FC<IConfigurationStudioProps> = () => {
                     </Splitter>
                 </Layout.Content>
             </Layout>
-            {false && <ConfigurationItemMenu />}
-        </ConfigurationStudioProvider >
+        </ConfigurationStudioProvider>
     );
 };
 

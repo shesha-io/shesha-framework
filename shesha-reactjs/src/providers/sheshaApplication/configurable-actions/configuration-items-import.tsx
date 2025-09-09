@@ -18,7 +18,7 @@ const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
-  importerRef: MutableRefObject<IImportInterface>;
+  importerRef: MutableRefObject<IImportInterface | undefined>;
 }
 
 export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {

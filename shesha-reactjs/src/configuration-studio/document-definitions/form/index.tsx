@@ -31,5 +31,5 @@ export const FormDocumentDefinition: DocumentDefinition = {
     },
     documentInstanceFactory: (args) => {
         return new DocumentInstance({ ...args, itemType: FormDocumentDefinition.documentType, definition: FormDocumentDefinition });
-    }
+    },
 };

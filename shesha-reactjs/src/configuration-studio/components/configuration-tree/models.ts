@@ -1,7 +1,7 @@
 export const DropPositions = {
     Before: -1,
     Inside: 0,
-    After: 1
+    After: 1,
 };
 
 export const getDropPositionText = (dropPosition: number): string => {

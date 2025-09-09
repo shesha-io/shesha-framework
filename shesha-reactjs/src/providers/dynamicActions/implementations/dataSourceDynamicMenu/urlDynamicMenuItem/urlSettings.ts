@@ -29,16 +29,16 @@ export const getSettings = () => {
                         validate: {},
                         description: '',
                         settingsValidationErrors: [],
-                        mode: 'dialog'
-                    }
-                ]
+                        mode: 'dialog',
+                    },
+                ],
             })
             .addSettingsInputRow({
                 id: nanoid(),
                 hidden: {
                     _code: 'return !getSettingValue(data?.dataSourceUrl);',
                     _mode: 'code',
-                    _value: false
+                    _value: false,
                 },
                 inputs: [
                     {
@@ -48,8 +48,8 @@ export const getSettings = () => {
                         label: 'Label Property',
                         labelAlign: 'right',
                         validate: {
-                            required: true
-                        }
+                            required: true,
+                        },
                     },
                     {
                         id: nanoid(),
@@ -58,9 +58,9 @@ export const getSettings = () => {
                         label: 'Tooltip Property',
                         labelAlign: 'right',
                         validate: {},
-                        settingsValidationErrors: []
-                    }
-                ]
+                        settingsValidationErrors: [],
+                    },
+                ],
             })
             .addSettingsInputRow({
                 id: nanoid(),
@@ -73,19 +73,19 @@ export const getSettings = () => {
                         hidden: false,
                         hideLabel: true,
                         jsSetting: false,
-                    }
-                ]
+                    },
+                ],
             })
             .toJson(),
         formSettings: {
             layout: 'vertical',
             colon: true,
             labelCol: {
-                span: 24
+                span: 24,
             },
             wrapperCol: {
-                span: 24
+                span: 24,
             },
-        }
+        },
     };
 };

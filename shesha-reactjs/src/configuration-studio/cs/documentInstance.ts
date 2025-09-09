@@ -8,31 +8,30 @@ export type DocumentInstanceArgs = DocumentInstanceFactoryArgs & {
 
 export class DocumentInstance implements IDocumentInstance {
     itemId: string;
+
     label: string;
+
     type: DocumentType = 'ci';
+
     itemType: string;
-    flags?: DocumentFlags;
+
+    flags: DocumentFlags;
+
     moduleId: string;
+
     moduleName: string;
 
     definition: DocumentDefinition;
+
     loadingState: LoadingStatus;
+
     isHistoryVisible: boolean;
-    
-    //constructor(definition: DocumentDefinition, itemType: string, itemId: string, label: string, moduleId: string, moduleName: string, flags?: DocumentFlags){
-    constructor(args: DocumentInstanceArgs){
+
+    constructor(args: DocumentInstanceArgs) {
         mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
-        
-        /*
-        this.definition = definition;
-        this.itemType = itemType;
-        this.itemId = itemId;
-        this.label = label;
-        this.moduleId = moduleId;
-        this.moduleName = moduleName;
-        this.flags = flags;
-        */
+
         this.isHistoryVisible = false;
     }
+
     toolbarForceRender?: ForceRenderFunc;
 }

@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { DESKTOP_SIZE_QUERY, PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
+import {PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
 import { useDataTable } from '@/providers';
 import TablePaging from './tablePaging';
 import TableNoPaging from './tableNoPaging';
@@ -30,9 +30,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
     dataFetchingMode,
   } = useDataTable();
 
-  const hideSizeChanger = useMediaQuery({
-    query: DESKTOP_SIZE_QUERY,
-  });
+
 
   const hideTotalItems = useMediaQuery({
     query: PHONE_SIZE_QUERY,
@@ -47,7 +45,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
         currentPage,
         totalRows,
         selectedPageSize,
-        showSizeChanger: !hideSizeChanger && showSizeChanger,
+        showSizeChanger: !hideTotalItems && showSizeChanger,
         showTotalItems: !hideTotalItems && showTotalItems,
         setCurrentPage,
         changePageSize,

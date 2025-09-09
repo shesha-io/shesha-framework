@@ -97,7 +97,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   enableStyleOnReadonly = true,
   ...rest
 }) => {
-  const { message, notification } = App.useApp();
+  const { message, notification, modal } = App.useApp();
   const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
@@ -106,16 +106,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const model = rest;
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
 
   const { styles } = useStyles({
     containerStyles: {
-      ...containerDimensionsStyles,
-      width: layout === 'vertical' ? '' : addPx(containerDimensionsStyles.width), height: layout === 'horizontal' ? '' : addPx(containerDimensionsStyles.height),
-      ...containerJsStyle, ...stylingBoxAsCSS,
+      ...(containerDimensionsStyles ?? {}),
+      width: layout === 'vertical' ? undefined : addPx(containerDimensionsStyles?.width),
+      height: layout === 'horizontal' ? undefined : addPx(containerDimensionsStyles?.height),
+      ...containerJsStyle,
+      ...stylingBoxAsCSS,
     },
-    style: enableStyleOnReadonly && disabled ?
-      { ...model.allStyles.dimensionsStyles, ...model.allStyles.fontStyles } : { ...model?.allStyles?.fullStyle }, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
+    style: enableStyleOnReadonly && disabled
+      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}) }
+      : { ...(model?.allStyles?.fullStyle ?? {}) },
+    model: {
+      gap: addPx(gap),
+      layout: listType === 'thumbnail' && !isDragger,
+      hideFileName: rest.hideFileName && listType === 'thumbnail',
+      isDragger,
+      isStub
+    },
     primaryColor
   });
 
@@ -184,6 +194,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
+
+  const showDeleteConfirmation = (file) => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile(file.uid);
+      }
+    });
+  };
+
   const props: DraggerProps = {
     name: '',
     accept: allowedFileTypes?.join(','),
@@ -202,7 +226,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     },
     onRemove(file) {
-      deleteFile(file.uid);
+      showDeleteConfirmation(file);
+      return false;
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
@@ -247,6 +272,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const renderUploadContent = () => {
     return (
+      !disabled &&
       <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
         {listType === 'text' && '(press to upload)'}
       </Button>

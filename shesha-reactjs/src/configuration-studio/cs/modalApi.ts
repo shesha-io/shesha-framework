@@ -6,7 +6,7 @@ import { ReactNode, useRef } from "react";
 import { HookAPI as ModalHookAPI } from 'antd/lib/modal/useModal';
 
 export interface ShowModalArgs {
-    title?: string;
+    title?: string | undefined;
 };
 
 export interface ShowModalFormArgs extends ShowModalArgs {
@@ -48,7 +48,9 @@ type ModalApiArguments = {
 
 export class ModalApi implements IModalApi {
     private _createModal: CreateModalType;
+
     private _removeModal: RemoveModalType;
+
     private _antdApi: ModalHookAPI;
 
     constructor(args: ModalApiArguments) {
@@ -57,7 +59,7 @@ export class ModalApi implements IModalApi {
         this._antdApi = args.antdApi;
     }
 
-    confirmYesNo = (args: ConfirmArgs) => {
+    confirmYesNo = (args: ConfirmArgs): Promise<boolean> => {
         return new Promise<boolean>((resolve, reject) => {
             this._antdApi.confirm({
                 title: args.title,
@@ -113,7 +115,7 @@ export class ModalApi implements IModalApi {
         const modalId = nanoid();
 
         return new Promise((resolve, reject) => {
-            const removeModal = () => {
+            const removeModal = (): void => {
                 this._removeModal(modalId);
             };
             const modalArgs = executor({ resolve, reject, removeModal });
@@ -150,8 +152,6 @@ export const useModalApi = (): IModalApi => {
             antdApi: modal,
         });
         apiRef.current = instance;
-
-        //instance.init();
     }
 
     return apiRef.current;

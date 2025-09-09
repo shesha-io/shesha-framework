@@ -33,7 +33,7 @@ export const getUnknownDocumentDefinition = (itemType: string): DocumentDefiniti
         Toolbar: EmptyComponent,
         documentInstanceFactory: (args) => {
             return new DocumentInstance({ ...args, itemType, definition });
-        }
+        },
     };
     return definition;
 };
@@ -55,7 +55,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
                         instance.setFormMode(props.mode);
                         instance.setParentFormValues(parentFormValues);
                         */
-                    }
+                    },
                 });
 
                 return (
@@ -90,7 +90,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
         },
         documentInstanceFactory: (args) => {
             return new DocumentInstance({ ...args, definition, itemType });
-        }
+        },
     };
     return definition;
 };

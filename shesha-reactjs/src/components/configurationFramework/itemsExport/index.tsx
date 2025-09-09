@@ -30,7 +30,7 @@ export interface IExportInterface {
 
 export interface IConfigurationItemsExportProps {
   onExported?: () => void;
-  exportRef: MutableRefObject<IExportInterface>;
+  exportRef: MutableRefObject<IExportInterface | undefined>;
 }
 
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {

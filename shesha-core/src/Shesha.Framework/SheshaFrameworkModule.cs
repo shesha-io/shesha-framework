@@ -46,6 +46,8 @@ namespace Shesha
 #endif
         };
 
+        public bool SkipAppWarmUp { get; set; }
+
         public SheshaFrameworkModule()
         {
         }

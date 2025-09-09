@@ -7,13 +7,9 @@ import { useCsSubscription } from '@/configuration-studio/cs/hooks';
 
 const { useToken } = theme;
 
-export interface INewButtonProps {
-
-}
-
 type MenuItems = MenuProps["items"];
 
-export const NewButton: FC<INewButtonProps> = () => {
+export const NewButton: FC = () => {
     const cs = useConfigurationStudio();
     const node = cs.treeSelectedNode;
     useCsSubscription('tree');

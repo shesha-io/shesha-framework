@@ -5,6 +5,7 @@ import { useHttpClient } from "@/providers";
 import { asyncStorage } from "../storage";
 import { useModalApi } from "./modalApi";
 import { useNotificationApi } from "./notificationApi";
+import { isDefined } from "../types";
 
 const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
     const csRef = React.useRef<IConfigurationStudio>();
@@ -16,7 +17,7 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
 
     if (!csRef.current) {
         // Create a new FormStore if not provided
-        const forceReRender = () => {
+        const forceReRender = (): void => {
             forceUpdate({});
         };
 
@@ -29,14 +30,14 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
         });
         instance.toolbarRef = toolbarRef;
         csRef.current = instance;
-        
+
         instance.init();
     }
 
     return [csRef.current];
 };
 
-export const ConfigurationStudioContext = createNamedContext<IConfigurationStudio>(undefined, "ConfigurationStudioContext");
+export const ConfigurationStudioContext = createNamedContext<IConfigurationStudio | undefined>(undefined, "ConfigurationStudioContext");
 
 export const ConfigurationStudioProvider: FC<PropsWithChildren> = ({ children }) => {
     const [cs] = useConfigurationStudioSingletone();
@@ -47,12 +48,15 @@ export const ConfigurationStudioProvider: FC<PropsWithChildren> = ({ children })
     );
 };
 
-export const useConfigurationStudio = (required: boolean = true): IConfigurationStudio => {
-    const context = useContext(ConfigurationStudioContext);
+export const useConfigurationStudioIfAvailable = (): IConfigurationStudio | undefined => {
+    return useContext(ConfigurationStudioContext);
+};
 
-    if (required && context === undefined) {
+export const useConfigurationStudio = (): IConfigurationStudio => {
+    const context = useConfigurationStudioIfAvailable();
+
+    if (!isDefined(context))
         throw new Error('useConfigurationStudio must be used within a ConfigurationStudioProvider');
-    }
 
     return context;
 };

@@ -27,7 +27,7 @@ export interface IImportInterface {
 
 export interface IConfigurationItemsImportProps {
     onImported?: () => void;
-    importRef?: MutableRefObject<IImportInterface>;
+    importRef?: MutableRefObject<IImportInterface | undefined>;
 }
 
 export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (props) => {
