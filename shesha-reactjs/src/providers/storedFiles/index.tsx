@@ -110,7 +110,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   useEffect(() => {
     const val = state?.fileList?.length > 0 ? state.fileList : value || [];
       if (typeof onChange === 'function' && value !== val) {
-        console.log("Did it change? Value::", JSON.stringify(value), "Val::", JSON.stringify(val), "list::", state.fileList);
         onChange(val);
       };
   }, [state.fileList]);
