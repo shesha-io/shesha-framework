@@ -73,7 +73,6 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataIcon?: string;
   showExpandedView?: boolean;
 
-  // Row color customization
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
@@ -169,7 +168,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const handleRowSelect = useMemo(() => {
     if (!onRowSelect?.actionName) return undefined;
 
-    return (rowIndex: number, row: any) => {
+    return (row: any, rowIndex: number) => {
       const evaluationContext = {
         data: row,
         rowIndex,
@@ -189,7 +188,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row select action:', error);
       }
     };
-  }, [onRowSelect, formData, globalState, httpClient]);
+  }, [onRowSelect, formData, globalState, setGlobalState, moment, executeAction, httpClient]);
 
   const onSelectRowLocal = (index: number, row: any) => {
     if (onSelectRow) {
@@ -202,7 +201,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       if (rowId !== currentId) {
         setSelectedRow(index, row);
         if (handleRowSelect) {
-          handleRowSelect(index, row);
+          handleRowSelect(row, index);
         }
       } else {
         setSelectedRow(null, null);
@@ -315,7 +314,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row double-click action:', error);
       }
     };
-  }, [onRowDoubleClick, formData, globalState, httpClient]);
+  }, [onRowDoubleClick, formData, globalState, setGlobalState, moment, executeAction, httpClient]);
 
   const handleRowHover = useMemo(() => {
     if (!onRowHover?.actionName) return undefined;
