@@ -20,6 +20,7 @@ import {
   downloadZipSuccessAction,
   fetchFileListErrorAction,
   fetchFileListSuccessAction,
+  initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
   uploadFileErrorAction,
@@ -99,10 +100,18 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   const { mutate: uploadFileHttp } = useMutate();
 
+  // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
-    const val = state?.fileList?.length > 0 ? state.fileList : [];
+    if (value && value.length > 0 && (!state.fileList || state.fileList.length === 0)) {
+      dispatch(initializeFileListAction(value as IStoredFile[]));
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const val = state?.fileList?.length > 0 ? state.fileList : value || [];
       if (typeof onChange === 'function' && value !== val) {
-        onChange(val || value);
+        console.log("Did it change? Value::", JSON.stringify(value), "Val::", JSON.stringify(val), "list::", state.fileList);
+        onChange(val);
       };
   }, [state.fileList]);
 
