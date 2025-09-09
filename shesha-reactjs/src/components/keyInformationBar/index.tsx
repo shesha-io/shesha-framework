@@ -87,7 +87,6 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
   const finalStyle = removeUndefinedProps({
     ...additionalStyles,
-    fontWeight: props?.font?.weight ? Number(props.font.weight.split(' - ')[0]) : 400,
   });
 
   if (
