@@ -40,7 +40,7 @@ export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyle
   disabledTimeFunc?: string;
   additionalStyles?: CSSProperties;
   /** Script to execute on focus (handled via customDateEventHandler). */
-  onFocusCustom?: string;
+  onFocusCustom?: any;
   /** Script to execute on blur (handled via customDateEventHandler). */
-  onBlurCustom?: string;
+  onBlurCustom?: any;
 }
