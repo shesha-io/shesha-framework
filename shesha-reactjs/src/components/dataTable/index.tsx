@@ -72,7 +72,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataSecondaryText?: string;
   noDataIcon?: string;
   showExpandedView?: boolean;
-  
+
   // Row color customization
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -162,6 +162,35 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     customReorderEndpoint,
   } = store;
 
+  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
+  const { executeAction } = useConfigurableActionDispatcher();
+
+  const handleRowSelect = useMemo(() => {
+    if (!onRowSelect?.actionName) return undefined;
+
+    return (rowIndex: number, row: any) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowSelect,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row select action:', error);
+      }
+    };
+  }, [onRowSelect, formData, globalState, httpClient]);
+
   const onSelectRowLocal = (index: number, row: any) => {
     if (onSelectRow) {
       onSelectRow(index, row);
@@ -172,7 +201,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const currentId = store.selectedRow?.id;
       if (rowId !== currentId) {
         setSelectedRow(index, row);
-        // Execute custom onRowSelect event
         if (handleRowSelect) {
           handleRowSelect(index, row);
         }
@@ -237,12 +265,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const metadata = useMetadata(false)?.metadata;
 
-  const { backendUrl } = useSheshaApplication();
-  const httpClient = useHttpClient();
+
 
   const handleRowClick = useMemo(() => {
     if (!onRowClick?.actionName) return undefined;
-    
+
     return (rowIndex: number, row: any) => {
       const evaluationContext = {
         data: row,
@@ -253,7 +280,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         http: httpClient,
         moment,
       };
-      
+
       try {
         executeAction({
           actionConfiguration: onRowClick,
@@ -267,7 +294,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
-    
+
     return (row: any, rowIndex: number) => {
       const evaluationContext = {
         data: row,
@@ -278,7 +305,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         http: httpClient,
         moment,
       };
-      
+
       try {
         executeAction({
           actionConfiguration: onRowDoubleClick,
@@ -292,7 +319,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const handleRowHover = useMemo(() => {
     if (!onRowHover?.actionName) return undefined;
-    
+
     return (rowIndex: number, row: any) => {
       const evaluationContext = {
         data: row,
@@ -303,7 +330,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         http: httpClient,
         moment,
       };
-      
+
       try {
         executeAction({
           actionConfiguration: onRowHover,
@@ -315,34 +342,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowHover, formData, globalState, httpClient]);
 
-  const handleRowSelect = useMemo(() => {
-    if (!onRowSelect?.actionName) return undefined;
-    
-    return (rowIndex: number, row: any) => {
-      const evaluationContext = {
-        data: row,
-        rowIndex,
-        formData,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
-      
-      try {
-        executeAction({
-          actionConfiguration: onRowSelect,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing row select action:', error);
-      }
-    };
-  }, [onRowSelect, formData, globalState, httpClient]);
 
   const handleSelectionChange = useMemo(() => {
     if (!onSelectionChange?.actionName) return undefined;
-    
+
     return (selectedIds: string[]) => {
       const evaluationContext = {
         selectedIds,
@@ -352,7 +355,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         http: httpClient,
         moment,
       };
-      
+
       try {
         executeAction({
           actionConfiguration: onSelectionChange,
@@ -536,7 +539,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSave, httpClient]);
 
-  const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {
@@ -878,12 +880,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onResizedChange: onResizedChange,
 
     showExpandedView,
-    
+
     rowBackgroundColor,
     rowAlternateBackgroundColor,
     rowHoverBackgroundColor,
     rowSelectedBackgroundColor,
-    
+
     // Custom event handlers
     onRowClick: handleRowClick,
     onRowHover: handleRowHover,
