@@ -4,6 +4,7 @@ import { GenerationLogic } from "./interface";
 import { DetailsViewGenerationLogic } from "./details-view/detailsViewGenerationLogic";
 import { BlankViewGenerationLogic } from "./blank-view/blankViewGenerationLogic";
 import { TableViewGenerationLogic } from "./table-view/tableViewGenerationLogic";
+import { BaseGenerationLogic } from "./baseGenerationLogic";
 
 /**
  * Factory for creating appropriate GenerationLogic implementations
@@ -61,19 +62,21 @@ export class GenerationLogicFactory {
 /**
  * Default implementation for templates without a specific handler
  */
-class DefaultGenerationLogic implements GenerationLogic {
-  async processTemplate(
-    markup: string, 
-    replacements: Record<string, any>,
-  ): Promise<string> {
-    // Just apply standard replacements without specialized logic
-    const result = await Promise.resolve(evaluateString(markup, replacements, true));
-    return result;
+class DefaultGenerationLogic extends BaseGenerationLogic {
+  readonly typeName = "DefaultGenerationLogic";
+  
+  protected getModelTypeFromReplacements(_replacements: object): string | null {
+    return null;
   }
   
-  supportsTemplate(_template: FormConfigurationDto): boolean {
-    // This is the fallback implementation, so it supports any template
-    return true;
+  protected async addComponentsToMarkup(): Promise<void> {
+    // Do nothing for default logic
+  }
+  
+  override async processTemplate(markup: string, replacements: Record<string, any>): Promise<string> {
+    // Override base implementation to just apply standard replacements
+    const result = await Promise.resolve(evaluateString(markup, replacements, true));
+    return result;
   }
 }
 

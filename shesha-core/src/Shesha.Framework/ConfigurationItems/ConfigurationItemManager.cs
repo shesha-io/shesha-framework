@@ -227,15 +227,47 @@ namespace Shesha.ConfigurationItems
         }
 
         /// <summary>
-        /// Override this method in derived classes to handle additional properties from CreateItemInput
+        /// Creates a configuration item with additional data that can be used during creation process.
+        /// This allows derived classes to pass additional data to HandleAdditionalPropertiesAsync without using temporary fields.
         /// </summary>
-        /// <param name="input">The create item input containing additional properties</param>
-        /// <param name="item">The newly created configuration item</param>
-        /// <param name="revision">The newly created revision</param>
-        /// <returns></returns>
-        protected virtual Task HandleAdditionalPropertiesAsync(CreateItemInput input, TItem item, TRevision revision)
+        /// <param name="input">Basic configuration item properties</param>
+        /// <param name="additionalData">Additional data required by derived classes</param>
+        /// <returns>Created configuration item</returns>
+        public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object additionalData) 
         {
-            // Base implementation does nothing - derived classes can override
+            var validationResults = new ValidationResults();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            var item = new TItem
+            {
+                Name = input.Name,
+                Module = input.Module,
+                Folder = input.Folder,
+            };
+            item.Origin = item;
+            item.Description = input.Description;
+            item.Label = input.Label;
+            item.Normalize();
+
+            await Repository.InsertAsync(item);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            return item;
+        }
+        
+        /// <summary>
+        /// Override this method in derived classes to handle additional properties from CreateItemInput with additional data
+        /// </summary>
+        /// <param name="revision">The newly created revision</param>
+        /// <param name="additionalData">Additional data required for specialized item creation</param>
+        /// <returns></returns>
+        protected virtual Task HandleAdditionalPropertiesAsync(TRevision revision, object additionalData)
+        {
+            // By default, call the simpler overload
             return Task.CompletedTask;
         }
 

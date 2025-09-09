@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Abp.Threading;
+using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -19,7 +20,9 @@ using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Dtos;
+using Shesha.Web.FormsDesigner.Dtos.Forms;
 using Shesha.Web.FormsDesigner.Exceptions;
+using Shesha.Web.FormsDesigner.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,8 +33,9 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
-    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationDto, UpdateFormConfigurationDto, GetFormByIdInput>
+    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
+        private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -92,6 +96,32 @@ namespace Shesha.Web.FormsDesigner.Services
         protected override FormConfigurationDto MapToEntityDto(FormConfiguration entity)
         {
             return AsyncHelper.RunSync(() => MapToEntityDtoAsync(entity));
+        }
+
+        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationRequest input)
+        {
+            var module = await _moduleRepository.GetAsync(input.ModuleId);
+            module.EnsureEditable();
+
+            var folder = input.FolderId != null
+                ? await _folderRepository.GetAsync(input.FolderId.Value)
+                : null;
+
+            var formInput = new CreateFormInput
+            {
+                Module = module,
+                Folder = folder,
+                Name = input.Name,
+                Description = input.Description,
+                Label = input.Label,
+                Markup = input.Markup,
+                ModelType = input.ModelType,
+                GenerationLogicExtensionJson = input.GenerationLogicExtensionJson,
+                TemplateId = input.TemplateId,
+            };
+
+            var form = await _formManager.CreateFormAsync(formInput);
+            return await MapToEntityDtoAsync(form);
         }
         
         protected async Task<FormConfigurationDto> MapToEntityDtoAsync(FormConfiguration entity)

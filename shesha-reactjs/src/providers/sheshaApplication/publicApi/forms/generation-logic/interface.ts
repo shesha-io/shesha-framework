@@ -1,5 +1,5 @@
 import { FormConfigurationDto } from "@/providers/form/api";
-import { EntityMetadataHelper } from "./entityMetadataHelper";
+import { FormMetadataHelper } from "./formMetadataHelper";
 
 /**
  * The GenerationLogic interface defines how template forms are processed and instantiated.
@@ -15,7 +15,7 @@ export interface GenerationLogic {
   processTemplate(
     markup: string, 
     replacements: object,
-    metadataHelper?: EntityMetadataHelper
+    metadataHelper?: FormMetadataHelper
   ): Promise<string>;
   
   /**

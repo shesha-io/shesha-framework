@@ -1,79 +1,35 @@
-import { FormConfigurationDto } from "@/providers/form/api";
-import { evaluateString } from "@/providers/form/utils";
-import { GenerationLogic } from "../interface";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
-import { EntityMetadataHelper } from "../entityMetadataHelper";
+import { FormMetadataHelper } from "../formMetadataHelper";
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, processBaseMarkup, addDetailsPanel } from "../viewGenerationUtils";
+import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
+import { BaseGenerationLogic } from "../baseGenerationLogic";
 
 /**
  * Implements generation logic for detail views.
  * Handles processing template markup for detail views, including specific header components, key information bars, and child tables.
  */
-export class DetailsViewGenerationLogic implements GenerationLogic {
+export class DetailsViewGenerationLogic extends BaseGenerationLogic {
+  readonly typeName = "DetailsViewGenerationLogic";
 
-  /**
-   * Processes the template markup with replacements and specialized logic for detail views.
-   * Parses the template, applies replacements, and injects components based on the extension configuration.
-   *
-   * @param markup The original template markup as a string.
-   * @param replacements An object containing values to replace in the template.
-   * @param metadataHelper Optional helper for fetching entity metadata.
-   * @returns The processed markup as a string, ready for use.
-   */
-  async processTemplate(markup: string, replacements: object, metadataHelper?: EntityMetadataHelper): Promise<string> {
-    try {
-      let processedMarkup = processBaseMarkup(markup, replacements);
-
-      const markupObj = JSON.parse(processedMarkup);
-
-      const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
-      if (extensionJson?.modelType && metadataHelper) {
-        const entity = await metadataHelper.fetchEntityMetadataAsync(extensionJson.modelType);
-
-        const nonFrameworkProperties = (entity.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
-
-        await this.addComponentsToMarkup(markupObj, extensionJson, entity, nonFrameworkProperties, metadataHelper);
-      }
-      return JSON.stringify(markupObj);
-    } catch (error) {
-      console.error("Error processing details view markup:", error);
-      // In case of error, return the original markup with basic replacements
-      return evaluateString(markup, replacements, true);
-    }
+  protected getModelTypeFromReplacements(replacements: object): string | null {
+    const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
+    return extensionJson?.modelType || null;
   }
-
-  /**
-   * Checks if this generation logic implementation supports the given template.
-   * Determines if the template is intended for a details view by inspecting its attributes.
-   *
-   * @param template The form template to check.
-   * @returns True if this implementation supports the template, otherwise false.
-   */
-  supportsTemplate(template: FormConfigurationDto): boolean {
-    // Check template attributes that indicate this is a details view template
-    return template?.generationLogicTypeName === "DetailsViewGenerationLogic";
-  }
-
-  /**
-   * Adds components to the markup based on the extension configuration.
-   * This method adds header, details panel, and child tables to the markup object
-   * according to the provided extension configuration and entity metadata.
-   *
-   * @param markup The JSON markup object to modify.
-   * @param extensionJson The extension configuration for the details view.
-   * @param entity The entity metadata for the main entity.
-   * @param nonFrameworkProperties The filtered list of non-framework properties for the entity.
-   * @param metadataHelper The form builder or metadata helper instance.
-   * @returns The updated markup object with added components.
-   */
-  private async addComponentsToMarkup(markup: any, extensionJson: DetailsViewExtensionJson, entity: IEntityMetadata, nonFrameworkProperties: PropertyMetadataDto[], metadataHelper: EntityMetadataHelper): Promise<any> {
+  
+  protected async addComponentsToMarkup(
+    markup: any, 
+    entity: IEntityMetadata, 
+    nonFrameworkProperties: PropertyMetadataDto[],
+    metadataHelper: FormMetadataHelper
+  ): Promise<void> {
     try {
+      const extensionJson = castToExtensionType<DetailsViewExtensionJson>({});
+      
       // Add header components
       this.addHeader(entity, nonFrameworkProperties, markup, extensionJson, metadataHelper);
 
@@ -88,9 +44,20 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
       console.error("Error adding components to details view markup:", error);
       throw error;
     }
-
-    return markup;
   }
+
+  /**
+   * Adds components to the markup based on the extension configuration.
+   * This method adds header, details panel, and child tables to the markup object
+   * according to the provided extension configuration and entity metadata.
+   *
+   * @param markup The JSON markup object to modify.
+   * @param extensionJson The extension configuration for the details view.
+   * @param entity The entity metadata for the main entity.
+   * @param nonFrameworkProperties The filtered list of non-framework properties for the entity.
+   * @param metadataHelper The form builder or metadata helper instance.
+   * @returns The updated markup object with added components.
+   */
 
   /**
    * Adds header components to the markup.
@@ -102,7 +69,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
    * @param extensionJson The extension configuration.
    * @param metadataHelper The metadata helper instance.
    */
-  private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): void {
+  private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): void {
     const title = `${entity.typeAccessor} Details`;
 
     const titleContainer = findContainersWithPlaceholder(markup, "//*TITLE*//");
@@ -122,7 +89,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
         throw new Error("No key information bar container found in the markup.");
       }
       const keyInfoProperties = metadata.filter(x =>
-        extensionJson.keyInformationBarProperties?.includes(x.path || x.label)
+        extensionJson.keyInformationBarProperties?.includes(x.path || x.label || '')
       );
 
       if (keyInfoProperties.length === 0) {
@@ -148,7 +115,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
               hideLabel: true,
               hidden: false,
               componentName: 'text1',
-              content: prop.label,
+              content: prop.label || '',
               contentDisplay: 'content',
               textType: "span",
               color: 'default',
@@ -182,7 +149,7 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
    * @param extensionJson The extension configuration.
    * @param metadataHelper The metadata helper instance.
    */
-  private async addChildTablesAsync(markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: EntityMetadataHelper): Promise<void> {
+  private async addChildTablesAsync(markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
     const builder = new DesignerToolbarSettings({});
 
     const childTableContainer = findContainersWithPlaceholder(markup, "//*CHILDTABLES*//");
@@ -207,8 +174,8 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
         hideLabel: true,
         hidden: false,
         componentName: "childTables",
-        tabs: entities.map((childTable, index) => {
-          const nonFrameworkProperties = (childTable.properties as PropertyMetadataDto[]).filter(x => !x.isFrameworkRelated);
+        tabs: await Promise.all(entities.map(async (childTable, index) => {
+          const nonFrameworkProperties = await metadataHelper.extractNonFrameworkProperties(childTable);
 
           const childTableAccessoriesBuilder = new DesignerToolbarSettings({});
           childTableAccessoriesBuilder.addQuickSearch({
@@ -243,10 +210,10 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
             return {
               id: nanoid(),
               columnType: 'data',
-              propertyName: toCamelCase(prop.path),
-              caption: prop.label,
+              propertyName: toCamelCase(prop.path || ''),
+              caption: prop.label || '',
               isVisible: true,
-              description: prop.description,
+              description: prop.description || '',
               sortOrder: idx,
               itemType: 'item'
             };
@@ -307,19 +274,19 @@ export class DetailsViewGenerationLogic implements GenerationLogic {
                 }
               ]
             },
-            entityType: extensionJson.childTablesList[index],
+            entityType: extensionJson.childTablesList[index] || '',
             components: childTableBuilder.toJson()
           });
 
           return {
             id: nanoid(),
-            title: humanizeModelType(childTable.typeAccessor),
+            title: humanizeModelType(childTable.typeAccessor || ''),
             key: String(index),
-            label: humanizeModelType(childTable.typeAccessor),
+            label: humanizeModelType(childTable.typeAccessor || ''),
             closable: false,
             components: childTableContextBuilder.toJson()
           };
-        })
+        }))
       });
 
       if (childTableContainer[0].components && Array.isArray(childTableContainer[0].components)) {

@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Runtime.Session;
-using NHibernate.Linq;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Permissions;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
