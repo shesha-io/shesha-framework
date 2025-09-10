@@ -227,7 +227,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const showUploadButton = allowUpload && !isUploading;
 
   const uploadButton = (
-    <Button
+    allowUpload && <Button
       icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
       type="link"
       disabled={!showUploadButton}
