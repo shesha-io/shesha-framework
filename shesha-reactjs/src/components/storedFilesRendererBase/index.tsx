@@ -192,6 +192,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     multiple,
     fileList,
     disabled,
+    pastable: false,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
       if (status === 'done') {
