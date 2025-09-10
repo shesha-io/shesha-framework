@@ -166,7 +166,7 @@ export const getSettings = () => {
                                             label: 'Show Back Button',
                                             parentId: 'root',
                                             type: 'switch',
-                                            jsSetting: false,
+                                            jsSetting: true,
                                             defaultValue: true,
                                         },
                                         {
@@ -175,7 +175,7 @@ export const getSettings = () => {
                                             label: 'Show Done Button',
                                             parentId: 'root',
                                             type: 'switch',
-                                            jsSetting: false,
+                                            jsSetting: true,
                                             defaultValue: true,
                                         }
                                     ]
