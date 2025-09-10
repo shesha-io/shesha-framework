@@ -15,6 +15,13 @@ export const getSettings = () =>
       content: {
         id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...new DesignerToolbarSettings()
+          .addSwitch({
+            id: nanoid(),
+            propertyName: 'removeFieldFromPayload',
+            label: 'Exclude From Form Data',
+            description: 'If checked, the field will not be included in the submitted payload',
+            jsSetting: true,
+          })
           .addPropertyAutocomplete({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
             propertyName: 'componentName',
