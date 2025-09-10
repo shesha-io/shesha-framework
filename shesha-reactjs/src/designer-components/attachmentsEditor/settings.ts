@@ -22,6 +22,16 @@ export const getSettings = () =>
             description: 'If checked, the field will not be included in the submitted payload',
             jsSetting: true,
           })
+          .addContextPropertyAutocomplete({
+            id: nanoid(),
+            propertyName: 'propertyName',
+            label: 'Property name',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            validate: {
+              required: true,
+            },
+            hidden: { _code: 'return getSettingValue(data?.removeFieldFromPayload);', _mode: 'code', _value: false } as any,
+          })
           .addPropertyAutocomplete({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
             propertyName: 'componentName',
