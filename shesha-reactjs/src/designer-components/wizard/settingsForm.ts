@@ -2,7 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { onAddNewItem } from './utils';
-import { getItemSettings } from './itemSettings';
+import { getSettings } from './itemSettings';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -166,7 +166,7 @@ export const getSettings = () => {
                                             label: 'Show Back Button',
                                             parentId: 'root',
                                             type: 'switch',
-                                            jsSetting: false,
+                                            jsSetting: true,
                                             defaultValue: true,
                                         },
                                         {
@@ -175,7 +175,7 @@ export const getSettings = () => {
                                             label: 'Show Done Button',
                                             parentId: 'root',
                                             type: 'switch',
-                                            jsSetting: false,
+                                            jsSetting: true,
                                             defaultValue: true,
                                         }
                                     ]
