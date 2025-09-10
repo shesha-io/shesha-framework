@@ -41,6 +41,14 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'removeFieldFromPayload',
+                  label: 'Exclude From Form Data',
+                  inputType: 'switch',
+                  tooltip: 'If checked, the field will not be included in the submitted payload',
+                  jsSetting: true,
+                })
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
