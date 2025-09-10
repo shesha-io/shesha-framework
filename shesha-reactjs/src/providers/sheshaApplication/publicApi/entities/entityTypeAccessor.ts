@@ -24,7 +24,9 @@ export interface IEntityTypeAccessor<TId, TEntity extends IEntity<TId>> {
  */
 export class EntityTypeAccessor<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> implements IEntityTypeAccessor<TId, TEntity> {
     readonly _entityTypeId: IEntityTypeIndentifier;
+
     readonly _manager: EntitiesManager;
+
     readonly _metadata: Promise<IEntityMetadata>;
 
     constructor(manager: EntitiesManager, moduleAccessor: string, name: string) {
@@ -39,12 +41,15 @@ export class EntityTypeAccessor<TId = string, TEntity extends IEntity<TId> = IEn
     createAsync = (value: TEntity) => {
         return this._manager.createEntityAsync<TId, TEntity>(this._entityTypeId, value);
     };
+
     getAsync = (id: TId) => {
         return this._manager.getEntityAsync<TId, TEntity>(this._entityTypeId, id);
     };
+
     updateAsync = (value: TEntity) => {
         return this._manager.updateEntityAsync<TId, TEntity>(this._entityTypeId, value);
     };
+
     deleteAsync = (id: TId) => {
         return this._manager.deleteEntityAsync<TId>(this._entityTypeId, id);
     };

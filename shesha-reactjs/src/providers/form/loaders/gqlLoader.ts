@@ -22,8 +22,11 @@ export interface GqlLoaderArguments {
 
 export class GqlLoader implements IFormDataLoader {
     #httpClient: HttpClientApi;
+
     #metadataDispatcher: IMetadataDispatcher;
+
     #toolboxComponents: IToolboxComponents;
+
     #endpointsEvaluator: IEntityEndpointsEvaluator;
 
     constructor(args: GqlLoaderArguments) {
@@ -32,6 +35,7 @@ export class GqlLoader implements IFormDataLoader {
         this.#toolboxComponents = args.toolboxComponents;
         this.#endpointsEvaluator = args.endpointsEvaluator;
     }
+
     canLoadData = (formArguments: any): boolean => {
         return Boolean(formArguments?.id);
     };
@@ -47,9 +51,9 @@ export class GqlLoader implements IFormDataLoader {
         const gqlSettings = this.#getGqlSettings(formSettings);
         const { endpointType, staticEndpoint, dynamicEndpoint } = gqlSettings;
 
-        switch (endpointType){
+        switch (endpointType) {
             case 'default': {
-                return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });                
+                return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });
             }
             case 'static': {
                 return { ...staticEndpoint, httpVerb: staticEndpoint?.httpVerb || 'get' };
@@ -91,9 +95,9 @@ export class GqlLoader implements IFormDataLoader {
 
         const response = await this.#httpClient.get<EntityAjaxResponse>(finalUrl);
 
-        if (response.data.success){
+        if (response.data.success) {
             loadingCallback?.({ loadingState: 'ready', loaderHint: null });
-            
+
             return response.data.result;
         } else {
             loadingCallback?.({ loadingState: 'failed', error: response.data.error });

@@ -13,6 +13,7 @@ export interface IEntitiesApi {
  */
 export class EntitiesApi implements IEntitiesApi {
     readonly _modules: Map<string, IEntitiesModuleAccessor>;
+
     readonly _manager: EntitiesManager;
 
     getModuleEntities(name: string): IEntitiesModuleAccessor {
@@ -46,7 +47,7 @@ export class EntitiesApi implements IEntitiesApi {
                     return true;
                 }
                 return false;
-            }
+            },
         });
     }
 }

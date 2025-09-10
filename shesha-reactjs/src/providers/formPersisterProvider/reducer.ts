@@ -29,7 +29,7 @@ const reducer = handleActions<IFormPersisterStateContext, any>(
 
       return {
         ...state,
-        formProps: {...payload},        
+        formProps: { ...payload },
         loaded: true,
         loading: false,
         loadError: null,

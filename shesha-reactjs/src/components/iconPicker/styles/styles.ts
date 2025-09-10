@@ -16,8 +16,10 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
 
             .ant-btn {
                 background: transparent;
+                color: inherit;
                 &:hover {
                     background: transparent;
+                    color: inherit;
                 }
             }
         }

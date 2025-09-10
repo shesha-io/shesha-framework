@@ -60,11 +60,6 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
         ...new DesignerToolbarSettings()
           .addNumberField({
             id: nanoid(),
-            propertyName: 'defaultValue',
-            label: 'Default Value',
-          })
-          .addNumberField({
-            id: nanoid(),
             propertyName: 'min',
             label: 'Minimum',
           })

@@ -8,19 +8,19 @@ import { CSSProperties, ReactNode } from 'react';
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
 export type IndexColumnFilterOption =
-  | 'contains'
-  | 'startsWith'
-  | 'endsWith'
-  | 'equals'
-  | 'lessThan'
-  | 'greaterThan'
-  | 'between'
-  | 'before'
-  | 'after';
+  | 'contains' |
+  'startsWith' |
+  'endsWith' |
+  'equals' |
+  'lessThan' |
+  'greaterThan' |
+  'between' |
+  'before' |
+  'after';
 
 export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations' | 'form' | 'renderer';
 
-export type SortDirection = 0 /*asc*/ | 1 /*desc*/;
+export type SortDirection = 0 /* asc*/ | 1;
 export type ColumnSorting = 'asc' | 'desc';
 
 export type DataFetchingMode = 'paging' | 'fetchAll';

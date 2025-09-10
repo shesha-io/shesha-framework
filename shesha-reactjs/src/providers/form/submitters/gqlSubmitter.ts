@@ -20,15 +20,16 @@ export interface GqlSubmitterArguments {
 
 export class GqlSubmitter implements IFormDataSubmitter {
     #httpClient: HttpClientApi;
+
     #endpointsEvaluator: IEntityEndpointsEvaluator;
-    //#toolboxComponents: IToolboxComponents;
-    
+    // #toolboxComponents: IToolboxComponents;
+
 
     constructor(args: GqlSubmitterArguments) {
         this.#httpClient = args.httpClient;
         this.#endpointsEvaluator = args.endpointsEvaluator;
-        //this.#toolboxComponents = args.toolboxComponents;
-        
+        // this.#toolboxComponents = args.toolboxComponents;
+
         if (!this.#httpClient)
             throw new Error("Http client is mandatory");
     }
@@ -122,7 +123,7 @@ export class GqlSubmitter implements IFormDataSubmitter {
         const { onBeforeSubmit, onSubmitSuccess, onSubmitFailed, customSubmitCaller } = payload;
 
         if (onBeforeSubmit)
-            await onBeforeSubmit({data: removeGhostKeys({...data})});
+            await onBeforeSubmit({ data: removeGhostKeys({ ...data }) });
 
         const getDefaultSubmitCaller = async (): Promise<SubmitCaller> => {
             const entityAction = data?.id

@@ -501,7 +501,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         previousSelectedComponentId: payload.id,
       };
     },
-    
+
     [FormActionEnums.ChangeMarkup]: (
       state: IFormDesignerStateContext,
       action: ReduxActions.Action<IFlatComponentsStructure>

@@ -38,7 +38,7 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         type: 'dropdown',
         propertyName: 'verb',
         label: 'HTTP Verb',
-        dropdownOptions: HttpVerbs.map(v => ({ id: v, label: v.toUpperCase(), value: v })),
+        dropdownOptions: HttpVerbs.map((v) => ({ id: v, label: v.toUpperCase(), value: v })),
         defaultValue: 'get',
       },
       {
@@ -48,8 +48,8 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         label: 'URL',
         description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
         httpVerb: "{data.verb}",
-      }
-    ]
+      },
+    ],
   })
   .addSettingsInputRow({
     id: "parameters-standard-header-row",
@@ -72,8 +72,8 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         label: 'Send Standard Headers',
         description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
         defaultValue: true,
-      }
-    ]
+      },
+    ],
   })
   .addSettingsInput({
     id: nanoid(),
@@ -139,7 +139,7 @@ export const useApiCallAction = () => {
         data: preparedData,
         method: verb as Method,
         headers: allHeaders,
-      }).then(response => unwrapAbpResponse(response.data));
-    }
+      }).then((response) => unwrapAbpResponse(response.data));
+    },
   }, [backendUrl, httpHeaders]);
-};  
+};

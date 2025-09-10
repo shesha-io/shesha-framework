@@ -12,8 +12,11 @@ export interface ISettingAccessor<Value = any> {
  */
 export class SettingAccessor<Value = any> implements ISettingAccessor<Value> {
     readonly _name: string;
+
     readonly _moduleAccessor: string;
+
     readonly _categoryAccessor: string;
+
     readonly _settingManager: SettingsManager;
 
     constructor(settingManager: SettingsManager, moduleAccessor: string, categoryAccessor: string, name: string) {

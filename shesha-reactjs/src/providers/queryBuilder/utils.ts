@@ -28,8 +28,8 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
     return !hasCustomQBSettings(property)
         ? base
         : {
-            ...base, 
-            toQueryBuilderField: hasCustomQBSettings(property) ? property.toQueryBuilderField : undefined
+            ...base,
+            toQueryBuilderField: hasCustomQBSettings(property) ? property.toQueryBuilderField : undefined,
         } as IPropertyWithCustomQBSettings;
 };
 
@@ -43,7 +43,7 @@ export const useMetadataFields = () => {
   const fields = useMemo<IProperty[]>(() => {
     if (metadata) {
       const properties = asPropertiesArray(metadata?.metadata?.properties, []);
-      if (Boolean(properties)) 
+      if (Boolean(properties))
         return properties.map<IProperty>((property) => propertyMetadata2QbProperty(property));
     }
     return null;

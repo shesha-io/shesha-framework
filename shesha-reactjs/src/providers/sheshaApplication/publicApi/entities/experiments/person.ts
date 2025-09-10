@@ -25,7 +25,7 @@ export interface IModificationAuditedEntity {
     lastModifierUserId?: number;
 }
 
-export interface IFullAudited extends IDeletionAuditedEntity, ICreationAuditedEntity, IModificationAuditedEntity { 
+export interface IFullAudited extends IDeletionAuditedEntity, ICreationAuditedEntity, IModificationAuditedEntity {
 
 }
 export interface IFullAuditedEntity<TId = string> extends IEntity<TId>, IFullAudited {
@@ -63,7 +63,7 @@ export interface Person extends IEntity<string> {
     /** Last Modifier User Id */
     lastModifierUserId?: number;
 
-    //---------------------------
+    // ---------------------------
     /** Custom Short Name */
     customShortName: string;
     /** Date Of Birth */

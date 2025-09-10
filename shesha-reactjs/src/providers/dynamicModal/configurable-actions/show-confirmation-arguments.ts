@@ -26,8 +26,8 @@ export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
         propertyName: 'content',
         label: 'Content',
         validate: { required: true },
-      }
-    ]
+      },
+    ],
   })
   .addSettingsInputRow({
     id: 'oktext-canceltext-row',
@@ -45,8 +45,8 @@ export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
         propertyName: 'cancelText',
         label: 'Cancel Text',
         validate: { required: true },
-      }
-    ]
+      },
+    ],
   })
   .addSettingsInput({
     id: nanoid(),
