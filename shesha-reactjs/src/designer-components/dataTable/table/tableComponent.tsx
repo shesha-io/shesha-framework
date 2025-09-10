@@ -16,6 +16,8 @@ import { useDataTableStore } from '@/providers';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -107,7 +109,8 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         ...prev,
         noDataText: prev.noDataText ?? 'No Data',
         noDataSecondaryText: prev.noDataSecondaryText ?? 'No data is available for this table',
-      })),
+      }))
+      .add<ITableComponentProps>(12, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   actualModelPropertyFilter: (name, value) => name !== 'items' || isPropertySettings(value),
 };
 
