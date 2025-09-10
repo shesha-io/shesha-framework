@@ -76,4 +76,6 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   buttonsLayout?: 'left' | 'right' | 'spaceBetween';
   showStepStatus?: boolean;
   sequence?: IWizardSequence;
+  showBackButton?: boolean;
+  showDoneButton?: boolean;
 }

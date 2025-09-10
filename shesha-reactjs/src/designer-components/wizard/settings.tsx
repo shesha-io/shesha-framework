@@ -147,6 +147,14 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
           </Select>
         </SettingsFormItem>
 
+        <SettingsFormItem name="showBackButton" label="Show Back Button" valuePropName="checked" jsSetting>
+          <Checkbox disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="showDoneButton" label="Show Done Button" valuePropName="checked" jsSetting>
+          <Checkbox disabled={readOnly} />
+        </SettingsFormItem>
+
         <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
