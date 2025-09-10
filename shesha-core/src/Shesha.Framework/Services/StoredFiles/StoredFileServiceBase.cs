@@ -26,16 +26,21 @@ namespace Shesha.Services.StoredFiles
         /// Version repository
         /// </summary>
         protected readonly IRepository<StoredFileVersion, Guid> VersionRepository;
+        /// <summary>
+        /// 
+        /// </summary>
+        protected readonly IRepository<StoredFileVersionDownload, Guid> StoredFileVersionDownloadRepository;
 
         /// <summary>
         /// Entity configuration store
         /// </summary>
         public IEntityConfigurationStore EntityConfigurationStore { get; set; }
 
-        protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService)
+        protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService)
         {
             FileRepository = fileService;
             VersionRepository = versionService;
+            StoredFileVersionDownloadRepository = storedFileVersionDownloadService; 
         }
 
         #region  GetAttachmentsAsync
@@ -260,11 +265,13 @@ namespace Shesha.Services.StoredFiles
             return query;
         }
 
-        public Task MarkDownloadedAsync(StoredFileVersion fileVersion)
+        public async Task MarkDownloadedAsync(StoredFileVersion fileVersion)
         {
-            // todo: implement
-
-            return Task.CompletedTask;            
+            var download = new StoredFileVersionDownload()
+            {
+                FileVersion = fileVersion
+            };
+            await StoredFileVersionDownloadRepository.InsertOrUpdateAsync(download);
         }
 
         /// <summary>
