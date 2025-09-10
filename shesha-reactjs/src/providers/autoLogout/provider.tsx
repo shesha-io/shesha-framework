@@ -251,22 +251,8 @@ const AutoLogoutProvider: FC<PropsWithChildren<IAutoLogoutProviderProps>> = ({
     let isPageUnloading = false;
 
     const handleVisibilityChange = () => {
-      if (document.hidden && !isPageUnloading) {
-        // Tab/window became hidden, start timer using same timeout as inactive users
-        const timeoutMs = (state.settings.timeoutMinutes || 5) * 60 * 1000;
-        
-        browserCloseTimeoutRef.current = setTimeout(() => {
-          if (document.hidden) {
-            handleLogout();
-          }
-        }, timeoutMs);
-      } else if (!document.hidden) {
-        // Tab/window became visible again, clear timer
-        if (browserCloseTimeoutRef.current) {
-          clearTimeout(browserCloseTimeoutRef.current);
-          browserCloseTimeoutRef.current = undefined;
-        }
-      }
+      // We mainly handle immediate logout in beforeunload
+      // Visibility change handling can be added here if needed in the future
     };
 
     const handleBeforeUnload = () => {
@@ -275,6 +261,19 @@ const AutoLogoutProvider: FC<PropsWithChildren<IAutoLogoutProviderProps>> = ({
       if (browserCloseTimeoutRef.current) {
         clearTimeout(browserCloseTimeoutRef.current);
         browserCloseTimeoutRef.current = undefined;
+      }
+      
+      // Immediately logout when browser is closing
+      try {
+        // Use sendBeacon for reliable logout during page unload
+        const logoutUrl = '/api/services/app/Session/Logout';
+        navigator.sendBeacon(logoutUrl, JSON.stringify({}));
+        
+        // Also clear local storage/session data immediately
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (error) {
+        // Silent fail - browser is closing anyway
       }
     };
 
