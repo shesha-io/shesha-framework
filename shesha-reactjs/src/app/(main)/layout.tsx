@@ -1,16 +1,18 @@
 "use client";
 
 import React from 'react';
-import { MainLayout } from '@/components';
+import { useLayoutSelection } from '@/hooks/useLayoutSelection';
 
 export default function CommonLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const { LayoutComponent } = useLayoutSelection('horizontalLayout');    
+
     return (
-        <MainLayout noPadding>
+        <LayoutComponent noPadding>
             {children}
-        </MainLayout>
+        </LayoutComponent>
     );
 };

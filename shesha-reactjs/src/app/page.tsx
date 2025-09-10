@@ -6,7 +6,6 @@ import React from 'react';
 import { CollapsiblePanel } from '@/components';
 import styled from 'styled-components';
 import { PageWithLayout } from '@/interfaces';
-import { MainLayout } from '@/components';
 
 /**
  * There was an error 
@@ -23,19 +22,17 @@ const StyledAlert: any = styled(Alert)`
 
 const Home: PageWithLayout<{}> = () => {
   return (
-    <MainLayout noPadding>
-      <CollapsiblePanel header="Plugins">
-        <StyledAlert message="This is a list of plugins the boilerplate uses" type="info" />
+    <CollapsiblePanel header="Plugins">
+      <StyledAlert message="This is a list of plugins the boilerplate uses" type="info" />
 
-        <Row style={{ flex: 1 }}>
-          {(data?.plugins ?? []).map((plugin) => (
-            <Col md={6} key={plugin.name} data-testid="container">
-              <Card title={plugin.name}>{plugin.description}</Card>
-            </Col>
-          ))}
-        </Row>
-      </CollapsiblePanel>
-    </MainLayout>
+      <Row style={{ flex: 1 }}>
+        {(data?.plugins ?? []).map((plugin) => (
+          <Col md={6} key={plugin.name} data-testid="container">
+            <Card title={plugin.name}>{plugin.description}</Card>
+          </Col>
+        ))}
+      </Row>
+    </CollapsiblePanel>
   );
 };
 
