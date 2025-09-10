@@ -80,4 +80,6 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   secondaryBgColor?: React.CSSProperties['color'];
   secondaryTextColor?: React.CSSProperties['color'];
   stepWidth?: string;
+  showBackButton?: boolean;
+  showDoneButton?: boolean;
 }
