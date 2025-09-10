@@ -108,12 +108,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, [value]);
 
   useEffect(() => {
-    if (value && value.length > 0 && (!state.fileList || state.fileList.length === 0)) {
-      dispatch(initializeFileListAction(value as IStoredFile[]));
-    }
-  }, [value]);
-
-  useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
         if (typeof onChange === 'function' && value !== val) {
         onChange(val);
