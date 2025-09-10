@@ -17,10 +17,8 @@ export interface IAutoLogoutProviderProps {
   onTimerReset?: () => void;
 }
 
-const securitySettingsId: ISettingIdentifier = { 
-  name: 'Shesha.Security', 
-  module: 'Shesha' 
-};
+// Complex settings identifier for Shesha.Security
+const securitySettingsId: ISettingIdentifier = { name: 'Shesha.Security', module: 'Shesha' };
 
 const AutoLogoutProvider: FC<PropsWithChildren<IAutoLogoutProviderProps>> = ({
   children,
@@ -30,18 +28,27 @@ const AutoLogoutProvider: FC<PropsWithChildren<IAutoLogoutProviderProps>> = ({
   onTimerReset,
 }) => {
   const { logoutUser, isLoggedIn } = useAuth();
-  const { value: securitySettings } = useSettingValue<{ autoLogoffTimeout?: number }>(securitySettingsId);
+  // Use complex settings structure for Shesha.Security
+  const { value: securitySettings } = useSettingValue(securitySettingsId);
   
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const browserCloseTimeoutRef = useRef<NodeJS.Timeout>();
   
   const getEffectiveSettings = useCallback((): IAutoLogoutSettings => {
-    const systemTimeout = securitySettings?.autoLogoffTimeout && securitySettings.autoLogoffTimeout > 0 
+    const effectiveTimeoutMinutes = securitySettings?.autoLogoffTimeout && securitySettings.autoLogoffTimeout > 0 
       ? securitySettings.autoLogoffTimeout 
       : DEFAULT_AUTO_LOGOUT_SETTINGS.timeoutMinutes;
-    
+
+    const effectiveWarningSeconds = securitySettings?.logoutWarningSeconds && securitySettings.logoutWarningSeconds > 0 
+      ? securitySettings.logoutWarningSeconds 
+      : DEFAULT_AUTO_LOGOUT_SETTINGS.warningSeconds;
+
     return {
       ...DEFAULT_AUTO_LOGOUT_SETTINGS,
-      timeoutMinutes: systemTimeout,
+      timeoutMinutes: effectiveTimeoutMinutes,
+      warningSeconds: effectiveWarningSeconds,
+      enabled: securitySettings?.logoutWhenUserInactive || (securitySettings?.autoLogoffTimeout && securitySettings.autoLogoffTimeout > 0),
+      logoutWhenBrowserClosed: securitySettings?.logoutWhenBrowserClosed ?? false,
       ...customSettings,
     };
   }, [securitySettings, customSettings]);
@@ -58,6 +65,10 @@ const AutoLogoutProvider: FC<PropsWithChildren<IAutoLogoutProviderProps>> = ({
     if (timeoutRef.current) {
       clearInterval(timeoutRef.current);
       timeoutRef.current = undefined;
+    }
+    if (browserCloseTimeoutRef.current) {
+      clearTimeout(browserCloseTimeoutRef.current);
+      browserCloseTimeoutRef.current = undefined;
     }
   }, []);
 
@@ -107,9 +118,10 @@ const AutoLogoutProvider: FC<PropsWithChildren<IAutoLogoutProviderProps>> = ({
     const now = Date.now();
     const timeSinceActivity = now - state.lastActivity;
     const inactiveSeconds = Math.floor(timeSinceActivity / 1000);
-    const maxInactiveSeconds = state.settings.timeoutMinutes * 60;
-    const warningThreshold = maxInactiveSeconds - state.settings.warningSeconds;
-
+    const timeoutSeconds = state.settings.timeoutMinutes * 60;
+    const maxInactiveSeconds = timeoutSeconds + state.settings.warningSeconds;
+    const warningThreshold = timeoutSeconds; // Show warning after timeout, not before
+    
     if (inactiveSeconds >= maxInactiveSeconds) {
       // Time to logout
       handleLogout();
@@ -229,6 +241,61 @@ const AutoLogoutProvider: FC<PropsWithChildren<IAutoLogoutProviderProps>> = ({
       });
     };
   }, [isLoggedIn, state.settings.enabled, state.isWarningVisible, recordActivity]);
+
+  // Browser close detection
+  useEffect(() => {
+    if (!isLoggedIn || !state.settings.logoutWhenBrowserClosed) {
+      return undefined;
+    }
+
+    let isPageUnloading = false;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden && !isPageUnloading) {
+        // Tab/window became hidden, start timer using same timeout as inactive users
+        const timeoutMs = (state.settings.timeoutMinutes || 5) * 60 * 1000;
+        
+        browserCloseTimeoutRef.current = setTimeout(() => {
+          if (document.hidden) {
+            handleLogout();
+          }
+        }, timeoutMs);
+      } else if (!document.hidden) {
+        // Tab/window became visible again, clear timer
+        if (browserCloseTimeoutRef.current) {
+          clearTimeout(browserCloseTimeoutRef.current);
+          browserCloseTimeoutRef.current = undefined;
+        }
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      isPageUnloading = true;
+      // Clear any existing timeout since we're navigating away
+      if (browserCloseTimeoutRef.current) {
+        clearTimeout(browserCloseTimeoutRef.current);
+        browserCloseTimeoutRef.current = undefined;
+      }
+    };
+
+    const handlePageShow = () => {
+      isPageUnloading = false;
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pageshow', handlePageShow);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pageshow', handlePageShow);
+      if (browserCloseTimeoutRef.current) {
+        clearTimeout(browserCloseTimeoutRef.current);
+        browserCloseTimeoutRef.current = undefined;
+      }
+    };
+  }, [isLoggedIn, state.settings.logoutWhenBrowserClosed, state.settings.timeoutMinutes, handleLogout]);
 
   const getProgressPercent = () => {
     if (state.remainingTime === 0) return 0;

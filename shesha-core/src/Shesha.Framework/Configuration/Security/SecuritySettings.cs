@@ -12,7 +12,7 @@ namespace Shesha.Configuration.Security
     public class SecuritySettings
     {
         /// <summary>
-        /// Auto logoff timeout
+        /// Auto logoff timeout in minutes
         /// </summary>
         public int AutoLogoffTimeout { get; set; }
 
@@ -56,6 +56,21 @@ namespace Shesha.Configuration.Security
         /// </summary>
         [Display(Name = "Default endpoint access", Description = "Used for 'Inherited' endpoint access")]
         public RefListPermissionedAccess DefaultEndpointAccess { get; set; }
+
+        /// <summary>
+        /// Enable logout when user is inactive
+        /// </summary>
+        public bool LogoutWhenUserInactive { get; set; }
+
+        /// <summary>
+        /// Warning time before logout in seconds
+        /// </summary>
+        public int LogoutWarningSeconds { get; set; }
+
+        /// <summary>
+        /// Enable logout when browser is closed/hidden
+        /// </summary>
+        public bool LogoutWhenBrowserClosed { get; set; }
 
     }
 }

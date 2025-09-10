@@ -131,7 +131,10 @@ namespace Shesha
                 s.DefaultAccountLockoutSeconds.WithDefaultValue(300 /* 5 minutes */);
                 s.SecuritySettings.WithDefaultValue(new SecuritySettings
                 {
-                    AutoLogoffTimeout = 0,
+                    AutoLogoffTimeout = 15, // 15 minutes default,
+                    LogoutWhenUserInactive = false,
+                    LogoutWarningSeconds = 60,
+                    LogoutWhenBrowserClosed = false,
                     UseResetPasswordViaEmailLink = true,
                     ResetPasswordEmailLinkLifetime = 60,
                     UseResetPasswordViaSmsOtp = true,

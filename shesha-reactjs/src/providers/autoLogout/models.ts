@@ -5,6 +5,8 @@ export interface IAutoLogoutSettings {
   warningSeconds: number;
   /** Whether auto logout is enabled */
   enabled: boolean;
+  /** Whether to logout when browser is closed */
+  logoutWhenBrowserClosed?: boolean;
 }
 
 export interface IAutoLogoutState {

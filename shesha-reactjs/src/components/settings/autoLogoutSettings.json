@@ -1,0 +1,70 @@
+{
+  "id": "auto-logout-settings",
+  "name": "Auto Logout Settings",
+  "label": "Auto Logout Settings",
+  "description": "Configure automatic user logout settings",
+  "formType": "Settings",
+  "components": [
+    {
+      "id": "inactive-section",
+      "type": "sectionSeparator", 
+      "componentName": "sectionSeparator",
+      "label": "Auto Logout Settings",
+      "labelAlign": "left",
+      "version": 1
+    },
+    {
+      "id": "logout-when-inactive",
+      "type": "checkbox",
+      "componentName": "checkbox",
+      "propertyName": "LogoutWhenUserInactive",
+      "label": "Enable auto logout when user is inactive",
+      "description": "Automatically logout users after a period of inactivity",
+      "version": 1
+    },
+    {
+      "id": "auto-logoff-timeout",
+      "type": "numberField",
+      "componentName": "numberField",
+      "propertyName": "AutoLogoffTimeout",
+      "label": "Auto logout timeout (minutes)",
+      "description": "Time in minutes before an inactive user is automatically logged out. Set to 0 to disable.",
+      "min": 0,
+      "max": 1440,
+      "defaultValue": 15,
+      "hidden": "!(data.LogoutWhenUserInactive === true || (data.AutoLogoffTimeout && data.AutoLogoffTimeout > 0))",
+      "version": 1
+    },
+    {
+      "id": "warning-seconds",
+      "type": "numberField",
+      "componentName": "numberField",
+      "propertyName": "LogoutWarningSeconds",
+      "label": "Warning time (seconds)",
+      "description": "Time in seconds to show warning before automatic logout",
+      "min": 10,
+      "max": 300,
+      "defaultValue": 60,
+      "hidden": "!(data.LogoutWhenUserInactive === true || (data.AutoLogoffTimeout && data.AutoLogoffTimeout > 0))",
+      "version": 1
+    },
+    {
+      "id": "browser-section",
+      "type": "sectionSeparator",
+      "componentName": "sectionSeparator", 
+      "label": "Browser Close Settings",
+      "labelAlign": "left",
+      "version": 1
+    },
+    {
+      "id": "logout-when-browser-closed",
+      "type": "checkbox",
+      "componentName": "checkbox",
+      "propertyName": "LogoutWhenBrowserClosed",
+      "label": "Logout when browser is closed",
+      "description": "Automatically logout users when browser tab/window is closed or hidden. Uses the same timeout as inactive users.",
+      "version": 1
+    }
+  ],
+  "versionNo": 1
+}
