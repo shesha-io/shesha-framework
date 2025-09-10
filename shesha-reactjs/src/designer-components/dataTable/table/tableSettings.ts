@@ -471,41 +471,42 @@ export const getSettings = (data: ITableComponentProps) => {
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowClick',
-                                    parentId: 'root',
+                                    parentId: eventsTabId,
                                     label: 'On Row Click',
                                     description: 'Action to execute when a row is clicked',
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowDoubleClick',
-                                    parentId: 'root',
+                                    parentId: eventsTabId,
                                     label: 'On Row Double-Click',
                                     description: 'Action to execute when a row is double-clicked',
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowHover',
-                                    parentId: 'root',
+                                    parentId: eventsTabId,
                                     label: 'On Row Hover',
                                     description: 'Action to execute when hovering over a row',
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowSelect',
-                                    parentId: 'root',
+                                    parentId: eventsTabId,
                                     label: 'On Row Select',
                                     description: 'Action to execute when a row is selected',
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onSelectionChange',
-                                    parentId: 'root',
+                                    parentId: eventsTabId,
                                     label: 'On Selection Change',
                                     description: 'Action to execute when the selection changes',
                                 })
                                 .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowSaveSuccessAction',
+                                    parentId: eventsTabId,
                                     label: 'On Row Save Success',
                                     description: 'Custom business logic to be executed after successfull saving of new/updated row.',
                                     hideLabel: true,
@@ -514,6 +515,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     id: nanoid(),
                                     propertyName: 'onRowDeleteSuccessAction',
                                     label: 'On Row Delete Success',
+                                    parentId: eventsTabId,
                                     description: 'Custom business logic to be executed after successfull deletion of a row.',
                                     hideLabel: true,
                                 })
