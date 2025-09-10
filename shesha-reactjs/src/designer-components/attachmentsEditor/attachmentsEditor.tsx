@@ -155,7 +155,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
+    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, removeFieldFromPayload: true })),
 };
 
 export default AttachmentsEditor;
