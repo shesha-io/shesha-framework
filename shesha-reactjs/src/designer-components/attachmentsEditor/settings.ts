@@ -49,17 +49,28 @@ export const getSettings = () => {
                   tooltip: 'If checked, the field will not be included in the submitted payload',
                   jsSetting: true,
                 })
-                .addContextPropertyAutocomplete({
+                .addContainer({
                   id: nanoid(),
-                  propertyName: 'propertyName',
-                  label: 'Property Name',
+                  propertyName: 'container',
+                  label: 'Container',
                   parentId: commonTabId,
-                  size: 'small',
-                  styledLabel: true,
-                  validate: {
-                    required: true,
-                  },
-                  jsSetting: true,
+                  hidden: { _code: 'return getSettingValue(data?.removeFieldFromPayload);', _mode: 'code', _value: false } as any,
+                  components: [
+                    ...new DesignerToolbarSettings()
+                    .addContextPropertyAutocomplete({
+                      id: nanoid(),
+                      propertyName: 'propertyName',
+                      label: 'Property Name',
+                      parentId: commonTabId,
+                      size: 'small',
+                      styledLabel: true,
+                      validate: {
+                        required: true,
+                      },
+                      jsSetting: true,
+                    })
+                    .toJson()
+                  ]
                 })
                 .addSettingsInput({
                   id: nanoid(),
