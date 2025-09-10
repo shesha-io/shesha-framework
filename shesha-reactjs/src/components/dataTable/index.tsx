@@ -48,6 +48,7 @@ import moment from 'moment';
 import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
@@ -77,6 +78,8 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+  borderRadius?: string;
+  border?: IBorderValue;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -115,7 +118,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
-  // Row interaction events
+  border,
   onRowClick,
   onRowDoubleClick,
   onRowHover,
@@ -884,8 +887,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowAlternateBackgroundColor,
     rowHoverBackgroundColor,
     rowSelectedBackgroundColor,
+    border,
 
-    // Custom event handlers
     onRowClick: handleRowClick,
     onRowHover: handleRowHover,
   };

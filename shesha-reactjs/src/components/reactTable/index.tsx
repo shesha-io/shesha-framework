@@ -31,6 +31,7 @@ import { EmptyState } from '..';
 import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
+import { getBorderStyle } from '@/designer-components/_settings/utils/index';
 
 interface IReactTableState {
   allRows: any[];
@@ -92,6 +93,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
+  border,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -108,6 +110,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     rowAlternateBackgroundColor,
     rowHoverBackgroundColor,
     rowSelectedBackgroundColor,
+    border,
   });
 
   const { setDragState } = useDataTableStore();
@@ -676,6 +679,7 @@ export const ReactTable: FC<IReactTableProps> = ({
               height: scrollBodyHorizontally ? height || 250 : 'unset',
               overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
               overflowX: 'unset',
+              ...getBorderStyle(border, {})
             }}
             {...getTableBodyProps()}
           >
@@ -705,6 +709,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                   handle=".row-handle"
                   scroll={true}
                   bubbleScroll={true}
+                  style={getBorderStyle(border, {})}
                   className={styles.shaSortable}
                 >
                   {children}

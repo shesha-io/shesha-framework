@@ -3,6 +3,7 @@ import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -224,6 +225,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+  borderRadius?: string;
+  border?: IBorderValue;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

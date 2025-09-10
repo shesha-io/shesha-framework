@@ -70,7 +70,6 @@ export interface IShaDataTableInlineEditableProps {
   onDblClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
   onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
   
-  // Row interaction events
   onRowClick?: IConfigurableActionConfiguration;
   onRowDoubleClick?: IConfigurableActionConfiguration;
   onRowHover?: IConfigurableActionConfiguration;
