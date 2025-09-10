@@ -23,6 +23,7 @@ export const getSettings = () => {
   const pnlShadowStyleId = nanoid();
   const customStylePnlId = nanoid();
   const pnlFontStyleId = nanoid();
+  const containerId = nanoid();
 
   return {
     components: new DesignerToolbarSettings()
@@ -50,7 +51,7 @@ export const getSettings = () => {
                   jsSetting: true,
                 })
                 .addContainer({
-                  id: nanoid(),
+                  id: containerId,
                   propertyName: 'container',
                   label: 'Container',
                   parentId: commonTabId,
@@ -61,7 +62,7 @@ export const getSettings = () => {
                       id: nanoid(),
                       propertyName: 'propertyName',
                       label: 'Property Name',
-                      parentId: commonTabId,
+                      parentId: containerId,
                       size: 'small',
                       styledLabel: true,
                       validate: {
