@@ -2,7 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { onAddNewItem } from './utils';
-import { getSettings } from './itemSettings';
+import { getItemSettings } from './itemSettings';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
