@@ -28,6 +28,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         isDynamic,
         labelPlacement,
         wizardType = 'default',
+        showBackButton = true,
+        showDoneButton = true,
     } = model;
 
     const steps = useMemo(() => {
@@ -92,7 +94,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                                 </Space>
                             )}
                         >
-                            {current > 0 && (
+                            {current > 0 && showBackButton && (
                                 <Button
                                     style={btnStyle('back')}
                                     onClick={back}
@@ -132,7 +134,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                                 </Button>
                             )}
 
-                            {current === visibleSteps.length - 1 && (
+                            {current === visibleSteps.length - 1 && showDoneButton && (
                                 <Button
                                     type="primary"
                                     style={btnStyle('next')}
