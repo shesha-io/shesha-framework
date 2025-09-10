@@ -68,6 +68,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   readOnly = false,
   defaultValue,
   iconSize,
+  twoToneColor,
   ...props
 }) => {
   const { styles } = useStyles();
@@ -142,18 +143,12 @@ const IconPicker: FC<IIconPickerProps> = ({
           className={classNames(styles.shaIconPickerSelectedIcon, { 'sha-readonly': readOnly })}
         >
           {localSelectedIcon ? (
-            <Button
-              size={selectBtnSize}
-              className={styles.shaIconPicker}
-              type='text'
-              icon={<ShaIcon
+            <ShaIcon
                 className={styles.shaIconPicker}
                 iconName={localSelectedIcon}
                 {...props}
-                style={{ fontSize: iconSize || 24 }}
+                style={{ fontSize: iconSize || 24, color: twoToneColor}}
                 name={localSelectedIcon}
-              //title={localSelectedIcon} removed to avoid it conflicting with icon tooltip
-              />}
             />
           ) : (
             <Button
