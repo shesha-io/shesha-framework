@@ -254,7 +254,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trOdd} {
-            background: ${rowAlternateBackgroundColor || '#f0f0f0'} !important;
+            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
           }
 
           &.${trSelected} {
