@@ -55,8 +55,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         rowAlternateBackgroundColor: props?.rowAlternateBackgroundColor,
         rowHoverBackgroundColor: props?.rowHoverBackgroundColor,
         rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
-    });
-    
+        border: props?.border,
+    });    
+
     const finalStyle = useMemo(() => {
         if (props.allStyles) {
             if (!props.enableStyleOnReadonly && props.readOnly) {
@@ -166,12 +167,16 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                     noDataSecondaryText={props.noDataSecondaryText}
                     noDataIcon={props.noDataIcon}
                     showExpandedView={props.showExpandedView}
-                    // Row interaction events
                     onRowClick={props.onRowClick}
                     onRowDoubleClick={props.onRowDoubleClick}
                     onRowHover={props.onRowHover}
                     onRowSelect={props.onRowSelect}
                     onSelectionChange={props.onSelectionChange}
+                    rowBackgroundColor={props.rowBackgroundColor}
+                    rowAlternateBackgroundColor={props.rowAlternateBackgroundColor}
+                    rowHoverBackgroundColor={props.rowHoverBackgroundColor}
+                    rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
+                    border={props.border}
                 />
             </div>
         </SidebarContainer>

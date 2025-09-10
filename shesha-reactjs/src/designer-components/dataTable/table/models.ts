@@ -3,6 +3,7 @@ import { IConfigurableActionConfiguration } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ICommonContainerProps } from '../../container/interfaces';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 export type RowDroppedMode = 'executeScript' | 'showDialog';
 
@@ -34,6 +35,8 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+  borderRadius?: string;
+  border?: IBorderValue;
   
   enableStyleOnReadonly?: boolean;
 }

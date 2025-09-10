@@ -12,12 +12,14 @@ export const useStyles = createStyles(({ css, cx, token }, {
   rowBackgroundColor,
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
-  rowSelectedBackgroundColor 
+  rowSelectedBackgroundColor,
+  borderRadius
 }) => {
 
   const dataTable = cx("sha-data-table", css`
     ${ `
       .ant-table {
+        border-radius: ${borderRadius};
         font-family: ${fontFamily};
         font-size: ${fontSize}px;
         font-weight: ${fontWeight};
