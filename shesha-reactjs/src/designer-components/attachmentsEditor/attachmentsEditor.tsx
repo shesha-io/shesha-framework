@@ -19,6 +19,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles } from './utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
@@ -43,6 +44,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
+  removeFieldFromPayload?: boolean;
   container?: IStyleType;
   primaryColor?: string;
 }
@@ -84,8 +86,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model }}>
+      <ConfigurableFormItem model={{ ...model, propertyName: !model.removeFieldFromPayload && model.propertyName ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
+
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}

@@ -247,7 +247,7 @@ export const getSettings = () => {
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
-                propertyName: 'onFileChanged',
+                propertyName: 'onChangeCustom',
                 label: 'On File List Changed',
                 labelAlign: 'right',
                 parentId: eventsTabId,
