@@ -100,9 +100,15 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { mutate: uploadFileHttp } = useMutate();
 
   useEffect(() => {
-    const val = state?.fileList?.length > 0 ? state.fileList : [];
-      if (typeof onChange === 'function' && value !== val) {
-        onChange(val || value);
+    if (value && value.length > 0 && (!state.fileList || state.fileList.length === 0)) {
+      dispatch(initializeFileListAction(value as IStoredFile[]));
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const val = state.fileList?.length > 0 ? state.fileList : [];
+        if (typeof onChange === 'function' && value !== val) {
+        onChange(val);
       };
   }, [state.fileList]);
 
@@ -137,6 +143,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
+      onChange?.(state.fileList?.filter(file => file.id !== patient?.id) || []);
     });
   }, []);
   //#endregion
