@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from "@/index";
-import { nanoid } from "nanoid";
+import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';

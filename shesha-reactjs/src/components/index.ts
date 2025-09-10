@@ -55,6 +55,7 @@ export {
 export { default as IndexToolbar, type IIndexToolbarProps } from './indexToolbar';
 export { default as LayoutHeading, type ILayoutHeadingProps } from './layoutHeading';
 export { default as MainLayout, type IMainLayoutProps } from './mainLayout';
+export { default as HorizontalLayout, type IHorizontalLayoutProps } from './horizontalLayout';
 export { default as NodeOrFuncRenderer, type ReactNodeOrFunc } from './nodeOrFuncRenderer';
 export { default as NotAuthorized, type INotAuthorizedProps } from './notAuthorized';
 export { default as NotesRenderer, type INotesRendererProps } from './notesRenderer';

@@ -1,7 +1,9 @@
 export * from './components';
+export { default as HorizontalLayout, type IHorizontalLayoutProps } from './components/horizontalLayout';
 export * from './formDesignerUtils';
 export * from './hocs';
 export * from './hooks';
+export { useLayoutSelection, type LayoutMode, type ILayoutSelectionHook } from './hooks/useLayoutSelection';
 export * from './interfaces';
 export * from './providers';
 export * from './shesha-constants';
