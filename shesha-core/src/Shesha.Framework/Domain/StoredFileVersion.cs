@@ -68,7 +68,6 @@ namespace Shesha.Domain
         /// 
         /// </summary>
         [InversePropertyAttribute("FileVersionId")]
-        [LazyLoad]
         public virtual IList<StoredFileVersionDownload> Downloads { get; set; }
 
     }

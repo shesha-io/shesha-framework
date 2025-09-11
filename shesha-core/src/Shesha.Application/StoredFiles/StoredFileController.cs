@@ -94,8 +94,10 @@ namespace Shesha.StoredFiles
         public async Task<ActionResult> HasDownloadedAsync(Guid storedFileId)
         {
             var currentLoggedInUserId = _abpSession.UserId;
-            var file = await _fileVersionDownloadRepository.FirstOrDefaultAsync(x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId);
-            return Ok(new { hasDownloaded = file != null });
+            var hasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                .Where((x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId))
+               .AnyAsync();
+            return Ok(new { hasDownloaded });
 
         }
 
