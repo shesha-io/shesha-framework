@@ -31,11 +31,14 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
             result.Markup = revision.Markup;
             result.ModelType = revision.ModelType;
-            //TemplateId = revision.Template?.Id,
             result.IsTemplate = revision.IsTemplate;
-
+            result.TemplateId = revision.Template?.Id;
             result.Access = permission?.Access;
             result.Permissions = permission?.Permissions;
+            result.ConfigurationForm = revision.ConfigurationForm;
+            result.GenerationLogicTypeName = revision.GenerationLogicTypeName;
+            result.GenerationLogicExtensionJson = revision.GenerationLogicExtensionJson;
+            result.PlaceholderIcon = revision.PlaceholderIcon;
         }
     }
 }

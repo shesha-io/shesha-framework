@@ -1,5 +1,6 @@
 ﻿using Shesha.ConfigurationItems;
 using Shesha.Domain;
+using Shesha.Web.FormsDesigner.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,5 +16,10 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <returns></returns>
         Task<List<FormConfiguration>> GetAllAsync();
+
+        /// <summary>
+        /// Create form item with form-specific input
+        /// </summary>
+        Task<FormConfiguration> CreateFormAsync(CreateFormInput input);
     }
 }

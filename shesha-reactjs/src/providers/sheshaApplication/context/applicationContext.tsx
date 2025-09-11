@@ -8,6 +8,7 @@ import { useAuth, useShaRouting } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
 import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
+import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
 
@@ -38,11 +39,12 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
   const httpClient = useHttpClient();
   const cacheProvider = useCacheProvider();
   const metadataFetcher = useEntityMetadataFetcher();
+  const metadataDispatcher = useMetadataDispatcher();
   const shaRouter = useShaRouting();
 
   // inject fields from plugins
   const [contextData] = useState<IApplicationApi>(
-    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter)
+    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher)
   );
 
   const { loginInfo } = useAuth(false) ?? {};
