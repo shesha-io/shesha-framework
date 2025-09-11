@@ -72,9 +72,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
           const customEvents = getEventHandlers(model, allData);
           const onFileListChanged = (...args: any[]) => {
-            customEvents.onChange(args[0]);
-            console.log("Args...:", args[0]);
             if (typeof onChange === 'function') onChange(args);
+            customEvents.onChange(args[0]);
           };
 
           return (
