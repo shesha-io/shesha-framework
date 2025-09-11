@@ -8,7 +8,7 @@ export default function CommonLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const { LayoutComponent } = useLayoutSelection('horizontalLayout');    
+    const { LayoutComponent } = useLayoutSelection('defaultLayout');    
 
     return (
         <LayoutComponent noPadding>
