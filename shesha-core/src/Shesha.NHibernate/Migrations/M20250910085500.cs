@@ -16,7 +16,7 @@ namespace Shesha.Migrations
             Create.Table("Frwk_StoredFileVersionDownloads")
                 .WithIdAsGuid()
                 .WithFullAuditColumns()
-                .WithForeignKeyColumn("FileVersionId", "Frwk_StoredFileVersions");
+                .WithForeignKeyColumn("FileVersionId", "Frwk_StoredFileVersions").NotNullable();
         }
     }
 }

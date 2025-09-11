@@ -275,7 +275,7 @@ namespace Shesha.Services.StoredFiles
             {
                 FileVersion = fileVersion
             };
-            await StoredFileVersionDownloadRepository.InsertOrUpdateAsync(download);
+            await StoredFileVersionDownloadRepository.InsertAsync(download);
         }
 
         /// <summary>
