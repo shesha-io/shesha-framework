@@ -63,28 +63,31 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
-    const onFileListChanged = (fileList: IStoredFile[]) => {
-
-      if (!model.onFileChanged)
-        return;
-
-      executeScript<void>(model.onFileChanged, {
-        fileList,
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState
-      });
-    };
-
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: !model.removeFieldFromPayload && model.propertyName ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
+
+          const onFileListChanged = (fileList: IStoredFile[]) => {
+
+            onChange(fileList);
+            console.log("OnFileListChanged:", fileList, value);
+
+            if (!model.onFileChanged)
+              return;
+
+            executeScript<void>(model.onFileChanged, {
+              fileList,
+              data,
+              form: getFormApi(form),
+              globalState,
+              http: httpClient,
+              message,
+              moment,
+              setGlobalState
+            });
+          };
 
           return (
             <StoredFilesProvider
@@ -96,7 +99,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
               // used for requered field validation
-              onChange={onChange}
+              onChange={onFileListChanged}
               value={value}
             >
               <CustomFile
@@ -109,7 +112,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
                 isDragger={model?.isDragger}
-                onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
                 layout={model.layout}
                 listType={model.listType}

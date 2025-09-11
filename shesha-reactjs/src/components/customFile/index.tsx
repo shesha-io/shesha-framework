@@ -8,7 +8,6 @@ export interface ICustomFileProps extends IInputStyles {
   id?: string;
   ownerId?: string;
   uploadFile?: (payload: IUploadFilePayload) => void;
-  onFileListChanged?: (list: IStoredFile[]) => void;
   allowAdd?: boolean;
   allowReplace?: boolean;
   allowDelete?: boolean;
@@ -56,7 +55,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
         downloadFile={downloadFile}
-        onFileListChanged={props.onFileListChanged}
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}

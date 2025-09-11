@@ -2,7 +2,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
@@ -48,7 +48,7 @@ export interface IStoredFilesProviderProps {
 
   // used for requered field validation
   value?: IStoredFile[];
-  onChange?: (value: IStoredFile[]) => void;
+  onChange?: (fileList: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -109,7 +109,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
-        if (typeof onChange === 'function' && value !== val) {
+    console.log("useEffect:", val, value);
+        if (typeof onChange === 'function' && JSON.stringify(value) !== JSON.stringify(val)) {
+          console.log("called");
         onChange(val);
       };
   }, [state.fileList]);
@@ -145,7 +147,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
-      onChange?.(state.fileList?.filter(file => file.id !== patient?.id) || []);
     });
   }, []);
   //#endregion

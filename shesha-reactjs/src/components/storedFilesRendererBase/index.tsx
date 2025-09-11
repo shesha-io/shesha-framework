@@ -39,7 +39,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
-  onFileListChanged?: (list: IStoredFile[]) => void;
+  onFileListChanged?: () => void;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
   isDragger?: boolean;
@@ -67,7 +67,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   uploadFile,
   downloadZipFile,
   downloadFile,
-  onFileListChanged,
   ownerId,
   ownerType,
   fetchFilesError,
@@ -198,9 +197,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         message.success(`${info.file.name} file uploaded successfully.`);
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
-      }
-      if (onFileListChanged) {
-        onFileListChanged(info.fileList);
       }
     },
     onRemove(file) {
