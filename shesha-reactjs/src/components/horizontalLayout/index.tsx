@@ -1,14 +1,10 @@
 import classNames from 'classnames';
-import LayoutMenu from '@/components/menu';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
-import LayoutHeading from '@/components/layoutHeading';
 import React, {
   CSSProperties,
   FC,
-  Fragment,
   PropsWithChildren,
   ReactElement,
-  ReactNode,
   useEffect,
   useMemo,
 } from 'react';
@@ -20,7 +16,7 @@ import { useStyles } from './styles';
 import { ConfigurableForm } from '../configurableForm';
 import { HEADER_CONFIGURATION } from '../mainLayout/constant';
 
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 export interface IHorizontalLayoutProps extends IHtmlHeadProps {
   breadcrumb?: ReactNodeOrFunc;
@@ -34,9 +30,6 @@ export interface IHorizontalLayoutProps extends IHtmlHeadProps {
   fixHeading?: boolean;
   showHeading?: boolean;
   noPadding?: boolean;
-  headerControls?: ReactNodeOrFunc;
-  menuOverflow?: 'dropdown' | 'menu' | 'scroll';
-  menuStyle?: CSSProperties;
 }
 
 const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (props) => {
@@ -52,7 +45,6 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
     fixHeading = false,
     showHeading = true,
     noPadding = false,
-    headerControls,
   } = props;
 
   const { theme: themeFromStorage } = useTheme();
@@ -74,18 +66,6 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
   const headingClass = {
     'has-heading': hasHeading || (Boolean(title) && showHeading),
     'fixed-heading': isFixedHeading,
-  };
-
-  const renderPageTitle = (): ReactNode => {
-    if (hasHeading) {
-      return typeof heading === 'function' ? heading() : heading;
-    }
-
-    if (title && showHeading) {
-      return <LayoutHeading title={title} />;
-    }
-
-    return <Fragment />;
   };
 
   return (
