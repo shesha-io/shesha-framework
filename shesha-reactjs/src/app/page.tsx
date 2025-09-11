@@ -6,6 +6,7 @@ import React from 'react';
 import { CollapsiblePanel } from '@/components';
 import styled from 'styled-components';
 import { PageWithLayout } from '@/interfaces';
+import { useLayoutSelection } from '@/hooks';
 
 /**
  * There was an error 
@@ -21,7 +22,10 @@ const StyledAlert: any = styled(Alert)`
 `;
 
 const Home: PageWithLayout<{}> = () => {
+  const { LayoutComponent } = useLayoutSelection('defaultLayout');
+
   return (
+    <LayoutComponent>
     <CollapsiblePanel header="Plugins">
       <StyledAlert message="This is a list of plugins the boilerplate uses" type="info" />
 
@@ -33,6 +37,7 @@ const Home: PageWithLayout<{}> = () => {
         ))}
       </Row>
     </CollapsiblePanel>
+    </LayoutComponent>
   );
 };
 
