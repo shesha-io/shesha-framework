@@ -73,12 +73,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       let isLineOrCircle = false;
 
       if (progressType === 'line') {
-        color = lineStrokeColor?.toString();
+        color = lineStrokeColor?.toString() ?? strokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (progressType === 'circle') {
-        color = circleStrokeColor?.toString();
+        color = circleStrokeColor?.toString() ?? strokeColor?.toString();
         isLineOrCircle = true;
       }
 
