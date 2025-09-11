@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
@@ -14,10 +12,6 @@ namespace Shesha.Domain
     [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersion", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StoredFileVersion : FullAuditedEntity<Guid>, IMayHaveTenant
     {
-         public StoredFileVersion()
-        {
-            Downloads = new List<StoredFileVersionDownload>();
-        }
         /// <summary>
         /// Stored file
         /// </summary>
@@ -64,11 +58,6 @@ namespace Shesha.Domain
         /// Note: updated by triggers in sql server side
         /// </summary>
         public virtual bool IsLast { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        [InversePropertyAttribute("FileVersionId")]
-        public virtual IList<StoredFileVersionDownload> Downloads { get; set; }
 
     }
 }
