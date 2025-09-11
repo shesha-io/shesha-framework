@@ -14,6 +14,7 @@ export interface IDataListInlineEditableProps {
   canDeleteInline?: YesNoInherit;
   customDeleteUrl?: string;
   canEditInline?: YesNoInherit;
+  showEditIcons?: boolean;
   inlineEditMode?: InlineEditMode;
   customUpdateUrl?: string;
   canAddInline?: YesNoInherit;

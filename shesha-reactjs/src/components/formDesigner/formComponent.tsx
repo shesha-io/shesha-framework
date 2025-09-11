@@ -20,8 +20,8 @@ export const standartActualModelPropertyFilter = (name: string) => {
   return propertiesToSkip.indexOf(name) === -1;
 };
 
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string) => {
-  return (component.actualModelPropertyFilter ? component.actualModelPropertyFilter(name) : true)
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any) => {
+  return (component.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true)
     && propertiesToSkip.indexOf(name) === -1;
 };
 
@@ -38,7 +38,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
 
-  const actualModel = useActualContextData(deviceModel, undefined, undefined, (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name));
+  const actualModel = useActualContextData(deviceModel, undefined, undefined, (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value));
 
   if (!toolboxComponent) 
     return <ComponentError errors={{

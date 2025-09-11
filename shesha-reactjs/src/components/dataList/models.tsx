@@ -27,6 +27,7 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   canDeleteInline?: boolean;
   canEditInline?: boolean;
   canAddInline?: boolean;
+  showEditIcons?: boolean;
 
   allowChangeEditMode?: boolean;
 

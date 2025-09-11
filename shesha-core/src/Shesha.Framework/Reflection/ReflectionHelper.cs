@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
@@ -791,6 +792,7 @@ namespace Shesha.Reflection
         }
 
         #nullable enable
+        [DebuggerStepThrough]        
         public static T NotNull<T>([NotNull] this T? value, string message = "Value must not be null")
         {
             return value ?? throw new Exception(message);

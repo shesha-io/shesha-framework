@@ -44,7 +44,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
-    stylingBox: "{\"marginBottom\":\"5\"}"
+    stylingBox: "{\"marginBottom\":\"5\"}",
+    showBackButton: true,
+    showDoneButton: true
   }),
   migrator: (m) =>
     m
@@ -101,6 +103,11 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
+      .add<IWizardComponentProps>(7, (prev) => ({ 
+        ...prev,
+        showBackButton: prev.showBackButton ?? true,
+        showDoneButton: prev.showDoneButton ?? true
+      }))
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),

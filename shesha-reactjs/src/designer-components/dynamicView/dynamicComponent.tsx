@@ -26,7 +26,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
   
-  const actualModel = useActualContextData(deviceModel, undefined, undefined, (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name));
+  const actualModel = useActualContextData(deviceModel, undefined, undefined, (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value));
 
   if (!toolboxComponent) 
     return <ComponentError errors={{

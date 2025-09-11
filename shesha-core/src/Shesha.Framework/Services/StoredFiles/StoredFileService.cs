@@ -17,7 +17,7 @@ namespace Shesha.Services.StoredFiles
         private readonly ISheshaSettings _sheshaSettings;
         private readonly IPathHelper _pathHelper;
         
-        public StoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, ISheshaSettings sheshaSettings, IPathHelper pathHelper) : base(fileService, versionService)
+        public StoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService, ISheshaSettings sheshaSettings, IPathHelper pathHelper) : base(fileService, versionService, storedFileVersionDownloadService)
         {
             _sheshaSettings = sheshaSettings;
             _pathHelper = pathHelper;

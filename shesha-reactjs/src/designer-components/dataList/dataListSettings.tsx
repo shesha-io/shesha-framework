@@ -10,7 +10,8 @@ import {
   Checkbox,
   Input,
   InputNumber,
-  Select
+  Select,
+  Switch
 } from 'antd';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 import { IDataListComponentProps } from './model';
@@ -358,6 +359,9 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
    <SettingsCollapsiblePanel header="CRUD">
         <SettingsFormItem name="canEditInline" label="Can edit inline" jsSetting>
           <Select disabled={readOnly} options={yesNoInheritOptions} />
+        </SettingsFormItem>
+        <SettingsFormItem name="showEditIcons" label="Show edit icon" hidden={model.canEditInline === 'no'} valuePropName="checked">
+            <Switch />
         </SettingsFormItem>
         <SettingsFormItem name="inlineEditMode" label="List edit mode" hidden={model.canEditInline === 'no'}>
           <Select disabled={readOnly} options={inlineEditModes} />

@@ -43,7 +43,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         canDeleteInline: 'no',
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
-        dblClickActionConfiguration: prev['actionConfiguration']
+        dblClickActionConfiguration: prev['actionConfiguration'],
+        showEditIcons: true,
         
       };
     })
@@ -53,6 +54,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       onNewListItemInitialize: migrateFormApi.full(prev.onNewListItemInitialize),
       onListItemSave: migrateFormApi.full(prev.onListItemSave)
     }))
+    .add<IDataListComponentProps>(8, prev => ({...prev, showEditIcons: true}))
 ,
   settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
 };

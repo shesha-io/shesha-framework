@@ -413,7 +413,7 @@
           {
             "id": "26347fb3-4c52-4d24-9fb7-54d266b18ea4_radio",
             "type": "codeEditor",
-            "propertyName": "onChange",
+            "propertyName": "onChangeCustom",
             "label": "On Change",
             "labelAlign": "right",
             "parentId": "_m7e9WBdpkz4CsCrpVx8d_radio",

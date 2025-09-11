@@ -4,6 +4,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Distribution;
@@ -316,6 +317,92 @@ namespace Shesha.ConfigurationItems
             if (item == null)
                 throw new EntityNotFoundException(typeof(ConfigurationItemBase), id);
             return item;
+        }
+
+        public async Task<List<ExportTreeFlatItem>> GetExportFlatTreeAsync(ConfigurationItemViewMode mode) 
+        {
+            var query = Repository.GetAll();
+            switch (mode)
+            {
+                case ConfigurationItemViewMode.Live:
+                    query = query.Where(e => e.VersionStatus == ConfigurationItemVersionStatus.Live);
+                    break;
+                case ConfigurationItemViewMode.Ready:
+                    {
+                        var statuses = new ConfigurationItemVersionStatus[] {
+                            ConfigurationItemVersionStatus.Live,
+                            ConfigurationItemVersionStatus.Ready
+                        };
+                        query = query.Where(e => e.IsLast && statuses.Contains(e.VersionStatus));
+                        break;
+                    }
+                case ConfigurationItemViewMode.Latest:
+                    {
+                        var statuses = new ConfigurationItemVersionStatus[] {
+                            ConfigurationItemVersionStatus.Live,
+                            ConfigurationItemVersionStatus.Ready,
+                            ConfigurationItemVersionStatus.Draft
+                        };
+                        query = query.Where(e => e.IsLast && statuses.Contains(e.VersionStatus));
+                        break;
+                    }
+                default:
+                    break;
+            }
+            var items = await query
+                .OrderBy(e => e.Module.Name)
+                .ThenBy(e => e.Name)
+                .Select(e => new ExportTreeFlatItem
+                    {
+                        Id = e.Id,
+                        ItemType = e.ItemType,
+                        Name = e.Name,
+                        Label = e.Label,
+                        Description = e.Description,
+                        Module = e.Module != null
+                            ? new ExportTreeFlatItemModule { 
+                                Id = e.Module.Id,
+                                Name = e.Module.Name,
+                                Description = e.Module.Description
+                            }
+                            : null,
+                        Application = e.Application != null
+                            ? new ExportTreeFlatItemApplication {
+                                Id = e.Application.Id,
+                                AppKey = e.Application.AppKey,
+                                Name = e.Application.Name,                        
+                            }
+                            : null,
+                    })
+                .ToListAsync();
+
+            return items;
+        }
+
+        public class ExportTreeFlatItem 
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public string ItemType { get; set; }
+            public string Label { get; set; }
+            public string Description { get; set; }
+            public ExportTreeFlatItemModule Module { get; set; }
+            public ExportTreeFlatItemApplication Application { get; set; }            
+
+        }
+
+        public class ExportTreeFlatItemModule
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+        }
+
+        public class ExportTreeFlatItemApplication
+        {
+            public Guid Id { get; set; }
+            public string AppKey { get; set; }
+            public string Name { get; set; }            
         }
     }
 }
