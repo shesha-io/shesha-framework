@@ -24,7 +24,7 @@ export interface IDataListInlineEditableProps {
   modalWidth?: string;
   widthUnits?: string;
   customWidth?: number;
-
+  showEditIcons?: boolean;
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;

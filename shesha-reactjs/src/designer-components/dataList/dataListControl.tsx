@@ -44,6 +44,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     noDataSecondaryText = "No data is available for this list",
     noDataIcon,
     allStyles,
+    showEditIcons,
     onRowDeleteSuccessAction,
     orientation = 'vertical',
   } = props;
@@ -266,6 +267,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         selectedRow={selectedRow}
         selectedRows={selectedRows}
         records={data}
+        showEditIcons={showEditIcons}
         grouping={grouping}
         groupingMetadata={groupingColumns?.map(item => item.metadata) ?? []}
         isFetchingTableData={isFetchingTableData}
