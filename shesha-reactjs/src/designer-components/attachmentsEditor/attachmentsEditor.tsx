@@ -10,6 +10,7 @@ import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/model
 import {
   evaluateValue,
   executeScript,
+  useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
@@ -20,6 +21,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -53,11 +55,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
-    const httpClient = useHttpClient();
     const form = useForm();
     const { data } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { message } = App.useApp();
+    const allData = useAvailableConstantsData();
+    const { globalState } = useGlobalState();
 
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
@@ -69,24 +70,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       <ConfigurableFormItem model={{ ...model, propertyName: !model.removeFieldFromPayload && model.propertyName ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
 
-          const onFileListChanged = (fileList: IStoredFile[]) => {
-
-            onChange(fileList);
-            console.log("OnFileListChanged:", fileList, value);
-
-            if (!model.onFileChanged)
-              return;
-
-            executeScript<void>(model.onFileChanged, {
-              fileList,
-              data,
-              form: getFormApi(form),
-              globalState,
-              http: httpClient,
-              message,
-              moment,
-              setGlobalState
-            });
+          const customEvents = getEventHandlers(model, allData);
+          const onFileListChanged = (...args: any[]) => {
+            customEvents.onChange(args[0]);
+            console.log("Args...:", args[0]);
+            if (typeof onChange === 'function') onChange(args);
           };
 
           return (
@@ -152,7 +140,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, removeFieldFromPayload: true })),
+    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '' })),
 };
 
 export default AttachmentsEditor;

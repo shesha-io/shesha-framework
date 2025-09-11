@@ -109,11 +109,13 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
-    console.log("useEffect:", val, value);
-        if (typeof onChange === 'function' && JSON.stringify(value) !== JSON.stringify(val)) {
-          console.log("called");
-        onChange(val);
-      };
+    const filesUids = val ? val?.map(file => file.uid).filter(uid => !uid?.includes('rc-upload')) : [];
+    const valueUids = value ? value.map(file => file.uid) : [];
+
+    if(JSON.stringify(filesUids) !== JSON.stringify(valueUids)) {
+      console.log("useEffect:", JSON.stringify(val), JSON.stringify(value));
+      onChange?.(val);
+    }
   }, [state.fileList]);
 
   useEffect(() => {
@@ -165,7 +167,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     formData.append('propertyName', '');
 
     // @ts-ignore
-    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
+    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name , linkProps: '{"download": "image"}'};
 
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
@@ -187,7 +189,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,

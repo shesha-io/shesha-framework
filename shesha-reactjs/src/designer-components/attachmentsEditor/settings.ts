@@ -15,13 +15,6 @@ export const getSettings = () =>
       content: {
         id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...new DesignerToolbarSettings()
-          .addSwitch({
-            id: nanoid(),
-            propertyName: 'removeFieldFromPayload',
-            label: 'Exclude From Form Data',
-            description: 'If checked, the field will not be included in the submitted payload',
-            jsSetting: true,
-          })
           .addContextPropertyAutocomplete({
             id: nanoid(),
             propertyName: 'propertyName',
@@ -30,7 +23,6 @@ export const getSettings = () =>
             validate: {
               required: true,
             },
-            hidden: { _code: 'return getSettingValue(data?.removeFieldFromPayload);', _mode: 'code', _value: false } as any,
           })
           .addPropertyAutocomplete({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
@@ -185,7 +177,7 @@ export const getSettings = () =>
           })
           .addCodeEditor({
             id: '48ff91b3-5fb1-4e1b-a17f-ff86bce22e0b',
-            propertyName: 'onFileChanged',
+            propertyName: 'onChangeCustom',
             label: 'On File List Changed',
             labelAlign: 'right',
             parentId: 'root',
@@ -198,6 +190,7 @@ export const getSettings = () =>
               functionName: 'onFileListChanged',
               useAsyncDeclaration: true,
             },
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           })
           .toJson()
         ]
