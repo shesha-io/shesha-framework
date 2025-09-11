@@ -4,6 +4,7 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.ObjectMapping;
 using Abp.Reflection;
+using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
@@ -36,10 +37,12 @@ namespace Shesha.StoredFiles
         private readonly IStoredFileService _fileService;
         private readonly IRepository<StoredFile, Guid> _fileRepository;
         private readonly IRepository<StoredFileVersion, Guid> _fileVersionRepository;
+        private readonly IRepository<StoredFileVersionDownload, Guid> _fileVersionDownloadRepository;
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly TypeFinder _typeFinder;
+        private readonly IAbpSession _abpSession;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -52,7 +55,7 @@ namespace Shesha.StoredFiles
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Person, Guid> personRepository,
             TypeFinder typeFinder
-            )
+, IAbpSession abpSession, IRepository<StoredFileVersionDownload, Guid> fileVersionDownloadRepository)
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
@@ -61,6 +64,8 @@ namespace Shesha.StoredFiles
             _unitOfWorkManager = unitOfWorkManager;
             _personRepository = personRepository;
             _typeFinder = typeFinder;
+            _abpSession = abpSession;
+            _fileVersionDownloadRepository = fileVersionDownloadRepository;
         }
 
         [HttpGet, Route("Download")]
@@ -69,17 +74,31 @@ namespace Shesha.StoredFiles
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+            {
+                await _fileService.MarkDownloadedAsync(fileVersion);
                 return StatusCode(304);
-
+            }
+                
 #pragma warning disable IDISP001 // Dispose created
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
-            await _fileService.MarkDownloadedAsync(fileVersion);
+             await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
             return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
+        }
+
+        [HttpGet, Route("HasDownloaded")]
+        public async Task<ActionResult> HasDownloadedAsync(Guid storedFileId)
+        {
+            var currentLoggedInUserId = _abpSession.UserId;
+            var hasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                .Where((x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId))
+               .AnyAsync();
+            return Ok(new { hasDownloaded });
+
         }
 
         [HttpGet, Route("Base64String")]
