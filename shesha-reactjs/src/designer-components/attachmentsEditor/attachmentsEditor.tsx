@@ -1,7 +1,7 @@
 import { FolderAddOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import moment from 'moment';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
@@ -9,7 +9,7 @@ import { useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplicati
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
-  executeScript,
+  executeScriptSync,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
@@ -17,9 +17,9 @@ import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -43,6 +43,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
+  removeFieldFromPayload?: boolean;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -60,30 +61,31 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
+    const [files, setFiles] = useState<IStoredFile[]>(undefined);
+
     const enabled = !model.readOnly;
 
-    const onFileListChanged = (fileList: IStoredFile[]) => {
-
-      if (!model.onFileChanged)
-        return;
-
-      executeScript<void>(model.onFileChanged, {
-        fileList,
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState
-      });
-    };
+    useEffect(()=> {
+        if (model.onFileChanged && files !== undefined )
+        executeScriptSync(model.onFileChanged, {
+          value: files,
+          data,
+          form: getFormApi(form),
+          globalState,
+          http: httpClient,
+          message,
+          moment,
+          setGlobalState
+        });
+    },[files]);
 
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
+      <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
+          if(JSON.stringify(value) !== JSON.stringify(files)) setFiles(value);
+
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
@@ -107,7 +109,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
                 isDragger={model?.isDragger}
-                onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
                 layout={model.layout}
                 listType={model.listType}
@@ -147,7 +148,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType })),
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
+    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, propertyName: prev.propertyName || '' })),
 };
 
 export default AttachmentsEditor;
