@@ -325,6 +325,26 @@ export const getSettings = (data: any) => {
                 ],
               })
               .addSettingsInputRow({
+                id: nanoid(),
+                parentId: dataTabId,
+                hidden: {
+                  _code: 'return getSettingValue(data?.canEditInline) === "no";',
+                  _mode: 'code',
+                  _value: false
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    inputType: 'switch',
+                    propertyName: "showEditIcons",
+                    parentId: dataTabId,
+                    label: "Show Edit Icon",
+                    jsSetting: true,
+                    value: 'checked',
+                  }
+                ]
+              })
+              .addSettingsInputRow({
                 parentId: dataTabId,
                 id: nanoid(),
                 hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
