@@ -1,4 +1,4 @@
- 
+ /* eslint-disable react-hooks/rules-of-hooks */
 import { FolderOpenOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
