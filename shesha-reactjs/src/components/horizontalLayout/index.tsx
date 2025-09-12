@@ -90,6 +90,15 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
             })}
             style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
           >
+            {(hasHeading || isFixedHeading) && (
+              <div className={isFixedHeading ? 'fixed-heading-wrapper' : 'heading-wrapper'}>
+                {heading ? (
+                  <NodeOrFuncRenderer>{heading}</NodeOrFuncRenderer>
+                ) : (
+                  title && showHeading && <h2>{title}</h2>
+                )}
+              </div>
+            )}
             {children}
           </div>
         </NodeOrFuncRenderer>
