@@ -80,11 +80,11 @@ namespace Shesha.StoredFiles
                 await _fileService.MarkDownloadedAsync(fileVersion);
                 return StatusCode(304);
             }
-                
+                                
 #pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
-            await _fileService.MarkDownloadedAsync(fileVersion);
+             await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
@@ -530,8 +530,23 @@ namespace Shesha.StoredFiles
                 ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
                 : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
 
-            var list = fileVersions.Select(v => GetFileDto(v)).WhereNotNull().ToList();
-            return list;
+            var currentUserId = _abpSession.UserId;
+
+            if (currentUserId == null)
+                return fileVersions.Select(GetFileDto).WhereNotNull().ToList();
+
+            var fileIds = fileVersions.Select(v => v.File.Id).ToList();
+            var downloadedFileIds = await _fileVersionDownloadRepository.GetAll()
+                .Where(x => x.CreatorUserId == currentUserId && fileIds.Contains(x.FileVersion.File.Id))
+                .Select(x => x.FileVersion.File.Id)
+                .ToListAsync();
+
+            return fileVersions.Select(v =>
+            {
+                var dto = GetFileDto(v);
+                dto!.UserHasDownloaded = downloadedFileIds.Contains(v.File.Id);
+                return dto;
+            }).ToList();
         }
 
         #region REST
