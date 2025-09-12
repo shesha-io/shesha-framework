@@ -108,8 +108,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         {(value, onChange) => {
           const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange(args[0]);
             if (typeof onChange === 'function') onChange(...args);
+            customEvents.onChange(args[0]);
           };
           return inputProps.readOnly ? (
             <ReadOnlyDisplayFormItem

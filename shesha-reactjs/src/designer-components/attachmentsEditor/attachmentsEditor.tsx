@@ -67,7 +67,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
           const customEvents = getEventHandlers(model, allData);
           const onFileListChanged = (...args: any[]) => {
-            if (typeof onChange === 'function') onChange(args);
+            if (typeof onChange === 'function') onChange(...args);
             customEvents.onChange(args[0]);
           };
 
@@ -134,7 +134,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '' })),
+    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '' }))
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false })),
 };
 
 export default AttachmentsEditor;
