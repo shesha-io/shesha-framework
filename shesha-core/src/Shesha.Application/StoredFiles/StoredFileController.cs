@@ -83,7 +83,7 @@ namespace Shesha.StoredFiles
 #pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
-             await _fileService.MarkDownloadedAsync(fileVersion);
+            await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
