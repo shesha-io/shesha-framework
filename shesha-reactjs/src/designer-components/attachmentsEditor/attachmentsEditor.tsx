@@ -85,6 +85,12 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       <ConfigurableFormItem model={{ ...model, propertyName: !model.removeFieldFromPayload && model.propertyName ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
 
+          const customEvents = getEventHandlers(model, allData);
+          const onFileListChanged = (...args: any[]) => {
+            if (typeof onChange === 'function') onChange(...args);
+            customEvents.onChange(args[0]);
+          };
+
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
@@ -152,7 +158,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, removeFieldFromPayload: true })),
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, removeFieldFromPayload: true }))
+    .add<IAttachmentsEditorProps>(9, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' })),
 };
 
 export default AttachmentsEditor;
