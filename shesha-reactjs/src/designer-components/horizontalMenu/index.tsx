@@ -8,6 +8,7 @@ import {
   IConfigurableFormComponent,
   ISidebarMenuItem,
   IToolboxComponent,
+  migratePrevStyles,
   useFormData,
   useMainMenu,
   validateConfigurableComponentSettings,
@@ -18,10 +19,11 @@ import { ItemType } from "antd/es/menu/interface";
 import React from "react";
 import Editor from "./modal";
 import { getSettings } from "./settings";
+import { defaultStyles } from "./utils";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
-  overflow: "dropdown" | "menu" | "scroll";
+  overflow?: "dropdown" | "menu" | "scroll";
   fontSize?: string;
   gap?: string;
   height?: string;
@@ -154,30 +156,10 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       </ConfigurableComponentRenderer>
     );
   },
-  initModel: (model) => ({
-    ...model,
-    fontSize: "14",
-    gap: "12",
-    height: "6",
-    overflow: "dropdown",
-    dimensions: {
-      width: "500px",
-      ...model.dimensions,
-    },
-    width: "500px",
-    font: {
-      size: 14,
-      type: 'Arial',
-      weight: 'normal',
-      color: '#000',
-      align: 'left',
-      ...model.font,
-    },
-    menuItemColor: "#000",
-    hoverItemColor: "#000",
-  }),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+    migrator: (m) => m
+      .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default MenuListComponent;
