@@ -177,7 +177,7 @@ export const getSettings = () =>
           })
           .addCodeEditor({
             id: '48ff91b3-5fb1-4e1b-a17f-ff86bce22e0b',
-            propertyName: 'onChangeCustom',
+            propertyName: 'onFileChanged',
             label: 'On File List Changed',
             labelAlign: 'right',
             parentId: 'root',
@@ -190,63 +190,8 @@ export const getSettings = () =>
               functionName: 'onFileListChanged',
               useAsyncDeclaration: true,
             },
-            exposedVariables: [
-              {
-                name: "data",
-                description: "Selected form values",
-                type: "object"
-              },
-              {
-                name: "event",
-                description: "Event callback when user input",
-                type: "object"
-              },
-              {
-                name: "form",
-                description: "Form instance",
-                type: "FormInstance"
-              },
-              {
-                name: "formMode",
-                description: "The form mode",
-                type: "'readonly' | 'edit' | 'designer'"
-              },
-              {
-                name: "globalState",
-                description: "The global state of the application",
-                type: "object"
-              },
-              {
-                name: "http",
-                description: "axios instance used to make http requests",
-                type: "object"
-              },
-              {
-                name: "message",
-                description: "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-                type: "object"
-              },
-              {
-                name: "moment",
-                description: "The moment.js object",
-                type: "object"
-              },
-              {
-                name: "value",
-                description: "Component current value",
-                type: "number | string | null"
-              },
-              {
-                name: "setFormData",
-                description: "A function used to update the form data",
-                type: "({ values: object, mergeValues: boolean}) => void"
-              },
-              {
-                name: "setGlobalState",
-                description: "Setting the global state of the application",
-                type: "(payload: { key: string, data: any } ) => void"
-              }
-            ],
+            availableConstantsExpression: "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+
           })
           .toJson()
         ]

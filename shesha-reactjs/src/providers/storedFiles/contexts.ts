@@ -39,7 +39,6 @@ export interface IRequestFilePayload {
   ownerId?: string;
   ownerType?: string;
   ownerName?: string;
-  onChange?: (fileList: IStoredFile[]) => void;
 }
 
 export interface IUploadFilePayload extends IRequestFilePayload {}

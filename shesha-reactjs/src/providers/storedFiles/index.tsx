@@ -38,7 +38,6 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
- 
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -58,10 +57,9 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
 
 const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
 
-const hasDownloadedEndpoint: IApiEndpoint = { url: '/api/StoredFile/HasDownloaded', httpVerb: 'GET' };
-const markAsDownloadedEndpoint: IApiEndpoint = { url: '/api/StoredFile/MarkAsDownloaded', httpVerb: 'POST' };
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
+const haDownloadedEndpoint: IApiEndpoint = {url: '/api/StoredFile/HasDownloaded', httpVerb: 'GET'};
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,
@@ -71,7 +69,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   filesCategory,
   propertyName,
   baseUrl,
-
   // used for requered field validation
   onChange,
   value = []
@@ -108,8 +105,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     try {
       const response = await axios({
         baseURL: baseUrl ?? backendUrl,
-        url: `${hasDownloadedEndpoint.url}?id=${fileId}`,
-        method: 'GET',
+        url: `${haDownloadedEndpoint.url}?id=${fileId}`,
+        method: haDownloadedEndpoint.httpVerb,
         headers,
       });
       const data = response.data as IAjaxResponse<boolean>;
@@ -142,7 +139,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(initializeFileListAction(value as IStoredFile[]));
       });
     }
-  }, [value]);
+  }, []);
 
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
@@ -160,20 +157,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [ownerId, ownerType, filesCategory, propertyName]);
 
+
   useEffect(() => {
-    if (!isFetchingFileList && fileListResponse) {
-      const processFileList = async () => {
+    if (!isFetchingFileList) {
+      if (fileListResponse) {
         const { result } = fileListResponse;
         const fileList = filesReducer(result as IStoredFile[]);
-        const enrichedFileList = await enrichFilesWithDownloadStatus(fileList);
-        dispatch(fetchFileListSuccessAction(enrichedFileList));
-      };
 
-      processFileList().catch(() => {
+        dispatch(fetchFileListSuccessAction(fileList));
+      } else {
         dispatch(fetchFileListErrorAction());
-      });
+      }
     }
-  }, [isFetchingFileList, fileListResponse]);
+  }, [isFetchingFileList]);
 
   //#region Register signal r events
   useEffect(() => {
@@ -205,7 +201,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     formData.append('propertyName', '');
 
     // @ts-ignore
-    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name, linkProps: '{"download": "image"}' };
+    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
 
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
@@ -293,20 +289,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
-  const markFileAsDownloaded = async (fileId: string): Promise<void> => {
-    if (!fileId) return;
-    try {
-      await axios({
-        baseURL: baseUrl ?? backendUrl,
-        url: `${markAsDownloadedEndpoint.url}?id=${fileId}`,
-        method: 'POST',
-        headers,
-      });
-    } catch {
-      // ignore errors silently; UI will still reflect local state
-    }
-  };
-
   const downloadFile = (payload: IDownloadFilePayload) => {
     const url = `${baseUrl}/api/StoredFile/Download?${qs.stringify({
       id: payload.fileId,
@@ -317,22 +299,17 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       responseType: 'blob',
       headers,
     })
-      .then(async (response) => {
+      .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
-
-        // Track the download
-        await markFileAsDownloaded(payload.fileId);
-
-        // Update the file list to reflect the download status
-        const updatedFileList = state.fileList?.map(file =>
-          file.id === payload.fileId
-            ? { ...file, isDownloadedByCurrentUser: true }
-            : file
-        ) || [];
-
-        if (updatedFileList.length > 0) {
-          dispatch(fetchFileListSuccessAction(updatedFileList));
-        }
+          const enrichValueWithDownloadStatus = async () => {
+            const enrichedValue = await enrichFilesWithDownloadStatus(value as IStoredFile[]);
+            dispatch(initializeFileListAction(enrichedValue));
+          };
+    
+          enrichValueWithDownloadStatus().catch(() => {
+            // Fallback to original value if enrichment fails
+            dispatch(initializeFileListAction(value as IStoredFile[]));
+          });
       })
       .catch((e) => {
         console.error(e);
