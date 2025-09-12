@@ -10,7 +10,7 @@ import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
-export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface IValidationErrorsComponentProps extends Omit<IConfigurableFormComponent, 'hidden'>, IStyleType {
   className?: string;
   borderSize?: string | number;
   borderRadius?: number;
@@ -50,7 +50,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
       />
     );
   },
-  /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
+  /** validationErrors should not have any settings and depends on permission */
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   settingsFormMarkup: (data) => getSettings(data),
   migrator: (m) =>
