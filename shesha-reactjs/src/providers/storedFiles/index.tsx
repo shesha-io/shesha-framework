@@ -109,9 +109,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
-        if (typeof onChange === 'function' && value !== val) {
-        onChange(val);
-      };
+    const filesUids = val ? val?.map(file => file.uid).filter(uid => !uid?.includes('rc-upload')) : [];
+    const valueUids = value ? value.map(file => file.uid) : [];
+
+    if (JSON.stringify(filesUids) !== JSON.stringify(valueUids)) {
+      onChange?.(val);
+    }
   }, [state.fileList]);
 
   useEffect(() => {

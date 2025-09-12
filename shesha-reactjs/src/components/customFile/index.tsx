@@ -1,5 +1,5 @@
 import React, { FC, } from 'react';
-import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
+import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
