@@ -368,7 +368,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             // Column Attributes
 
             // Set ColumnName to avoid incorrect mapping
-            SetAttribute(propertyBuilder, typeof(ColumnAttribute), [property.ColumnName.NotNull()]);
+            if (!string.IsNullOrWhiteSpace(property.ColumnName))
+                SetAttribute(propertyBuilder, typeof(ColumnAttribute), [property.ColumnName]);
 
             switch (property.DataType)
             {
