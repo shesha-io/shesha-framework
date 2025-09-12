@@ -335,7 +335,7 @@ export const getSettings = (data: any) => {
                 inputs: [
                   {
                     id: nanoid(),
-                    inputType: 'switch',
+                    type: 'switch',
                     propertyName: "showEditIcons",
                     parentId: dataTabId,
                     label: "Show Edit Icon",
