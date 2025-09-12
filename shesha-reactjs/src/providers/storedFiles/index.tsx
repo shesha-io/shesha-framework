@@ -59,7 +59,7 @@ const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) =>
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
-const haDownloadedEndpoint: IApiEndpoint = {url: '/api/StoredFile/HasDownloaded', httpVerb: 'GET'};
+const haDownloadedEndpoint: IApiEndpoint = { url: '/api/StoredFile/HasDownloaded', httpVerb: 'GET' };
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,
@@ -100,46 +100,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   const { mutate: uploadFileHttp } = useMutate();
 
-  const hasDownloaded = async (fileId: string): Promise<boolean> => {
-    if (!fileId) return false;
-    try {
-      const response = await axios({
-        baseURL: baseUrl ?? backendUrl,
-        url: `${haDownloadedEndpoint.url}?id=${fileId}`,
-        method: haDownloadedEndpoint.httpVerb,
-        headers,
-      });
-      const data = response.data as IAjaxResponse<boolean>;
-      return Boolean(data?.result);
-    } catch {
-      return false;
-    }
-  };
-
-  const enrichFilesWithDownloadStatus = async (files: IStoredFile[]): Promise<IStoredFile[]> => {
-    const enriched = await Promise.all(
-      (files || []).map(async (file) => ({
-        ...file,
-        isDownloadedByCurrentUser: await hasDownloaded(file.id),
-      }))
-    );
-    return enriched;
-  };
-
   // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
     if (value && value.length > 0 && (!state.fileList || state.fileList.length === 0)) {
-      const enrichValueWithDownloadStatus = async () => {
-        const enrichedValue = await enrichFilesWithDownloadStatus(value as IStoredFile[]);
-        dispatch(initializeFileListAction(enrichedValue));
-      };
-
-      enrichValueWithDownloadStatus().catch(() => {
-        // Fallback to original value if enrichment fails
-        dispatch(initializeFileListAction(value as IStoredFile[]));
-      });
+      dispatch(initializeFileListAction(value as IStoredFile[]));
     }
-  }, []);
+  }, [value]);
 
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
@@ -301,15 +267,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     })
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
-          const enrichValueWithDownloadStatus = async () => {
-            const enrichedValue = await enrichFilesWithDownloadStatus(value as IStoredFile[]);
-            dispatch(initializeFileListAction(enrichedValue));
-          };
-    
-          enrichValueWithDownloadStatus().catch(() => {
-            // Fallback to original value if enrichment fails
-            dispatch(initializeFileListAction(value as IStoredFile[]));
-          });
       })
       .catch((e) => {
         console.error(e);

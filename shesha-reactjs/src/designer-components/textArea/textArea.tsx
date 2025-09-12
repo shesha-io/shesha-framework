@@ -104,8 +104,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
 
           const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            if (typeof onChange === 'function') onChange(...args);
             customEvents.onChange(args[0]);
+            if (typeof onChange === 'function') onChange(...args);
           };
 
           return showAsJson ? (
