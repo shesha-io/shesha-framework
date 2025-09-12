@@ -555,12 +555,28 @@ namespace Shesha.StoredFiles
 
             var id = owner.GetId();
             var type = owner.GetType().StripCastleProxyType().FullName;
+
             var fileVersions = input.FilesCategory.IsNullOrEmpty()
                 ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
                 : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
 
-            var list = fileVersions.Select(v => GetFileDto(v)).ToList();
-            return list;
+            var currentUserId = _abpSession.UserId;
+
+            if (currentUserId == null)
+                return fileVersions.Select(GetFileDto).ToList();
+
+            var fileIds = fileVersions.Select(v => v.File.Id).ToList();
+            var downloadedFileIds = await _fileVersionDownloadRepository.GetAll()
+                .Where(x => x.CreatorUserId == currentUserId && fileIds.Contains(x.FileVersion.File.Id))
+                .Select(x => x.FileVersion.File.Id)
+                .ToListAsync();
+
+            return fileVersions.Select(v =>
+            {
+                var dto = GetFileDto(v);
+                dto.UserHasDownloaded = downloadedFileIds.Contains(v.File.Id);
+                return dto;
+            }).ToList();
         }
 
         #region REST

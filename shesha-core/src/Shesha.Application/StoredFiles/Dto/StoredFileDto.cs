@@ -12,5 +12,6 @@ namespace Shesha.StoredFiles.Dto
         public Int64 Size { get; set; }
         public string Type { get; set; }
         public bool Temporary { get; set; }
+        public bool UserHasDownloaded {  get; set; }
     }
 }
