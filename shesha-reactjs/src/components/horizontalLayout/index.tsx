@@ -45,6 +45,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
     fixHeading = false,
     showHeading = true,
     noPadding = false,
+    footer
   } = props;
 
   const { theme: themeFromStorage } = useTheme();
@@ -105,13 +106,17 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
       </Content>
 
       <Footer className={styles.footer} style={footerStyle}>
-        <ConfigurableForm
-          mode={'readonly'}
-          formId={FOOTER_CONFIGURATION}
-          showFormInfoOverlay={false}
-          showDataLoadingIndicator={false}
-          showMarkupLoadingIndicator={false}
-        />
+        {footer ? (
+          <NodeOrFuncRenderer>{footer}</NodeOrFuncRenderer>
+        ) : (
+          <ConfigurableForm
+            mode={'readonly'}
+            formId={FOOTER_CONFIGURATION}
+            showFormInfoOverlay={false}
+            showDataLoadingIndicator={false}
+            showMarkupLoadingIndicator={false}
+          />
+        )}
       </Footer>
     </Layout>
   );
