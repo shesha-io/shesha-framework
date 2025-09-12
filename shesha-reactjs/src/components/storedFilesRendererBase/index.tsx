@@ -39,7 +39,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
-  onFileListChanged?: () => void;
+  onFileListChanged?: (list: IStoredFile[]) => void;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
   isDragger?: boolean;

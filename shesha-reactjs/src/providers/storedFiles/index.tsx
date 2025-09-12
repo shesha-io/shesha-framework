@@ -150,7 +150,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const valueUids = value ? value.map(file => file.uid) : [];
 
     if (JSON.stringify(filesUids) !== JSON.stringify(valueUids)) {
-      console.log("useEffect:", JSON.stringify(val), JSON.stringify(value));
       onChange?.(val);
     }
   }, [state.fileList]);
