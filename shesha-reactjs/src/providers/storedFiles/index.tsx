@@ -172,8 +172,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       processFileList().catch(() => {
         dispatch(fetchFileListErrorAction());
       });
-    } else if (!isFetchingFileList && !fileListResponse) {
-      dispatch(fetchFileListErrorAction());
     }
   }, [isFetchingFileList, fileListResponse]);
 
