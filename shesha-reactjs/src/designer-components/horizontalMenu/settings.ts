@@ -56,25 +56,6 @@ export const getSettings = (data: any) => {
                   },
                 ],
               })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'dropdown',
-                    id: nanoid(),
-                    propertyName: 'overflow',
-                    label: 'Overflow',
-                    size: 'small',
-                    jsSetting: true,
-                    dropdownOptions: [
-                      { label: 'Dropdown', value: 'dropdown' },
-                      { label: 'Menu', value: 'menu' },
-                      { label: 'Scroll', value: 'scroll' },
-                    ],
-                  },
-                ],
-              })
               .toJson()
             ]
           },
@@ -112,8 +93,28 @@ export const getSettings = (data: any) => {
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: ""
                 },
+
                 components: [
                   ...new DesignerToolbarSettings()
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: commonTabId,
+                      inputs: [
+                        {
+                          type: 'dropdown',
+                          id: nanoid(),
+                          propertyName: 'overflow',
+                          label: 'Overflow',
+                          size: 'small',
+                          jsSetting: true,
+                          dropdownOptions: [
+                            { label: 'Dropdown', value: 'dropdown' },
+                            { label: 'Menu', value: 'menu' },
+                            { label: 'Scroll', value: 'scroll' },
+                          ],
+                        },
+                      ],
+                    })
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'pnlFontStyle',
