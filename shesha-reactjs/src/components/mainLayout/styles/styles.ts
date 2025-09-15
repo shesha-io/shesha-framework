@@ -21,7 +21,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     &.collapsed {
       margin-left: ${shaSiderCollapsedWidth};
-    }  
+    }
   `;
 
   const flexCenterAligned = css`
@@ -38,13 +38,13 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const layout = cx(
     'site-layout',
     css`
-        min-height: 100vh;
+      min-height: 100vh;
     `
   );
   const headerPart = css`
-        display: flex;
-        align-items: center;
-    `;
+    display: flex;
+    align-items: center;
+  `;
   const antLayoutHeader = cx(css`
     border-bottom: ${shaBorder};
     position: fixed;
@@ -63,19 +63,19 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   `);
 
   const layoutHeaderLeft = css`
-        .search {
-          display: flex;
-          align-items: center;
-          margin-left: ${sheshaStyles.paddingLG}px;
-        }
+    .search {
+      display: flex;
+      align-items: center;
+      margin-left: ${sheshaStyles.paddingLG}px;
+    }
 
-        .logo,
-        .search {
-            ${responsive.tablet} {
-            display: none;
-          }
-        }
-    `;
+    .logo,
+    .search {
+      ${responsive.tablet} {
+        display: none;
+      }
+    }
+  `;
 
   const customComponents = cx(css`
     margin-right: ${sheshaStyles.paddingLG}px;
@@ -84,7 +84,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
   const layoutHeaderRight = css`
     ${headerPart}
-  
+
     .actions {
       margin-right: ${sheshaStyles.paddingLG}px;
       color: ${token.colorPrimary};
@@ -101,7 +101,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
       .hidden-sm-scr {
         // @media @phone-lg-size-query
-          ${responsive.mobile} {
+        ${responsive.mobile} {
           display: none;
         }
       }
@@ -148,17 +148,16 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     z-index: 4;
     flex: 0 0 ${shaSiderExpandedWidth} !important;
-    max-width: ${shaSiderExpandedWidth}  !important;
-    min-width: ${shaSiderExpandedWidth}  !important;
-    width: ${shaSiderExpandedWidth}  !important;
+    max-width: ${shaSiderExpandedWidth} !important;
+    min-width: ${shaSiderExpandedWidth} !important;
+    width: ${shaSiderExpandedWidth} !important;
 
     ${sheshaStyles.thinScrollbars}
 
     .${prefixCls}-layout-sider-children {
-      width: ${shaSiderExpandedWidth}  !important;
-z
-      .logo {
-        margin-top: ${layoutTriggerHeight}  !important; // It should use a config
+      width: ${shaSiderExpandedWidth} !important;
+      z .logo {
+        margin-top: ${layoutTriggerHeight} !important; // It should use a config
       }
 
       .${prefixCls}-menu-inline-collapsed {
@@ -175,7 +174,7 @@ z
     &.${prefixCls}-layout-sider-collapsed {
       flex: 0 0 ${shaSiderCollapsedWidth} !important;
       max-width: ${shaSiderCollapsedWidth} !important;
-      min-width: ${shaSiderCollapsedWidth}  !important;
+      min-width: ${shaSiderCollapsedWidth} !important;
       width: ${shaSiderCollapsedWidth} !important;
 
       .${prefixCls}-layout-sider-children {
@@ -186,25 +185,29 @@ z
         width: ${shaSiderCollapsedWidth} !important;
       }
     }
+
+    .ant-layout-sider-trigger {
+      height: ${layoutTriggerHeight};
+    }
   `;
 
   const shaLayoutHeading = cx(
     '',
     css`
-    &.has-heading {
-      ${flexCenterAligned}
+      &.has-heading {
+        ${flexCenterAligned}
 
-      min-height: ${shaPageHeadingHeight};
-      max-height: ${shaPageHeadingHeight};
-      border-bottom: 0.5px solid lightgrey;
-      background: white;
+        min-height: ${shaPageHeadingHeight};
+        max-height: ${shaPageHeadingHeight};
+        border-bottom: 0.5px solid lightgrey;
+        background: white;
 
-      &.fixed-heading {
-        position: sticky;
-        z-index: 1;
-        top: ${sheshaStyles.layoutHeaderHeight};
+        &.fixed-heading {
+          position: sticky;
+          z-index: 1;
+          top: ${sheshaStyles.layoutHeaderHeight};
+        }
       }
-    }
     `
   );
 
@@ -238,7 +241,7 @@ z
 
     &.${shaSiteLayoutBackgroundNoPadding} {
       padding: unset;
-    }  
+    }
   `;
 
   return {

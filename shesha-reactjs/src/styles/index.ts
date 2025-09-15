@@ -5,7 +5,7 @@ export const sheshaStyles = {
     paddingMD: 8,
     paddingLG: 12,
 
-    layoutHeaderHeight: "55px", // @layout-header-height
+    layoutHeaderHeight: "51.5px", // @layout-header-height
     pageHeadingHeight: "45px", // @sha-page-heading-height
     pageToolbarHeight: "33px", // @sha-page-toolbar-height
     border: "1px solid #d3d3d3", // @sha-border
