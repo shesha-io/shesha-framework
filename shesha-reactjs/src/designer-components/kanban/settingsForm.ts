@@ -128,11 +128,6 @@ export const getSettings = (data: IKanbanProps) => {
                       propertyName: 'collapsible',
                       label: 'Collapsible',
                       jsSetting: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.kanbanReadonly);',
-                        _mode: 'code',
-                        _value: false,
-                      } as any,
                     },
                     {
                       type: 'switch',
