@@ -145,10 +145,9 @@ namespace Shesha.ConfigurationStudio
             return dto;
         }
 
-        private async Task GenericUpdateItemAsync<TItem, TRevision, TDynamicDto>(TItem entity, TDynamicDto input)
+        private async Task GenericUpdateItemAsync<TItem, TDynamicDto>(TItem entity, TDynamicDto input)
             where TItem: ConfigurationItem, IEntity<Guid>
             where TDynamicDto : class, IDynamicDto<TItem, Guid>
-            where TRevision: ConfigurationItemRevision, new()
         {
             var itemResult = await MapDynamicDtoToEntityAsync<TDynamicDto, TItem, Guid>(input, entity);
             itemResult.ValidationResults.ThrowValidationExceptionIfAny(L);
