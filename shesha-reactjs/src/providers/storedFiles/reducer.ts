@@ -122,6 +122,16 @@ export function storedFilesReducer(
       };
     }
 
+    case StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess: {
+      return {
+        ...state,
+        fileList: state.fileList?.map(file => ({
+          ...file,
+          isDownloadedByCurrentUser: true
+        })) || [],
+      };
+    }
+
     default: {
       return state;
     }
