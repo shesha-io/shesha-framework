@@ -7,7 +7,7 @@ export function storedFilesReducer(
   action: ReduxActions.Action<IStoredFilesStateContext>
 ): IStoredFilesStateContext {
   //#region Register flags reducer
-  const state = flagsReducer(incomingState, action) as IStoredFilesStateContext;
+  const state = flagsReducer<IStoredFilesStateContext>(incomingState, action);
 
   const { type, payload } = action;
   //#endregion
@@ -26,6 +26,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.DownloadZipRequest:
     case StoredFilesActionEnums.DownloadZipSuccess:
     case StoredFilesActionEnums.DownloadZipError:
+    case StoredFilesActionEnums.InitializeFileList:
       /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
@@ -97,14 +98,14 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.DeleteFileError: {
-      if (state.fileList?.find(x => x.uid === payload.fileIdToDelete)?.status === 'error')
+      if (state.fileList?.find((x) => x.uid === payload.fileIdToDelete)?.status === 'error')
         return {
           ...state,
           fileList: state.fileList.filter(
             ({ id, uid }) => id !== payload.fileIdToDelete && uid !== payload.fileIdToDelete
           ),
         };
-      
+
       return state;
     }
 

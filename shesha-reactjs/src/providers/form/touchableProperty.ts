@@ -36,7 +36,7 @@ export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, nam
         },
         ownKeys(target) {
           const data = target.accessor._data;
-          return data ? Object.keys(data) : [];
+          return data ? Reflect.ownKeys(data) : [];
         },
         getOwnPropertyDescriptor(target, prop) {
           const propertyName = prop.toString();
@@ -44,7 +44,7 @@ export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, nam
           if (data && propertyName in data)
               return { enumerable: true, configurable: true, writable: true };
           return undefined;
-        }
+        },
     });
 };
 
@@ -53,7 +53,7 @@ export class TouchableProperty implements IPropertyTouched {
 
     getData = () => this.accessor.getData();
 
-    touched (propName: string, fullPropName: string, value: any) {
+    touched(propName: string, fullPropName: string, value: any) {
         this.accessor.touched(propName, fullPropName, value);
     }
 
@@ -67,7 +67,7 @@ export class TouchableArrayProperty extends Array implements IPropertyTouched {
 
     getData = () => this.accessor.getData();
 
-    touched (propName: string, fullPropName: string, value: any) {
+    touched(propName: string, fullPropName: string, value: any) {
         this.accessor.touched(propName, fullPropName, value);
     }
 
@@ -79,10 +79,13 @@ export class TouchableArrayProperty extends Array implements IPropertyTouched {
 
 class PropertyTouchAccessor implements IPropertyTouched {
     readonly _accessor: string;
+
     readonly _children: Map<string, IPropertyTouched>;
+
     readonly _data: any;
 
     protected _touchedProps: Array<IPropertyTouch>;
+
     readonly _parent: IPropertyTouched;
 
     constructor(data: any, parent: IPropertyTouched, name: string) {
@@ -101,11 +104,11 @@ class PropertyTouchAccessor implements IPropertyTouched {
                 next() {
                     const result = {
                         value: data[index],
-                        done: index >= data.length
+                        done: index >= data.length,
                     };
                     index++;
                     return result;
-                }
+                },
             };
           };
         }
@@ -127,13 +130,13 @@ class PropertyTouchAccessor implements IPropertyTouched {
     };
 
     addTouchedProp = (propName: string, value?: any) => {
-        if (!this._touchedProps.find(p => p.propertyName === propName))
-            this._touchedProps.push({propertyName: propName, value });
+        if (!this._touchedProps.find((p) => p.propertyName === propName))
+            this._touchedProps.push({ propertyName: propName, value });
     };
 
     touched = (propName: string, fullPropName: string, value: any) => {
         this.addTouchedProp(propName);
-        if (this._parent && this._parent.touched) 
+        if (this._parent && this._parent.touched)
             this._parent.touched(this._accessor, this._accessor + '.' + fullPropName, value);
     };
 
@@ -148,7 +151,7 @@ class PropertyTouchAccessor implements IPropertyTouched {
 
         if (unproxiedValue !== null && typeof unproxiedValue === 'object')
             return CreateTouchableProperty(child, this, accessor);
-          
+
         return child;
     };
 }

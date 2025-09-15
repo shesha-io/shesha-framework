@@ -3,7 +3,6 @@ using Abp.Domain.Uow;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -87,12 +86,22 @@ namespace Shesha.Services.ConfigurationItems
         }
     }
 
-    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase 
-        where TItem : ConfigurationItemBase
+    public abstract class ConfigurationItemImportBase<TItem, TRevision, TDistributedItem> : ConfigurationItemImportBase
+        where TItem : ConfigurationItem<TRevision>, new()
+        where TRevision : ConfigurationItemRevision, new()
         where TDistributedItem : DistributedConfigurableItemBase
     {
-        protected ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo) : base(_moduleRepo, _frontendAppRepo)
+        protected IRepository<TItem, Guid> Repository { get; private set; }
+        protected IRepository<TRevision, Guid> RevisionRepository { get; private set; }
+
+        protected ConfigurationItemImportBase(
+            IRepository<TItem, Guid> repository,
+            IRepository<TRevision, Guid> revisionRepository,
+            IRepository<Module, Guid> moduleRepo, 
+            IRepository<FrontEndApp, Guid> frontendAppRepo) : base(moduleRepo, frontendAppRepo)
         {
+            Repository = repository;
+            RevisionRepository = revisionRepository;
         }
 
         public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
@@ -111,5 +120,93 @@ namespace Shesha.Services.ConfigurationItems
                 return result;
             }
         }
+
+        public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+
+            if (!(item is TDistributedItem itemConfig))
+                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {typeof(TDistributedItem).FullName}. Actual type is {item.GetType().FullName}");
+
+            return await ImportAsync(itemConfig, context);
+        }
+
+        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context) 
+        {
+            // check if form exists
+            var item = await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
+
+            if (await SkipImportAsync(item, distributedItem))
+                return item;
+
+            if (item == null)
+            {
+                item = new TItem
+                {
+                    Module = await GetModuleAsync(distributedItem.ModuleName, context),
+                    Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
+                    Name = distributedItem.Name,
+                };
+                item.Normalize();
+                await Repository.InsertAsync(item);
+            }
+            var revision = item.MakeNewRevision();
+
+            await MapStandardPropsToItemAsync(item, revision, distributedItem);
+            await MapCustomPropsToItemAsync(item, revision, distributedItem);
+
+            revision.CreatedByImport = context.ImportResult;
+
+            await RevisionRepository.InsertAsync(revision);
+
+            item.LatestImportedRevisionId = revision.Id;
+            await Repository.UpdateAsync(item);
+
+            await AfterImportAsync(item, revision, distributedItem, context);
+
+            return item;
+        }
+
+        protected virtual Task AfterImportAsync(TItem item, 
+            TRevision revision,
+            TDistributedItem distributedItem,
+            IConfigurationItemsImportContext context
+        )
+        {
+            return Task.CompletedTask;
+        }
+
+        protected async Task<bool> SkipImportAsync(TItem? item, TDistributedItem distributedItem)
+        {
+            var revision = item?.LatestRevision;
+            if (item == null || revision == null)
+                return false;
+
+            var baseEquals = (item.Module == null ? string.IsNullOrWhiteSpace(distributedItem.ModuleName) : item.Module.Name == distributedItem.ModuleName) &&
+                item.Name == distributedItem.Name &&
+                item.Suppress == distributedItem.Suppress &&
+
+                revision.Label == distributedItem.Label &&
+                revision.Description == distributedItem.Description;
+            if (!baseEquals)
+                return false;
+
+            return await CustomPropsAreEqualAsync(item, revision, distributedItem);
+        }
+
+        protected abstract Task<bool> CustomPropsAreEqualAsync(TItem item, TRevision revision, TDistributedItem distributedItem);
+
+        protected Task MapStandardPropsToItemAsync(TItem item, TRevision revision, TDistributedItem distributedItem) 
+        {
+            item.Suppress = distributedItem.Suppress;
+
+            revision.Label = distributedItem.Label;
+            revision.Description = distributedItem.Description;
+
+            return Task.CompletedTask;
+        }
+
+        protected abstract Task MapCustomPropsToItemAsync(TItem item, TRevision revision, TDistributedItem distributedItem);
     }
 }

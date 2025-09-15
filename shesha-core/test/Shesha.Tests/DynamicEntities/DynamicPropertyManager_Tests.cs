@@ -62,7 +62,7 @@ namespace Shesha.Tests.DynamicEntities
                     {
                         new EntityPropertyDto
                         {
-                            Name = "UnitTestDynamicObject", DataType = DataTypes.Object, Source = MetadataSourceType.UserDefined,
+                            Name = "UnitTestDynamicObject", DataType = DataTypes.Object, DataFormat = ObjectFormats.Object, Source = MetadataSourceType.UserDefined,
                             Properties = new List<EntityPropertyDto>()
                             {
                                 new EntityPropertyDto {Name = "UnitTestObjectProperty1", DataType = DataTypes.String, Source = MetadataSourceType.UserDefined},
@@ -121,12 +121,13 @@ namespace Shesha.Tests.DynamicEntities
                 // Create temporary Entity Properties configs
                 var entityConfigRepo = Resolve<IRepository<EntityConfig, Guid>>();
                 var entityPropRepo = Resolve<IRepository<EntityProperty, Guid>>();
-                var config = entityConfigRepo.GetAll().First(x => x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
+                var config = entityConfigRepo.GetAll().First(x => x.LatestRevision.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
+                var revision = config.LatestRevision;
                 foreach (var prop in props)
                 {
                     var propConf = new EntityProperty()
                     {
-                        EntityConfig = config,
+                        EntityConfigRevision = revision,
                         Name = prop.Key.Name,
                         DataType = prop.Key.DataType,
                         Source = MetadataSourceType.UserDefined
@@ -137,7 +138,7 @@ namespace Shesha.Tests.DynamicEntities
                         var childPropConf = new EntityProperty()
                         {
                             ParentProperty = propConf,
-                            EntityConfig = config,
+                            EntityConfigRevision = revision,
                             Name = childProp.Name,
                             DataType = childProp.DataType,
                             Source = MetadataSourceType.UserDefined

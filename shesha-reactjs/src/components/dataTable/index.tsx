@@ -218,7 +218,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const httpClient = useHttpClient();
 
   const toolboxComponents = useFormDesignerComponents();
-  const shaForm = useShaFormInstance();
+  const shaForm = useShaFormInstance(false);
 
   const onNewRowInitializeExecuter = useMemo<Function>(() => {
     return props.onNewRowInitialize

@@ -102,13 +102,13 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   allowClear: true,
                   propertyName: 'entityType',
                   label: 'Entity Type',
-                  description: 'The entity type you want to use for the chart.',
+                  tooltip: 'The entity type you want to reference.',
                   labelAlign: 'right',
                   parentId: dataTabId,
                   hidden: false,
                   dataSourceType: 'url',
                   validate: { required: true },
-                  dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                  dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                   settingsValidationErrors: [],
                   useRawValues: true,
                   width: '100%',
@@ -572,7 +572,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           id: nanoid(),
                           propertyName: 'quickviewWidth',
                           label: 'Quickview Width',
-                          description: 'You can use any unit (%, px, em, etc). px by default if without unit.',
+                          tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit.',
                           parentId: dataTabId,
                           inputType: 'textField',
                           jsSetting: true,
@@ -1126,7 +1126,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                 propertyName: 'style',
                                 parentId: styleRouterId,
                                 label: 'Style',
-                                description:
+                                tooltip:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
                               .toJson(),

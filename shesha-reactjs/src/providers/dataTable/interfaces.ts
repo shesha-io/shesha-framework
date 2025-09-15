@@ -3,24 +3,24 @@ import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConf
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
 import { FormFullName, IDictionary, IPropertySetting } from '@/interfaces';
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
 export type IndexColumnFilterOption =
-  | 'contains'
-  | 'startsWith'
-  | 'endsWith'
-  | 'equals'
-  | 'lessThan'
-  | 'greaterThan'
-  | 'between'
-  | 'before'
-  | 'after';
+  | 'contains' |
+  'startsWith' |
+  'endsWith' |
+  'equals' |
+  'lessThan' |
+  'greaterThan' |
+  'between' |
+  'before' |
+  'after';
 
-export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations' | 'form';
+export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations' | 'form' | 'renderer';
 
-export type SortDirection = 0 /*asc*/ | 1 /*desc*/;
+export type SortDirection = 0 /* asc*/ | 1;
 export type ColumnSorting = 'asc' | 'desc';
 
 export type DataFetchingMode = 'paging' | 'fetchAll';
@@ -103,13 +103,29 @@ export const isDataColumn = (column: ITableColumn): column is ITableDataColumn =
   return column && column.columnType === 'data';
 };
 
+export const isActionColumn = (column: ITableColumn): column is ITableActionColumn => {
+  return column && column.columnType === 'action';
+};
+
+export const isCrudOperationsColumn = (column: ITableColumn): column is ITableCrudOperationsColumn => {
+  return column && column.columnType === 'crud-operations';
+};
+
 export const isFormColumn = (column: ITableColumn): column is ITableFormColumn => {
   return column && column.columnType === 'form';
 };
 
+export const isRendererColumn = (column: ITableColumn): column is ITableRendererColumn => {
+  return column && column.columnType === 'renderer';
+};
+
 export interface ITableActionColumn extends ITableColumn, IActionColumnProps { }
 
-export interface ITableCrudOperationsColumn extends ITableColumn {}
+export interface ITableCrudOperationsColumn extends ITableColumn { }
+
+export interface ITableRendererColumn extends ITableColumn {
+  renderCell: (row: object) => ReactNode | string;
+}
 
 export interface ICustomFilterOptions {
   readonly id: string;
@@ -231,7 +247,7 @@ export interface IPublicDataTableActions {
   exportToExcel?: () => void;
 }
 
-export interface IDataTableInstance extends IPublicDataTableActions {}
+export interface IDataTableInstance extends IPublicDataTableActions { }
 
 export type ListSortDirection = 0 | 1;
 

@@ -3,14 +3,16 @@ using Abp.Domain.Repositories;
 using Abp.Timing;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
+using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -26,12 +28,12 @@ namespace Shesha.ConfigurationItems.Distribution
     {
         public const string NoModuleFolder = "[no-module]";
 
-        private readonly IRepository<ConfigurationItemBase, Guid> _itemsRepository;
+        private readonly IRepository<ConfigurationItem, Guid> _itemsRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
         public IIocManager IocManager { get; set; } = default!;
 
-        public ConfigurationPackageManager(IRepository<ConfigurationItemBase, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
+        public ConfigurationPackageManager(IRepository<ConfigurationItem, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
         {
             _itemsRepository = itemsRepository;
             _storedFileService = storedFileService;
@@ -49,7 +51,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                     using (var entryStream = entry.Open())
                     {
-                        await item.Exporter.WriteToJsonAsync(item.ItemData, entryStream);
+                        await item.Exporter.WriteItemToJsonAsync(item.ItemData, entryStream);
                     }
                 }
             }
@@ -104,7 +106,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return Task.FromResult(pack);
         }
 
-        private async Task ProcessItemExportAsync(ConfigurationItemBase item, ConfigurationItemsExportResult exportResult, PreparePackageContext context)
+        private async Task ProcessItemExportAsync(ConfigurationItem item, ConfigurationItemsExportResult exportResult, PreparePackageContext context)
         {
             var path = GetItemRelativePath(item);
             if (exportResult.Items.Any(i => i.RelativePath == path))
@@ -113,6 +115,10 @@ namespace Shesha.ConfigurationItems.Distribution
             var exporter = context.GetExporter(item);
             if (exporter == null)
                 throw new ExporterNotFoundException(item.ItemType);
+
+            var canExport = await exporter.CanExportItemAsync(item);
+            if (!canExport)
+                return;
 
             var dto = await exporter.ExportItemAsync(item);
 
@@ -133,7 +139,7 @@ namespace Shesha.ConfigurationItems.Distribution
                     var dependencies = await depsProvider.GetReferencedItemsAsync(item);
                     foreach (var dependency in dependencies)
                     {
-                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItemBase>();                        
+                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItem>();                        
 
                         var dependencyItem = await query.GetItemByIdAsync(dependency, context.VersionSelectionMode);
 
@@ -152,7 +158,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItemBase item) 
+        private List<IDependenciesProvider> GetDependenciesProviders(ConfigurationItem item) 
         {
             var requestedType = item.GetType().StripCastleProxyType();
 
@@ -180,7 +186,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return null;
         }
 
-        private string GetItemRelativePath(ConfigurationItemBase item)
+        private string GetItemRelativePath(ConfigurationItem item)
         {
             var moduleFolder = item.Module != null
                 ? item.Module.Name
@@ -307,5 +313,89 @@ namespace Shesha.ConfigurationItems.Distribution
             await _importResultRepository.InsertAsync(result);
             return result;
         }
+
+        public async Task<AnalyzePackageResponse> AnalyzePackageAsync(Stream stream, ReadPackageContext context)
+        {
+            using var package = await ReadPackageAsync(stream, context);
+
+            var result = new AnalyzePackageResponse();
+
+            foreach (var item in package.Items)
+            {
+                if (item.Importer == null)
+                    continue;
+
+                using (var jsonStream = item.StreamGetter())
+                {
+                    var srcItemDto = await item.Importer.ReadFromJsonAsync(jsonStream);
+
+                    var dbItem = await _itemsRepository.GetByByFullName(srcItemDto.ModuleName, srcItemDto.Name)
+                        .FilterByApplication(item.ApplicationKey)
+                        .FirstOrDefaultAsync();
+
+                    var isExposed = srcItemDto.BaseModules.Any();
+                    var baseModule = isExposed
+                        ? srcItemDto.BaseModules.FirstOrDefault()
+                        : srcItemDto.ModuleName;
+                    var overrideModule = isExposed
+                        ? srcItemDto.ModuleName
+                        : null;
+
+                    var status = await GetItemStatusAsync(srcItemDto, dbItem, out var description);
+                    var itemDto = new AnalyzePackageResponse.PackageItemDto
+                    {
+                        Id = srcItemDto.Id,
+                        Name = srcItemDto.Name,
+                        Label = srcItemDto.Label,
+                        Description = srcItemDto.Description,
+                        //FrontEndApplication = srcItemDto.FrontEndApplication,
+                        Type = srcItemDto.ItemType,
+
+                        DateUpdated = srcItemDto.DateUpdated,
+                        BaseModule = baseModule.NotNull(),
+                        OverrideModule = overrideModule,
+
+                        Status = status,
+                        StatusDescription = description,
+                    };
+
+                    result.Items.Add(itemDto);
+                }
+            }
+
+            return result;
+        }
+
+        
+        private Task<AnalyzePackageResponse.PackageItemStatus> GetItemStatusAsync(DistributedConfigurableItemBase distributedItem, ConfigurationItem? dbItem, out string? description) 
+        {
+            if (dbItem == null)
+            {
+                description = null;
+                return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.New);
+            }
+            else {
+                if (dbItem is IDistributedConfigurationItem itemWithRevision)
+                {
+                    var revision = itemWithRevision.GetLatestRevision();
+
+                    if (revision != null && !string.IsNullOrWhiteSpace(distributedItem.ConfigHash) && revision.ConfigHash == distributedItem.ConfigHash)
+                    {
+                        description = null;
+                        return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Unchanged);
+                    }
+                    else
+                    {
+                        // TODO: check import errors
+                        description = null;
+                        return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Updated);
+                    }
+                }
+                else {
+                    description = "Unsupported item type";
+                    return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Error);
+                }
+            }                
+        }        
     }
 }

@@ -6,7 +6,7 @@ import {
 
 const reducer = handleActions<IFormStateInternalContext, any>(
   {
-    
+
   },
 
   FORM_CONTEXT_INITIAL_STATE

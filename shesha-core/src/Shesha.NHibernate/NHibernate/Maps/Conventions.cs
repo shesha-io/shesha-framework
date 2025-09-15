@@ -213,14 +213,14 @@ namespace Shesha.NHibernate.Maps
                         // add join with provided table name, all properties will be added using current conventions and placed to the corresponding group using SplitGroupId = TableName
                         subclassMapper.Join(joinPropAttribute.TableName, j =>
                         {
-                            j.Table(joinPropAttribute.TableName);
+                            j. Table(joinPropAttribute.TableName);
                             if (!string.IsNullOrWhiteSpace(joinPropAttribute.Schema))
                                 j.Schema(joinPropAttribute.Schema);
 
                             j.Fetch(FetchKind.Join);
 
-                            var idProp = type.GetProperty("Id");
-                            var idColumn = idProp.GetAttribute<ColumnAttribute>()?.Name ?? "Id";
+                            var idProp = type.GetRequiredProperty("Id");
+                            var idColumn = MappingHelper.GetColumnName(idProp);
 
                             j.Key(k =>
                             {
@@ -262,15 +262,19 @@ namespace Shesha.NHibernate.Maps
                 if (lazyAttribute != null)
                     propertyCustomizer.Lazy(true);
 
-                var columnName = MappingHelper.GetColumnName(member.LocalMember);
+                var columnName = member.LocalMember.GetCustomAttribute<ColumnAttribute>()?.Name ?? MappingHelper.GetColumnName(member.LocalMember);
 
                 if (member.LocalMember.DeclaringType == typeof(GenericEntityReference) ||
                     member.LocalMember.GetMemberType() == typeof(GenericEntityReference))
                 {
                     var attr = member.LocalMember.GetCustomAttribute<EntityReferenceAttribute>();
-                    var idn = attr?.IdColumnName ?? $"{member.LocalMember.Name}Id";
-                    var cnn = attr?.ClassNameColumnName ?? $"{member.LocalMember.Name}ClassName";
-                    var dnn = attr?.DisplayNameColumnName ?? $"{member.LocalMember.Name}DisplayName";
+
+                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType.NotNull());
+
+                    var idn = attr?.IdColumnName ?? MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, "Id");
+                    var cnn = attr?.ClassNameColumnName ?? MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, "ClassName");
+                    var dnn = attr?.DisplayNameColumnName ?? MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, "DisplayName");
+
                     if (attr?.StoreDisplayName ?? false)
                     {
                         propertyCustomizer.Columns(
@@ -370,8 +374,6 @@ namespace Shesha.NHibernate.Maps
                 var isId = mi.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase);
                 return isId;
             });
-
-
 
             mapper.BeforeMapClass += (modelInspector, type, classCustomizer) =>
             {
@@ -492,29 +494,40 @@ namespace Shesha.NHibernate.Maps
             };
 
             mapper.BeforeMapManyToOne += (modelInspector, propertyPath, map) =>
-           {
-               string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType.NotNull());
+            {
+                string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType.NotNull());
 
-               var lazyAttribute = propertyPath.LocalMember.GetAttributeOrNull<LazyLoadAttribute>(true);
-               var lazyRelation = lazyAttribute != null
+                var lazyAttribute = propertyPath.LocalMember.GetAttributeOrNull<LazyLoadAttribute>(true);
+                var lazyRelation = lazyAttribute != null
                     ? lazyAttribute is NhLazyLoadAttribute nhLazy
                         ? nhLazy.GetLazyRelation()
                         : LazyRelation.NoProxy
                     : _defaultLazyRelation;
-               if (lazyRelation != null)
-                   map.Lazy(lazyRelation);
+                if (lazyRelation != null)
+                    map.Lazy(lazyRelation);
 
-               //map.NotFound(NotFoundMode.Ignore); disabled due to performance issues, this option breaks lazy loading
+                //map.NotFound(NotFoundMode.Ignore); disabled due to performance issues, this option breaks lazy loading
 
-               var foreignKeyColumn = MappingHelper.GetForeignKeyColumn(propertyPath.LocalMember);
-               map.Column(foreignKeyColumn);
+                var foreignKeyColumn = propertyPath.LocalMember.GetCustomAttribute<ColumnAttribute>()?.Name 
+                    ?? MappingHelper.GetForeignKeyColumn(propertyPath.LocalMember);
+                map.Column(foreignKeyColumn);
 
-               var directlyMappedFk = propertyPath.LocalMember.DeclaringType?.GetProperty(foreignKeyColumn);
-
-               if (foreignKeyColumn.ToLower() == "id" || directlyMappedFk != null)
+               var readonlyAttribute = propertyPath.LocalMember.GetAttributeOrNull<ReadonlyPropertyAttribute>();
+               if (readonlyAttribute != null)
                {
-                   map.Insert(false);
-                   map.Update(false);
+                   map.Insert(readonlyAttribute.Insert);
+                   map.Update(readonlyAttribute.Update);
+               }
+               else 
+               {
+                   var directlyMappedFk = propertyPath.LocalMember.ReflectedType != null
+                       ? propertyPath.LocalMember.ReflectedType.GetProperties().FirstOrDefault(p => p != propertyPath.LocalMember && modelInspector.IsPersistentProperty(p) && MappingHelper.GetColumnName(p) == foreignKeyColumn)
+                       : null;
+                   if (foreignKeyColumn.ToLower() == "id" || directlyMappedFk != null)
+                   {
+                       map.Insert(false);
+                       map.Update(false);
+                   }
                }
 
                var cascadeAttribute = propertyPath.LocalMember.GetAttributeOrNull<CascadeAttribute>(true);
@@ -524,11 +537,25 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapBag += (modelInspector, propertyPath, map) =>
             {
+                var containerEntity = propertyPath.GetContainerEntity(modelInspector);
                 var inversePropertyAttribute = propertyPath.LocalMember.GetAttributeOrNull<InversePropertyAttribute>(true);
                 if (inversePropertyAttribute != null)
                     map.Key(keyMapper => keyMapper.Column(inversePropertyAttribute.Property));
                 else
-                    map.Key(keyMapper => keyMapper.Column(propertyPath.GetContainerEntity(modelInspector).Name + "Id"));
+                {
+                    var manyToOneAttribute = propertyPath.LocalMember.GetAttributeOrNull<DynamicManyToOneAttribute>(true);
+                    if (manyToOneAttribute != null)
+                    {
+                        var propType = (propertyPath.LocalMember as PropertyInfo)?.PropertyType;
+                        var foreignClass = (propType?.IsGenericType ?? false) ? propType.GenericTypeArguments[0] : null;
+                        var referenceProperty = foreignClass?.GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == manyToOneAttribute.PropertyName.ToCamelCase());
+                        if (referenceProperty != null)
+                            map.Key(keyMapper => keyMapper.Column(MappingHelper.GetColumnName(referenceProperty)));
+                        else
+                            map.Key(keyMapper => keyMapper.Column(manyToOneAttribute.PropertyName));
+                    } else
+                        map.Key(keyMapper => keyMapper.Column(containerEntity.Name + "Id"));
+                }
 
                 map.Cascade(ByCode.Cascade.All);
                 map.Lazy(CollectionLazy.Lazy);
@@ -581,7 +608,6 @@ namespace Shesha.NHibernate.Maps
                             m.Condition(SoftDeleteFilter.GetCondition(isDeletedColumnName));
                     });
                 }
-
             };
 
             mapper.BeforeMapManyToMany += (modelInspector, propertyPath, map) =>
@@ -595,11 +621,12 @@ namespace Shesha.NHibernate.Maps
                         map.Column(manyToManyAttribute.ChildColumn);
                     else if (manyToManyAttribute.AutoGeneration)
                     {
-                        var (tableName, parentTableName, childTableName, parentColumnName, childColumnName) =
+                        var (_, _, _, _, childColumnName) =
                             _nameGenerator.GetAutoManyToManyTableNames(propertyPath.LocalMember);
                         map.Column(childColumnName);
                     }
                 }
+                map.Lazy(LazyRelation.NoProxy);
             };
 
             foreach (var assembly in _assemblies)

@@ -24,7 +24,7 @@ export const Item: FC<IItemProps> = ({ itemProps, index, containerRendering, onC
             onChange={onChange}
             key={itemProps.id}
         />;
-    } else if (itemProps.dataType === DataTypes.objectReference) {
+    } else if (itemProps.dataType === DataTypes.object) {
         return <JsonProperty
             id={index}
             index={index}

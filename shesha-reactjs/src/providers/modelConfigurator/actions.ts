@@ -15,6 +15,8 @@ export enum ModelActionEnums {
   SaveSuccess = 'SAVE_SUCCESS',
   SaveError = 'SAVE_ERROR',
 
+  Cancel = 'CANCEL_ACTION',
+
   DeleteRequest = 'DELETE_REQUEST',
   DeleteSuccess = 'DELETE_SUCCESS',
   DeleteError = 'DELETE_ERROR',
@@ -41,6 +43,8 @@ export const loadErrorAction = createAction<IErrorInfo, IErrorInfo>(ModelActionE
 export const saveRequestAction = createAction(ModelActionEnums.SaveRequest);
 export const saveSuccessAction = createAction(ModelActionEnums.SaveSuccess);
 export const saveErrorAction = createAction<IErrorInfo, IErrorInfo>(ModelActionEnums.SaveError, (p) => p);
+
+export const cancelAction = createAction(ModelActionEnums.Cancel);
 
 export const deleteRequestAction = createAction(ModelActionEnums.DeleteRequest);
 export const deleteSuccessAction = createAction(ModelActionEnums.DeleteSuccess);

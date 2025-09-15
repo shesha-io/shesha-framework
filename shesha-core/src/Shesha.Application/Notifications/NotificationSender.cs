@@ -111,11 +111,12 @@ namespace Shesha.Notifications
             NotificationChannelConfig? channel = null,
             string? category = null) where TData : NotificationData
         {
+            var revision = type.Revision;
             // Check if the notification type is disabled
-            if (type.Disable) 
+            if (revision.Disable) 
                 return;
 
-            if (type.CanOptOut)
+            if (revision.CanOptOut)
             {
                 var optedOut = await receiver.IsNotificationOptedOutAsync(type);
                 if (optedOut)
@@ -179,7 +180,7 @@ namespace Shesha.Notifications
             string? cc = null,
             List<NotificationAttachmentDto>? attachments = null) where TData : NotificationData
         {
-            var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
+            var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.Revision.SupportedFormat == x.MessageFormat);
 
             if (template == null)
                 throw new UserFriendlyException($"There is no {type.Name} template found for the {channelConfig.Name} channel");
@@ -202,7 +203,7 @@ namespace Shesha.Notifications
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
             // Save attachments if specified and allowed
-            if (attachments != null && attachments.Any() && channelConfig.SupportsAttachment && type.AllowAttachments)
+            if (attachments != null && attachments.Any() && channelConfig.Revision.SupportsAttachment && type.Revision.AllowAttachments)
             {
                 foreach (var attachmentDto in attachments)
                 {
@@ -218,7 +219,7 @@ namespace Shesha.Notifications
                 await _unitOfWorkManager.Current.SaveChangesAsync();
             }
 
-            if (type.IsTimeSensitive)
+            if (type.Revision.IsTimeSensitive)
             {
                 await SendAsync(message.Id);
             }
@@ -240,7 +241,7 @@ namespace Shesha.Notifications
 
         private INotificationChannelSender GetChannelSender(NotificationMessage message) 
         {
-            var sender = _channelSenders.FirstOrDefault(x => x.GetType().Name == message.Channel.SenderTypeName);
+            var sender = _channelSenders.FirstOrDefault(x => x.GetType().Name == message.Channel.Revision.SenderTypeName);
 
             if (sender == null)
                 throw new UserFriendlyException($"Sender not found for channel {message.Channel.Name}");
@@ -318,9 +319,9 @@ namespace Shesha.Notifications
         }
 
         [Obsolete("For backward compatibility only (is used by old scheduled jobs)")]
-        public async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName) 
+        public Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName) 
         {
-            await SendAsync(messageId);
+            return SendAsync(messageId);
         }
 
         /// <summary>
@@ -355,7 +356,7 @@ namespace Shesha.Notifications
             }
         }
 
-        public async Task SendNotificationAsync<TData>(
+        public Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
             Person? senderPerson, 
             Person receiverPerson, 
@@ -371,7 +372,7 @@ namespace Shesha.Notifications
                 ? new PersonMessageParticipant(senderPerson)
                 : null;
             var receiver = new PersonMessageParticipant(receiverPerson);            
-            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel, category);
+            return SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel, category);
         }
     }
 }

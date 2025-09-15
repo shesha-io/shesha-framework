@@ -49,6 +49,8 @@ export const FormPersisterStateContext = createNamedContext<IFormPersisterStateC
   "FormPersisterStateContext"
 );
 
+export type IFormPersisterContext = IFormPersisterActionsContext & IFormPersisterStateContext;
+
 export const FormPersisterActionsContext = createNamedContext<IFormPersisterActionsContext>(undefined, "FormPersisterActionsContext");
 
 export const FormPersisterStateConsumer = FormPersisterStateContext.Consumer;

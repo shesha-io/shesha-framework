@@ -27,7 +27,7 @@ const makeEvaluatorFromItems = (items: IKeyValue[]): string => {
         return undefined;
 
     let propsList = "    return {\r\n";
-    items.forEach(item => {
+    items.forEach((item) => {
         if (item.key) {
             const value = extractJsFieldFromKeyValue(item.value?.trim());
             const currentPropLine = `        ${item.key}: ${value},\r\n`;

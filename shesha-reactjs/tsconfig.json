@@ -59,5 +59,10 @@
     "typings",
     "node_modules/@types",
     "models"
+  ],
+  "references": [
+    {
+      "path": "./src/configuration-studio"
+    }
   ]
 }

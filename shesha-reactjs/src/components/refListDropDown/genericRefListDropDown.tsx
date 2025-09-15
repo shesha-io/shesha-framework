@@ -52,7 +52,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     localValue: TValue | TValue[],
     allOptions: ISelectOption<TValue>[]
   ): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
-    if (localValue === undefined) return mode === 'multiple' ? [] : undefined;
+    if (localValue === undefined || localValue === null) return mode === 'multiple' ? [] : undefined;
     if (mode === 'multiple') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
@@ -94,7 +94,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     const selectedItem = wrapValue(value, fetchedItems);
     // Remove items which are already exist in the fetched items.
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
-    const selectedItems = selectedItem
+    const selectedItems = selectedItem !== undefined && selectedItem !== null
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
         (i) => fetchedItems.findIndex((fi) => String(fi.value) === String(i.value)) === -1
       )

@@ -2,6 +2,7 @@
 using Abp.Events.Bus.Handlers;
 using Castle.Core.Logging;
 using Shesha.DynamicEntities;
+using Shesha.Reflection;
 using Shesha.Swagger;
 using System;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace Shesha.Warmup
             var entityTypes = SwaggerHelper.EntityTypesFunc();
             foreach (var entityType in entityTypes)
             {
-                await _entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
+                await _entityConfigs.GetCachedModelConfigurationOrNullAsync(entityType.Namespace.NotNull(), entityType.Name);
             }
         }
     }

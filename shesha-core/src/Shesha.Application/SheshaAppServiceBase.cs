@@ -23,7 +23,9 @@ using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Swagger;
 using Shesha.Validations;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -158,10 +160,10 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the existing entity or null for a new one</param>
         /// <param name="action">Update action</param>
-        protected async Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Func<T, Task> action)
+        protected Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Func<T, Task> action)
             where T : class, IEntity<Guid>
         {
-            return await SaveOrUpdateEntityAsync<T, Guid>(id, action);
+            return SaveOrUpdateEntityAsync<T, Guid>(id, action);
         }
 
         /// <summary>
@@ -170,10 +172,10 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the existing entity or null for a new one</param>
         /// <param name="action">Update action</param>
-        protected async Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Action<T> action)
+        protected Task<T> SaveOrUpdateEntityAsync<T>(Guid? id, Action<T> action)
             where T : class, IEntity<Guid>
         {
-            return await SaveOrUpdateEntityAsync<T, Guid>(id, a =>
+            return SaveOrUpdateEntityAsync<T, Guid>(id, a =>
             {
                 action.Invoke(a);
                 return Task.CompletedTask;
@@ -207,9 +209,9 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the entity</param>
         /// <returns></returns>
-        protected async Task<T?> GetEntityOrNullAsync<T>(Guid id) where T : class, IEntity<Guid>
+        protected Task<T?> GetEntityOrNullAsync<T>(Guid id) where T : class, IEntity<Guid>
         {
-            return await GetEntityOrNullAsync<T, Guid>(id);
+            return GetEntityOrNullAsync<T, Guid>(id);
         }
 
         /// <summary>
@@ -235,9 +237,9 @@ namespace Shesha
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the entity</param>
         /// <returns></returns>
-        protected async Task<T> GetEntityAsync<T>(Guid id) where T : class, IEntity<Guid>
+        protected Task<T> GetEntityAsync<T>(Guid id) where T : class, IEntity<Guid>
         {
-            return await GetEntityAsync<T, Guid>(id);
+            return GetEntityAsync<T, Guid>(id);
         }
 
         /// <summary>
@@ -497,13 +499,13 @@ namespace Shesha
         /// <param name="entity">Destination entity</param>
         /// <param name="validationResult">Validation result</param>
         /// <returns></returns>
-        protected async Task<bool> MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(
+        protected Task<bool> MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(
             JObject jObject,
             TEntity entity,
             List<ValidationResult> validationResult)
             where TEntity : class, IEntity<TPrimaryKey>
         {
-            return await EntityModelBinder.BindPropertiesAsync(jObject, entity, new EntityModelBindingContext() { ValidationResult = validationResult });
+            return EntityModelBinder.BindPropertiesAsync(jObject, entity, new EntityModelBindingContext() { ValidationResult = validationResult });
         }
 
         /// <summary>

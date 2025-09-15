@@ -23,6 +23,12 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings,
     .add(5, (prev) => migrateFieldsToFetchAndOnDataLoad(prev))
     .add(6, (prev) => migrateGqlCustomEndpoint(prev))
     .add(7, (prev, context) => migrateDefaults(prev, context))
+    .add(8, (prev) => ({
+      ...prev,
+      layout: prev.layout ?? 'horizontal',
+      labelCol: prev.labelCol ?? { span: 6 },
+      wrapperCol: prev.wrapperCol ?? { span: 18 },
+    }))
   ;
 
 export const migrateFormSettings = (form: IFormDto, designerComponents: IToolboxComponents) => {

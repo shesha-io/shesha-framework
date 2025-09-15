@@ -4,7 +4,6 @@ using Shesha.Application.Services;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
-using Shesha.DynamicEntities;
 using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -26,16 +25,15 @@ namespace Shesha.Swagger
 
         public IEnumerator<UrlDescriptor> GetEnumerator()
         {
-            var entityConfigs = StaticContext.IocManager.Resolve<IModelConfigurationManager>();
             var pmo = StaticContext.IocManager.Resolve<IPermissionedObjectManager>();
             var uowManager = StaticContext.IocManager.Resolve<IUnitOfWorkManager>();
-
             var types = SwaggerHelper.ServiceTypesFunc();
 
             var permissioned = new List<TypeInfo>();
-            List<string>? disabledEntities = null;
             using (var uow = uowManager.Begin())
             {
+                var disabledEntities = GetEntityWithDisabledAppServices();
+
                 foreach (var service in types)
                 {
                     if (service.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
@@ -43,8 +41,6 @@ namespace Shesha.Swagger
                         // entity service
                         var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
                         var entityType = genericInterface.GenericTypeArguments.First();
-                        
-                        disabledEntities ??= GetEntityWithDisabledAppServices();
                         var fullName = GetFullName(entityType.Namespace, entityType.Name);
 
                         var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
@@ -86,8 +82,8 @@ namespace Shesha.Swagger
         {
             var entityConfigRepo = StaticContext.IocManager.Resolve<IRepository<EntityConfig, Guid>>();
             var entities = entityConfigRepo.GetAll()
-                .Where(e => !e.IsDeleted && !e.GenerateAppService)
-                .Select(e => new { ClassName = e.ClassName, Namespace = e.Namespace })
+                .Where(e => !e.IsDeleted && e.Revision != null && !e.Revision.GenerateAppService)
+                .Select(e => new { e.ClassName, e.Namespace })
                 .ToList();
             return entities.Select(e => GetFullName(e.Namespace, e.ClassName)).ToList();
         }

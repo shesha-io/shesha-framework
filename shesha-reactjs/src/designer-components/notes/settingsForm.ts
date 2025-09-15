@@ -133,6 +133,27 @@ export const getSettings = (data: any) => {
                   parentId: dataTabId,
                   inputs: [
                     {
+                      id: nanoid(),
+                      propertyName: 'ownerType',
+                      type: 'autocomplete',
+                      parentId: nanoid(),
+                      label: 'Owner Type',
+                      labelAlign: 'right',
+                      dataSourceType: 'url',
+                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
+                      mode: 'single',
+                      jsSetting: true,
+                      validate: {
+                        required: true
+                      }
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  inputs: [
+                    {
                       type: 'textField',
                       id: nanoid(),
                       propertyName: 'ownerId',
@@ -144,18 +165,10 @@ export const getSettings = (data: any) => {
                     },
                     {
                       id: nanoid(),
-                      propertyName: 'ownerType',
-                      type: 'autocomplete',
-                      parentId: nanoid(),
-                      label: 'Owner Type',
-                      labelAlign: 'right',
-                      dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                      mode: 'single',
+                      propertyName: 'category',
+                      label: 'Category',
+                      type: 'textField',
                       jsSetting: true,
-                      validate: {
-                        required: true
-                      }
                     }
                   ]
                 })

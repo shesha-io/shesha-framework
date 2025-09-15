@@ -7,9 +7,6 @@ export interface IDataSourceComponentProps extends IConfigurableFormComponent {
     endpoint?: string;
 
     filters?: ITableViewProps [];
-    //persistSelectedFilters?: boolean;
-    //componentRef?: MutableRefObject<any>;
-
     maxResultCount?: number;
 }
   

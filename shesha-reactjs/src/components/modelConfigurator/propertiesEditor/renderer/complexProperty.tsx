@@ -1,67 +1,67 @@
 import React, { FC } from 'react';
-import { Button, Tag, Tooltip } from 'antd';
-import { DeleteFilled, QuestionCircleOutlined, PlusOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { Button, Tooltip } from 'antd';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { usePropertiesEditor } from '../provider';
-import DragHandle from './dragHandle';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { getIconByDataType } from '@/utils/metadata';
+import { getIconTypeByDataType } from '@/utils/metadata';
 import { ShaIcon } from '../../..';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
-import classNames from 'classnames';
+import { ItemChangeDetails } from '@/components/listEditor';
+import PropertyWrapper from './propertyWrapper';
+import { ContainerRenderer } from './itemsContainer';
 
-export interface IContainerRenderArgs {
-  index?: number[];
-  items: IModelItem[];
-}
-
-export type ContainerRenderer = (args: IContainerRenderArgs) => React.ReactNode;
-
-export interface IProps extends IModelItem {
+export interface IProps {
   index: number[];
+  data: IModelItem;
+  parent?: IModelItem;
   containerRendering: ContainerRenderer;
+  onChange?: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
 }
 
 export const ComplexProperty: FC<IProps> = props => {
-  const { deleteItem, addItem, selectedItemId, selectedItemRef } = usePropertiesEditor();
+  const { addItem } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const icon = getIconByDataType(props.dataType);
-
-  const onDeleteClick = () => {
-    deleteItem(props.id);
-  };
+  const icon = getIconTypeByDataType(props.data.dataType);
 
   const onAddChildClick = () => {
-    addItem(props.id);
+    addItem(props.data.id);
   };
 
-  return (
-    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
-      <div className={styles.shaToolbarItemHeader}>
-        <DragHandle id={props.id} />
-        {props.suppress && <span><EyeInvisibleOutlined /> </span>}
-        {icon && <ShaIcon iconName={icon} />}
-        <span className={styles.shaToolbarItemName}>{props.name}</span>
-        {props.description && (
-          <Tooltip title={props.description}>
-            <QuestionCircleOutlined className={styles.shaHelpIcon} />
-          </Tooltip>
-        )}
-        <Button icon={<PlusOutlined color="red" />} onClick={onAddChildClick} size="small">Add child</Button>
+  const label = props.data.isItemsType 
+    ? <>Array items type</>
+    : <>{props.data.name} {props.data.label && <>({props.data.label})</>}</>;
 
-        <div className={styles.shaToolbarItemControls}>
-          {
-            props.source === MetadataSourceType.UserDefined
-              ? <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
-              : <Tag>APP</Tag>
+  // skip array items type property
+  const properties = props.data.properties?.filter(p => !p.isItemsType) || [];
+
+  return (
+    <PropertyWrapper {...props.data} index={props.index}>
+      {icon && <ShaIcon iconName={icon} />}
+      <span className={styles.shaToolbarItemName}>{label}</span>
+      {props.data.description && (
+        <Tooltip title={props.data.description}>
+          <QuestionCircleOutlined className={styles.shaHelpIcon} />
+        </Tooltip>
+      )}
+      {
+        props.data.source === MetadataSourceType.UserDefined && !props.data.inheritedFromId &&
+        <Button icon={<PlusOutlined color="red" />} onClick={onAddChildClick} size="small">Add child</Button>
+      }
+
+      <div className={styles.shaToolbarGroupContainer}>
+        {props.containerRendering({
+          index: props.index,
+          items: properties,
+          parent: props.data,
+          onChange: (newItems, changeDetails) => {
+            if (props.onChange)
+              props.onChange({...props.data, properties: [...newItems]}, changeDetails);
           }
-        </div>
-        <div className={styles.shaToolbarGroupContainer}>
-          {props.containerRendering({ index: props.index, items: props.properties || [] })}
-        </div>
+        })}
       </div>
-    </div>
+    </PropertyWrapper>
   );
 };
 

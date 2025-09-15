@@ -22,6 +22,7 @@ export enum StoredFilesActionEnums {
   DownloadZipError = 'DOWNLOAD_ZIP_ERROR',
   OnFileAdded = 'ON_FILE_ADDED',
   OnFileDeleted = 'ON_FILE_REMOVED',
+  InitializeFileList = 'INITIALIZE_FILE_LIST',
 
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
@@ -113,6 +114,11 @@ export const onFileAddedAction = createAction<IStoredFilesStateContext, IStoredF
 export const onFileDeletedAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.OnFileDeleted,
   (fileIdToDelete) => ({ fileIdToDelete })
+);
+
+export const initializeFileListAction = createAction<IStoredFilesStateContext, IStoredFile[]>(
+  StoredFilesActionEnums.InitializeFileList,
+  (fileList) => ({ fileList })
 );
 
 /* NEW_ACTION_GOES_HERE */

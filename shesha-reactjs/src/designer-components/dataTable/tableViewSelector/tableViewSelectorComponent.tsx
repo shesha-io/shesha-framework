@@ -16,10 +16,10 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
   isInput: false,
   name: 'Table view selector',
   icon: <SelectOutlined />,
-  Factory: ({ model, componentRef }) => {
+  Factory: ({ model }) => {
     const store = useDataTableStore(false);
     return store 
-      ? <TableViewSelector {...model} componentRef={componentRef} />
+      ? <TableViewSelector {...model} />
       : <Alert
         className="sha-designer-warning"
         message="Table view selector must be used within a Data Table Context"
@@ -31,7 +31,6 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
       ...prev,
       title: prev['title'] ?? 'Title',
       filters: prev['filters'] ?? [],
-      componentRef: prev['componentRef']
     };
   })
     .add(1, prev => (

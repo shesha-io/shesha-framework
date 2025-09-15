@@ -12,6 +12,7 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
@@ -315,7 +316,25 @@ namespace Shesha.Reflection
         {
             return property.PropertyType.IsEntityType()
                 ? !property.HasAttribute<RequiredMemberAttribute>()
-                : property.PropertyType.IsNullableType() || property.HasAttribute<NullableAttribute>();
+                : property.PropertyType.IsNullableType() || IsReferencePropertyNullable(property);
+        }
+
+        private static bool IsReferencePropertyNullable(PropertyInfo property)
+        {
+            /*
+            0: Not nullable - The property cannot be null (like string in a #nullable enable context)
+            1: Oblivious - The nullability context isn't specified (like pre-C# 8.0 code)
+            2: Nullable - The property is explicitly nullable (like string?)
+            */
+            const byte nullableFlag = 2;
+
+            var nullable = property.GetAttributeOrNull<NullableAttribute>();
+            if (nullable != null)
+                return nullable.NullableFlags.FirstOrDefault() == nullableFlag;
+
+            var context = property.DeclaringType?.GetAttributeOrNull<NullableContextAttribute>();
+
+            return context != null && context.Flag == nullableFlag;
         }
 
         /// <summary>
@@ -426,6 +445,17 @@ namespace Shesha.Reflection
                 description = displayAttribute?.GetDescription();
 
             return description;
+        }
+
+        /// <summary>
+        /// Returns user-friendly name of the class
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        public static string GetFriendlyClassName(this object instance) 
+        { 
+            // TODO: use metadata and entity attribute
+            return instance.GetType().Name.ToFriendlyName();
         }
 
         /// <summary>
@@ -684,6 +714,17 @@ namespace Shesha.Reflection
             if (source is TDestination dest)
                 return dest;
 
+            if (source != null && source.GetType().IsEntityType()) 
+            {
+                var strippers = StaticContext.IocManager.ResolveAll<IProxyStripper>();
+                foreach (var stripper in strippers)
+                {
+                    var stripped = stripper.Unproxy(source);
+                    if (stripped is TDestination unproxied)
+                        return unproxied;
+                }
+            }
+
             if (source is GenericEntityReference genericEntity && typeof(Entity<Guid>).IsAssignableFrom(typeof(TDestination))) {
                 var entity = (Entity<Guid>)genericEntity.NotNull();
                 return entity.ForceCastAs<TDestination>();
@@ -783,6 +824,30 @@ namespace Shesha.Reflection
         public static FieldInfo GetRequiredField(this Type type, string fieldName)
         {
             return type.GetField(fieldName) ?? throw new FieldNotFoundException(type, fieldName);
+        }
+
+        public static PropertyInfo? GetClosestPropertyOrNull(this Type type, string propertyName)
+        {
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                      .Where(p => p.Name == propertyName)
+                      .OrderByDescending(p => p.DeclaringType == type) // Prefer exact match
+                      .ThenByDescending(p => p.DeclaringType, new TypeInheritanceComparer())
+                      .FirstOrDefault();
+        }
+
+        // Helper comparer to sort types by inheritance depth
+        private class TypeInheritanceComparer : IComparer<Type?>
+        {
+            public int Compare(Type? x, Type? y)
+            {
+                if (x == y) return 0;
+                if (x == null) return -1;
+                if (y == null) return 1;
+                
+                return x.IsAssignableFrom(y)
+                    ? 1 // y is more derived
+                    :  -1;
+            }
         }
     }
 }

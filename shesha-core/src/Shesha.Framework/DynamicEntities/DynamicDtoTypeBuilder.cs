@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Extensions;
@@ -27,7 +28,8 @@ namespace Shesha.DynamicEntities
     public class DynamicDtoTypeBuilder : IEventHandler<EntityChangedEventData<EntityProperty>>, IDynamicDtoTypeBuilder, ITransientDependency
     {
         private readonly IEntityConfigCache _entityConfigCache;
-        private IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityConfigurationStore _entityConfigurationStore;
+
         /// <summary>
         /// Cache of proxy classes
         /// </summary>
@@ -53,9 +55,9 @@ namespace Shesha.DynamicEntities
         }
 
         /// inheritedDoc
-        public async Task<Type> BuildDtoProxyTypeAsync(DynamicDtoTypeBuildingContext context)
+        public Task<Type> BuildDtoProxyTypeAsync(DynamicDtoTypeBuildingContext context)
         {
-            return await CompileResultTypeAsync(context);
+            return CompileResultTypeAsync(context);
         }
 
         public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
@@ -73,7 +75,7 @@ namespace Shesha.DynamicEntities
 
             var hardCodedDtoProperties = type.GetProperties().Select(p => p.Name.ToLower()).ToList();
 
-            var configuredProperties = (await GetEntityPropertiesAsync(entityType)).Where(p => !p.Suppress);
+            var configuredProperties = (await GetEntityPropertiesAsync(entityType)).Where(p => !p.Suppress).ToList();
             foreach (var property in configuredProperties)
             {
                 // skip property if already included into the DTO (hardcoded)
@@ -149,7 +151,9 @@ namespace Shesha.DynamicEntities
                         return typeof(GenericEntityReference);
                     else
                         return GetEntityReferenceType(propertyDto, context);
-
+                
+                case DataTypes.File:
+                    return typeof(StoredFile);
 
                 case DataTypes.Array:
                     if (propertyDto.ItemsType != null)
@@ -158,16 +162,15 @@ namespace Shesha.DynamicEntities
                         var arrayType = typeof(List<>).MakeGenericType(nestedType.NotNull());
                         return arrayType;
                     }
-                    if (propertyDto.DataFormat == ArrayFormats.ObjectReference)
-                    {
-                        var arrayType = typeof(List<>).MakeGenericType(typeof(object));
-                        return arrayType;
-                    }
                     return null;
-                case DataTypes.Object:
-                    return await GetNestedTypeAsync(propertyDto, context); // JSON content
-                case DataTypes.ObjectReference:
-                    return typeof(object);
+                case DataTypes.Object: // JSON content
+                    if (dataFormat == ObjectFormats.Object)
+                        return await GetNestedTypeAsync(propertyDto, context); 
+                    if (dataFormat == ObjectFormats.Interface)
+                        return typeof(object);
+                    throw new NotSupportedException($"Data type not supported: {dataType} {dataFormat}");
+                case DataTypes.Advanced:
+                    return null;
                 default:
                     throw new NotSupportedException($"Data type not supported: {dataType}");
             }
@@ -196,7 +199,7 @@ namespace Shesha.DynamicEntities
             if (t == null)
             {
                 t = propertyDto.Properties?.Any() ?? false
-                    ? propertyDto.DataType == DataTypes.ObjectReference
+                    ? propertyDto.DataFormat == ObjectFormats.Interface
                         ? typeof(object)
                         : await BuildNestedTypeAsync(propertyDto, context)
                     : typeof(object);
@@ -411,7 +414,12 @@ namespace Shesha.DynamicEntities
             if (entityType == null)
                 throw new NotSupportedException($"Type '{type.FullName}' is not a dynamic DTO");
 
-            return $"{entityType.FullName}|formFields:{context.AddFormFieldsProperty.ToString().ToLower()}|useEntityDtos:{context.UseDtoForEntityReferences.ToString().ToLower()}";
+            return GetTypeCacheKey(entityType.FullName.NotNull(), context.AddFormFieldsProperty, context.UseDtoForEntityReferences);
+        }
+
+        private string GetTypeCacheKey(string typeName, bool formFields, bool useEntityDtos)
+        {
+            return $"{typeName}|formFields:{formFields.ToString().ToLower()}|useEntityDtos:{useEntityDtos.ToString().ToLower()}";
         }
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
@@ -419,11 +427,18 @@ namespace Shesha.DynamicEntities
             if (eventData.Entity == null)
                 return;
 
-            var entityConfig = eventData.Entity?.EntityConfig;
+            var entityConfig = eventData.Entity.EntityConfigRevision.EntityConfig;
             if (entityConfig != null)
             {
-                var cacheKey = $"{entityConfig.Namespace}.{entityConfig.ClassName}";
-
+                // TODO: V1 review take versions into account
+                // remove all variation of Entity cache items
+                var cacheKey = GetTypeCacheKey(entityConfig.FullClassName, false, false);
+                _fullProxyCache.Remove(cacheKey);
+                cacheKey = GetTypeCacheKey(entityConfig.FullClassName, false, true);
+                _fullProxyCache.Remove(cacheKey);
+                cacheKey = GetTypeCacheKey(entityConfig.FullClassName, true, false);
+                _fullProxyCache.Remove(cacheKey);
+                cacheKey = GetTypeCacheKey(entityConfig.FullClassName, true, true);
                 _fullProxyCache.Remove(cacheKey);
             }
 

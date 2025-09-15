@@ -1,4 +1,3 @@
-import { fixupConfigRules } from "@eslint/compat";
 import jsdoc from "eslint-plugin-jsdoc";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import stylistic from "@stylistic/eslint-plugin";
@@ -7,40 +6,151 @@ import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
 
-export default [{
+const stylisticOverrides = {
+    "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
+    "@stylistic/jsx-indent-props": [
+        'error',
+        4
+        // - 'first' - align with first prop (VS Code-like)
+        // - 2 - 2 space indentation (most common)
+        // - 4 - 4 space indentation  
+        // - 'tab' - use tab characters
+    ],
+    "@stylistic/jsx-one-expression-per-line": "off",
+    "@stylistic/semi": ["error", "always"],
+    "@stylistic/type-annotation-spacing": "error",
+    "@stylistic/quotes": "off",
+    "@stylistic/member-delimiter-style": ["error", {
+        multiline: {
+            delimiter: "semi",
+            requireLast: true,
+        },
+
+        singleline: {
+            delimiter: "semi",
+            requireLast: false,
+        },
+    }],
+    "@stylistic/indent": "off",
+    "@stylistic/indent-binary-ops": "off",
+    /* todo: review after development of a standard and integration with auto-formatter
+    "@stylistic/indent": ["error", 2],
+    "@stylistic/indent-binary-ops": ["error", 2],
+    */
+    "@stylistic/jsx-quotes": ["error", "prefer-double"],
+    "@stylistic/eol-last": "error",
+    "@stylistic/space-before-blocks": "error",
+    "@stylistic/arrow-parens": ["error", "always"],
+    "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
+    "@stylistic/operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
+    "@stylistic/no-trailing-spaces": "error",
+    "@stylistic/comma-dangle": ["error", "always-multiline"],
+    "@stylistic/padded-blocks": ["error", "never"],
+    "@stylistic/no-multiple-empty-lines": "error",
+    "@stylistic/lines-between-class-members": ["error", "always"],
+};
+
+const legacyTypescriptOverrides = {
+    "@typescript-eslint/dot-notation": "off",
+
+    "@typescript-eslint/explicit-function-return-type": ["off", {
+        allowExpressions: false,
+        allowTypedFunctionExpressions: false,
+        allowHigherOrderFunctions: false,
+        allowDirectConstAssertionInArrowFunctions: true,
+        allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+    }],
+
+    "@typescript-eslint/explicit-module-boundary-types": ["off", {
+        allowArgumentsExplicitlyTypedAsAny: true,
+        allowDirectConstAssertionInArrowFunctions: true,
+        allowHigherOrderFunctions: false,
+        allowTypedFunctionExpressions: false,
+    }],
+
+    "@typescript-eslint/indent": "off",
+
+    "@typescript-eslint/naming-convention": ["error", {
+        selector: "variable",
+        format: ["camelCase", "UPPER_CASE", "PascalCase"],
+        leadingUnderscore: "forbid",
+        trailingUnderscore: "forbid",
+    }],
+
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-unused-expressions": "error",
+
+    "@typescript-eslint/no-unused-vars": ["error", {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+        ignoreRestSiblings: true,
+    }],
+
+    "@typescript-eslint/no-use-before-define": ["error", {
+        ignoreTypeReferences: true,
+        classes: false,
+    }],
+
+    "@typescript-eslint/quotes": ["off", "double"],
+
+    "@typescript-eslint/typedef": ["off", {
+        parameter: true,
+        propertyDeclaration: true,
+        variableDeclaration: true,
+    }],
+    // TODO: activate and review code
+    // "@typescript-eslint/no-explicit-any": "error",
+    // "@typescript-eslint/no-unsafe-call": "error",
+    // "@typescript-eslint/no-unsafe-member-access": "error",
+    // "@typescript-eslint/no-unsafe-argument": "error",
+    // "@typescript-eslint/no-unsafe-assignment": "error",
+};
+
+const typescriptOverrides = {
+    "@typescript-eslint/no-unused-vars": ["error", {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+        ignoreRestSiblings: true,
+    }],
+
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/explicit-function-return-type": [
+        "error",
+        {
+            "allowExpressions": true,
+            "allowHigherOrderFunctions": true,
+            "allowDirectConstAssertionInArrowFunctions": true
+        }
+    ],
+
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unsafe-call": "error",
+    "@typescript-eslint/no-unsafe-member-access": "error",
+    "@typescript-eslint/no-unsafe-argument": "error",
+    "@typescript-eslint/no-unsafe-assignment": "error",
+    "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
+    "@typescript-eslint/no-unnecessary-condition": "error",
+    "@typescript-eslint/strict-boolean-expressions": "error",
+};
+
+const baseTsConfig = {
     files: [
-        "**/*.ts",
-        "**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.tsx",
     ],
     ignores: [
-        ".next/**/*",
-        "dist/**/*",
-        ".out/**/*",
-        "node_modules/**/*",
-        "example/**/*",
         "src/apis/*",
         "**/__tests__/**/*",
-        "**/.eslintrc.js",
-        "**/rollup.config.mjs",
-        "**/next.config.js",
-        "**/jest.config.js",
     ],
-}, ...fixupConfigRules(
-    compat.extends("plugin:@next/next/recommended"),
-), {
     plugins: {
         jsdoc,
+        "react": reactPlugin,
         "react-hooks": hooksPlugin,
         "@typescript-eslint": typescriptEslint,
         "@stylistic": stylistic,
@@ -113,6 +223,9 @@ export default [{
 
     rules: {
         ...hooksPlugin.configs.recommended.rules,
+        ...reactPlugin.configs.recommended.rules,
+        "react/prop-types": ["off"],
+        "require-await": "error",
         "no-restricted-imports": ["error", {
             paths: ["@/utils/publicUtils",
                 {
@@ -140,75 +253,6 @@ export default [{
             ignoreMemberSort: false,
             memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
             allowSeparatedGroups: false,
-        }],
-
-        // TODO: activate and review code
-        // "@typescript-eslint/no-explicit-any": "error",
-        // "@typescript-eslint/no-unsafe-call": "error",
-        // "@typescript-eslint/no-unsafe-member-access": "error",
-        // "@typescript-eslint/no-unsafe-argument": "error",
-        // "@typescript-eslint/no-unsafe-assignment": "error",
-
-        "@typescript-eslint/dot-notation": "off",
-
-        "@typescript-eslint/explicit-function-return-type": ["off", {
-            allowExpressions: false,
-            allowTypedFunctionExpressions: false,
-            allowHigherOrderFunctions: false,
-            allowDirectConstAssertionInArrowFunctions: true,
-            allowConciseArrowFunctionExpressionsStartingWithVoid: true,
-        }],
-
-        "@typescript-eslint/explicit-module-boundary-types": ["off", {
-            allowArgumentsExplicitlyTypedAsAny: true,
-            allowDirectConstAssertionInArrowFunctions: true,
-            allowHigherOrderFunctions: false,
-            allowTypedFunctionExpressions: false,
-        }],
-
-        "@typescript-eslint/indent": "off",
-
-        "@stylistic/member-delimiter-style": ["error", {
-            multiline: {
-                delimiter: "semi",
-                requireLast: true,
-            },
-
-            singleline: {
-                delimiter: "semi",
-                requireLast: false,
-            },
-        }],
-
-        "@typescript-eslint/naming-convention": ["error", {
-            selector: "variable",
-            format: ["camelCase", "UPPER_CASE", "PascalCase"],
-            leadingUnderscore: "forbid",
-            trailingUnderscore: "forbid",
-        }],
-
-        "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/no-unused-expressions": "error",
-
-        "@typescript-eslint/no-unused-vars": ["error", {
-            varsIgnorePattern: "^_",
-            argsIgnorePattern: "^_",
-            ignoreRestSiblings: true,
-        }],
-
-        "@typescript-eslint/no-use-before-define": ["error", {
-            ignoreTypeReferences: true,
-            classes: false,
-        }],
-
-        "@typescript-eslint/quotes": ["off", "double"],
-        "@stylistic/semi": ["error", "always"],
-        "@stylistic/type-annotation-spacing": "error",
-
-        "@typescript-eslint/typedef": ["off", {
-            parameter: true,
-            propertyDeclaration: true,
-            variableDeclaration: true,
         }],
 
         "brace-style": ["error", "1tbs"],
@@ -274,5 +318,83 @@ export default [{
             markers: ["/"],
         }],
     }
+};
+
+const makeStrictConfig = (path) => {
+    return {
+        ...baseTsConfig,
+        files: [
+            `${path}/**/*.ts`,
+        ],
+        languageOptions: {
+            ...baseTsConfig.languageOptions,
+            parserOptions: {
+                project: `${path}/tsconfig.json`,
+                tsconfigRootDir: __dirname,
+            },
+        },
+        rules: {
+            ...baseTsConfig.rules,
+            ...typescriptEslint.configs.recommended.rules,
+            ...typescriptOverrides,
+            ...stylistic.configs.recommended.rules,
+            ...stylisticOverrides,
+
+            "react-hooks/exhaustive-deps": "error",
+            "no-unsafe-optional-chaining": "error",
+        },
+    };
 }
+const csConfig = makeStrictConfig("src/configuration-studio");
+
+const strictFolders = [
+    "src/configuration-studio",
+    //"src/providers"
+];
+
+export default [
+    {
+        ...baseTsConfig,
+        files: [
+            "src/**/*.ts",
+            "src/**/*.tsx",
+        ],
+        ignores: [...baseTsConfig.ignores, ...strictFolders.map(f => `${f}/**/*`)],
+        rules: {
+            ...baseTsConfig.rules,
+            ...legacyTypescriptOverrides,
+        }
+    },
+    ...strictFolders.map(f => makeStrictConfig(f)),
+    // {
+    //     ...csConfig,
+    //     files: [
+    //         "src/configuration-studio/**/*.ts",
+    //     ],
+    //     rules: {
+    //         ...csConfig.rules,
+    //         //'@stylistic/indent': ['error', 2],
+    //     }
+    // },
+    // {
+    //     ...csConfig,
+    //     files: [
+    //         "src/configuration-studio/**/*.tsx",
+    //     ],
+    //     rules: {
+    //         ...csConfig.rules,
+    //         //'@stylistic/indent': ['error', 4],
+    //     }
+    // },
+    {
+        files: ['**/*.js', '**/*.mjs'],
+        ...js.configs.recommended,
+        languageOptions: {
+            sourceType: 'module',
+            ecmaVersion: 'latest',
+        },
+        rules: {
+            '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
+        }
+    },
 ];

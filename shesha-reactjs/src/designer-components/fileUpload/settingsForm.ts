@@ -183,7 +183,7 @@ export const getSettings = () => {
                       label: 'Owner Type',
                       type: 'autocomplete',
                       dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                       useRawValues: true,
                       jsSetting: true,
                     },
@@ -206,7 +206,8 @@ export const getSettings = () => {
                       label: 'Allowed File Types',
                       type: 'editableTagGroupProps',
                       description: 'File types that can be accepted.',
-                      jsSetting: true,
+                      tooltip: "The file typeName should consist a dot before the name, for example: .png",
+
                     },
                   ],
                 })

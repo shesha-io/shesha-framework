@@ -23,12 +23,12 @@ export const getEntityMetadataCacheKey = (id: IEntityTypeIndentifier) => {
     return `${moduleAccessor}/${id.name}`;
 };
 
-const getEntitiesSyncVersion = async (cacheProvider: ICacheProvider): Promise<string> => {
+const getEntitiesSyncVersion = (cacheProvider: ICacheProvider): Promise<string> => {
     const cache = cacheProvider.getCache(CACHE.MISC);
     return cache.getItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME);
 };
 
-const setEntitiesSyncVersion = async (cacheProvider: ICacheProvider, value: string): Promise<string> => {
+const setEntitiesSyncVersion = (cacheProvider: ICacheProvider, value: string): Promise<string> => {
     const cache = cacheProvider.getCache(CACHE.MISC);
     return cache.setItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME, value);
 };
@@ -40,7 +40,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
         if (!modulesMap.has(key)) {
             modulesMap.set(key, {
                 accessor: key,
-                entities: []
+                entities: [],
             });
         }
         return modulesMap.get(key);
@@ -49,20 +49,20 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
     const metadataCache = context.cacheProvider.getCache(CACHE.ENTITIES);
 
     const savedVersion = await getEntitiesSyncVersion(context.cacheProvider);
-    if (savedVersion === CURRENT_SYNC_VERSION){
+    if (savedVersion === CURRENT_SYNC_VERSION) {
         await metadataCache.iterate<IEntityMetadata, void>((metadata) => {
             if (!metadata.typeAccessor)
                 return;
             const moduleSync = getModuleSyncRequest(metadata.moduleAccessor);
-            
+
             const aliases = [...(metadata.aliases ?? []), metadata.entityType];
-            aliases.forEach(alias => {
+            aliases.forEach((alias) => {
                 context.typesMap.register(alias, {
                     module: metadata.moduleAccessor,
                     name: metadata.typeAccessor,
                 });
             });
-    
+
             moduleSync.entities.push({
                 accessor: metadata.typeAccessor,
                 md5: metadata.md5,
@@ -75,7 +75,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
     const request: SyncAllRequest = {
         modules: [],
     };
-    modulesMap.forEach(m => request.modules.push(m));
+    modulesMap.forEach((m) => request.modules.push(m));
     return request;
 };
 
@@ -90,8 +90,8 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                 const data = response.data.result;
 
                 const metadataCache = context.cacheProvider.getCache(CACHE.ENTITIES);
-                data.modules.forEach(m => {
-                    m.entities.forEach(e => {
+                data.modules.forEach((m) => {
+                    m.entities.forEach((e) => {
                         const key = getEntityMetadataCacheKey({ module: m.accessor, name: e.accessor });
 
                         if (isEntityOutOfDateResponse(e)) {
@@ -99,7 +99,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                                 ...e.metadata,
                                 entityType: e.metadata.className, // TODO: remove after refactoring
                                 name: e.metadata.className, // TODO: remove after refactoring
-                            };                            
+                            };
 
                             promises.push(metadataCache.setItem(key, meta));
 
@@ -116,7 +116,8 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                         }
                     });
                 });
-                //console.groupEnd();
+                // promises.push(metadataCache.removeItem('functionalTests/null'));
+                // console.groupEnd();
                 return Promise.all(promises).then();
             } else {
                 console.error('Failed to sync entities', response.data?.error);
@@ -132,12 +133,12 @@ export const getEntityMetadata = async (accessor: IEntityTypeIndentifier, contex
     return context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IEntityMetadata>(key);
 };
 
-export const getCachedMetadataByTypeId = async (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
+export const getCachedMetadataByTypeId = (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
     const key = getEntityMetadataCacheKey(typeId);
     return context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IEntityMetadata>(key);
 };
 
-export const getCachedMetadataByClassName = async (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
+export const getCachedMetadataByClassName = (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata> => {
     const typeId = context.typesMap.resolve(className);
     if (!typeId) {
         throw new Error(`Failed to resolve type id for class ${className}`);

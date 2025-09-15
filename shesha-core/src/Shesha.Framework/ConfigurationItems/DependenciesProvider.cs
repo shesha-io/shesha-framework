@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public abstract class DependenciesProvider<TItem> : IDependenciesProvider<TItem> where TItem : IConfigurationItem
     {
-        public async Task<IList<ConfigurationItemIdentifier>> GetReferencedItemsAsync(ConfigurationItemBase item)
+        public async Task<IList<ConfigurationItemIdentifier>> GetReferencedItemsAsync(ConfigurationItem item)
         {
             return item is TItem typedItem
                 ? await GetReferencedItemsTypedAsync(typedItem)

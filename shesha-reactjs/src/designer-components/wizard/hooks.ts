@@ -175,7 +175,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     });
   };
 
-  const next = async () => {
+  const next = () => {
     try {
       if (current < tabs.length - 1) {
         executeActionIfConfigured(
@@ -204,7 +204,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       (tab) => tab.afterCancelActionConfiguration
     );
 
-  const done = async () => {
+  const done = () => {
     try {
       executeActionIfConfigured(
         (tab) => tab.beforeDoneActionConfiguration,
@@ -301,7 +301,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
       hasArguments: false,
-      executer: async (_, actionContext) => {
+      executer: (_, actionContext) => {
         if (actionContext?.validate) {
           return actionContext.validate();
         }

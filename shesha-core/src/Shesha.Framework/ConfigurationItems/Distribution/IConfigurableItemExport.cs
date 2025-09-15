@@ -23,16 +23,23 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Export configurable item
         /// </summary>
-        Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item);
+        Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item);
 
         /// <summary>
         /// Write item to json
         /// </summary>
         /// <returns></returns>
-        Task WriteToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream);
+        Task WriteItemToJsonAsync(DistributedConfigurableItemBase item, Stream jsonStream);
+
+        /// <summary>
+        /// Check is item can be exported
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        Task<bool> CanExportItemAsync(ConfigurationItem item);
     }
 
-    public interface IConfigurableItemExport<TItem>: IConfigurableItemExport where TItem: ConfigurationItemBase
+    public interface IConfigurableItemExport<TItem>: IConfigurableItemExport where TItem: ConfigurationItem
     { 
 
     }

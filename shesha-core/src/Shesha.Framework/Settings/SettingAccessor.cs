@@ -1,7 +1,7 @@
 ﻿using Abp.Dependency;
+using Abp.Threading;
 using Shesha.Reflection;
 using Shesha.Settings.Exceptions;
-using Shesha.Utilities;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -39,9 +39,9 @@ namespace Shesha.Settings
         }
 
         /// inheritedDoc
-        public async Task<TValue?> GetValueOrNullAsync(SettingManagementContext? context = null)
+        public Task<TValue?> GetValueOrNullAsync(SettingManagementContext? context = null)
         {
-            return await _settingManager.GetOrNullAsync<TValue>(Module, Name, context);
+            return _settingManager.GetOrNullAsync<TValue>(Module, Name, context);
         }
 
         /// inheritedDoc
@@ -64,9 +64,9 @@ namespace Shesha.Settings
         }
 
         /// inheritedDoc
-        public async Task SetValueAsync(TValue? value)
+        public Task SetValueAsync(TValue? value)
         {
-            await _settingManager.SetAsync<TValue>(Module, Name, value);
+            return _settingManager.SetAsync<TValue>(Module, Name, value);
         }
 
         /// inheritedDoc

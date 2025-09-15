@@ -1,5 +1,6 @@
 import { FormFullName, IConfigurableFormComponent } from '@/interfaces';
 import { DatatableColumnType, IActionColumnProps, IAnchoredDirection } from '@/providers/dataTable/interfaces';
+import { ReactNode } from 'react';
 
 type ColumnsItemType = 'item' | 'group';
 
@@ -43,12 +44,24 @@ export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
   customEnabled?: string;
 }
 
+export interface IRendererColumnProps extends IConfigurableColumnsProps {
+  renderCell: (row: object) => ReactNode | string;
+}
+
 /**
  * Configurable data column (displays property of the model)
  */
 export interface IDataColumnsProps extends IConfigurableColumnsProps, IEditableColumnProps {
   propertyName: string;
   allowSorting: boolean;
+}
+
+export const isDataColumn = (column: IConfigurableColumnsProps): column is IDataColumnsProps => {
+  return Boolean(column) && column.columnType === 'data';
+};
+
+export interface ICrudOperationsColumnProps extends IConfigurableColumnsProps {
+
 }
 
 /**
@@ -89,4 +102,16 @@ export const isDataColumnProps = (column: IConfigurableColumnsProps): column is 
 
 export const isActionColumnProps = (column: IConfigurableColumnsProps): column is IConfigurableActionColumnsProps => {
   return column && column.columnType === 'action';
+};
+
+export const isCrudOperationsColumnProps = (column: IConfigurableColumnsProps): column is ICrudOperationsColumnProps => {
+  return column && column.columnType === 'crud-operations';
+};
+
+export const isRendererColumnProps = (column: IConfigurableColumnsProps): column is IRendererColumnProps => {
+  return column && column.columnType === 'renderer';
+};
+
+export const isFormColumnProps = (column: IConfigurableColumnsProps): column is IFormColumnsProps => {
+  return column && column.columnType === 'form';
 };

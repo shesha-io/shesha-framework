@@ -31,7 +31,7 @@ export function useActualContextData<T = any>(
   model: T,
   parentReadonly?: boolean,
   additionalData?: any,
-  propertyFilter?: (name: string) => boolean,
+  propertyFilter?: (name: string, value: any) => boolean,
   executor?: (data: any, context: any) => any,
 ) {
   const parent = useParent(false);

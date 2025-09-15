@@ -175,6 +175,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
+      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter 
+        ? {...propMetadata.formatting?.filter}
+        : null,
     };
   },
   actualModelPropertyFilter: (propName) => propName !== 'queryParams',

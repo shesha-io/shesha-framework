@@ -5,7 +5,7 @@ import {
     ISidebarButton,
     ISidebarGroup,
     ISidebarMenuItem,
-    ISidebarMenuItemV0
+    ISidebarMenuItemV0,
 } from '@/interfaces/sidebar';
 import { ISideBarMenuProps } from '../../../components/configurableSidebarMenu/index';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
@@ -47,7 +47,7 @@ const migrateItem = (item: ISidebarMenuItem): ISidebarMenuItem => {
     if (oldItem.itemType === 'group') {
         const group: ISidebarGroup = {
             ...commonProps,
-            childItems: oldItem.childItems?.map(migrateItem)?.filter(childItem => Boolean(childItem))
+            childItems: oldItem.childItems?.map(migrateItem)?.filter((childItem) => Boolean(childItem)),
         };
         return group;
     }
@@ -63,6 +63,6 @@ const migrateItem = (item: ISidebarMenuItem): ISidebarMenuItem => {
 
 export const migrateToConfigActions = (prev: ISideBarMenuProps): ISideBarMenuProps => {
     const { items } = prev;
-    const newItems = items?.map(item => migrateItem(item)).filter(item => Boolean(item));
+    const newItems = items?.map((item) => migrateItem(item)).filter((item) => Boolean(item));
     return { ...prev, items: newItems };
 };

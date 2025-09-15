@@ -1,6 +1,6 @@
 import { createNamedContext } from "@/utils/react";
 
-export  interface ISourcesFolderContext {
+export interface ISourcesFolderContext {
     /**
      * Folder name
      */

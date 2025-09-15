@@ -38,25 +38,32 @@ export interface IInternalCurrentUserApi extends ICurrentUserApi {
 
 export class CurrentUserApi implements IInternalCurrentUserApi {
   readonly #httpClient: HttpClientApi;
+
   #profileInfo: IUserProfileInfo;
+
   #grantedPermissions: GrantedPermissionDto[];
 
   //#region profile data
   get isLoggedIn() {
     return Boolean(this.#profileInfo);
   }
+
   get id() {
     return this.#profileInfo?.id;
   }
+
   get userName() {
     return this.#profileInfo?.userName;
   }
+
   get firstName() {
     return this.#profileInfo?.firstName;
   }
+
   get lastName() {
     return this.#profileInfo?.lastName;
   }
+
   get personId() {
     return this.#profileInfo?.personId;
   }
@@ -94,12 +101,13 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
       permissionedEntityId: permissionedEntity ? permissionedEntity?.id : undefined,
       permissionedEntityClass: permissionedEntity ? permissionedEntity?._className : undefined,
     };
-    return this.#httpClient
-      .get<IAjaxResponse<boolean>>(`${URLS.IS_PERMISSION_GRANTED}?${qs.stringify(requestParams)}`)
-      .then((response) => (response.data?.success ? response.data.result : false));
+    const response = await this.#httpClient
+      .get<IAjaxResponse<boolean>>(`${URLS.IS_PERMISSION_GRANTED}?${qs.stringify(requestParams)}`);
+
+    return response.data?.success ? response.data.result : false;
   }
 
-  async hasRoleAsync(roleName: string): Promise<boolean> {
+  hasRoleAsync(roleName: string): Promise<boolean> {
     if (!this.isLoggedIn) return Promise.resolve(false);
 
     const requestParams = {
@@ -110,7 +118,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
       .then((response) => (response.data?.success ? response.data.result : false));
   }
 
-  async getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any> {
+  getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any> {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, { name, module, defaultValue, dataType })
       .then((res) => {
@@ -118,7 +126,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
       });
   }
 
-  async updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void> {
+  updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void> {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, { name, module, value, dataType })
       .then((res) => {

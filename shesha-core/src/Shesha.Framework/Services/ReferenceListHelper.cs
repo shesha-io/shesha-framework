@@ -1,22 +1,22 @@
-﻿using Abp.Dependency;
+﻿using Abp;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
+using Abp.Threading;
 using Shesha.AutoMapper.Dto;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Cache;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Services.ReferenceLists.Exceptions;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +38,7 @@ namespace Shesha.Services
         /// <summary>
         /// Cache of reference list ids
         /// </summary>
-        private readonly ITypedCache<string, Guid> _listIdsCache;
+        private readonly ITypedCache<string, RefListRevisionIds> _listIdsCache;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -90,7 +90,7 @@ namespace Shesha.Services
                 return null;
             
             // make sure that we have active session
-            using (_unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
+            using (ExistingOrNewUnitOfWork())
             {
                 var items = GetItems(refListId);
                 return items.FirstOrDefault(i => i.ItemValue == value)?.Item;
@@ -105,7 +105,7 @@ namespace Shesha.Services
 
             ValidateRefListId(refListId);
 
-            var values = Extensions.EntityExtensions.DecomposeIntoBitFlagComponents(value);
+            var values = EntityExtensions.DecomposeIntoBitFlagComponents(value);
             var selectedItems = GetItems(refListId)
                 .Where(i => values.Contains(i.ItemValue))
                 .ToList();
@@ -116,27 +116,27 @@ namespace Shesha.Services
         /// inheritedDoc
         public async Task<List<ReferenceListItemDto>> GetItemsAsync(ReferenceListIdentifier refListId)
         {
-            var listId = await GetListIdAsync(refListId);
+            var revisionId = await GetListRevisionIdAsync(refListId);
 
-            return await _listItemsCache.GetAsync(listId, async id => {
-                return await GetItemsAsync(id);
-            });
+            return revisionId != null 
+                ? await _listItemsCache.GetAsync(revisionId.Value, GetRevisionItemsAsync)
+                : new ();
         }
 
         /// inheritedDoc
         public List<ReferenceListItemDto> GetItems(ReferenceListIdentifier refListId)
         {
-            var listId = GetListId(refListId);
+            var revisionId = GetListRevisionId(refListId);
 
-            return _listItemsCache.Get(listId, id => {
-                return GetItems(id);
-            });
+            return revisionId != null
+                ? _listItemsCache.Get(revisionId.Value, GetItems)
+                : new ();
         }
 
-        public List<ReferenceListItemDto> GetItems(Guid listId) 
+        public List<ReferenceListItemDto> GetItems(Guid revisionId) 
         {
             var items = _itemsRepository.GetAll()
-                .Where(e => e.ReferenceList.Id == listId)
+                .Where(e => e.ReferenceListRevision.Id == revisionId)
                 .OrderBy(e => e.OrderIndex).ThenBy(e => e.Item)
                 .ToList();
 
@@ -144,10 +144,10 @@ namespace Shesha.Services
             return itemDtos;
         }
 
-        public async Task<List<ReferenceListItemDto>> GetItemsAsync(Guid listId)
+        public async Task<List<ReferenceListItemDto>> GetRevisionItemsAsync(Guid revisionId)
         {
             var items = await _itemsRepository.GetAll()
-                .Where(e => e.ReferenceList.Id == listId)
+                .Where(e => e.ReferenceListRevision.Id == revisionId)
                 .OrderBy(e => e.OrderIndex).ThenBy(e => e.Item)
                 .ToListAsync();
 
@@ -166,32 +166,6 @@ namespace Shesha.Services
 
             var query = _listRepository.GetAll().Where(f => (anyModule || f.Module != null && !f.Module.IsDeleted && f.Module.Name == refListId.Module) && f.Name == refListId.Name);
 
-            switch (mode)
-            {
-                case ConfigurationItemViewMode.Live:
-                    query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    break;
-                case ConfigurationItemViewMode.Ready:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready
-                        };
-
-                        query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
-                        break;
-                    }
-                case ConfigurationItemViewMode.Latest:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready,
-                            ConfigurationItemVersionStatus.Draft
-                        };
-                        query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
-                        break;
-                    }
-            }
             return query;
         }
 
@@ -228,44 +202,57 @@ namespace Shesha.Services
             return GetListIdCacheKey(refListId, _cfRuntime.ViewMode);
         }
 
-        private async Task<Guid> GetListIdAsync(ReferenceListIdentifier refListId)
+        public async Task<Guid?> GetListRevisionIdAsync(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            var listId = await _listIdsCache.GetAsync(idCacheKey, async key => {
-                var list = await GetReferenceListAsync(refListId);
-                return list.Id;
+            var revisionIds = await _listIdsCache.GetAsync(idCacheKey, async key => {
+                using (ExistingOrNewUnitOfWork()) 
+                {
+                    var list = await GetReferenceListAsync(refListId);
+                    return new RefListRevisionIds(list);
+                }                    
             });
-            return listId;
+
+            return _cfRuntime.ViewMode == ConfigurationItemViewMode.Live
+                ? revisionIds.ActiveRevisionId
+                : revisionIds.LatestRevisionId;
         }
 
-        private Guid GetListId(ReferenceListIdentifier refListId)
+        public Guid? GetListRevisionId(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            var listId = _listIdsCache.Get(idCacheKey, key => {
-                var list = GetReferenceList(refListId);
-                return list.Id;
+            var revisionIds = _listIdsCache.Get(idCacheKey, key => {
+                using (ExistingOrNewUnitOfWork())
+                {
+                    var list = GetReferenceList(refListId);
+                    return new RefListRevisionIds(list);
+                }                    
             });
-            return listId;
+            return _cfRuntime.ViewMode == ConfigurationItemViewMode.Live
+                ? revisionIds.ActiveRevisionId
+                : revisionIds.LatestRevisionId;
         }
 
         #endregion
 
         public void HandleEvent(EntityChangedEventData<ReferenceListItem> eventData)
         {
-            var refList = eventData.Entity?.ReferenceList;
+            var refList = eventData.Entity?.ReferenceListRevision;
 
             if (refList != null)
                 ClearCacheForRefList(refList);
         }
 
-        private void ClearCacheForRefList(ReferenceList refList) 
+        private void ClearCacheForRefList(ReferenceListRevision refListRevision) 
         {
             // clear items cache by Id
-            _listItemsCache.Remove(refList.Id);
+            _listItemsCache.Remove(refListRevision.Id);
 
             // clear ids cache by module, nameapce and name
             var modes = Enum.GetValues(typeof(ConfigurationItemViewMode)).Cast<ConfigurationItemViewMode>().ToList();
-            var refListId = refList.GetReferenceListIdentifier();
+            var refListId = refListRevision.RefList.GetReferenceListIdentifier();
+            //var refListId = refListRevision.ConfigurationItem.GetId();
+            
             var keys = modes.Select(mode => GetListIdCacheKey(refListId, mode)).ToArray();
             _listIdsCache.Remove(keys);
 
@@ -279,9 +266,9 @@ namespace Shesha.Services
         /// <summary>
         /// Clear reference list cache
         /// </summary>
-        public async Task ClearCacheAsync()
+        public Task ClearCacheAsync()
         {
-            await _listItemsCache.ClearAsync();
+            return _listItemsCache.ClearAsync();
         }
 
         /// <summary>
@@ -323,11 +310,39 @@ namespace Shesha.Services
             {
                 var item = _itemsRepository.FirstOrDefault(itemId);
 
-                if (item?.ReferenceList != null)
-                    ClearCacheForRefList(item.ReferenceList);
+                if (item?.ReferenceListRevision != null)
+                    ClearCacheForRefList(item.ReferenceListRevision);
                 
                 uow.Complete();
             }
+        }
+
+        private IDisposable? ExistingOrNewUnitOfWork()
+        {
+            if (_unitOfWorkManager.Current != null)
+                return null;
+
+            var uow = _unitOfWorkManager.Begin();
+
+            return new DisposeAction(() => {
+                uow.Complete();
+                uow.Dispose();
+            });
+        }
+
+        public class RefListRevisionIds
+        {
+            public Guid? ActiveRevisionId { get; set; }
+            public Guid? LatestRevisionId { get; set; }
+            public RefListRevisionIds()
+            {
+            }
+
+            public RefListRevisionIds(ReferenceList refList)
+            {
+                LatestRevisionId = refList.LatestRevision?.Id;
+                ActiveRevisionId = refList.ActiveRevision?.Id;
+            }            
         }
     }
 }

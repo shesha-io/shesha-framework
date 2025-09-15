@@ -30,7 +30,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
   const keyValueFunc: KayValueFunc = props.keyValueFunc ??
-    ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
+    ((value: any) => getValueByPropertyName(value, keyPropName) ?? value);
   const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ??
     ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] }));
   const filterNotKeysFunc: FilterSelectedFunc = ((value: any) => {
@@ -41,7 +41,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
   const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ??
     // --- For backward compatibility
-    (props.dataSourceType === 'entitiesList'
+    (props.dataSourceType === 'entitiesList' && !props.keyPropName
       ? ((value: any) => ({ id: value.id, _displayName: getValueByPropertyName(value, displayPropName), _className: value._className }))
       // ---
       : ((value: any) => getValueByPropertyName(value, keyPropName) ?? value));
@@ -66,6 +66,11 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     return res;
   }, [props.value]);
 
+  // reset loading state on error
+  useEffect(() => {
+    setLoadingValues(false);
+  }, [source.error]);
+
   // update local store of values details
   useEffect(() => {
     if (props.dataSourceType === 'entitiesList' && props.entityType
@@ -87,7 +92,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           const values = Array.isArray(props.value) ? props.value : [props.value];
           selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
-        if (loadingValues && source?.tableData?.length) {
+        if (loadingValues) {
           setLoadingIndicator(false);
           setLoadingValues(false);
           selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));

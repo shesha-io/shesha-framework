@@ -119,7 +119,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
             owner: name,
             ownerUid: actionsOwnerUid,
             hasArguments: false,
-            executer: async (_args, actionContext) => {
+            executer: (_args, actionContext) => {
                 if (hasPreviousActionError(actionContext)) {
                     const error = actionContext.actionError instanceof Error
                         ? { message: actionContext.actionError.message }
@@ -141,12 +141,11 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
             owner: name,
             ownerUid: actionsOwnerUid,
             hasArguments: false,
-            executer: async () => {
+            executer: () => {
                 shaForm.setValidationErrors(undefined);
                 return Promise.resolve();
             },
         },
         actionDependencies
     );
-
 };

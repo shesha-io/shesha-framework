@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useMemo } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useActualContextData, useActualContextExecution, useCalculatedModel, useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
@@ -24,7 +24,6 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(componentModel.type);
 
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
@@ -35,7 +34,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     deviceModel,
     undefined,
     undefined,
-    (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name),
+    (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
   );
 
@@ -56,7 +55,6 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
 
   const control = useMemo(() => (
     <toolboxComponent.Factory 
-      componentRef={componentRef}
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}

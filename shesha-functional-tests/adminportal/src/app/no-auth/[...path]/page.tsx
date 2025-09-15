@@ -29,11 +29,11 @@ const DynamicPageInternal: FC<PageProps> = (props) => {
     return notFound();
 
   const formId: FormIdentifier = {
-    module: moduleName, 
+    module: moduleName,
     name: formName
   };
 
-  return <DynamicPage {...searchParams} formId={ formId }/>;
+  return <DynamicPage {...searchParams} formId={formId} />;
 };
 
 export default DynamicPageInternal;

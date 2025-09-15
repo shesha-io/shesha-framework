@@ -43,6 +43,26 @@ export const getSettings = () => {
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
+                  propertyName: 'removeFieldFromPayload',
+                  label: 'Exclude From Form Data',
+                  inputType: 'switch',
+                  tooltip: 'If checked, the field will not be included in the submitted payload',
+                  jsSetting: true,
+                })
+                .addContextPropertyAutocomplete({
+                  id: nanoid(),
+                  propertyName: 'propertyName',
+                  label: 'Property Name',
+                  parentId: commonTabId,
+                  size: 'small',
+                  styledLabel: true,
+                  validate: {
+                    required: true,
+                  },
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
                   propertyName: 'componentName',
                   label: 'Component name',
                   inputType: 'propertyAutocomplete',
@@ -174,13 +194,6 @@ export const getSettings = () => {
                       type: 'propertyAutocomplete',
                       autoFillProps: false,
                     },
-                    {
-                      id: nanoid(),
-                      propertyName: 'ownerId',
-                      label: 'Owner ID',
-                      type: 'textField',
-                      jsSetting: true,
-                    },
                   ]
                 })
                 .addSettingsInputRow({
@@ -193,8 +206,21 @@ export const getSettings = () => {
                       label: 'Owner Type',
                       type: 'autocomplete',
                       dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                       useRawValues: true,
+                      jsSetting: true,
+                    },
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'ownerId',
+                      label: 'Owner ID',
+                      type: 'textField',
                       jsSetting: true,
                     },
                     {
@@ -217,6 +243,7 @@ export const getSettings = () => {
                       type: 'editableTagGroupProps',
                       description: 'File types that can be accepted.',
                       jsSetting: true,
+                      tooltip: "The file typeName should consist a dot before the name, for example .png",
                     }
                   ]
                 })

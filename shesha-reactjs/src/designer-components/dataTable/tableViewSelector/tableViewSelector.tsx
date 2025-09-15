@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { FC, MutableRefObject, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { Alert } from 'antd';
 import { evaluateDynamicFilters } from '@/utils';
@@ -17,18 +17,15 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
-    componentRef: MutableRefObject<any>;
 }
 
 export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     id,
     filters,
     hidden,
-    componentRef,
     persistSelectedFilters,
 }) => {
     const {
-        columns,
         changeSelectedStoredFilterIds,
         selectedStoredFilterIds,
         setPredefinedFilters,
@@ -47,10 +44,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     const pageContext = dataContextManager?.getPageContext();
     const dataContext = useDataContext(false);
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
-
-    componentRef.current = {
-        columns,
-    };
 
     const selectedFilterId =
         selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;

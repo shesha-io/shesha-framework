@@ -82,7 +82,7 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
         return getFormByIdLoader(payload).promise;
     };
 
-    const getFormByMarkupAsync = async ({ markup, formSettings = DEFAULT_FORM_SETTINGS, isSettingsForm: convertToSettings }: GetFormByMarkupPayload): Promise<UpToDateForm> => {
+    const getFormByMarkupAsync = ({ markup, formSettings = DEFAULT_FORM_SETTINGS, isSettingsForm: convertToSettings }: GetFormByMarkupPayload): Promise<UpToDateForm> => {
         const settings: IFormSettings = convertToSettings
             ? { ...formSettings, isSettingsForm: true }
             : formSettings;
@@ -94,7 +94,7 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
             flatStructure,
             settings: upToDateForm.settings,
         };
-        return result;
+        return Promise.resolve(result);
     };
 
     const makeFormByMarkupLoader = (payload: GetFormByMarkupPayload): FormLoadingItem => {

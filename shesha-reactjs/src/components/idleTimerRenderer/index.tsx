@@ -92,7 +92,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
           <div className={styles.idleTimerContent}>
             <span className={styles.idleTimerContentTopHint}>
               You have not been using the application for sometime. Please click on the
-              <strong>Keep me signed in</strong> button, else you'll be automatically signed out in
+              <strong>Keep me signed in</strong> button, else you`ll be automatically signed out in
             </span>
             <Progress type="circle" percent={getPercentage(rt)} status={getStatus(rt)} format={() => <>{rt}</>} />
             <span className={styles.idleTimerContentBottomHint}>

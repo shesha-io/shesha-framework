@@ -12,8 +12,6 @@ next-example/.out-storybook/*
 .next
 
 # Ide
-.vscode/*
-vscode/
 .idea/*
 
 # misc

@@ -161,7 +161,7 @@ export const getSettings = () =>
             label: 'Owner Type',
             labelAlign: 'right',
             dataSourceType: 'url',
-            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+            dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
             displayPropName: 'displayText',
             keyPropName: 'value',
             mode: 'single',

@@ -2,7 +2,6 @@
 using Moq;
 using Shesha.Configuration;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Reflection;
 using Shesha.Services.Settings;
 using Shesha.Services.Settings.Cache;
@@ -35,9 +34,11 @@ namespace Shesha.Tests.Settings
                 Id = "268A7384-72F5-4CCF-A411-BFCF5E5DDAD7".ToGuid(),
                 Module = module,
                 Name = settingName,
-                VersionStatus = ConfigurationItemVersionStatus.Live,
+                // TODO: V1 review
+                //VersionStatus = ConfigurationItemVersionStatus.Live,
             };
-            testConfiguration.SetIsLast(true);
+            // TODO: V1 review
+            //testConfiguration.SetIsLast(true);
 
             var testValue = new SettingValue { 
                 Id = "DCCFCC16-4EAA-4C1C-855D-6AE29A7F5286".ToGuid(),

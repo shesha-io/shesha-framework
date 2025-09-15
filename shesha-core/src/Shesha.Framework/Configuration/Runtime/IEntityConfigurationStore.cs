@@ -7,6 +7,8 @@ namespace Shesha.Configuration.Runtime
     /// </summary>
     public interface IEntityConfigurationStore
     {
+        void InitializeDynamic();
+
         /// <summary>
         /// Returns <see cref="EntityConfiguration"/> by entity type
         /// </summary>
@@ -28,5 +30,7 @@ namespace Shesha.Configuration.Runtime
         /// <param name="entityType"></param>
         /// <param name="applicationServiceType"></param>
         void SetDefaultAppService(Type entityType, Type applicationServiceType);
+
+        void ReInitialize();
     }
 }

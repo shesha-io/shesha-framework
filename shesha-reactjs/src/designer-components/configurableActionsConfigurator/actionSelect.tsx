@@ -22,6 +22,16 @@ interface IActionSelectItem {
     children: IActionSelectItem[];
     selectable: boolean;
 }
+
+const treeStyles = {
+  popup: {
+    root: {
+      maxHeight: 400,
+      overflow: 'auto',
+    }
+  }
+};
+
 export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOnly = false }) => {
 
     const treeData = useMemo<IActionSelectItem[]>(() => {
@@ -70,10 +80,7 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
                 width: '100%',
             }}
             value={value}
-            dropdownStyle={{
-                maxHeight: 400,
-                overflow: 'auto',
-            }}
+            styles={treeStyles}
             size='small'
             placeholder="Please select"
             allowClear
