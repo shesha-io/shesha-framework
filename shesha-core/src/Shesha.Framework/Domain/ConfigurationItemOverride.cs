@@ -18,8 +18,6 @@ namespace Shesha.Domain
         public virtual Guid BaseModuleId { get; set; }
         public virtual string BaseModuleName { get; set; }
 
-        public virtual Guid? ActiveRevisionId { get; set; }
         public virtual Guid LatestRevisionId { get; set; }
-        public virtual Guid RevisionId { get; set; }
     }
 }

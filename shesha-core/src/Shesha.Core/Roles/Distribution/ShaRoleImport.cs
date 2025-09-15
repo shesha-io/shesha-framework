@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class ShaRoleImport : ConfigurationItemImportBase<ShaRole, ShaRoleRevision, DistributedShaRole>, IShaRoleImport, ITransientDependency
+    public class ShaRoleImport : ConfigurationItemImportBase<ShaRole, DistributedShaRole>, IShaRoleImport, ITransientDependency
     {
         private readonly IRepository<ShaRolePermission, Guid> _rolePermissionRepo;
         public string ItemType => ShaRole.ItemTypeName;
@@ -22,16 +22,15 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<ShaRole, Guid> repository,
-            IRepository<ShaRoleRevision, Guid> revisionRepository,
             IRepository<ShaRolePermission, Guid> rolePermissionRepo
-        ) : base (repository, revisionRepository, moduleRepo, frontEndAppRepo)
+        ) : base (repository, moduleRepo, frontEndAppRepo)
         {
             _rolePermissionRepo = rolePermissionRepo;
         }
 
-        private async Task ImportPermissionsAsync(ShaRole item, ShaRoleRevision revision, DistributedShaRole distributedItem) 
+        private async Task ImportPermissionsAsync(ShaRole item, DistributedShaRole distributedItem) 
         {
-            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.RoleRevision == revision).ToListAsync();
+            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.Role == item).ToListAsync();
 
             var toDelete = dbPermissions.Where(e => !distributedItem.Permissions.Any(dp => dp.Permission == e.Permission)).ToList();
             foreach (var permission in toDelete) 
@@ -50,7 +49,7 @@ namespace Shesha.DynamicEntities.Distribution
                 else {
                     await _rolePermissionRepo.InsertAsync(new ShaRolePermission()
                     {
-                        RoleRevision = revision,
+                        Role = item,
                         Permission = perm.Permission,
                         IsGranted = perm.IsGranted,
                     });
@@ -58,20 +57,20 @@ namespace Shesha.DynamicEntities.Distribution
             }
         }
 
-        protected override async Task<bool> CustomPropsAreEqualAsync(ShaRole item, ShaRoleRevision revision, DistributedShaRole distributedItem)
+        protected override async Task<bool> CustomPropsAreEqualAsync(ShaRole item, DistributedShaRole distributedItem)
         {
-            var equals = revision.NameSpace == distributedItem.NameSpace &&
-                revision.HardLinkToApplication == distributedItem.HardLinkToApplication;
+            var equals = item.NameSpace == distributedItem.NameSpace &&
+                item.HardLinkToApplication == distributedItem.HardLinkToApplication;
 
             if (!equals)
                 return false;
 
-            return await PermissionsAreEqualAsync(revision, distributedItem);
+            return await PermissionsAreEqualAsync(item, distributedItem);
         }
 
-        private async Task<bool> PermissionsAreEqualAsync(ShaRoleRevision revision, DistributedShaRole distributedItem)
+        private async Task<bool> PermissionsAreEqualAsync(ShaRole role, DistributedShaRole distributedItem)
         {
-            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.RoleRevision == revision && e.IsGranted)
+            var dbPermissions = await _rolePermissionRepo.GetAll().Where(e => e.Role == role && e.IsGranted)
                 .OrderBy(e => e.Permission)
                 .Select(e => e.Permission)                
                 .ToListAsync();
@@ -85,12 +84,12 @@ namespace Shesha.DynamicEntities.Distribution
             return dbPermissions.Delimited(",") == distributedPermissions.Delimited(",");
         }
 
-        protected override async Task MapCustomPropsToItemAsync(ShaRole item, ShaRoleRevision revision, DistributedShaRole distributedItem)
+        protected override async Task MapCustomPropsToItemAsync(ShaRole item, DistributedShaRole distributedItem)
         {
-            revision.NameSpace = distributedItem.NameSpace;
-            revision.SetHardLinkToApplication(distributedItem.HardLinkToApplication);
+            item.NameSpace = distributedItem.NameSpace;
+            item.SetHardLinkToApplication(distributedItem.HardLinkToApplication);
 
-            await ImportPermissionsAsync(item, revision, distributedItem);
+            await ImportPermissionsAsync(item, distributedItem);
         }
     }
 }

@@ -9,9 +9,9 @@ namespace Shesha.Domain
     public class ShaRolePermission : FullPowerEntity
     {
         /// <summary>
-        /// Role revision
+        /// Role
         /// </summary>
-        public required virtual ShaRoleRevision RoleRevision { get; set; }
+        public required virtual ShaRole Role { get; set; }
 
         /// <summary>
         /// Permission

@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Extensions;
@@ -106,10 +105,10 @@ namespace Shesha.GraphQL.Provider
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            if (eventData.Entity?.EntityConfigRevision == null)
+            if (eventData.Entity?.EntityConfig == null)
                 return;
 
-            Cache.Remove(GetEntitySchemaName(eventData.Entity.EntityConfigRevision.EntityConfig.ClassName));
+            Cache.Remove(GetEntitySchemaName(eventData.Entity.EntityConfig.ClassName));
         }
 
         public void RegisterCustomSchema(string name, ISchema schema)

@@ -12,7 +12,6 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("configuration_item_revisions", Schema = "frwk")]
-    [Discriminator]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class ConfigurationItemRevision : FullAuditedEntity<Guid, User>
     {
@@ -20,20 +19,6 @@ namespace Shesha.Domain
         /// Configuration Item this revision belongs to
         /// </summary>
         public virtual ConfigurationItem ConfigurationItem { get; set; } = default!;
-
-        /// <summary>
-        /// Label of the configuration item
-        /// </summary>
-        [MaxLength(200)]
-        [Display(Name = "Label", Description = "Label of the item, can be used in lists as a user friendly name")]
-        public virtual string? Label { get; set; }
-
-        /// <summary>
-        /// Item description
-        /// </summary>
-        [MaxLength(int.MaxValue)]
-        [DataType(DataType.MultilineText)]
-        public virtual string? Description { get; set; }
 
         /// <summary>
         /// Version number
@@ -52,7 +37,7 @@ namespace Shesha.Domain
         public virtual string? Comments { get; set; }
 
         /// <summary>
-        /// Hash of the configuration JSON.Allows for easy comparison and search for versions with the same config.
+        /// Hash of the configuration JSON. Allows for easy comparison and search for versions with the same config.
         /// </summary>
         public virtual string ConfigHash { get; set; } = string.Empty;
 
@@ -70,5 +55,11 @@ namespace Shesha.Domain
         /// Parent revision
         /// </summary>
         public virtual ConfigurationItemRevision? ParentRevision { get; set; }
+
+        /// <summary>
+        /// Configuration in JSON format
+        /// </summary>
+        [StringLength(int.MaxValue)]
+        public virtual string ConfigurationJson { get; set; } = string.Empty;
     }
 }

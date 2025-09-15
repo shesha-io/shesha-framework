@@ -1,11 +1,14 @@
 ﻿using Abp.Auditing;
 using Abp.Domain.Entities.Auditing;
+using JetBrains.Annotations;
 using Shesha.ConfigurationItems;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shesha.Domain
 {
@@ -16,7 +19,7 @@ namespace Shesha.Domain
     [Table("configuration_items", Schema = "frwk")]
     [SnakeCaseNaming]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    public class ConfigurationItem : FullAuditedEntity<Guid>, IMayHaveFrontEndApplication, IConfigurationItem
+    public class ConfigurationItem : FullAuditedEntity<Guid>, IMayHaveFrontEndApplication
     {
         [ReadonlyProperty]
         [MaxLength(50)]
@@ -40,6 +43,26 @@ namespace Shesha.Domain
         /// Module
         /// </summary>
         public virtual Module? Module { get; set; }
+
+        /// <summary>
+        /// Label of the configuration item
+        /// </summary>
+        [MaxLength(200)]
+        [Display(Name = "Label", Description = "Label of the item, can be used in lists as a user friendly name")]
+        public virtual string? Label { get; set; }
+
+        /// <summary>
+        /// Item description
+        /// </summary>
+        [MaxLength(int.MaxValue)]
+        [DataType(DataType.MultilineText)]
+        public virtual string? Description { get; set; }
+
+        /// <summary>
+        /// Most recent revision. Is used for performance boosting
+        /// </summary>
+        [CascadeUpdateRules(false, false)]
+        public virtual ConfigurationItemRevision LatestRevision { get; set; }
 
         /// <summary>
         /// If true, it means that the item will not be visible to Config or End-users/Admins.
@@ -88,12 +111,37 @@ namespace Shesha.Domain
             if (Origin == null)
                 Origin = this;
         }
-        
+
+        [MemberNotNull(nameof(LatestRevision))]
+        public virtual ConfigurationItemRevision MakeNewRevision()
+        {
+            var prevRevision = LatestRevision;
+            var newVersionNo = prevRevision != null
+                ? prevRevision.VersionNo + 1
+                : 1;
+            LatestRevision = new ConfigurationItemRevision()
+            {
+                ConfigurationItem = this,
+                VersionNo = newVersionNo,
+                ParentRevision = prevRevision,
+            };
+            return LatestRevision;
+        }
+
         public override string ToString()
         {
             return Module != null
                 ? $"{ItemType}:{Module.Name}/{Name}"
                 : $"{ItemType}:{Name}";
+
+        }
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        [UsedImplicitly]
+        public ConfigurationItem()
+        {
 
         }
     }

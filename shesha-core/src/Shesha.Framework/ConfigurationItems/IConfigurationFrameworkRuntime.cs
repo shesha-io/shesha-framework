@@ -1,5 +1,4 @@
-﻿using Shesha.ConfigurationItems.Models;
-using System;
+﻿using System;
 
 namespace Shesha.ConfigurationItems
 {
@@ -8,11 +7,6 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public interface IConfigurationFrameworkRuntime
     {
-        /// <summary>
-        /// View mode (live/ready/latest)
-        /// </summary>
-        ConfigurationItemViewMode ViewMode { get; }
-
         /// <summary>
         /// Front-end application
         /// </summary>

@@ -6,6 +6,7 @@ using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,14 +14,16 @@ using System.Threading.Tasks;
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.NotificationTemplate")]
+    [SnakeCaseNaming]
+    [Table("notification_templates", Schema = "frwk")]
     public class NotificationTemplate : FullAuditedEntity<Guid>, INotificationTemplateProps
     {
-        public virtual RefListNotificationMessageFormat? MessageFormat { get; set; }
-        public virtual NotificationTypeConfigRevision PartOf { get; set; }
+        public virtual RefListNotificationMessageFormat MessageFormat { get; set; }
+        public virtual NotificationTypeConfig PartOf { get; set; }
         [MaxLength(2000)]
-        public virtual string TitleTemplate { get; set; }
+        public virtual string TitleTemplate { get; set; } = string.Empty;
         [MaxLength(int.MaxValue)]
-        public virtual string BodyTemplate { get; set; }
+        public virtual string BodyTemplate { get; set; } = string.Empty;
 
         public NotificationTemplate Clone()
         {
@@ -50,7 +53,7 @@ namespace Shesha.Domain
 
         private async Task<bool> UniqueMessageFormatAsync(NotificationTemplate template, CancellationToken cancellationToken)
         {
-            if (template.MessageFormat == null || template.PartOf == null)
+            if (template.PartOf == null)
                 return true;
 
             var alreadyExist = await _repository.GetAll()

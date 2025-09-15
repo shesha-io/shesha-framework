@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class ShaRoleExport : ConfigurableItemExportBase<ShaRole, ShaRoleRevision, DistributedShaRole>, IShaRoleExport, ITransientDependency
+    public class ShaRoleExport : ConfigurableItemExportBase<ShaRole, DistributedShaRole>, IShaRoleExport, ITransientDependency
     {
         public string ItemType => ShaRole.ItemTypeName;
 
@@ -16,14 +16,14 @@ namespace Shesha.DynamicEntities.Distribution
         {
         }
 
-        protected override Task MapCustomPropsAsync(ShaRole item, ShaRoleRevision revision, DistributedShaRole result)
+        protected override Task MapCustomPropsAsync(ShaRole item, DistributedShaRole result)
         {
             // specific properties
-            result.NameSpace = revision.NameSpace;
-            result.HardLinkToApplication = revision.HardLinkToApplication;
+            result.NameSpace = item.NameSpace;
+            result.HardLinkToApplication = item.HardLinkToApplication;
             result.Permissions = new List<DistributedShaRolePermission>();
 
-            foreach (var perm in revision.Permissions)
+            foreach (var perm in item.Permissions)
             {
                 result.Permissions.Add(new DistributedShaRolePermission()
                 {

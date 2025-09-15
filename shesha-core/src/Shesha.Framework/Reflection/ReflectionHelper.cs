@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
@@ -752,6 +753,7 @@ namespace Shesha.Reflection
                 : null;
         }
 
+        [DebuggerStepThrough]
         public static T NotNull<T>([NotNull]this T? value, string message = "Value must not be null")
         {
             return value ?? throw new Exception(message);
@@ -764,6 +766,7 @@ namespace Shesha.Reflection
         /// <param name="message"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        [DebuggerStepThrough]
         public static string NotNullOrWhiteSpace([NotNull] this string? value, string message = "String must not be null or empty")
         {
             return !string.IsNullOrWhiteSpace(value) 
@@ -779,6 +782,7 @@ namespace Shesha.Reflection
         /// <param name="types">Argument types</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static MethodInfo GetRequiredMethod(this Type type, string name, Type[] types)
         { 
             return type.GetMethod(name, types) ?? throw new MethodNotFoundException(type, name);
@@ -792,6 +796,7 @@ namespace Shesha.Reflection
         /// <param name="bindingAttr">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static MethodInfo GetRequiredMethod(this Type type, string name, BindingFlags bindingAttr)
         {
             return type.GetMethod(name, bindingAttr) ?? throw new MethodNotFoundException(type, name);
@@ -804,6 +809,7 @@ namespace Shesha.Reflection
         /// <param name="name">Method name</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static MethodInfo GetRequiredMethod(this Type type, string name)
         {
             return type.GetMethod(name) ?? throw new MethodNotFoundException(type, name);
@@ -816,11 +822,20 @@ namespace Shesha.Reflection
         /// <param name="propertyName">Property name</param>
         /// <returns></returns>
         /// <exception cref="PropertyNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static PropertyInfo GetRequiredProperty(this Type type, string propertyName) 
         {
             return type.GetProperty(propertyName) ?? throw new PropertyNotFoundException(type, propertyName);
         }
 
+        /// <summary>
+        /// Get field by name. Throws <see cref="FieldNotFoundException"/> if field not found
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        /// <exception cref="FieldNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static FieldInfo GetRequiredField(this Type type, string fieldName)
         {
             return type.GetField(fieldName) ?? throw new FieldNotFoundException(type, fieldName);

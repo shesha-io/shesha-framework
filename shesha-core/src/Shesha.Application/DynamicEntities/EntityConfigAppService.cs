@@ -44,13 +44,13 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
     public async Task<FormIdentifier?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
     {
-        var entityConfig = await Repository.GetAll().Where(x => x.Name == entityConfigName || x.Revision.TypeShortAlias == entityConfigName).FirstOrDefaultAsync();
+        var entityConfig = await Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName).FirstOrDefaultAsync();
         if (entityConfig == null)
             return null;
 
         typeName = typeName.Replace(" ", "").ToLower();
 
-        var configFormId = entityConfig.Revision.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
+        var configFormId = entityConfig.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
 
         return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityConfigName}-{typeName}");
     }
@@ -110,7 +110,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
     private async Task DeleteConfigAsync(Guid id)
     {
-        await _propertyRepository.DeleteAsync(x => x.EntityConfigRevision.ConfigurationItem.Id == id);
+        await _propertyRepository.DeleteAsync(x => x.EntityConfig.Id == id);
         await _configItemRepository.DeleteAsync(id);
     }
 

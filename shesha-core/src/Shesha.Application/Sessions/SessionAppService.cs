@@ -80,7 +80,7 @@ namespace Shesha.Sessions
                 {
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var permissionRoles = roles.Where(x => x.Role != null && x.Role.Revision != null && x.Role.Revision.Permissions.Any(p => p.Permission == permissionName)).ToList();
+                        var permissionRoles = roles.Where(x => x.Role != null && x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
@@ -95,7 +95,7 @@ namespace Shesha.Sessions
 
                 foreach(var role in roles)
                 {
-                    var permissions = role.Role?.Revision?.Permissions;
+                    var permissions = role.Role?.Permissions;
                     if (permissions == null || permissions.Any())
                         continue;
 

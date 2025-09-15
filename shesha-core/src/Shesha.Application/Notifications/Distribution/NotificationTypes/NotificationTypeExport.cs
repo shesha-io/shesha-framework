@@ -14,7 +14,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationTypeExport : ConfigurableItemExportBase<NotificationTypeConfig, NotificationTypeConfigRevision, DistributedNotificationType>, INotificationTypeExport, ITransientDependency
+    public class NotificationTypeExport : ConfigurableItemExportBase<NotificationTypeConfig, DistributedNotificationType>, INotificationTypeExport, ITransientDependency
     {
         private readonly IRepository<NotificationTemplate, Guid> _templateRepo;
 
@@ -25,15 +25,15 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         public string ItemType => NotificationTypeConfig.ItemTypeName;
 
-        protected override async Task MapCustomPropsAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType result)
+        protected override async Task MapCustomPropsAsync(NotificationTypeConfig item, DistributedNotificationType result)
         {
-            result.CopyNotificationSpecificPropsFrom(revision);
-            result.Templates = await ExportTemplatesAsync(revision);
+            result.CopyNotificationSpecificPropsFrom(item);
+            result.Templates = await ExportTemplatesAsync(item);
         }
 
-        private async Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfigRevision revision)
+        private async Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfig item)
         {
-            var templates = await _templateRepo.GetAll().Where(t => t.PartOf == revision).ToListAsync();
+            var templates = await _templateRepo.GetAll().Where(t => t.PartOf == item).ToListAsync();
             return templates.Select(e => new DistributedNotificationTemplateDto { Id = e.Id }.CopyTemplatePropsFrom(e)).ToList();
         }
     }

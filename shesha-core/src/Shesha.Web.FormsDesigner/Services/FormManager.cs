@@ -1,10 +1,8 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Permissions;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,15 +11,11 @@ namespace Shesha.Web.FormsDesigner.Services
     /// <summary>
     /// Form manager
     /// </summary>
-    public class FormManager : ConfigurationItemManager<FormConfiguration, FormConfigurationRevision>, IFormManager, ITransientDependency
+    public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         
-        public FormManager(
-            IPermissionedObjectManager permissionedObjectManager,
-            IModuleManager moduleManager,
-            IRepository<FormConfigurationRevision, Guid> revisionRepo
-        ) : base()
+        public FormManager(IPermissionedObjectManager permissionedObjectManager) : base()
         {
             _permissionedObjectManager = permissionedObjectManager;
         }
@@ -38,11 +32,11 @@ namespace Shesha.Web.FormsDesigner.Services
             return Repository.GetAllListAsync();
         }
 
-        protected override Task CopyRevisionPropertiesAsync(FormConfigurationRevision source, FormConfigurationRevision destination)
+        protected override Task CopyItemPropertiesAsync(FormConfiguration source, FormConfiguration destination)
         {
             destination.Markup = source.Markup;
             destination.IsTemplate = source.IsTemplate;
-
+            
             return Task.CompletedTask;
         }
 

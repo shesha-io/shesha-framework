@@ -32,7 +32,7 @@ namespace Shesha.Authorization
             
             // TODO: add caching
             var roles = await _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null).Select(e => e.Role).ToListAsync();
-            return roles.Any(r => r!.Revision.Permissions.Any(x => x.Permission == permissionName && x.IsGranted));
+            return roles.Any(r => r!.Permissions.Any(x => x.Permission == permissionName && x.IsGranted));
         }
 
         public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
@@ -49,7 +49,7 @@ namespace Shesha.Authorization
                     !x.PermissionedEntities.Any()
                     || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
 
-            var permissions = appointments.Select(e => e.Role?.Revision)
+            var permissions = appointments.Select(e => e.Role)
                 .WhereNotNull()
                 .SelectMany(e => e.Permissions)
                 .ToList();

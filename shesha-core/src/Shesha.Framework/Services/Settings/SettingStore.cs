@@ -3,10 +3,8 @@ using Abp.Domain.Repositories;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Services.Settings.Cache;
 using Shesha.Services.Settings.Dto;
@@ -23,11 +21,10 @@ using System.Threading.Tasks;
 namespace Shesha.Services.Settings
 {
     /// inheritedDoc
-    public class SettingStore : ConfigurationItemManager<SettingConfiguration, SettingConfigurationRevision>, ISettingStore, ITransientDependency,
+    public class SettingStore : ConfigurationItemManager<SettingConfiguration>, ISettingStore, ITransientDependency,
         IAsyncEventHandler<EntityChangedEventData<SettingDefinition>>,
         IAsyncEventHandler<EntityChangingEventData<SettingValue>>
     {
-        private readonly IRepository<SettingConfigurationRevision, Guid> _revisionRepository;
         private readonly IRepository<SettingValue, Guid> _settingValueRepository;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly ISettingCacheHolder _cacheHolder;
@@ -37,12 +34,10 @@ namespace Shesha.Services.Settings
         /// Default constructor
         /// </summary>
         public SettingStore(
-            IRepository<SettingConfigurationRevision, Guid> revisionRepository,
             IRepository<SettingValue, Guid> settingValueRepository,
             IConfigurationFrameworkRuntime cfRuntime,
             ISettingCacheHolder cacheHolder) : base()
         {
-            _revisionRepository = revisionRepository;
             _settingValueRepository = settingValueRepository;
             _cfRuntime = cfRuntime;
             _cacheHolder = cacheHolder;
@@ -73,22 +68,20 @@ namespace Shesha.Services.Settings
 
             definition.Origin = definition;
 
-            var revision = definition.EnsureLatestRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
-            revision.DataType = input.DataType;
-            revision.EditorFormName = input.EditorFormName;
-            revision.EditorFormModule = input.EditorFormModule;
-            revision.OrderIndex = input.OrderIndex;
-            revision.IsClientSpecific = input.IsClientSpecific;
-            revision.AccessMode = input.AccessMode;
-            revision.Category = input.Category;
-            revision.IsUserSpecific = input.IsUserSpecific;
-            revision.ClientAccess = input.ClientAccess;
+            definition.Description = input.Description;
+            definition.Label = input.Label;
+            definition.DataType = input.DataType;
+            definition.EditorFormName = input.EditorFormName;
+            definition.EditorFormModule = input.EditorFormModule;
+            definition.OrderIndex = input.OrderIndex;
+            definition.IsClientSpecific = input.IsClientSpecific;
+            definition.AccessMode = input.AccessMode;
+            definition.Category = input.Category;
+            definition.IsUserSpecific = input.IsUserSpecific;
+            definition.ClientAccess = input.ClientAccess;
             
             definition.Normalize();
 
-            await _revisionRepository.InsertOrUpdateAsync(revision);
             await Repository.InsertAsync(definition);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -194,7 +187,7 @@ namespace Shesha.Services.Settings
             await _cacheHolder.Cache.RemoveAsync(cacheKey);
         }
 
-        protected override Task CopyRevisionPropertiesAsync(SettingConfigurationRevision source, SettingConfigurationRevision destination)
+        protected override Task CopyItemPropertiesAsync(SettingConfiguration source, SettingConfiguration destination)
         {
             destination.DataType = source.DataType;
             destination.DataFormat = source.DataFormat;
@@ -206,7 +199,7 @@ namespace Shesha.Services.Settings
             destination.AccessMode = source.AccessMode;
             destination.IsUserSpecific = source.IsUserSpecific;
             destination.ClientAccess = source.ClientAccess;
-
+            
             return Task.CompletedTask;
         }
 
@@ -234,10 +227,8 @@ namespace Shesha.Services.Settings
 
                 Module = config.Module?.Name;
                 Name = config.Name;
-                
-                var revision = config.Revision;
-                IsClientSpecific = revision?.IsClientSpecific ?? false;
-                IsUserSpecific = revision?.IsUserSpecific ?? false;
+                IsClientSpecific = config.IsClientSpecific;
+                IsUserSpecific = config.IsUserSpecific;
                 AppKey = settingValue.Application?.AppKey;
                 UserId = settingValue.User?.Id;
             }

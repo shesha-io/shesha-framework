@@ -2,7 +2,6 @@
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using System;
 using System.Collections.Generic;
@@ -63,9 +62,9 @@ namespace Shesha.ConfigurationItems.Cache
         }
 
         /// inhertiedDoc
-        public Task<string?> GetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode)
+        public Task<string?> GetCachedMd5Async(string itemType, string? applicationKey, string? module, string name)
         {
-            var key = GetCacheKey(applicationKey, module, name, mode);
+            var key = GetCacheKey(applicationKey, module, name);
 
             return UsingCacheAsync(itemType, async(cache) => {
                 var value = await cache.TryGetValueAsync(key);
@@ -85,9 +84,9 @@ namespace Shesha.ConfigurationItems.Cache
         }
 
         /// inhertiedDoc
-        public Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode, string? md5)
+        public Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, string? md5)
         {
-            var key = GetCacheKey(applicationKey, module, name, mode);
+            var key = GetCacheKey(applicationKey, module, name);
             return UsingCacheAsync(itemType, async (cache) => {
                 await cache.SetAsync(key, new ConfigurationItemCacheItem { Md5 = md5 });
             });
@@ -102,9 +101,9 @@ namespace Shesha.ConfigurationItems.Cache
             });
         }
 
-        private string GetCacheKey(string? applicationKey, string? module, string name, ConfigurationItemViewMode mode)
+        private string GetCacheKey(string? applicationKey, string? module, string name)
         {
-            var key = $"{module}|{name}|{mode}";
+            var key = $"{module}|{name}";
 
             if (!string.IsNullOrWhiteSpace(applicationKey))
                 key = applicationKey + "/" + key;
@@ -158,8 +157,7 @@ namespace Shesha.ConfigurationItems.Cache
         {
             await UsingCacheAsync(configItem.ItemType, async (cache) => {
                 await cache.RemoveAsync(GetCacheKey(configItem.Id));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Live));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Latest));
+                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name));
             });
         }
     }

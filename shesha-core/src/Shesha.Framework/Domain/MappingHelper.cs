@@ -9,7 +9,6 @@ using Shesha.Domain.Conventions;
 using Shesha.Domain.Interfaces;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
-using Shesha.FluentMigrator;
 using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Reflection;
@@ -201,7 +200,7 @@ namespace Shesha.Domain
                     || (propertyConfig.DataType == DataTypes.Array && propertyConfig.DataFormat == ArrayFormats.MultivalueReferenceList)
                     ? "Lkp"
                     : null;
-            return $"{GetColumnPrefix(propertyConfig.EntityConfigRevision.EntityConfig, moduleList)}{propertyConfig.Name}{suffix}";
+            return $"{GetColumnPrefix(propertyConfig.EntityConfig, moduleList)}{propertyConfig.Name}{suffix}";
 
         }
 
