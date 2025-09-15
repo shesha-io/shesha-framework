@@ -92,7 +92,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         {(value, onChange) => {
           if(JSON.stringify(value) !== JSON.stringify(files)) setFiles(value);
 
-          const onChangeCustom = (fileList) => {
+          const onFileListChanged = (fileList) => {
             onChange(fileList);
 
             executeScriptSync(model.onFileChanged, {
@@ -117,7 +117,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
               // used for requered field validation
-              onChange={onChangeCustom}
+              onChange={onFileListChanged}
               value={value}
             >
               <CustomFile
