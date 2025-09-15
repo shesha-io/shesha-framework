@@ -111,12 +111,12 @@ export function storedFilesReducer(
 
     case StoredFilesActionEnums.UpdateIsDownloadedSuccess: {
       const { fileId } = payload;
-      
+
       return {
         ...state,
         fileList: state.fileList?.map(file => 
           file.id === fileId || file.uid === fileId
-            ? { ...file, isDownloadedByCurrentUser: true }
+            ? { ...file, userHasDownloaded: true }
             : file
         ) || [],
       };
@@ -127,7 +127,7 @@ export function storedFilesReducer(
         ...state,
         fileList: state.fileList?.map(file => ({
           ...file,
-          isDownloadedByCurrentUser: true
+          userHasDownloaded: true
         })) || [],
       };
     }

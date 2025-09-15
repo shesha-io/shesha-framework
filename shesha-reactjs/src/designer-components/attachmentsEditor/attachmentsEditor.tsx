@@ -1,7 +1,7 @@
 import { FolderAddOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
@@ -65,26 +65,27 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
-    useEffect(()=> {
-        if (model.onFileChanged && files !== undefined )
-        executeScriptSync(model.onFileChanged, {
-          value: files,
-          data,
-          form: getFormApi(form),
-          globalState,
-          http: httpClient,
-          message,
-          moment,
-          setGlobalState
-        });
-    },[files]);
-
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
           if(JSON.stringify(value) !== JSON.stringify(files)) setFiles(value);
+
+          const onChangeCustom = (fileList) => {
+            onChange(fileList);
+
+            executeScriptSync(model.onFileChanged, {
+              value: fileList,
+              data,
+              form: getFormApi(form),
+              globalState,
+              http: httpClient,
+              message,
+              moment,
+              setGlobalState
+            });
+          };
 
           return (
             <StoredFilesProvider
@@ -96,7 +97,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
               // used for requered field validation
-              onChange={onChange}
+              onChange={onChangeCustom}
               value={value}
             >
               <CustomFile
