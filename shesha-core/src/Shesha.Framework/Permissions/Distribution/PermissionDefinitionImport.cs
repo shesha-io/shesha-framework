@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class PermissionDefinitionImport : ConfigurationItemImportBase<PermissionDefinition, PermissionDefinitionRevision, DistributedPermissionDefinition>, IPermissionDefinitionImport, ITransientDependency
+    public class PermissionDefinitionImport : ConfigurationItemImportBase<PermissionDefinition, DistributedPermissionDefinition>, IPermissionDefinitionImport, ITransientDependency
     {
         public string ItemType => PermissionDefinition.ItemTypeName;
 
@@ -23,9 +23,8 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<PermissionDefinition, Guid> repository,
-            IRepository<PermissionDefinitionRevision, Guid> revisionRepository,
             IShaPermissionManager shaPermissionManager
-        ) : base (repository, revisionRepository, moduleRepo, frontEndAppRepo)
+        ) : base (repository, moduleRepo, frontEndAppRepo)
         {
             _shaPermissionManager = shaPermissionManager;
         }
@@ -57,7 +56,7 @@ namespace Shesha.DynamicEntities.Distribution
             return Task.FromResult(result);
         }
 
-        protected override Task AfterImportAsync(PermissionDefinition item, PermissionDefinitionRevision revision, DistributedPermissionDefinition distributedItem, IConfigurationItemsImportContext context)
+        protected override Task AfterImportAsync(PermissionDefinition item, DistributedPermissionDefinition distributedItem, IConfigurationItemsImportContext context)
         {
             /* TODO_V1: review usage of _shaPermissionManager and restore if required
             await _shaPermissionManager.EditPermissionAsync(dbItem.Name, dbItem);
@@ -67,15 +66,15 @@ namespace Shesha.DynamicEntities.Distribution
         }
 
 
-        protected override Task<bool> CustomPropsAreEqualAsync(PermissionDefinition item, PermissionDefinitionRevision revision, DistributedPermissionDefinition distributedItem)
+        protected override Task<bool> CustomPropsAreEqualAsync(PermissionDefinition item, DistributedPermissionDefinition distributedItem)
         {
-            var equals = revision.Parent == distributedItem.Parent;
+            var equals = item.Parent == distributedItem.Parent;
             return Task.FromResult(equals);
         }
 
-        protected override Task MapCustomPropsToItemAsync(PermissionDefinition item, PermissionDefinitionRevision revision, DistributedPermissionDefinition distributedItem)
+        protected override Task MapCustomPropsToItemAsync(PermissionDefinition item, DistributedPermissionDefinition distributedItem)
         {
-            revision.Parent = distributedItem.Parent;
+            item.Parent = distributedItem.Parent;
 
             return Task.CompletedTask;
         }

@@ -9,7 +9,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationChannelExport : ConfigurableItemExportBase<NotificationChannelConfig, NotificationChannelConfigRevision, DistributedNotificationChannel>, INotificationChannelExport, ITransientDependency
+    public class NotificationChannelExport : ConfigurableItemExportBase<NotificationChannelConfig, DistributedNotificationChannel>, INotificationChannelExport, ITransientDependency
     {
         public NotificationChannelExport()
         {
@@ -17,14 +17,14 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
 
         public string ItemType => NotificationChannelConfig.ItemTypeName;
 
-        protected override Task MapCustomPropsAsync(NotificationChannelConfig item, NotificationChannelConfigRevision revision, DistributedNotificationChannel result)
+        protected override Task MapCustomPropsAsync(NotificationChannelConfig item, DistributedNotificationChannel result)
         {
-            result.SupportedFormat = revision.SupportedFormat;
-            result.MaxMessageSize = revision.MaxMessageSize;
-            result.SupportedMechanism = revision.SupportedMechanism;
-            result.SenderTypeName = revision.SenderTypeName;
-            result.DefaultPriority = revision.DefaultPriority;
-            result.Status = revision.Status;
+            result.SupportedFormat = item.SupportedFormat;
+            result.MaxMessageSize = item.MaxMessageSize;
+            result.SupportedMechanism = item.SupportedMechanism;
+            result.SenderTypeName = item.SenderTypeName;
+            result.DefaultPriority = item.DefaultPriority;
+            result.Status = item.Status;
 
             return Task.CompletedTask;
         }

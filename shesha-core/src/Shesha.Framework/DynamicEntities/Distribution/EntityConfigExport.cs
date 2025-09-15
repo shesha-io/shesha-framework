@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class EntityConfigExport : ConfigurableItemExportBase<EntityConfig, EntityConfigRevision, DistributedEntityConfig>, IEntityConfigExport, ITransientDependency
+    public class EntityConfigExport : ConfigurableItemExportBase<EntityConfig, DistributedEntityConfig>, IEntityConfigExport, ITransientDependency
     {
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepo;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -30,21 +30,21 @@ namespace Shesha.DynamicEntities.Distribution
             _permissionedObjectManager = permissionedObjectManager;
         }
 
-        protected override async Task MapCustomPropsAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig result)
+        protected override async Task MapCustomPropsAsync(EntityConfig item, DistributedEntityConfig result)
         {
             var fullClassName = item.FullClassName;
 
-            result.TypeShortAlias = revision.TypeShortAlias;
+            result.TypeShortAlias = item.TypeShortAlias;
             result.SchemaName = item.SchemaName;
             result.TableName = item.TableName;
             result.ClassName = item.ClassName;
             result.Namespace = item.Namespace;
             result.DiscriminatorValue = item.DiscriminatorValue;
-            result.GenerateAppService = revision.GenerateAppService;
-            result.Source = revision.Source;
+            result.GenerateAppService = item.GenerateAppService;
+            result.Source = item.Source;
             result.EntityConfigType = item.EntityConfigType;
 
-            result.PropertiesMD5 = revision.HardcodedPropertiesMD5;
+            result.PropertiesMD5 = item.HardcodedPropertiesMD5;
 
             result.ViewConfigurations = MapViewConfigurations(item);
             result.Properties = await MapPropertiesAsync(item);
@@ -58,7 +58,7 @@ namespace Shesha.DynamicEntities.Distribution
 
         private async Task<List<DistributedEntityConfigProperty>> MapPropertiesAsync(EntityConfig entityConfig)
         {
-            var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfigRevision == entityConfig.Revision).ToListAsync();
+            var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
             var properties = new List<DistributedEntityConfigProperty>();
             foreach (var dbProp in dbProperties)
             {
@@ -110,7 +110,7 @@ namespace Shesha.DynamicEntities.Distribution
 
         private List<EntityViewConfigurationDto> MapViewConfigurations(EntityConfig entityConfig)
         {
-            return entityConfig.LatestRevision.ViewConfigurations?.ToList() ?? new();
+            return entityConfig.ViewConfigurations?.ToList() ?? new();
         }
     }
 }

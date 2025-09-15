@@ -86,22 +86,19 @@ namespace Shesha.Services.ConfigurationItems
         }
     }
 
-    public abstract class ConfigurationItemImportBase<TItem, TRevision, TDistributedItem> : ConfigurationItemImportBase
-        where TItem : ConfigurationItem<TRevision>, new()
-        where TRevision : ConfigurationItemRevision, new()
+    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase
+        where TItem : ConfigurationItem, new()
         where TDistributedItem : DistributedConfigurableItemBase
     {
         protected IRepository<TItem, Guid> Repository { get; private set; }
-        protected IRepository<TRevision, Guid> RevisionRepository { get; private set; }
+        public IRepository<ConfigurationItemRevision, Guid> RevisionRepository { get; set; }
 
         protected ConfigurationItemImportBase(
             IRepository<TItem, Guid> repository,
-            IRepository<TRevision, Guid> revisionRepository,
             IRepository<Module, Guid> moduleRepo, 
             IRepository<FrontEndApp, Guid> frontendAppRepo) : base(moduleRepo, frontendAppRepo)
         {
             Repository = repository;
-            RevisionRepository = revisionRepository;
         }
 
         public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
@@ -148,14 +145,15 @@ namespace Shesha.Services.ConfigurationItems
                     Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
                     Name = distributedItem.Name,
                 };
-                item.Normalize();
-                await Repository.InsertAsync(item);
             }
+
+            await MapStandardPropsToItemAsync(item, distributedItem);
+            await MapCustomPropsToItemAsync(item, distributedItem);
+            
+            item.Normalize();
+            await Repository.InsertOrUpdateAsync(item);
+
             var revision = item.MakeNewRevision();
-
-            await MapStandardPropsToItemAsync(item, revision, distributedItem);
-            await MapCustomPropsToItemAsync(item, revision, distributedItem);
-
             revision.CreatedByImport = context.ImportResult;
 
             await RevisionRepository.InsertAsync(revision);
@@ -163,13 +161,12 @@ namespace Shesha.Services.ConfigurationItems
             item.LatestImportedRevisionId = revision.Id;
             await Repository.UpdateAsync(item);
 
-            await AfterImportAsync(item, revision, distributedItem, context);
+            await AfterImportAsync(item, distributedItem, context);
 
             return item;
         }
 
         protected virtual Task AfterImportAsync(TItem item, 
-            TRevision revision,
             TDistributedItem distributedItem,
             IConfigurationItemsImportContext context
         )
@@ -179,34 +176,32 @@ namespace Shesha.Services.ConfigurationItems
 
         protected async Task<bool> SkipImportAsync(TItem? item, TDistributedItem distributedItem)
         {
-            var revision = item?.LatestRevision;
-            if (item == null || revision == null)
+            if (item == null)
                 return false;
 
             var baseEquals = (item.Module == null ? string.IsNullOrWhiteSpace(distributedItem.ModuleName) : item.Module.Name == distributedItem.ModuleName) &&
                 item.Name == distributedItem.Name &&
                 item.Suppress == distributedItem.Suppress &&
 
-                revision.Label == distributedItem.Label &&
-                revision.Description == distributedItem.Description;
+                item.Label == distributedItem.Label &&
+                item.Description == distributedItem.Description;
             if (!baseEquals)
                 return false;
 
-            return await CustomPropsAreEqualAsync(item, revision, distributedItem);
+            return await CustomPropsAreEqualAsync(item, distributedItem);
         }
 
-        protected abstract Task<bool> CustomPropsAreEqualAsync(TItem item, TRevision revision, TDistributedItem distributedItem);
+        protected abstract Task<bool> CustomPropsAreEqualAsync(TItem item, TDistributedItem distributedItem);
 
-        protected Task MapStandardPropsToItemAsync(TItem item, TRevision revision, TDistributedItem distributedItem) 
+        protected Task MapStandardPropsToItemAsync(TItem item, TDistributedItem distributedItem) 
         {
             item.Suppress = distributedItem.Suppress;
-
-            revision.Label = distributedItem.Label;
-            revision.Description = distributedItem.Description;
+            item.Label = distributedItem.Label;
+            item.Description = distributedItem.Description;
 
             return Task.CompletedTask;
         }
 
-        protected abstract Task MapCustomPropsToItemAsync(TItem item, TRevision revision, TDistributedItem distributedItem);
-    }
+        protected abstract Task MapCustomPropsToItemAsync(TItem item, TDistributedItem distributedItem);
+    }    
 }

@@ -9,7 +9,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration export
     /// </summary>
-    public class FormConfigurationExport : ConfigurableItemExportBase<FormConfiguration, FormConfigurationRevision, DistributedFormConfiguration>, IFormConfigurationExport, ITransientDependency
+    public class FormConfigurationExport : ConfigurableItemExportBase<FormConfiguration, DistributedFormConfiguration>, IFormConfigurationExport, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
@@ -22,17 +22,17 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         public string ItemType => FormConfiguration.ItemTypeName;
 
-        protected override async Task MapCustomPropsAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration result)
+        protected override async Task MapCustomPropsAsync(FormConfiguration item, DistributedFormConfiguration result)
         {
             var permission = await _permissionedObjectManager.GetOrNullAsync(
                 FormManager.GetFormPermissionedObjectName(item.Module?.Name, item.Name),
                 ShaPermissionedObjectsTypes.Form
             );
 
-            result.Markup = revision.Markup;
-            result.ModelType = revision.ModelType;
+            result.Markup = item.Markup;
+            result.ModelType = item.ModelType;
             //TemplateId = revision.Template?.Id,
-            result.IsTemplate = revision.IsTemplate;
+            result.IsTemplate = item.IsTemplate;
 
             result.Access = permission?.Access;
             result.Permissions = permission?.Permissions;

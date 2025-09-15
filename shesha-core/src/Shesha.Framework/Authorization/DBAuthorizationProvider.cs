@@ -21,10 +21,10 @@ namespace Shesha.Authorization
 
         private void CreateChildPermissions(List<PermissionDefinition> dbPermissions, Abp.Authorization.Permission permission)
         {
-            var dbChildPermissions = dbPermissions.Where(x => x.Revision != null && x.Revision.Parent == permission.Name).ToList();
+            var dbChildPermissions = dbPermissions.Where(x => x.Parent == permission.Name).ToList();
             foreach (var dbChildPermission in dbChildPermissions)
             {
-                var childPermission = permission.CreateChildPermission(dbChildPermission.Name, dbChildPermission.Revision.NotNull().Label?.L(), dbChildPermission.Revision.Description?.L());
+                var childPermission = permission.CreateChildPermission(dbChildPermission.Name, dbChildPermission.NotNull().Label?.L(), dbChildPermission.Description?.L());
                 CreateChildPermissions(dbPermissions, childPermission);
                 dbPermissions.Remove(dbChildPermission);
             }

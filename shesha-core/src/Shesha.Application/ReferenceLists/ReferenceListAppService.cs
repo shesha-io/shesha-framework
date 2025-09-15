@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
-using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
 using Shesha.Exceptions;
@@ -21,18 +20,15 @@ namespace Shesha.ReferenceLists
     public class ReferenceListAppService : SheshaCrudServiceBase<ReferenceList, ReferenceListDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateReferenceListDto, UpdateReferenceListDto, GetReferenceListByIdInput>
     {
         private readonly IReferenceListHelper _refListHelper;
-        private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
 
         public ReferenceListAppService(
             IRepository<ReferenceList, Guid> repository,
             IReferenceListHelper refListHelper, 
-            IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache
             ) : base(repository)
         {
             _refListHelper = refListHelper;
-            _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
         }
 
@@ -44,12 +40,10 @@ namespace Shesha.ReferenceLists
         [HttpGet]
         public async Task<ReferenceListWithItemsDto> GetByNameAsync(GetReferenceListByNameInput input)
         {
-            var mode = _cfRuntime.ViewMode;
-
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
-                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(ReferenceList.ItemTypeName, null, input.Module, input.Name, mode);
+                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(ReferenceList.ItemTypeName, null, input.Module, input.Name);
                 if (input.Md5 == cachedMd5)
                     throw new ContentNotModifiedException("Reference list not changed");
             }
@@ -58,12 +52,11 @@ namespace Shesha.ReferenceLists
 
             var dto = ObjectMapper.Map<ReferenceListWithItemsDto>(refList);
 
-            var items = await _refListHelper.GetRevisionItemsAsync(refList.Revision.Id);
-            dto.Items = items.Select(item => ObjectMapper.Map<ReferenceListItemDto>(item)).ToList();
+            dto.Items = await _refListHelper.GetItemsAsync(refList.Id);
 
             var json = JsonConvert.SerializeObject(dto);
             dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
+            await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
 
             return dto;
         }

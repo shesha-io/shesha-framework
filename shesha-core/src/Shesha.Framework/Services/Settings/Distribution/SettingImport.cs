@@ -15,53 +15,52 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting import
     /// </summary>
-    public class SettingImport : ConfigurationItemImportBase<SettingConfiguration, SettingConfigurationRevision, DistributedSettingConfiguration>, ISettingImport, ITransientDependency
+    public class SettingImport : ConfigurationItemImportBase<SettingConfiguration, DistributedSettingConfiguration>, ISettingImport, ITransientDependency
     {
         private readonly IRepository<SettingValue, Guid> _settingValueRepo;
 
         public SettingImport(IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<SettingConfiguration, Guid> repository,
-            IRepository<SettingConfigurationRevision, Guid> revisionRepository,
-            IRepository<SettingValue, Guid> settingValueRepo): base(repository, revisionRepository, moduleRepo, frontEndAppRepo)
+            IRepository<SettingValue, Guid> settingValueRepo): base(repository, moduleRepo, frontEndAppRepo)
         {
             _settingValueRepo = settingValueRepo;
         }
 
         public string ItemType => SettingConfiguration.ItemTypeName;
 
-        protected override Task<bool> CustomPropsAreEqualAsync(SettingConfiguration item, SettingConfigurationRevision revision, DistributedSettingConfiguration distributedItem)
+        protected override Task<bool> CustomPropsAreEqualAsync(SettingConfiguration item, DistributedSettingConfiguration distributedItem)
         {
-            var equals = revision.DataType == distributedItem.DataType &&
-                revision.EditorFormName == distributedItem.EditorFormName &&
-                revision.EditorFormModule == distributedItem.EditorFormModule &&
-                revision.OrderIndex == distributedItem.OrderIndex &&
-                revision.Category == distributedItem.Category &&
-                revision.IsClientSpecific == distributedItem.IsClientSpecific &&
-                revision.AccessMode == distributedItem.AccessMode &&
-                revision.IsUserSpecific == distributedItem.IsUserSpecific &&
-                revision.ClientAccess == distributedItem.ClientAccess;
+            var equals = item.DataType == distributedItem.DataType &&
+                item.EditorFormName == distributedItem.EditorFormName &&
+                item.EditorFormModule == distributedItem.EditorFormModule &&
+                item.OrderIndex == distributedItem.OrderIndex &&
+                item.Category == distributedItem.Category &&
+                item.IsClientSpecific == distributedItem.IsClientSpecific &&
+                item.AccessMode == distributedItem.AccessMode &&
+                item.IsUserSpecific == distributedItem.IsUserSpecific &&
+                item.ClientAccess == distributedItem.ClientAccess;
 
             return Task.FromResult(equals);
         }
 
-        protected override async Task AfterImportAsync(SettingConfiguration item, SettingConfigurationRevision revision, DistributedSettingConfiguration distributedItem, IConfigurationItemsImportContext context)
+        protected override async Task AfterImportAsync(SettingConfiguration item, DistributedSettingConfiguration distributedItem, IConfigurationItemsImportContext context)
         {
             await ImportSettingValuesAsync(item, distributedItem.Values, context);
         }
 
-        protected override Task MapCustomPropsToItemAsync(SettingConfiguration item, SettingConfigurationRevision revision, DistributedSettingConfiguration distributedItem)
+        protected override Task MapCustomPropsToItemAsync(SettingConfiguration item, DistributedSettingConfiguration distributedItem)
         {
             // setting configuration specific properties
-            revision.DataType = distributedItem.DataType;
-            revision.EditorFormName = distributedItem.EditorFormName;
-            revision.EditorFormModule = distributedItem.EditorFormModule;
-            revision.OrderIndex = distributedItem.OrderIndex;
-            revision.Category = distributedItem.Category;
-            revision.IsClientSpecific = distributedItem.IsClientSpecific;
-            revision.AccessMode = distributedItem.AccessMode;
-            revision.IsUserSpecific = distributedItem.IsUserSpecific;
-            revision.ClientAccess = distributedItem.ClientAccess;
+            item.DataType = distributedItem.DataType;
+            item.EditorFormName = distributedItem.EditorFormName;
+            item.EditorFormModule = distributedItem.EditorFormModule;
+            item.OrderIndex = distributedItem.OrderIndex;
+            item.Category = distributedItem.Category;
+            item.IsClientSpecific = distributedItem.IsClientSpecific;
+            item.AccessMode = distributedItem.AccessMode;
+            item.IsUserSpecific = distributedItem.IsUserSpecific;
+            item.ClientAccess = distributedItem.ClientAccess;
 
             return Task.CompletedTask;
         }

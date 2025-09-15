@@ -17,9 +17,8 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Base class of the Configuration Item Manager
     /// </summary>
-    public abstract class ConfigurationItemManager<TItem, TRevision> : AbpServiceBase, IConfigurationItemManager<TItem>
-        where TItem : ConfigurationItem<TRevision>, new()
-        where TRevision: ConfigurationItemRevision, new()
+    public abstract class ConfigurationItemManager<TItem> : AbpServiceBase, IConfigurationItemManager<TItem>
+        where TItem : ConfigurationItem, new()
     {
         /// <summary>
         /// Configurable Item type supported by the current manager
@@ -29,10 +28,9 @@ namespace Shesha.ConfigurationItems
         private string? _discriminator;
         public string Discriminator => _discriminator ?? (_discriminator = ConfigurationItemHelper.GetDiscriminator(ItemType));
         public IRepository<TItem, Guid> Repository { get; set; }
-        public IRepository<TRevision, Guid> RevisionRepository { get; set; }
+        public IRepository<ConfigurationItemRevision, Guid> RevisionRepository { get; set; }
         public IRepository<Module, Guid> ModuleRepository { get; set; }
         public IConfigurationItemHelper ConfigurationItemHelper { get; set; }
-        public IConfigurationFrameworkRuntime CfRuntime { get; set; }
         public IModuleHierarchyProvider HierarchyProvider { get; set; }
         public IRepository<ConfigurationItemInheritance, string> InheritanceRepository { get; set; }
 
@@ -89,18 +87,12 @@ namespace Shesha.ConfigurationItems
             duplicate.Normalize();
             await Repository.InsertAsync(duplicate);
 
-            var sourceRevision = item.LatestRevision;
             var duplicateRevision = duplicate.MakeNewRevision();
 
-            // copy base properties
-            await CopyRevisionPropertiesBaseAsync(sourceRevision, duplicateRevision);
-            await CopyRevisionPropertiesAsync(sourceRevision, duplicateRevision);
-
+            /* TODO: process new revision*/
             duplicateRevision.CreatedByImport = null;
             duplicateRevision.ParentRevision = null;
             
-            await RevisionRepository.InsertAsync(duplicateRevision);
-
             await Repository.UpdateAsync(duplicate);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -115,25 +107,23 @@ namespace Shesha.ConfigurationItems
             return Task.CompletedTask;
         }
 
-        protected virtual Task CopyItemPropertiesAsync(TItem source, TItem destination)
-        {
-            return Task.CompletedTask;
-        }
-
         /// <summary>
-        /// Copy value of custom properties from <paramref name="source"/> to <paramref name="destination"/> revision.
+        /// Copy value of custom properties from <paramref name="source"/> to <paramref name="destination"/>.
         /// Is used in Duplicate and Expose operations
         /// </summary>
-        /// <param name="source">Source revision to copy custom properties from</param>
-        /// <param name="destination">Destination revision to copy custom properties to</param>
-        /// <returns></returns>
-        protected abstract Task CopyRevisionPropertiesAsync(TRevision source, TRevision destination);
+        /// <param name="source">Source to copy custom properties from</param>
+        /// <param name="destination">Destination to copy custom properties to</param>
+        protected virtual Task CopyItemPropertiesAsync(TItem source, TItem destination)
+        {
+            destination.Label = source.Label;
+            destination.Description = source.Description;
+
+            return Task.CompletedTask;
+        }
 
         /// inheritedDoc
         public virtual Task<IConfigurationItemDto> MapToDtoAsync(TItem item) 
         {
-            var revision = item.LatestRevision;
-
             var dto = new ConfigurationItemDto
             {
                 Id = item.Id,
@@ -141,8 +131,8 @@ namespace Shesha.ConfigurationItems
                 OriginId = item.Origin?.Id,
                 Module = item.Module?.Name,
                 Name = item.Name,
-                Label = revision.Label,
-                Description = revision.Description,
+                Label = item.Label,
+                Description = item.Description,
             };
             return Task.FromResult<IConfigurationItemDto>(dto);
         }
@@ -165,8 +155,8 @@ namespace Shesha.ConfigurationItems
 
             var exposedRevision = exposedConfig.MakeNewRevision();
 
-            await CopyRevisionPropertiesBaseAsync(srcRevision, exposedRevision);
-            await CopyRevisionPropertiesAsync(srcRevision, exposedRevision);
+            if (srcRevision != null)
+                await CopyRevisionPropertiesBaseAsync(srcRevision, exposedRevision);
             exposedRevision.VersionNo = 1;
             exposedRevision.VersionName = null;
 
@@ -223,15 +213,11 @@ namespace Shesha.ConfigurationItems
                 Folder = input.Folder,
             };
             item.Origin = item;
-
-            await Repository.InsertAsync(item);
-
-            var revision = item.MakeNewRevision();
-            revision.Description = input.Description;
-            revision.Label = input.Label;
+            item.Description = input.Description;
+            item.Label = input.Label;
             item.Normalize();
 
-            await RevisionRepository.InsertAsync(revision);
+            await Repository.InsertAsync(item);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
@@ -254,10 +240,8 @@ namespace Shesha.ConfigurationItems
             return Repository.GetAll().AnyAsync(e => e.Name == name && e.Module == module);
         }
 
-        protected Task CopyRevisionPropertiesBaseAsync(TRevision srcRevision, TRevision dstRevision)
+        protected Task CopyRevisionPropertiesBaseAsync(ConfigurationItemRevision srcRevision, ConfigurationItemRevision dstRevision)
         {
-            dstRevision.Label = srcRevision.Label;
-            dstRevision.Description = srcRevision.Description;
             dstRevision.Comments = srcRevision.Comments;
             dstRevision.ConfigHash = srcRevision.ConfigHash;
 

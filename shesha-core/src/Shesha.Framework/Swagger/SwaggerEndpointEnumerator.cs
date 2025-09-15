@@ -82,7 +82,7 @@ namespace Shesha.Swagger
         {
             var entityConfigRepo = StaticContext.IocManager.Resolve<IRepository<EntityConfig, Guid>>();
             var entities = entityConfigRepo.GetAll()
-                .Where(e => !e.IsDeleted && e.Revision != null && !e.Revision.GenerateAppService)
+                .Where(e => !e.IsDeleted && !e.GenerateAppService)
                 .Select(e => new { e.ClassName, e.Namespace })
                 .ToList();
             return entities.Select(e => GetFullName(e.Namespace, e.ClassName)).ToList();

@@ -45,7 +45,7 @@ namespace Shesha
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
                 var configs = await _entityConfigRepository.GetAll()
-                    .Where(x => x.LatestRevision.Source == Domain.Enums.MetadataSourceType.UserDefined && x.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+                    .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && x.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
                     .ToListAsync();
 
                 var allCount = configs.Count;
@@ -63,7 +63,7 @@ namespace Shesha
                 {
                     var properties = await _entityPropertyRepository.GetAll()
                         .Where(x => 
-                            x.EntityConfigRevision.ConfigurationItem.Id == config.Id
+                            x.EntityConfig.Id == config.Id
                             && !x.CreatedInDb 
                             && (x.InheritedFrom == null || x.InheritedFrom.IsDeleted)
                             && x.ParentProperty == null 

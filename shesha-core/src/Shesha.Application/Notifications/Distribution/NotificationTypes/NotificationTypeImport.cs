@@ -15,7 +15,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationTypeImport : ConfigurationItemImportBase<NotificationTypeConfig, NotificationTypeConfigRevision, DistributedNotificationType>, INotificationTypeImport, ITransientDependency
+    public class NotificationTypeImport : ConfigurationItemImportBase<NotificationTypeConfig, DistributedNotificationType>, INotificationTypeImport, ITransientDependency
     {
         private readonly INotificationManager _manager;
         private readonly IRepository<NotificationTemplate, Guid> _templateRepo;
@@ -24,10 +24,9 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<NotificationTypeConfig, Guid> repository,
-            IRepository<NotificationTypeConfigRevision, Guid> revisionRepository,
             IRepository<NotificationTemplate, Guid> templateRepo,
             INotificationManager manager            
-        ) : base (repository, revisionRepository, moduleRepo, frontEndAppRepo)
+        ) : base (repository, moduleRepo, frontEndAppRepo)
         {
             _templateRepo = templateRepo;
             _manager = manager;           
@@ -35,34 +34,34 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         public string ItemType => NotificationTypeConfig.ItemTypeName;
 
-        protected override async Task AfterImportAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType distributedItem, IConfigurationItemsImportContext context)
+        protected override async Task AfterImportAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem, IConfigurationItemsImportContext context)
         {
-            await ImportTemplatesAsync(item, revision, distributedItem.Templates);
+            await ImportTemplatesAsync(item, distributedItem.Templates);
         }
 
-        private async Task ImportTemplatesAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, List<DistributedNotificationTemplateDto> templates)
+        private async Task ImportTemplatesAsync(NotificationTypeConfig item, List<DistributedNotificationTemplateDto> templates)
         {
             foreach (var templateDto in templates) 
             {
-                var template = new NotificationTemplate { PartOf = revision }.CopyTemplatePropsFrom(templateDto);
+                var template = new NotificationTemplate { PartOf = item }.CopyTemplatePropsFrom(templateDto);
                 await _templateRepo.InsertAsync(template);
             }
         }
 
-        protected override async Task<bool> CustomPropsAreEqualAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType distributedItem)
+        protected override async Task<bool> CustomPropsAreEqualAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem)
         {
-            var equals = revision.IsTimeSensitive == distributedItem.IsTimeSensitive &&
-                revision.AllowAttachments == distributedItem.AllowAttachments &&
-                revision.Disable == distributedItem.Disable &&
-                revision.CanOptOut == distributedItem.CanOptOut &&
-                revision.Category == distributedItem.Category &&
-                revision.OverrideChannels == distributedItem.OverrideChannels;
+            var equals = item.IsTimeSensitive == distributedItem.IsTimeSensitive &&
+                item.AllowAttachments == distributedItem.AllowAttachments &&
+                item.Disable == distributedItem.Disable &&
+                item.CanOptOut == distributedItem.CanOptOut &&
+                item.Category == distributedItem.Category &&
+                item.OverrideChannels == distributedItem.OverrideChannels;
 
             if (!equals)
                 return false;
 
             // compare templates
-            var templates = await _templateRepo.GetAll().Where(e => e.PartOf == revision).ToListAsync();
+            var templates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
             if (templates.Count() != distributedItem.Templates.Count)
                 return false;
 
@@ -76,10 +75,10 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             return true;
         }
 
-        protected override Task MapCustomPropsToItemAsync(NotificationTypeConfig item, NotificationTypeConfigRevision revision, DistributedNotificationType distributedItem)
+        protected override Task MapCustomPropsToItemAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem)
         {
             // entity specific properties
-            revision.CopyNotificationSpecificPropsFrom(distributedItem);
+            item.CopyNotificationSpecificPropsFrom(distributedItem);
 
             return Task.CompletedTask;
         }

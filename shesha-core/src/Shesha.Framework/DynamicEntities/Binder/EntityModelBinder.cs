@@ -4,7 +4,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Json;
-using Abp.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.AutoMapper.Dto;
@@ -144,9 +143,14 @@ namespace Shesha.DynamicEntities.Binder
                             await DeleteUnreferencedEntityAsync(childEntity, entity);
                         }
                     }
-                    else
-                        if (await ValidateAsync(entity, string.IsNullOrWhiteSpace(propertyName) ? mprop : $"{propertyName}.{mprop}", null, context))
-                        property.SetValue(entity, null);
+                    else {
+                        var emptyValue = property.PropertyType == typeof(string) && !property.IsNullable()
+                            ? string.Empty
+                            : null;
+
+                        if (await ValidateAsync(entity, string.IsNullOrWhiteSpace(propertyName) ? mprop : $"{propertyName}.{mprop}", emptyValue, context))
+                            property.SetValue(entity, emptyValue);
+                    }                        
                 }
             }
 
@@ -699,7 +703,7 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfigRevision.ConfigurationItem.Id);
+                var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfig.Id);
 
                 var refType = _typeFinder.Find(x => x.Namespace == entityConfig.Namespace
                     && (x.Name == entityConfig.ClassName || x.GetTypeShortAliasOrNull() == entityConfig.ClassName))

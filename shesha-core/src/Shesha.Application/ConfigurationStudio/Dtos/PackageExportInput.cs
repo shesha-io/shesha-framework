@@ -1,5 +1,4 @@
-﻿using Shesha.ConfigurationItems.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.ConfigurationStudio.Dtos
 {
@@ -13,11 +12,6 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         public string Filter { get; set; }
-
-        /// <summary>
-        /// Mode of the version selection (live/ready/latest)
-        /// </summary>
-        public ConfigurationItemViewMode VersionSelectionMode { get; set; }
 
         /// <summary>
         /// If true, indicate that all dependencies should be exported as well
