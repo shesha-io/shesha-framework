@@ -1,7 +1,7 @@
 import { FolderAddOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
@@ -92,6 +92,21 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         {(value, onChange) => {
           if(JSON.stringify(value) !== JSON.stringify(files)) setFiles(value);
 
+          const onChangeCustom = (fileList) => {
+            onChange(fileList);
+
+            executeScriptSync(model.onFileChanged, {
+              value: fileList,
+              data,
+              form: getFormApi(form),
+              globalState,
+              http: httpClient,
+              message,
+              moment,
+              setGlobalState
+            });
+          };
+
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
@@ -102,7 +117,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
               // used for requered field validation
-              onChange={onChange}
+              onChange={onChangeCustom}
               value={value}
             >
               <CustomFile

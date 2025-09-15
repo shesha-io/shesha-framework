@@ -31,6 +31,7 @@ export interface IStoredFile extends UploadFile {
   fileCategory?: string | null;
   url?: string | null;
   temporary?: boolean;
+  userHasDownloaded?: boolean;
 }
 
 export interface IRequestFilePayload {
