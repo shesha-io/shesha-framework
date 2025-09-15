@@ -2,7 +2,6 @@
 using Abp.Modules;
 using Abp.Runtime;
 using Shesha.ConfigurationItems.Exceptions;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Extensions;
 using System;
 
@@ -26,7 +25,6 @@ namespace Shesha.ConfigurationItems
         }
 
         private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState {
-            ViewMode = ConfigurationItemViewMode.Live,
             FrontEndApplication = FrontEndAppKeyConsts.SheshaSwaggerFrontend,
         };
 
@@ -37,9 +35,6 @@ namespace Shesha.ConfigurationItems
                 return _scopeProvider.GetValue(ScopeKey) ?? _defaultState;
             }
         }
-
-        /// inheritedDoc
-        public ConfigurationItemViewMode ViewMode => State.ViewMode;
 
         /// inheritedDoc
         public string? FrontEndApplication => State.FrontEndApplication;

@@ -40,10 +40,7 @@ namespace Shesha.Settings
 
                 foreach (var setting in dynamicallyCreatedSettings)
                 {
-                    if (!setting.IsRevisionAvailable)
-                        continue;
-
-                    var definition = _settingDefinitionManager.CreateUserSettingDefinition(setting.Module.NotNull().Name, setting.Name, setting.Revision.DataType, null);
+                    var definition = _settingDefinitionManager.CreateUserSettingDefinition(setting.Module.NotNull().Name, setting.Name, setting.DataType, null);
 
                     var id = new SettingIdentifier(definition.ModuleName, definition.Name);
                     if (settings.ContainsKey(id))

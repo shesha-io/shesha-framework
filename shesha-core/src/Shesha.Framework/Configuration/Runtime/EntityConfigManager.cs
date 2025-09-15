@@ -2,9 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Dto.Interfaces;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using System;
@@ -15,7 +13,7 @@ using System.Threading.Tasks;
 namespace Shesha.Configuration.Runtime
 {
     /// inheritedDoc
-    public class EntityConfigManager : ConfigurationItemManager<EntityConfig, EntityConfigRevision>, IEntityConfigManager, ITransientDependency
+    public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
 
@@ -46,10 +44,10 @@ namespace Shesha.Configuration.Runtime
 
                     EntityConfigType = x.EntityConfigType,
 
-                    Label = x.Revision.Label,
-                    TypeShortAlias = x.Revision.TypeShortAlias,
+                    Label = x.Label,
+                    TypeShortAlias = x.TypeShortAlias,
 
-                    Source = x.Revision.Source,
+                    Source = x.Source,
                 }).ToListAsync();
 
             return implemented ?? false
@@ -57,14 +55,14 @@ namespace Shesha.Configuration.Runtime
                 : result;
         }
 
-        protected async Task CopyPropertiesAsync(EntityConfigRevision source, EntityConfigRevision destination)
+        protected async Task CopyPropertiesAsync(EntityConfig source, EntityConfig destination)
         {
-            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfigRevision == source);
+            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == source);
             foreach (var src in properties)
             {
                 var property = new EntityProperty 
                 { 
-                    EntityConfigRevision = destination,
+                    EntityConfig = destination,
                     Name = src.Name,
                     DataType = src.DataType
                 };
@@ -97,8 +95,14 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        protected override async Task CopyRevisionPropertiesAsync(EntityConfigRevision source, EntityConfigRevision destination)
+        protected override async Task CopyItemPropertiesAsync(EntityConfig source, EntityConfig destination)
         {
+            destination.ClassName = source.ClassName;
+            destination.Namespace = source.Namespace;
+            destination.DiscriminatorValue = source.DiscriminatorValue;
+            destination.TableName = source.TableName;
+            destination.EntityConfigType = source.EntityConfigType;
+
             destination.TypeShortAlias = source.TypeShortAlias;
             destination.HardcodedPropertiesMD5 = source.HardcodedPropertiesMD5;
             destination.ViewConfigurations = source.ViewConfigurations.Select(v => v.Clone()).ToList();
@@ -107,17 +111,6 @@ namespace Shesha.Configuration.Runtime
             destination.Accessor = source.Accessor;
 
             await CopyPropertiesAsync(source, destination);
-        }
-
-        protected override Task CopyItemPropertiesAsync(EntityConfig source, EntityConfig destination)
-        {
-            destination.ClassName = source.ClassName;
-            destination.Namespace = source.Namespace;
-            destination.DiscriminatorValue = source.DiscriminatorValue;
-            destination.TableName = source.TableName;
-            destination.EntityConfigType = source.EntityConfigType;
-
-            return Task.CompletedTask;
         }
     }
 }

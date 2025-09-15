@@ -84,7 +84,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             // Get all user configs
-            var userConfigs = _entityConfigRepo.GetAll().Where(x => x.LatestRevision.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted).ToList();
+            var userConfigs = _entityConfigRepo.GetAll().Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted).ToList();
 
             // Generate dynamic assembly per module
             CreateDynamicAssemblies(context, assemblies, userConfigs);
@@ -199,14 +199,14 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
         public Type CreateType(EntityTypeBuilderType typeBuilderType, EntityTypeBuilderContext context)
         {
-            var properties = _propertyConfigRepo.GetAll().Where(x => x.EntityConfigRevision.ConfigurationItem.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted).ToList();
+            var properties = _propertyConfigRepo.GetAll().Where(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted).ToList();
             return CreateType(typeBuilderType, properties, context);
         }
 
         public EntityTypeBuilderType CreateTypeBuilder(ModuleBuilder moduleBuilder, EntityConfig entityConfig, EntityTypeBuilderContext context)
         {
             // ToDo: AS - remove logging
-            _logger.Warn($"DynamicEntityTypeBuilder: CreateTypeBuilder - {entityConfig.LatestRevision.Accessor}");
+            _logger.Warn($"DynamicEntityTypeBuilder: CreateTypeBuilder - {entityConfig.Accessor}");
 
             Type? baseType = null;
 
@@ -217,7 +217,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
             if (entityConfig.InheritedFrom != null)
             {
-                if (entityConfig.InheritedFrom.LatestRevision.Source == Domain.Enums.MetadataSourceType.ApplicationCode)
+                if (entityConfig.InheritedFrom.Source == Domain.Enums.MetadataSourceType.ApplicationCode)
                 {
                     baseType = _typeFinder.Find(x => x.Name == entityConfig.InheritedFrom.ClassName && x.Namespace == entityConfig.InheritedFrom.Namespace).FirstOrDefault();
                 }

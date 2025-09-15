@@ -110,6 +110,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       <Form
         component={false}
         form={form}
+        layout={formSettings.layout}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         colon={formSettings.colon}

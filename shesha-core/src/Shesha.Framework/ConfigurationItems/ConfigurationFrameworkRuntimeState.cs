@@ -8,11 +8,6 @@ namespace Shesha.ConfigurationItems
     public class ConfigurationFrameworkRuntimeState
     {
         /// <summary>
-        /// View mode
-        /// </summary>
-        public ConfigurationItemViewMode ViewMode { get; set; } = ConfigurationItemViewMode.Live;
-
-        /// <summary>
         /// Front-end application
         /// </summary>
         public string? FrontEndApplication { get; set; }

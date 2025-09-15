@@ -72,8 +72,7 @@ namespace Shesha.Roles
                     Name = name,
                     //NameSpace
                 };
-                var revision = role.EnsureLatestRevision();
-                revision.SetHardLinkToApplication(true);
+                role.SetHardLinkToApplication(true);
 
                 _roleRepository.Insert(role);
             }

@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -22,11 +21,6 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// Enable/disable export of dependencies
         /// </summary>
         public bool ExportDependencies { get; set; }
-
-        /// <summary>
-        /// Mode of the version selection (live/ready/latest)
-        /// </summary>
-        public ConfigurationItemViewMode VersionSelectionMode { get; set; }
 
         private readonly IIocManager _iocManager;
         

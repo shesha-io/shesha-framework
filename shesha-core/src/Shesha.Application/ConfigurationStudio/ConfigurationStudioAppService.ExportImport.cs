@@ -31,7 +31,6 @@ namespace Shesha.ConfigurationStudio
             var exportContext = new PreparePackageContext(items)
             {
                 ExportDependencies = input.ExportDependencies,
-                VersionSelectionMode = input.VersionSelectionMode,
             };
 
             var pack = await PackageManager.PreparePackageAsync(exportContext);

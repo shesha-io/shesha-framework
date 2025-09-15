@@ -119,10 +119,9 @@ namespace Shesha.Permissions
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
             };
             
-            var revision = dbp.EnsureLatestRevision();
-            revision.Parent = permission.ParentName ?? permission.Parent?.Name;
-            revision.Label = permission.DisplayName;
-            revision.Description = permission.Description;
+            dbp.Parent = permission.ParentName ?? permission.Parent?.Name;
+            dbp.Label = permission.DisplayName;
+            dbp.Description = permission.Description;
 
             var res = await _shaPermissionManager.CreatePermissionAsync(dbp);
 
@@ -143,10 +142,9 @@ namespace Shesha.Permissions
                 Name = permission.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
             };
-            var revision = dbp.EnsureLatestRevision();
-            revision.Label = permission.DisplayName;
-            revision.Description = permission.Description;
-            revision.Parent = permission.ParentName ?? permission.Parent?.Name;
+            dbp.Label = permission.DisplayName;
+            dbp.Description = permission.Description;
+            dbp.Parent = permission.ParentName ?? permission.Parent?.Name;
 
             var res = await _shaPermissionManager.EditPermissionAsync(permission.Id.NotNull(), dbp);
 
