@@ -75,7 +75,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           const onFileListChanged = (fileList) => {
             onChange(fileList);
 
-            executeScriptSync(model.onFileChanged, {
+            model.onFileChanged && executeScriptSync(model.onFileChanged, {
               value: fileList,
               data,
               form: getFormApi(form),
