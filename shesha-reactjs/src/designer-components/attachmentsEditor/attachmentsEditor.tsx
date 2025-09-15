@@ -1,7 +1,7 @@
 import { FolderAddOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
@@ -71,7 +71,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           const onFileListChanged = (fileList) => {
             onChange(fileList);
 
-            model.onFileChanged && executeScriptSync(model.onFileChanged, {
+            if(model.onFileChanged) executeScriptSync(model.onFileChanged, {
               value: fileList,
               data,
               form: getFormApi(form),
