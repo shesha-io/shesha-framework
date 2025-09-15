@@ -87,6 +87,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
           desktop: {...prev?.desktop, font: {...prev?.desktop?.font, size: px}},
         };
       })
+      .add<ITextTypographyProps>(6, (prev) => ({ ...prev, content: prev.content ?? "Text..." }))
 };
 
 export default TextComponent;
