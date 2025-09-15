@@ -54,7 +54,7 @@ export interface IStoredFilesStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   fileList?: IStoredFile[];
   newFile?: IStoredFile;
-  fileIdToDelete?: string;
+  fileId?: string;
   url?: string;
 }
 

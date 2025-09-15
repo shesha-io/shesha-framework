@@ -23,6 +23,7 @@ import {
   initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
+  updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
   uploadFileRequestAction,
   uploadFileSuccessAction,
@@ -59,7 +60,6 @@ const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) =>
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
-const haDownloadedEndpoint: IApiEndpoint = { url: '/api/StoredFile/HasDownloaded', httpVerb: 'GET' };
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,
@@ -251,6 +251,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
+      console.log("Response data:: ", response)
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -269,6 +270,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     })
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
+        dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
       })
       .catch((e) => {
         console.error(e);
