@@ -23,6 +23,7 @@ import {
   initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
+  updateAllFilesDownloadedByCurrentUser,
   updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
   uploadFileRequestAction,
@@ -251,7 +252,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
-      console.log("Response data:: ", response)
+        dispatch(updateAllFilesDownloadedByCurrentUser());
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
