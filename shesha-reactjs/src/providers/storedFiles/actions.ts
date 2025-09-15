@@ -25,6 +25,8 @@ export enum StoredFilesActionEnums {
   InitializeFileList = 'INITIALIZE_FILE_LIST',
   UpdateIsDownloadedSuccess = 'UPDATE_IS_DOWNLOADED_SUCCESS',
   UpdateAllFilesDownloadedSuccess = 'UPDATE_ALL_FILES_DOWNLOADED_SUCCESS',
+  UpdateIsDownloadedSuccess = 'UPDATE_IS_DOWNLOADED_SUCCESS'
+
 
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
@@ -131,6 +133,11 @@ export const updateIsDownloadedByCurrentUser  = createAction<IStoredFilesStateCo
 export const updateAllFilesDownloadedByCurrentUser = createAction<IStoredFilesStateContext>(
   StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess,
   () => ({})
+);
+
+export const updateIsDownloadedByCurrentUser  = createAction<IStoredFilesStateContext, string>(
+  StoredFilesActionEnums.UpdateIsDownloadedSuccess,
+  (fileId) => ({ fileId })
 );
 
 /* NEW_ACTION_GOES_HERE */
