@@ -13,7 +13,6 @@ import {
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
-import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -64,8 +63,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
-    const [files, setFiles] = useState<IStoredFile[]>(undefined);
-
     const enabled = !model.readOnly;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
@@ -90,7 +87,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
-          if(JSON.stringify(value) !== JSON.stringify(files)) setFiles(value);
 
           const onFileListChanged = (fileList) => {
             onChange(fileList);
