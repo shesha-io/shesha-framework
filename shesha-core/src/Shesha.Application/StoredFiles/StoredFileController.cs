@@ -7,6 +7,7 @@ using Abp.Reflection;
 using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Shesha.Authorization;
@@ -73,16 +74,16 @@ namespace Shesha.StoredFiles
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
+            await _fileService.MarkDownloadedAsync(fileVersion);
+
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
             {
-                await _fileService.MarkDownloadedAsync(fileVersion);
                 return StatusCode(304);
             }
                 
 #pragma warning disable IDISP001 // Dispose created
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
-             await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
@@ -515,6 +516,10 @@ namespace Shesha.StoredFiles
 
             if (files?.Count > 0)
             {
+                    foreach (var file in files)
+                    {
+                        await _fileService.MarkDownloadedAsync(file.LastVersion());
+                    }
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
 
@@ -718,10 +723,23 @@ namespace Shesha.StoredFiles
         {
             var storedFile = await _fileRepository.GetAsync(id);
 
-            return storedFile != null && !storedFile.IsDeleted
-                ? GetFileDto(storedFile.LastVersion())
-                : null;
+            if (storedFile == null || storedFile.IsDeleted)
+                return null;
+
+            var fileVersion = storedFile.LastVersion();
+            var dto = GetFileDto(fileVersion);
+
+            var currentUserId = _abpSession.UserId;
+            if (currentUserId.HasValue)
+            {
+                dto.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                    .AnyAsync(x => x.CreatorUserId == currentUserId.Value &&
+                                   x.FileVersion.File.Id == storedFile.Id);
+            }
+
+            return dto;
         }
+
 
         /// <summary>
         /// Get file as property of the entity
