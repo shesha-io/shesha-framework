@@ -143,9 +143,14 @@ namespace Shesha.DynamicEntities.Binder
                             await DeleteUnreferencedEntityAsync(childEntity, entity);
                         }
                     }
-                    else
-                        if (await ValidateAsync(entity, string.IsNullOrWhiteSpace(propertyName) ? mprop : $"{propertyName}.{mprop}", null, context))
-                        property.SetValue(entity, null);
+                    else {
+                        var emptyValue = property.PropertyType == typeof(string) && !property.IsNullable()
+                            ? string.Empty
+                            : null;
+
+                        if (await ValidateAsync(entity, string.IsNullOrWhiteSpace(propertyName) ? mprop : $"{propertyName}.{mprop}", emptyValue, context))
+                            property.SetValue(entity, emptyValue);
+                    }                        
                 }
             }
 

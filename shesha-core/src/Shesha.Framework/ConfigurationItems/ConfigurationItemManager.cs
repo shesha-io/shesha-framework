@@ -87,7 +87,6 @@ namespace Shesha.ConfigurationItems
             duplicate.Normalize();
             await Repository.InsertAsync(duplicate);
 
-            var sourceRevision = item.LatestRevision;
             var duplicateRevision = duplicate.MakeNewRevision();
 
             /* TODO: process new revision*/

@@ -176,8 +176,7 @@ namespace Shesha.Services.ConfigurationItems
 
         protected async Task<bool> SkipImportAsync(TItem? item, TDistributedItem distributedItem)
         {
-            var revision = item?.LatestRevision;
-            if (item == null || revision == null)
+            if (item == null)
                 return false;
 
             var baseEquals = (item.Module == null ? string.IsNullOrWhiteSpace(distributedItem.ModuleName) : item.Module.Name == distributedItem.ModuleName) &&
