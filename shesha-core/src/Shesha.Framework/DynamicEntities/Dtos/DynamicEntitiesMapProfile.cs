@@ -20,8 +20,6 @@ namespace Shesha.DynamicEntities.Dtos
                 .ForMember(e => e.Suppress, c => c.MapFrom(e => e.Suppress))
                 .ForMember(e => e.Name, c => c.MapFrom(e => e.Name))
 
-                .ForMember(e => e.Label, c => c.MapFrom(e => e.Revision != null ? e.Revision.Label : null))
-                .ForMember(e => e.Description, c => c.MapFrom(e => e.Revision != null ? e.Revision.Description : null))
                 .ForMember(e => e.Module, c => c.MapFrom(e => e.Module != null ? e.Module.Name : ""))
                 .ForMember(e => e.ModuleId, c => c.MapFrom(e => e.Module != null ? e.Module.Id : Guid.Empty))
                 .ForMember(e => e.InheritedFrom, c => c.MapFrom(e => e.InheritedFrom != null ? e.InheritedFrom.FullClassName : ""))
@@ -30,9 +28,9 @@ namespace Shesha.DynamicEntities.Dtos
 
             CreateMap<EntityPropertyDto, EntityProperty>();
             CreateMap<EntityProperty, EntityPropertyDto>()
-                .ForMember(e => e.EntityConfigId, c => c.MapFrom(e => e.EntityConfigRevision.ConfigurationItem.Id))
+                .ForMember(e => e.EntityConfigId, c => c.MapFrom(e => e.EntityConfig.Id))
                 // ToDo: AS - V1 review mapping
-                .ForMember(e => e.EntityConfigName, c => c.MapFrom(e => e.EntityConfigRevision.EntityConfig.FullClassName))
+                .ForMember(e => e.EntityConfigName, c => c.MapFrom(e => e.EntityConfig.FullClassName))
                 .ForMember(e => e.InheritedFrom, c => c.MapFrom(e => e.InheritedFrom != null ? e.InheritedFrom.Name : ""))
                 .ForMember(e => e.InheritedFromId, c => c.MapFrom(e => e.InheritedFrom != null ? e.InheritedFrom.Id : Guid.Empty))
 
@@ -61,11 +59,11 @@ namespace Shesha.DynamicEntities.Dtos
                 .ForMember(e => e.Name, m => m.MapFrom(e => e.Name))
                 .ForMember(e => e.Suppress, c => c.MapFrom(e => e.Suppress))
 
-                .ForMember(e => e.Label, m => m.MapFrom(e => e.LatestRevision.Label))
-                .ForMember(e => e.Description, m => m.MapFrom(e => e.LatestRevision.Description))
-                .ForMember(e => e.NotImplemented, c => c.MapFrom(e => e.LatestRevision.Source == MetadataSourceType.ApplicationCode
+                .ForMember(e => e.Label, m => m.MapFrom(e => e.Label))
+                .ForMember(e => e.Description, m => m.MapFrom(e => e.Description))
+                .ForMember(e => e.NotImplemented, c => c.MapFrom(e => e.Source == MetadataSourceType.ApplicationCode
                         && StaticContext.IocManager.Resolve<EntityConfigurationStore>().GetOrNull(e.FullClassName) == null))
-                .ForMember(e => e.AllowConfigureAppService, c => c.MapFrom(e => e.LatestRevision.Source == MetadataSourceType.ApplicationCode 
+                .ForMember(e => e.AllowConfigureAppService, c => c.MapFrom(e => e.Source == MetadataSourceType.ApplicationCode 
                         && AllowConfigureAppService(e)))
                 ;
 

@@ -48,6 +48,7 @@ import moment from 'moment';
 import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
@@ -72,6 +73,13 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataSecondaryText?: string;
   noDataIcon?: string;
   showExpandedView?: boolean;
+
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
+  borderRadius?: string;
+  border?: IBorderValue;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -106,6 +114,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onRowSaveSuccessAction: onRowSaveSuccess,
   showExpandedView,
   onRowDeleteSuccessAction,
+  rowBackgroundColor,
+  rowAlternateBackgroundColor,
+  rowHoverBackgroundColor,
+  rowSelectedBackgroundColor,
+  border,
+  onRowClick,
+  onRowDoubleClick,
+  onRowHover,
+  onRowSelect,
+  onSelectionChange,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -146,6 +164,35 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     customReorderEndpoint,
   } = store;
 
+  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
+  const { executeAction } = useConfigurableActionDispatcher();
+
+  const handleRowSelect = useMemo(() => {
+    if (!onRowSelect?.actionName) return undefined;
+
+    return (row: any, rowIndex: number) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowSelect,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row select action:', error);
+      }
+    };
+  }, [onRowSelect, formData, globalState, setGlobalState, moment, executeAction, httpClient]);
+
   const onSelectRowLocal = (index: number, row: any) => {
     if (onSelectRow) {
       onSelectRow(index, row);
@@ -154,8 +201,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (setSelectedRow) {
       const rowId = row?.id;
       const currentId = store.selectedRow?.id;
-      if (rowId !== currentId) setSelectedRow(index, row);
-      else setSelectedRow(null, null);
+      if (rowId !== currentId) {
+        setSelectedRow(index, row);
+        if (handleRowSelect) {
+          handleRowSelect(row, index);
+        }
+      } else {
+        setSelectedRow(null, null);
+      }
     }
   };
 
@@ -165,7 +218,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
       onSelectedIdsChanged(selectedIds);
     }
-  }, [selectedIds]);
+  }, [selectedIds, previousIds]);
 
   useEffect(() => {
     if (!isFetchingTableData && tableData?.length && onFetchDataSuccess) {
@@ -214,8 +267,126 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const metadata = useMetadata(false)?.metadata;
 
-  const { backendUrl } = useSheshaApplication();
-  const httpClient = useHttpClient();
+
+
+  const handleRowClick = useMemo(() => {
+    if (!onRowClick?.actionName) return undefined;
+
+    return (rowIndex: number, row: any) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowClick,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row click action:', error);
+      }
+    };
+  }, [onRowClick, formData, globalState, httpClient]);
+
+  const handleRowDoubleClick = useMemo(() => {
+    if (!onRowDoubleClick?.actionName) return undefined;
+
+    return (row: any, rowIndex: number) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowDoubleClick,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row double-click action:', error);
+      }
+    };
+  }, [onRowDoubleClick, formData, globalState, setGlobalState, moment, executeAction, httpClient]);
+
+  const handleRowHover = useMemo(() => {
+    if (!onRowHover?.actionName) return undefined;
+
+    return (rowIndex: number, row: any) => {
+      const evaluationContext = {
+        data: row,
+        rowIndex,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onRowHover,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row hover action:', error);
+      }
+    };
+  }, [onRowHover, formData, globalState, httpClient]);
+
+
+  const handleSelectionChange = useMemo(() => {
+    if (!onSelectionChange?.actionName) return undefined;
+
+    return (selectedIds: string[]) => {
+      const evaluationContext = {
+        selectedIds,
+        formData,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+
+      try {
+        executeAction({
+          actionConfiguration: onSelectionChange,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing selection change action:', error);
+      }
+    };
+  }, [onSelectionChange, formData, globalState, httpClient]);
+
+  const combinedDblClickHandler = useMemo(() => {
+    return (rowData: any, rowIndex: number) => {
+      if (dblClickHandler) {
+        if (typeof dblClickHandler === 'function') {
+          dblClickHandler(rowData, rowIndex);
+        }
+      }
+      if (handleRowDoubleClick) {
+        handleRowDoubleClick(rowData, rowIndex);
+      }
+    };
+  }, [dblClickHandler, handleRowDoubleClick]);
+
+  useEffect(() => {
+    if (handleSelectionChange && selectedIds?.length !== previousIds?.length) {
+      handleSelectionChange(selectedIds);
+    }
+  }, [selectedIds, handleSelectionChange, previousIds]);
 
   const toolboxComponents = useFormDesignerComponents();
   const shaForm = useShaFormInstance(false);
@@ -370,7 +541,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSave, httpClient]);
 
-  const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {
@@ -453,6 +623,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       }
     };
   }, [onRowDeleteSuccessAction, httpClient]);
+
 
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
@@ -665,7 +836,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     useMultiSelect,
     freezeHeaders,
     onSelectRow: onSelectRowLocal,
-    onRowDoubleClick: dblClickHandler,
+    onRowDoubleClick: combinedDblClickHandler,
     onSelectedIdsChanged: changeSelectedIds,
     onMultiRowSelect,
     onSort, // Update it so that you can pass it as param. Quick fix for now
@@ -711,6 +882,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onResizedChange: onResizedChange,
 
     showExpandedView,
+
+    rowBackgroundColor,
+    rowAlternateBackgroundColor,
+    rowHoverBackgroundColor,
+    rowSelectedBackgroundColor,
+    border,
+
+    onRowClick: handleRowClick,
+    onRowHover: handleRowHover,
   };
 
   return (

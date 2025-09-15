@@ -35,7 +35,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Owner entity config
         /// </summary>
-        public required virtual EntityConfigRevision EntityConfigRevision { get; set; }
+        public required virtual EntityConfig EntityConfig { get; set; }
 
         /// <summary>
         /// Property Name

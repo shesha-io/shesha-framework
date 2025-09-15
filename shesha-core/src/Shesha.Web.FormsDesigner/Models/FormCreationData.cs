@@ -1,5 +1,4 @@
 using Shesha.Domain;
-using Shesha.Web.FormsDesigner.Models;
 
 namespace Shesha.Web.FormsDesigner.Models
 {
@@ -16,6 +15,6 @@ namespace Shesha.Web.FormsDesigner.Models
         /// <summary>
         /// Template to use for the form, if specified
         /// </summary>
-        public FormConfigurationRevision? Template { get; set; }
+        public FormConfiguration? Template { get; set; }
     }
 }

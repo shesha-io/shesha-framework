@@ -15,6 +15,8 @@ export interface ISortableRowProps {
   prepareRow: (row: Row<any>) => void;
   onClick: (row: Row<any>) => void;
   onDoubleClick: (row: Row<any>, index: number) => void;
+  onRowClick?: () => void;
+  onRowHover?: () => void;
   row: Row<any>;
   index: number;
   selectedRowIndex?: number;
@@ -56,6 +58,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     prepareRow,
     onClick,
     onDoubleClick,
+    onRowClick,
+    onRowHover,
     index,
     selectedRowIndex,
     updater,
@@ -77,10 +81,21 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
 
   const handleRowClick = () => {
     onClick(row);
+    if (onRowClick) {
+      onRowClick();
+    }
   };
 
   const handleRowDoubleClick = () => {
     onDoubleClick(row, index);
+  };
+
+  const handleRowMouseEnter = () => {
+    if (dragState === 'finished')
+      setDragState(null);
+    if (onRowHover) {
+      onRowHover();
+    }
   };
 
   prepareRow(row);
@@ -102,10 +117,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       displayComponents={inlineDisplayComponents}
     >
       <div
-        onMouseEnter={() => {
-          if (dragState === 'finished')
-            setDragState(null);
-        }}
+        onMouseEnter={handleRowMouseEnter}
         ref={tableRef}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}

@@ -3,12 +3,12 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio
 {
-    [Migration(20250730081100)]
-    public class M20250730081100 : OneWayMigration
+    [Migration(20250915174100)]
+    public class M20250915174100 : OneWayMigration
     {
         public override void Up()
         {
-            Alter.Table("form_configuration_revisions").InSchema("frwk")
+            Alter.Table("form_configurations").InSchema("frwk")
                 .AddColumn("configuration_form_module").AsString(200).Nullable()
                 .AddColumn("configuration_form_name").AsString(200).Nullable()
                 .AddColumn("generation_logic_type_name").AsString(200).Nullable()

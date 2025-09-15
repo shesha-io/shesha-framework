@@ -156,6 +156,31 @@ export const getSettings = () => {
                                     ]
                                 }
                             )
+                            .addSettingsInputRow(
+                                {
+                                    id: nanoid(),
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'showBackButton',
+                                            label: 'Show Back Button',
+                                            parentId: 'root',
+                                            type: 'switch',
+                                            jsSetting: true,
+                                            defaultValue: true,
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'showDoneButton',
+                                            label: 'Show Done Button',
+                                            parentId: 'root',
+                                            type: 'switch',
+                                            jsSetting: true,
+                                            defaultValue: true,
+                                        }
+                                    ]
+                                }
+                            )
                             .toJson()
                         ]
                     },

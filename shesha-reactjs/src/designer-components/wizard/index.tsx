@@ -29,6 +29,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
+    showBackButton: model.showBackButton ?? true,
+    showDoneButton: model.showDoneButton ?? true,
   }),
   migrator: (m) =>
     m

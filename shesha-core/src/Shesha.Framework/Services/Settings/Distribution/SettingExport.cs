@@ -13,7 +13,7 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting export
     /// </summary>
-    public class SettingExport : ConfigurableItemExportBase<SettingConfiguration, SettingConfigurationRevision, DistributedSettingConfiguration>, ISettingExport, ITransientDependency
+    public class SettingExport : ConfigurableItemExportBase<SettingConfiguration, DistributedSettingConfiguration>, ISettingExport, ITransientDependency
     {
         private readonly IRepository<SettingValue, Guid> _settingValueRepo;
 
@@ -24,18 +24,18 @@ namespace Shesha.Services.Settings.Distribution
 
         public string ItemType => SettingConfiguration.ItemTypeName;
 
-        protected override async Task MapCustomPropsAsync(SettingConfiguration item, SettingConfigurationRevision revision, DistributedSettingConfiguration result)
+        protected override async Task MapCustomPropsAsync(SettingConfiguration item, DistributedSettingConfiguration result)
         {
             // setting configuration specific properties
-            result.DataType = revision.DataType;
-            result.EditorFormName = revision.EditorFormName;
-            result.EditorFormModule = revision.EditorFormModule;
-            result.OrderIndex = revision.OrderIndex;
-            result.Category = revision.Category;
-            result.IsClientSpecific = revision.IsClientSpecific;
-            result.AccessMode = revision.AccessMode;
-            result.ClientAccess = revision.ClientAccess;
-            result.IsUserSpecific = revision.IsUserSpecific;
+            result.DataType = item.DataType;
+            result.EditorFormName = item.EditorFormName;
+            result.EditorFormModule = item.EditorFormModule;
+            result.OrderIndex = item.OrderIndex;
+            result.Category = item.Category;
+            result.IsClientSpecific = item.IsClientSpecific;
+            result.AccessMode = item.AccessMode;
+            result.ClientAccess = item.ClientAccess;
+            result.IsUserSpecific = item.IsUserSpecific;
 
             result.Values = await ExportSettingValuesAsync(item);
         }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
-using Shesha.ConfigurationItems;
 using System;
 using System.ComponentModel;
 
@@ -74,7 +73,7 @@ namespace Shesha.Domain
         }
     }
 
-    public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : IConfigurationItem
+    public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : ConfigurationItem
     {
         protected ConfigurationItemIdentifier(string? module, string name) : base(module, name)
         {

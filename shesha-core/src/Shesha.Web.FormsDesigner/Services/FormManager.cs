@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
@@ -15,15 +14,11 @@ namespace Shesha.Web.FormsDesigner.Services
     /// <summary>
     /// Form manager
     /// </summary>
-    public class FormManager : ConfigurationItemManager<FormConfiguration, FormConfigurationRevision>, IFormManager, ITransientDependency
+    public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         
-        public FormManager(
-            IPermissionedObjectManager permissionedObjectManager,
-            IModuleManager moduleManager,
-            IRepository<FormConfigurationRevision, Guid> revisionRepo
-        ) : base()
+        public FormManager(IPermissionedObjectManager permissionedObjectManager) : base()
         {
             _permissionedObjectManager = permissionedObjectManager;
         }
@@ -55,7 +50,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             // Create a strongly-typed container for form-specific data
             var template = input.TemplateId.HasValue 
-                ? await RevisionRepository.GetAsync(input.TemplateId.Value)
+                ? await Repository.GetAsync(input.TemplateId.Value)
                 : null;
                 
             var additionalData = new FormCreationData
@@ -68,24 +63,24 @@ namespace Shesha.Web.FormsDesigner.Services
             return await base.CreateItemAsync(baseInput, additionalData);
         }
 
-        protected override Task HandleAdditionalPropertiesAsync(FormConfigurationRevision revision, object additionalData)
+        protected override Task HandleAdditionalPropertiesAsync(FormConfiguration form, object additionalData)
         {
             if (additionalData is FormCreationData data)
             {
-                revision.Markup = data.FormInput?.Markup ?? string.Empty;
-                revision.IsTemplate = false;
-                revision.ModelType = data.FormInput?.ModelType;
-                revision.GenerationLogicExtensionJson = data.FormInput?.GenerationLogicExtensionJson;
-                revision.Template = data.Template;
+                form.Markup = data.FormInput?.Markup ?? string.Empty;
+                form.IsTemplate = false;
+                form.ModelType = data.FormInput?.ModelType;
+                form.GenerationLogicExtensionJson = data.FormInput?.GenerationLogicExtensionJson;
+                form.Template = data.Template;
             }
             return Task.CompletedTask;
         }
 
-        protected override Task CopyRevisionPropertiesAsync(FormConfigurationRevision source, FormConfigurationRevision destination)
+        protected override Task CopyItemPropertiesAsync(FormConfiguration source, FormConfiguration destination)
         {
             destination.Markup = source.Markup;
             destination.IsTemplate = source.IsTemplate;
-
+            
             return Task.CompletedTask;
         }
 

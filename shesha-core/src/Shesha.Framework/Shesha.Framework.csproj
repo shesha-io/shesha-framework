@@ -39,6 +39,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\Revisions2Json.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\00-copy front_end_apps.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\01-copy modules.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\02-configuration_items.sql" />
@@ -83,6 +84,7 @@
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\18-copy role_appointments.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\19-copy role_permissions.sql" />
         <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\20-copy permissioned_objects.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\Revisions2Json.sql" />
         <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
         <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
         <None Remove="Migrations\PostgreSql\InitialScripts\Core_DistanceTo.sql" />
@@ -119,6 +121,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\Revisions2Json.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\00-copy front_end_apps.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\01-copy modules.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\02-configuration_items.sql" />
@@ -163,6 +166,7 @@
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\18-copy role_appointments.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\19-copy role_permissions.sql" />
         <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\20-copy permissioned_objects.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\Revisions2Json.sql" />
         <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
         <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
         <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_DistanceTo.sql" />

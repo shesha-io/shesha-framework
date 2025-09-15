@@ -1,4 +1,5 @@
 import { createStyles } from 'antd-style';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -36,7 +37,18 @@ export const useStyles = () => {
   return tableStyles;
 };
 
-export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {
+  rowBackgroundColor,
+  rowAlternateBackgroundColor, 
+  rowHoverBackgroundColor,
+  rowSelectedBackgroundColor,
+}: {
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
+  border?: IBorderValue;
+}) => {
   const {
     shaTable,
     thead,
@@ -69,7 +81,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   // var(--ant-primary-3)
   const hoverableRow = `
         &:not(.${trSelected}) {
-            background: ${token.colorPrimaryBgHover} !important;
+            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
     `;
 
@@ -94,11 +106,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       : null;
   };
 
+
   // .sha-react-table
   const shaReactTable = cx(
     'sha-react-table',
     css`
-      margin: 0 12px;
       background: white;
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
@@ -117,7 +129,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
       .${shaTable} {
         border-spacing: 0;
-        border: 1px solid #ddd;
         display: inline-block;
         min-width: 100%;
 
@@ -183,6 +194,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
           }
 
+          &.${trBody} {
+            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
+          }
+
           .${shaCrudCell} {
             display: flex;
             width: 100%;
@@ -239,14 +254,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trOdd} {
-            background: #f0f0f0;
+            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
           }
 
           &.${trSelected} {
             .sha-link {
               color: white;
             }
-            background: ${token.colorPrimary};
+            background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
             color: white;
 
             .ant-form-item-control-input-content, button, a {

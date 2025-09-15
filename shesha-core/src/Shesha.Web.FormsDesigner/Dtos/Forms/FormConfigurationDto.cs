@@ -52,16 +52,6 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// </summary>
         public string? ModelType { get; set; }
 
-        /// <summary>
-        /// Version number
-        /// </summary>
-        public int VersionNo { get; set; }
-
-        /// <summary>
-        /// If true, indicates that this is a last version of the form
-        /// </summary>
-        public bool IsLastVersion { get; set; }
-
         public bool Suppress { get; set; }
 
         public RefListPermissionedAccess? Access { get; set; }

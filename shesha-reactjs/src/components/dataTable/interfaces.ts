@@ -69,6 +69,12 @@ export interface IShaDataTableInlineEditableProps {
   onRowSaveSuccessAction?: IConfigurableActionConfiguration;
   onDblClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
   onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
+  
+  onRowClick?: IConfigurableActionConfiguration;
+  onRowDoubleClick?: IConfigurableActionConfiguration;
+  onRowHover?: IConfigurableActionConfiguration;
+  onRowSelect?: IConfigurableActionConfiguration;
+  onSelectionChange?: IConfigurableActionConfiguration;
 }
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {

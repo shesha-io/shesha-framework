@@ -1,7 +1,5 @@
 ﻿using Abp.Dependency;
 using Microsoft.AspNetCore.Http;
-using Shesha.ConfigurationItems.Models;
-using System;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems
@@ -11,7 +9,6 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public class ConfigurationFrameworkMiddleware : IMiddleware, ISingletonDependency
     {
-        public const string ConfigItemModeHeader = "sha-config-item-mode";
         public const string FrontEndApplicationHeader = "sha-frontend-application";
         public const string TopLevelModuleHeader = "sha-top-level-module";
 
@@ -32,19 +29,11 @@ namespace Shesha.ConfigurationItems
                 ? context.Request.Headers[TopLevelModuleHeader].ToString()
                 : null;            
 
-            context.Request.Headers.TryGetValue(ConfigItemModeHeader, out var modeStr);
-            var configItemMode = Enum.TryParse(modeStr, true, out ConfigurationItemViewMode myStatus)
-                ? myStatus
-                : (ConfigurationItemViewMode?)null;
-
-            if (configItemMode.HasValue || !string.IsNullOrEmpty(frontEndApp) || !string.IsNullOrWhiteSpace(topLevelModule))
+            if (!string.IsNullOrEmpty(frontEndApp) || !string.IsNullOrWhiteSpace(topLevelModule))
             {
                 using (_cfRuntime.BeginScope(a => 
                 {
 
-                    a.ViewMode = configItemMode.HasValue
-                        ? configItemMode.Value
-                        : ConfigurationItemViewMode.Live;
                     a.FrontEndApplication = string.IsNullOrWhiteSpace(frontEndApp)
                         ? FrontEndAppKeyConsts.SheshaDefaultFrontend 
                         : frontEndApp;

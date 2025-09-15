@@ -17,10 +17,10 @@ import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { containerDefaultStyles, defaultStyles } from './utils';
+import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -46,6 +46,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   hideFileName?: boolean;
   container?: IStyleType;
   primaryColor?: string;
+  removeFieldFromPayload?: boolean;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -86,8 +87,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
+      <ConfigurableFormItem model={{ ...model, propertyName: !model.removeFieldFromPayload && model.propertyName ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
+
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
@@ -155,7 +157,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
+    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, removeFieldFromPayload: true })),
 };
 
 export default AttachmentsEditor;

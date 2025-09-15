@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
-    public class NotificationManager : ConfigurationItemManager<NotificationTypeConfig, NotificationTypeConfigRevision>, INotificationManager, ITransientDependency
+    public class NotificationManager : ConfigurationItemManager<NotificationTypeConfig>, INotificationManager, ITransientDependency
     {
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreference;
@@ -56,12 +56,11 @@ namespace Shesha.Notifications
                     return defaultChannels;
             }
 
-            var revision = type.Revision;
             // Step 2: Check for Parsed Override Channels
-            if (revision.ParsedOverrideChannels.Any())
+            if (type.ParsedOverrideChannels.Any())
             {
                 var overrideChannels = new List<NotificationChannelConfig>();
-                foreach (var channel in revision.ParsedOverrideChannels) 
+                foreach (var channel in type.ParsedOverrideChannels) 
                 {
                     // TODO: check versioned query
                     var dbChannel = await _notificationChannelRepository.GetAll().Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression())
@@ -97,7 +96,7 @@ namespace Shesha.Notifications
             return result;
         }
 
-        protected override async Task CopyRevisionPropertiesAsync(NotificationTypeConfigRevision source, NotificationTypeConfigRevision destination)
+        protected override async Task CopyItemPropertiesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
         {
             destination.Disable = source.Disable;
             destination.CanOptOut = source.CanOptOut;
@@ -109,7 +108,7 @@ namespace Shesha.Notifications
             await CopyTemplatesAsync(source, destination);
         }
 
-        private async Task CopyTemplatesAsync(NotificationTypeConfigRevision source, NotificationTypeConfigRevision destination)
+        private async Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
         {
             var srcItems = await _templateRepository.GetAll().Where(i => i.PartOf == source).ToListAsync();
 
