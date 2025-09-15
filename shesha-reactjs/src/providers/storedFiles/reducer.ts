@@ -26,6 +26,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.DownloadZipRequest:
     case StoredFilesActionEnums.DownloadZipSuccess:
     case StoredFilesActionEnums.DownloadZipError:
+    case StoredFilesActionEnums.InitializeFileList:
       /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
@@ -38,7 +39,7 @@ export function storedFilesReducer(
       return {
         ...state,
         fileList: state.fileList?.filter(
-          ({ id, uid }) => id !== payload.fileIdToDelete && uid !== payload.fileIdToDelete
+          ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
         ),
       };
     case StoredFilesActionEnums.UploadFileRequest:
@@ -97,15 +98,38 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.DeleteFileError: {
-      if (state.fileList?.find(x => x.uid === payload.fileIdToDelete)?.status === 'error')
+      if (state.fileList?.find(x => x.uid === payload.fileId)?.status === 'error')
         return {
           ...state,
           fileList: state.fileList.filter(
-            ({ id, uid }) => id !== payload.fileIdToDelete && uid !== payload.fileIdToDelete
+            ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
           ),
         };
       
       return state;
+    }
+
+    case StoredFilesActionEnums.UpdateIsDownloadedSuccess: {
+      const { fileId } = payload;
+
+      return {
+        ...state,
+        fileList: state.fileList?.map(file => 
+          file.id === fileId || file.uid === fileId
+            ? { ...file, userHasDownloaded: true }
+            : file
+        ) || [],
+      };
+    }
+
+    case StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess: {
+      return {
+        ...state,
+        fileList: state.fileList?.map(file => ({
+          ...file,
+          userHasDownloaded: true
+        })) || [],
+      };
     }
 
     default: {

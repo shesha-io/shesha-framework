@@ -20,8 +20,11 @@ import {
   downloadZipSuccessAction,
   fetchFileListErrorAction,
   fetchFileListSuccessAction,
+  initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
+  updateAllFilesDownloadedByCurrentUser,
+  updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
   uploadFileRequestAction,
   uploadFileSuccessAction,
@@ -46,8 +49,8 @@ export interface IStoredFilesProviderProps {
   baseUrl?: string;
 
   // used for requered field validation
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: IStoredFile[];
+  onChange?: (fileList: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -67,10 +70,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   filesCategory,
   propertyName,
   baseUrl,
-
   // used for requered field validation
   onChange,
-  value = null
+  value = []
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -99,10 +101,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   const { mutate: uploadFileHttp } = useMutate();
 
+  // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
-    const val = state.fileList?.length > 0 ? 'filled' : null;
-    if (typeof onChange === 'function' && value !== val)
-      onChange(val);
+    if (value && value.length > 0 && (!state.fileList || state.fileList.length === 0)) {
+      dispatch(initializeFileListAction(value as IStoredFile[]));
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const val = state.fileList?.length > 0 ? state.fileList : [];
+
+    if (val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
+      onChange?.(val);
+    }
   }, [state.fileList]);
 
   useEffect(() => {
@@ -110,6 +121,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       fetchFileListHttp();
     }
   }, [ownerId, ownerType, filesCategory, propertyName]);
+
 
   useEffect(() => {
     if (!isFetchingFileList) {
@@ -176,7 +188,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,
@@ -237,6 +248,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
+        dispatch(updateAllFilesDownloadedByCurrentUser());
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -255,6 +267,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     })
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
+        dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
       })
       .catch((e) => {
         console.error(e);
