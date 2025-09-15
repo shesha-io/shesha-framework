@@ -70,7 +70,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
-          if(JSON.stringify(value) !== JSON.stringify(files)) setFiles(value);
 
           const onFileListChanged = (fileList) => {
             onChange(fileList);
