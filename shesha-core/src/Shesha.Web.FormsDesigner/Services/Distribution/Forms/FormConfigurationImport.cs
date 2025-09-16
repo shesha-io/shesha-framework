@@ -62,17 +62,27 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         {
             var equals = item.Markup == distributedItem.Markup &&
                 item.ModelType == distributedItem.ModelType &&
-                item.IsTemplate == distributedItem.IsTemplate;
+                item.IsTemplate == distributedItem.IsTemplate &&
+                item.Template?.Id == distributedItem.TemplateId &&
+                item.ConfigurationForm == distributedItem.ConfigurationForm &&
+                item.GenerationLogicTypeName == distributedItem.GenerationLogicTypeName &&
+                item.GenerationLogicExtensionJson == distributedItem.GenerationLogicExtensionJson &&
+                item.PlaceholderIcon == distributedItem.PlaceholderIcon;
 
             return Task.FromResult(equals);
         }
 
         protected override Task MapCustomPropsToItemAsync(FormConfiguration item, DistributedFormConfiguration distributedItem)
         {
+            item.Label = distributedItem.Label;
+            item.Description = distributedItem.Description;
             item.Markup = distributedItem.Markup;
             item.ModelType = distributedItem.ModelType;
             item.IsTemplate = distributedItem.IsTemplate;
-
+            item.ConfigurationForm = distributedItem.ConfigurationForm;
+            item.GenerationLogicTypeName = distributedItem.GenerationLogicTypeName;
+            item.GenerationLogicExtensionJson = distributedItem.GenerationLogicExtensionJson;
+            item.PlaceholderIcon = distributedItem.PlaceholderIcon;
             return Task.CompletedTask;
         }
     }
