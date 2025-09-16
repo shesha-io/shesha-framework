@@ -51,10 +51,13 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     z-index: 3;
     width: 100%;
     padding: unset;
-    overflow: hidden;
+    overflow: visible;
+    min-height: ${layoutTriggerHeight};
+    height: auto;
   `);
 
   const layoutHeader = cx(css`
+    min-height: ${layoutTriggerHeight};
     height: auto;
     display: flex;
     justify-content: space-between;
@@ -137,6 +140,14 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     ${marginLeftTransition}
     margin-top: ${sheshaStyles.layoutHeaderHeight};
     background: ${backgroundColor};
+    position: relative;
+    
+    &::before {
+      content: '';
+      display: block;
+      height: 5px;
+      width: 100%;
+    }
   `);
 
   const mainSider = css`
