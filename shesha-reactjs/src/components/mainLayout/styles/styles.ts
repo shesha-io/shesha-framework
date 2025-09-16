@@ -145,7 +145,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     &::before {
       content: '';
       display: block;
-      height: 1px;
+      height: 0px;
       width: 100%;
       pointer-events: none;
     }
@@ -228,15 +228,15 @@ z
 
   const shaSiteLayoutBackground = css`
     background: ${backgroundColor};
-    padding: 8px 12px;
+    padding: 2px 4px;
 
     .sha-site-layout-toolbar {
       ${flexCenterAlignedSpaceBetween}
       min-height: ${shaPageToolbarHeight};
       background: white;
 
-      margin: -8px;
-      margin-bottom: 8px;
+      margin: -2px;
+      margin-bottom: 2px;
     }
 
     .sha-index-table-full {
@@ -250,7 +250,7 @@ z
     }
 
     &.${shaSiteLayoutBackgroundNoPadding} {
-      padding: unset;
+      padding: 1px 2px;
     }  
   `;
 
