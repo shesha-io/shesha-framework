@@ -58,7 +58,7 @@ namespace Shesha.DynamicEntities.DbGenerator
             var props = properties 
                 ?? await _entityPropertyRepository.GetAll()
                 // Process only top level properties and not "Id" property
-                .Where(x => x.EntityConfig.Id == entityConfig.Id && x.ParentProperty == null && x.Name != "Id").ToListAsync();
+                .Where(x => x.EntityConfig.Id == entityConfig.Id && x.ParentProperty == null && x.Name != "id" && x.Name != "Id").ToListAsync();
             if (props != null)
             {
                 foreach (var property in props.Where(x => !x.CreatedInDb))
@@ -124,8 +124,8 @@ namespace Shesha.DynamicEntities.DbGenerator
 
                         // ToDo: AS - get Id Column and naming generator
                         entityProperty.ListConfiguration.DbMapping.ManyToManyTableName = $"{schema}.{tableName}";
-                        entityProperty.ListConfiguration.DbMapping.ManyToManyKeyColumnName = $"{columnName}Id";
-                        entityProperty.ListConfiguration.DbMapping.ManyToManyChildColumnName = $"{refConfig.TableName}Id";
+                        entityProperty.ListConfiguration.DbMapping.ManyToManyKeyColumnName = $"{columnName}_id";
+                        entityProperty.ListConfiguration.DbMapping.ManyToManyChildColumnName = $"{refConfig.TableName}_id";
                     }
                 }
 
@@ -140,7 +140,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                     await _dbActions.CreateManyToManyTableAsync(
                         (dbMapping?.ManyToManyTableName).NotNull(),
                         primaryTable.NotNull(),foreignTable.NotNull(),
-                        "Id", "Id", // ToDo: AS - get Id Column
+                        "id", "id", // ToDo: AS - get Id Column
                         (dbMapping?.ManyToManyKeyColumnName).NotNull(),(dbMapping?.ManyToManyChildColumnName).NotNull()
                     );
                 }
@@ -170,17 +170,18 @@ namespace Shesha.DynamicEntities.DbGenerator
                 primaryTable = referenceConfig?.Source == Domain.Enums.MetadataSourceType.UserDefined
                     ? $"dynamic.{primaryTable}"
                     : primaryTable;
-                await _dbActions.CreateEntityReferenceColumnAsync($"{columnName}", primaryTable.NotNull(), "Id"); // ToDo: AS - get Id Column
+                await _dbActions.CreateEntityReferenceColumnAsync($"{columnName}", primaryTable.NotNull(), "id"); // ToDo: AS - get Id Column
                 entityProperty.CreatedInDb = true;
                 await _entityPropertyRepository.UpdateAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
                 return;
             }
-            if (propertyDbType.ColumnType == DbColumnTypeEnum.GenericEntityReference && (force || !await _dbActions.IsColumnExistsAsync($"{columnName}Id")))
+            // ToDo: AS - get Id Column and naming generator
+            if (propertyDbType.ColumnType == DbColumnTypeEnum.GenericEntityReference && (force || !await _dbActions.IsColumnExistsAsync($"{columnName}_id"))) // ToDo: AS - get Id Column
             {
-                await _dbActions.CreateColumnAsync($"{columnName}Id", new DbColumnType(DbColumnTypeEnum.String, 100));
-                await _dbActions.CreateColumnAsync($"{columnName}ClassName", new DbColumnType(DbColumnTypeEnum.String, 1000));
-                await _dbActions.CreateColumnAsync($"{columnName}DisplayName", new DbColumnType(DbColumnTypeEnum.String));
+                await _dbActions.CreateColumnAsync($"{columnName}_id", new DbColumnType(DbColumnTypeEnum.String, 100));
+                await _dbActions.CreateColumnAsync($"{columnName}_class_name", new DbColumnType(DbColumnTypeEnum.String, 1000));
+                await _dbActions.CreateColumnAsync($"{columnName}_display_name", new DbColumnType(DbColumnTypeEnum.String));
                 entityProperty.CreatedInDb = true;
                 await _entityPropertyRepository.UpdateAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
