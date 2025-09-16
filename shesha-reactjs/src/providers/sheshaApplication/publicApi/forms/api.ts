@@ -54,7 +54,7 @@ export class FormsApi implements IFormsApi {
       id: templateId,
     };
 
-    const url = `/api/dynamic/Shesha/FormConfigurationRevision/Crud/Get?${qs.stringify(payload)}`;
+    const url = `/api/dynamic/Shesha/FormConfiguration/Crud/Get?${qs.stringify(payload)}`;
     return this._httpClient
       .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
       .then(async (response) => {
