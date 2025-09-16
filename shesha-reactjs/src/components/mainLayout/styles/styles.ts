@@ -138,15 +138,16 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const sider = cx(css``);
   const content = cx(css`
     ${marginLeftTransition}
-    margin-top: ${sheshaStyles.layoutHeaderHeight};
+    margin-top: var(--sha-header-height, ${sheshaStyles.layoutHeaderHeight});
     background: ${backgroundColor};
     position: relative;
     
     &::before {
       content: '';
       display: block;
-      height: 5px;
+      height: 1px;
       width: 100%;
+      pointer-events: none;
     }
   `);
 
@@ -227,14 +228,15 @@ z
 
   const shaSiteLayoutBackground = css`
     background: ${backgroundColor};
+    padding: 8px 12px;
 
     .sha-site-layout-toolbar {
       ${flexCenterAlignedSpaceBetween}
       min-height: ${shaPageToolbarHeight};
       background: white;
 
-      margin: -12px;
-      margin-bottom: 12px;
+      margin: -8px;
+      margin-bottom: 8px;
     }
 
     .sha-index-table-full {
