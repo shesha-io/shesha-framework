@@ -5,6 +5,15 @@ import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPay
 import { DataContextType, IDataContextFull, useDataContext } from "../dataContextProvider/contexts";
 import { createNamedContext } from "@/utils/react";
 
+export const DataContextTopLevels = {
+  /** Only aplication root contexts */
+  Root: 'root',
+  /** All contexts from this Data context manager */
+  All: 'all',
+  /** All available contexts */
+  Full: 'full'
+};
+
 export const RootContexts: string[] = [];
 
 export interface IDataContextManagerStateContext {
