@@ -5,6 +5,15 @@ import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPay
 import { DataContextType, IDataContextFull, useDataContext } from "../dataContextProvider/contexts";
 import { createNamedContext } from "@/utils/react";
 
+export const DataContextTopLevels = {
+  /** Only aplication root contexts */
+  Root: 'root',
+  /** All contexts from this Data context manager */
+  All: 'all',
+  /** All available contexts */
+  Full: 'full'
+};
+
 export const RootContexts: string[] = [];
 
 export interface IDataContextManagerStateContext {
@@ -183,7 +192,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
             contexts.current[payload.id] = {...ctx};
             internalUpdate();
 
-            if (payload.type === 'root')
+            if (payload.type === DataContextTopLevels.Root)
                 RootContexts.push(payload.id);
         }
     };
@@ -194,7 +203,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
       internalUpdate();
 
-      if (payload.type === 'root')
+      if (payload.type === DataContextTopLevels.Root)
         RootContexts.splice(RootContexts.indexOf(payload.id), 1);
     };
 
@@ -207,15 +216,15 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
           dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
       if (!topId)
-        return dataContexts?.filter(x => x.type === 'root') ?? [];
+        return dataContexts?.filter(x => x.type === DataContextTopLevels.Root) ?? [];
 
-      if (topId === 'all')
+      if (topId === DataContextTopLevels.All)
         return [...dataContexts];
 
-      if (topId === 'full') {
+      if (topId === DataContextTopLevels.Full) {
         const res = [...dataContexts];
         managers.current.forEach(manager => {
-          manager.getLocalDataContexts('full').forEach(x => res.push(x));
+          manager.getLocalDataContexts(DataContextTopLevels.Full).forEach(x => res.push(x));
         });
         return res;
       }

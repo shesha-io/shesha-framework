@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import {
+  DataContextTopLevels,
   IApplicationContext,
   IConfigurableFormComponent,
   IFormComponentStyles,
@@ -35,7 +36,7 @@ export function useActualContextData<T = any>(
 ) {
   const parent = useParent(false);
   const fullContext = useAvailableConstantsContexts();
-  const accessors = wrapConstantsData({ fullContext, topContextId: 'all' });
+  const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
   if (!contextProxyRef.current) {
@@ -85,7 +86,7 @@ export function useCalculatedModel<T = any>(
   calculateModel?: (model: T, allData: IApplicationContext, useCalculatedModel?: T) => T,
 ) {
   const fullContext = useAvailableConstantsContextsNoRefresh();
-  const accessors = wrapConstantsData({ fullContext, topContextId: 'all' });
+  const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
   if (!contextProxyRef.current) {

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
+import { DataContextTopLevels, isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { useStyles } from './style';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
@@ -19,7 +19,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { getUrlFromNavigationRequest } = useShaRouting();
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
   const dynamicContext = useActionDynamicContext(actionConfiguration);
-  const evaluationContext = useAvailableConstantsData({}, { ...dynamicContext, dynamicItem });
+  const evaluationContext = useAvailableConstantsData({ topContextId: DataContextTopLevels.Full }, { ...dynamicContext, dynamicItem });
 
   const { theme } = useTheme();
   const { styles } = useStyles();

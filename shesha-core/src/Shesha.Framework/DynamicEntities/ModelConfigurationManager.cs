@@ -207,7 +207,7 @@ namespace Shesha.DynamicEntities
                 InheritedFromNamespace = inheritedFrom?.Namespace,
 
                 // ToDo: AS - use name conventions
-                SchemaName = schemaName.ToSnakeCase(),
+                SchemaName = inheritedFrom?.SchemaName ?? schemaName.ToSnakeCase(),
                 TableName = inheritedFrom?.TableName ?? input.Name.ToSnakeCase(),
                 DiscriminatorValue = discriminatorValue,
 
