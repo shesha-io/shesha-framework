@@ -2,7 +2,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
@@ -108,24 +108,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [value]);
 
-  // Fire onChange only for meaningful changes. Ignore download-only mutations (userHasDownloaded).
-  const shouldTriggerOnDownloadRef = useRef(false);
-
-  useEffect(() => {
-    const val = state.fileList?.length > 0 ? state.fileList : [];
-
-    if (!shouldTriggerOnDownloadRef.current && val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
-      onChange?.(val);
-    }
-  }, [state.fileList]);
-
-  // Ensure onDownload is called with the latest state after download flags update
-  useEffect(() => {
-    if (!shouldTriggerOnDownloadRef.current) return;
-    shouldTriggerOnDownloadRef.current = false;
-    onDownload?.(state.fileList ?? []);
-  }, [state.fileList]);
-
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
       fetchFileListHttp()
@@ -186,7 +168,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       );
       return;
     }
-
+    
     // Dispatch and notify optimistically with the uploading item
     dispatch(uploadFileRequestAction(newFile));
 
@@ -196,10 +178,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
         // Compute next list after success (replace by uid and set uid=id as reducer does)
-        const updatedFile = fileReducer(responseFile);
-        dispatch(uploadFileSuccessAction({ ...updatedFile }));
-        onChange?.([...state.fileList, updatedFile]);
+        const latestFile = { ...responseFile, uid: responseFile.id } as IStoredFile;
 
+        onChange?.([...state.fileList, latestFile]);
+        
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,
@@ -235,14 +217,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         deleteFileSuccess(fileIdToDelete);
         const nextList = (state.fileList ?? []).filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
         onChange?.(nextList);
-        if (typeof addDelayedUpdate === 'function') {
-          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
-        }; 
+        if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
-      .catch((e) => {
+      .catch(() => {
         deleteFileError(fileIdToDelete);
-        message.error('Failed to delete file');
-        console.error(e);
       });
   };
 
@@ -272,8 +250,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
-        // Defer onDownload until after state.fileList reflects the update
-        shouldTriggerOnDownloadRef.current = true;
+        const nextList = (state.fileList ?? []).map((f) => ({ ...f, userHasDownloaded: true }));
+        onDownload?.(nextList);
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -293,8 +271,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
-        // Defer onDownload until after state.fileList reflects the update
-        shouldTriggerOnDownloadRef.current = true;
+        const nextList = (state.fileList ?? []).map((f) =>
+          f.id === payload.fileId || f.uid === payload.fileId ? { ...f, userHasDownloaded: true } : f
+        );
+        onDownload?.(nextList);
       })
       .catch((e) => {
         console.error(e);
