@@ -36,6 +36,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
+  onDownload?: string;
   downloadZip?: boolean;
   filesLayout?: layoutType;
   listType: listType;
@@ -67,7 +68,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const executeScript = (script, value, onChange?) => {
 
-      if(onChange) onChange(value);
+      onChange && onChange(value);
 
       executeScriptSync(script, {
         value: value,
@@ -80,8 +81,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         setGlobalState,
         pageContext
       });
-    };
-    
+    }
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
@@ -95,7 +95,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
           const onDownload = (fileList) => {
             onChange(fileList);
-            if(model.onDownload) executeScript(model.onDownload, fileList);
+            if(model.onDownload) executeScript(model.onDownload, value);
           };
 
           return (
@@ -109,6 +109,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               baseUrl={backendUrl}
               // used for requered field validation
               onChange={onFileListChanged}
+              onDownload={onDownload}
               value={value}
             >
               <CustomFile
