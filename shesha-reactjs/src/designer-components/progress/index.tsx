@@ -22,7 +22,7 @@ interface IProgressProps
   lineStrokeColor?: string;
   circleStrokeColor?: string;
   defaultValue?: number;
-  stylingBox?: any;
+  stylingBox?: string;
   allStyles?: any;
 }
 
