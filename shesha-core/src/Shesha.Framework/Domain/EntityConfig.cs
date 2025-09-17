@@ -77,7 +77,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Source of the entity (code/user)
         /// </summary>
-        public virtual MetadataSourceType? Source { get; set; } = MetadataSourceType.UserDefined; // set to user-defined by default, `ApplicationCode` is used in the bootstrapper only
+        public virtual MetadataSourceType Source { get; set; } = MetadataSourceType.UserDefined; // set to user-defined by default, `ApplicationCode` is used in the bootstrapper only
 
         /// <summary>
         /// Code identifier that can be used in the client-side code to reference current module
