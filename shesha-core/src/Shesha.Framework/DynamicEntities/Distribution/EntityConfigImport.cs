@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Caching;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
@@ -119,7 +120,7 @@ namespace Shesha.DynamicEntities.Distribution
             item.EntityConfigType = distributedItem.EntityConfigType;
 
             item.TypeShortAlias = distributedItem.TypeShortAlias;
-            item.Source = distributedItem.Source;
+            item.Source = distributedItem.Source ?? MetadataSourceType.UserDefined;
 
             item.GenerateAppService = distributedItem.GenerateAppService;
             item.HardcodedPropertiesMD5 = distributedItem.PropertiesMD5;
