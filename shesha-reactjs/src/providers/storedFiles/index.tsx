@@ -168,7 +168,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       );
       return;
     }
-    
+
     // Dispatch and notify optimistically with the uploading item
     dispatch(uploadFileRequestAction(newFile));
 
@@ -178,10 +178,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
         // Compute next list after success (replace by uid and set uid=id as reducer does)
-        const latestFile = { ...responseFile, uid: responseFile.id } as IStoredFile;
+        const updatedFile = fileReducer(responseFile);
+        dispatch(uploadFileSuccessAction({ ...updatedFile }));
+        onChange?.([...state.fileList, updatedFile]);
 
-        onChange?.([...state.fileList, latestFile]);
-        
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,
@@ -217,10 +217,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         deleteFileSuccess(fileIdToDelete);
         const nextList = (state.fileList ?? []).filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
         onChange?.(nextList);
-        if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+        if (typeof addDelayedUpdate === 'function') {
+          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+        }; 
       })
-      .catch(() => {
+      .catch((e) => {
         deleteFileError(fileIdToDelete);
+        message.error('Failed to delete file');
+        console.error(e);
       });
   };
 
