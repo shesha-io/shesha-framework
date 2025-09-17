@@ -27,7 +27,15 @@
                         LayoutBackground = "#fafafa",
                         SidebarBackground = "#4d192b",
                         LabelSpan = 6,
-                        ComponentSpan = 18
+                        ComponentSpan = 18,
+                        MarginPadding = new MarginPaddingSettings()
+                        {
+                            FormFields = "",
+                            Layout = "",
+                            Grid = "",
+                            Standard = "",
+                            Inline = "",
+                        }
                     };
             }
         }
@@ -44,6 +52,15 @@
         {
             public string? Default { get; set; }
             public string? Secondary { get; set; }
+        }
+
+        public class MarginPaddingSettings
+        {
+            public string? FormFied { get; set; }
+            public string? Layout { get; set; }
+            public string? Grid { get; set; }
+            public string? Standard { get; set; }
+            public string? Inline { get; set; }
         }
 
         public ThemeSettings.ApplicationSettings? Application { get; set; }
