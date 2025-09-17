@@ -51,7 +51,7 @@ export interface IStoredFilesProviderProps {
   // used for requered field validation
   value?: IStoredFile[];
   onChange?: (fileList: IStoredFile[]) => void;
-  onDownload?: (value: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -111,29 +111,17 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, [value]);
 
   // Fire onChange only for meaningful changes. Ignore download-only mutations (userHasDownloaded).
-  const prevComparableRef = useRef<string>('');
+  const shouldTriggerOnDownloadRef = useRef(false);
+
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
 
-    // Build a comparable signature excluding download-only fields
-    const comparable = JSON.stringify(
-      (val || []).map((file) => {
-        const { userHasDownloaded, ...rest } = file as any;
-        return rest;
-      })
-    );
-
-    // Skip triggering onChange if only download flags changed
-    if (comparable === prevComparableRef.current) return;
-    prevComparableRef.current = comparable;
-
-    if (val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
+    if (!shouldTriggerOnDownloadRef.current && val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
       onChange?.(val);
     }
   }, [state.fileList]);
 
   // Ensure onDownload is called with the latest state after download flags update
-  const shouldTriggerOnDownloadRef = useRef(false);
   useEffect(() => {
     if (!shouldTriggerOnDownloadRef.current) return;
     shouldTriggerOnDownloadRef.current = false;
