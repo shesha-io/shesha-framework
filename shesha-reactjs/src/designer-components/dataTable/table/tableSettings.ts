@@ -147,25 +147,6 @@ export const getSettings = (data: ITableComponentProps) => {
                         ]
                     },
                     {
-                        key: 'validation',
-                        title: 'Validation',
-                        id: validationTabId,
-                        components: [
-                            ...new DesignerToolbarSettings()
-                                .addSettingsInputRow({
-                                    id: nanoid(),
-                                    propertyName: 'validate.required',
-                                    label: 'Required',
-                                    inputType: 'switch',
-                                    size: 'small',
-                                    layout: 'horizontal',
-                                    jsSetting: true,
-                                    parentId: validationTabId
-                                })
-                                .toJson()
-                        ]
-                    },
-                    {
                         key: 'data',
                         title: 'Data',
                         id: crudTabId,
