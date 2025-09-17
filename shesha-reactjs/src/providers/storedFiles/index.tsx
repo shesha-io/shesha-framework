@@ -2,7 +2,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
@@ -85,9 +85,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const {
-    loading: isFetchingFileList,
     refetch: fetchFileListHttp,
-    data: fileListResponse,
   } = useGet<IAjaxResponse<IStoredFile[]>>({
     path: filesListEndpoint.url,
     queryParams: {
@@ -109,44 +107,20 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [value]);
 
-  // Fire onChange only for meaningful changes. Ignore download-only mutations (userHasDownloaded).
-  const shouldTriggerOnDownloadRef = useRef(false);
-
-  useEffect(() => {
-    const val = state.fileList?.length > 0 ? state.fileList : [];
-
-    if (!shouldTriggerOnDownloadRef.current && val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
-      onChange?.(val);
-    }
-  }, [state.fileList]);
-
-  // Ensure onDownload is called with the latest state after download flags update
-  useEffect(() => {
-    if (!shouldTriggerOnDownloadRef.current) return;
-    shouldTriggerOnDownloadRef.current = false;
-    onDownload?.(state.fileList ?? []);
-  }, [state.fileList]);
-
->>>>>>> 336aa34ba (fire onChange only for meaningful changes. Ignore download-only mutations)
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
-      fetchFileListHttp();
+      fetchFileListHttp()
+        .then((resp) => {
+          const { result } = resp ?? {} as any;
+          const fileList = filesReducer(result as IStoredFile[]);
+          dispatch(fetchFileListSuccessAction(fileList));
+          onChange?.(fileList ?? []);
+        })
+        .catch(() => {
+          dispatch(fetchFileListErrorAction());
+        });
     }
   }, [ownerId, ownerType, filesCategory, propertyName]);
-
-
-  useEffect(() => {
-    if (!isFetchingFileList) {
-      if (fileListResponse) {
-        const { result } = fileListResponse;
-        const fileList = filesReducer(result as IStoredFile[]);
-
-        dispatch(fetchFileListSuccessAction(fileList));
-      } else {
-        dispatch(fetchFileListErrorAction());
-      }
-    }
-  }, [isFetchingFileList]);
 
   //#region Register signal r events
   useEffect(() => {
@@ -158,9 +132,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
-
-      dispatch(onFileDeletedAction(patient?.id));
-      onChange?.(state.fileList?.filter(file => file.id !== patient?.id) || []);
+      const deletedId = patient?.id;
+      if (!deletedId) return;
+      dispatch(onFileDeletedAction(deletedId));
     });
   }, []);
   //#endregion
@@ -193,7 +167,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       );
       return;
     }
-
+    
+    // Dispatch and notify optimistically with the uploading item
     dispatch(uploadFileRequestAction(newFile));
 
     uploadFileHttp(uploadFileEndpoint, formData)
@@ -201,7 +176,11 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
+        // Compute next list after success (replace by uid and set uid=id as reducer does)
+        const latestFile = { ...responseFile, uid: responseFile.id } as IStoredFile;
 
+        onChange?.([...state.fileList, latestFile]);
+        
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,
@@ -210,7 +189,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .catch((e) => {
         message.error(`File upload failed. Probably file size is too big`);
         console.error(e);
-        dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
+        const errored = { ...newFile, status: 'error' } as IStoredFile;
+        dispatch(uploadFileErrorAction(errored));
+        const nextListError = (state.fileList ?? []).map((f) => (f.uid === newFile.uid ? errored : f));
+        onChange?.(nextListError);
       });
   };
 
@@ -232,9 +214,13 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
+        const nextList = (state.fileList ?? []).filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
+        onChange?.(nextList);
         if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
-      .catch(() => deleteFileError(fileIdToDelete));
+      .catch(() => {
+        deleteFileError(fileIdToDelete);
+      });
   };
 
   //#endregion
@@ -263,6 +249,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
+        const nextList = (state.fileList ?? []).map((f) => ({ ...f, userHasDownloaded: true }));
+        onDownload?.(nextList);
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -282,6 +270,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
+        const nextList = (state.fileList ?? []).map((f) =>
+          f.id === payload.fileId || f.uid === payload.fileId ? { ...f, userHasDownloaded: true } : f
+        );
+        onDownload?.(nextList);
       })
       .catch((e) => {
         console.error(e);
