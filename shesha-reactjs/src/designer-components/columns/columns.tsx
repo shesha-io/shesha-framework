@@ -120,21 +120,19 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     // Add padding when border is configured to prevent border from touching components
     const isValidBorderWidth = (width: string | number | undefined): boolean => {
-      return Boolean(width && width !== '0px' && width !== 0 && width !== '0');
+      return !!(width && width !== '0px' && width != 0);
     };
 
     const hasBorder = border && !border.hideBorder && (
-      isValidBorderWidth(border.border?.all?.width) ||
-      isValidBorderWidth(border.border?.top?.width) ||
-      isValidBorderWidth(border.border?.right?.width) ||
-      isValidBorderWidth(border.border?.bottom?.width) ||
-      isValidBorderWidth(border.border?.left?.width)
+      [border.border?.all, border.border?.top, border.border?.right, border.border?.bottom,
+    border.border?.left]
+        .some(side => isValidBorderWidth(side?.width))
     );
 
 
-    const hPad = `${((gutterX || 0) / 2) + 8}px`;
-    const vPadTop = `${((gutterY || 0) / 2) + 8}px`;
-    const vPadBottom = `${((gutterY || 0) / 2) + 3}px`; // keep the reduced bottom margin intent
+    const hPad = `${((gutterX || 0) / 2) + 2}px`;
+    const vPadTop = `${((gutterY || 0) / 2) + 2}px`;
+    const vPadBottom = `${((gutterY || 0) / 2)}px`; // keep the reduced bottom margin intent
     const containerPadding = hasBorder
       ? { paddingTop: vPadTop, paddingLeft: hPad, paddingRight: hPad, paddingBottom: vPadBottom }
       : {};
