@@ -96,7 +96,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
           const onDownload = (fileList) => {
             onChange(fileList);
-            if(model.onDownload) executeScript(model.onDownload, value);
+            if(model.onDownload) executeScript(model.onDownload, fileList);
           };
 
           return (
