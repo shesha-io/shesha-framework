@@ -90,7 +90,6 @@ const ENABLE_CRUD_EXPOSED_VARIABLES = [
 export const getSettings = (data: ITableComponentProps) => {
     const searchableTabsId = nanoid();
     const commonTabId = nanoid();
-    const validationTabId = nanoid();
     const crudTabId = nanoid();
     const eventsTabId = nanoid();
     const appearanceTabId = nanoid();
