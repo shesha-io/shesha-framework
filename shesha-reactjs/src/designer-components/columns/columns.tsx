@@ -119,12 +119,16 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     // Add padding when border is configured to prevent border from touching components
+    const isValidBorderWidth = (width: string | number | undefined): boolean => {
+      return Boolean(width && width !== '0px' && width !== 0 && width !== '0');
+    };
+
     const hasBorder = border && !border.hideBorder && (
-      (border.border?.all?.width && border.border.all.width !== '0px' && border.border.all.width !== 0 && border.border.all.width !== '0') ||
-      (border.border?.top?.width && border.border.top.width !== '0px' && border.border.top.width !== 0 && border.border.top.width !== '0') ||
-      (border.border?.right?.width && border.border.right.width !== '0px' && border.border.right.width !== 0 && border.border.right.width !== '0') ||
-      (border.border?.bottom?.width && border.border.bottom.width !== '0px' && border.border.bottom.width !== 0 && border.border.bottom.width !== '0') ||
-      (border.border?.left?.width && border.border.left.width !== '0px' && border.border.left.width !== 0 && border.border.left.width !== '0')
+      isValidBorderWidth(border.border?.all?.width) ||
+      isValidBorderWidth(border.border?.top?.width) ||
+      isValidBorderWidth(border.border?.right?.width) ||
+      isValidBorderWidth(border.border?.bottom?.width) ||
+      isValidBorderWidth(border.border?.left?.width)
     );
 
 
