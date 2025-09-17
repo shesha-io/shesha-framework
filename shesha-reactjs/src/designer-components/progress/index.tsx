@@ -1,7 +1,7 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { getSettings } from './settings';
-import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { IConfigurableFormComponent, IFormComponentStyles, IInputStyles } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -23,7 +23,7 @@ interface IProgressProps
   circleStrokeColor?: string;
   defaultValue?: number;
   stylingBox?: string;
-  allStyles?: any;
+  allStyles?: IFormComponentStyles;
 }
 
 const ProgressComponent: IToolboxComponent<IProgressProps> = {
