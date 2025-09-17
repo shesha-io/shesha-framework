@@ -17,6 +17,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   allowFullCollapse?: boolean;
   renderSource?: 'modal' | 'designer-page';
   canZoom?: boolean;
+  configTreePanelSize?: string | number;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -36,8 +37,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
   const { globalVariables} = useSheshaApplication();
 
-  const isSidebarCollapsed = !globalVariables.isSideBarExpanded;
+  const configTreePanelSize = !globalVariables.configTreePanelSize;
 
+  console.log("configTreePanelSize : ", configTreePanelSize)
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
@@ -59,11 +61,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, isSidebarCollapsed, renderSource}) : zoom);
+      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, renderSource, configTreePanelSize: 20}) : zoom);
     }
-  }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, isSidebarCollapsed]);
+  }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
   
-
   useEffect(()=>{
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
   },[isOpenRight, isOpenLeft]);

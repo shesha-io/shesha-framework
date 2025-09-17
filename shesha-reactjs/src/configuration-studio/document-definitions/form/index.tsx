@@ -6,6 +6,7 @@ import React, { ReactNode } from "react";
 import { FormToolbar } from "./toolbar";
 import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
 import { useMainStyles } from "@/components/formDesigner/styles/styles";
+import { CanvasConfig } from "@/components/formDesigner/toolbar/canvasConfig";
 
 export const FormDocumentDefinition: DocumentDefinition = {
     documentType: ITEM_TYPES.FORM,
@@ -19,9 +20,13 @@ export const FormDocumentDefinition: DocumentDefinition = {
     },
     Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
         return (
-            <FormDesigner.NonVisual formId={document.itemId}>
+            <>
+            <CanvasConfig/>
+             <FormDesigner.NonVisual formId={document.itemId}>
                 {children}
             </FormDesigner.NonVisual>
+            </>
+           
         );
     },
     Toolbar: (_props: ItemEditorProps): ReactNode => {

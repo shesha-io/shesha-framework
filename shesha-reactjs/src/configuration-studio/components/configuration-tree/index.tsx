@@ -58,7 +58,7 @@ type DndState = {
     allowed: boolean;
 };
 
-export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false }) => {
+export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = true }) => {
     const cs = useConfigurationStudio();
     const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
     const { setIsDragging } = useCsTreeDnd();
