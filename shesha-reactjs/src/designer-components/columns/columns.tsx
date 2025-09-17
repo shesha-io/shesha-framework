@@ -125,7 +125,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     const hasBorder = border && !border.hideBorder && (
       [border.border?.all, border.border?.top, border.border?.right, border.border?.bottom,
-    border.border?.left]
+      border.border?.left]
         .some(side => isValidBorderWidth(side?.width))
     );
 
