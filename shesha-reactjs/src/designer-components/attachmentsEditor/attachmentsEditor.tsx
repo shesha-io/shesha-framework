@@ -65,6 +65,23 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
+    const executeScript = (script, value, onChange?) => {
+
+      if(onChange) onChange(value);
+
+      executeScriptSync(script, {
+        value: value,
+        data,
+        form: getFormApi(form),
+        globalState,
+        http: httpClient,
+        message,
+        moment,
+        setGlobalState,
+        pageContext
+      });
+    };
+    
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
