@@ -193,6 +193,23 @@ export const getSettings = () =>
             availableConstantsExpression: "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
 
           })
+          .addCodeEditor({
+            id: '48ff91b3-5fb1-4e1b-a17f-fskj3e2-d32323dxc',
+            propertyName: 'onDownload',
+            label: 'On Download',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            description: 'Callback that is triggered when a file is downloaded.',
+            validate: {},
+            settingsValidationErrors: [],
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: 'onDownload',
+              useAsyncDeclaration: true,
+            },
+            availableConstantsExpression: "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+          })
           .toJson()
         ]
       }

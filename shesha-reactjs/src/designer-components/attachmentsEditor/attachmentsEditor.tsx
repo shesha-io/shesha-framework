@@ -35,6 +35,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
+  onDownload?: string;
   downloadZip?: boolean;
   layout: layoutType;
   listType: listType;
@@ -62,6 +63,22 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
+    const executeScript = (script, value, onChange?) => {
+
+      onChange && onChange(value);
+
+      executeScriptSync(script, {
+        value: value,
+        data,
+        form: getFormApi(form),
+        globalState,
+        http: httpClient,
+        message,
+        moment,
+        setGlobalState,
+        pageContext
+      });
+    }
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
@@ -70,18 +87,12 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
           const onFileListChanged = (fileList) => {
             onChange(fileList);
+            if(model.onFileChanged) executeScript(model.onFileChanged, fileList);
+          };
 
-            if(model.onFileChanged) executeScriptSync(model.onFileChanged, {
-              value: fileList,
-              data,
-              form: getFormApi(form),
-              globalState,
-              http: httpClient,
-              message,
-              moment,
-              setGlobalState,
-              pageContext
-            });
+          const onDownload = (fileList) => {
+            onChange(fileList);
+            if(model.onDownload) executeScript(model.onDownload, value);
           };
 
           return (
@@ -95,6 +106,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               baseUrl={backendUrl}
               // used for requered field validation
               onChange={onFileListChanged}
+              onDownload={onDownload}
               value={value}
             >
               <CustomFile

@@ -2,7 +2,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
@@ -51,6 +51,7 @@ export interface IStoredFilesProviderProps {
   // used for requered field validation
   value?: IStoredFile[];
   onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (value: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -72,6 +73,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   baseUrl,
   // used for requered field validation
   onChange,
+  onDownload,
   value = []
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
@@ -108,12 +110,34 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [value]);
 
+  // Fire onChange only for meaningful changes. Ignore download-only mutations (userHasDownloaded).
+  const prevComparableRef = useRef<string>('');
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
+
+    // Build a comparable signature excluding download-only fields
+    const comparable = JSON.stringify(
+      (val || []).map((file) => {
+        const { userHasDownloaded, ...rest } = file as any;
+        return rest;
+      })
+    );
+
+    // Skip triggering onChange if only download flags changed
+    if (comparable === prevComparableRef.current) return;
+    prevComparableRef.current = comparable;
 
     if (val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
       onChange?.(val);
     }
+  }, [state.fileList]);
+
+  // Ensure onDownload is called with the latest state after download flags update
+  const shouldTriggerOnDownloadRef = useRef(false);
+  useEffect(() => {
+    if (!shouldTriggerOnDownloadRef.current) return;
+    shouldTriggerOnDownloadRef.current = false;
+    onDownload?.(state.fileList ?? []);
   }, [state.fileList]);
 
   useEffect(() => {
@@ -249,6 +273,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
+        // Defer onDownload until after state.fileList reflects the update
+        shouldTriggerOnDownloadRef.current = true;
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -268,6 +294,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
+        // Defer onDownload until after state.fileList reflects the update
+        shouldTriggerOnDownloadRef.current = true;
       })
       .catch((e) => {
         console.error(e);
