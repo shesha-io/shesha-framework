@@ -56,7 +56,7 @@
 
         public class MarginPaddingSettings
         {
-            public string? FormFied { get; set; }
+            public string? FormFields { get; set; }
             public string? Layout { get; set; }
             public string? Grid { get; set; }
             public string? Standard { get; set; }
@@ -70,5 +70,6 @@
         public string? SidebarBackground { get; set; }
         public int? LabelSpan { get; set; }
         public int? ComponentSpan { get; set; }
+        public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
     }
 }
