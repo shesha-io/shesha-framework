@@ -50,7 +50,8 @@ export interface IStoredFilesProviderProps {
 
   // used for requered field validation
   value?: IStoredFile[];
-  onChange?: (value: IStoredFile[]) => void;
+  onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -108,14 +109,25 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [value]);
 
+  // Fire onChange only for meaningful changes. Ignore download-only mutations (userHasDownloaded).
+  const shouldTriggerOnDownloadRef = useRef(false);
+
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
 
-    if (val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
+    if (!shouldTriggerOnDownloadRef.current && val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
       onChange?.(val);
     }
   }, [state.fileList]);
 
+  // Ensure onDownload is called with the latest state after download flags update
+  useEffect(() => {
+    if (!shouldTriggerOnDownloadRef.current) return;
+    shouldTriggerOnDownloadRef.current = false;
+    onDownload?.(state.fileList ?? []);
+  }, [state.fileList]);
+
+>>>>>>> 336aa34ba (fire onChange only for meaningful changes. Ignore download-only mutations)
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
       fetchFileListHttp();
