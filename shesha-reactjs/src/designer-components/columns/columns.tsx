@@ -10,7 +10,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
@@ -108,7 +108,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     }
     const styling = jsonSafeParse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const additionalStyles: CSSProperties = removeUndefinedProps({
+    const additionalStyles = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...dimensionsStyles,
       ...borderStyles,
@@ -118,12 +118,31 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
+    // Add padding when border is configured to prevent border from touching components
+    const isValidBorderWidth = (width: string | number | undefined): boolean => {
+      return !!(width && width !== '0px' && width != 0);
+    };
+
+    const hasBorder = border && !border.hideBorder && (
+      [border.border?.all, border.border?.top, border.border?.right, border.border?.bottom,
+      border.border?.left]
+        .some(side => isValidBorderWidth(side?.width))
+    );
+
+
+    const hPad = `${((gutterX || 0) / 2) + 2}px`;
+    const vPadTop = `${((gutterY || 0) / 2) + 2}px`;
+    const vPadBottom = `${((gutterY || 0) / 2)}px`; // keep the reduced bottom margin intent
+    const containerPadding = hasBorder
+      ? { paddingTop: vPadTop, paddingLeft: hPad, paddingRight: hPad, paddingBottom: vPadBottom }
+      : {};
+    const boxSizing = hasBorder ? { boxSizing: 'border-box' } : {};
     // Validate and normalize columns to prevent overflow
     const validatedColumns = validateColumns(columns);
 
     return (
-      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
-        <Row gutter={[gutterX || 0, gutterY || 0]} style={{ margin: 0, height: 'auto' }}>
+      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
+        <Row gutter={[gutterX || 0, gutterY || 0]}>
           <ParentProvider model={model}>
             {validatedColumns &&
               validatedColumns.map((col, index) => (
@@ -133,8 +152,6 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   offset={col.offset}
                   pull={col.pull}
                   push={col.push}
-                  className="sha-designer-column"
-                  style={{ height: 'auto', minHeight: 'auto' }}
                 >
                   <ComponentsContainer
                     containerId={col.id}
