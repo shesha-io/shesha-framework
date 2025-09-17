@@ -152,7 +152,7 @@ export const getSettings = (data: ITableComponentProps) => {
                         id: validationTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
                                     propertyName: 'validate.required',
                                     label: 'Required',
