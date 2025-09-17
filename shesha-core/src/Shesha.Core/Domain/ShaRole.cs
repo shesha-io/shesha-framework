@@ -31,7 +31,7 @@ namespace Shesha.Domain
         [MaxLength(200)]
         public virtual string NameSpace { get; set; }
 
-        [InverseProperty("role_revision_id")]
+        [InverseProperty("role_id")]
         public virtual IList<ShaRolePermission> Permissions { get; set; } = new List<ShaRolePermission>();
 
         [Display(Name = "Hard linked to application", Description = "If true, indicates that the application logic references the value or name of this role and should therefore not be changed.")]
