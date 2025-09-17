@@ -48,6 +48,34 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model) => ({
     ...model,
+    content: model.content || `
+    # Markdown Example
+    
+    ## Basic Text
+    This is a paragraph with **bold text**, *italic text*, and ~~strikethrough text~~.
+
+    ## Lists
+    - Bullet list item 1
+    - Bullet list item 2
+
+    1. Numbered list item 1
+    2. Numbered list item 2
+
+
+    ## Links & Images
+    [Shesha](https://www.shesha.io)  
+    ![Shesha Logo](https://raw.githubusercontent.com/shesha-io/shesha-framework/refs/heads/main/shesha-reactjs/public/images/app-logo.png)
+
+    ## Code
+    Inline code: \`print("Hello, world!")\`
+
+    Block code:
+    \`\`\`python
+    def greet(name):
+      return f"Hello, {name}!"
+
+    greet("world")
+    \`\`\``,
   }),
   migrator: (m) =>
     m
