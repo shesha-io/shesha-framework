@@ -65,7 +65,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const executeScript = (script, value, onChange?) => {
 
-      onChange && onChange(value);
+      if(onChange) onChange(value);
 
       executeScriptSync(script, {
         value: value,
@@ -78,7 +78,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         setGlobalState,
         pageContext
       });
-    }
+    };
+    
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
