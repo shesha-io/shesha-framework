@@ -40,7 +40,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile, fileReducer, filesReducer, replaceFileByUid } from './utils';
+import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -55,6 +55,11 @@ export interface IStoredFilesProviderProps {
   onDownload?: (fileList: IStoredFile[]) => void;
 }
 
+const fileReducer = (data: IStoredFile): IStoredFile => {
+  return { ...data, uid: data.id };
+};
+
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
@@ -175,10 +180,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         // Compute next list after success (replace by uid and set uid=id as reducer does)
         const updatedFile = fileReducer(responseFile);
         dispatch(uploadFileSuccessAction({ ...updatedFile }));
-
-        // Calculate the updated list after successful upload
-        const updatedList = replaceFileByUid(state.fileList, updatedFile);
-        onChange?.(updatedList);
+        onChange?.([...state.fileList, updatedFile]);
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
