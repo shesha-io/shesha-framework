@@ -25,28 +25,38 @@ interface IOption {
 }
 
 const baseItemFilter = [
-    {
-        "!=": [{ "var": "revision" }, null]
-    }
 ];
+
+const baseListFilter = {
+    "!=": [
+        {
+            "var": "module"
+        },
+        null
+    ]
+};
+
 const getFilter = (term: string) => {
     const termFilter = term
-        ? [
-            {
-                or: [
-                    { 'in': [term, { 'var': 'name' }] },
-                    { 'in': [term, { 'var': 'module.name' }] },
-                ]
-            },
-        ]
-        : [];
-    const filter = {
-        and: [...baseItemFilter, ...termFilter]
-    };
+        ? {
+            or: [
+                { 'in': [term, { 'var': 'name' }] },
+                { 'in': [term, { 'var': 'module.name' }] },
+            ]
+        }
+        : undefined;
+
+    const allFilters = [baseListFilter, termFilter].filter(f => Boolean(f));
+    const filter = allFilters.length === 0
+        ? undefined
+        : allFilters.length === 1
+            ? allFilters[0]
+            : { and: allFilters };
+
     return JSON.stringify(filter);
 };
 const REFERENCE_LIST_ENTITY_TYPE = 'Shesha.Framework.ReferenceList';
-const REFERENCE_LIST_PROPERTIES = 'id name module { id name } revision { label description versionNo }';
+const REFERENCE_LIST_PROPERTIES = 'id name module { id name } label description';
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,
@@ -89,28 +99,24 @@ interface IResponseItem {
         id: string;
         name: string;
     };
-    revision: {
-        label?: string;
-        description?: string;
-        versionNo?: number;
-    };
+    label?: string;
+    description?: string;
 };
 
 interface IConfigurationItemProps {
     name: string;
     label?: string;
     description?: string;
-    versionNo?: number;
 }
 
-const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, versionNo, label }) => {
+const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, label }) => {
     const displayLabel = label && label !== name
         ? label
         : null;
     return (
         <div>
             <HelpTextPopover content={description}>
-                <span>{name}</span> {false && versionNo && <i>(version {versionNo})</i>}
+                <span>{name}</span>
             </HelpTextPopover>
             {displayLabel && (
                 <><br /><Typography.Text type="secondary" ellipsis={true}>{displayLabel}</Typography.Text></>
@@ -190,9 +196,8 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
                     label: (
                         <RefListLabel
                             name={item.name}
-                            label={item.revision.label}
-                            description={item.revision.description}
-                            versionNo={item.revision.versionNo}
+                            label={item.label}
+                            description={item.description}
                         />
                     ),
                     value: getDisplayText(item),
