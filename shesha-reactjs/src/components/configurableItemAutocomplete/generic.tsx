@@ -28,11 +28,7 @@ export type StandardAutocompleteProps = {
 type EditorWithMode<TValue> = SingleEditorProps<TValue> | MultipleEditorProps<TValue>;
 
 export type ConfigurableItemAutocompleteRuntimeProps<TValue = ConfigurableItemFullName, TProps = StandardAutocompleteProps> = EditorWithMode<TValue> & TProps;
-/*
-const isSingleEditor = <TValue,>(editor: EditorWithMode<TValue>): editor is SingleEditorProps<TValue> => {
-    return editor.mode === 'single';
-};
-*/
+
 const isMultipleEditor = <TValue,>(editor: EditorWithMode<TValue>): editor is MultipleEditorProps<TValue> => {
     return editor.mode === 'multiple';
 };
@@ -44,12 +40,20 @@ interface IOption<TData = ConfigurableItemFullName> {
     optionData: TData & {
         label?: string;
         description?: string;
-        versionNo?: number;
     };
     options?: IOption[];
 }
 
 const baseItemFilter = undefined;
+
+const baseListFilter = {
+    "!=": [
+        {
+            "var": "module"
+        },
+        null
+    ]
+};
 
 const getFilter = (term: string, staticFilter?: object): string => {
     const termFilter = term
@@ -60,7 +64,7 @@ const getFilter = (term: string, staticFilter?: object): string => {
             ]
         }
         : undefined;
-    const allFilters = [baseItemFilter, termFilter, staticFilter].filter(f => Boolean(f));
+    const allFilters = [baseListFilter, termFilter, staticFilter].filter(f => Boolean(f));
     const filter = allFilters.length === 0
         ? undefined
         : allFilters.length === 1
@@ -70,7 +74,7 @@ const getFilter = (term: string, staticFilter?: object): string => {
     return JSON.stringify(filter);
 };
 
-const ITEM_CONFIG_PROPERTIES = 'id name module { id name } revision { label description versionNo }';
+const ITEM_CONFIG_PROPERTIES = 'id name module { id name } label description';
 
 export const itemIdsEqual = (left: ConfigurableItemFullName, right: ConfigurableItemFullName): Boolean => {
     return !left && !right ||
@@ -131,17 +135,16 @@ interface IConfigurationItemProps {
     name: string;
     label?: string;
     description?: string;
-    versionNo?: number;
 }
 
-const ItemLabel: FC<IConfigurationItemProps> = ({ name, description, versionNo, label }) => {
+const ItemLabel: FC<IConfigurationItemProps> = ({ name, description, label }) => {
     const displayLabel = label && label !== name
         ? label
         : null;
     return (
         <div>
             <HelpTextPopover content={description}>
-                <span>{name}</span> {false && versionNo && <i>(version {versionNo})</i>}
+                <span>{name}</span>
             </HelpTextPopover>
             {displayLabel && (
                 <><br /><Typography.Text type="secondary" ellipsis={true}>{displayLabel}</Typography.Text></>
@@ -241,7 +244,6 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
                         module: item.module?.name,
                         label: item.label,
                         description: item.description,
-                        versionNo: item.versionNo,
                     }
                 };
                 let group = result.find(g => g.value === moduleDto.id);
@@ -359,7 +361,6 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
                             name={optionData.name}
                             label={optionData.label}
                             description={optionData.description}
-                            versionNo={optionData.versionNo}
                         />
                     )
                     : <>{value}</>;
