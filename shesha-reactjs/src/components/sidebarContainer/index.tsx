@@ -35,7 +35,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
-  const { globalVariables} = useSheshaApplication();
+  const { globalVariables } = useSheshaApplication();
 
   const configTreePanelSize = !globalVariables.configTreePanelSize;
 

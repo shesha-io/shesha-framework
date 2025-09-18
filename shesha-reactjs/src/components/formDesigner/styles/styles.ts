@@ -43,6 +43,7 @@ const designerClassNames = {
     formName: "form-name",
     formTitle: "form-title",
     formNameParent: "form-name-parent",
+    toolbarWrapper: "form-toolbar-wrapper"
 };
 const useStylesResponse = {
     styles: designerClassNames,
@@ -90,6 +91,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         formName,
         formTitle,
         formNameParent,
+        toolbarWrapper,
         //mainArea,
     } = useStyles().styles;
 

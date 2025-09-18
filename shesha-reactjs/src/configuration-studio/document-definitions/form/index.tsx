@@ -20,18 +20,17 @@ export const FormDocumentDefinition: DocumentDefinition = {
     },
     Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
         return (
-            <>
-            <CanvasConfig/>
-             <FormDesigner.NonVisual formId={document.itemId}>
+            <FormDesigner.NonVisual formId={document.itemId}>
                 {children}
             </FormDesigner.NonVisual>
-            </>
-           
         );
     },
     Toolbar: (_props: ItemEditorProps): ReactNode => {
         return (
+            <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center'}}>
+            <CanvasConfig/>
             <FormToolbar />
+            </div>
         );
     },
     documentInstanceFactory: (args) => {

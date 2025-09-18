@@ -51,6 +51,10 @@ const ConfigurationStudio: FC = () => {
                         // set sideBar size
                         if (setGlobalVariables) {
                             const total = sizes.reduce((prev, curr) => prev + curr, 0);
+                            console.log("Total :", total, sizes[0]);
+                            const size = ((((sizes[0] ?? 20)/ total) * 100 )/100) * window.innerWidth;
+
+                            console.log("calc size", size, "px")
                             const configTreePanelSize = sizes[0];
                             if (total > 0) {
                                 setGlobalVariables({ configTreePanelSize: ((configTreePanelSize ?? 20)/ total) * 100 });
