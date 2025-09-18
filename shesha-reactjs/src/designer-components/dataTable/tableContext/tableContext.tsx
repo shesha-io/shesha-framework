@@ -61,7 +61,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
                 {isDesignerMode && (
                     <div className="data-context-label">
                         <DatabaseOutlined />
-                        Data Context Component {hasChildComponents && `(${childComponentIds.length} child components)`}
+                        Data Context {hasChildComponents && `(${childComponentIds.length} child components)`}
                     </div>
                 )}
                 <DataTableProvider

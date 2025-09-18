@@ -12,6 +12,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         background-color: ${token.colorPrimaryBg}20;
         margin: 4px 0;
         transition: all 0.2s ease;
+        padding-top: 8px;
 
         &:hover {
             border-color: ${token.colorPrimary}60;
