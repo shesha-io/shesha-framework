@@ -31,7 +31,7 @@ export const expressionFunc: Func & IHasHideForCompare & { defaultValue?: boolea
     args: {
         expression: {
             label: "Expression",
-            type: 'text',
+            type: 'javascript',
             preferWidgets: ['javascript'],
             widgets: {
                 javascript: {
