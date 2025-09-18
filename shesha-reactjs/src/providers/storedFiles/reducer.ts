@@ -1,6 +1,7 @@
 import flagsReducer from '../utils/flagsReducer';
 import { StoredFilesActionEnums } from './actions';
 import { IStoredFilesStateContext } from './contexts';
+import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 
 export function storedFilesReducer(
   incomingState: IStoredFilesStateContext,
@@ -38,9 +39,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.OnFileDeleted:
       return {
         ...state,
-        fileList: state.fileList?.filter(
-          ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
-        ),
+        fileList: removeFile(state.fileList, payload.fileId),
       };
     case StoredFilesActionEnums.UploadFileRequest:
       return {
@@ -114,21 +113,14 @@ export function storedFilesReducer(
 
       return {
         ...state,
-        fileList: state.fileList?.map(file => 
-          file.id === fileId || file.uid === fileId
-            ? { ...file, userHasDownloaded: true }
-            : file
-        ) || [],
+        fileList: updateDownloadedAFile(state.fileList, fileId) || [],
       };
     }
 
     case StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess: {
       return {
         ...state,
-        fileList: state.fileList?.map(file => ({
-          ...file,
-          userHasDownloaded: true
-        })) || [],
+        fileList: updateAllFilesDownloaded(state.fileList) || [],
       };
     }
 

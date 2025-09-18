@@ -40,6 +40,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
+import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -176,7 +177,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
-        dispatch(uploadFileSuccessAction({ ...responseFile }));
         // Compute next list after success (replace by uid and set uid=id as reducer does)
         const updatedFile = fileReducer(responseFile);
         dispatch(uploadFileSuccessAction({ ...updatedFile }));
@@ -190,10 +190,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .catch((e) => {
         message.error(`File upload failed. Probably file size is too big`);
         console.error(e);
-        const errored = { ...newFile, status: 'error' } as IStoredFile;
-        dispatch(uploadFileErrorAction(errored));
-        const nextListError = (state.fileList ?? []).map((f) => (f.uid === newFile.uid ? errored : f));
-        onChange?.(nextListError);
+        dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
       });
   };
 
@@ -215,16 +212,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
-        const nextList = (state.fileList ?? []).filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
-        onChange?.(nextList);
+        const updateList = removeFile(state.fileList ?? [], fileIdToDelete);
+        onChange?.(updateList);
         if (typeof addDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
         }; 
       })
-      .catch((e) => {
+      .catch(() => {
         deleteFileError(fileIdToDelete);
-        message.error('Failed to delete file');
-        console.error(e);
       });
   };
 
@@ -254,8 +249,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
-        const nextList = (state.fileList ?? []).map((f) => ({ ...f, userHasDownloaded: true }));
-        onDownload?.(nextList);
+        const updatedList = updateAllFilesDownloaded(state.fileList ?? []);
+        onDownload?.(updatedList);
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -275,9 +270,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
-        const nextList = (state.fileList ?? []).map((f) =>
-          f.id === payload.fileId || f.uid === payload.fileId ? { ...f, userHasDownloaded: true } : f
-        );
+        const nextList = updateDownloadedAFile(state.fileList ?? [], payload.fileId);
         onDownload?.(nextList);
       })
       .catch((e) => {
