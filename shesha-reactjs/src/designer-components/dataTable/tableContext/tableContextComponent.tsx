@@ -26,7 +26,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       return {
         ...model,
         sourceType: 'Entity',
-        entityType: 'Shesha.Domain.Module',
+        entityType: 'Shesha.Domain.FormConfiguration',
         dataFetchingMode: 'paging',
         defaultPageSize: 10,
       };
