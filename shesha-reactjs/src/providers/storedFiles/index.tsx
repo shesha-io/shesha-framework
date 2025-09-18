@@ -177,10 +177,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
-        // Compute next list after success (replace by uid and set uid=id as reducer does)
-        const updatedFile = fileReducer(responseFile);
-        dispatch(uploadFileSuccessAction({ ...updatedFile }));
-        onChange?.([...state.fileList, updatedFile]);
+        dispatch(uploadFileSuccessAction({ ...responseFile }));
+        onChange?.([...state.fileList, responseFile]);
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {

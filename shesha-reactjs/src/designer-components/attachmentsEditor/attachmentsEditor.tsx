@@ -66,8 +66,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
-    console.log("Model :: ", model);
-
     const executeScript = (script, value) => {
 
       executeScriptSync(script, {
