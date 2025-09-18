@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import {PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
+import { PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
 import { useDataTable } from '@/providers';
 import TablePaging from './tablePaging';
 import TableNoPaging from './tableNoPaging';
@@ -8,6 +8,9 @@ import { IFontValue } from '@/designer-components/_settings/utils/font/interface
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Popover } from 'antd';
+import { useTheme } from '@/providers/theme';
 
 export interface ITablePagerProps {
   showSizeChanger?: boolean;
@@ -20,6 +23,59 @@ export interface ITablePagerProps {
 }
 
 export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems, style }) => {
+  const dataTableContext = useDataTable(false);
+  const { theme } = useTheme();
+
+  const hideTotalItems = useMediaQuery({
+    query: PHONE_SIZE_QUERY,
+  });
+
+  // Fallback UI when not in a Data Context
+  if (!dataTableContext) {
+    return (
+      <div
+        style={{
+          ...style,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '4px 8px',
+          border: '1px solid #d9d9d9',
+          borderRadius: '6px',
+          backgroundColor: '#fafafa',
+          color: '#8c8c8c',
+          fontSize: '14px',
+          gap: 8,
+        }}>
+          <span>Table Pager</span>
+          <span style={{ opacity: 0.6 }}>•</span>
+          <span>•••</span>
+          <span style={{ opacity: 0.6 }}>•</span>
+          <span>Page 1 of 1</span>
+        </div>
+        <Popover
+          placement="right"
+          title="Hint:"
+          overlayInnerStyle={{
+            backgroundColor: '#D9DCDC',
+          }}
+          content={(<p>The Table Pager component must be<br />placed inside of a Data Context component<br />that contains a configured Data Table or<br />Data List to be fully functional.
+            <br />
+            <br />
+            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+          </p>)}
+        >
+          <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+        </Popover>
+      </div>
+    );
+  }
+
   const {
     pageSizeOptions,
     currentPage,
@@ -28,15 +84,53 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
     setCurrentPage,
     changePageSize,
     dataFetchingMode,
-  } = useDataTable();
+  } = dataTableContext;
 
-
-
-  const hideTotalItems = useMediaQuery({
-    query: PHONE_SIZE_QUERY,
-  });
-
-  if (totalRows === undefined || totalRows === null) return null;
+  // Fallback UI when in Data Context but no configured DataTable/DataList
+  if (totalRows === undefined || totalRows === null) {
+    return (
+      <div
+        style={{
+          ...style,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '4px 8px',
+          border: '1px solid #d9d9d9',
+          borderRadius: '6px',
+          backgroundColor: '#fafafa',
+          color: '#8c8c8c',
+          fontSize: '14px',
+          gap: 8,
+        }}>
+          <span>Table Pager</span>
+          <span style={{ opacity: 0.6 }}>•</span>
+          <span>•••</span>
+          <span style={{ opacity: 0.6 }}>•</span>
+          <span>Page 1 of 1</span>
+        </div>
+        <Popover
+          placement="right"
+          title="Hint:"
+          overlayInnerStyle={{
+            backgroundColor: '#D9DCDC',
+          }}
+          content={(<p>The Table Pager is within a Data Context<br />but no sibling Data Table or Data List<br />component has been configured with<br />columns or items.
+            <br />
+            <br />
+            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+          </p>)}
+        >
+          <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+        </Popover>
+      </div>
+    );
+  }
 
   return dataFetchingMode === 'paging' ? (
     <TablePaging
