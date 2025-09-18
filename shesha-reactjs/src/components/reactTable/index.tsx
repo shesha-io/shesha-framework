@@ -499,10 +499,9 @@ export const ReactTable: FC<IReactTableProps> = ({
                 borderRadius: 4,
                 boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
                 display: "inline-block",
-                whiteSpace: "nowrap",
-                overflowX: "auto", 
-                maxWidth: "100vw",  
-                wordBreak: "keep-all",   
+                whiteSpace: "pre-wrap",
+                maxWidth: "80vw",
+                wordBreak: "break-word",
             }}
           >
             {cellRef?.current?.innerText}
