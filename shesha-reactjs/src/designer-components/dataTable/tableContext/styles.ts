@@ -5,6 +5,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: column;
         min-height: 60px;
         border: 2px dashed ${token.colorPrimary}40;
         border-radius: 8px;
