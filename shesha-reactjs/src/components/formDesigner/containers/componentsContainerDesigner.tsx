@@ -23,6 +23,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         wrapperStyle,
         style: incomingStyle,
         noDefaultStyling,
+        emptyInsertThreshold,
     } = props;
 
     const { styles } = useStyles();
@@ -137,7 +138,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
                     draggable={`.${styles.shaComponent}`}
                     animation={75}
                     ghostClass={styles.shaComponentGhost}
-                    emptyInsertThreshold={20}
+                    emptyInsertThreshold={emptyInsertThreshold || 20}
                     handle={`.${styles.componentDragHandle}`}
                     scroll={true}
                     bubbleScroll={true}
