@@ -63,9 +63,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
-    const executeScript = (script, value, onChange?) => {
+    console.log("Model :: ", model);
 
-      if(onChange) onChange(value);
+    const executeScript = (script, value) => {
 
       executeScriptSync(script, {
         value: value,
@@ -83,7 +83,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
+      <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
 
           const onFileListChanged = (fileList) => {
