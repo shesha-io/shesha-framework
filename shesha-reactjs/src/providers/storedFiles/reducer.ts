@@ -1,7 +1,7 @@
 import flagsReducer from '../utils/flagsReducer';
 import { StoredFilesActionEnums } from './actions';
 import { IStoredFilesStateContext } from './contexts';
-import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile, replaceFileByUid, addFileToList, findFile } from './utils';
 
 export function storedFilesReducer(
   incomingState: IStoredFilesStateContext,
@@ -50,33 +50,23 @@ export function storedFilesReducer(
       const { fileList } = state;
       const { newFile } = payload;
 
+      const updatedFile = {
+        ...newFile,
+        uid: newFile.id, // We want to reset the uid to the id because we use it to delete the file
+      };
+
       return {
         ...state,
-        fileList: fileList.map((file) => {
-          if (file.uid === newFile.uid) {
-            return {
-              ...newFile,
-              uid: newFile.id, // We want to reset the uid to the id because we use it to delete the file
-            };
-          } else {
-            return file;
-          }
-        }),
+        fileList: replaceFileByUid(fileList, updatedFile),
       };
     }
     case StoredFilesActionEnums.OnFileAdded: {
       const { fileList } = state;
       const { newFile } = payload;
 
-      const foundFile = fileList.find(({ id }) => id === newFile.id);
-
-      if (foundFile) {
-        return state;
-      }
-
       return {
         ...state,
-        fileList: [newFile, ...fileList],
+        fileList: addFileToList(fileList, newFile),
       };
     }
     case StoredFilesActionEnums.UploadFileError: {
@@ -85,26 +75,18 @@ export function storedFilesReducer(
 
       return {
         ...state,
-        fileList: fileList.map((file) => {
-          if (file.uid === newFile.uid) {
-            return {
-              ...newFile,
-            };
-          } else {
-            return file;
-          }
-        }),
+        fileList: replaceFileByUid(fileList, newFile),
       };
     }
     case StoredFilesActionEnums.DeleteFileError: {
-      if (state.fileList?.find(x => x.uid === payload.fileId)?.status === 'error')
+      const errorFile = findFile(state.fileList, payload.fileId);
+      if (errorFile?.status === 'error') {
         return {
           ...state,
-          fileList: state.fileList.filter(
-            ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
-          ),
+          fileList: removeFile(state.fileList, payload.fileId),
         };
-      
+      }
+
       return state;
     }
 
