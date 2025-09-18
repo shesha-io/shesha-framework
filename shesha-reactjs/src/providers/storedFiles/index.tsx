@@ -40,6 +40,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
+import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -51,6 +52,7 @@ export interface IStoredFilesProviderProps {
   // used for requered field validation
   value?: IStoredFile[];
   onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -72,6 +74,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   baseUrl,
   // used for requered field validation
   onChange,
+  onDownload,
   value = []
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
@@ -84,9 +87,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const {
-    loading: isFetchingFileList,
     refetch: fetchFileListHttp,
-    data: fileListResponse,
   } = useGet<IAjaxResponse<IStoredFile[]>>({
     path: filesListEndpoint.url,
     queryParams: {
@@ -109,32 +110,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, [value]);
 
   useEffect(() => {
-    const val = state.fileList?.length > 0 ? state.fileList : [];
-
-    if (val?.map(file => file.uid).filter(uid => uid?.includes('rc-upload')).length === 0) {
-      onChange?.(val);
-    }
-  }, [state.fileList]);
-
-  useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
-      fetchFileListHttp();
+      fetchFileListHttp()
+        .then((resp) => {
+          const { result } = resp ?? {} as any;
+          const fileList = filesReducer(result as IStoredFile[]);
+          dispatch(fetchFileListSuccessAction(fileList));
+          onChange?.(fileList ?? []);
+        })
+        .catch(() => {
+          dispatch(fetchFileListErrorAction());
+        });
     }
   }, [ownerId, ownerType, filesCategory, propertyName]);
-
-
-  useEffect(() => {
-    if (!isFetchingFileList) {
-      if (fileListResponse) {
-        const { result } = fileListResponse;
-        const fileList = filesReducer(result as IStoredFile[]);
-
-        dispatch(fetchFileListSuccessAction(fileList));
-      } else {
-        dispatch(fetchFileListErrorAction());
-      }
-    }
-  }, [isFetchingFileList]);
 
   //#region Register signal r events
   useEffect(() => {
@@ -146,8 +134,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
-
-      dispatch(onFileDeletedAction(patient?.id));
+      const deletedId = patient?.id;
+      if (!deletedId) return;
+      dispatch(onFileDeletedAction(deletedId));
     });
   }, []);
   //#endregion
@@ -181,6 +170,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       return;
     }
 
+    // Dispatch and notify optimistically with the uploading item
     dispatch(uploadFileRequestAction(newFile));
 
     uploadFileHttp(uploadFileEndpoint, formData)
@@ -188,6 +178,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
+        onChange?.([...state.fileList, responseFile]);
+
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,
@@ -218,9 +210,15 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
-        if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+        const updateList = removeFile(state.fileList ?? [], fileIdToDelete);
+        onChange?.(updateList);
+        if (typeof addDelayedUpdate === 'function') {
+          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+        }; 
       })
-      .catch(() => deleteFileError(fileIdToDelete));
+      .catch(() => {
+        deleteFileError(fileIdToDelete);
+      });
   };
 
   //#endregion
@@ -249,6 +247,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
+        const updatedList = updateAllFilesDownloaded(state.fileList ?? []);
+        onDownload?.(updatedList);
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -268,6 +268,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
+        const nextList = updateDownloadedAFile(state.fileList ?? [], payload.fileId);
+        onDownload?.(nextList);
       })
       .catch((e) => {
         console.error(e);
