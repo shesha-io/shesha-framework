@@ -12,6 +12,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+// import defaultPersonFormTemplate from './defaultPersonFormTemplate.json';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -93,6 +94,25 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   };
 }),
 settingsFormMarkup: (data) => getSettings(data),
+initModel: (model: IDataListComponentProps) => {
+  const defaultModel: IDataListComponentProps = {
+    ...model,
+    formSelectionMode: 'name',
+    formId: { name: 'PersonListTemplate', module: 'Default' },
+    orientation: 'vertical',
+    selectionMode: 'none',
+    canAddInline: 'no',
+    canEditInline: 'no',
+    canDeleteInline: 'no',
+    noDataText: "No Data",
+    noDataSecondaryText: "No data is available for this list",
+    hideLabel: true,
+    inlineEditMode: 'one-by-one',
+    inlineSaveMode: 'manual',
+    collapsible: false,
+  };
+  return defaultModel;
+},
 };
 
 export default DataListComponent;

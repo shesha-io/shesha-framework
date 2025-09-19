@@ -13,6 +13,10 @@ import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { IFormApi } from '@/providers/form/formApi';
+import { getDefaultMockData } from './mockData';
+import defaultPersonFormTemplate from './defaultPersonFormTemplate.json';
+import { useMetadataDispatcher } from '@/providers';
+import { DataTypes } from '@/interfaces';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -64,8 +68,21 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
   const { executeAction } = useConfigurableActionDispatcher();
+  const metadataDispatcher = useMetadataDispatcher();
+  // TODO: Need to implement proper form fetching
 
   const repository = getRepository();
+
+  // Register configurable columns for field fetching
+  const registerConfigurableColumns = dataSource?.registerConfigurableColumns;
+  const requireColumns = dataSource?.requireColumns;
+
+  // Call requireColumns to indicate that this DataList needs columns functionality
+  React.useEffect(() => {
+    if (requireColumns) {
+      requireColumns();
+    }
+  }, [requireColumns]);
 
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
@@ -92,9 +109,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const data = useDeepCompareMemo(() => {
     return isDesignMode
-      ? orientation === 'vertical'
-        ? [{}]
-        : [{}, {}, {}, {}]
+      ? getDefaultMockData(orientation)
       : tableData;
   }, [isDesignMode, tableData, orientation]);
 
@@ -223,21 +238,128 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode
-    && (
-      !repository
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
-    )) return <NotConfiguredWarning />;
+  const isFormMissing = isDesignMode && (
+    !repository
+    || !props.formId && props.formSelectionMode === "name"
+    || !props.formType && props.formSelectionMode === "view"
+    || !props.formIdExpression && props.formSelectionMode === "expression"
+  );
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
+
+  // Register all entity properties for fetching
+  const registerAllEntityProperties = useCallback(async () => {
+    if (!registerConfigurableColumns || !modelType) {
+      return;
+    }
+
+    try {
+      if (isDesignMode) console.warn(`DataList (${props.id}): Registering all properties for entity:`, modelType);
+
+      // Get entity metadata to fetch all available properties
+      const metadata = await metadataDispatcher.getMetadata({
+        dataType: DataTypes.entityReference,
+        modelType: modelType
+      });
+
+      if (metadata?.properties) {
+        // Create virtual columns for all entity properties
+        const allProperties = Object.keys(metadata.properties);
+        const virtualColumns = allProperties.map((propertyName, index) => ({
+          id: `datalist_all_${propertyName}`,
+          propertyName: propertyName,
+          caption: propertyName,
+          itemType: 'item' as const,
+          sortOrder: index,
+          isVisible: false, // Hidden columns, only for field fetching
+          columnType: 'data' as const,
+          propertiesToFetch: propertyName,
+        }));
+
+        // Register all properties as virtual columns
+        registerConfigurableColumns(`datalist_all_${props.id}`, virtualColumns);
+
+        if (isDesignMode) {
+          console.warn(`DataList (${modelType}): Registered ${allProperties.length} properties for fetching:`, allProperties.join(', '));
+        }
+      } else {
+        // Fallback to common properties if metadata not available
+        const fallbackProperties = ['id', 'firstName', 'lastName', 'jobTitle', 'name', 'displayName', 'email', 'phoneNumber'];
+        const virtualColumns = fallbackProperties.map((propertyName, index) => ({
+          id: `datalist_fallback_${propertyName}`,
+          propertyName: propertyName,
+          caption: propertyName,
+          itemType: 'item' as const,
+          sortOrder: index,
+          isVisible: false,
+          columnType: 'data' as const,
+          propertiesToFetch: propertyName,
+        }));
+
+        registerConfigurableColumns(`datalist_fallback_${props.id}`, virtualColumns);
+
+        if (isDesignMode) {
+          console.warn(`DataList (${modelType}): Using fallback properties:`, fallbackProperties.join(', '));
+        }
+      }
+    } catch (error) {
+      console.error(`DataList: Failed to register entity properties for ${modelType}:`, error);
+    }
+  }, [registerConfigurableColumns, isDesignMode, props.id, modelType, metadataDispatcher]);
+
+  // Effect to register all entity properties when modelType changes
+  React.useEffect(() => {
+    if (modelType) {
+      registerAllEntityProperties().catch(error => {
+        console.error('Failed to register entity properties:', error);
+      });
+    }
+  }, [modelType, registerAllEntityProperties]);
+
+  const dataListProps = useMemo(() => {
+    const baseProps = {
+      ...props,
+      onRowDeleteSuccessAction: props.onRowDeleteSuccessAction,
+      style: allStyles.fullStyle as string,
+      createFormId: props.createFormId ?? props.formId,
+      createFormType: props.createFormType ?? props.formType,
+      canAddInline: canAction(canAddInline),
+      canEditInline: canAction(canEditInline),
+      canDeleteInline: canAction(canDeleteInline),
+      noDataIcon,
+      noDataSecondaryText,
+      noDataText,
+      entityType: modelType,
+      onSelectRow,
+      onMultiSelectRows: setMultiSelectedRow,
+      selectedRow,
+      selectedRows,
+      records: data,
+      grouping,
+      groupingMetadata: groupingColumns?.map(item => item.metadata) ?? [],
+      isFetchingTableData,
+      selectedIds,
+      changeSelectedIds,
+      createAction: creater,
+      updateAction: updater,
+      deleteAction: deleter,
+      actionRef: dataListRef,
+      modalWidth: width ?? '60%',
+    };
+
+    // If form is missing in design mode, provide default template
+    if (isFormMissing) {
+      baseProps.formId = { name: 'PersonListTemplate', module: 'Default' };
+      baseProps.formSelectionMode = 'name';
+    }
+
+    return baseProps;
+  }, [props, isFormMissing, canAddInline, canEditInline, canDeleteInline, data, selectedRow, selectedRows]);
 
   if (groupingColumns?.length > 0 && orientation === "wrap") {
     return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
   }
 
-  
   return (
     <ConfigurableFormItem
       model={{ ...props, hideLabel: true }}
@@ -248,35 +370,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       wrapperCol={{ md: 24 }}
     >
 
-      <DataList
-        {...props}
-         onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
-        style={allStyles.fullStyle as string}
-        createFormId={props.createFormId ?? props.formId}
-        createFormType={props.createFormType ?? props.formType}
-        canAddInline={canAction(canAddInline)}
-        canEditInline={canAction(canEditInline)}
-        canDeleteInline={canAction(canDeleteInline)}
-        noDataIcon={noDataIcon}
-        noDataSecondaryText={noDataSecondaryText}
-        noDataText={noDataText}
-        entityType={modelType}
-        onSelectRow={onSelectRow}
-        onMultiSelectRows={setMultiSelectedRow}
-        selectedRow={selectedRow}
-        selectedRows={selectedRows}
-        records={data}
-        grouping={grouping}
-        groupingMetadata={groupingColumns?.map(item => item.metadata) ?? []}
-        isFetchingTableData={isFetchingTableData}
-        selectedIds={selectedIds}
-        changeSelectedIds={changeSelectedIds}
-        createAction={creater}
-        updateAction={updater}
-        deleteAction={deleter}
-        actionRef={dataListRef}
-        modalWidth={width ?? '60%'}
-      />
+      <DataList {...dataListProps} />
     </ConfigurableFormItem>
   );
 };
