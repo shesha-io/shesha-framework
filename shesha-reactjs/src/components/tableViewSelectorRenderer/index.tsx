@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo } from 'react';
-import { BulbTwoTone, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Dropdown, MenuProps, Popover, Space, Tooltip, Typography } from 'antd';
+import { BulbTwoTone, DownOutlined, QuestionCircleOutlined, LayoutOutlined } from '@ant-design/icons';
+import { Dropdown, MenuProps, Popover, Space, Tooltip, Typography, Badge } from 'antd';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
 import Show from '@/components/show';
 import { nanoid } from '@/utils/uuid';
@@ -103,35 +103,66 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
     });
   }, [filters]);
 
-  const renderTitle = () => (
-    <Typography.Title className="title" level={4}>
-      {selectedFilter?.name}
-    </Typography.Title>
-  );
+  const renderTitle = () => {
+    const hasFilters = (filters?.length || 0) > 1;
+    const isActiveFilter = selectedFilter?.expression !== null && selectedFilter?.expression !== undefined;
+
+    return (
+      <div className={styles.titleContainer}>
+        <div className={styles.titleWrapper}>
+          <LayoutOutlined className={styles.filterIcon} />
+          <div className={styles.titleContent}>
+            <span className={styles.titleLabel}>View:</span>
+            <span className={styles.titleName}>
+              {selectedFilter?.name || 'All Records'}
+            </span>
+          </div>
+          {hasFilters && <DownOutlined className={styles.dropdownIcon} />}
+        </div>
+        {isActiveFilter && <Badge dot className={styles.activeBadge} />}
+      </div>
+    );
+  };
+
+  const hasMultipleFilters = (filters?.length || 0) > 1;
 
   return (
     <div className={styles.tableViewSelector}>
-      <Space>
-        <Show when={!hidden}>
-          <Show when={filters?.length === 1}>{renderTitle()}</Show>
-          <Show when={filters?.length > 1}>
-            <Dropdown menu={{ items: menuItems, onClick: onMenuClickMemoized }} trigger={['click']}>
-              <Space>
-                {renderTitle()}
-                <DownOutlined />
-              </Space>
-            </Dropdown>
-          </Show>
-        </Show>
+      <Show when={!hidden}>
+        {hasMultipleFilters ? (
+          <Dropdown
+            menu={{
+              items: menuItems,
+              onClick: onMenuClickMemoized,
+              className: styles.dropdownMenu
+            }}
+            trigger={['click']}
+            placement="bottomLeft"
+            overlayClassName={styles.dropdownOverlay}
+          >
+            <div className={styles.clickableTitle}>
+              {renderTitle()}
+            </div>
+          </Dropdown>
+        ) : (
+          <div className={styles.singleTitle}>
+            {renderTitle()}
+          </div>
+        )}
+      </Show>
 
-        <Show when={Boolean(unevaluatedExpressions?.length)}>
-          <Popover content={getPopoverHintContent} trigger="hover" title="Some fields have not been evaluated">
-            <span className={styles.indexViewSelectorBulb}>
-              <BulbTwoTone twoToneColor="orange" />
-            </span>
-          </Popover>
-        </Show>
-      </Space>
+      <Show when={Boolean(unevaluatedExpressions?.length)}>
+        <Popover
+          content={getPopoverHintContent}
+          trigger="hover"
+          title="Some fields have not been evaluated"
+          placement="topRight"
+        >
+          <span className={styles.indexViewSelectorBulb}>
+            <BulbTwoTone twoToneColor="orange" />
+          </span>
+        </Popover>
+      </Show>
     </div>
   );
 };
