@@ -12,6 +12,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+// import defaultPersonFormTemplate from './defaultPersonFormTemplate.json';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -58,41 +59,60 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDataListComponentProps>(9, (prev) => {
       return {
-        ...prev,
-        desktop: {...prev.desktop,
-          gap: prev.cardSpacing,
-          dimensions: {
-            ...prev.desktop.dimensions,
-            minWidth: prev.cardMinWidth,
-            maxWidth: prev.cardMaxWidth,
-            width: prev.customWidth,
-            height: prev.cardHeight,
-          }},
-      };
-    }).add<IDataListComponentProps>(10, (prev) => {
-      const cardSpacing = prev.cardSpacing || '0px';
-      const parsedGap = parseInt(cardSpacing.replace('px', ''), 10);
-      const gap = isNaN(parsedGap) ? 0 : parsedGap;
-
-      return {
-        ...prev,
-        orientation: prev.orientation,
-        desktop: {
-          ...prev.desktop,
-          gap: gap,
-          orientation: prev.orientation,
-          dimensions: {
-            minWidth: prev.cardMinWidth ?? 'auto',
-            maxWidth: prev.cardMaxWidth ?? 'auto',
-            width: prev.customWidth ?? prev.cardMaxWidth ?? 'auto',
-            height: prev.cardHeight ?? 'auto',
-            minHeight: 'auto',
-            maxHeight: 'auto',
-          },
-        },
-      };
-    }),
-  settingsFormMarkup: (data) => getSettings(data),
+      ...prev,
+      desktop: {...prev.desktop,
+        gap: prev.cardSpacing,
+        dimensions: {
+        ...prev.desktop.dimensions,
+        minWidth: prev.cardMinWidth,
+        maxWidth: prev.cardMaxWidth,
+        width: prev.customWidth,
+        height: prev.cardHeight, 
+      }}
+    };
+}).add<IDataListComponentProps>(10, (prev) => {
+  const cardSpacing = prev.cardSpacing || '0px';
+  const parsedGap = parseInt(cardSpacing.replace('px', ''), 10);
+  const gap = isNaN(parsedGap) ? 0 : parsedGap;
+  
+  return {
+    ...prev,
+    orientation: prev.orientation,
+    desktop: {
+      ...prev.desktop,
+      gap: gap,
+      orientation: prev.orientation,
+      dimensions: {
+        minWidth: prev.cardMinWidth ?? 'auto',
+        maxWidth: prev.cardMaxWidth ?? 'auto',
+        width: prev.customWidth ?? prev.cardMaxWidth ?? 'auto',
+        height: prev.cardHeight ?? 'auto',
+        minHeight: 'auto',
+        maxHeight: 'auto'
+      }
+    } 
+  };
+}),
+settingsFormMarkup: (data) => getSettings(data),
+initModel: (model: IDataListComponentProps) => {
+  const defaultModel: IDataListComponentProps = {
+    ...model,
+    formSelectionMode: 'name',
+    formId: { name: 'PersonListTemplate', module: 'Default' },
+    orientation: 'vertical',
+    selectionMode: 'none',
+    canAddInline: 'no',
+    canEditInline: 'no',
+    canDeleteInline: 'no',
+    noDataText: "No Data",
+    noDataSecondaryText: "No data is available for this list",
+    hideLabel: true,
+    inlineEditMode: 'one-by-one',
+    inlineSaveMode: 'manual',
+    collapsible: false,
+  };
+  return defaultModel;
+},
 };
 
 export default DataListComponent;

@@ -138,6 +138,7 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     propertyName: 'formId',
                     label: 'Form',
+                    tooltip: 'Form to use to display item content',
                     type: 'formAutocomplete',
                     labelAlign: 'right',
                     hidden: false,

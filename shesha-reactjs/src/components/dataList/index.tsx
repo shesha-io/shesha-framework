@@ -24,6 +24,7 @@ import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { extractFieldsFromFormConfig } from '../../designer-components/dataList/fieldExtractor';
 
 interface EntityForm {
   entityType: string;
@@ -77,6 +78,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   style,
   gap,
   onRowDeleteSuccessAction,
+  defaultFormTemplate,
+  onFieldsExtracted,
   ...props
 }) => {
   const { styles } = useStyles();
@@ -268,6 +271,62 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
+  // Effect to automatically extract and configure fields to fetch based on form configuration
+  useDeepCompareEffect(() => {
+    const extractFieldsFromCurrentForm = () => {
+      // Check the main form configuration
+      const mainEntityForm = entityFormInfo.current;
+      if (mainEntityForm?.formConfiguration) {
+        const extractedFields = extractFieldsFromFormConfig(mainEntityForm.formConfiguration);
+
+        if (extractedFields.length > 0) {
+          // Call the callback to inform parent components about extracted fields
+          const result = onFieldsExtracted?.(extractedFields, mainEntityForm.formConfiguration);
+
+          // Handle async callback
+          if (result instanceof Promise) {
+            result.catch(error => {
+              console.error('DataList: Error in onFieldsExtracted callback:', error);
+            });
+          }
+
+          // Log for debugging in designer mode
+          if (allData.form?.formMode === 'designer') {
+            console.warn('DataList: Extracted fields from form configuration:', extractedFields);
+          }
+        }
+
+        return extractedFields;
+      }
+
+      // Fallback to default template if available
+      if (defaultFormTemplate) {
+        const extractedFields = extractFieldsFromFormConfig(defaultFormTemplate);
+        if (extractedFields.length > 0) {
+          const result = onFieldsExtracted?.(extractedFields, defaultFormTemplate);
+
+          // Handle async callback
+          if (result instanceof Promise) {
+            result.catch(error => {
+              console.error('DataList: Error in onFieldsExtracted callback (default template):', error);
+            });
+          }
+
+          if (allData.form?.formMode === 'designer') {
+            console.warn('DataList: Using fields from default template:', extractedFields);
+          }
+        }
+        return extractedFields;
+      }
+
+      return [];
+    };
+
+    if (entityFormInfo.current || defaultFormTemplate) {
+      extractFieldsFromCurrentForm();
+    }
+  }, [entityFormInfo.current?.formConfiguration, defaultFormTemplate, allData.form?.formMode, onFieldsExtracted]);
+
   const renderSubForm = (item: any, index: number) => {
     let className = null;
     let fType = null;
@@ -281,8 +340,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup)
-      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+    // If no form configuration found, try to use the default template if available
+    if (!entityForm?.formConfiguration?.markup) {
+      if (defaultFormTemplate && allData.form?.formMode === 'designer') {
+        entityForm = {
+          entityType: className,
+          formId: { name: 'PersonListTemplate', module: 'Default' },
+          formType: fType,
+          formConfiguration: defaultFormTemplate,
+        };
+      } else {
+        return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+      }
+    }
 
     const dblClick = () => {
       if (props.dblClickActionConfiguration) {
