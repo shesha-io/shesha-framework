@@ -371,16 +371,43 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             background-color: white;
             .${shaComponentsContainer} {
                 border-radius: 2px;
-            
+
                 .${shaDropHint} {
                     margin: 0;
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
                 }
-            
+
                 .${shaComponent} {
                     min-height: 30px;
+                }
+
+                /* Improve dropzone visibility during drag operations */
+                &.sha-components-container-inner {
+                    min-height: 20px;
+                    transition: background-color 0.2s ease, border 0.2s ease;
+
+                    &:empty {
+                        min-height: 40px;
+                        border: 2px dashed transparent;
+                        border-radius: 4px;
+                    }
+                }
+            }
+
+            /* Enhanced visual feedback when dragging */
+            &.${shaDragging} {
+                .${shaComponentsContainer} {
+                    &.sha-components-container-inner:empty {
+                        border-color: ${token.colorPrimary}40;
+                        background-color: ${token.colorPrimaryBg}20;
+                    }
+
+                    &.sha-components-container-inner:hover {
+                        border-color: ${token.colorPrimary};
+                        background-color: ${token.colorPrimaryBg}40;
+                    }
                 }
             }
         }

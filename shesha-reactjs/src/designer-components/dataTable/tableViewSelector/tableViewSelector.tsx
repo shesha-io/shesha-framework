@@ -1,9 +1,11 @@
 import _ from 'lodash';
 import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
-import { Alert } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Popover } from 'antd';
 import { evaluateDynamicFilters } from '@/utils';
 import { ITableViewSelectorComponentProps } from './models';
+import { useTheme } from '@/providers/theme';
 import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager';
 import {
@@ -33,6 +35,8 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
         changePersistedFiltersToggle,
         modelType,
     } = useDataTableStore();
+
+    const { theme } = useTheme();
 
     // ToDo: AS - need to optimize
     useShaFormDataUpdate();
@@ -92,7 +96,42 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
 
     if (!defaultTitle) {
         if (isDesignerMode) {
-            return <Alert message="Please make sure that you have at least 1 filter" type="warning" showIcon />;
+            // WYSIWYG fallback when no filters are configured
+            return (
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '4px 8px',
+                        border: '1px solid #d9d9d9',
+                        borderRadius: '6px',
+                        backgroundColor: '#fafafa',
+                        color: '#8c8c8c',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                    }}>
+                        View: All Records
+                    </div>
+                    <Popover
+                        placement="right"
+                        title="Hint:"
+                        overlayInnerStyle={{
+                            backgroundColor: '#D9DCDC',
+                        }}
+                        content={(<p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
+                            <br />
+                            <br />
+                            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+                        </p>)}
+                    >
+                        <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+                    </Popover>
+                </div>
+            );
         }
 
         return null;
