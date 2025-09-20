@@ -29,7 +29,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
         try {
           const { entity, nonFrameworkProperties } = await this.fetchEntityMetadata(replacements, metadataHelper);
           if (entity && nonFrameworkProperties) {
-            await this.addComponentsToMarkup(markupObj, entity, nonFrameworkProperties, metadataHelper);
+            await this.addComponentsToMarkup(markupObj, entity, nonFrameworkProperties, metadataHelper, replacements);
           }
         } catch (entityError) {
           console.error(`Error processing entity metadata in ${this.typeName}:`, entityError);
@@ -82,6 +82,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
     markup: any, 
     entity: IEntityMetadata, 
     nonFrameworkProperties: PropertyMetadataDto[],
-    metadataHelper: FormMetadataHelper
+    metadataHelper: FormMetadataHelper,
+    replacements?: object
   ): Promise<void>;
 }
