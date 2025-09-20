@@ -2,7 +2,8 @@
 
 import { evaluateString } from "@/providers/form/utils";
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { DesignerToolbarSettings, EditMode } from "@/index";
+import { DataTypes } from "@/interfaces/dataTypes";
+import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
@@ -52,16 +53,37 @@ export function humanizeModelType(modelType: string): string {
   if (!modelType) return '';
   const parts = modelType.split('.');
   const name = parts[parts.length - 1];
-  return name.replace(/([A-Z])/g, ' $1').trim();
+  return name?.replace(/([A-Z])/g, ' $1').trim() || '';
 }
 
 export function processBaseMarkup(markup: string, replacements: Record<string, any>): string {
     return evaluateString(markup, replacements, true);
 }
 
+function getDataTypePriority(dataType: string | null | undefined, dataFormat?: string | null): number {
+  if (!dataType) return 99;
+  
+  switch (dataType) {
+    case DataTypes.string:
+      // Handle multiline strings separately
+      return dataFormat === 'multiline' ? 6 : 1;
+    case DataTypes.number:
+      return 2;
+    case DataTypes.boolean:
+      return 3;
+    case DataTypes.referenceListItem:
+      return 4;
+    case DataTypes.entityReference:
+      return 5;
+    default:
+      return 99; // Other data types have lower priority
+  }
+};
+
 /**
  * Adds details panel components to the markup.
  * Organizes properties into columns if there are more than five, otherwise adds them in a single column.
+ * Properties are sorted with required fields first, then by dataType priority.
  *
  * @param metadata The properties metadata.
  * @param markup The JSON markup object.
@@ -82,11 +104,25 @@ export function addDetailsPanel(
     throw new Error(`No details panel container found in the markup with placeholder ${placeholderName}.`);
   }
 
-  const column1 = [];
-  const column2 = [];
-  if (metadata.length > ROW_COUNT) {
+  // Sort the properties: required fields first, then by dataType priority
+  const sortedMetadata = [...metadata].sort((a, b) => {
+    // Sort by required status (required first)
+    if (a.required !== b.required) {
+      return a.required ? -1 : 1;
+    }
+    
+    // Sort by dataType priority only
+    const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
+    const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+    
+    return priorityA - priorityB;
+  });
 
-    metadata.forEach((prop, index) => {
+  const column1: IConfigurableFormComponent[] = [];
+  const column2: IConfigurableFormComponent[] = [];
+  if (sortedMetadata.length > ROW_COUNT) {
+
+    sortedMetadata.forEach((prop, index) => {
       const columnBuilder = new DesignerToolbarSettings({});
       metadataHelper.getConfigFields(prop, columnBuilder);
 
@@ -125,7 +161,7 @@ export function addDetailsPanel(
         }]
     });
   } else {
-    metadata.forEach(prop => {
+    sortedMetadata.forEach(prop => {
       metadataHelper.getConfigFields(prop, builder);
     });
   }
