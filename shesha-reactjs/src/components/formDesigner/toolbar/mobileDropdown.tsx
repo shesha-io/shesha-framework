@@ -23,11 +23,15 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
         const value = parseInt(val, 10);
         setCanvasWidth(value, value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
       }}
-      value={designerWidth}
+      value={typeof designerWidth === 'number' ? `${designerWidth}px` : designerWidth}
       labelRender={({ label, value }) => {
         const option = screenSizeOptions.find(opt => opt.value === value);
         const Icon = option?.icon;
-        return <Tooltip title={value}><Icon/> {label}</Tooltip>;
+        return (
+          <Tooltip title={value}>
+            {Icon ? <Icon /> : null} {label ?? value}
+          </Tooltip>
+        );
       }
       }
       options={screenSizeOptions}

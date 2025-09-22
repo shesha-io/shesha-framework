@@ -1,6 +1,5 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
-import { getFormDesignerBackgroundSvg } from '../utils/svgConstants';
+import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
+import { createStyles, sheshaStyles } from '@/styles';
 
 const designerClassNames = {
     componentDragHandle: "sha-component-drag-handle",

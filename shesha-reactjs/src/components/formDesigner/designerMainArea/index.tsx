@@ -13,7 +13,6 @@ import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
 
 export interface IDesignerMainAreaProps {
-    renderSource?: "modal" | "designer-page";
 }
 
 const rightSidebarProps = {
@@ -22,7 +21,7 @@ const rightSidebarProps = {
   placeholder: 'Properties',
 };
 
-export const DesignerMainArea: FC<IDesignerMainAreaProps> = ({ renderSource }) => {
+export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const isDebug = useFormDesignerStateSelector(state => state.isDebug);
     const readOnly = useFormDesignerStateSelector(state => state.readOnly);
     const formSettings = useFormDesignerStateSelector(state => state.formSettings);
@@ -58,7 +57,6 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = ({ renderSource }) =
                     <SidebarContainer
                         leftSidebarProps={leftSidebarProps}
                         rightSidebarProps={rightSidebarProps}
-                        renderSource={renderSource}
                         canZoom={true}
                     >
                         {children}
@@ -73,13 +71,11 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = ({ renderSource }) =
                             <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'} 
                                 description='Form designer'
                             >
-                                <div>
                                     <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
                                     {isDebug && (
                                         <DebugPanel />
                                     )}
                                 </ConfigurableFormRenderer>
-                                </div>
                                 
                             </DataContextProvider>
                         </ParentProvider>

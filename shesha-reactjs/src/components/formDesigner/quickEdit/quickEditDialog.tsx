@@ -33,7 +33,7 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
                             renderSource='modal'
                             onUpdated={onUpdated}
                         />
-                        <DesignerMainArea renderSource='modal'/>
+                        <DesignerMainArea/>
                     </div>
                 </FormDesigner.NonVisual>
             </Modal>

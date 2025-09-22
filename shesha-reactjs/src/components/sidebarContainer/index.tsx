@@ -15,7 +15,6 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   header?: ReactNode | (() => ReactNode);
   sideBarWidth?: number;
   allowFullCollapse?: boolean;
-  renderSource?: 'modal' | 'designer-page';
   canZoom?: boolean;
   configTreePanelSize?: string | number;
 }
@@ -27,7 +26,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
-  renderSource,
   canZoom = false
 }) => {
   const { formMode } = useShaFormInstance();
@@ -60,7 +58,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, renderSource, configTreePanelSize: configTreePanelSize || 20}) : zoom);
+      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize || (20/100) * window.innerWidth}) : zoom);
     }
   }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
   
