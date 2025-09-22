@@ -41,7 +41,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       applicationTheme.current = theme;
   }, [dispatch, applicationTheme]);
 
-  const resetToApplicationTheme =  useCallback(() => {
+  const resetToApplicationTheme = useCallback(() => {
     // save theme to the state
     dispatch(setThemeAction(applicationTheme.current));
   }, [dispatch]);
@@ -66,7 +66,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       token: { ...themeDefaults, ...theme },
       components: {
         Menu: {
-          itemHeight: 'clamp(40px, 40px, 100%)' as any
+          itemHeight: 'clamp(40px, 40px, 100%)' as any,
         },
       },
     };

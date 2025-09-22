@@ -22,6 +22,7 @@ import {
 import { GuidEntityReferenceDto } from '@/apis/common';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { ShaSpin, useAvailableConstantsData } from '@/index';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 interface IDataNode {
   title: JSX.Element;
@@ -146,7 +147,6 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       const sorted = allItems.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
 
       sorted?.forEach(item => {
-        //const module = item.module ? item.module._displayName ?? {withoutModule};
         if (!modules.find(m => m?.id === item.module?.id))
           modules.push(item.module);
       });
@@ -163,8 +163,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
   useEffect(() => {
     if (!isFetchingData) {
-      if (fetchingDataResponse) {
-        const fetchedData = fetchingDataResponse?.result;
+      if (isAjaxSuccessResponse(fetchingDataResponse)) {
+        const fetchedData = fetchingDataResponse.result;
         if (fetchedData)
           setAllItems(fetchedData);
       }

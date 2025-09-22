@@ -17,7 +17,7 @@ export const DesignerTitle: FC<IDesignerTitleProps> = ({ }) => {
         <Space>
             {title && (
                 <p style={{ margin: 'unset' }}>
-                    {title} v{formProps.versionNo}
+                    {title}
                 </p>
             )}
             <HelpTextPopover content={formProps.description}></HelpTextPopover>

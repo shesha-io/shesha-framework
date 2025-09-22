@@ -2,10 +2,10 @@ import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { IConfigurableComponentProps } from './models';
 import { createNamedContext } from '@/utils/react';
 
-export type IFlagProgressFlags = 'load' | 'save' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
-export type IFlagSucceededFlags = 'load' | 'save' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
-export type IFlagErrorFlags = 'load' | 'save' /* NEW_ERROR_FLAG_GOES_HERE */;
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
+export type IFlagProgressFlags = 'load' | 'save';
+export type IFlagSucceededFlags = 'load' | 'save';
+export type IFlagErrorFlags = 'load' | 'save';
+export type IFlagActionedFlags = '__DEFAULT__';
 
 export interface ILayoutProps {
   span: number;
@@ -13,12 +13,12 @@ export interface ILayoutProps {
 
 export interface IConfigurableComponentStateContext<TSettings = any>
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-    IConfigurableComponentProps {
+  IConfigurableComponentProps {
   settings: TSettings;
 }
 
 export interface IComponentLoadPayload {
-  //id: string;
+  // id: string;
 }
 
 export interface IComponentLoadErrorPayload {
@@ -50,7 +50,7 @@ export interface IConfigurableComponentActionsContext<TSettings extends any>
 
 export interface IConfigurableComponentContext<TSettings>
   extends IConfigurableComponentStateContext<TSettings>,
-    IConfigurableComponentActionsContext<TSettings> {}
+  IConfigurableComponentActionsContext<TSettings> {}
 
 export const getContextInitialState = <TSettings extends any>(
   defaultSettings: TSettings

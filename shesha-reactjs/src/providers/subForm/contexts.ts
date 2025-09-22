@@ -4,7 +4,7 @@ import { IFormSettings, IPersistedFormProps } from '../form/models';
 import { createNamedContext } from '@/utils/react';
 
 export interface IPersistedFormPayload
-  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module' | 'name'> { }
+  extends Pick<IPersistedFormProps, 'id' | 'description' | 'module' | 'name'> { }
 
 export interface IFetchDataSuccessPayload {
   entityId: string;

@@ -10,83 +10,83 @@ export interface IStorageProxy {
 }
 
 export const CreateStorageProperty = (onChange: () => void, data?: object) => {
-    const property = (Array.isArray(data))
-        ? new StorageArrayProperty(onChange, data)
-        : new StorageProperty(onChange, data);
+  const property = (Array.isArray(data))
+    ? new StorageArrayProperty(onChange, data)
+    : new StorageProperty(onChange, data);
 
-    return new Proxy(property, {
-        get(target, name) {
-            const propertyName = name.toString();
+  return new Proxy(property, {
+    get(target, name) {
+      const propertyName = name.toString();
 
-            if (propertyName === 'hasOwnProperty')
-                return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
+      if (propertyName === 'hasOwnProperty')
+        return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
 
-            if (propertyName in target.accessor)
-                return typeof target.accessor[propertyName] === 'function'
-                    ? target.accessor[propertyName].bind(target.accessor)
-                    : target.accessor[propertyName];
+      if (propertyName in target.accessor)
+        return typeof target.accessor[propertyName] === 'function'
+          ? target.accessor[propertyName].bind(target.accessor)
+          : target.accessor[propertyName];
 
-            return target.accessor.getFieldValue(propertyName);
-        },
-        set(target, name, newValue, _receiver) {
-            const propertyName = name.toString();
-            target.accessor.setFieldValue(propertyName, newValue);
-            return true;
-        },
-        has(target, prop) {
-            return prop.toString() in target.accessor;
-        },
-        ownKeys(target) {
-            return target.accessor.getKeys();
-        },
-        getOwnPropertyDescriptor(target, prop) {
-            if (target.accessor.getKeys().indexOf(prop.toString()) >= 0)
-                return { enumerable: true, configurable: true, writable: true };
-            return undefined;
-        },
-    });
+      return target.accessor.getFieldValue(propertyName);
+    },
+    set(target, name, newValue, _receiver) {
+      const propertyName = name.toString();
+      target.accessor.setFieldValue(propertyName, newValue);
+      return true;
+    },
+    has(target, prop) {
+      return prop.toString() in target.accessor;
+    },
+    ownKeys(target) {
+      return target.accessor.getKeys();
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      if (target.accessor.getKeys().indexOf(prop.toString()) >= 0)
+        return { enumerable: true, configurable: true, writable: true };
+      return undefined;
+    },
+  });
 };
 
 export class StorageProperty implements IStorageProxy {
-    readonly accessor: StorageProxyAccessor;
+  readonly accessor: StorageProxyAccessor;
 
-    updateOnChange = (onChange: () => void) => this.accessor.updateOnChange(onChange);
+  updateOnChange = (onChange: () => void) => this.accessor.updateOnChange(onChange);
 
-    setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+  setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
 
-    getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+  getFieldValue = (name: string) => this.accessor.getFieldValue(name);
 
-    getData = () => this.accessor.getData();
+  getData = () => this.accessor.getData();
 
-    setData = (data: any) => this.accessor.setData(data);
+  setData = (data: any) => this.accessor.setData(data);
 
-    getKeys = () => this.accessor.getKeys();
+  getKeys = () => this.accessor.getKeys();
 
-    constructor(onChange: () => void, initialData?: object) {
-        this.accessor = new StorageProxyAccessor(onChange, initialData);
-    }
+  constructor(onChange: () => void, initialData?: object) {
+    this.accessor = new StorageProxyAccessor(onChange, initialData);
+  }
 }
 
 export class StorageArrayProperty extends Array implements IStorageProxy {
-    readonly accessor: StorageProxyAccessor;
+  readonly accessor: StorageProxyAccessor;
 
-    updateOnChange = (onChange: () => void) => this.accessor.updateOnChange(onChange);
+  updateOnChange = (onChange: () => void) => this.accessor.updateOnChange(onChange);
 
-    setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+  setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
 
-    getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+  getFieldValue = (name: string) => this.accessor.getFieldValue(name);
 
-    getData = () => this.accessor.getData();
+  getData = () => this.accessor.getData();
 
-    setData = (data: any) => this.accessor.setData(data);
+  setData = (data: any) => this.accessor.setData(data);
 
-    getKeys = () => this.accessor.getKeys();
+  getKeys = () => this.accessor.getKeys();
 
-    constructor(onChange: () => void, initialData?: object) {
-        super();
-        this.accessor = new StorageProxyAccessor(onChange, initialData);
+  constructor(onChange: () => void, initialData?: object) {
+    super();
+    this.accessor = new StorageProxyAccessor(onChange, initialData);
 
-        /* if (Array.isArray(initialData)) {
+    /* if (Array.isArray(initialData)) {
           this[Symbol.iterator] = () => {
             const data = this.accessor.getData() as Array<any>;
             let index = 0;
@@ -116,64 +116,64 @@ export class StorageArrayProperty extends Array implements IStorageProxy {
             };
           };
         }*/
-    }
+  }
 }
 
 
 export class StorageProxyAccessor implements IStorageProxy {
-    private _data: any;
+  private _data: any;
 
-    private _onChange: () => void;
+  private _onChange: () => void;
 
-    updateOnChange(onChange: () => void) {
-      this._onChange = onChange;
-    };
+  updateOnChange(onChange: () => void) {
+    this._onChange = onChange;
+  };
 
-    getFieldValue(propName: string): any {
-        const propValue = getValueByPropertyName(this._data, propName);
+  getFieldValue(propName: string): any {
+    const propValue = getValueByPropertyName(this._data, propName);
 
-        if (propValue === undefined)
-            return undefined;
-        if (propValue === null)
-            return null;
+    if (propValue === undefined)
+      return undefined;
+    if (propValue === null)
+      return null;
 
-        if (typeof propValue === 'function')
-            return propValue.bind(this._data);
+    if (typeof propValue === 'function')
+      return propValue.bind(this._data);
 
-        if (typeof propValue === 'object' && propValue) {
-            return CreateStorageProperty(this._onChange, propValue);
-        }
+    if (typeof propValue === 'object' && propValue) {
+      return CreateStorageProperty(this._onChange, propValue);
+    }
 
-        return propValue;
-    };
+    return propValue;
+  };
 
-    setFieldValue(name: string, value: any) {
-        setValueByPropertyName(this._data, name, value);
-        if (this._onChange)
-            this._onChange();
-    };
+  setFieldValue(name: string, value: any) {
+    setValueByPropertyName(this._data, name, value);
+    if (this._onChange)
+      this._onChange();
+  };
 
-    getData() {
-        return this._data;
-    };
+  getData() {
+    return this._data;
+  };
 
-    setData(data: object, update: boolean = true) {
-        this._data = data;
-        this._data['setFieldValue'] = this.setFieldValue.bind(this);
-        if (update && this._onChange)
-            this._onChange();
-    };
+  setData(data: object, update: boolean = true) {
+    this._data = data;
+    this._data['setFieldValue'] = this.setFieldValue.bind(this);
+    if (update && this._onChange)
+      this._onChange();
+  };
 
-    getKeys(): string[] {
-        const keys = [];
-        for (const key in this._data)
-            if (Object.hasOwn(this._data, key))
-                keys.push(key);
-        return keys;
-    };
+  getKeys(): string[] {
+    const keys = [];
+    for (const key in this._data)
+      if (Object.hasOwn(this._data, key))
+        keys.push(key);
+    return keys;
+  };
 
-    constructor(onChange: () => void, initialData?: object) {
-        this._onChange = onChange;
-        this.setData(initialData ?? {}, false);
-    };
+  constructor(onChange: () => void, initialData?: object) {
+    this._onChange = onChange;
+    this.setData(initialData ?? {}, false);
+  };
 }

@@ -4,7 +4,7 @@ export const isDefined = <T>(value: T | null | undefined): value is NonNullable<
 };
 
 export const isNullOrWhiteSpace = (value: string | null | undefined): value is null | undefined => {
-  return value == null || value.trim() === '';
+  return value === null || value === undefined || value.trim() === '';
 };
 
 export const isNotNullOrWhiteSpace = (value: string | null | undefined): value is string => {

@@ -10,6 +10,7 @@ import { ISetGroupingArguments, setGroupingArgumentsForm } from './set-grouping-
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
 import { ShaSpin, useAvailableConstantsData } from '@/index';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IPermissionedObjectsTreeProps {
   objectsType?: string;
@@ -34,9 +35,6 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissionedObjects.toolbox.objects.openedKeys.' + props.objectsType, ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissionedObjects.toolbox.objects.search.' + props.objectsType, '');
   const [groupBy, setGroupBy] = useLocalStorage('shaPermissionedObjects.toolbox.objects.grouping.' + props.objectsType, '-');
-  //const [objectsType, setObjectsType] = useLocalStorage('shaPermissionedObjects.toolbox.objects.type', null);
-  //const objectsType = 'Shesha.WebApi';
-
   const [allItems, setAllItems] = useState<PermissionedObjectDto[]>();
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -54,8 +52,8 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   useEffect(() => {
     if (!isFetchingData) {
-      if (fetchingDataResponse) {
-        const fetchedData = fetchingDataResponse?.result;
+      if (isAjaxSuccessResponse(fetchingDataResponse)) {
+        const fetchedData = fetchingDataResponse.result;
         if (fetchedData) {
           setAllItems(fetchedData);
         }

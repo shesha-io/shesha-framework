@@ -1,5 +1,5 @@
 import { IModelMetadata } from "@/interfaces/metadata";
-import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, } from "@/providers";
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from "@/providers";
 import React, { FC, PropsWithChildren, useRef } from "react";
 import { useDataContextManagerActions } from "../dataContextManager/index";
 import { DataContextType, ContextOnChangeData, ContextGetFull } from "./contexts";
@@ -8,7 +8,7 @@ import { setValueByPropertyName } from "@/utils/object";
 import { useAvailableConstantsDataNoRefresh } from "../form/utils";
 import { GetShaContextDataAccessor, IShaDataAccessor } from "./contexts/shaDataAccessProxy";
 
-export interface IDataContextProviderProps { 
+export interface IDataContextProviderProps {
   id: string;
   name: string;
   description?: string;
@@ -24,9 +24,9 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const {
     children,
     id,
-    name, 
-    description, 
-    type, 
+    name,
+    description,
+    type,
     initialData,
     metadata,
   } = props;
@@ -66,12 +66,12 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
 
   onChangeAction = (changedData: any) => {
     if (props.onChangeAction?.actionName) {
-      const data = {...allData.current};
+      const data = { ...allData.current };
       // update self
       data.contexts[name] = getFull();
       executeAction({
         actionConfiguration: props.onChangeAction,
-        argumentsEvaluationContext: {...allData.current, changedData},
+        argumentsEvaluationContext: { ...allData.current, changedData },
       });
     }
   };
@@ -81,12 +81,12 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
 
     if (onChangeData.current)
       onChangeData.current(changedData, changedData);
-};
+  };
 
   const setData = (changedData: any) => {
     setDataInternal(changedData);
     onChangeAction(changedData);
-    //fireListeners();
+    // fireListeners();
   };
 
   if (initialData && initialDataRef.current === undefined) {
@@ -95,7 +95,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       setDataInternal(data);
       executeAction({
         actionConfiguration: props.onInitAction,
-        argumentsEvaluationContext: {...allData.current},
+        argumentsEvaluationContext: { ...allData.current },
       });
     });
   }
@@ -112,7 +112,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       getFieldValue={getFieldValue}
       setData={setData}
       getData={getData}
-      //listenersRef={dataBinderRef}
+      // listenersRef={dataBinderRef}
     >
       {children}
     </DataContextBinder>

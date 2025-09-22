@@ -9,7 +9,7 @@ export interface ILoadSettingPayload {
 export interface ISettingsStateContext {}
 
 export interface ISettingsActionsContext {
-  getSetting: (settingId: ISettingIdentifier) => Promise<any>;
+  getSetting: <TValue = unknown>(settingId: ISettingIdentifier) => Promise<TValue>;
 }
 
 export interface ISettingsContext extends ISettingsStateContext, ISettingsActionsContext {}

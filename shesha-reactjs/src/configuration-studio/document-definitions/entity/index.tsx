@@ -10,26 +10,26 @@ import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
 export const EntityDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.ENTITY,
   Editor: (_props: ItemEditorProps): ReactNode => {
-      return (
-          <div>
-              <ModelConfiguratorRenderer />
-          </div>
-      );
+    return (
+      <div>
+        <ModelConfiguratorRenderer />
+      </div>
+    );
   },
   Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
-      const [form] = Form.useForm();
-      return (
-          <ModelConfiguratorProvider id={document.itemId} form={form}>
-              {children}
-          </ModelConfiguratorProvider>
-      );
+    const [form] = Form.useForm();
+    return (
+      <ModelConfiguratorProvider id={document.itemId} form={form}>
+        {children}
+      </ModelConfiguratorProvider>
+    );
   },
   Toolbar: (_props: ItemEditorProps): ReactNode => {
-      return (
-          <EntityToolbar />
-      );
+    return (
+      <EntityToolbar />
+    );
   },
   documentInstanceFactory: (args) => {
-      return new DocumentInstance({ ...args, itemType: EntityDocumentDefinition.documentType, definition: EntityDocumentDefinition });
+    return new DocumentInstance({ ...args, itemType: EntityDocumentDefinition.documentType, definition: EntityDocumentDefinition });
   },
 };

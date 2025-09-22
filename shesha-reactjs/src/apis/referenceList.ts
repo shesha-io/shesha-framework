@@ -81,23 +81,14 @@ export interface ReferenceListWithItemsDto {
    * Module name
    */
   module?: string | null;
-  /**
-   * Version number
-   */
-  versionNo?: number;
-  /**
-   * If true, indicates that this is a last version of the form
-   */
-  isLastVersion?: boolean;
-  versionStatus?: ConfigurationItemVersionStatus;
-  name?: string | null;
+  name: string;
   label?: string | null;
   description?: string | null;
   hardLinkToApplication?: boolean;
   namespace?: string | null;
   noSelectionValue?: number | null;
   suppress?: boolean;
-  items?: ReferenceListItemDto[] | null;
+  items: ReferenceListItemDto[];
   /**
    * Cache MD5, is used for client-side caching
    */
@@ -115,15 +106,3 @@ export type referenceListGetByNameProps = Omit<
   >,
   'queryParams'
 >;
-/**
- * Get current form configuration by name
- */
-export const referenceListGetByName = (
-  queryParams: ReferenceListGetByNameQueryParams,
-  props: referenceListGetByNameProps
-) =>
-  RestfulShesha.get<ReferenceListWithItemsDtoAjaxResponse, IAjaxResponseBase, ReferenceListGetByNameQueryParams, void>(
-    `/api/services/app/ReferenceList/GetByName`,
-    queryParams,
-    props
-  );

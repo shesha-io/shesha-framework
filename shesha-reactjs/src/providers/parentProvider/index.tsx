@@ -19,7 +19,7 @@ export interface IParentProviderStateContext {
   unRegisterChild: (input: IParentProviderStateContext) => void;
 }
 
-export interface IParentProviderProps { 
+export interface IParentProviderProps {
   name?: string;
   formMode?: FormMode;
   context?: string;
@@ -132,7 +132,10 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
           <ValidateProvider>
             <DataContextManager id={id}>
               <ConfigurableActionDispatcherProvider>
-                <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'} 
+                <DataContextProvider
+                  id={SheshaCommonContexts.FormContext}
+                  name={SheshaCommonContexts.FormContext}
+                  type="form"
                   description={`${props.name || id}`}
                 >
                   {children}

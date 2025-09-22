@@ -62,6 +62,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     return new Promise<IModelItem>((resolve) => {
       const item: IModelItem = {
         id: nanoid(),
+        dataType: ''
       };
       dispatchAndFire(addItemAction({ parentId, item }));
       resolve(item);

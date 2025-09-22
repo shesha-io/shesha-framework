@@ -26,3 +26,11 @@ export const isHasErrorInfo = (value: any): value is IHasErrorInfo => {
   return value && typeof(value) === 'object'
     && isErrorInfo(typed.errorInfo);
 };
+
+export const toErrorInfo = (error: unknown): IErrorInfo => {
+  return error instanceof Error
+    ? { message: error.message }
+    : isErrorInfo(error)
+      ? error
+      : { message: "Unknown error" } satisfies IErrorInfo;
+};
