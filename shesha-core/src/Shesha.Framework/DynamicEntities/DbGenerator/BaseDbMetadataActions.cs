@@ -75,7 +75,7 @@ namespace Shesha.DynamicEntities.DbGenerator
             return this;
         }
 
-        public virtual Task CreateInternalManyToManyTableAsync(
+        protected virtual Task CreateInternalManyToManyTableAsync(
             string tableName,
             string primaryTableName, string foreignTableName,
             string primaryIdName, string foreignIdName,

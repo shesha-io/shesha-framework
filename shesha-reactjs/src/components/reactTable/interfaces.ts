@@ -3,6 +3,7 @@ import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -160,6 +161,16 @@ export interface IReactTableProps extends ITableRowDragProps {
   onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
 
   /**
+   * A callback for clicking the rows
+   */
+  onRowClick?: (rowIndex: number, row: any) => void;
+
+  /**
+   * A callback for hovering over the rows
+   */
+  onRowHover?: (rowIndex: number, row: any) => void;
+
+  /**
    * A callback for when ids are selected. Required if useMultiSelect is true
    */
   onSelectedIdsChanged?: (ids: string[]) => void;
@@ -209,6 +220,13 @@ export interface IReactTableProps extends ITableRowDragProps {
   noDataSecondaryText?: string;
   noDataIcon?: string;
   showExpandedView?: boolean;
+  
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
+  borderRadius?: string;
+  border?: IBorderValue;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

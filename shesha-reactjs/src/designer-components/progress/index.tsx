@@ -1,7 +1,7 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { getSettings } from './settings';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IFormComponentStyles, IInputStyles } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -10,6 +10,7 @@ import { ProgressType } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 interface IProgressProps
   extends Omit<ProgressProps, 'style' | 'type' | 'size' | 'format' | 'success' | 'strokeColor'>,
@@ -21,6 +22,8 @@ interface IProgressProps
   lineStrokeColor?: string;
   circleStrokeColor?: string;
   defaultValue?: number;
+  stylingBox?: string;
+  allStyles?: IFormComponentStyles;
 }
 
 const ProgressComponent: IToolboxComponent<IProgressProps> = {
@@ -55,12 +58,14 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       defaultValue,
       hidden,
       gapDegree,
-      style
+      style,
+      allStyles
     } = model;
 
     if (hidden) return null;
 
-      const styles = getStyle(style);
+    const styles = getStyle(style);
+    const finalStyle = allStyles?.fullStyle || styles;
     
 
     const getEvaluatedSuccessColor = () => {
@@ -73,12 +78,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       let isLineOrCircle = false;
 
       if (progressType === 'line') {
-        color = lineStrokeColor?.toString();
+        color = lineStrokeColor?.toString() ?? strokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (progressType === 'circle') {
-        color = circleStrokeColor?.toString();
+        color = circleStrokeColor?.toString() ?? strokeColor?.toString();
         isLineOrCircle = true;
       }
 
@@ -115,7 +120,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               success={getEvaluatedSuccessColor()}
               defaultValue={defaultValue}
               gapDegree={gapDegree}
-              style={styles}
+              style={finalStyle}
             />);
         }}
       </ConfigurableFormItem>
@@ -126,6 +131,14 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IProgressProps>(2, (prev) => {
+      const styles: IInputStyles = {
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
+    .add<IProgressProps>(3, (prev) => ({ ...migratePrevStyles(prev, {}) }))
   ,
 };
 

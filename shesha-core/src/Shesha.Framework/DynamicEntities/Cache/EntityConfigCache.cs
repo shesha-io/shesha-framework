@@ -21,8 +21,8 @@ namespace Shesha.DynamicEntities.Cache
 {
     public class EntityConfigCache : IEntityConfigCache, ITransientDependency,
         IEventHandler<EntityChangedEventData<EntityProperty>>,
-        IEventHandler<EntityChangedEventData<EntityConfigRevision>>,
-        IEventHandler<EntityChangingEventData<EntityConfigRevision>>
+        IEventHandler<EntityChangedEventData<EntityConfig>>,
+        IEventHandler<EntityChangingEventData<EntityConfig>>
     {
         private readonly IRepository<EntityProperty, Guid> _propertyRepository;
         private readonly IRepository<EntityConfig, Guid> _configReprository;
@@ -55,7 +55,6 @@ namespace Shesha.DynamicEntities.Cache
 
         private string GetCacheKey(EntityConfig entityConfig)
         {
-            // TODO: V1 review take versions into account
             return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
         }
 
@@ -73,7 +72,7 @@ namespace Shesha.DynamicEntities.Cache
             using (var uow = _unitOfWorkManager.Begin())
             {
                 var conf = await _configReprository.GetAll()
-                    .Where(x => x.ClassName == className && x.Namespace == classNamespace || x.LatestRevision.TypeShortAlias == $"{classNamespace}.{className}")
+                    .Where(x => x.ClassName == className && x.Namespace == classNamespace || x.TypeShortAlias == $"{classNamespace}.{className}")
                     .FirstOrDefaultAsync();
 
                 // ToDo: AS - get nested properties
@@ -84,10 +83,8 @@ namespace Shesha.DynamicEntities.Cache
                     return null;
                 }
 
-                var revision = conf.LatestRevision;
-
                 var properties = await _propertyRepository.GetAll()
-                    .Where(p => p.EntityConfigRevision == revision && p.ParentProperty == null)
+                    .Where(p => p.EntityConfig == conf && p.ParentProperty == null)
                     .ToListAsync();
                 var propertyDtos = properties.Select(p => _mapper.Map<EntityPropertyDto>(p)).ToList();
                 
@@ -200,10 +197,10 @@ namespace Shesha.DynamicEntities.Cache
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            if (eventData.Entity?.EntityConfigRevision == null)
+            if (eventData.Entity?.EntityConfig == null)
                 return;
 
-            _propertyCache.Remove(GetCacheKey((eventData.Entity.EntityConfigRevision.EntityConfig).NotNull()));
+            _propertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
         }
 
         public void HandleEvent(EntityChangingEventData<EntityConfig> eventData)
@@ -214,16 +211,6 @@ namespace Shesha.DynamicEntities.Cache
         public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
         {
             _propertyCache.Remove(GetCacheKey(eventData.Entity));
-        }
-
-        public void HandleEvent(EntityChangingEventData<EntityConfigRevision> eventData)
-        {
-            _propertyCache.Remove(GetCacheKey((eventData.Entity.ConfigurationItem as EntityConfig).NotNull()));
-        }
-
-        public void HandleEvent(EntityChangedEventData<EntityConfigRevision> eventData)
-        {
-            _propertyCache.Remove(GetCacheKey((eventData.Entity.ConfigurationItem as EntityConfig).NotNull()));
-        }
+        }        
     }
 }

@@ -25,7 +25,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
         /// <summary>
         /// 
         /// </summary>
-        public string Category { get; set; }
+        public string Category { get; set; } = string.Empty;
         /// <summary>
         /// 
         /// </summary>
@@ -34,7 +34,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
         /// List of NotificationChannelConfigs
         /// </summary>
         [MaxLength(int.MaxValue)]
-        public string? OverrideChannels { get; set; }
+        public string OverrideChannels { get; set; } = string.Empty;
         /// <summary>
         ///  messages without which the user should not proceed in any case e.g. OTP
         /// </summary>

@@ -1,5 +1,4 @@
 using AutoMapper;
-using ConcurrentCollections;
 using Shesha.Domain;
 using System.Linq;
 
@@ -13,9 +12,9 @@ namespace Shesha.ShaRoles.Dto
 
             
             CreateMap<ShaRoleDto, ShaRole>();
-            
+
             CreateMap<ShaRole, ShaRoleDto>()
-                .ForMember(e => e.Permissions, c => c.MapFrom(e => e.Revision != null ? e.Revision.Permissions.Select(x => x.Permission) : new ConcurrentHashSet<string>()));
+                .ForMember(e => e.Permissions, c => c.MapFrom(e => e.Permissions.Select(x => x.Permission)));
         }
     }
 }

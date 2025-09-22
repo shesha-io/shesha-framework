@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Caching;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class EntityConfigImport : ConfigurationItemImportBase<EntityConfig, EntityConfigRevision, DistributedEntityConfig>, IEntityConfigImport, ITransientDependency
+    public class EntityConfigImport : ConfigurationItemImportBase<EntityConfig, DistributedEntityConfig>, IEntityConfigImport, ITransientDependency
     {
         public string ItemType => EntityConfig.ItemTypeName;
 
@@ -30,11 +31,10 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo,
             IRepository<EntityConfig, Guid> repository,
-            IRepository<EntityConfigRevision, Guid> revisionRepository,
             IRepository<EntityProperty, Guid> propertyConfigRepo,
             IPermissionedObjectManager permissionedObjectManager,
             IModelConfigsCacheHolder modelConfigsCacheHolder
-        ) : base (repository, revisionRepository, moduleRepo, frontEndAppRepo)
+        ) : base (repository, moduleRepo, frontEndAppRepo)
         {
             _propertyConfigRepo = propertyConfigRepo;
             _permissionedObjectManager = permissionedObjectManager;
@@ -42,7 +42,7 @@ namespace Shesha.DynamicEntities.Distribution
             _modelConfigsCache = modelConfigsCacheHolder.Cache;
         }
 
-        protected override async Task AfterImportAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig distributedItem, IConfigurationItemsImportContext context)
+        protected override async Task AfterImportAsync(EntityConfig item, DistributedEntityConfig distributedItem, IConfigurationItemsImportContext context)
         {
             await MapPropertiesAsync(item, distributedItem.Properties);
             
@@ -55,13 +55,11 @@ namespace Shesha.DynamicEntities.Distribution
             List<DistributedEntityConfigProperty> Properties
         )
         {
-            var revision = item.EnsureLatestRevision();
-
             foreach (var src in Properties)
             {
                 // TODO: V1 review. fetch all properties and compare
-                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfigRevision == revision)
-                    ?? new EntityProperty() { EntityConfigRevision = revision };
+                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
+                    ?? new EntityProperty() { EntityConfig = item };
                 
                 dbItem.Name = src.Name;
                 dbItem.Label = src.Label;
@@ -92,27 +90,27 @@ namespace Shesha.DynamicEntities.Distribution
             }
         }
 
-        protected override Task<bool> CustomPropsAreEqualAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig distributedItem)
+        protected override Task<bool> CustomPropsAreEqualAsync(EntityConfig item, DistributedEntityConfig distributedItem)
         {
             // TODO: review comparison
-            var equals = revision.TypeShortAlias == distributedItem.TypeShortAlias &&
+            var equals = item.TypeShortAlias == distributedItem.TypeShortAlias &&
                 item.ClassName == distributedItem.ClassName &&
                 item.Namespace == distributedItem.Namespace &&
                 item.DiscriminatorValue == distributedItem.DiscriminatorValue &&
                 item.TableName == distributedItem.TableName &&
                 item.EntityConfigType == item.EntityConfigType &&
 
-                revision.Source == distributedItem.Source &&
+                item.Source == distributedItem.Source &&
 
-                revision.GenerateAppService == distributedItem.GenerateAppService &&
-                revision.HardcodedPropertiesMD5 == distributedItem.PropertiesMD5;
+                item.GenerateAppService == distributedItem.GenerateAppService &&
+                item.HardcodedPropertiesMD5 == distributedItem.PropertiesMD5;
                 // TODO: implement 
                 //revision.ViewConfigurations == distributedItem.ViewConfigurations.ToList() &&
 
             return Task.FromResult(equals);
         }
 
-        protected override async Task MapCustomPropsToItemAsync(EntityConfig item, EntityConfigRevision revision, DistributedEntityConfig distributedItem)
+        protected override async Task MapCustomPropsToItemAsync(EntityConfig item, DistributedEntityConfig distributedItem)
         {
             // entity config specific properties
             item.ClassName = distributedItem.ClassName;
@@ -121,12 +119,12 @@ namespace Shesha.DynamicEntities.Distribution
             item.TableName = distributedItem.TableName;
             item.EntityConfigType = distributedItem.EntityConfigType;
 
-            revision.TypeShortAlias = distributedItem.TypeShortAlias;
-            revision.Source = distributedItem.Source;
+            item.TypeShortAlias = distributedItem.TypeShortAlias;
+            item.Source = distributedItem.Source ?? MetadataSourceType.UserDefined;
 
-            revision.GenerateAppService = distributedItem.GenerateAppService;
-            revision.HardcodedPropertiesMD5 = distributedItem.PropertiesMD5;
-            revision.ViewConfigurations = distributedItem.ViewConfigurations.ToList();
+            item.GenerateAppService = distributedItem.GenerateAppService;
+            item.HardcodedPropertiesMD5 = distributedItem.PropertiesMD5;
+            item.ViewConfigurations = distributedItem.ViewConfigurations.ToList();
 
             if (distributedItem.Permission != null)
             {

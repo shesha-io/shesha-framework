@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Abp.Timing;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
-using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Exceptions;
 using Shesha.Extensions;
@@ -12,7 +11,6 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -141,7 +139,7 @@ namespace Shesha.ConfigurationItems.Distribution
                     {
                         var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItem>();                        
 
-                        var dependencyItem = await query.GetItemByIdAsync(dependency, context.VersionSelectionMode);
+                        var dependencyItem = await query.GetItemByIdAsync(dependency);
 
                         // todo: write log and include all missing items
                         if (dependencyItem != null)
@@ -173,7 +171,7 @@ namespace Shesha.ConfigurationItems.Distribution
             var type = itemType;
             while (type != null)
             {
-                if (type.IsAssignableTo(typeof(IConfigurationItem)))
+                if (type.IsAssignableTo(typeof(ConfigurationItem)))
                 {
                     var serviceType = typeof(IDependenciesProvider<>).MakeGenericType(type);
                     var services = IocManager.ResolveAll(serviceType).OfType<IDependenciesProvider>().ToList();
@@ -375,25 +373,18 @@ namespace Shesha.ConfigurationItems.Distribution
                 return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.New);
             }
             else {
-                if (dbItem is IDistributedConfigurationItem itemWithRevision)
-                {
-                    var revision = itemWithRevision.GetLatestRevision();
+                var revision = dbItem.LatestRevision;
 
-                    if (revision != null && !string.IsNullOrWhiteSpace(distributedItem.ConfigHash) && revision.ConfigHash == distributedItem.ConfigHash)
-                    {
-                        description = null;
-                        return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Unchanged);
-                    }
-                    else
-                    {
-                        // TODO: check import errors
-                        description = null;
-                        return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Updated);
-                    }
+                if (revision != null && !string.IsNullOrWhiteSpace(distributedItem.ConfigHash) && revision.ConfigHash == distributedItem.ConfigHash)
+                {
+                    description = null;
+                    return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Unchanged);
                 }
-                else {
-                    description = "Unsupported item type";
-                    return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Error);
+                else
+                {
+                    // TODO: check import errors
+                    description = null;
+                    return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Updated);
                 }
             }                
         }        

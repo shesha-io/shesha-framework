@@ -4,10 +4,8 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Domain.Uow;
-using Abp.Reflection;
 using Abp.Runtime.Caching;
 using AutoMapper;
-using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
@@ -56,19 +54,14 @@ namespace Shesha.DynamicEntities
         private readonly bool metadataRefresh = false;
 
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IRepository<EntityConfigRevision, Guid> _entityConfigRevisionRepository;
-        private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IShaTypeFinder _typeFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
-        private readonly IMappingMetadataProvider _mappingMetadataProvider;
         private readonly IRepository<Domain.Module, Guid> _moduleRepository;
         private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
-        private readonly IModelConfigsCacheHolder _modelConfigsCacheHolder;
         private readonly IModuleList _moduleList;
         private readonly IDynamicEntitiesDbGenerator _dbGenerator;
-        private readonly IAssemblyFinder _assemblyFinder;
 
         private readonly IMapper _propertyCopy;
 
@@ -76,36 +69,27 @@ namespace Shesha.DynamicEntities
 
         public ModelConfigurationManager(
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IRepository<EntityConfigRevision, Guid> entityConfigRevisionRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IPermissionedObjectManager permissionedObjectManager,
             IShaTypeFinder typeFinder,
             IHardcodeMetadataProvider metadataProvider,
-            IRepository<ConfigurationItem, Guid> configurationItemRepository,
-            IMappingMetadataProvider mappingMetadataProvider,
             IRepository<Domain.Module, Guid> moduleRepository,
             IModelConfigsCacheHolder modelConfigsCacheHolder,
             IUnitOfWorkManager unitOfWorkManager,
             IModuleList moduleList,
-            IDynamicEntitiesDbGenerator dbGenerator,
-            IAssemblyFinder assemblyFinder
+            IDynamicEntitiesDbGenerator dbGenerator
             )
         {
             _entityConfigRepository = entityConfigRepository;
-            _entityConfigRevisionRepository = entityConfigRevisionRepository;
             _entityPropertyRepository = entityPropertyRepository;
             _permissionedObjectManager = permissionedObjectManager;
             _typeFinder = typeFinder;
             _metadataProvider = metadataProvider;
-            _configurationItemRepository = configurationItemRepository;
-            _mappingMetadataProvider = mappingMetadataProvider;
             _moduleRepository = moduleRepository;
-            _modelConfigsCacheHolder = modelConfigsCacheHolder;
             _modelConfigsCache = modelConfigsCacheHolder.Cache;
             _unitOfWorkManager = unitOfWorkManager;
             _moduleList = moduleList;
             _dbGenerator = dbGenerator;
-            _assemblyFinder = assemblyFinder;
 
             var propertyCopyMapping = new MapperConfiguration(cfg =>
             {
@@ -223,8 +207,8 @@ namespace Shesha.DynamicEntities
                 InheritedFromNamespace = inheritedFrom?.Namespace,
 
                 // ToDo: AS - use name conventions
-                SchemaName = schemaName.ToSnakeCase(),
-                TableName = inheritedFrom?.TableName ?? input.Name.ToSnakeCase(),
+                SchemaName = inheritedFrom != null ? inheritedFrom.SchemaName : schemaName.ToSnakeCase(),
+                TableName = inheritedFrom != null ? inheritedFrom.TableName : input.Name.ToSnakeCase(),
                 DiscriminatorValue = discriminatorValue,
 
                 ClassName = input.Name,
@@ -283,20 +267,18 @@ namespace Shesha.DynamicEntities
                 await _entityConfigRepository.InsertAsync(entityConfig);
             }
 
-            var revision = entityConfig.EnsureLatestRevision();
-            revision.Label = input.Label;
-            revision.Description = input.Description;
-            revision.GenerateAppService = input.GenerateAppService;
-            revision.Accessor = input.ClassName;
-            revision.ViewConfigurations = input.ViewConfigurations;
+            entityConfig.Label = input.Label;
+            entityConfig.Description = input.Description;
+            entityConfig.GenerateAppService = input.GenerateAppService;
+            entityConfig.Accessor = input.ClassName;
+            entityConfig.ViewConfigurations = input.ViewConfigurations;
 
-            await _entityConfigRevisionRepository.InsertOrUpdateAsync(revision);
             await _entityConfigRepository.UpdateAsync(entityConfig);
 
             if (isNew && metadataRefresh)
                   await _dbGenerator.ProcessEntityConfigAsync(entityConfig, new List<EntityProperty>()); // use empty list because properties will be processed later
 
-            var properties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfigRevision == revision).OrderBy(p => p.SortOrder).ToListAsync();
+            var properties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfig == entityConfig).OrderBy(p => p.SortOrder).ToListAsync();
 
             var mappers = new Dictionary<ModelUpdateType, IMapper> {
                 { ModelUpdateType.DecorProperties, GetPropertyMapper(ModelUpdateType.DecorProperties) },
@@ -423,7 +405,7 @@ namespace Shesha.DynamicEntities
                 if (!isNew && dbProp == null)
                     throw new EntityNotFoundException($"Property with id =`{inputProp.Id}` of entity `{entityConfig.Name}` not found. Unable to Add/Update");
 
-                dbProp = dbProp ?? new EntityProperty { EntityConfigRevision = entityConfig.EnsureLatestRevision(), Name = inputProp.Name };
+                dbProp = dbProp ?? new EntityProperty { EntityConfig = entityConfig, Name = inputProp.Name };
 
                 var propertyMapper = mappers[
                     dbProp.InheritedFrom != null
@@ -487,7 +469,7 @@ namespace Shesha.DynamicEntities
                         mappers,
                         dbProp.Properties.ToList(),
                         inputProp.Properties,
-                        dbProp.EntityConfigRevision.EntityConfig,
+                        dbProp.EntityConfig,
                         dbProp,
                         inherited,
                         inheritedFromProp?.Properties.ToList() ?? new List<EntityProperty>()
@@ -535,13 +517,13 @@ namespace Shesha.DynamicEntities
                                 mappers, 
                                 new List<EntityProperty>() { inheritedProperty }, 
                                 new List<ModelPropertyDto> { inhProp },
-                                inheritedProperty.EntityConfigRevision.EntityConfig,
+                                inheritedProperty.EntityConfig,
                                 inheritedProperty.ParentProperty,
                                 true,
                                 new List<EntityProperty> { dbProp }
                             );
 
-                            await _modelConfigsCache.RemoveAsync($"{inheritedProperty.EntityConfigRevision.EntityConfig.Namespace}|{inheritedProperty.EntityConfigRevision.EntityConfig.ClassName}");
+                            await _modelConfigsCache.RemoveAsync($"{inheritedProperty.EntityConfig.Namespace}|{inheritedProperty.EntityConfig.ClassName}");
                         }
                     }
                 }
@@ -567,7 +549,7 @@ namespace Shesha.DynamicEntities
                 var mapExpression = cfg.CreateMap<ModelPropertyDto, EntityProperty>()
                     .ForMember(d => d.Id, o => o.Ignore())
                     .ForMember(d => d.InheritedFrom, o => o.Ignore())
-                    .ForMember(d => d.EntityConfigRevision, o => o.Ignore())
+                    .ForMember(d => d.EntityConfig, o => o.Ignore())
                     .ForMember(d => d.SortOrder, o => o.Ignore())
                     .ForMember(d => d.Properties, o => o.Ignore())
                     .ForMember(d => d.Source, o => o.Ignore())
@@ -598,21 +580,19 @@ namespace Shesha.DynamicEntities
             dto.InheritedFromClassName = baseConfig?.ClassName;
             dto.InheritedFromNamespace = baseConfig?.Namespace;
 
-            var revision = modelConfig.LatestRevision;
-
-            dto.GenerateAppService = revision.GenerateAppService;
-            dto.Source = revision.Source;
-            dto.HardcodedPropertiesMD5 = revision.HardcodedPropertiesMD5;
-            dto.ViewConfigurations = revision.ViewConfigurations;
+            dto.GenerateAppService = modelConfig.GenerateAppService;
+            dto.Source = modelConfig.Source;
+            dto.HardcodedPropertiesMD5 = modelConfig.HardcodedPropertiesMD5;
+            dto.ViewConfigurations = modelConfig.ViewConfigurations;
 
             var properties = await _entityPropertyRepository.GetAll()
-                .Where(p => p.EntityConfigRevision == revision && p.ParentProperty == null)
+                .Where(p => p.EntityConfig == modelConfig && p.ParentProperty == null)
                 .OrderBy(p => p.SortOrder).ToListAsync();
 
             dto.Properties = new List<ModelPropertyDto>();
 
             // Check hard-coded properties only for Application classes because User defined classes are configured from the DB
-            var containerType = revision.Source == MetadataSourceType.ApplicationCode
+            var containerType = modelConfig.Source == MetadataSourceType.ApplicationCode
                 ? _typeFinder.Find(x => x.Namespace == modelConfig.Namespace && x.Name == modelConfig.ClassName).FirstOrDefault()
                 : null;
 
@@ -676,7 +656,7 @@ namespace Shesha.DynamicEntities
                 dto.Properties.Add(prop);
             }
 
-            dto.HardcodedPropertiesMD5 = modelConfig.LatestRevision.HardcodedPropertiesMD5;
+            dto.HardcodedPropertiesMD5 = modelConfig.HardcodedPropertiesMD5;
 
             var changeDates = properties.Select(p => p.LastModificationTime ?? p.CreationTime).ToList();
             changeDates.Add(modelConfig.LastModificationTime ?? modelConfig.CreationTime);

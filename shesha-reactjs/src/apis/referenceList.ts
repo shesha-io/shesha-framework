@@ -25,7 +25,6 @@ export interface ReferenceListItemDto {
   itemValue?: number;
   description?: string | null;
   orderIndex?: number;
-  referenceList?: GuidNullableEntityReferenceDto;
   /**
    * Color associated with the item
    */

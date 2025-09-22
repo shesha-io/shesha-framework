@@ -24,9 +24,12 @@ namespace Shesha.NHibernate.Session
             var persister = sessionImpl.Factory.GetEntityPersister(className);
 
             var oldEntry = session.GetEntry(entity);
-            Object[] oldState = oldEntry.LoadedState;
-            Object[] currentState = persister.GetPropertyValues(entity);
-            Int32[] dirtyProps = persister.FindDirty(currentState, oldState, entity, sessionImpl);
+            object[]? oldState = oldEntry.LoadedState;
+            if (oldState == null)
+                return new();
+
+            object[] currentState = persister.GetPropertyValues(entity);
+            int[] dirtyProps = persister.FindDirty(currentState, oldState, entity, sessionImpl);
 
             return dirtyProps != null
                 ? dirtyProps.Select(i => new DirtyPropertyInfo()
@@ -36,7 +39,7 @@ namespace Shesha.NHibernate.Session
                         NewValue = currentState[i]
                     })
                     .ToList()
-                : new List<DirtyPropertyInfo>();
+                : new ();
         }
         
         public static EntityEntry? GetEntryOrNull(this ISession session, Object entity) 

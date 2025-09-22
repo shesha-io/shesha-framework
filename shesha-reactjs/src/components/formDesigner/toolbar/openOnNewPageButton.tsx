@@ -12,8 +12,6 @@ export const OpenOnNewPageButton: FC<IOpenOnNewPageButtonProps> = () => {
     const { formId } = useFormPersister();
     const formDesignerUrl = useFormDesignerUrl(formId);
     return (
-        <Button onClick={() => window?.open(formDesignerUrl, '_blank')} type={'default'} size='small' title="Expand">
-            <ArrowsAltOutlined />
-        </Button>
+        <Button icon={<ArrowsAltOutlined />} onClick={() => window?.open(formDesignerUrl, '_blank')} type={'default'} shape="circle" title="Expand" />
     );
 };

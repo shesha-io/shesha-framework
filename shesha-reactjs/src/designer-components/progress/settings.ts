@@ -249,17 +249,53 @@ export const getSettings = (data: any) => {
                                 jsSetting: true,
                                 parentId: styleRouterId,
                               })
+                              // .addSettingsInputRow({
+                              //   id: nanoid(),
+                              //   parentId: styleRouterId,
+                              //   hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
+                              //   inputs: [
+                              //     {
+                              //       type: 'colorPicker',
+                              //       id: nanoid(),
+                              //       propertyName: 'lineStrokeColor',
+                              //       label: 'Line Stroke Color',
+                              //       tooltip: "The color of line progress bar",
+                              //       jsSetting: true,
+                              //     }
+                              //   ]
+                              // })
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
-                                hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
+                                hidden: { _code: 'return getSettingValue(data?.progressType) !== "circle";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
-                                    type: 'colorPicker',
+                                    type: 'numberField',
                                     id: nanoid(),
-                                    propertyName: 'lineStrokeColor',
-                                    label: 'Stroke Color',
-                                    tooltip: "The color of progress bar",
+                                    propertyName: 'gapDegree',
+                                    label: 'Gap Degree',
+                                    tooltip: "The gap degree of half circle, 0 ~ 295",
+                                    jsSetting: true,
+                                  }
+                                ]
+                              })
+                              .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: styleRouterId,
+                                hidden: { _code: 'return !["circle", "dashboard"].includes(getSettingValue(data?.progressType));', _mode: 'code', _value: false },
+                                inputs: [
+                                  {
+                                    type: 'dropdown',
+                                    id: nanoid(),
+                                    propertyName: 'gapPosition',
+                                    label: 'Gap Position',
+                                    tooltip: "The gap position",
+                                    dropdownOptions: [
+                                      { label: 'Top', value: 'top' },
+                                      { label: 'Bottom', value: 'bottom' },
+                                      { label: 'Left', value: 'left' },
+                                      { label: 'Right', value: 'right' },
+                                    ],
                                     jsSetting: true,
                                   }
                                 ]
@@ -275,20 +311,6 @@ export const getSettings = (data: any) => {
                                     propertyName: 'gapDegree',
                                     label: 'Gap Degree',
                                     tooltip: "The gap degree of half circle, 0 ~ 295",
-                                    jsSetting: true,
-                                  },
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    propertyName: 'gapPosition',
-                                    label: 'Gap Position',
-                                    tooltip: "The gap position",
-                                    dropdownOptions: [
-                                      { label: 'Top', value: 'top' },
-                                      { label: 'Bottom', value: 'bottom' },
-                                      { label: 'Left', value: 'left' },
-                                      { label: 'Right', value: 'right' },
-                                    ],
                                     jsSetting: true,
                                   }
                                 ]

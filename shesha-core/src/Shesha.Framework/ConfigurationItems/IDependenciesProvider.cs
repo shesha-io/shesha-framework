@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 namespace Shesha.ConfigurationItems
 {
     /// <summary>
-    /// Dependencies provider. Allows to get a list of dependencies of <see cref="IConfigurationItem"/>
+    /// Dependencies provider. Allows to get a list of dependencies of <see cref="ConfigurationItem"/>
     /// </summary>
-    public interface IDependenciesProvider<TItem>: IDependenciesProvider where TItem: IConfigurationItem
+    public interface IDependenciesProvider<TItem>: IDependenciesProvider where TItem: ConfigurationItem
     {
         /// <summary>
         /// Get list of referenced configuration items
@@ -17,7 +17,7 @@ namespace Shesha.ConfigurationItems
     }
 
     /// <summary>
-    /// Dependencies provider. Allows to get a list of dependencies of <see cref="IConfigurationItem"/>
+    /// Dependencies provider. Allows to get a list of dependencies of <see cref="ConfigurationItem"/>
     /// </summary>
     public interface IDependenciesProvider 
     {

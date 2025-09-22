@@ -108,8 +108,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, [value]);
 
   useEffect(() => {
-    const val = state?.fileList?.length > 0 ? state.fileList : value || [];
-      if (typeof onChange === 'function' && value !== val) {
+    const val = state.fileList?.length > 0 ? state.fileList : [];
+        if (typeof onChange === 'function' && value !== val) {
         onChange(val);
       };
   }, [state.fileList]);
@@ -145,6 +145,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
+      onChange?.(state.fileList?.filter(file => file.id !== patient?.id) || []);
     });
   }, []);
   //#endregion

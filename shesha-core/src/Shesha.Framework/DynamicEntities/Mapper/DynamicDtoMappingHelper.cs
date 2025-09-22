@@ -52,10 +52,10 @@ namespace Shesha.DynamicEntities.Mapper
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            if (eventData.Entity?.EntityConfigRevision == null)
+            if (eventData.Entity?.EntityConfig == null)
                 return;
 
-            var cacheKey = GetCacheKey(eventData.Entity.EntityConfigRevision.EntityConfig);
+            var cacheKey = GetCacheKey(eventData.Entity.EntityConfig);
             _internalCache.Remove(cacheKey);
         }
 

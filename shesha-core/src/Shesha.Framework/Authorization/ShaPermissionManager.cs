@@ -9,7 +9,6 @@ using Abp.Localization;
 using Abp.MultiTenancy;
 using Abp.Threading;
 using Shesha.Domain;
-using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -50,7 +49,7 @@ namespace Shesha.Authorization
             var dbPermissions = await _permissionDefinitionRepository.GetAllListAsync();
 
             // Update DB-related items
-            var dbRootPermissions = dbPermissions.Where(x => string.IsNullOrEmpty(x.Revision?.Parent)).ToList();
+            var dbRootPermissions = dbPermissions.Where(x => string.IsNullOrEmpty(x.Parent)).ToList();
             foreach (var dbPermission in dbRootPermissions)
             {
                 if (GetPermissionOrNull(dbPermission.Name) == null)
@@ -66,13 +65,13 @@ namespace Shesha.Authorization
             while (dbPermissions.Any())
             {
                 var dbPermission = dbPermissions.FirstOrDefault();
-                if (dbPermission != null && dbPermission.Revision != null)
+                if (dbPermission != null)
                 {
-                    var permission = GetPermissionOrNull(dbPermission.Revision.Parent);
-                    while (permission == null && dbPermissions.Any(x => dbPermission.Revision != null && x.Name == dbPermission.Revision.Parent))
+                    var permission = GetPermissionOrNull(dbPermission.Parent);
+                    while (permission == null && dbPermissions.Any(x => x.Name == dbPermission.Parent))
                     {
-                        dbPermission = dbPermissions.First(x => dbPermission.Revision != null && x.Name == dbPermission.Revision.Parent);
-                        permission = GetPermissionOrNull(dbPermission.Revision?.Parent);
+                        dbPermission = dbPermissions.First(x => x.Name == dbPermission.Parent);
+                        permission = GetPermissionOrNull(dbPermission.Parent);
                     }
 
                     if (permission != null)
@@ -91,7 +90,7 @@ namespace Shesha.Authorization
 
         private async Task CreateChildPermissionsAsync(List<PermissionDefinition> dbPermissions, Abp.Authorization.Permission permission)
         {
-            var dbChildPermissions = dbPermissions.Where(x => x.Revision != null && x.Revision.Parent == permission.Name).ToList();
+            var dbChildPermissions = dbPermissions.Where(x => x.Parent == permission.Name).ToList();
             foreach (var dbChildPermission in dbChildPermissions)
             {
                 if (GetPermissionOrNull(dbChildPermission.Name) == null)
@@ -131,13 +130,13 @@ namespace Shesha.Authorization
 
         private Task<Abp.Authorization.Permission> CreatePermissionInternalAsync(PermissionDefinition permissionDefinition)
         {
-            if (!string.IsNullOrEmpty(permissionDefinition.Revision.Parent))
+            if (!string.IsNullOrEmpty(permissionDefinition.Parent))
             {
                 // add new permission to parent
-                var parent = GetPermission(permissionDefinition.Revision.Parent);
+                var parent = GetPermission(permissionDefinition.Parent);
                 var permission = parent.CreateChildPermission(permissionDefinition.Name,
-                    (permissionDefinition.Revision.Label ?? "").L(),
-                    (permissionDefinition.Revision.Description ?? "").L(),
+                    (permissionDefinition.Label ?? "").L(),
+                    (permissionDefinition.Description ?? "").L(),
                     properties: new Dictionary<string, object?>() 
                     { 
                         { IsDbPermission, true },
@@ -150,8 +149,8 @@ namespace Shesha.Authorization
             {
                 var permission = CreatePermission(
                     permissionDefinition.Name,
-                    (permissionDefinition.Revision.Label ?? "").L(),
-                    (permissionDefinition.Revision.Description ?? "").L(),
+                    (permissionDefinition.Label ?? "").L(),
+                    (permissionDefinition.Description ?? "").L(),
                     properties: new Dictionary<string, object?>()
                     {
                         { IsDbPermission, true },
@@ -173,20 +172,19 @@ namespace Shesha.Authorization
             }
 
             if (dbPermission.Name != permissionDefinition.Name
-                || dbPermission.Revision.Label != permissionDefinition.Revision.Label
-                || dbPermission.Revision.Description != permissionDefinition.Revision.Description
+                || dbPermission.Label != permissionDefinition.Label
+                || dbPermission.Description != permissionDefinition.Description
                 || dbPermission.Module != permissionDefinition.Module
             )
             {
                 dbPermission.Name = permissionDefinition.Name;
-                var revision = dbPermission.EnsureLatestRevision();
-                revision.Description = permissionDefinition.Revision.Description;
-                revision.Label = permissionDefinition.Revision.Label;
-                revision.Parent = permissionDefinition.Revision.Parent;
+                dbPermission.Description = permissionDefinition.Description;
+                dbPermission.Label = permissionDefinition.Label;
+                dbPermission.Parent = permissionDefinition.Parent;
 
                 RemovePermission(oldName);
-                var parent = !string.IsNullOrEmpty(permissionDefinition.Revision.Parent)
-                    ? GetPermissionOrNull(permissionDefinition.Revision.Parent)
+                var parent = !string.IsNullOrEmpty(permissionDefinition.Parent)
+                    ? GetPermissionOrNull(permissionDefinition.Parent)
                     : null;
 
                 parent?.RemoveChildPermission(oldName);
@@ -215,8 +213,7 @@ namespace Shesha.Authorization
 
             InternalDeletePermission(dbPermission);
 
-            var revision = dbPermission.EnsureLatestRevision();
-            revision.Parent = parentName;
+            dbPermission.Parent = parentName;
             dbPermission.Module = module;
             await CreatePermissionInternalAsync(dbPermission);
             Permissions.AddAllPermissions();
@@ -226,9 +223,9 @@ namespace Shesha.Authorization
 
         private void InternalDeletePermission(PermissionDefinition permission)
         {
-            if (!string.IsNullOrEmpty(permission.Revision.Parent))
+            if (!string.IsNullOrEmpty(permission.Parent))
             {
-                var parent = GetPermissionOrNull(permission.Revision.Parent);
+                var parent = GetPermissionOrNull(permission.Parent);
                 parent?.RemoveChildPermission(permission.Name);
             }
 
@@ -247,7 +244,7 @@ namespace Shesha.Authorization
                 throw new EntityNotFoundException("Permission 'name' not found");
             }
 
-            var child = _permissionDefinitionRepository.GetAll().Where(x => x.LatestRevision.Parent == name);
+            var child = _permissionDefinitionRepository.GetAll().Where(x => x.Parent == name);
             foreach (var item in child)
             {
                 await DeletePermissionAsync(item.Name);

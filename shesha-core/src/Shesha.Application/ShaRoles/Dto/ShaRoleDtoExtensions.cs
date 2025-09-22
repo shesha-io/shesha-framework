@@ -8,12 +8,10 @@ namespace Shesha.ShaRoles.Dto
     {
         public static List<ShaRolePermission> MapPermissions(this ShaRole role, IEnumerable<string> permissions)
         {
-            var revision = role.EnsureLatestRevision();
-
-            var rolesPermissions = revision.Permissions.ToList();
+            var rolesPermissions = role.Permissions.ToList();
             var toAdd = permissions.Where(x => !rolesPermissions.Any(p => p.Permission == x && p.IsGranted));
             foreach (var permission in toAdd) 
-                rolesPermissions.Add(new ShaRolePermission() { Permission = permission, IsGranted = true, RoleRevision = revision });
+                rolesPermissions.Add(new ShaRolePermission() { Permission = permission, IsGranted = true, Role = role });
 
             var toRemove = rolesPermissions.Where(x => permissions.All(p => x.Permission != p)).ToList();
             foreach (var permission in toRemove)

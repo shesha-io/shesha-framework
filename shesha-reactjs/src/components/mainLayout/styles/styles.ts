@@ -51,10 +51,13 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     z-index: 3;
     width: 100%;
     padding: unset;
-    overflow: hidden;
+    overflow: visible;
+    min-height: ${layoutTriggerHeight};
+    height: auto;
   `);
 
   const layoutHeader = cx(css`
+    min-height: ${layoutTriggerHeight};
     height: auto;
     display: flex;
     justify-content: space-between;
@@ -135,8 +138,17 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const sider = cx(css``);
   const content = cx(css`
     ${marginLeftTransition}
-    margin-top: ${sheshaStyles.layoutHeaderHeight};
+    margin-top: var(--sha-header-height, ${sheshaStyles.layoutHeaderHeight});
     background: ${backgroundColor};
+    position: relative;
+    
+    &::before {
+      content: '';
+      display: block;
+      height: 0px;
+      width: 100%;
+      pointer-events: none;
+    }
   `);
 
   const mainSider = css`
@@ -156,7 +168,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     .${prefixCls}-layout-sider-children {
       width: ${shaSiderExpandedWidth}  !important;
-      
       .logo {
         margin-top: ${layoutTriggerHeight}  !important; // It should use a config
       }
@@ -216,14 +227,15 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
   const shaSiteLayoutBackground = css`
     background: ${backgroundColor};
+    padding: 2px 4px;
 
     .sha-site-layout-toolbar {
       ${flexCenterAlignedSpaceBetween}
       min-height: ${shaPageToolbarHeight};
       background: white;
 
-      margin: -12px;
-      margin-bottom: 12px;
+      margin: -2px;
+      margin-bottom: 2px;
     }
 
     .sha-index-table-full {
@@ -237,7 +249,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
 
     &.${shaSiteLayoutBackgroundNoPadding} {
-      padding: unset;
+      padding: 1px 2px;
     }  
   `;
 

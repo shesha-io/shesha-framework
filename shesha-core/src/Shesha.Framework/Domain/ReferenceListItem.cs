@@ -51,7 +51,7 @@ namespace Shesha.Domain
         /// Reference List current item belongs to
         /// </summary>
         [Required]
-        public required virtual ReferenceListRevision ReferenceListRevision { get; set; }
+        public required virtual ReferenceList ReferenceList { get; set; }
 
         /// <summary>
         /// Parent item

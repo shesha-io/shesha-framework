@@ -17,7 +17,6 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
   canBeJsSetting: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
-
     const defaultValue = model?.defaultValue ? parseInt(model.defaultValue, 10) : undefined;
     const min = model?.min ? parseInt(model.min, 10) : undefined;
     const max = model?.max ? parseInt(model.max, 10) : undefined;
@@ -32,7 +31,9 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
             max={max}
             onChange={onChange}
             value={value}
-            style={{ ...(!model.enableStyleOnReadonly && model.readOnly ? {} : getStyle(model?.style, formData)), ...(model.readOnly ? { pointerEvents: 'none' } : {}) }}
+            style={{ ...(!model.enableStyleOnReadonly && model.readOnly ?
+              {} : getStyle(model?.style, formData)), ...(model.readOnly ?
+              { pointerEvents: 'none' } : {}) }}
           />
         )}
       </ConfigurableFormItem>
