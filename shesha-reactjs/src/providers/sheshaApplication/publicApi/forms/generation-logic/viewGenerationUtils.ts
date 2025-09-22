@@ -148,7 +148,7 @@ export function getColumnWidthByDataType(dataType: string | null | undefined, da
       return COLUMN_WIDTH_FILE;
       
     default:
-      return COLUMN_WIDTH_REFERENCE_LIST_ITEM; 
+      return COLUMN_WIDTH_DEFAULT; 
   }
 };
 
