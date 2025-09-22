@@ -74,7 +74,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
               : !showTime
                 ? newValue.startOf('day')
                 : newValue;
-    const finalMoment = resolveToUTC ? val?.utc(true) : val.local(true);
+      
+    const finalMoment = resolveToUTC ? val.clone().utc() : val.clone().local();
+    
     if (resolveToUTC) {
       // Always store UTC in ISO
       return finalMoment.toISOString();
@@ -196,8 +198,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       ]
     );
   };
-
-
 
   if (range) {
     return (

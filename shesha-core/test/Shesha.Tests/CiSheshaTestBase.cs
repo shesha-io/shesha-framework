@@ -30,7 +30,7 @@ namespace Shesha.Tests
         protected async Task DeleteFormAsync(string moduleName, string formName)
         {
             var repo = Resolve<IRepository<FormConfiguration, Guid>>();
-            var revisionRepo = Resolve<IRepository<FormConfigurationRevision, Guid>>();
+            var revisionRepo = Resolve<IRepository<ConfigurationItemRevision, Guid>>();
             var uowManager = Resolve<IUnitOfWorkManager>();
 
             await DeleteActionAsync(async () => {
@@ -40,9 +40,6 @@ namespace Shesha.Tests
                     await UpdateWhereAsync(repo, e => e.ExposedFromRevision == revision, form => {
                         form.ExposedFrom = null;
                         form.ExposedFromRevision = null;
-                    });
-                    await UpdateWhereAsync(repo, e => e.ActiveRevision == revision, form => {
-                        form.ActiveRevision = null;
                     });
                     await UpdateWhereAsync(repo, e => e.LatestRevision == revision, form => {
                         form.LatestRevision = null!;
@@ -72,7 +69,7 @@ namespace Shesha.Tests
         protected async Task DeleteFormFromAllModulesAsync(string formName)
         {
             var repo = Resolve<IRepository<FormConfiguration, Guid>>();
-            var revisionRepo = Resolve<IRepository<FormConfigurationRevision, Guid>>();
+            var revisionRepo = Resolve<IRepository<ConfigurationItemRevision, Guid>>();
             var uowManager = Resolve<IUnitOfWorkManager>();
 
             // exposed from
@@ -89,13 +86,11 @@ namespace Shesha.Tests
             });
             // latest revision & active revision
             await DeleteActionAsync(async () => {
-                var forms = await repo.GetAll().Where(e => e.LatestRevision != null && e.LatestRevision.ConfigurationItem.Name == formName ||
-                        e.ActiveRevision != null && e.ActiveRevision.ConfigurationItem.Name == formName)
+                var forms = await repo.GetAll().Where(e => e.LatestRevision != null && e.LatestRevision.ConfigurationItem.Name == formName)
                     .ToListAsync();
                 foreach (var form in forms)
                 {
                     form.LatestRevision = null!;
-                    form.ActiveRevision = null;
                     await repo.UpdateAsync(form);
                 }
             });

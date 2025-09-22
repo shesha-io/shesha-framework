@@ -32,7 +32,7 @@ import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
+import { DataContextTopLevels, isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
@@ -758,7 +758,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 metadataDispatcher: metadataDispatcher,
             });
             const accessors = wrapConstantsData({
-                topContextId: 'full',
+                topContextId: DataContextTopLevels.Full,
                 fullContext,
                 shaForm: instance,
                 queryStringGetter: getQueryParams,

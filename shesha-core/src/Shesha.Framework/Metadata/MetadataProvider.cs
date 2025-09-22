@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.ConfigurationItems;
 using Shesha.DynamicEntities;
 using Shesha.Exceptions;
 using Shesha.Extensions;
@@ -37,6 +38,7 @@ namespace Shesha.Metadata
         private readonly IObjectMapper _mapper;
         private readonly IAssemblyFinder _assemblyFinder;
         private readonly IIocResolver _iocResolver;
+        private readonly IModuleManager _moduleManager;
 
         public MetadataProvider(
             IEntityConfigurationStore entityConfigurationStore,
@@ -45,7 +47,8 @@ namespace Shesha.Metadata
             IHardcodeMetadataProvider hardcodeMetadataProvider,
             IObjectMapper mapper,
             IIocResolver iocResolver,
-            IAssemblyFinder assemblyFinder
+            IAssemblyFinder assemblyFinder,
+            IModuleManager moduleManager
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
@@ -54,6 +57,7 @@ namespace Shesha.Metadata
             _hardcodeMetadataProvider = hardcodeMetadataProvider;
             _mapper = mapper;
             _assemblyFinder = assemblyFinder;
+            _moduleManager = moduleManager;
 
             _iocResolver = iocResolver;
             _actionDescriptorCollectionProvider = iocResolver.IsRegistered<IActionDescriptorCollectionProvider>()
@@ -326,8 +330,16 @@ namespace Shesha.Metadata
         {
             var allModels = await GetAllModelsAsync();
             var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
-            if (!string.IsNullOrWhiteSpace(moduleName))
-                models = models.Where(m => m.Type.GetConfigurableModuleName() == moduleName).ToList();
+            if (!string.IsNullOrWhiteSpace(moduleName)) 
+            {
+                var moduleInfos = _moduleManager.GetModuleInfos();
+                var moduleInfo = moduleInfos.First(m => m.Name == moduleName);
+                models = models.Where(m => m is EntityModelDto em 
+                        ? em.ModuleAccessor == moduleInfo.GetModuleAccessor() 
+                        : m.Type.GetConfigurableModuleName() == moduleName
+                    )
+                    .ToList();
+            }
 
             if (models.Count() > 1)
                 throw new DuplicateModelsException(models);
@@ -360,12 +372,46 @@ namespace Shesha.Metadata
         {
             bool IEqualityComparer<ModelDto>.Equals(ModelDto? x, ModelDto? y)
             {
-                return x != null && y != null && x.ClassName == y.ClassName || x == null && y == null;
+                if (x != null && y != null) {
+                    return GetTextForHash(x) == GetTextForHash(y);
+                }
+                return x == null && y == null;
             }
 
             int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
             {
-                return obj.GetHashCode();
+                return GetTextForHash(obj).GetHashCode();
+            }
+
+            private string GetTextForHash(ModelDto obj)
+            {
+                return (obj is EntityModelDto entityDto)
+                    ? $"{entityDto.ModuleAccessor}/{entityDto.ClassName}"
+                    : obj.ClassName;
+            }
+        }
+
+        private class EntityModelDtoComparer : IEqualityComparer<EntityModelDto>
+        {
+            bool IEqualityComparer<EntityModelDto>.Equals(EntityModelDto? x, EntityModelDto? y)
+            {
+                if (x != null && y != null)
+                {
+                    return GetTextForHash(x) == GetTextForHash(y);
+                }
+                return x == null && y == null;
+            }
+
+            int IEqualityComparer<EntityModelDto>.GetHashCode(EntityModelDto obj)
+            {
+                return GetTextForHash(obj).GetHashCode();
+            }
+
+            private string GetTextForHash(ModelDto obj)
+            {
+                return (obj is EntityModelDto entityDto)
+                    ? $"{entityDto.ModuleAccessor}/{entityDto.ClassName}"
+                    : obj.ClassName;
             }
         }
     }

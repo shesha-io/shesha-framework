@@ -12,7 +12,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration import
     /// </summary>
-    public class FormConfigurationImport : ConfigurationItemImportBase<FormConfiguration, FormConfigurationRevision, DistributedFormConfiguration>, IFormConfigurationImport, ITransientDependency
+    public class FormConfigurationImport : ConfigurationItemImportBase<FormConfiguration, DistributedFormConfiguration>, IFormConfigurationImport, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
@@ -22,9 +22,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         public FormConfigurationImport(IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo, 
             IRepository<FormConfiguration, Guid> repository,
-            IRepository<FormConfigurationRevision, Guid> revisionRepository,
             IPermissionedObjectManager permissionedObjectManager
-        ) : base(repository, revisionRepository, moduleRepo, frontEndAppRepo)
+        ) : base(repository, moduleRepo, frontEndAppRepo)
         {
             _permissionedObjectManager = permissionedObjectManager;
         }
@@ -34,7 +33,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// </summary>
         public string ItemType => FormConfiguration.ItemTypeName;
 
-        protected override Task AfterImportAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration distributedItem, IConfigurationItemsImportContext context)
+        protected override Task AfterImportAsync(FormConfiguration item, DistributedFormConfiguration distributedItem, IConfigurationItemsImportContext context)
         {
             return SetPermissionsAsync(distributedItem, item);
         }
@@ -59,21 +58,31 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
-        protected override Task<bool> CustomPropsAreEqualAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration distributedItem)
+        protected override Task<bool> CustomPropsAreEqualAsync(FormConfiguration item, DistributedFormConfiguration distributedItem)
         {
-            var equals = revision.Markup == distributedItem.Markup &&
-                revision.ModelType == distributedItem.ModelType &&
-                revision.IsTemplate == distributedItem.IsTemplate;
+            var equals = item.Markup == distributedItem.Markup &&
+                item.ModelType == distributedItem.ModelType &&
+                item.IsTemplate == distributedItem.IsTemplate &&
+                item.Template?.Id == distributedItem.TemplateId &&
+                item.ConfigurationForm == distributedItem.ConfigurationForm &&
+                item.GenerationLogicTypeName == distributedItem.GenerationLogicTypeName &&
+                item.GenerationLogicExtensionJson == distributedItem.GenerationLogicExtensionJson &&
+                item.PlaceholderIcon == distributedItem.PlaceholderIcon;
 
             return Task.FromResult(equals);
         }
 
-        protected override Task MapCustomPropsToItemAsync(FormConfiguration item, FormConfigurationRevision revision, DistributedFormConfiguration distributedItem)
+        protected override Task MapCustomPropsToItemAsync(FormConfiguration item, DistributedFormConfiguration distributedItem)
         {
-            revision.Markup = distributedItem.Markup;
-            revision.ModelType = distributedItem.ModelType;
-            revision.IsTemplate = distributedItem.IsTemplate;
-
+            item.Label = distributedItem.Label;
+            item.Description = distributedItem.Description;
+            item.Markup = distributedItem.Markup;
+            item.ModelType = distributedItem.ModelType;
+            item.IsTemplate = distributedItem.IsTemplate;
+            item.ConfigurationForm = distributedItem.ConfigurationForm;
+            item.GenerationLogicTypeName = distributedItem.GenerationLogicTypeName;
+            item.GenerationLogicExtensionJson = distributedItem.GenerationLogicExtensionJson;
+            item.PlaceholderIcon = distributedItem.PlaceholderIcon;
             return Task.CompletedTask;
         }
     }

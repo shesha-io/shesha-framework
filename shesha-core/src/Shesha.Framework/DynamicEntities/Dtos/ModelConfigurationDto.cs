@@ -65,7 +65,6 @@ namespace Shesha.DynamicEntities.Dtos
 
         public void NormalizeViewConfigurations(EntityConfig model)
         {
-            var revision = model.Revision;
             var list = new List<EntityViewConfigurationDto>();
             if (model.EntityConfigType == EntityConfigTypes.Class)
                 list.AddRange(new List<EntityViewConfigurationDto>()
@@ -83,9 +82,9 @@ namespace Shesha.DynamicEntities.Dtos
                 new EntityViewConfigurationDto { IsStandard = true, Type = "List item", FormId = null },
             });
 
-            if (revision?.ViewConfigurations != null)
+            if (model.ViewConfigurations != null)
             {
-                foreach (var view in revision.ViewConfigurations)
+                foreach (var view in model.ViewConfigurations)
                 {
                     var vc = list.FirstOrDefault(x => x.Type == view.Type);
                     if (vc != null)

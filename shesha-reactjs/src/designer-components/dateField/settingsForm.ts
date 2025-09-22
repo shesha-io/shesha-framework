@@ -416,6 +416,24 @@ export const getSettings = (data: IDateFieldProps) => {
                                 parentId: eventsTabId,
                                 availableConstantsExpression: '    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"dateString\", \"Date string value\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();',
                             })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'codeEditor',
+                                propertyName: 'onFocusCustom',
+                                label: 'On Focus',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on focus of event.',
+                                parentId: eventsTabId
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'codeEditor',
+                                propertyName: 'onBlurCustom',
+                                label: 'On Blur',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on blur of event.',
+                                parentId: eventsTabId
+                            })
                             .toJson()
                         ]
                     },

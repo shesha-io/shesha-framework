@@ -23,6 +23,7 @@ export const getSettings = () => {
   const pnlShadowStyleId = nanoid();
   const customStylePnlId = nanoid();
   const pnlFontStyleId = nanoid();
+  const containerId = nanoid();
 
   return {
     components: new DesignerToolbarSettings()
@@ -41,6 +42,37 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'removeFieldFromPayload',
+                  label: 'Exclude From Form Data',
+                  inputType: 'switch',
+                  tooltip: 'If checked, the field will not be included in the submitted payload',
+                  jsSetting: true,
+                })
+                .addContainer({
+                  id: containerId,
+                  propertyName: 'container',
+                  label: 'Container',
+                  parentId: commonTabId,
+                  hidden: { _code: 'return getSettingValue(data?.removeFieldFromPayload);', _mode: 'code', _value: false } as any,
+                  components: [
+                    ...new DesignerToolbarSettings()
+                    .addContextPropertyAutocomplete({
+                      id: nanoid(),
+                      propertyName: 'propertyName',
+                      label: 'Property Name',
+                      parentId: containerId,
+                      size: 'small',
+                      styledLabel: true,
+                      validate: {
+                        required: true,
+                      },
+                      jsSetting: true,
+                    })
+                    .toJson()
+                  ]
+                })
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'componentName',

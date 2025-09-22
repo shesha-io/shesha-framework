@@ -40,18 +40,18 @@ namespace Shesha.Tests.ConfigurationItems
             var dbProvider = GetMemoryDbProvider();
 
             var formRepository = new MemoryRepository<FormConfiguration, Guid>(dbProvider);
-            var formRevisionRepository = new MemoryRepository<FormConfigurationRevision, Guid>(dbProvider);
+            var formRevisionRepository = new MemoryRepository<ConfigurationItemRevision, Guid>(dbProvider);
             var moduleRepository = new MemoryRepository<Module, Guid>(dbProvider);
 
             var module = new Module { Id = Guid.NewGuid(), Name = "test-module" };
             await moduleRepository.InsertAsync(module);
 
             var formConfig1 = await MockFormConfigurationAsync(c => {
-                c.LatestRevision.ModelType = "-ModelType";
-                c.LatestRevision.Markup = "{ components: [], settings: {} }";
+                c.ModelType = "-ModelType";
+                c.Markup = "{ components: [], settings: {} }";
                 c.Name = "test-form";
-                c.LatestRevision.Label = "-Label";
-                c.LatestRevision.Description = "-Description";
+                c.Label = "-Label";
+                c.Description = "-Description";
 
                 c.Module = module;
                 return Task.CompletedTask;
@@ -62,13 +62,12 @@ namespace Shesha.Tests.ConfigurationItems
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
             export.Repository = formRepository;
-            export.RevisionRepository = formRevisionRepository;
 
             var exported = await export.ExportItemAsync(formConfig1.Id);
             exported.ShouldNotBeNull();
             exported.Name.ShouldBe(formConfig1.Name);
-            exported.Label.ShouldBe(formConfig1.LatestRevision.Label);
-            exported.Description.ShouldBe(formConfig1.LatestRevision.Description);
+            exported.Label.ShouldBe(formConfig1.Label);
+            exported.Description.ShouldBe(formConfig1.Description);
             exported.ModuleName.ShouldBe(formConfig1.Module?.Name);
         }
 
@@ -82,12 +81,10 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Module = srcModule;
                 c.Name = "test-import-missing-form";
 
-                var revision = c.LatestRevision;
-
-                revision.ModelType = "test-modelType";
-                revision.Markup = "{ components: [], settings: {} }";
-                revision.Label = "test-label";
-                revision.Description = "test-description";
+                c.ModelType = "test-modelType";
+                c.Markup = "{ components: [], settings: {} }";
+                c.Label = "test-label";
+                c.Description = "test-description";
                 
                 return Task.CompletedTask;
             }).ConfigureAwait(true);
@@ -95,7 +92,6 @@ namespace Shesha.Tests.ConfigurationItems
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
             export.Repository = src.FormRepo;
-            export.RevisionRepository = src.FormRevisionRepo;
 
             var exported = await export.ExportItemAsync(srcForm.Id);
 
@@ -136,10 +132,10 @@ namespace Shesha.Tests.ConfigurationItems
 
                 var importedRevision = importedFormFromRepo.LatestRevision;
                 importedRevision.ShouldNotBeNull("Revision should be created during import");
-                ShouldBeStringTestExtensions.ShouldBe(importedRevision.Label, (string?)srcForm.LatestRevision.Label);
-                ShouldBeStringTestExtensions.ShouldBe(importedRevision.Description, (string?)srcForm.LatestRevision.Description);
-                importedRevision.Markup.ShouldBe(srcForm.LatestRevision.Markup);
-                importedRevision.ModelType.ShouldBe(srcForm.LatestRevision.ModelType);
+                ShouldBeStringTestExtensions.ShouldBe(importedFormFromRepo.Label, (string?)srcForm.Label);
+                ShouldBeStringTestExtensions.ShouldBe(importedFormFromRepo.Description, (string?)srcForm.Description);
+                importedFormFromRepo.Markup.ShouldBe(srcForm.Markup);
+                importedFormFromRepo.ModelType.ShouldBe(srcForm.ModelType);
             }));            
         }
 
@@ -152,12 +148,10 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Module = srcModule;
                 c.Name = "test-import-existing-form";
 
-                var revision = c.LatestRevision;
-
-                revision.ModelType = "test-modelType";
-                revision.Markup = "src-markup";
-                revision.Label = "test-label";
-                revision.Description = "test-description";
+                c.ModelType = "test-modelType";
+                c.Markup = "src-markup";
+                c.Label = "test-label";
+                c.Description = "test-description";
                 
                 return Task.CompletedTask;
             });
@@ -165,14 +159,13 @@ namespace Shesha.Tests.ConfigurationItems
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
             export.Repository = src.FormRepo;
-            export.RevisionRepository = src.FormRevisionRepo;
 
             var exported = await export.ExportItemAsync(srcForm.Id);
 
             await DeleteFormAsync(srcModule.Name, srcForm.Name);
 
             var dstFormRepo = Resolve<IRepository<FormConfiguration, Guid>>();
-            var dstRevisionRepo = Resolve<IRepository<FormConfigurationRevision, Guid>>();
+            var dstRevisionRepo = Resolve<IRepository<ConfigurationItemRevision, Guid>>();
             var dstModuleRepo = Resolve<IRepository<Module, Guid>>();
             Guid dstFormId = Guid.Empty;
             await WithUnitOfWorkAsync(async() => {
@@ -184,12 +177,13 @@ namespace Shesha.Tests.ConfigurationItems
                     Module = dstModule,
                 };
                 await dstFormRepo.InsertAsync(dstForm);
+                dstForm.Label = "dst-test-label";
+                dstForm.Description = "dst-test-description";
+                dstForm.ModelType = "dst-test-modelType";
+                dstForm.Markup = "dst-markup";
 
                 var revision = dstForm.MakeNewRevision();
-                revision.Label = "dst-test-label";
-                revision.Description = "dst-test-description";
-                revision.ModelType = "dst-test-modelType";
-                revision.Markup = "dst-markup";
+                
                 await dstRevisionRepo.InsertAsync(revision);
                 await dstFormRepo.UpdateAsync(dstForm);
 
@@ -220,12 +214,12 @@ namespace Shesha.Tests.ConfigurationItems
                 imported.ShouldBe(importedFormFromRepo, "Imported form should be fetched from the repo");
 
                 imported.Name.ShouldBe(srcForm.Name);
-                ShouldBeStringTestExtensions.ShouldBe(imported.LatestRevision.Label, (string?)srcForm.LatestRevision.Label);
-                ShouldBeStringTestExtensions.ShouldBe(imported.LatestRevision.Description, (string?)srcForm.LatestRevision.Description);
+                ShouldBeStringTestExtensions.ShouldBe(imported.Label, (string?)srcForm.Label);
+                ShouldBeStringTestExtensions.ShouldBe(imported.Description, (string?)srcForm.Description);
                 imported.Module?.Name.ShouldBe((string?)(srcForm.Module?.Name));
 
-                imported.LatestRevision.Markup.ShouldBe(srcForm.LatestRevision.Markup);
-                imported.LatestRevision.ModelType.ShouldBe(srcForm.LatestRevision.ModelType);
+                imported.Markup.ShouldBe(srcForm.Markup);
+                imported.ModelType.ShouldBe(srcForm.ModelType);
             }));            
         }
 
@@ -238,11 +232,10 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Name = "test-import-same-form-twice";
                 c.Module = srcModule;
 
-                var revision = c.LatestRevision;
-                revision.Label = "test-label";
-                revision.Description = "test-description";
-                revision.ModelType = "test-modelType";
-                revision.Markup = "src-markup";
+                c.Label = "test-label";
+                c.Description = "test-description";
+                c.ModelType = "test-modelType";
+                c.Markup = "src-markup";
 
                 return Task.CompletedTask;
             });
@@ -250,13 +243,12 @@ namespace Shesha.Tests.ConfigurationItems
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
             var export = Resolve<FormConfigurationExport>(permissionedObjectManager);
             export.Repository = src.FormRepo;
-            export.RevisionRepository = src.FormRevisionRepo;
 
             var exported = await export.ExportItemAsync(srcForm.Id);
 
             var uowManager = Resolve<IUnitOfWorkManager>();
             var dstFormRepo = Resolve<IRepository<FormConfiguration, Guid>>();
-            var dstFormRevisionRepo = Resolve<IRepository<FormConfigurationRevision, Guid>>();
+            var dstFormRevisionRepo = Resolve<IRepository<ConfigurationItemRevision, Guid>>();
             var dstModuleRepo = Resolve<IRepository<Module, Guid>>();
             Guid dstFormId = Guid.Empty;
             
@@ -276,11 +268,12 @@ namespace Shesha.Tests.ConfigurationItems
                 };
                 await dstFormRepo.InsertAsync(dstForm);
 
+                dstForm.Label = "dst-test-label";
+                dstForm.Description = "dst-test-description";
+                dstForm.ModelType = "dst-test-modelType";
+                dstForm.Markup = "dst-markup";
+
                 var revision = dstForm.MakeNewRevision();
-                revision.Label = "dst-test-label";
-                revision.Description = "dst-test-description";
-                revision.ModelType = "dst-test-modelType";
-                revision.Markup = "dst-markup";
                 
                 await dstFormRevisionRepo.InsertAsync(revision);
                 await dstFormRepo.UpdateAsync(dstForm);
@@ -495,7 +488,7 @@ namespace Shesha.Tests.ConfigurationItems
         {
             public IMemoryDatabaseProvider DbProvider { get; set; }
             public IRepository<FormConfiguration, Guid> FormRepo { get; set; }
-            public IRepository<FormConfigurationRevision, Guid> FormRevisionRepo { get; set; }             
+            public IRepository<ConfigurationItemRevision, Guid> FormRevisionRepo { get; set; }             
             public IRepository<ConfigurationItem, Guid> ConfigurationItemRepo { get; set; }
             public IRepository<Module, Guid> ModuleRepo { get; set; }
             public IRepository<FrontEndApp, Guid> FrontEndAppRepo { get; set; }
@@ -527,7 +520,7 @@ namespace Shesha.Tests.ConfigurationItems
                 DbProvider = dbProvider;
 
                 FormRepo = GetRepository<FormConfiguration, Guid>();
-                FormRevisionRepo = GetRepository<FormConfigurationRevision, Guid>();
+                FormRevisionRepo = GetRepository<ConfigurationItemRevision, Guid>();
                 ConfigurationItemRepo = GetRepository<ConfigurationItem, Guid>();
                 ModuleRepo = GetRepository<Module, Guid>();
                 FrontEndAppRepo = GetRepository<FrontEndApp, Guid>();

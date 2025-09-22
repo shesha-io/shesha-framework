@@ -16,3 +16,4 @@ export { useFormExpression } from './useFormExpression';
 export { useNextRouter } from './useNextRouter';
 export { useUi } from './useUi';
 export { useActualContextData, useActualContextExecution, useActualContextExecutionExecutor, useCalculatedModel } from './formComponentHooks';
+export { useLayoutSelection, type LayoutMode, type ILayoutSelectionHook } from './useLayoutSelection';

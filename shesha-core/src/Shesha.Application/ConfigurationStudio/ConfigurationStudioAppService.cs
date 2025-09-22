@@ -121,7 +121,8 @@ namespace Shesha.ConfigurationStudio
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
 
-            var item = await manager.CreateItemAsync(new ConfigurationItems.Models.CreateItemInput() {
+            var item = await manager.CreateItemAsync(new ConfigurationItems.Models.CreateItemInput
+            {
                 Module = module,
                 Folder = folder,
                 Name = request.Name,
@@ -145,101 +146,18 @@ namespace Shesha.ConfigurationStudio
             return dto;
         }
 
-        private Task HandleConfigurationItemRevisionAsync<TItem, TRevision>(TItem entity)
-            where TItem : ConfigurationItem<TRevision>
-            where TRevision : ConfigurationItemRevision, new()
-        {
-            /*
-             * TODO: detect changes and skip creation of new revision if properties stay unchanged
-            A new version should automatically be created whenever one of the following occurs:
-            1.	a new configuration item is imported from a package, 
-            2.	a configuration change is made more than 15 minutes after the last recorded change
-            3.	a configuration change is made by a user which is different from the user who made the previous configuration change, regardless of the time since the last change.
-             */
-            var revision = entity.LatestRevision;
-            var newRevisionRequired = revision == null ||
-                revision.LastModificationTime != null && revision.LastModificationTime < Clock.Now.AddMinutes(-15) ||
-                revision.LastModifierUserId != AbpSession.UserId;
-
-            if (newRevisionRequired) 
-            {
-                var prevRevision = entity.LatestRevision;
-                var newRevision = new TRevision { ConfigurationItem = entity };
-
-                /**/
-                // TODO: move to a manager
-                // TODO: cache mapper as part of manager
-                // TODO: cover by unit tests
-                var modelConfigMapperConfig = new MapperConfiguration(cfg =>
-                {
-                    var mapExpression = cfg.CreateMap<TRevision, TRevision>()
-                        .ForMember(d => d.Id, o => o.Ignore())
-
-                        .ForMember(d => d.VersionName, o => o.Ignore())
-                        .ForMember(d => d.Comments, o => o.Ignore())
-                        .ForMember(d => d.ConfigHash, o => o.Ignore())
-                        .ForMember(d => d.IsCompressed, o => o.Ignore())
-                        .ForMember(d => d.CreatedByImport, o => o.Ignore())
-                        .ForMember(d => d.ParentRevision, o => o.Ignore())
-                        
-                        // audit properties
-                        .ForMember(d => d.CreationTime, o => o.Ignore())
-                        .ForMember(d => d.CreationTime, o => o.Ignore())
-                        .ForMember(d => d.IsDeleted, o => o.Ignore())
-                        .ForMember(d => d.DeleterUserId, o => o.Ignore())
-                        .ForMember(d => d.DeletionTime, o => o.Ignore())
-                        .ForMember(d => d.LastModificationTime, o => o.Ignore())
-                        .ForMember(d => d.LastModifierUserId, o => o.Ignore())
-
-                        .ForMember(d => d.ConfigurationItem, o => o.Ignore());
-                });
-                var mapper = modelConfigMapperConfig.CreateMapper();
-
-                mapper.Map(prevRevision, newRevision);
-
-                newRevision.VersionNo = prevRevision.VersionNo + 1;
-                newRevision.ParentRevision = prevRevision;
-
-                /**/
-
-                entity.LatestRevision = newRevision;
-            }
-
-            return Task.CompletedTask;
-        }
-
-        private async Task GenericUpdateItemAsync<TItem, TRevision, TDynamicDto>(TItem entity, TDynamicDto input)
-            where TItem: ConfigurationItem<TRevision>, IEntity<Guid>
+        private async Task GenericUpdateItemAsync<TItem, TDynamicDto>(TItem entity, TDynamicDto input)
+            where TItem: ConfigurationItem, IEntity<Guid>
             where TDynamicDto : class, IDynamicDto<TItem, Guid>
-            where TRevision: ConfigurationItemRevision, new()
         {
-            await HandleConfigurationItemRevisionAsync<TItem, TRevision>(entity);
-            entity.LatestRevision.NotNull();
+            var itemResult = await MapDynamicDtoToEntityAsync<TDynamicDto, TItem, Guid>(input, entity);
+            itemResult.ValidationResults.ThrowValidationExceptionIfAny(L);
 
-            var parts = ConfigurationItemUpdater<TItem, TRevision, TDynamicDto>.ExtractConfigurationItemDtoParts(input.Id, input);
+            var itemRepository = IocManager.Resolve<IRepository<TItem, Guid>>();
+            await itemRepository.UpdateAsync(entity);
 
-            // 1. bind item
-            if (parts.Item != null) 
-            {
-                var itemResult = await MapDynamicDtoToEntityAsync<TDynamicDto, TItem, Guid>(parts.Item, entity);
-                itemResult.ValidationResults.ThrowValidationExceptionIfAny(L);
-                
-                var itemRepository = IocManager.Resolve<IRepository<TItem, Guid>>();
-                await itemRepository.UpdateAsync(entity);
-
-                var result = await DelayedUpdateAsync<TDynamicDto, TItem, Guid>(input, entity);
-                result.ValidationResults.ThrowValidationExceptionIfAny(L);
-            }
-
-            // 2. bind revision
-            if (parts.Revision != null)
-            {
-                var revisionResult = await MapDynamicDtoToEntityAsync<IDynamicDto<TRevision, Guid>, TRevision, Guid>(parts.Revision, entity.LatestRevision);
-                revisionResult.ValidationResults.ThrowValidationExceptionIfAny(L);
-
-                var revisionRepository = IocManager.Resolve<IRepository<TRevision, Guid>>();
-                await revisionRepository.InsertOrUpdateAsync(entity.LatestRevision);
-            }
+            var result = await DelayedUpdateAsync<TDynamicDto, TItem, Guid>(input, entity);
+            result.ValidationResults.ThrowValidationExceptionIfAny(L);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();            
         }
@@ -247,7 +165,6 @@ namespace Shesha.ConfigurationStudio
         private async Task<ConfigurationItem> NonGenericUpdateItemAsync(ConfigurationItem entity, IDynamicDto<ConfigurationItem, Guid> input)
         {
             var itemType = entity.GetType().StripCastleProxyType();
-            var revisionType = itemType.GetRequiredProperty(nameof(IConfigurationItem<ConfigurationItemRevision>.LatestRevision)).PropertyType;
             var dtoType = typeof(DynamicDto<,>).MakeGenericType([itemType, typeof(Guid)]);
 
             var dto = ActivatorHelper.CreateNotNullObject(dtoType);
@@ -256,7 +173,7 @@ namespace Shesha.ConfigurationStudio
             (dto as IHasJObjectField).NotNull()._jObject = input._jObject;
 
             var methodType = GetType().GetRequiredMethod(nameof(GenericUpdateItemAsync), BindingFlags.NonPublic | BindingFlags.Instance);
-            var genericMethodType = methodType.MakeGenericMethod(itemType, revisionType, dtoType);
+            var genericMethodType = methodType.MakeGenericMethod(itemType, dtoType);
             var result = genericMethodType.Invoke<Task>(this, [entity, dto]).NotNull();
             await result;
 

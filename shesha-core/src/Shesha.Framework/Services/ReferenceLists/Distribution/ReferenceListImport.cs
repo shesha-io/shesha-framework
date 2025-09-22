@@ -13,31 +13,30 @@ namespace Shesha.Services.ReferenceLists.Distribution
     /// <summary>
     /// Reference list import
     /// </summary>
-    public class ReferenceListImport : ConfigurationItemImportBase<ReferenceList, ReferenceListRevision, DistributedReferenceList>, IReferenceListImport, ITransientDependency
+    public class ReferenceListImport : ConfigurationItemImportBase<ReferenceList, DistributedReferenceList>, IReferenceListImport, ITransientDependency
     {
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepo;
 
         public ReferenceListImport(IRepository<ReferenceList, Guid> repository,
-            IRepository<ReferenceListRevision, Guid> revisionRepository,
             IRepository<ReferenceListItem, Guid> refListItemRepo, 
             IRepository<Module, Guid> moduleRepo,
-            IRepository<FrontEndApp, Guid> frontEndAppRepo): base (repository, revisionRepository, moduleRepo, frontEndAppRepo)
+            IRepository<FrontEndApp, Guid> frontEndAppRepo): base (repository, moduleRepo, frontEndAppRepo)
         {
             _refListItemRepo = refListItemRepo;
         }
 
         public string ItemType => ReferenceList.ItemTypeName;
 
-        protected override async Task AfterImportAsync(ReferenceList item, ReferenceListRevision revision, DistributedReferenceList distributedItem, IConfigurationItemsImportContext context)
+        protected override async Task AfterImportAsync(ReferenceList item, DistributedReferenceList distributedItem, IConfigurationItemsImportContext context)
         {
-            await ImportListItemLevelAsync(revision, distributedItem.Items, null);
+            await ImportListItemLevelAsync(item, distributedItem.Items, null);
         }
 
-        private async Task ImportListItemLevelAsync(ReferenceListRevision revision, List<DistributedReferenceListItem> items, ReferenceListItem? parent)
+        private async Task ImportListItemLevelAsync(ReferenceList referenceList, List<DistributedReferenceListItem> items, ReferenceListItem? parent)
         {
             foreach (var distributedItem in items)
             {
-                var item = new ReferenceListItem() { ReferenceListRevision = revision };
+                var item = new ReferenceListItem() { ReferenceList = referenceList };
 
                 MapListItem(distributedItem, item);
                 item.Parent = parent;
@@ -45,7 +44,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 await _refListItemRepo.InsertAsync(item);
 
                 if (distributedItem.ChildItems != null && distributedItem.ChildItems.Any())
-                    await ImportListItemLevelAsync(revision, distributedItem.ChildItems, item);
+                    await ImportListItemLevelAsync(referenceList, distributedItem.ChildItems, item);
             }
         }
 
@@ -61,14 +60,14 @@ namespace Shesha.Services.ReferenceLists.Distribution
             dst.ShortAlias = src.ShortAlias ?? string.Empty;
         }
 
-        protected override Task<bool> CustomPropsAreEqualAsync(ReferenceList item, ReferenceListRevision revision, DistributedReferenceList distributedItem)
+        protected override Task<bool> CustomPropsAreEqualAsync(ReferenceList item, DistributedReferenceList distributedItem)
         {
             //var items = 
             // TODO_V1: use common code in export and import
             throw new NotImplementedException();
         }
 
-        protected override Task MapCustomPropsToItemAsync(ReferenceList item, ReferenceListRevision revision, DistributedReferenceList distributedItem)
+        protected override Task MapCustomPropsToItemAsync(ReferenceList item, DistributedReferenceList distributedItem)
         {
             return Task.CompletedTask;
         }

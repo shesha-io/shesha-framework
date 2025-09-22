@@ -1,5 +1,4 @@
-﻿using Shesha.Services.ReferenceLists.Dto;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Shesha.Services.ReferenceLists.Dto
 {

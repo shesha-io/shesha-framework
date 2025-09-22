@@ -121,13 +121,12 @@ namespace Shesha.Tests.DynamicEntities
                 // Create temporary Entity Properties configs
                 var entityConfigRepo = Resolve<IRepository<EntityConfig, Guid>>();
                 var entityPropRepo = Resolve<IRepository<EntityProperty, Guid>>();
-                var config = entityConfigRepo.GetAll().First(x => x.LatestRevision.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
-                var revision = config.LatestRevision;
+                var config = entityConfigRepo.GetAll().First(x => x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
                 foreach (var prop in props)
                 {
                     var propConf = new EntityProperty()
                     {
-                        EntityConfigRevision = revision,
+                        EntityConfig = config,
                         Name = prop.Key.Name,
                         DataType = prop.Key.DataType,
                         Source = MetadataSourceType.UserDefined
@@ -138,7 +137,7 @@ namespace Shesha.Tests.DynamicEntities
                         var childPropConf = new EntityProperty()
                         {
                             ParentProperty = propConf,
-                            EntityConfigRevision = revision,
+                            EntityConfig = config,
                             Name = childProp.Name,
                             DataType = childProp.DataType,
                             Source = MetadataSourceType.UserDefined

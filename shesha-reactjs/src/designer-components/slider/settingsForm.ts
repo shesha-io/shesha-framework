@@ -81,19 +81,6 @@ export const getSettings = (data: any) => {
                   {
                     type: 'numberField',
                     id: nanoid(),
-                    propertyName: 'defaultValue',
-                    label: 'Default Value',
-                    jsSetting: true,
-                  }
-                ]
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: dataTabId,
-                inputs: [
-                  {
-                    type: 'numberField',
-                    id: nanoid(),
                     propertyName: 'min',
                     label: 'Minimum',
                     jsSetting: true,

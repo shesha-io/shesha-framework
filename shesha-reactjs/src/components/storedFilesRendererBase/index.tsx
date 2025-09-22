@@ -208,6 +208,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     multiple,
     fileList,
     disabled,
+    pastable: false,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
       if (status === 'done') {
@@ -266,6 +267,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const renderUploadContent = () => {
     return (
+      !disabled &&
       <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
         {listType === 'text' && '(press to upload)'}
       </Button>

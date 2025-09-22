@@ -10,13 +10,11 @@ namespace Shesha.ConfigurationItems.Distribution
     /// <summary>
     /// Base exporter of configurable items
     /// </summary>
-    public abstract class ConfigurableItemExportBase<TItem, TRevision, TDistributedItem>
-        where TItem : ConfigurationItem<TRevision>, new()
-        where TRevision : ConfigurationItemRevision, new()
+    public abstract class ConfigurableItemExportBase<TItem, TDistributedItem>
+        where TItem : ConfigurationItem, new()
         where TDistributedItem : DistributedConfigurableItemBase, new()
     {
         public IRepository<TItem, Guid> Repository { get; set; }
-        public IRepository<TRevision, Guid> RevisionRepository { get; set; }
 
         /// <summary>
         /// Check is item can be exported
@@ -25,8 +23,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <returns></returns>
         public virtual Task<bool> CanExportItemAsync(ConfigurationItem item) 
         {
-            var canEdport = item is IDistributedConfigurationItem ci && ci.HasRevision;
-            return Task.FromResult(canEdport);
+            return Task.FromResult(true);
         }
 
         public async Task<DistributedConfigurableItemBase> ExportItemAsync(Guid id)
@@ -39,16 +36,15 @@ namespace Shesha.ConfigurationItems.Distribution
         {
             var typedItem = CastItem<TItem, ConfigurationItem>(item);
 
-            var revision = typedItem.LatestRevision;
-            var distributedItem = GetBaseDistributedItem(typedItem, revision);
-            await MapCustomPropsAsync(typedItem, revision, distributedItem);
+            var distributedItem = GetBaseDistributedItem(typedItem, typedItem);
+            await MapCustomPropsAsync(typedItem, distributedItem);
 
             return distributedItem;
         }
 
-        protected abstract Task MapCustomPropsAsync(TItem item, TRevision revision, TDistributedItem result);
+        protected abstract Task MapCustomPropsAsync(TItem item, TDistributedItem result);
 
-        protected TDistributedItem GetBaseDistributedItem(TItem item, TRevision revision)
+        protected TDistributedItem GetBaseDistributedItem(TItem item, ConfigurationItem revision)
         {
             return new TDistributedItem {
                 Id = item.Id,
@@ -60,8 +56,8 @@ namespace Shesha.ConfigurationItems.Distribution
                 OriginId = item.Origin?.Id,
                 Suppress = item.Suppress,
 
-                Label = revision.Label,
-                Description = revision.Description,
+                Label = item.Label,
+                Description = item.Description,
             };
         }
 

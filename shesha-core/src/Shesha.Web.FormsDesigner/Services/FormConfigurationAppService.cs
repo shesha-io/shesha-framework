@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -20,7 +19,9 @@ using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Dtos;
+using Shesha.Web.FormsDesigner.Dtos.Forms;
 using Shesha.Web.FormsDesigner.Exceptions;
+using Shesha.Web.FormsDesigner.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,29 +32,26 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
-    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationDto, UpdateFormConfigurationDto, GetFormByIdInput>
+    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
+        private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
-        private readonly IRepository<FormConfigurationRevision, Guid> _revisionRepository;
         private readonly IFormManager _formManager;
-        private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public FormConfigurationAppService(
-            IRepository<FormConfigurationRevision, Guid> revisionRepository,
             IRepository<FormConfiguration, Guid> repository,
             IRepository<Module, Guid> moduleRepository,
+            IRepository<ConfigurationItemFolder, Guid> folderRepository,
             IFormManager formManager,
-            IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache,
             IPermissionedObjectManager permissionedObjectManager
         ) : base(repository)
         {
-            _revisionRepository = revisionRepository;
             _moduleRepository = moduleRepository;
+            _folderRepository = folderRepository;
             _formManager = formManager;
-            _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
             _permissionedObjectManager = permissionedObjectManager;
         }
@@ -102,6 +100,32 @@ namespace Shesha.Web.FormsDesigner.Services
         protected override FormConfigurationDto MapToEntityDto(FormConfiguration entity)
         {
             return AsyncHelper.RunSync(() => MapToEntityDtoAsync(entity));
+        }
+
+        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationRequest input)
+        {
+            var module = await _moduleRepository.GetAsync(input.ModuleId);
+            module.EnsureEditable();
+
+            var folder = input.FolderId != null
+                ? await _folderRepository.GetAsync(input.FolderId.Value)
+                : null;
+
+            var formInput = new CreateFormInput
+            {
+                Module = module,
+                Folder = folder,
+                Name = input.Name,
+                Description = input.Description,
+                Label = input.Label,
+                Markup = input.Markup,
+                ModelType = input.ModelType,
+                GenerationLogicExtensionJson = input.GenerationLogicExtensionJson,
+                TemplateId = input.TemplateId,
+            };
+
+            var form = await _formManager.CreateFormAsync(formInput);
+            return await MapToEntityDtoAsync(form);
         }
         
         protected async Task<FormConfigurationDto> MapToEntityDtoAsync(FormConfiguration entity)
@@ -155,12 +179,10 @@ namespace Shesha.Web.FormsDesigner.Services
         [AllowAnonymous]
         public async Task<FormConfigurationDto> GetByNameAsync(GetFormByFullNameInput input)
         {
-            var mode = _cfRuntime.ViewMode;
-
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
-                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode);
+                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name);
                 if (input.Md5 == cachedMd5)
                     throw new ContentNotModifiedException("Form not changed");
             }
@@ -179,7 +201,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var dto = await MapToEntityDtoAsync(form);
 
             dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
+            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
 
             if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
             {
@@ -234,9 +256,8 @@ namespace Shesha.Web.FormsDesigner.Services
             // todo: check rights
             var form = await Repository.GetAsync(input.Id);
 
-            var revision = form.EnsureLatestRevision();
-            revision.Markup = input.Markup;
-            await _revisionRepository.InsertOrUpdateAsync(revision);
+            form.Markup = input.Markup;
+            await Repository.UpdateAsync(form);
 
             await Repository.UpdateAsync(form);
 
@@ -267,7 +288,7 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             var item = await Repository.GetAsync(id);
             
-            var bytes = Encoding.UTF8.GetBytes(item.Revision.Markup ?? "");
+            var bytes = Encoding.UTF8.GetBytes(item.Markup ?? "");
 
             return new ShaFileContentResult(bytes, "application/json") { FileDownloadName = $"{item.FullName}.json" };
         }
@@ -299,10 +320,7 @@ namespace Shesha.Web.FormsDesigner.Services
             {
                 using (var reader = new StreamReader(fileStream)) 
                 {
-                    var revision = item.EnsureLatestRevision();
-                    revision.Markup = await reader.ReadToEndAsync();
-
-                    await _revisionRepository.InsertOrUpdateAsync(revision);
+                    item.Markup = await reader.ReadToEndAsync();
                     await Repository.UpdateAsync(item);
                 }
             }
@@ -336,12 +354,14 @@ namespace Shesha.Web.FormsDesigner.Services
 
             entity.Name = input.Name;
 
-            var revision = entity.EnsureLatestRevision();
-            revision.Label = input.Label;
-            revision.Description = input.Description;
-            revision.Markup = input.Markup;
-            revision.ModelType = input.ModelType;
-
+            entity.Label = input.Label;
+            entity.Description = input.Description;
+            entity.Markup = input.Markup;
+            entity.ModelType = input.ModelType;
+            entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
+            entity.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            entity.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            entity.PlaceholderIcon = input.PlaceholderIcon;
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return await MapToEntityDtoAsync(entity);

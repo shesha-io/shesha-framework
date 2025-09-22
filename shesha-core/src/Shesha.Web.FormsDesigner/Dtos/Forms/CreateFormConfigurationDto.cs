@@ -11,7 +11,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Module id
         /// </summary>
-        public Guid? ModuleId { get; set; }
+        public Guid ModuleId { get; set; }
 
         /// <summary>
         /// Form name
@@ -52,5 +52,26 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// If true, indeicates that the form is a template
         /// </summary>
         public bool IsTemplate { get; set; }
+
+        /// <summary>
+        /// Form module for getting additional configuration options for template
+        /// </summary>
+        public string? ConfigurationFormModule { get; set; }
+        /// <summary>
+        /// Form name for getting additional configuration options for template
+        /// </summary>
+        public string? ConfigurationFormName { get; set; }
+        /// <summary>
+        /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator
+        /// </summary>
+        public string? GenerationLogicTypeName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? GenerationLogicExtensionJson { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? PlaceholderIcon { get; set; }
     }
 }

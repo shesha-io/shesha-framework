@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
+import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -209,7 +209,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 const ConfigurableFormComponentDesignerMemo = memo(ConfigurableFormComponentDesignerInner);
 
 export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = (props) => {
-  const allData = useAvailableConstantsData({ topContextId: 'all' });
+
+  const allData = useAvailableConstantsData({ topContextId: DataContextTopLevels.All });
   const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
   const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
   const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;

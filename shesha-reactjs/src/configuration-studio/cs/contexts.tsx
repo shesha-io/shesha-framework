@@ -48,8 +48,12 @@ export const ConfigurationStudioProvider: FC<PropsWithChildren> = ({ children })
     );
 };
 
+export const useConfigurationStudioIfAvailable = (): IConfigurationStudio | undefined => {
+    return useContext(ConfigurationStudioContext);
+};
+
 export const useConfigurationStudio = (): IConfigurationStudio => {
-    const context = useContext(ConfigurationStudioContext);
+    const context = useConfigurationStudioIfAvailable();
 
     if (!isDefined(context))
         throw new Error('useConfigurationStudio must be used within a ConfigurationStudioProvider');

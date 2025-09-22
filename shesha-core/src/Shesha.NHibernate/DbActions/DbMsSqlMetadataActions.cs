@@ -54,7 +54,7 @@ namespace Shesha.DbActions
                 .ExecuteUpdateAsync();
         }
 
-        public override async Task CreateInternalManyToManyTableAsync(
+        protected override async Task CreateInternalManyToManyTableAsync(
             string tableName,
             string primaryTableName, string foreignTableName,
             string primaryIdName, string foreignIdName,
@@ -67,19 +67,15 @@ namespace Shesha.DbActions
             var table = names.Length == 1 ? tableName : names[1];
 
             await session
-                .CreateSQLQuery(@$"
-CREATE TABLE {tableName} (
-[{keyColumnName}] [uniqueidentifier] NOT NULL,
-[{foreignColumnName}] [uniqueidentifier] NOT NULL
-)")
+                .CreateSQLQuery(@$"CREATE TABLE {tableName} ([{keyColumnName}] [uniqueidentifier] NOT NULL, [{foreignColumnName}] [uniqueidentifier] NOT NULL)")
                 .ExecuteUpdateAsync();
 
             await session
-                .CreateSQLQuery($"ALTER TABLE {tableName}  WITH CHECK ADD CONSTRAINT [FK_{table}_{keyColumnName}_{primaryTableName}] FOREIGN KEY([{keyColumnName}]) REFERENCES {primaryTableName} ([{primaryIdName}])")
+                .CreateSQLQuery($"ALTER TABLE {tableName} WITH CHECK ADD CONSTRAINT [FK_{table}_{keyColumnName}_{primaryTableName.Replace(".", "_")}] FOREIGN KEY([{keyColumnName}]) REFERENCES {primaryTableName} ([{primaryIdName}])")
                 .ExecuteUpdateAsync();
 
             await session
-                .CreateSQLQuery($"ALTER TABLE {tableName}  WITH CHECK ADD CONSTRAINT [FK_{table}_{foreignColumnName}_{foreignTableName}] FOREIGN KEY([{foreignColumnName}]) REFERENCES {foreignTableName} ([{foreignIdName}])")
+                .CreateSQLQuery($"ALTER TABLE {tableName} WITH CHECK ADD CONSTRAINT [FK_{table}_{foreignColumnName}_{foreignTableName.Replace(".", "_")}] FOREIGN KEY([{foreignColumnName}]) REFERENCES {foreignTableName} ([{foreignIdName}])")
                 .ExecuteUpdateAsync();
         }
 

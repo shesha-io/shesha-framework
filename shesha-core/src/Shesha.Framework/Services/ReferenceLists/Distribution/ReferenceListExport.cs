@@ -13,7 +13,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
     /// <summary>
     /// Reference list export
     /// </summary>
-    public class ReferenceListExport : ConfigurableItemExportBase<ReferenceList, ReferenceListRevision, DistributedReferenceList>, IReferenceListExport, ITransientDependency
+    public class ReferenceListExport : ConfigurableItemExportBase<ReferenceList, DistributedReferenceList>, IReferenceListExport, ITransientDependency
     {
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepo;
 
@@ -24,15 +24,14 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
         public string ItemType => ReferenceList.ItemTypeName;
 
-        protected override async Task MapCustomPropsAsync(ReferenceList item, ReferenceListRevision revision, DistributedReferenceList result)
+        protected override async Task MapCustomPropsAsync(ReferenceList item, DistributedReferenceList result)
         {
             result.Items = await ExportRefListItemsAsync(item);
         }
 
         private async Task<List<DistributedReferenceListItem>> ExportRefListItemsAsync(ReferenceList refList)
         {
-            var revision = refList.EnsureLatestRevision();
-            var items = await _refListItemRepo.GetAll().Where(item => item.ReferenceListRevision == revision).ToListAsync();
+            var items = await _refListItemRepo.GetAll().Where(item => item.ReferenceList == refList).ToListAsync();
 
             async Task ProcessRecursiveAsync(ReferenceListItem? parent, List<DistributedReferenceListItem> container) 
             {

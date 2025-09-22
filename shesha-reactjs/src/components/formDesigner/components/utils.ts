@@ -1,5 +1,5 @@
 import { MessageInstance } from 'antd/es/message/interface';
-import { DOMAttributes } from 'react';
+import { DOMAttributes , FocusEvent} from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
@@ -90,11 +90,37 @@ export const getAllEventHandlers = <T = any>(model: IConfigurableFormComponent, 
   };
 };
 
-export const customDateEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext) => ({
+export const customDateEventHandler = (
+  model: IConfigurableFormComponent,
+  context: IApplicationContext
+) => ({
   onChange: (value: any | null, dateString: string | [string, string]) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {dateString, value}));
+      return executeScriptSync(
+        expression,
+        addContextData(context, { dateString, value })
+      );
+    }
+  },
+
+  onFocus: (event: FocusEvent<HTMLInputElement>) => {
+    const expression = model?.onFocusCustom;
+    if (Boolean(expression)) {
+      return executeScriptSync(
+        expression,
+        addContextData(context, { event })
+      );
+    }
+  },
+
+  onBlur: (event: FocusEvent<HTMLInputElement>) => {
+    const expression = model?.onBlurCustom;
+    if (Boolean(expression)) {
+      return executeScriptSync(
+        expression,
+        addContextData(context, { event })
+      );
     }
   },
 });

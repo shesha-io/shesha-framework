@@ -20,6 +20,7 @@ import {
   downloadZipSuccessAction,
   fetchFileListErrorAction,
   fetchFileListSuccessAction,
+  initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
   uploadFileErrorAction,
@@ -46,8 +47,8 @@ export interface IStoredFilesProviderProps {
   baseUrl?: string;
 
   // used for requered field validation
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: IStoredFile[];
+  onChange?: (value: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -70,7 +71,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   // used for requered field validation
   onChange,
-  value = null
+  value = []
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -99,10 +100,18 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   const { mutate: uploadFileHttp } = useMutate();
 
+  // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
-    const val = state.fileList?.length > 0 ? 'filled' : null;
-    if (typeof onChange === 'function' && value !== val)
-      onChange(val);
+    if (value && value.length > 0 && (!state.fileList || state.fileList.length === 0)) {
+      dispatch(initializeFileListAction(value as IStoredFile[]));
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const val = state.fileList?.length > 0 ? state.fileList : [];
+        if (typeof onChange === 'function' && value !== val) {
+        onChange(val);
+      };
   }, [state.fileList]);
 
   useEffect(() => {
@@ -136,6 +145,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
+      onChange?.(state.fileList?.filter(file => file.id !== patient?.id) || []);
     });
   }, []);
   //#endregion
