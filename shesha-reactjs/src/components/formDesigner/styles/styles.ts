@@ -91,7 +91,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         formName,
         formTitle,
         formNameParent,
-        toolbarWrapper,
         //mainArea,
     } = useStyles().styles;
 

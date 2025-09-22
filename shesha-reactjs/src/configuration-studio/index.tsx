@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/workArea';
@@ -18,7 +18,7 @@ import { useSheshaApplication } from '@/providers';
 
 const ConfigurationStudio: FC = () => {
     const { styles } = useStyles();
-    const {setGlobalVariables } = useSheshaApplication()
+    const { setGlobalVariables } = useSheshaApplication();
 
     return (
         <ConfigurationStudioProvider>
@@ -51,19 +51,16 @@ const ConfigurationStudio: FC = () => {
                         // set sideBar size
                         if (setGlobalVariables) {
                             const total = sizes.reduce((prev, curr) => prev + curr, 0);
-                            console.log("Total :", total, sizes[0]);
-                            const size = ((((sizes[0] ?? 20)/ total) * 100 )/100) * window.innerWidth;
-
-                            console.log("calc size", size, "px")
-                            const configTreePanelSize = sizes[0];
+                            const size = ((((sizes[0] ?? 20) / total) * 100) / 100) * window.innerWidth;
                             if (total > 0) {
-                                setGlobalVariables({ configTreePanelSize: ((configTreePanelSize ?? 20)/ total) * 100 });
+                                setGlobalVariables({ configTreePanelSize: size });
                             }
                         }
                     }}>
                         <Splitter.Panel
                             collapsible
                             min="5%"
+                            defaultSize={20}
                             className={styles.csTreeArea}
                         >
                             <ConfigurationTree />
