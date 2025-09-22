@@ -98,7 +98,6 @@ initModel: (model: IDataListComponentProps) => {
   const defaultModel: IDataListComponentProps = {
     ...model,
     formSelectionMode: 'name',
-    formId: { name: 'PersonListTemplate', module: 'Default' },
     orientation: 'vertical',
     selectionMode: 'none',
     canAddInline: 'no',
