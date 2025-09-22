@@ -34,9 +34,13 @@ export const DEFAULT_OPTIONS = {
   defaultSizes: [25, 50, 25]
 };
 
+
 export function calculateAutoZoom(params: IAutoZoomParams): number {
   const { designerWidth = '1024px', sizes = [20, 60, 20], configTreePanelSize } = params;
   const availableWidthPercent = sizes[1];
+  /*const menuWidth = 55 */
+
+  /*i don't think the menu is still there*/
   const availableWidth = (availableWidthPercent / 100) * (window.innerWidth - 55 - configTreePanelSize);
 
   let canvasWidth: number;
@@ -74,6 +78,8 @@ export const usePinchZoom = (
     );
   }, []);
 
+  /*clean up touch event listeners after they're used. */
+
   const handleTouchStart = useCallback((e: TouchEvent) => {
     if (isAutoWidth || e.touches.length !== 2) return;
     
@@ -110,6 +116,8 @@ export const usePinchZoom = (
     }
   }, []);
 
+
+  /*add null check for element because it's going to crash if it's null*/
   useEffect(() => {
     const element = elementRef?.current;
     

@@ -9,6 +9,13 @@ export interface IPreviewButtonProps { }
 export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
   const { setCanvasWidth, designerWidth } = useCanvas();
 
+  /*Property 'optionFilterProp' does not exist on type 'IntrinsicAttributes & CustomDropdownProps'
+  0. > mobile  <430 > tablet   < 850 > desktop
+  */
+
+  /*
+    const mobileBreakPoint = 430;
+  */
 
   return (
     <CustomDropdown
@@ -21,6 +28,10 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
       popupMatchSelectWidth={false}
       onChange={(val) => {
         const value = parseInt(val, 10);
+        /*
+          -why not use breakpoints from utils? the ones degined in svgConstants.ts?
+          please define the constants as ^
+        */
         setCanvasWidth(value, value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
       }}
       value={typeof designerWidth === 'number' ? `${designerWidth}px` : designerWidth}

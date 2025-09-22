@@ -40,11 +40,16 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
+
+    /*debounce*/
+    /*update the sizes type*/
     setCurrentSizes(sizes as any);
   }, []);
 
   const handleZoomChange = useCallback((newZoom: number) => {
     setCanvasZoom(newZoom);
+
+    /*css zoom doesn't force rerenders*/
   }, [setCanvasZoom]);
 
   const canvasRef = usePinchZoom(
@@ -55,9 +60,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     autoZoom
   );
 
+
+  /*omit unused dependencies, isOpenRight, and isOpenLeft don't seem to be used...*/
+
+  /*move magic numbers to single const file*/
+
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
+      /*const the 20%*/
       setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize || (20/100) * window.innerWidth}) : zoom);
     }
   }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
