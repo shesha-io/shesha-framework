@@ -106,7 +106,7 @@ stages:
       #- UnitTests_1
     pool:
       name: Azure Pipelines
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - checkout: self
     - task: PowerShell@2
