@@ -69,7 +69,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const executeScript = (script, value) => {
 
       executeScriptSync(script, {
-        value: value,
+        value,
         data,
         form: getFormApi(form),
         globalState,
