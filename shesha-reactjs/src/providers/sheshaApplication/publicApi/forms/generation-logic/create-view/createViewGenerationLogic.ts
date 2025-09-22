@@ -6,7 +6,7 @@ import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { CreateViewExtensionJson } from "../../models/CreateViewExtensionJson";
 
 /**
- * Implements generation logic for blank views.
+ * Implements generation logic for create views.
  */
 export class CreateViewGenerationLogic extends BaseGenerationLogic {
   readonly typeName = "CreateViewGenerationLogic";
@@ -27,7 +27,7 @@ export class CreateViewGenerationLogic extends BaseGenerationLogic {
       // Using await with a Promise-wrapped function to satisfy the require-await rule
       await Promise.resolve(addDetailsPanel(nonFrameworkProperties, markup, metadataHelper));
     } catch (error) {
-      console.error("Error adding components to blank view markup:", error);
+      console.error("Error adding components to create view markup:", error);
       throw error;
     }
   }
