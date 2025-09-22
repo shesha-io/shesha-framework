@@ -9,7 +9,7 @@ import { IStyleType, useForm, useFormData, useGlobalState, useHttpClient, useShe
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
-  executeScript,
+  executeScriptSync,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
