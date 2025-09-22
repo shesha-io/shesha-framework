@@ -25,6 +25,7 @@ import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { extractFieldsFromFormConfig } from '../../designer-components/dataList/fieldExtractor';
+import { SmartDefaultItem } from './smartDefaultItem';
 
 interface EntityForm {
   entityType: string;
@@ -268,6 +269,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (isReady) {
       updateRows();
       updateContent();
+    } else if (allData.form?.formMode === 'designer' && records?.length > 0) {
+      // In designer mode, if we have records but no forms configured, still render
+      updateRows();
+      updateContent();
     }
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
@@ -340,9 +345,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
-    // If no form configuration found, try to use the default template if available
+    // If no form configuration found, show smart default display
     if (!entityForm?.formConfiguration?.markup) {
-      if (defaultFormTemplate && allData.form?.formMode === 'designer') {
+      // Check if we have a proper form configuration (formId or formType specified)
+      const hasFormConfigured =
+        (formSelectionMode === 'name' && formId) ||
+        (formSelectionMode === 'view' && formType) ||
+        formSelectionMode === 'expression';
+
+      if (defaultFormTemplate && allData.form?.formMode === 'designer' && hasFormConfigured) {
+        // Only use default template if user actually configured a form but it's not loading
         entityForm = {
           entityType: className,
           formId: { name: 'PersonListTemplate', module: 'Default' },
@@ -350,7 +362,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           formConfiguration: defaultFormTemplate,
         };
       } else {
-        return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+        // Use smart default item renderer for unconfigured or missing forms
+        if (allData.form?.formMode === 'designer') {
+          console.warn(`DataList: Rendering smart default for item ${index}, formSelectionMode: ${formSelectionMode}, hasFormConfigured: ${hasFormConfigured}`);
+        }
+        return (
+          <SmartDefaultItem
+            data={item}
+            itemIndex={index}
+            entityType={entityType}
+            isDesignMode={allData.form?.formMode === 'designer'}
+          />
+        );
       }
     }
 
