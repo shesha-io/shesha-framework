@@ -12,15 +12,15 @@ export function shaRoutingReducer(
   //#endregion
 
   switch (type) {
-    case RouteActionEnums.GoingToRoute:
-      /* NEW_ACTION_ENUM_GOES_HERE */
-      return {
-        ...incomingState,
-        ...payload,
-      };
+  case RouteActionEnums.GoingToRoute:
+    /* NEW_ACTION_ENUM_GOES_HERE */
+    return {
+      ...incomingState,
+      ...payload,
+    };
 
-    default: {
-      return incomingState;
-    }
+  default: {
+    return incomingState;
+  }
   }
 }

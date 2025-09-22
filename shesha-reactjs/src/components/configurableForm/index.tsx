@@ -48,7 +48,7 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     isActionsOwner,
     externalShaForm,
   } = props;
-  const { switchApplicationMode, configurationItemMode } = useAppConfigurator();
+  const { switchApplicationMode } = useAppConfigurator();
   const app = useSheshaApplication();
 
   const [form] = Form.useForm(props.form);
@@ -75,12 +75,11 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     if (formId) {
       shaForm.initByFormId({
         formId: formId,
-        configurationItemMode: configurationItemMode,
         formArguments: formArguments,
         initialValues: initialValues,
       });
     }
-  }, [shaForm, formId, configurationItemMode, formArguments]);
+  }, [shaForm, formId, formArguments]);
   useEffect(() => {
     if (markup) {
       shaForm.initByRawMarkup({

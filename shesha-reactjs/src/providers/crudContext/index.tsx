@@ -108,7 +108,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     onSave,
     allowChangeMode,
     autoSave = false,
-    formSettings = DEFAULT_FORM_SETTINGS
+    formSettings = DEFAULT_FORM_SETTINGS,
   } = props;
   const [state, dispatch] = useThunkReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
@@ -139,7 +139,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   }, [autoSave]);
 
   useEffect(() => {
-    //to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one) 
+    // to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one)
     const modeToUse = mode === 'read' ? mode : allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
@@ -316,7 +316,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         formFlatMarkup: flatMarkup,
         formSettings: formSettings,
       });
-    }
+    },
   });
   return (
     <ShaFormProvider shaForm={shaForm}>
@@ -324,7 +324,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         <FormProvider
           key={state.mode} /* important for re-rendering of the provider after mode change */
           form={form}
-          name={''}
+          name=""
           formSettings={formSettings}
           mode={state.mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
@@ -338,7 +338,10 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           formSettings={formSettings}
           delayedUpdate={delayedUpdate}
         >
-          <InternalCrudProvider {...props} context={contextValue} delayedUpdate={delayedUpdate}
+          <InternalCrudProvider
+            {...props}
+            context={contextValue}
+            delayedUpdate={delayedUpdate}
             onValuesChange={onValuesChange}
             setInitialValues={setInitialValues}
             setInitialValuesLoading={setInitialValuesLoading}

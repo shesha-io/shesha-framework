@@ -1,14 +1,14 @@
 import { createAction } from "redux-actions";
 
 export enum ChartDataActionsEnum {
-    SetData = "SET_DATA",
-    SetIsLoaded = "SET_IS_LOADED",
-    SetIsFilterVisible = "SET_IS_FILTER_VISIBLE",
-    SetControlProps = "SET_CONTROL_PROPS",
-    SetUrlTypeData = "SET_URL_TYPE_DATA",
-    CleanData = "CLEAN_DATA",
-    SetAxisPropertyLabel = "SET_AXIS_LABEL",
-    SetValuePropertyLabel = "SET_VALUE_LABEL",
+  SetData = "SET_DATA",
+  SetIsLoaded = "SET_IS_LOADED",
+  SetIsFilterVisible = "SET_IS_FILTER_VISIBLE",
+  SetControlProps = "SET_CONTROL_PROPS",
+  SetUrlTypeData = "SET_URL_TYPE_DATA",
+  CleanData = "CLEAN_DATA",
+  SetAxisPropertyLabel = "SET_AXIS_LABEL",
+  SetValuePropertyLabel = "SET_VALUE_LABEL",
 }
 
 export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: object[]) => ({ data, items: data }));

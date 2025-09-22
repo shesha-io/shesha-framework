@@ -15,7 +15,7 @@ export interface IDynamicActionsStateContext<TSettings = any> {
   /**
    * Settings form factory
    */
-  settingsFormFactory?: IProviderSettingsFormFactory<TSettings>;//<TArguments>;
+  settingsFormFactory?: IProviderSettingsFormFactory<TSettings>;// <TArguments>;
 }
 
 export interface IDynamicActionsActionsContext {

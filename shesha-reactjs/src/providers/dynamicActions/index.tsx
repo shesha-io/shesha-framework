@@ -41,13 +41,13 @@ const DynamicActionsProvider = <TSettings, >({ id, name, useEvaluator, children,
     settingsFormMarkup,
   };
 
-  const [state/*, dispatch*/] = useThunkReducer(metadataReducer, initial);
+  const [state/* , dispatch*/] = useThunkReducer(metadataReducer, initial);
 
   // register provider in the dispatcher if exists
   const { registerProvider } = useDynamicActionsDispatcher();
 
   const dynamicActions: IDynamicActionsActionsContext = {
-    /* NEW_ACTION_GOES_HERE */    
+    /* NEW_ACTION_GOES_HERE */
   };
 
   const contextValue: IDynamicActionsContext = { ...state, ...dynamicActions };

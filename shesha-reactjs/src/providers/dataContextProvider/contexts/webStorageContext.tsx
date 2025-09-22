@@ -8,9 +8,9 @@ import { webStorageCode } from '@/publicJsApis';
 
 export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
-    typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWebStorage', files: [{ content: webStorageCode, fileName: 'apis/webStorage.ts' }]}),
-    properties: [{path: 'local', dataType: DataTypes.object}, {path: 'session', dataType: DataTypes.object}],
-    dataType: DataTypes.object
+    typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWebStorage', files: [{ content: webStorageCode, fileName: 'apis/webStorage.ts' }] }),
+    properties: [{ path: 'local', dataType: DataTypes.object }, { path: 'session', dataType: DataTypes.object }],
+    dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
   const manager = useDataContextManagerActions();
@@ -21,14 +21,14 @@ export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => 
 
   const setItem = (key: string, value: any) => {
     const parts = key.split('.');
-    if (parts[0] === 'session') 
+    if (parts[0] === 'session')
       sessionStorage.current.setItem(parts[1], value);
     if (parts[0] === 'local')
       localStorage.current.setItem(parts[1], value);
   };
   const getItem = (key: string) => {
     const parts = key.split('.');
-    if (parts[0] === 'session') 
+    if (parts[0] === 'session')
       return sessionStorage.current.getItem(parts[1]);
     if (parts[0] === 'local')
       return localStorage.current.getItem(parts[1]);
@@ -43,8 +43,8 @@ export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => 
     <DataContextBinder
       id={SheshaCommonContexts.WebStorageContext}
       name={SheshaCommonContexts.WebStorageContext}
-      description={'Web local storage access context'}
-      type={'storage'}
+      description="Web local storage access context"
+      type="storage"
       data={data}
       metadata={contextMetadata}
       setFieldValue={setFieldValue}

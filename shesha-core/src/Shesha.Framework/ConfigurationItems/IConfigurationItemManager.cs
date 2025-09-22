@@ -46,6 +46,12 @@ namespace Shesha.ConfigurationItems
         Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItem item);
 
         /// <summary>
+        /// Get client-side cache MD5
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetCacheMD5Async(IConfigurationItemDto dto);
+
+        /// <summary>
         /// Expose item to a specified module
         /// </summary>
         /// <param name="item">Item to expose</param>
@@ -62,5 +68,13 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="item">Source item to duplicate</param>
         Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item);
+
+        /// <summary>
+        /// Checks is the current user has access to the item
+        /// </summary>
+        /// <param name="module"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task<bool> CurrentUserHasAccessToAsync(string module, string name);
     }
 }
