@@ -1,5 +1,3 @@
-import { Switch } from 'antd';
-import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import React, { FC, useMemo } from 'react';
 import { getMoment } from '@/utils/date';
