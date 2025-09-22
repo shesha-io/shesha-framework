@@ -106,7 +106,7 @@ stages:
       #- UnitTests_1
     pool:
       name: Azure Pipelines
-      vmImage: windows-latest
+      vmImage: ubuntu-latest
     steps:
     - checkout: self
     - task: PowerShell@2
@@ -226,7 +226,7 @@ stages:
     dependsOn: Job_4
     displayName: Build_Functional_Shesha_AdminPortal
     pool:
-      vmImage: windows-latest
+      vmImage: ubuntu-latest
     steps:
     - task: PowerShell@2
       displayName: Check if Pull Request
@@ -353,7 +353,7 @@ stages:
     displayName: Prepare Release if published
     dependsOn: Job_4
     pool:
-      vmImage: windows-latest
+      vmImage: ubuntu-latest
     steps:
     - task: PowerShell@2
       displayName: Check if Pull Request
