@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxProps } from 'antd';
@@ -6,7 +6,6 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
 import {
   migratePropertyName,
@@ -42,7 +41,12 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-    const {styles} = useStyles({style: model.allStyles.fullStyle});
+    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+
+    const {styles} = useStyles({style: finalStyle});
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
@@ -56,9 +60,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
             }
           };
 
-          return model.readOnly
-            ? <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle} />
-            : <Checkbox className={styles.checkbox} disabled={model.readOnly} checked={value} {...events} />;
+          return  <Checkbox className={styles.checkbox} disabled={model.readOnly} checked={value} {...events} />;
         }}
       </ConfigurableFormItem>
     );
@@ -78,8 +80,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev,defaultStyles())))
-      ,
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev,defaultStyles()))),
 };
 
 export default CheckboxComponent;
