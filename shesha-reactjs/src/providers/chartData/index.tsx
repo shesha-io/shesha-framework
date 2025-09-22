@@ -52,8 +52,9 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
         setUrlTypeData,
         cleanData,
         setAxisPropertyLabel,
-        setValuePropertyLabel
-      }}>
+        setValuePropertyLabel,
+      }}
+      >
         {children}
       </ChartDataActionsContext.Provider>
     </ChartDataStateContext.Provider>

@@ -189,7 +189,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			// Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
 			app.UseSwaggerUI(options =>
 			{
-				options.AddEndpointsPerService(false);
+				options.AddEndpointsPerService();
 				//options.SwaggerEndpoint("swagger/v1/swagger.json", "Shesha API V1");​
 				// todo: add documents per module with summary about `service:xxx` endpoints
 				//options.SwaggerEndpoint(baseUrl + "swagger/service:Meter/swagger.json", "Meter API");​

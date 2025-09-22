@@ -1,6 +1,5 @@
 import { IFlatComponentsStructure, IFormActions, IFormSections, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
 import React, { FC } from 'react';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { FormProvider } from '@/providers/form';
 import FormInfo from './formInfo';
 import { ConfigurableFormRenderer } from './configurableFormRenderer';
@@ -41,11 +40,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   if (!formFlatMarkup) 
     return null;
 
-  const formStatusInfo = persistedFormProps?.versionStatus
-    ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
-    : null;
-
-  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
+  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible;
 
   return (
     <FormInfo visible={showFormInfo} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated}>

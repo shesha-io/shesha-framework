@@ -2,8 +2,8 @@ export interface PromisedValue<T> {
   isPending: boolean;
   isResolved: boolean;
   isRejected: boolean;
-  value?: T;
-  error: any;
+  value?: T | undefined;
+  error: unknown;
   promise: Promise<T>;
 }
 

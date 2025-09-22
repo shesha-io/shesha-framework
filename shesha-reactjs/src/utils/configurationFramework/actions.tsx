@@ -1,10 +1,7 @@
 import FileSaver from 'file-saver';
 import React, { FC } from 'react';
 import { getFileNameFromResponse } from '@/utils/fetchers';
-import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { MessageInstance } from 'antd/lib/message/interface';
-import { NotificationInstance } from 'antd/lib/notification/interface';
 import { HttpClientApi } from '@/providers';
 
 //#region validation
@@ -20,17 +17,6 @@ export const ErrorDetails: FC<IErrorDetailsProps> = ({ error, showDetails = fals
       <ul>{error.validationErrors?.map((e, i) => <li key={i}>{e.message}</li>)}</ul>
     </div>
   );
-};
-
-export const showErrorDetails = (message: MessageInstance, notification: NotificationInstance, error: any) => {
-  const response = error.response?.data as IAjaxResponseBase;
-  if (response && response.error) {
-    notification.error({
-      message: 'Sorry! An error occurred.',
-      icon: null,
-      description: <ErrorDetails error={response.error} />,
-    });
-  } else message.error('An error occurred. Message:' + error);
 };
 
 //#endregion

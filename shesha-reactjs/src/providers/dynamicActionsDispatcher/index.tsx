@@ -22,7 +22,7 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDisp
 
   const providers = useRef<IProvidersDictionary>({});
 
-  const [state/*, dispatch*/] = useThunkReducer(metadataReducer, initial);
+  const [state/* , dispatch*/] = useThunkReducer(metadataReducer, initial);
 
   const registerProvider = (payload: IRegisterProviderPayload) => {
     const existingProvider = providers.current[payload.id];
@@ -88,10 +88,10 @@ function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDi
     : undefined;
 }
 
-export { 
-  DynamicActionsDispatcherProvider, 
-  useDynamicActionsDispatcherState, 
-  useDynamicActionsDispatcherActions, 
+export {
+  DynamicActionsDispatcherProvider,
+  useDynamicActionsDispatcherState,
+  useDynamicActionsDispatcherActions,
   useDynamicActionsDispatcher,
-  type DynamicItemsEvaluationHook,  
+  type DynamicItemsEvaluationHook,
 };

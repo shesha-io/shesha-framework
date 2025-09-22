@@ -15,28 +15,36 @@ import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 interface IDataContextSettingsState extends IDataContextComponentProps { }
 
-const convertPropertyMetadataToModelItem = (property: IPropertyMetadata) => {
-  const res = { ...property, properties: [], name: property.path };
-  delete res.path;
-  if (isPropertiesArray(property.properties))
-    res.properties = property.properties?.map((item) => convertPropertyMetadataToModelItem(item));
-  return res as IModelItem;
+const convertPropertyMetadataToModelItem = (property: IPropertyMetadata): IModelItem => {
+  const { path, properties, itemsType, ...commonProps } = property;
+
+  return {
+    ...commonProps,
+    id: path,
+    name: path,
+    itemsType: itemsType ? convertPropertyMetadataToModelItem(itemsType) : undefined,
+    properties: isPropertiesArray(properties)
+      ? properties.map((item) => convertPropertyMetadataToModelItem(item))
+      : undefined,
+  } satisfies IModelItem;
 };
 
-const convertModelItemToPropertyMetadata = (item: IModelItem) => {
-  const res = { ...item, properties: [], path: item.name };
-  delete res.name;
-  if (item.properties)
-    res.properties = item.properties?.map((item) => convertModelItemToPropertyMetadata(item));
-  return res as IPropertyMetadata;
+const convertModelItemToPropertyMetadata = (item: IModelItem): IPropertyMetadata => {
+  const { name, properties, itemsType, ...commonProps } = item;
+  return {
+    ...commonProps,
+    path: name,
+    properties: properties?.map((item) => convertModelItemToPropertyMetadata(item)),
+    itemsType: itemsType ? convertModelItemToPropertyMetadata(itemsType) : undefined,
+  };  
 };
 
 const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = (props) => {
   const { readOnly } = props;
   const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
 
-  const constants = useAvailableConstantsMetadata({ 
-    addGlobalConstants: true, 
+  const constants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
   });
 
   const [open, setOpen] = useState<boolean>(false);
@@ -53,7 +61,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   return (
     <>
       <SettingsCollapsiblePanel header="Data context">
-        <SettingsFormItem 
+        <SettingsFormItem
           name='componentName'
           label="Component name"
           tooltip='This name will be used as identifier and in the code editor'

@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
-import { IPropertyItem, isPropertyMetadata, PropertySelect } from "../../propertyAutocomplete/propertySelect";
-import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
+import { IPropertyItem, IPropertySelectProps, isPropertyMetadata, PropertySelect } from "../../propertyAutocomplete/propertySelect";
+import { isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
 import { useFieldWidget } from "../widgets/field/fieldWidgetContext";
 import { CustomFieldSettings } from "@/providers/queryBuilder/models";
 import { DataTypes } from "@/interfaces";
 
+type OnPropertySelect = IPropertySelectProps["onSelect"];
+
 export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
     const [text, setText] = useState(props.selectedKey);
     const fieldWidget = useFieldWidget();
-    const onSelect = (key, _propertyMetadata: IPropertyMetadata) => {
+    const onSelect: OnPropertySelect = (key) => {
         // check fields and expand if needed
         if (typeof (key) === 'string')
             props.setField(key);

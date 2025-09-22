@@ -9,7 +9,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Form configuration
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", FriendlyName = "Form")]
+    [Entity(TypeShortAlias = "Shesha.Core.FormConfiguration", FriendlyName = "Form", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-form-create")]
     [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [DiscriminatorValue(ItemTypeName)]

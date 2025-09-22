@@ -16,7 +16,7 @@ const stylisticOverrides = {
     "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
     "@stylistic/jsx-indent-props": [
         'error',
-        4
+        2
         // - 'first' - align with first prop (VS Code-like)
         // - 2 - 2 space indentation (most common)
         // - 4 - 4 space indentation  
@@ -37,10 +37,8 @@ const stylisticOverrides = {
             requireLast: false,
         },
     }],
-    "@stylistic/indent": "off",
-    "@stylistic/indent-binary-ops": "off",
-    /* todo: review after development of a standard and integration with auto-formatter
-    "@stylistic/indent": ["error", 2],
+    //"@stylistic/indent-binary-ops": "off",
+    /*
     "@stylistic/indent-binary-ops": ["error", 2],
     */
     "@stylistic/jsx-quotes": ["error", "prefer-double"],
@@ -54,6 +52,10 @@ const stylisticOverrides = {
     "@stylistic/padded-blocks": ["error", "never"],
     "@stylistic/no-multiple-empty-lines": "error",
     "@stylistic/lines-between-class-members": ["error", "always"],
+    "indent": "off",
+    "@stylistic/indent": ["error", 2, {
+        "ignoredNodes": ["JSXElement", "JSXAttribute", "JSXSpreadAttribute", "JSXText", "JSXFragment"]
+    }]
 };
 
 const legacyTypescriptOverrides = {
@@ -136,7 +138,8 @@ const typescriptOverrides = {
     "@typescript-eslint/no-unsafe-assignment": "error",
     "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
     "@typescript-eslint/no-unnecessary-condition": "error",
-    "@typescript-eslint/strict-boolean-expressions": "error",
+    //todo: enable after first part of fixes 
+    // "@typescript-eslint/strict-boolean-expressions": "error",
 };
 
 const baseTsConfig = {
@@ -264,7 +267,7 @@ const baseTsConfig = {
         "guard-for-in": "error",
         "id-denylist": "off",
         "id-match": "off",
-        indent: "off",
+        "indent": "off",
         "jsdoc/check-alignment": "error",
         "jsdoc/check-indentation": "off",
 
@@ -325,6 +328,7 @@ const makeStrictConfig = (path) => {
         ...baseTsConfig,
         files: [
             `${path}/**/*.ts`,
+            `${path}/**/*.tsx`,
         ],
         languageOptions: {
             ...baseTsConfig.languageOptions,
@@ -345,11 +349,19 @@ const makeStrictConfig = (path) => {
         },
     };
 }
-const csConfig = makeStrictConfig("src/configuration-studio");
 
 const strictFolders = [
     "src/configuration-studio",
-    //"src/providers"
+    "src/providers/referenceListDispatcher",
+    "src/providers/metadataDispatcher",
+    "src/providers/metadata",
+    "src/providers/configurationItemsLoader",
+    "src/providers/formPersisterProvider",
+    "src/providers/formMarkupConverter",
+    "src/providers/formManager",
+    "src/providers/configurableActionsDispatcher",
+    "src/providers/auth",
+    "src/providers/appConfigurator",
 ];
 
 export default [
@@ -366,26 +378,6 @@ export default [
         }
     },
     ...strictFolders.map(f => makeStrictConfig(f)),
-    // {
-    //     ...csConfig,
-    //     files: [
-    //         "src/configuration-studio/**/*.ts",
-    //     ],
-    //     rules: {
-    //         ...csConfig.rules,
-    //         //'@stylistic/indent': ['error', 2],
-    //     }
-    // },
-    // {
-    //     ...csConfig,
-    //     files: [
-    //         "src/configuration-studio/**/*.tsx",
-    //     ],
-    //     rules: {
-    //         ...csConfig.rules,
-    //         //'@stylistic/indent': ['error', 4],
-    //     }
-    // },
     {
         files: ['**/*.js', '**/*.mjs'],
         ...js.configs.recommended,

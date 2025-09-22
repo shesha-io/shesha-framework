@@ -9,15 +9,15 @@ export function signalRReducer(
   //#endregion
 
   switch (type) {
-    case SignalRActionEnums.SetConnection:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+  case SignalRActionEnums.SetConnection:
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
-      return {
-        ...state,
-        ...payload,
-      };
+    return {
+      ...state,
+      ...payload,
+    };
 
-    default:
-      return state;
+  default:
+    return state;
   }
 }

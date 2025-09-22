@@ -32,6 +32,7 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
             id: nanoid(),
             name: `NewProperty${(items ?? []).length + 1}`,
             label: `New Property ${(items ?? []).length + 1}`,
+            dataType: ''
         };
     };
 

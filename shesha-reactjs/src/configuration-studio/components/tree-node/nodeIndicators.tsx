@@ -4,17 +4,17 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 
 export interface INodeIndicatorProps {
-    node: TreeNode;
+  node: TreeNode;
 }
 
 export const NodeIndicator: FC<INodeIndicatorProps> = ({ node }) => {
-    const { theme } = useStyles();
-    if (!isConfigItemTreeNode(node))
-        return undefined;
+  const { theme } = useStyles();
+  if (!isConfigItemTreeNode(node))
+    return undefined;
 
-    return node.flags.isCodegenPending
-        ? (
-            <ExclamationCircleOutlined style={{ color: theme.colorError }} />
-        )
-        : undefined;
+  return node.flags.isCodegenPending
+    ? (
+      <ExclamationCircleOutlined style={{ color: theme.colorError }} />
+    )
+    : undefined;
 };

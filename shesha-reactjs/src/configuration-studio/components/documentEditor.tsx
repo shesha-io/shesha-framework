@@ -8,36 +8,36 @@ import { DocumentToolbar } from './documentToolbar';
 import { RevisionHistoryDrawer } from './revision-history/drawer';
 
 export interface IItemEditorProps {
-    doc: IDocumentInstance;
+  doc: IDocumentInstance;
 }
 
 export const DocumentEditor: FC<IItemEditorProps> = ({ doc }) => {
-    const { styles } = useStyles();
+  const { styles } = useStyles();
 
-    if (!isCIDocument(doc))
-        return undefined;
+  if (!isCIDocument(doc))
+    return undefined;
 
-    const { definition } = doc;
-    const { Editor, Provider } = definition;
+  const { definition } = doc;
+  const { Editor, Provider } = definition;
 
-    return (
-        <div className={styles.csDocEditor}>
-            <DocumentInstanceProvider documentInstance={doc}>
-                <CustomErrorBoundary>
-                    <ConditionalWrap
-                        condition={Boolean(Provider)}
-                        wrap={(content) => (
-                            <Provider doc={doc}>
-                                {content}
-                            </Provider>
-                        )}
-                    >
-                        <DocumentToolbar doc={doc} />
-                        <Editor doc={doc} />
-                        <RevisionHistoryDrawer />
-                    </ConditionalWrap>
-                </CustomErrorBoundary>
-            </DocumentInstanceProvider>
-        </div>
-    );
+  return (
+    <div className={styles.csDocEditor}>
+      <DocumentInstanceProvider documentInstance={doc}>
+        <CustomErrorBoundary>
+          <ConditionalWrap
+            condition={Boolean(Provider)}
+            wrap={(content) => (
+              <Provider doc={doc}>
+                {content}
+              </Provider>
+            )}
+          >
+            <DocumentToolbar doc={doc} />
+            <Editor doc={doc} />
+            <RevisionHistoryDrawer />
+          </ConditionalWrap>
+        </CustomErrorBoundary>
+      </DocumentInstanceProvider>
+    </div>
+  );
 };

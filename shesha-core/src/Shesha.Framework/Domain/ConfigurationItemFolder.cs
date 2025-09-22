@@ -11,6 +11,7 @@ namespace Shesha.Domain
     /// </summary>
     [SnakeCaseNaming]
     [Table("configuration_item_folders", Schema = "frwk")]
+    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class ConfigurationItemFolder : FullAuditedEntity<Guid>
     {
         /// <summary>

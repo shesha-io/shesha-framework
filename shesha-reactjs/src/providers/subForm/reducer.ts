@@ -12,8 +12,6 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
       const {
         components,
         formSettings,
-        versionNo,
-        versionStatus,
         description,
         hasFetchedConfig,
         id,
@@ -31,8 +29,6 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
         hasFetchedConfig,
         components,
         formSettings,
-        versionNo,
-        versionStatus,
         description,
         allComponents,
         componentRelations,

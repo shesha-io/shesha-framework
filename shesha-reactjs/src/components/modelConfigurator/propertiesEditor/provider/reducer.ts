@@ -48,7 +48,8 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
         name: `NewProperty`,
         label: `New Property`,
         id: payload.item?.id ?? '00000000-0000-0000-0000-000000000000', // Guid.Empty
-        source: MetadataSourceType.UserDefined
+        source: MetadataSourceType.UserDefined,
+        dataType: 'string',
       };
 
       const newItems = [...state.items];
@@ -114,7 +115,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
 
       const itemsTypeIndex = newItem.properties?.findIndex(p => p.isItemsType);
-      let itemsType = itemsTypeIndex !== undefined ? {...newItem.properties[itemsTypeIndex]} : null;
+      let itemsType: IModelItem = itemsTypeIndex !== undefined ? {...newItem.properties[itemsTypeIndex]} : null;
 
       if (newItem.dataType !== prevItem.dataType) {
         newItem.dataFormat = undefined;
@@ -131,7 +132,8 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
               id: nanoid(),
               source: MetadataSourceType.UserDefined,
               isItemsType: true,
-            };
+              dataType: ''
+            } satisfies IModelItem;
           newItem.itemsType = itemsType;
           newItem.properties = [...(newItem.properties ?? []), itemsType];
         } else {
