@@ -17,7 +17,7 @@ export interface IModelItem {
   /**
    * Data type
    */
-  dataType?: string | null;
+  dataType: string;
   /**
    * Data format
    */

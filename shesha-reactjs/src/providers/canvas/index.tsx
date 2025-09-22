@@ -12,7 +12,6 @@ export interface ICanvasProviderProps {
 const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   children,
 }) => {
-
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
       return Promise.resolve({
@@ -20,7 +19,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
         files: [{
           content: canvasContextCode,
           fileName: 'apis/CanvasContextApi.ts',
-        }]
+        }],
       });
     },
     properties: [
@@ -30,7 +29,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
       { path: 'physicalDevice', dataType: DataTypes.string },
       { path: 'activeDevice', dataType: DataTypes.string },
     ],
-    dataType: DataTypes.object
+    dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
   const [state, dispatch] = useReducer(CanvasReducer, {
@@ -45,7 +44,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   }, []);
 
   const setDesignerDevice = (deviceType: IDeviceTypes) => {
-    dispatch(setDesignerDeviceAction( deviceType));
+    dispatch(setDesignerDeviceAction(deviceType));
   };
 
   const setCanvasWidth = (width: number, deviceType: string) => {
@@ -56,10 +55,10 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   };
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const actions ={
+  const actions = {
     setDesignerDevice,
     setCanvasWidth,
-    setCanvasZoom
+    setCanvasZoom,
     /* NEW_ACTION_GOES_HERE */
   };
 
@@ -75,10 +74,10 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
 
   return (
     <DataContextBinder
-      id={'canvasContext'}
-      name={'canvasContext'}
-      description={`Canvas context`}
-      type='appLayer'
+      id="canvasContext"
+      name="canvasContext"
+      description="Canvas context"
+      type="appLayer"
       data={state}
       api={actions}
       onChangeData={contextOnChangeData}

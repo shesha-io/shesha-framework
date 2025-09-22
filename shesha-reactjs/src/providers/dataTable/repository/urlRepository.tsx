@@ -22,6 +22,7 @@ import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/confi
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
 import { wrapDisplayName } from '@/utils/react';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -44,11 +45,11 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
 
   const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
     const result: string[] = [];
-    columns.forEach(column => {
+    columns.forEach((column) => {
       if (!column.propertiesToFetch)
         return;
       if (Array.isArray(column.propertiesToFetch)) {
-        column.propertiesToFetch.forEach(p => {
+        column.propertiesToFetch.forEach((p) => {
           if (!!p)
             result.push(p);
         });
@@ -57,7 +58,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
         // special handling for entity references: expand properties list to include `id` and `_displayName`
         if (column.isEnitty) {
           const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
-          requiredProps.forEach(rp => {
+          requiredProps.forEach((rp) => {
             if (!result.includes(rp))
               result.push(rp);
           });
@@ -91,7 +92,8 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     response: IResult<ITableDataResponse>,
     pageSize: number
   ): ITableDataInternalResponse => {
-    if (!response.result) throw 'Failed to parse response';
+    if (!isAjaxSuccessResponse(response))
+      throw 'Failed to parse response';
 
     const items = response.result.items ?? (Array.isArray(response.result) ? response.result : null);
     const totalCount = response.result.totalCount ?? items?.length;

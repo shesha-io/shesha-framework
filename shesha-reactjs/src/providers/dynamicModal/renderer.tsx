@@ -24,18 +24,17 @@ function useDynamicRendererRegistar(id: string, dep: any[]) {
 }
 
 const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = (props) => {
-
   useDynamicRendererRegistar(props.id, [props.id]);
 
   const { instances, removeModal } = useDynamicModals();
   const children = useRef([]);
 
   const registerChildren = (id: string) => {
-    if (children.current.indexOf(id) === -1) 
+    if (children.current.indexOf(id) === -1)
       children.current = [...children.current, id];
   };
   const unregisterChildren = (id: string) => {
-    if (children.current.indexOf(id) !== -1) 
+    if (children.current.indexOf(id) !== -1)
       children.current = children.current.filter((i) => i !== id);
   };
 
@@ -51,7 +50,7 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
               instance,
               close: () => {
                 removeModal(instance.id);
-              }
+              },
             }}
           >
             <DynamicModal {...instance.props} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
@@ -62,7 +61,7 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
     return rendered;
   };
 
-  const context = {registerChildren, unregisterChildren};
+  const context = { registerChildren, unregisterChildren };
 
   return (
     <DynamicModalRendererContext.Provider value={context}>

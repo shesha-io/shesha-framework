@@ -7,26 +7,26 @@ import { usePortal } from '@/hooks/usePortal';
 import { isDefined } from '../types';
 
 export interface IDocumentToolbarProps {
-    doc: IDocumentInstance;
+  doc: IDocumentInstance;
 }
 
 export const DocumentToolbar: FC<IDocumentToolbarProps> = ({ doc }) => {
-    const cs = useConfigurationStudio();
-    const activeDoc = useActiveDoc();
-    const Portal = usePortal(isDefined(cs.toolbarRef) ? cs.toolbarRef.current : null);
+  const cs = useConfigurationStudio();
+  const activeDoc = useActiveDoc();
+  const Portal = usePortal(isDefined(cs.toolbarRef) ? cs.toolbarRef.current : null);
 
-    const Toolbar = doc.itemId === activeDoc?.itemId
-        ? doc.definition.Toolbar
-        : undefined;
+  const Toolbar = doc.itemId === activeDoc?.itemId
+    ? doc.definition.Toolbar
+    : undefined;
 
-    const [, forceUpdate] = useState({});
-    cs.setDocumentToolbarRerenderer(doc.itemId, () => forceUpdate({}));
+  const [, forceUpdate] = useState({});
+  cs.setDocumentToolbarRerenderer(doc.itemId, () => forceUpdate({}));
 
-    return (
-        <Portal>
-            <CustomErrorBoundary key={doc.itemId}>
-                {Toolbar && <Toolbar doc={doc} key={doc.itemId} />}
-            </CustomErrorBoundary>
-        </Portal>
-    );
+  return (
+    <Portal>
+      <CustomErrorBoundary key={doc.itemId}>
+        {Toolbar && <Toolbar doc={doc} key={doc.itemId} />}
+      </CustomErrorBoundary>
+    </Portal>
+  );
 };

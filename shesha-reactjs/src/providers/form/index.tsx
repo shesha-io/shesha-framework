@@ -98,7 +98,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formData: props.shaForm.formData,
 
     // TODO: AS - review and remove
-    initialValues: undefined
+    initialValues: undefined,
   };
 
   return (

@@ -36,7 +36,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
   const columnConfig = (column as DataTableColumn)?.originalConfig;
 
   const metadata = useMetadata(false)?.metadata;
-  const propertyMeta = asPropertiesArray(metadata?.properties, undefined)?.find(({ path }) => toCamelCase(path) === column.id);
+  const propertyMeta = asPropertiesArray(metadata?.properties, []).find(({ path }) => toCamelCase(path) === column.id);
   const { styles } = useStyles();
   const { key, ...headerProps } = column.getHeaderProps(cellProps);
   const anchored = getColumnAnchored((column as any)?.anchored);

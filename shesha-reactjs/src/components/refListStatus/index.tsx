@@ -5,6 +5,7 @@ import { DescriptionTooltip } from './tooltip';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { useStyles } from './styles/styles';
+import { extractErrorMessage } from '@/providers/referenceListDispatcher/models';
 
 export interface IRefListStatusProps {
   referenceListId: IReferenceListIdentifier;
@@ -43,7 +44,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
       <Alert
         showIcon
         message="Something went during Reflists fetch"
-        description={listItem.error.message}
+        description={extractErrorMessage(listItem.error)}
         type="error"
       />
     );

@@ -36,7 +36,7 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
       .addObject("forms", "Forms", (m) => getFormsApiProperties(m))
       .addObject("utils", "Utils", (m) => getUtilsApiProperties(m))
       .addObject("navigator", "Navigator", (m) => getNavigatorApiProperties(m))
-      ;
+    ;
 
     props.plugins.forEach((plugin) => {
       plugin.buildMetadata(apiBuilder, metadataBuilder);

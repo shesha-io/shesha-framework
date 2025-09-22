@@ -1,5 +1,6 @@
 ﻿using Abp;
 using Abp.Domain.Repositories;
+using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -7,6 +8,7 @@ using Shesha.Dto;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using Shesha.Validations;
 using System;
 using System.Linq;
@@ -246,6 +248,18 @@ namespace Shesha.ConfigurationItems
             dstRevision.ConfigHash = srcRevision.ConfigHash;
 
             return Task.CompletedTask;
+        }
+
+        public virtual Task<bool> CurrentUserHasAccessToAsync(string module, string name)
+        {
+            return Task.FromResult(true);
+        }
+
+        public virtual Task<string> GetCacheMD5Async(IConfigurationItemDto dto)
+        {
+            var json = JsonConvert.SerializeObject(dto);
+            var md5 = json.ToMd5Fingerprint();
+            return Task.FromResult(md5);
         }
     }
 }

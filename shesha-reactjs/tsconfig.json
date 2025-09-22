@@ -63,6 +63,12 @@
   "references": [
     {
       "path": "./src/configuration-studio"
+    },
+    {
+      "path": "src/providers/referenceListDispatcher"
+    },
+    {
+      "path": "src/providers/metadataDispatcher"
     }
   ]
 }

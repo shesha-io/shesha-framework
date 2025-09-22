@@ -41,22 +41,22 @@ export const hasDynamicFilter = (filters: IStoredFilter[]) => {
 
 export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSorting => {
   switch (value) {
-    case 0:
-      return 'asc';
-    case 1:
-      return 'desc';
-    default:
-      return null;
+  case 0:
+    return 'asc';
+  case 1:
+    return 'desc';
+  default:
+    return null;
   }
 };
 export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirection => {
   switch (value) {
-    case 'asc':
-      return 0;
-    case 'desc':
-      return 1;
-    default:
-      return null;
+  case 'asc':
+    return 0;
+  case 'desc':
+    return 1;
+  default:
+    return null;
   }
 };
 
@@ -83,12 +83,12 @@ export const getDuration = (value: any): Duration => {
 
 const convertFilterValue = (value: any, column: ITableDataColumn): any => {
   switch (column?.dataType) {
-    case 'date':
-      return getMoment(value, ADVANCEDFILTER_DATE_FORMAT)?.format();
-    case 'date-time':
-      return getMoment(value, ADVANCEDFILTER_DATETIME_FORMAT)?.format();
-    case 'time':
-      return getDuration(value)?.asSeconds();
+  case 'date':
+    return getMoment(value, ADVANCEDFILTER_DATE_FORMAT)?.format();
+  case 'date-time':
+    return getMoment(value, ADVANCEDFILTER_DATETIME_FORMAT)?.format();
+  case 'time':
+    return getDuration(value)?.asSeconds();
   }
   return value;
 };
@@ -115,44 +115,44 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
       }
 
       switch (filterOption) {
-        case 'equals':
+      case 'equals':
+        return {
+          '==': [property, filterValues],
+        };
+      case 'contains':
+        return column.dataType === 'string'
+          ? { in: [filterValues, property] /* for strings arguments are reversed */ }
+          : { in: [property, filterValues] };
+      case 'greaterThan':
+        return {
+          '>': [property, filterValues],
+        };
+      case 'after':
+        return {
+          '>': [property, filterValues],
+        };
+      case 'lessThan':
+        return {
+          '<': [property, filterValues],
+        };
+      case 'before':
+        return {
+          '<': [property, filterValues],
+        };
+      case 'startsWith':
+        return {
+          startsWith: [property, filterValues],
+        };
+      case 'endsWith':
+        return {
+          endsWith: [property, filterValues],
+        };
+      case 'between':
+        if (Array.isArray(filterValues) && filterValues.length === 2) {
           return {
-            '==': [property, filterValues],
+            '<=': [filterValues[0], property, filterValues[1]],
           };
-        case 'contains':
-          return column.dataType === 'string'
-            ? { in: [filterValues, property] /* for strings arguments are reversed */ }
-            : { in: [property, filterValues] };
-        case 'greaterThan':
-          return {
-            '>': [property, filterValues],
-          };
-        case 'after':
-          return {
-            '>': [property, filterValues],
-          };
-        case 'lessThan':
-          return {
-            '<': [property, filterValues],
-          };
-        case 'before':
-          return {
-            '<': [property, filterValues],
-          };
-        case 'startsWith':
-          return {
-            startsWith: [property, filterValues],
-          };
-        case 'endsWith':
-          return {
-            endsWith: [property, filterValues],
-          };
-        case 'between':
-          if (Array.isArray(filterValues) && filterValues.length === 2) {
-            return {
-              '<=': [filterValues[0], property, filterValues[1]],
-            };
-          } else console.error(`argument of the '${f.filterOption}' filter option must be an array with two values`);
+        } else console.error(`argument of the '${f.filterOption}' filter option must be an array with two values`);
       }
 
       console.error('operator is not supported: ' + f.filterOption);
@@ -335,26 +335,26 @@ const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[
 
 export const getCurrentSorting = (state: IDataTableStateContext, groupingSupported: boolean): IColumnSorting[] => {
   switch (state.sortMode) {
-    case 'standard': {
-      if (groupingSupported && state.grouping && state.grouping.length > 0) {
-        const groupSorting = state.grouping.map<IColumnSorting>((item) => ({
-          id: item.propertyName,
-          desc: item.sorting === 'desc',
-        }));
-        if (state.sortMode === 'standard' && state.standardSorting.length > 0) {
-          state.standardSorting.forEach((item) => {
-            if (!groupSorting.find((c) => c.id === item.id)) groupSorting.push(item);
-          });
-        }
-        return groupSorting;
+  case 'standard': {
+    if (groupingSupported && state.grouping && state.grouping.length > 0) {
+      const groupSorting = state.grouping.map<IColumnSorting>((item) => ({
+        id: item.propertyName,
+        desc: item.sorting === 'desc',
+      }));
+      if (state.sortMode === 'standard' && state.standardSorting.length > 0) {
+        state.standardSorting.forEach((item) => {
+          if (!groupSorting.find((c) => c.id === item.id)) groupSorting.push(item);
+        });
       }
+      return groupSorting;
+    }
 
-      const userSorting = getEffectiveUserSorting(state);
-      return userSorting && userSorting.length > 0 ? userSorting : state.standardSorting;
-    }
-    case 'strict': {
-      return [{ id: state.strictSortBy, desc: state.strictSortOrder === 'desc' }];
-    }
+    const userSorting = getEffectiveUserSorting(state);
+    return userSorting && userSorting.length > 0 ? userSorting : state.standardSorting;
+  }
+  case 'strict': {
+    return [{ id: state.strictSortBy, desc: state.strictSortOrder === 'desc' }];
+  }
   }
   return [];
 };

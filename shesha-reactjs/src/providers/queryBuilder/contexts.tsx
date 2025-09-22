@@ -16,7 +16,7 @@ export interface IQueryBuilderActionsContext {
 }
 
 export const QUERY_BUILDER_CONTEXT_INITIAL_STATE: IQueryBuilderStateContext = {
-  fields: [],  
+  fields: [],
 };
 
 export const QueryBuilderStateContext = createNamedContext<IQueryBuilderStateContext>(QUERY_BUILDER_CONTEXT_INITIAL_STATE, "QueryBuilderStateContext");

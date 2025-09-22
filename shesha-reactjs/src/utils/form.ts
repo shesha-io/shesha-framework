@@ -2,7 +2,6 @@ import { FormInstance } from 'antd';
 import { YesNoInherit } from '@/interfaces/formDesigner';
 import { FormIdentifier, FormMode } from '@/providers/form/models';
 import { isFormFullName, isFormRawId } from '@/providers/form/utils';
-import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
 import { isNumeric } from './string';
 
 interface IDataWithFields {
@@ -51,7 +50,7 @@ export function addFormFieldsList<TData = any>(
   return { _formFields: allFields, ...formData, ...nonFormData };
 }
 
-export const getFormFullName = (moduleName: string, name: string) => {
+export const getFormFullName = (moduleName: string | null, name: string) => {
   return moduleName ? `${moduleName}/${name}` : name;
 };
 
@@ -135,16 +134,14 @@ export const evaluateYesNo = (
   return false;
 };
 
-export const getFormCacheKey = (formId: FormIdentifier, configurationItemMode: ConfigurationItemsViewMode): string => {
+export const getFormCacheKey = (formId: FormIdentifier): string => {
   const formKey = isFormRawId(formId)
     ? formId
     : isFormFullName(formId)
       ? `${formId.module}/${formId.name}`
       : undefined;
 
-  return formKey
-    ? `${formKey}:${configurationItemMode}`
-    : undefined;
+  return formKey;
 };
 
 /**
