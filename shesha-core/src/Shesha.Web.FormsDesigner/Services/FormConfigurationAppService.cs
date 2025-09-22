@@ -19,7 +19,9 @@ using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Dtos;
+using Shesha.Web.FormsDesigner.Dtos.Forms;
 using Shesha.Web.FormsDesigner.Exceptions;
+using Shesha.Web.FormsDesigner.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,20 +32,26 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
-    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationDto, UpdateFormConfigurationDto, GetFormByIdInput>
+    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
+        private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
+        private readonly IFormManager _formManager;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public FormConfigurationAppService(
             IRepository<FormConfiguration, Guid> repository,
             IRepository<Module, Guid> moduleRepository,
+            IRepository<ConfigurationItemFolder, Guid> folderRepository,
+            IFormManager formManager,
             IConfigurationItemClientSideCache clientSideCache,
             IPermissionedObjectManager permissionedObjectManager
         ) : base(repository)
         {
             _moduleRepository = moduleRepository;
+            _folderRepository = folderRepository;
+            _formManager = formManager;
             _clientSideCache = clientSideCache;
             _permissionedObjectManager = permissionedObjectManager;
         }
@@ -92,6 +100,32 @@ namespace Shesha.Web.FormsDesigner.Services
         protected override FormConfigurationDto MapToEntityDto(FormConfiguration entity)
         {
             return AsyncHelper.RunSync(() => MapToEntityDtoAsync(entity));
+        }
+
+        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationRequest input)
+        {
+            var module = await _moduleRepository.GetAsync(input.ModuleId);
+            module.EnsureEditable();
+
+            var folder = input.FolderId != null
+                ? await _folderRepository.GetAsync(input.FolderId.Value)
+                : null;
+
+            var formInput = new CreateFormInput
+            {
+                Module = module,
+                Folder = folder,
+                Name = input.Name,
+                Description = input.Description,
+                Label = input.Label,
+                Markup = input.Markup,
+                ModelType = input.ModelType,
+                GenerationLogicExtensionJson = input.GenerationLogicExtensionJson,
+                TemplateId = input.TemplateId,
+            };
+
+            var form = await _formManager.CreateFormAsync(formInput);
+            return await MapToEntityDtoAsync(form);
         }
         
         protected async Task<FormConfigurationDto> MapToEntityDtoAsync(FormConfiguration entity)
@@ -324,7 +358,10 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.Description = input.Description;
             entity.Markup = input.Markup;
             entity.ModelType = input.ModelType;
-
+            entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
+            entity.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            entity.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            entity.PlaceholderIcon = input.PlaceholderIcon;
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return await MapToEntityDtoAsync(entity);

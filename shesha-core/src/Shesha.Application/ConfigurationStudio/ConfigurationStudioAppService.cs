@@ -121,7 +121,8 @@ namespace Shesha.ConfigurationStudio
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
 
-            var item = await manager.CreateItemAsync(new ConfigurationItems.Models.CreateItemInput() {
+            var item = await manager.CreateItemAsync(new ConfigurationItems.Models.CreateItemInput
+            {
                 Module = module,
                 Folder = folder,
                 Name = request.Name,

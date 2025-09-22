@@ -8,7 +8,10 @@ export interface IEditViewMsgProps {
 }
 
 export const EditViewMsg: FC<IEditViewMsgProps> = ({ persistedFormProps }) => {
-  if (!persistedFormProps) {
+  // Always show the edit button, even if form details aren't available yet
+  const hasFormDetails = persistedFormProps && persistedFormProps.name;
+  
+  if (!hasFormDetails) {
     return (
       <div className="sha-configurable-view-button-wrapper lite">
         <Button title="Edit view" shape="default" icon={<RebaseEditOutlined />} />

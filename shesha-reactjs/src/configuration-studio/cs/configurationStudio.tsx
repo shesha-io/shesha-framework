@@ -725,6 +725,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     const response = await this.modalApi.showModalFormAsync<CreateItemResponse>({
       title: `Create ${definition.friendlyName}`,
       formId: definition.createFormId,
+      footerButtons: definition.editor?.createModalFooterButtons ?? 'default',
       formArguments: {
         moduleId: moduleId,
         folderId: folderId,

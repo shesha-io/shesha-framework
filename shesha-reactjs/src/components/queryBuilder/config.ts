@@ -40,26 +40,36 @@ const types = {
   specification: SpecificationType,
   "strict-boolean": StrictBoolean,
   guid: GuidType,
+  javascript: {
+    ...standardTypes.text,
+    defaultWidget: 'javascript',
+    widgets: {
+      javascript: {
+        widgetProps: {},
+        opProps: {},
+      }
+    }
+  },
 };
 
 const typeModifiers: IDictionary<TypeModifier> = {
   'boolean': {
-    valueSources: standardSourceTypes,  
+    valueSources: standardSourceTypes,
   },
   'date': {
-    valueSources: standardSourceTypes,  
+    valueSources: standardSourceTypes,
   },
   'datetime': {
-    valueSources: standardSourceTypes,  
+    valueSources: standardSourceTypes,
   },
   'time': {
-    valueSources: standardSourceTypes,  
+    valueSources: standardSourceTypes,
   },
   'number': {
-    valueSources: standardSourceTypes,  
+    valueSources: standardSourceTypes,
   },
   'text': {
-    valueSources: standardSourceTypes,  
+    valueSources: standardSourceTypes,
     operators: [
       'equal',
       'not_equal',
@@ -69,6 +79,15 @@ const typeModifiers: IDictionary<TypeModifier> = {
       'not_like',
       'starts_with',
       'ends_with',
+    ]
+  },
+  'javascript': {
+    valueSources: ['value'],
+    operators: [
+      'equal',
+      'not_equal',
+      'is_empty',
+      'is_not_empty',
     ]
   },
 };

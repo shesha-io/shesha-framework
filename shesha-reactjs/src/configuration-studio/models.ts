@@ -2,6 +2,7 @@ import { FormFullName } from "@/interfaces";
 import { DataNode } from "antd/lib/tree";
 import { PropsWithChildren, ReactNode } from "react";
 import { isDefined } from "./types";
+import { ModalFooterButtons } from "@/providers/dynamicModal/models";
 
 export type ForceRenderFunc = () => void;
 
@@ -168,6 +169,7 @@ export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstanc
   Provider: ProviderRenderer<TDoc>;
   Toolbar: ItemEditorRenderer<TDoc>;
   documentInstanceFactory: DocumentInstanceFactory;
+  createModalFooterButtons?: ModalFooterButtons;
 };
 
 export type DocumentDefinitions = Map<string, DocumentDefinition>;

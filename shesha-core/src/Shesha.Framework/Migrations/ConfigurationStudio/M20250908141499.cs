@@ -8,6 +8,35 @@ namespace Shesha.Migrations.ConfigurationStudio
     {
         public override void Up()
         {
+			IfDatabase("SqlServer").Execute.Sql(@"update 
+	ec
+set
+	accessor = rev.accessor,
+	generate_app_service = rev.generate_app_service,
+	properties_md5 = rev.properties_md5,
+	source_lkp = rev.source_lkp,
+	type_short_alias = rev.type_short_alias,
+	view_configurations = rev.view_configurations
+from
+	frwk.entity_configs ec
+	inner join frwk.configuration_items ci on ci.id = ec.id
+	inner join frwk.entity_config_revisions rev on rev.id = ci.latest_revision_id
+");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"UPDATE frwk.entity_configs AS ec
+SET
+    accessor = rev.accessor,
+    generate_app_service = rev.generate_app_service,
+    properties_md5 = rev.properties_md5,
+    source_lkp = rev.source_lkp,
+    type_short_alias = rev.type_short_alias,
+    view_configurations = rev.view_configurations
+FROM
+    frwk.configuration_items ci
+    INNER JOIN frwk.entity_config_revisions rev ON rev.id = ci.latest_revision_id
+WHERE
+    ci.id = ec.id;");
+
             Execute.Sql(@"insert into
 	frwk.form_configurations
 	(id, markup, is_template, model_type)
@@ -54,6 +83,27 @@ from
 where
 	ci.item_type = 'reference-list'
 	and not exists (select 1 from frwk.reference_lists where id = ci.id)");
+
+			IfDatabase("SqlServer").Execute.Sql(@"update
+	item
+set
+	reference_list_id = ci.id
+from
+	frwk.reference_list_items item
+	inner join frwk.configuration_item_revisions rev on rev.id = item.reference_list_revision_id
+	inner join frwk.configuration_items ci on ci.latest_revision_id = rev.id
+where
+	item.reference_list_id is null");
+
+			IfDatabase("PostgreSql").Execute.Sql(@"UPDATE frwk.reference_list_items AS item
+SET
+    reference_list_id = ci.id
+FROM
+    frwk.configuration_item_revisions rev
+    INNER JOIN frwk.configuration_items ci ON ci.latest_revision_id = rev.id
+WHERE
+    item.reference_list_revision_id = rev.id
+    AND item.reference_list_id IS NULL");
 
             Execute.Sql(@"update
 	frwk.entity_properties

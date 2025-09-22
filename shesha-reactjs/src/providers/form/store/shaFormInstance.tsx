@@ -31,7 +31,7 @@ import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
+import { DataContextTopLevels, isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
@@ -790,21 +790,21 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
         forceUpdate({});
       };
 
-      const instance = new ShaFormInstance({
-        forceRootUpdate: forceReRender,
-        formManager: formManager,
-        dataLoaders: dataLoaders,
-        dataSubmitters: dataSubmitters,
-        antdForm: antdFormInstance,
-        metadataDispatcher: metadataDispatcher,
-      });
-      const accessors = wrapConstantsData({
-        topContextId: 'full',
-        fullContext,
-        shaForm: instance,
-        queryStringGetter: getQueryParams,
-      });
-      const allConstants = makeObservableProxy<IApplicationContext>(accessors);
+            const instance = new ShaFormInstance({
+                forceRootUpdate: forceReRender,
+                formManager: formManager,
+                dataLoaders: dataLoaders,
+                dataSubmitters: dataSubmitters,
+                antdForm: antdFormInstance,
+                metadataDispatcher: metadataDispatcher,
+            });
+            const accessors = wrapConstantsData({
+                topContextId: DataContextTopLevels.Full,
+                fullContext,
+                shaForm: instance,
+                queryStringGetter: getQueryParams,
+            });
+            const allConstants = makeObservableProxy<IApplicationContext>(accessors);
 
       const expressionExecuter = (expression: string, data: any = null) => {
         // get formApi here and pass to caller
