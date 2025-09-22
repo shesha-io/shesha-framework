@@ -5,8 +5,9 @@ import { PropertyMetadataDto } from "@/apis/metadata";
 import { DataTypes } from "@/interfaces/dataTypes";
 import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent } from "@/index";
 import { nanoid } from "@/utils/uuid";
-import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y, ROW_COUNT } from "../constants";
+import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y, COLUMN_WIDTH_BOOLEAN, COLUMN_WIDTH_DATE, COLUMN_WIDTH_DEFAULT, COLUMN_WIDTH_ENTITY_REFERENCE, COLUMN_WIDTH_FILE, COLUMN_WIDTH_NUMBER, COLUMN_WIDTH_REFERENCE_LIST_ITEM, COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
+import pluralize from 'pluralize';
 
 export function findContainersWithPlaceholderRecursive(
   token: any,
@@ -42,6 +43,14 @@ export function findContainersWithPlaceholder(markup: any, placeholder: string):
   return containers;
 }
 
+/**
+ * Casts the provided data to the specified extension type T.
+ * Throws an error if the data is not an object.
+ * @template T The target type to cast to.
+ * @param data The data to cast.
+ * @returns The data cast to type T.
+ * @throws {Error} If the data is not an object.
+ */
 export function castToExtensionType<T>(data: unknown): T {
     if (!data || typeof data !== 'object') {
         throw new Error(`Invalid extension data: expected object, got ${typeof data}`);
@@ -49,34 +58,93 @@ export function castToExtensionType<T>(data: unknown): T {
         return data as T;
 }
 
+/**
+ * Converts a technical model type name to a user-friendly pluralized form
+ * @param modelType The fully qualified model type name (e.g. "Shesha.Domain.Person")
+ * @returns A humanized and pluralized string (e.g. "People" for "Person")
+ */
 export function humanizeModelType(modelType: string): string {
   if (!modelType) return '';
+  
+  // Extract the class name from the fully qualified name
   const parts = modelType.split('.');
   const name = parts[parts.length - 1];
-  return name?.replace(/([A-Z])/g, ' $1').trim() || '';
+  
+  // Convert from PascalCase to space-separated words (e.g. "PersonAddress" -> "Person Address")
+  const humanized = name?.replace(/([A-Z])/g, ' $1').trim() || '';
+  
+  // Handle empty string case
+  if (!humanized) return '';
+  
+  // Use pluralize library to handle all pluralization rules
+  return pluralize(humanized);
 }
 
 export function processBaseMarkup(markup: string, replacements: Record<string, any>): string {
     return evaluateString(markup, replacements, true);
 }
 
-function getDataTypePriority(dataType: string | null | undefined, dataFormat?: string | null): number {
+export function getDataTypePriority(dataType: string | null | undefined, dataFormat?: string | null): number {
   if (!dataType) return 99;
   
   switch (dataType) {
     case DataTypes.string:
       // Handle multiline strings separately
       return dataFormat === 'multiline' ? 6 : 1;
-    case DataTypes.number:
+    case DataTypes.referenceListItem:
       return 2;
     case DataTypes.boolean:
       return 3;
-    case DataTypes.referenceListItem:
+    case DataTypes.number:
       return 4;
     case DataTypes.entityReference:
       return 5;
     default:
       return 99; // Other data types have lower priority
+  }
+}
+
+/**
+ * Gets sensible column width ranges based on data type
+ * @param dataType The data type to get width for
+ * @param dataFormat Optional data format for the data type
+ * @returns Object containing min and max width values
+ */
+export function getColumnWidthByDataType(dataType: string | null | undefined, dataFormat?: string | null): { min: number; max: number } {
+  if (!dataType) return COLUMN_WIDTH_DEFAULT; // Default values
+  
+  switch (dataType) {
+    case DataTypes.boolean:
+      return COLUMN_WIDTH_BOOLEAN;
+      
+    case DataTypes.number:
+      return COLUMN_WIDTH_NUMBER; 
+      
+    case DataTypes.date:
+    case DataTypes.dateTime:
+      return COLUMN_WIDTH_DATE;
+      
+    case DataTypes.time:
+      return COLUMN_WIDTH_TIME;
+      
+    case DataTypes.string:
+      if (dataFormat === 'multiline') {
+        return COLUMN_WIDTH_STRING_MULTILINE; 
+      } 
+
+      return COLUMN_WIDTH_STRING; 
+      
+    case DataTypes.referenceListItem:
+      return COLUMN_WIDTH_REFERENCE_LIST_ITEM;
+      
+    case DataTypes.entityReference:
+      return COLUMN_WIDTH_ENTITY_REFERENCE; 
+      
+    case DataTypes.file:
+      return COLUMN_WIDTH_FILE;
+      
+    default:
+      return COLUMN_WIDTH_REFERENCE_LIST_ITEM; 
   }
 };
 
