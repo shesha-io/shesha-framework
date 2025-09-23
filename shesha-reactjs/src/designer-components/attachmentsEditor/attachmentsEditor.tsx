@@ -121,7 +121,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
                 isDragger={model?.isDragger}
-                onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
                 filesLayout={model.filesLayout}
                 listType={model.listType}
