@@ -44,7 +44,6 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  removeFieldFromPayload?: boolean;
   container?: IStyleType;
   primaryColor?: string;
 }
@@ -164,8 +163,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, removeFieldFromPayload: true }))
-    .add<IAttachmentsEditorProps>(9, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' })),
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' })),
 };
 
 export default AttachmentsEditor;
