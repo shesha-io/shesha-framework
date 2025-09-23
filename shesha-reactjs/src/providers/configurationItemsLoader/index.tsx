@@ -1,38 +1,36 @@
 import localForage from 'localforage';
 import React, { FC, PropsWithChildren, useContext, useRef } from 'react';
-import { configurableComponentGetByName, configurableComponentUpdateSettings } from '@/apis/configurableComponent';
-import { entityConfigGetEntityConfigForm } from '@/apis/entityConfig';
-import { FormConfigurationDto, formConfigurationGet, formConfigurationGetByName } from '@/apis/formConfiguration';
-import { referenceListGetByName } from '@/apis/referenceList';
-import useThunkReducer from '@/hooks/thunkReducer';
+import { FormIdFullNameDtoAjaxResponse } from '@/apis/entityConfig';
+import { FormConfigurationDto, FormConfigurationGetByNameQueryParams, FormConfigurationGetQueryParams } from '@/apis/formConfiguration';
+import { ReferenceListItemDto, ReferenceListWithItemsDto } from '@/apis/referenceList';
 import { IDictionary } from '@/interfaces';
-import { IReferenceList, IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { FormIdentifier, useFormDesignerComponents, useSheshaApplication } from '@/providers';
+import { IReferenceList, IReferenceListIdentifier, IReferenceListItem } from '@/interfaces/referenceList';
+import { FormIdentifier, useFormDesignerComponents, useHttpClient } from '@/providers';
 import { MakePromiseWithState, PromisedValue } from '@/utils/promises';
-import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormMarkupWithSettings, IFormDto } from '../form/models';
 import { isFormFullName, isFormRawId } from '../form/utils';
 import { isValidRefListId } from '../referenceListDispatcher/utils';
 import {
-  CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE,
   ConfigurationItemsLoaderActionsContext,
-  ConfigurationItemsLoaderStateContext,
   IClearFormCachePayload,
   IConfigurationItemsLoaderActionsContext,
-  IConfigurationItemsLoaderStateContext,
   IGetComponentPayload,
   IGetFormPayload,
   IGetRefListPayload,
   IUpdateComponentPayload,
 } from './contexts';
-import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } from './models';
-import metadataReducer from './reducer';
+import { IFormsDictionary, IReferenceListsDictionary } from './models';
 import { getFormForbiddenMessage, getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
-import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
+import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { isDefined } from '@/configuration-studio/types';
+import { buildUrl } from '@/utils/url';
+import { HttpResponse } from '@/publicJsApis/httpClient';
+import axios from 'axios';
+import { IComponentSettings } from '../appConfigurator/models';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
-type StoragesDictionary = IDictionary<LocalForage>;
+type StoragesDictionary = IDictionary<LocalForage | undefined>;
 
 enum ItemTypes {
   ReferenceList = 'ref-lists',
@@ -40,14 +38,23 @@ enum ItemTypes {
   Component = 'components',
 }
 
-export interface IConfigurationItemsLoaderProviderProps { }
+const mapRefListItemDtoToRefListItem = (item: ReferenceListItemDto): IReferenceListItem => {
+  return {
+    color: item.color,
+    description: item.description,
+    id: item.id,
+    icon: item.icon,
+    item: item.item,
+    itemValue: item.itemValue,
+    orderIndex: item.orderIndex,
+    shortAlias: item.shortAlias,
+  };
+};
 
-const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItemsLoaderProviderProps>> = ({
+const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const initial: IConfigurationItemsLoaderStateContext = {
-    ...CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE,
-  };
+  const httpClient = useHttpClient();
 
   const designerComponents = useFormDesignerComponents();
 
@@ -62,38 +69,27 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
   const forms = useRef<IFormsDictionary>({});
   const referenceLists = useRef<IReferenceListsDictionary>({});
-  const components = useRef<IComponentsDictionary>({});
-
-  const [state] = useThunkReducer(metadataReducer, initial);
-
-  const { backendUrl, httpHeaders, applicationKey } = useSheshaApplication();
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const makeRefListLoadingKey = (payload: IGetRefListPayload): string => {
-    const { refListId, configurationItemMode } = payload;
-    if (!refListId || !refListId.name) return null;
-
-    const addMode = (key: string): string => {
-      return `${key}:${configurationItemMode}`;
-    };
-
-    return addMode(`${refListId.module}/${refListId.name}`);
+    const { refListId } = payload;
+    return `${refListId.module}/${refListId.name}`;
   };
 
-  const getMarkupFromResponse = (data: FormConfigurationDto): FormMarkupWithSettings => {
+  const getMarkupFromResponse = (data: FormConfigurationDto): FormMarkupWithSettings | null => {
     const markupJson = data.markup;
     return markupJson ? (JSON.parse(markupJson) as FormMarkupWithSettings) : null;
   };
 
-  const getCacheKeyByFullName = (mode: string, module: string, name: string): string => {
-    return `${mode}:${module}:${name}`;
+  const getCacheKeyByFullName = (module: string | null, name: string): string => {
+    return `${module}:${name}`;
   };
-  const getCacheKeyByRawId = (mode: string, rawId: string): string => {
-    return `${mode}:${rawId}`;
+  const getCacheKeyByRawId = (rawId: string): string => {
+    return `${rawId}`;
   };
 
-  const getFromCache = <TDto extends any>(itemType: ItemTypes, key: string): Promise<TDto> => {
+  const getFromCache = <TDto = unknown>(itemType: ItemTypes, key: string): Promise<TDto | null> => {
     const cacheStorage = getStorage(itemType);
     return key
       ? cacheStorage.getItem<TDto>(key).catch((e) => {
@@ -103,15 +99,14 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       : Promise.resolve(null);
   };
 
-  const addToCache = (itemType: ItemTypes, cacheKey: string, data: any) => {
-    if (!cacheKey) return;
+  const addToCache = <T = unknown>(itemType: ItemTypes, cacheKey: string, data: T): void => {
+    if (!cacheKey) throw new Error("Cache key can't be empty");
 
     const cacheStorage = getStorage(itemType);
-    if (data) {
-      cacheStorage.setItem(cacheKey, data).catch((e) => {
-        console.warn(`Failed to cache configuration item with key '${cacheKey}'`, e);
-      });
-    } else cacheStorage.removeItem(cacheKey);
+
+    cacheStorage.setItem(cacheKey, data).catch((e) => {
+      console.warn(`Failed to cache configuration item with key '${cacheKey}'`, e);
+    });
   };
 
   const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto): IFormDto => {
@@ -120,22 +115,17 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     const result: IFormDto = {
       id: dto.id,
       name: dto.name,
-
       module: dto.module,
       label: dto.label,
       description: dto.description,
       modelType: dto.modelType,
-      versionNo: dto.versionNo,
-      versionStatus: dto.versionStatus,
-      isLastVersion: dto.isLastVersion,
-
-      markup: markupWithSettings?.components,
-      settings: markupWithSettings?.formSettings,
+      markup: markupWithSettings?.components ?? null,
+      settings: markupWithSettings?.formSettings ?? null,
     };
 
     if (result.settings) {
       // there can be string for some old forms
-      const rawAccess = result.settings.access ?? dto?.access; // string | number | undefined
+      const rawAccess = result.settings.access ?? dto.access;
       let normalizedAccess: number;
       if (typeof rawAccess === 'string') {
         const parsed = parseInt(rawAccess, 10);
@@ -146,29 +136,24 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
         normalizedAccess = 3;
       }
       result.settings.access = normalizedAccess;
-      result.settings.permissions = result.settings.permissions ?? dto?.permissions ?? [];
+      result.settings.permissions = result.settings.permissions ?? dto.permissions ?? [];
     }
 
     return result;
   };
 
-  const configModeOrDefault = (mode?: ConfigurationItemsViewMode): ConfigurationItemsViewMode => {
-    return mode ?? 'live';
-  };
-
-  const getFormCacheKey = (formId: FormIdentifier, configurationItemMode?: ConfigurationItemsViewMode): string => {
-    return isFormFullName(formId)
-      ? getCacheKeyByFullName(configModeOrDefault(configurationItemMode), formId.module, formId.name)
-      : isFormRawId(formId)
-        ? getCacheKeyByRawId(configModeOrDefault(configurationItemMode), formId)
-        : null;
+  const getFormCacheKey = (formId: FormIdentifier): string => {
+    if (isFormFullName(formId))
+      return getCacheKeyByFullName(formId.module, formId.name);
+    if (isFormRawId(formId))
+      return getCacheKeyByRawId(formId);
+    throw new Error('Unsupported form identifier', formId);
   };
 
   const getRefListCacheKey = (
     listId: IReferenceListIdentifier,
-    configurationItemMode?: ConfigurationItemsViewMode
   ): string => {
-    return getCacheKeyByFullName(configModeOrDefault(configurationItemMode), listId.module, listId.name);
+    return getCacheKeyByFullName(listId.module, listId.name);
   };
 
   const getRefList = (payload: IGetRefListPayload): PromisedValue<IReferenceList> => {
@@ -180,58 +165,48 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       if (loadedRefList) return loadedRefList; // TODO: check for rejection
     }
 
-    const { refListId, configurationItemMode } = payload;
+    const { refListId } = payload;
 
     const refListPromise = new Promise<IReferenceList>((resolve, reject) => {
       if (!isValidRefListId(refListId)) reject('Reference List identifier must be specified');
 
-      const cacheKey = getRefListCacheKey(refListId, configurationItemMode);
+      const cacheKey = getRefListCacheKey(refListId);
 
       getFromCache<IReferenceList>(ItemTypes.ReferenceList, cacheKey).then((cachedDto) => {
-        const promise = referenceListGetByName(
-          { module: refListId.module, name: refListId.name, md5: cachedDto?.cacheMd5 },
-          { base: backendUrl, headers: httpHeaders /*, responseConverter*/ }
-        );
+        const url = `/api/services/app/ReferenceList/GetByName?module=${refListId.module}&name=${refListId.name}&md5=${cachedDto?.cacheMd5}`;
+        const promise = httpClient.get<IAjaxResponse<ReferenceListWithItemsDto>>(url);
 
         promise
-          .then((response) => {
-            // TODO: handle not changed
-            if (response.success) {
+          .then((httpResponse) => {
+            const response = httpResponse.data;
+            if (isAjaxSuccessResponse(response)) {
               const responseData = response.result;
-              if (!responseData) throw 'Failed to fetch reference list. Response is empty';
-
               const dto: IReferenceList = {
                 name: responseData.name,
-                items: [...responseData.items],
+                items: responseData.items.map((item) => mapRefListItemDtoToRefListItem(item)),
               };
               addToCache(ItemTypes.ReferenceList, cacheKey, responseData);
-
               resolve(dto);
-            } else {
-              const rawResponse = response as Response;
-              if (rawResponse && rawResponse.status === 304) {
+            }
+          }
+          )
+          .catch((e) => {
+            if (axios.isAxiosError(e)) {
+              switch (e.status) {
+              case 304:
                 // code 304 indicates that the content ws not modified - use cached value
-                resolve(cachedDto);
-              } else {
-                const httpResponse = response as Response;
-
-                const error = response.error ?? {
-                  code: httpResponse?.status,
-                  message:
-                    httpResponse?.status === 404
-                      ? getReferenceListNotFoundMessage(refListId)
-                      : httpResponse?.statusText,
-                };
-
-                reject(error);
+                if (cachedDto)
+                  resolve(cachedDto);
+                else
+                  reject(new Error('Unknown cache error', { cause: e }));
+                return;
+              case 404:
+                reject({ code: e.status, message: getReferenceListNotFoundMessage(refListId) });
+                return;
               }
             }
-          })
-          .catch((e) => {
             reject(e);
           });
-
-        return promise;
       });
     });
 
@@ -241,86 +216,92 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     return promiseWithState;
   };
 
-  const getCachedForm = (payload: IGetFormPayload): Promise<IFormDto> => {
+  const getCachedForm = (payload: IGetFormPayload): Promise<IFormDto> | null => {
     // create a key
-    const key = getFormCacheKey(payload.formId, payload.configurationItemMode);
+    const key = getFormCacheKey(payload.formId);
 
     if (!payload.skipCache) {
       const loadedForm = forms.current[key];
-      if (loadedForm) return loadedForm; // TODO: check for rejection
+      if (isDefined(loadedForm)) return loadedForm; // TODO: check for rejection
     }
     return null;
   };
 
+  const getFormByName = (queryParams: FormConfigurationGetByNameQueryParams): Promise<HttpResponse<IAjaxResponse<FormConfigurationDto>>> => {
+    const url = buildUrl(`/api/services/Shesha/FormConfiguration/GetByName`, queryParams);
+    return httpClient.get<IAjaxResponse<FormConfigurationDto>>(url);
+  };
+
+  const getFormById = (queryParams: FormConfigurationGetQueryParams): Promise<HttpResponse<IAjaxResponse<FormConfigurationDto>>> => {
+    const url = buildUrl(`/api/services/Shesha/FormConfiguration/Get`, queryParams);
+    return httpClient.get<IAjaxResponse<FormConfigurationDto>>(url);
+  };
+
   const getForm = (payload: IGetFormPayload): Promise<IFormDto> => {
-    // create a key
-    const key = getFormCacheKey(payload.formId, payload.configurationItemMode);
+    const key = getFormCacheKey(payload.formId);
 
     if (!payload.skipCache) {
       const loadedForm = forms.current[key];
-      if (loadedForm) return loadedForm; // TODO: check for rejection
+      if (isDefined(loadedForm)) return loadedForm; // TODO: check for rejection
     }
 
-    const { formId, configurationItemMode } = payload;
+    const { formId } = payload;
 
     const formPromise = new Promise<IFormDto>((resolve, reject) => {
       if (!isFormRawId(formId) && !isFormFullName(formId)) reject('Form identifier must be specified');
 
-      const cacheKey = getFormCacheKey(formId, configurationItemMode);
-      const headers = {...httpHeaders, [SheshaHttpHeaders.ConfigItemsMode]: configurationItemMode };      
+      const cacheKey = getFormCacheKey(formId);
 
       getFromCache<FormConfigurationDto>(ItemTypes.Form, cacheKey).then((cachedDto) => {
         const promise = isFormFullName(formId)
-          ? formConfigurationGetByName(
+          ? getFormByName(
             {
               name: formId.name,
               module: formId.module,
-              version: formId.version,
-              md5: cachedDto?.cacheMd5,
-            },
-            { base: backendUrl, headers: headers }
+              md5: cachedDto?.cacheMd5 ?? null,
+            }
           )
           : isFormRawId(formId)
-            ? formConfigurationGet(
-              { id: formId, md5: cachedDto?.cacheMd5 },
-              { base: backendUrl, headers: headers }
+            ? getFormById(
+              { id: formId, md5: cachedDto?.cacheMd5 ?? null },
             )
             : Promise.reject('Form identifier must be specified');
 
         promise
-          .then((response) => {
-            // TODO: handle not changed
-            if (response.success) {
+          .then((httpResponse) => {
+            const response = httpResponse.data;
+
+            if (isAjaxSuccessResponse(response)) {
               const responseData = response.result;
-              if (!responseData) throw 'Failed to fetch form. Response is empty';
+              if (!isDefined(responseData)) throw 'Failed to fetch form. Response is empty';
 
               const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(responseData), designerComponents);
               addToCache(ItemTypes.Form, cacheKey, responseData);
 
               resolve(dto);
             } else {
-              const rawResponse = response as Response;
-              if (rawResponse && rawResponse.status === 304) {
-                // code 304 indicates that the content ws not modified - use cached value
-                const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto), designerComponents);
-                resolve(dto);
-              } else {
-                const httpResponse = response as Response;
-
-                const error = response.error ?? {
-                  code: httpResponse?.status,
-                  message: httpResponse?.status === 404
-                    ? getFormNotFoundMessage(formId) 
-                    : httpResponse?.status === 401 || httpResponse?.status === 403
-                      ? getFormForbiddenMessage(formId)
-                      : httpResponse?.statusText,
-                };
-
-                reject(error);
-              }
+              reject(response.error);
             }
           })
           .catch((e) => {
+            if (axios.isAxiosError(e)) {
+              switch (e.status) {
+              case 304:
+                if (cachedDto) {
+                  const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto), designerComponents);
+                  resolve(dto);
+                } else
+                  reject(new Error('Unknown cache error', { cause: e }));
+                return;
+              case 404:
+                reject({ code: e.status, message: getFormNotFoundMessage(formId) });
+                return;
+              case 401:
+              case 403:
+                reject({ code: e.status, message: getFormForbiddenMessage(formId) });
+                return;
+              }
+            }
             reject(e);
           });
       });
@@ -330,118 +311,26 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     return formPromise;
   };
 
-  const prefixWithAppKey = (cacheKey: string): string => {
-    return cacheKey && applicationKey ? applicationKey + '/' + cacheKey : cacheKey;
+  const getComponent = (_payload: IGetComponentPayload): PromisedValue<IComponentSettings> => {
+    throw new Error('Not implemented');
   };
 
-  const getComponentCacheKey = (name: string, isApplicationSpecific: boolean): string => {
-    const key = name ? `${name.toLowerCase()}` : null;
-    return isApplicationSpecific ? prefixWithAppKey(key) : key;
+  const updateComponent = (_payload: IUpdateComponentPayload): Promise<void> => {
+    throw new Error('Not implemented');
   };
 
-  const clearComponentCache = (name: string) => {
-    delete components.current[name.toLocaleLowerCase()];
+  const clearFormCache = (payload: IClearFormCachePayload): void => {
+    const cacheKey = getFormCacheKey(payload.formId);
+
+    delete forms.current[cacheKey];
   };
 
-  const getComponent = (payload: IGetComponentPayload) => {
-    if (!payload.name) MakePromiseWithState(Promise.reject('Name must be specified'));
+  const getEntityFormId = async (className: string, formType: string): Promise<FormFullName> => {
+    const url = buildUrl('/api/services/app/EntityConfig/GetEntityConfigForm', { entityConfigName: className, typeName: formType });
 
-    // create a key
-    const key = payload.name.toLowerCase();
-
-    if (!payload.skipCache) {
-      const loadedComponent = components.current[key];
-      if (loadedComponent) return loadedComponent; // TODO: check for rejection
-    }
-
-    const { name, isApplicationSpecific } = payload;
-
-    const componentPromise = new Promise<IComponentSettings>((resolve, reject) => {
-      const cacheKey = getComponentCacheKey(payload.name, payload.isApplicationSpecific);
-      getFromCache<IComponentSettings>(ItemTypes.Component, cacheKey).then((cachedDto) => {
-        const promise = configurableComponentGetByName(
-          { name: name, md5: cachedDto?.cacheMd5, isApplicationSpecific },
-          { base: backendUrl, headers: httpHeaders /*, responseConverter*/ }
-        );
-
-        promise
-          .then((response) => {
-            // TODO: handle not changed
-            if (response.success) {
-              const responseData = response.result;
-              if (!responseData) throw 'Failed to fetch component. Response is empty';
-
-              const settings = responseData.settings ? JSON.parse(responseData.settings) : null;
-              const dto: IComponentSettings = {
-                ...responseData,
-                settings: settings,
-              };
-              addToCache(ItemTypes.Component, cacheKey, dto);
-
-              resolve(dto);
-            } else {
-              const rawResponse = response as Response;
-              if (rawResponse && rawResponse.status === 304) {
-                // code 304 indicates that the content ws not modified - use cached value
-                resolve(cachedDto);
-              } else {
-                const httpResponse = response as Response;
-
-                const error = response.error ?? {
-                  code: httpResponse?.status,
-                  message: httpResponse?.status === 404 ? `Component ${name} not found` : httpResponse?.statusText,
-                };
-
-                reject(error);
-              }
-            }
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      });
-    });
-    const promiseWithState = MakePromiseWithState(componentPromise);
-    components.current[key] = promiseWithState;
-
-    return promiseWithState;
-  };
-
-  const updateComponent = (payload: IUpdateComponentPayload) => {
-    const jsonSettings = payload.settings ? JSON.stringify(payload.settings) : null;
-
-    return configurableComponentUpdateSettings(
-      {
-        module: null,
-        name: payload.name,
-        isApplicationSpecific: payload.isApplicationSpecific,
-        settings: jsonSettings,
-      },
-      { base: backendUrl, headers: httpHeaders }
-    ).then((response) => {
-      clearComponentCache(payload.name);
-      return response;
-    });
-  };
-
-  const clearFormCache = (payload: IClearFormCachePayload) => {
-    const modes: ConfigurationItemsViewMode[] = ['live', 'ready', 'latest'];
-    modes.forEach((mode) => {
-      const cacheKey = getFormCacheKey(payload.formId, mode);
-
-      delete forms.current[cacheKey];
-    });
-  };
-
-  const getEntityFormId = (className: string, formType: string) => {
-    return new Promise<FormFullName>((resolve) => {
-      entityConfigGetEntityConfigForm(
-        { entityConfigName: className, typeName: formType },
-        { base: backendUrl, headers: httpHeaders }
-      ).then((response) => {
-        if (response.success) resolve({ name: response.result.name, module: response.result.module });
-      });
-    });
+    const response = await httpClient.get<FormIdFullNameDtoAjaxResponse>(url);
+    const dto = extractAjaxResponse(response.data);
+    return { name: dto.name, module: dto.module };
   };
 
   const loaderActions: IConfigurationItemsLoaderActionsContext = {
@@ -455,49 +344,22 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
   };
 
   return (
-    <ConfigurationItemsLoaderStateContext.Provider value={state}>
-      <ConfigurationItemsLoaderActionsContext.Provider value={loaderActions}>
-        {children}
-      </ConfigurationItemsLoaderActionsContext.Provider>
-    </ConfigurationItemsLoaderStateContext.Provider>
+    <ConfigurationItemsLoaderActionsContext.Provider value={loaderActions}>
+      {children}
+    </ConfigurationItemsLoaderActionsContext.Provider>
   );
 };
 
-function useConfigurationItemsLoaderState(require: boolean) {
-  const context = useContext(ConfigurationItemsLoaderStateContext);
-
-  if (context === undefined && require) {
-    throw new Error('useConfigurationItemsLoaderState must be used within a ConfigurationItemsLoaderProvider');
-  }
-
-  return context;
-}
-
-function useConfigurationItemsLoaderActions(require: boolean) {
+const useConfigurationItemsLoader = (): IConfigurationItemsLoaderActionsContext => {
   const context = useContext(ConfigurationItemsLoaderActionsContext);
 
-  if (context === undefined && require) {
-    throw new Error('useConfigurationItemsLoaderActions must be used within a ConfigurationItemsLoaderProvider');
-  }
+  if (context === undefined)
+    throw new Error('useConfigurationItemsLoader must be used within a ConfigurationItemsLoaderProvider');
 
   return context;
-}
-
-function useConfigurationItemsLoader(require: boolean = true) {
-  const actionsContext = useConfigurationItemsLoaderActions(require);
-  const stateContext = useConfigurationItemsLoaderState(require);
-
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
-  return actionsContext !== undefined && stateContext !== undefined
-    ? { ...actionsContext, ...stateContext }
-    : undefined;
-}
+};
 
 export {
   ConfigurationItemsLoaderProvider,
   useConfigurationItemsLoader,
-  useConfigurationItemsLoaderActions,
-  useConfigurationItemsLoaderState,
 };

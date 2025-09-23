@@ -3,7 +3,7 @@ import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
 
 export interface IGetMetadataPayload {
   modelType: string;
-  dataType: string;
+  dataType: string | null;
 }
 
 export type IGetPropertyMetadataFromMetaPayload = {
@@ -29,9 +29,9 @@ export interface IGetNestedPropertiesPayload {
 }
 
 export interface IMetadataDispatcher {
-  getMetadata: (payload: IGetMetadataPayload) => Promise<IModelMetadata>;
-  getPropertyMetadata: (payload: IGetPropertyMetadataPayload) => Promise<IPropertyMetadata>;
-  getPropertyFromMetadata: (payload: IGetPropertyMetadataFromMetaPayload) => Promise<IPropertyMetadata>;
+  getMetadata: (payload: IGetMetadataPayload) => Promise<IModelMetadata | null>;
+  getPropertyMetadata: (payload: IGetPropertyMetadataPayload) => Promise<IPropertyMetadata | null>;
+  getPropertyFromMetadata: (payload: IGetPropertyMetadataFromMetaPayload) => Promise<IPropertyMetadata | null>;
   getPropertiesMetadata: (payload: IGetPropertiesMetadataPayload) => Promise<IDictionary<IPropertyMetadata>>;
   isEntityType: (modelType: string) => Promise<boolean>;
   getContainerProperties: (payload: IGetNestedPropertiesPayload) => Promise<IPropertyMetadata[]>;

@@ -2,6 +2,7 @@ import qs from 'qs';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { IAjaxResponse, IEntityReferenceDto } from '@/interfaces';
 import { GrantedPermissionDto } from '@/apis/session';
+import { isAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 
 const URLS = {
   IS_PERMISSION_GRANTED: '/api/services/app/Permission/IsPermissionGranted',
@@ -87,12 +88,12 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     if (this.#grantedPermissions) {
       return permissionedEntity
         ? this.#grantedPermissions.some(
-            (p) =>
-              p.permission === permissionName &&
-              p.permissionedEntity?.some(
-                (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className
-              )
-          )
+          (p) =>
+            p.permission === permissionName &&
+            p.permissionedEntity?.some(
+              (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className
+            )
+        )
         : this.#grantedPermissions.some((p) => p.permission === permissionName);
     }
 
@@ -130,7 +131,8 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, { name, module, value, dataType })
       .then((res) => {
-        if (!res.data.success) throw new Error('Failed to update setting value: ' + res.data.error.message);
+        if (isAjaxErrorResponse(res.data))
+          throw new Error('Failed to update setting value: ' + res.data.error.message);
       });
   }
 }

@@ -2,7 +2,7 @@ import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
 import { GenerationLogic } from "./interface";
 import { DetailsViewGenerationLogic } from "./details-view/detailsViewGenerationLogic";
-import { BlankViewGenerationLogic } from "./blank-view/blankViewGenerationLogic";
+import { CreateViewGenerationLogic } from "./create-view/createViewGenerationLogic";
 import { TableViewGenerationLogic } from "./table-view/tableViewGenerationLogic";
 import { BaseGenerationLogic } from "./baseGenerationLogic";
 
@@ -13,7 +13,7 @@ export class GenerationLogicFactory {
   private _implementations: GenerationLogic[] = [];  
   private _logicConstructors: (new () => GenerationLogic)[] = [
     DetailsViewGenerationLogic,
-    BlankViewGenerationLogic,
+    CreateViewGenerationLogic,
     TableViewGenerationLogic,
   ];
   

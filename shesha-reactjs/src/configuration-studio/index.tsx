@@ -16,55 +16,55 @@ import { DocumentDefinitionRegistration } from './document-definitions/documentD
 import { SheshaDocumentDefinitions } from './document-definitions';
 
 const ConfigurationStudio: FC = () => {
-    const { styles } = useStyles();
+  const { styles } = useStyles();
 
-    return (
-        <ConfigurationStudioProvider>
-            <DocumentDefinitionRegistration definitions={SheshaDocumentDefinitions} />
+  return (
+    <ConfigurationStudioProvider>
+      <DocumentDefinitionRegistration definitions={SheshaDocumentDefinitions} />
 
-            <Layout className={styles.configStudio}>
-                <Layout.Header className={styles.csHeader}>
-                    <div className={styles.csHeaderLeft}>
-                        <Image
-                            src="/favicon.ico"
-                            alt="Shesha"
-                            width={32}
-                            height={32}
-                            className={styles.csLogo}
-                        />
-                        <NewButton />
-                    </div>
-                    <div className={styles.csHeaderCenter}>
-                        <ConfigurationItemMenu />
-                        <QuickInfoIcons />
-                    </div>
-                    <div className={styles.csHeaderRight}>
-                        <ItemToolbarHolder />
-                        <Divider type="vertical" />
-                        <UserProfileBlock />
-                    </div>
-                </Layout.Header>
-                <Layout.Content className={styles.csContent}>
-                    <Splitter>
-                        <Splitter.Panel
-                            collapsible
-                            min="5%"
-                            defaultSize="20%"
-                            className={styles.csTreeArea}
-                        >
-                            <ConfigurationTree />
-                        </Splitter.Panel>
-                        <Splitter.Panel
-                            min="20%"
-                            className={styles.csWorkArea}
-                        >
-                            <WorkArea />
-                        </Splitter.Panel>
-                    </Splitter>
-                </Layout.Content>
-            </Layout>
-        </ConfigurationStudioProvider>
-    );
+      <Layout className={styles.configStudio}>
+        <Layout.Header className={styles.csHeader}>
+          <div className={styles.csHeaderLeft}>
+            <Image
+              src="/favicon.ico"
+              alt="Shesha"
+              width={32}
+              height={32}
+              className={styles.csLogo}
+            />
+            <NewButton />
+          </div>
+          <div className={styles.csHeaderCenter}>
+            <ConfigurationItemMenu />
+            <QuickInfoIcons />
+          </div>
+          <div className={styles.csHeaderRight}>
+            <ItemToolbarHolder />
+            <Divider type="vertical" />
+            <UserProfileBlock />
+          </div>
+        </Layout.Header>
+        <Layout.Content className={styles.csContent}>
+          <Splitter>
+            <Splitter.Panel
+              collapsible
+              min="5%"
+              defaultSize="20%"
+              className={styles.csTreeArea}
+            >
+              <ConfigurationTree />
+            </Splitter.Panel>
+            <Splitter.Panel
+              min="20%"
+              className={styles.csWorkArea}
+            >
+              <WorkArea />
+            </Splitter.Panel>
+          </Splitter>
+        </Layout.Content>
+      </Layout>
+    </ConfigurationStudioProvider>
+  );
 };
 
 export default withAuth(ConfigurationStudio);

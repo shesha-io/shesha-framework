@@ -2,36 +2,36 @@ import { mapProps } from "@/utils/object";
 import { IDocumentInstance, DocumentType, DocumentDefinition, LoadingStatus, ForceRenderFunc, DocumentFlags, DocumentInstanceFactoryArgs } from "../models";
 
 export type DocumentInstanceArgs = DocumentInstanceFactoryArgs & {
-    definition: DocumentDefinition;
-    itemType: string;
+  definition: DocumentDefinition;
+  itemType: string;
 };
 
 export class DocumentInstance implements IDocumentInstance {
-    itemId: string;
+  itemId: string;
 
-    label: string;
+  label: string;
 
-    type: DocumentType = 'ci';
+  type: DocumentType = 'ci';
 
-    itemType: string;
+  itemType: string;
 
-    flags: DocumentFlags;
+  flags: DocumentFlags;
 
-    moduleId: string;
+  moduleId: string;
 
-    moduleName: string;
+  moduleName: string;
 
-    definition: DocumentDefinition;
+  definition: DocumentDefinition;
 
-    loadingState: LoadingStatus;
+  loadingState: LoadingStatus;
 
-    isHistoryVisible: boolean;
+  isHistoryVisible: boolean;
 
-    constructor(args: DocumentInstanceArgs) {
-        mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
+  constructor(args: DocumentInstanceArgs) {
+    mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
 
-        this.isHistoryVisible = false;
-    }
+    this.isHistoryVisible = false;
+  }
 
-    toolbarForceRender?: ForceRenderFunc;
+  toolbarForceRender?: ForceRenderFunc;
 }

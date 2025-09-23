@@ -1416,22 +1416,22 @@ export const cloneComponents = (
 
 export const getDefaultFormMarkup = (type: ViewType = 'blank') => {
   switch (type) {
-    case 'blank':
-      return blankViewMarkup;
-    case 'dashboard':
-      return dashboardViewMarkup;
-    case 'details':
-      return detailsViewMarkup;
-    case 'form':
-      return formViewMarkup;
-    case 'masterDetails':
-      return masterDetailsViewMarkup;
-    case 'menu':
-      return menuViewMarkup;
-    case 'table':
-      return tableViewMarkup;
-    default:
-      return blankViewMarkup;
+  case 'blank':
+    return blankViewMarkup;
+  case 'dashboard':
+    return dashboardViewMarkup;
+  case 'details':
+    return detailsViewMarkup;
+  case 'form':
+    return formViewMarkup;
+  case 'masterDetails':
+    return masterDetailsViewMarkup;
+  case 'menu':
+    return menuViewMarkup;
+  case 'table':
+    return tableViewMarkup;
+  default:
+    return blankViewMarkup;
   }
 };
 export const createComponentModelForDataProperty = (
@@ -1449,7 +1449,7 @@ export const createComponentModelForDataProperty = (
       (c) =>
         Boolean(c.dataTypeSupported) &&
         c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
-  );
+    );
 
   if (!Boolean(toolboxComponent)) return null;
 
@@ -1704,7 +1704,7 @@ export const isFormFullName = (formId: FormIdentifier): formId is FormFullName =
 
 export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {
   return isFormRawId(id1) && isFormRawId(id2) && id1 === id2 ||
-    isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase() && id1.version === id2.version;
+    isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase();
 };
 
 export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);

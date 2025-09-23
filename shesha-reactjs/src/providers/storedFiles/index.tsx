@@ -38,6 +38,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -71,7 +72,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   // used for requered field validation
   onChange,
-  value = []
+  value = [],
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -109,9 +110,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   useEffect(() => {
     const val = state.fileList?.length > 0 ? state.fileList : [];
-        if (typeof onChange === 'function' && value !== val) {
-        onChange(val);
-      };
+    if (typeof onChange === 'function' && value !== val) {
+      onChange(val);
+    };
   }, [state.fileList]);
 
   useEffect(() => {
@@ -122,7 +123,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   useEffect(() => {
     if (!isFetchingFileList) {
-      if (fileListResponse) {
+      if (isAjaxSuccessResponse(fileListResponse)) {
         const { result } = fileListResponse;
         const fileList = filesReducer(result as IStoredFile[]);
 
@@ -131,7 +132,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(fetchFileListErrorAction());
       }
     }
-  }, [isFetchingFileList]);
+  }, [isFetchingFileList, fileListResponse]);
 
   //#region Register signal r events
   useEffect(() => {
@@ -145,7 +146,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
-      onChange?.(state.fileList?.filter(file => file.id !== patient?.id) || []);
+      onChange?.(state.fileList?.filter((file) => file.id !== patient?.id) || []);
     });
   }, []);
   //#endregion
@@ -236,7 +237,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           ownerName: ownerName,
         }
         : {
-          filesId: state.fileList?.map(x => x.id).filter(x => !!x),
+          filesId: state.fileList?.map((x) => x.id).filter((x) => !!x),
         };
     axios({
       url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query)}`,
@@ -281,7 +282,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           uploadFile,
           deleteFile,
           downloadZipFile,
-          downloadFile,          /* NEW_ACTION_GOES_HERE */
+          downloadFile, /* NEW_ACTION_GOES_HERE */
         }}
       >
         {children}

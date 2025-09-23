@@ -10,15 +10,13 @@ export interface AuthenticateResultModel {
   userId?: number;
   personId?: string | null;
   deviceName?: string | null;
-  redirect?: Boolean;
-  url?: string;
   resultType?: AuthenticateResultType;
   redirectUrl?: string;
   redirectModule?: string;
   redirectForm?: string;
 }
 
-export interface AuthenticateResultModelAjaxResponse extends IAjaxResponse<AuthenticateResultModel> {}
+export type AuthenticateResultModelAjaxResponse = IAjaxResponse<AuthenticateResultModel>;
 
 export interface AuthenticateModel {
   userNameOrEmailAddress: string;

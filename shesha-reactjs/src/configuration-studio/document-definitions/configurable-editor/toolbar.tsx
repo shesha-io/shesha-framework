@@ -7,17 +7,17 @@ import { useShaFormInstance, useShaFormDataUpdate, useShaFormSubscription } from
 export type IGenericToolbarProps = ItemEditorProps;
 
 export const GenericToolbar: FC<IGenericToolbarProps> = ({ }) => {
-    useShaFormDataUpdate();
-    useShaFormSubscription('data-loading');
-    useShaFormSubscription('data-submit');
-    const shaForm = useShaFormInstance();
+  useShaFormDataUpdate();
+  useShaFormSubscription('data-loading');
+  useShaFormSubscription('data-submit');
+  const shaForm = useShaFormInstance();
 
-    const onSaveClick = (): void => {
-        shaForm.submit();
-    };
-    return (
-        <div>
-            <Button type="link" icon={<SaveOutlined />} onClick={onSaveClick} disabled={!shaForm.isDataModified}>Save</Button>
-        </div>
-    );
+  const onSaveClick = (): void => {
+    shaForm.submit();
+  };
+  return (
+    <div>
+      <Button type="link" icon={<SaveOutlined />} onClick={onSaveClick} disabled={!shaForm.isDataModified}>Save</Button>
+    </div>
+  );
 };

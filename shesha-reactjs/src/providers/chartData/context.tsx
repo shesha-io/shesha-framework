@@ -49,7 +49,7 @@ export interface IChartDataContext extends IChartsProps {
   axisPropertyLabel?: string;
   valuePropertyLabel?: string;
   filters?: FilterExpression | FilterExpression[];
-  
+
   // Font configuration properties
   titleFont?: {
     family?: string;
@@ -131,31 +131,31 @@ export const INITIAL_STATE: IChartDataContext = {
   axisPropertyLabel: '',
   valuePropertyLabel: '',
   maxResultCount: -1,
-  
+
   // Default font configurations
   titleFont: {
     family: 'Segoe UI',
     size: 16,
     weight: 'bold',
-    color: '#000000'
+    color: '#000000',
   },
   axisLabelFont: {
     family: 'Segoe UI',
     size: 12,
     weight: 'bold',
-    color: '#000000'
+    color: '#000000',
   },
   legendFont: {
     family: 'Segoe UI',
     size: 12,
     weight: '400',
-    color: '#000000'
+    color: '#000000',
   },
   tickFont: {
     family: 'Segoe UI',
     size: 12,
     weight: '400',
-    color: '#000000'
+    color: '#000000',
   },
 };
 

@@ -4,7 +4,7 @@ import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel } from "../viewGenerationUtils";
+import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
@@ -25,10 +25,11 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     markup: any, 
     entity: IEntityMetadata, 
     nonFrameworkProperties: PropertyMetadataDto[],
-    metadataHelper: FormMetadataHelper
+    metadataHelper: FormMetadataHelper,
+    replacements: object
   ): Promise<void> {
     try {
-      const extensionJson = castToExtensionType<DetailsViewExtensionJson>({});
+      const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
       
       // Add header components
       this.addHeader(entity, nonFrameworkProperties, markup, extensionJson, metadataHelper);
@@ -106,6 +107,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           componentName: "keyInformationBar",
           columns: keyInfoProperties.map(prop => {
             const keyInfoBuilder = new DesignerToolbarSettings({});
+            const keyInfoBarContainer = new DesignerToolbarSettings({});
 
             keyInfoBuilder.addText({
               id: nanoid(),
@@ -119,17 +121,34 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               contentDisplay: 'content',
               textType: "span",
               color: 'default',
+              desktop: {
+                weight: 500
+              },
               strong: true
             });
 
             metadataHelper.getConfigFields(prop, keyInfoBuilder, true);
+
+            keyInfoBarContainer.addContainer({
+              id: nanoid(),
+              propertyName: 'keyInfoContainer',
+              label: 'Key Information',
+              editMode: 'inherited' as EditMode,
+              hidden: false,
+              componentName: 'keyInfoContainer',
+              direction: 'vertical',
+              desktop: {
+                justifyContent: 'center',
+              },
+              components: keyInfoBuilder.toJson()
+            });
 
             return {
               id: nanoid(),
               width: 200,
               flexDirection: 'row',
               textAlign: 'start',
-              components: keyInfoBuilder.toJson()
+              components: keyInfoBarContainer.toJson()
             };
           })
         });
@@ -206,7 +225,24 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             components: childTableAccessoriesBuilder.toJson()
           });
 
-          const columns: IConfigurableColumnsProps[] = nonFrameworkProperties.map((prop, idx) => {
+          // Sort the properties: required fields first, then by dataType priority
+          const sortedProperties = [...nonFrameworkProperties].sort((a, b) => {
+            // Sort by required status (required first)
+            if (a.required !== b.required) {
+              return a.required ? -1 : 1;
+            }
+            
+            // Sort by dataType priority only
+            const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
+            const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+            
+            return priorityA - priorityB;
+          });
+
+          const columns: IConfigurableColumnsProps[] = sortedProperties.map((prop, idx) => {
+            // Get column width based on data type
+            const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
+            
             return {
               id: nanoid(),
               columnType: 'data',
@@ -215,7 +251,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               isVisible: true,
               description: prop.description || '',
               sortOrder: idx,
-              itemType: 'item'
+              itemType: 'item',
+              minWidth: width.min,
+              maxWidth: width.max
             };
           });
 
@@ -237,7 +275,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               ...columns
             ]
           });
-
+          
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find(p => p.entityType === extensionJson.modelType)?.path;
+          
           const childTableContextBuilder = new DesignerToolbarSettings({});
           childTableContextBuilder.addDatatableContext({
             id: nanoid(),
@@ -256,10 +296,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
                   "==": [
                     {
                       // Fallback to "parentId" if no matching property is found
-                      "var": (childTable.properties as PropertyMetadataDto[])
-                        .find(p => p.entityType === extensionJson.modelType)
-                        ?.path
-                        || "parentId",
+                      "var": filterProperty ? toCamelCase(filterProperty) : "parentId",
                     },
                     {
                       "evaluate": [

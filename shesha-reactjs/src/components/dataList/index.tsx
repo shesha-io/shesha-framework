@@ -116,7 +116,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [selectedRow, selectedRows, selectionMode]);
 
   const allData = useAvailableConstantsData();
-  const { configurationItemMode } = useAppConfigurator();
   const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
 
   const dynamicContext = useActionDynamicContext(props.dblClickActionConfiguration);
@@ -211,7 +210,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return !!entityForm.formConfiguration;
 
     if (!!entityForm.formId) {
-      getForm({ formId: entityForm.formId, configurationItemMode, skipCache })
+      getForm({ formId: entityForm.formId, skipCache })
         .then(response => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
@@ -222,7 +221,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         ?? getEntityFormId(entityForm.entityType, fType);
 
       f.then((e) =>
-        getForm({ formId: e, configurationItemMode, skipCache })
+        getForm({ formId: e, skipCache })
           .then(response => {
             entityForm.formId = e;
             entityForm.formConfiguration = response;

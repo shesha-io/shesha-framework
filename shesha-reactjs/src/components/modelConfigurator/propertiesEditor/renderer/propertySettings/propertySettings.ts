@@ -61,7 +61,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
               })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textArea', propertyName: 'description', label: 'Description',})
-              .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default editor', mode: 'single',
+              .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor', mode: 'single',
                 defaultValue: { '_value': '', '_mode': 'code', '_code': defaultEditorCode } as any,
                 dropdownOptions: { '_value': '', '_mode': 'code', '_code': editorsCode } as any,
               })
@@ -70,7 +70,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
           },
           {
             key: '2',
-            title: 'Data type',
+            title: 'Data Type',
             id: dataTabId,
             components: [
 
@@ -83,7 +83,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
               .addContainer({ id: entityFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'entity\';', '_mode': 'code', '_value': false },
                 components: [...new DesignerToolbarSettings()
                   .addSettingsInput({ parentId: entityFormatId, inputType: 'autocomplete', propertyName: 'entityType',
-                    label: 'Entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete",
+                    label: 'Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete",
                     queryParams: { '_value': '', '_mode': 'code', '_code': 'return { baseClass:data.baseEntityType};' } as any,
                     editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
                   })
@@ -98,7 +98,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
 
               .addContainer({ id: objectRefFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'object\';', '_mode': 'code', '_value': false },
                 components: [...new DesignerToolbarSettings()
-                  .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Object format', mode: 'single',
+                  .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Object Format', mode: 'single',
                     editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
                     dropdownOptions: [
                       { label: 'Nested object', value: 'object' },
@@ -106,7 +106,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                     ]
                   })
                   .addSettingsInputRow({ parentId: objectRefFormatId, inputs: [
-                      { type: 'autocomplete', propertyName: 'entityType', label: 'Pasrt of entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete",
+                      { type: 'autocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete",
                         queryParams: { baseClass: "{{data.baseEntityType}}" },
                       },
                     ],
@@ -135,22 +135,22 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
 
               .addContainer({ id: listFormatId, parentId: dataTabId, hidden: { '_code': 'return data?.dataType !== \'array\';', '_mode': 'code', '_value': false },
                 components: [...new DesignerToolbarSettings()
-                  .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'List format', mode: 'single',
+                  .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'List Format', mode: 'single',
                     editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
                     dropdownOptions: [
-                      { label: 'Simple values', value: 'simple' },
-                      { label: 'Referencing entities', value: 'entity' },
+                      { label: 'Simple Values', value: 'simple' },
+                      { label: 'Referencing Entities', value: 'entity' },
                       { label: 'Entities', value: 'many-entity' },
-                      { label: 'Child objects', value: 'object' },
+                      { label: 'Child Objects', value: 'object' },
                       { label: 'Child Entities', value: 'child-entity' },
-                      { label: 'Multi value Reference list item', value: 'multivalue-reference-list' },
+                      { label: 'Multi Value Reference List Item', value: 'multivalue-reference-list' },
                     ]
                   })
 
                   // Referencing entities and Entities (many-entity )
 
                   .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'autocomplete', propertyName: 'entityType', label: 'Entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete" },
+                      { type: 'autocomplete', propertyName: 'entityType', label: 'Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete" },
                     ],
                     hidden: { '_code': 'const d = data?.dataFormat; return d !== \'many-entity\' && d !== \'entity\';', '_mode': 'code', '_value': false },
                     editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
@@ -165,7 +165,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                   // Child objects
 
                   .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object format', mode: 'single',
+                      { type: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object Format', mode: 'single',
                         editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
                         dropdownOptions: [
                           { label: 'Nested object', value: 'object' },
@@ -176,7 +176,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                     hidden: { '_code': 'return data?.dataFormat !== \'object\';', '_mode': 'code', '_value': false },
                   })
                   .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'autocomplete', propertyName: 'entityType', label: 'Pasrt of entity type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete" },
+                      { type: 'autocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete" },
                     ],
                     hidden: { '_code': 'return data?.dataFormat !== \'object\' || data?.itemsType?.dataFormat !== \'interface\';', '_mode': 'code', '_value': false },
                     editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,

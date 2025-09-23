@@ -3,7 +3,7 @@ import React, {
   FC,
   MutableRefObject,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { Button, App } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
@@ -48,8 +48,8 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
   return (
     <>
-      <Button type='default' onClick={hideModal}>Cancel</Button>
-      <Button type='primary' icon={<ExportOutlined />} onClick={onExport} loading={inProgress}>Export</Button>
+      <Button type="default" onClick={hideModal}>Cancel</Button>
+      <Button type="primary" icon={<ExportOutlined />} onClick={onExport} loading={inProgress}>Export</Button>
     </>
   );
 };
@@ -68,7 +68,6 @@ export const useConfigurationItemsExportAction = () => {
       const modalId = nanoid();
 
       return new Promise((resolve, reject) => {
-
         const hideModal = () => {
           reject();
           removeModal(modalId);
@@ -94,7 +93,7 @@ export const useConfigurationItemsExportAction = () => {
             }
           },
           content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef} />,
-          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />
+          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />,
         };
         createModal({ ...modalProps });
       });
