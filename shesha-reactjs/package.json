@@ -19,7 +19,7 @@
   "scripts": {
     "test": "cross-env CI=1 jest --runInBand",
     "test:watch": "jest --watch",
-    "build": "eslint --quiet && rimraf dist && rollup -c && tsc-alias",
+    "build": "node --max-old-space-size=16384 node_modules/.bin/eslint --quiet && rimraf dist && node --max-old-space-size=16384 node_modules/.bin/rollup -c && node --max-old-space-size=16384 node_modules/.bin/tsc-alias",
     "start": "rollup -c -w",
     "changelog:major": "changelog -M && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin",
     "changelog:minor": "changelog -m && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin",
