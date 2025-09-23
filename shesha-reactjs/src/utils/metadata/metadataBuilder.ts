@@ -1,5 +1,5 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
-import { IHasEntityType, IMethodMetadata, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
+import { IEntityProperty, IMethodMetadata, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
 import { Environment, PropertiesBuilder, StandardConstantInclusionArgs } from "@/publicJsApis/metadataBuilder";
 import { registerMetadataBuilderAction } from "./standardProperties";
 import {
@@ -51,12 +51,14 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
         this.metadata.description = description;
     }
 
-    _createProperty(dataType: string, path: string, label: string): IPropertyMetadata {
-        const property: IPropertyMetadata = {
+    _createProperty = <T extends IPropertyMetadata = IPropertyMetadata>(dataType: string, path: string, label: string, init?: (base: IPropertyMetadata) => T): T => {
+        const baseProps: IPropertyMetadata = {
             dataType,
             path,
             label,
         };
+        const property = init ? init(baseProps) : baseProps as T;
+
         if (this.metadata.properties === null) {
             this.metadata.properties = [];
         } else if (!Array.isArray(this.metadata.properties))
@@ -129,15 +131,17 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
 
     addEntityAsync(path: string, label: string, entityType: string): Promise<this> {
         return this.#metadataBuilder.metadataFetcher({ name: entityType, module: null }).then(response => {
-            const nestedObject = this._createProperty(DataTypes.entityReference, path, label);
-            nestedObject.dataFormat = entityType;
-
             if (!isEntityMetadata(response))
                 throw new Error(`Failed to resolve entity type '${entityType}'`);
 
-            const entityProperty = nestedObject as IHasEntityType;
-            entityProperty.entityType = response.entityType;
-            entityProperty.entityModule = response.entityModule;
+            this._createProperty<IEntityProperty>(DataTypes.entityReference, path, label,
+                p => ({
+                    ...p,
+                    dataFormat: entityType,
+                    entityType: response.entityType,
+                    entityModule: response.entityModule,
+                    moduleAccessor: response.moduleAccessor,
+                }));
 
             return this;
         });

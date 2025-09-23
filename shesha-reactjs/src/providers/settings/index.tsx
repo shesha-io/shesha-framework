@@ -67,7 +67,7 @@ export interface SettingValueLoadingState<TValue = any> {
   error?: IErrorInfo;
 }
 
-const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
+const useSettingValue = <TValue = any>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
   const settings = useSettings();
   const [state, setState] = useState<SettingValueLoadingState>({ loadingState: 'waiting' });
 

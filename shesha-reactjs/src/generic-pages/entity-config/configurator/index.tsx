@@ -15,6 +15,7 @@ import { SizableColumns } from '@/components/sizableColumns';
 import classNames from 'classnames';
 import { useStyles } from './styles';
 import ModelConfiguratorRenderer from '@/components/modelConfigurator/renderer';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IEntityConfiguratorPageProps {
   id?: string;
@@ -71,7 +72,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
       { base: backendUrl, headers: httpHeaders }
     )
       .then((response) => {
-        if (response.success) {
+        if (isAjaxSuccessResponse(response)) {
           if (del) entityConfigTreeRef.current.refresh(autocompleteResult.id);
           onChange(response.result);
           message.success('Configurations merged successfully');
@@ -99,7 +100,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
       icon: <PlusOutlined />,
       onClick: () => {
         setEntityConfigId('');
-        configurator.createNew({source: MetadataSourceType.UserDefined});
+        configurator.createNew({ source: MetadataSourceType.UserDefined });
       },
     },
     {
@@ -196,7 +197,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
             />
           </div>
           <div className={styles.propsPanel}>
-            <div  className={classNames(styles.propsPanelContent  )}>
+            <div className={classNames(styles.propsPanelContent)}>
               <IndexToolbar className={classNames(styles.propsPanelHeader)} items={toolbarItems} />
               {entityConfigId != null && <ModelConfiguratorRenderer />}
             </div>

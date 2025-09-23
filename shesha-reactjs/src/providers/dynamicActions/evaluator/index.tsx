@@ -4,42 +4,42 @@ import { getDynamicActionsItemsLevel, getItemsWithResolved, IDynamicItemsEvaluat
 import { getDynamicItemKey, SingleDynamicItemEvaluator } from './singleDynamicItemEvaluator';
 
 export interface IDynamicActionsEvaluatorProps {
-    items: ButtonGroupItemProps[];
-    children: (items: ButtonGroupItemProps[]) => React.ReactElement;
+  items: ButtonGroupItemProps[];
+  children: (items: ButtonGroupItemProps[]) => React.ReactElement;
 }
 
 export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ items, children }) => {
-    const [numResolved, setNumResolved] = useState(0);
+  const [numResolved, setNumResolved] = useState(0);
 
-    const evaluation = useMemo<IDynamicItemsEvaluationStore>(() => {
-        const dynamicItems: IResolvedDynamicItem[] = [];
-        const preparedItems = getDynamicActionsItemsLevel(items,
-            (dynamicItem) => {
-                dynamicItems.push(dynamicItem);
-            }
-        );
-        
-        return {
-            dynamicItems,
-            items: preparedItems,
-        };
-    }, [items]);
+  const evaluation = useMemo<IDynamicItemsEvaluationStore>(() => {
+    const dynamicItems: IResolvedDynamicItem[] = [];
+    const preparedItems = getDynamicActionsItemsLevel(items,
+      (dynamicItem) => {
+        dynamicItems.push(dynamicItem);
+      }
+    );
 
-    // build a resulting tree that includes all resolved items but excludes non resolved ones
-    const finalItems = useMemo(() => {
-        return getItemsWithResolved(evaluation.items);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [evaluation.items, numResolved]);
-
-
-    const onDynamicItemEvaluated = () => {
-        setNumResolved(prev => prev + 1);
+    return {
+      dynamicItems,
+      items: preparedItems,
     };
+  }, [items]);
 
-    return (
+  // build a resulting tree that includes all resolved items but excludes non resolved ones
+  const finalItems = useMemo(() => {
+    return getItemsWithResolved(evaluation.items);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [evaluation.items, numResolved]);
+
+
+  const onDynamicItemEvaluated = () => {
+    setNumResolved((prev) => prev + 1);
+  };
+
+  return (
         <>
-            {evaluation.dynamicItems.map(item => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={getDynamicItemKey(item)} />))}
+            {evaluation.dynamicItems.map((item) => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={getDynamicItemKey(item)} />))}
             {children(finalItems)}
         </>
-    );
+  );
 };

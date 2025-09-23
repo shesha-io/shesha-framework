@@ -154,10 +154,10 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const updateComponent = useCallback((payload: IComponentUpdatePayload) => {
     // ToDo: AS - need to optimize
-     if (componentInitialization.current) {
+    if (componentInitialization.current) {
       // Do not trigger an update if first component initialization (reduce unnecessary re-renders)
       componentInitialization.current = false;
-      return; 
+      return;
     }
 
     dispatch(componentUpdateAction(payload));
@@ -223,7 +223,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const setSelectedComponent = useCallback((componentId: string) => {
     if (componentId !== state.present.selectedComponentId)
       dispatch(setSelectedComponentAction({ id: componentId }));
-      componentInitialization.current = true;
+    componentInitialization.current = true;
   }, [dispatch]);
 
   const setPreviousSelectedComponent = useCallback((componentId: string) => {
@@ -231,13 +231,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   }, [dispatch]);
 
   useEffect(() => {
-      if (state.present.formMode === 'edit' && state.present.selectedComponentId) {
-        setPreviousSelectedComponent(state.present.selectedComponentId);
-        setSelectedComponent(null);
-      } else if (state.present.formMode === 'designer' && state.present.previousSelectedComponentId) {
-        setSelectedComponent(state.present.previousSelectedComponentId);
-        setPreviousSelectedComponent(null);
-      }
+    if (state.present.formMode === 'edit' && state.present.selectedComponentId) {
+      setPreviousSelectedComponent(state.present.selectedComponentId);
+      setSelectedComponent(null);
+    } else if (state.present.formMode === 'designer' && state.present.previousSelectedComponentId) {
+      setSelectedComponent(state.present.previousSelectedComponentId);
+      setPreviousSelectedComponent(null);
+    }
   }, [state.present.formMode]);
 
   const updateFormSettings = useCallback((settings: IFormSettings) => {
@@ -311,7 +311,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     addDataSource,
     removeDataSource,
     setActiveDataSource,
-    setReadOnly
+    setReadOnly,
     /* NEW_ACTION_GOES_HERE */
   ]);
 
@@ -331,7 +331,7 @@ function useFormDesignerStateSelector(selector: (state: IFormDesignerStateContex
 }
 
 function useFormDesignerState(require: boolean = true) {
-  const context = useContextSelector(FormDesignerStateContext, state => state);
+  const context = useContextSelector(FormDesignerStateContext, (state) => state);
 
   if (require && context === undefined) {
     throw new Error('useFormDesignerState must be used within a FormDesignerProvider');

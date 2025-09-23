@@ -36,7 +36,7 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
   ];
 
   return new DesignerToolbarSettings()
-    .addSettingsInput({ parentId: dataTabId, inputType: 'dropdown', propertyName: `${propName}dataType`, label: 'Data type', validate: { required: true },
+    .addSettingsInput({ parentId: dataTabId, inputType: 'dropdown', propertyName: `${propName}dataType`, label: 'Data Type', validate: { required: true },
       editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
       mode: 'single', dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
       allowClear: true, tooltip: 'Select the data type for this property.',
@@ -44,13 +44,13 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
 
     // Date & Time format
     .addSettingsInputRow({ parentId: dataTabId, inputs: [
-        { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Date format', 
+        { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Date Format', 
           tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
         }],
         hidden: { _code: `return data?.${codePropName}dataType !== \'date\' && data?.${codePropName}  dataType !== \'date-time\';`, _mode: 'code', '_value': false },
     })
     .addSettingsInputRow({ parentId: dataTabId, inputs: [
-        { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Time format',
+        { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Time Format',
           tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
         }],
         hidden: { '_code': `return data?.${codePropName}dataType !== \'time\';`, '_mode': 'code', '_value': false },
@@ -60,7 +60,7 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
 
     .addContainer({ id: stringFormatId, parentId: dataTabId, hidden: { '_code': `return data?.${codePropName}dataType !== \'string\';`, '_mode': 'code', '_value': false },
       components: [...new DesignerToolbarSettings()
-        .addSettingsInput({ parentId: stringFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'String format', mode: 'single',
+        .addSettingsInput({ parentId: stringFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'String Format', mode: 'single',
           dropdownOptions: [
             { label: 'Single line', value: 'singleline' },
             { label: 'Multiline', value: 'multiline' },

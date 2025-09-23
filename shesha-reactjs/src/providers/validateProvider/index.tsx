@@ -14,7 +14,7 @@ export interface IValidateProviderStateContext {
   validate: () => Promise<void>;
 }
 
-export interface IValidateProviderProps { 
+export interface IValidateProviderProps {
 }
 
 export const ValidateProviderStateContext = createNamedContext<IValidateProviderStateContext>(
@@ -36,8 +36,7 @@ export function useValidator(require: boolean = true) {
   return stateContext;
 }
 
-const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({children}) => {
-
+const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({ children }) => {
   const parent = useValidator(false);
   const id = useId();
 
@@ -49,7 +48,7 @@ const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({childr
     if (!exists)
       childValidateProvider.current = [...childValidateProvider.current, input];
     else
-      childValidateProvider.current = childValidateProvider.current.map((item) =>{
+      childValidateProvider.current = childValidateProvider.current.map((item) => {
         return item.id === input.id ? input : item;
       });
   };
@@ -65,7 +64,7 @@ const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({childr
     if (!exists)
       validators.current = [...validators.current, input];
     else
-      validators.current = validators.current.map((item) =>{
+      validators.current = validators.current.map((item) => {
         return item.id === input.id ? input : item;
       });
   };
@@ -77,7 +76,7 @@ const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({childr
     childValidateProvider.current.forEach((child) => {
       promises.push(child.validate());
     });
-    return Promise.all(promises).then(_x => null);
+    return Promise.all(promises).then((_x) => null);
   };
 
   const value = useMemo((): IValidateProviderStateContext => {

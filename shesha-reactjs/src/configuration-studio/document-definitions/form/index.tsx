@@ -8,29 +8,29 @@ import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
 import { useMainStyles } from "@/components/formDesigner/styles/styles";
 
 export const FormDocumentDefinition: DocumentDefinition = {
-    documentType: ITEM_TYPES.FORM,
-    Editor: (_props: ItemEditorProps): ReactNode => {
-        const { styles } = useMainStyles();
-        return (
-            <div className={styles.formDesigner}>
-                <DesignerMainArea />
-            </div>
-        );
-    },
-    Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
-        return (
-            <FormDesigner.NonVisual formId={document.itemId}>
-                {children}
-            </FormDesigner.NonVisual>
-        );
-    },
-    Toolbar: (_props: ItemEditorProps): ReactNode => {
-        return (
-            <FormToolbar />
-        );
-    },
-    documentInstanceFactory: (args) => {
-        return new DocumentInstance({ ...args, itemType: FormDocumentDefinition.documentType, definition: FormDocumentDefinition });
-    },
-    createModalFooterButtons: 'none',
+  documentType: ITEM_TYPES.FORM,
+  Editor: (_props: ItemEditorProps): ReactNode => {
+    const { styles } = useMainStyles();
+    return (
+      <div className={styles.formDesigner}>
+        <DesignerMainArea />
+      </div>
+    );
+  },
+  Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
+    return (
+      <FormDesigner.NonVisual formId={document.itemId}>
+        {children}
+      </FormDesigner.NonVisual>
+    );
+  },
+  Toolbar: (_props: ItemEditorProps): ReactNode => {
+    return (
+      <FormToolbar />
+    );
+  },
+  documentInstanceFactory: (args) => {
+    return new DocumentInstance({ ...args, itemType: FormDocumentDefinition.documentType, definition: FormDocumentDefinition });
+  },
+  createModalFooterButtons: 'none',
 };

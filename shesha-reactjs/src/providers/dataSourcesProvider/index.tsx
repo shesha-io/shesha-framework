@@ -20,7 +20,7 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
       [`${payload.id}_${payload.name}`]: {
         id: payload.id,
         name: payload.name,
-        dataSource: payload.dataSource
+        dataSource: payload.dataSource,
       },
     };
   };
@@ -33,17 +33,17 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
     return dataSources.current;
   };
 
-    const getDataSource = (payload: IGetDataSourcePayload | string) => {
-        return (typeof(payload) === 'string') 
-            ? dataSources.current[payload]
-            : dataSources.current[`${payload.id}_${payload.name}`];
-    };
+  const getDataSource = (payload: IGetDataSourcePayload | string) => {
+    return (typeof (payload) === 'string')
+      ? dataSources.current[payload]
+      : dataSources.current[`${payload.id}_${payload.name}`];
+  };
 
-    const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
-        registerDataSource,
-        unregisterDataSource,
-        getDataSources,
-        getDataSource
+  const dataSourcesProviderActions: IDataSourcesProviderActionsContext = {
+    registerDataSource,
+    unregisterDataSource,
+    getDataSources,
+    getDataSource,
   };
 
   return (
@@ -71,17 +71,17 @@ function useDataSources(require: boolean = true) {
 }
 
 function useDataSource(
-    payload: IRegisterDataSourcePayload,
-    deps?: ReadonlyArray<any>
+  payload: IRegisterDataSourcePayload,
+  deps?: ReadonlyArray<any>
 ): void {
-    const { registerDataSource, unregisterDataSource } = useDataSources();
-  
-    useEffect(() => {
-        registerDataSource(payload);
-        return () => {
-            unregisterDataSource(payload);
-        };
-    }, deps);
+  const { registerDataSource, unregisterDataSource } = useDataSources();
+
+  useEffect(() => {
+    registerDataSource(payload);
+    return () => {
+      unregisterDataSource(payload);
+    };
+  }, deps);
 }
-  
+
 export { DataSourcesProvider, useDataSources, useDataSource };

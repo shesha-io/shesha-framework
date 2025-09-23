@@ -6,8 +6,8 @@ import React, {
   PropsWithChildren,
   useContext,
   useEffect,
-  useReducer
-  } from 'react';
+  useReducer,
+} from 'react';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
 import { storedFilesReducer as storedFileReducer } from './reducer';
@@ -46,6 +46,7 @@ import {
   StoredFileStateContext,
 } from './contexts';
 import { App } from 'antd';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;
@@ -125,8 +126,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     if (newFileId)
       fileFetcher.refetch({ queryParams: { id: newFileId } });
     else
-    if (ownerId && ownerType && propertyName)
-      propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName, fileCategory } });
+      if (ownerId && ownerType && propertyName)
+        propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName, fileCategory } });
   };
 
   useEffect(() => {
@@ -137,15 +138,15 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     if (uploadMode === 'sync' && value) {
       const fileInfo: IStoredFile = value
         ? {
-            //id: value.uid,
-            uid: value.uid,
-            url: null,
-            status: 'done',
-            name: value.name,
-            size: value.size,
-            type: value.type,
-            originFileObj: null,
-          }
+          // id: value.uid,
+          uid: value.uid,
+          url: null,
+          status: 'done',
+          name: value.name,
+          size: value.size,
+          type: value.type,
+          originFileObj: null,
+        }
         : null;
 
       dispatch(fetchFileInfoSuccessAction(fileInfo));
@@ -157,8 +158,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   useEffect(() => {
     if (!isFetchingFileInfo && uploadMode === 'async') {
-      if (fetchingFileInfoResponse) {
-        const fetchedFile = fetchingFileInfoResponse?.result;
+      if (isAjaxSuccessResponse(fetchingFileInfoResponse)) {
+        const fetchedFile = fetchingFileInfoResponse.result;
         if (fetchedFile) {
           const fileInfo: IStoredFile = {
             id: fetchedFile.id,

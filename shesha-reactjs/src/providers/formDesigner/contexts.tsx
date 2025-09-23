@@ -148,7 +148,7 @@ export const UndoableFormDesignerStateContext = createNamedContext<IUndoableForm
 
 export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext { }
 
-//export const FormDesignerStateContext = createNamedContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE, "FormDesignerStateContext");
+// export const FormDesignerStateContext = createNamedContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE, "FormDesignerStateContext");
 export const FormDesignerStateContext = createContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE);
 
 export const FormDesignerActionsContext = createNamedContext<IFormDesignerActionsContext>(undefined, "FormDesignerActionsContext");

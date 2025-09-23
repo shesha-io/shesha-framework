@@ -1,6 +1,5 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useEntityTemplates } from '../utils';
-import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import {
   DynamicActionsProvider,
@@ -48,8 +47,6 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
     }
   }, [item, settings, evaluatedFilters, pageContext, FormData, globalState]);
 
-  const { configurationItemMode } = useAppConfigurator();
-
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
 
@@ -76,7 +73,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
     }));
 
     return result;
-  }, [settings, item, data, configurationItemMode]);
+  }, [settings, item, data]);
   return operations;
 };
 

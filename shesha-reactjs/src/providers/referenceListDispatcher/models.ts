@@ -7,6 +7,12 @@ export interface IReferenceListDictionary {
 
 export interface ILoadingState<TData> {
   data: TData | null;
-  error?: any;
+  error?: unknown;
   loading: boolean;
 }
+
+export const extractErrorMessage = (error: unknown): string | undefined => {
+  return error instanceof Error
+    ? error.message
+    : undefined;
+};
