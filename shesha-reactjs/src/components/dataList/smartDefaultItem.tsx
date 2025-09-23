@@ -227,7 +227,7 @@ export const SmartDefaultItem: FC<ISmartDefaultItemProps> = ({
         <div style={{ marginBottom: 8, padding: '4px 8px', backgroundColor: '#e6f7ff', borderRadius: '4px', fontSize: '11px' }}>
           <SettingOutlined style={{ marginRight: 4, color: '#1890ff' }} />
           <Text type="secondary" style={{ fontSize: '11px' }}>
-            Auto-display mode • Configure Form ID for custom layout
+            Auto-display mode • Configure Form ID for data list item template ("Form" property in the Data section)
           </Text>
         </div>
       )}
