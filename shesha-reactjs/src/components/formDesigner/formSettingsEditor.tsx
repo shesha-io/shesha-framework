@@ -24,11 +24,17 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
 
-  const initialValues = {
+  const initialValues = React.useMemo(() => ({
     ...formSettings,
-    labelCol: { span: formSettings?.labelCol?.span || theme?.labelSpan },
-    wrapperCol: { span: formSettings?.wrapperCol?.span || theme?.componentSpan }
-  };
+    labelCol: {
+      ...(formSettings?.labelCol ?? {}),
+      span: formSettings?.labelCol?.span ?? theme?.labelSpan,
+    },
+    wrapperCol: {
+      ...(formSettings?.wrapperCol ?? {}),
+      span: formSettings?.wrapperCol?.span ?? theme?.componentSpan,
+    },
+  }), [formSettings, theme]);
 
   const onSave = values => {
     if (!readOnly) {
