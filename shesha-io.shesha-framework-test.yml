@@ -353,7 +353,7 @@ stages:
     displayName: Prepare Release if published
     dependsOn: Job_4
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check if Pull Request
