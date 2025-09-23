@@ -212,7 +212,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         deleteFileSuccess(fileIdToDelete);
         const updateList = removeFile(state.fileList ?? [], fileIdToDelete);
         onChange?.(updateList);
-        if (typeof addDelayedUpdate === 'function') {
+        if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
         }; 
       })
